@@ -558,6 +558,1328 @@
           }
         }
       }
+    },
+    {
+      "oneOf": [
+        {
+          "allOf": [
+            {
+              "anyOf": [
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "ECG": {
+                          "properties": {
+                            "readiness": {
+                              "not": {
+                                "const": "ready"
+                              }
+                            },
+                            "required_for_import": {
+                              "const": true
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "ECG"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "EEG": {
+                          "properties": {
+                            "readiness": {
+                              "not": {
+                                "const": "ready"
+                              }
+                            },
+                            "required_for_import": {
+                              "const": true
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "EEG"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "G": {
+                          "properties": {
+                            "readiness": {
+                              "not": {
+                                "const": "ready"
+                              }
+                            },
+                            "required_for_import": {
+                              "const": true
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "G"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "I": {
+                          "properties": {
+                            "readiness": {
+                              "not": {
+                                "const": "ready"
+                              }
+                            },
+                            "required_for_import": {
+                              "const": true
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "I"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "U": {
+                          "properties": {
+                            "readiness": {
+                              "not": {
+                                "const": "ready"
+                              }
+                            },
+                            "required_for_import": {
+                              "const": true
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "U"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "X": {
+                          "properties": {
+                            "readiness": {
+                              "not": {
+                                "const": "ready"
+                              }
+                            },
+                            "required_for_import": {
+                              "const": true
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "X"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "pilot_camera": {
+                          "properties": {
+                            "readiness": {
+                              "not": {
+                                "const": "ready"
+                              }
+                            },
+                            "required_for_import": {
+                              "const": true
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "pilot_camera"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "task_reference_result": {
+                      "properties": {
+                        "readiness": {
+                          "not": {
+                            "const": "ready"
+                          }
+                        },
+                        "required_for_import": {
+                          "const": true
+                        }
+                      },
+                      "required": [
+                        "required_for_import",
+                        "readiness"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "task_reference_result"
+                  ],
+                  "type": "object"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "can_continue_to_synchronization": {
+              "const": false
+            },
+            "disposition": {
+              "const": "blocked"
+            }
+          },
+          "required": [
+            "disposition",
+            "can_continue_to_synchronization"
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "not": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "ECG": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "ECG"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "EEG": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "EEG"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "G": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "G"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "I": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "I"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "U": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "U"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "X": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "X"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "pilot_camera": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "pilot_camera"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "task_reference_result": {
+                        "properties": {
+                          "readiness": {
+                            "not": {
+                              "const": "ready"
+                            }
+                          },
+                          "required_for_import": {
+                            "const": true
+                          }
+                        },
+                        "required": [
+                          "required_for_import",
+                          "readiness"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "task_reference_result"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            {
+              "anyOf": [
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "ECG": {
+                          "properties": {
+                            "readiness": {
+                              "enum": [
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "ECG"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "EEG": {
+                          "properties": {
+                            "readiness": {
+                              "enum": [
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "EEG"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "G": {
+                          "properties": {
+                            "readiness": {
+                              "enum": [
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "G"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "I": {
+                          "properties": {
+                            "readiness": {
+                              "enum": [
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "I"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "U": {
+                          "properties": {
+                            "readiness": {
+                              "enum": [
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "U"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "X": {
+                          "properties": {
+                            "readiness": {
+                              "enum": [
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "X"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "pilot_camera": {
+                          "properties": {
+                            "readiness": {
+                              "enum": [
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "readiness"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "pilot_camera"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "task_reference_result": {
+                      "properties": {
+                        "readiness": {
+                          "not": {
+                            "const": "ready"
+                          }
+                        }
+                      },
+                      "required": [
+                        "readiness"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "task_reference_result"
+                  ],
+                  "type": "object"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "can_continue_to_synchronization": {
+              "const": true
+            },
+            "disposition": {
+              "const": "ready_partial"
+            }
+          },
+          "required": [
+            "disposition",
+            "can_continue_to_synchronization"
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "not": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "ECG": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "ECG"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "EEG": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "EEG"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "G": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "G"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "I": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "I"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "U": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "U"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "X": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "X"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "pilot_camera": {
+                            "properties": {
+                              "readiness": {
+                                "not": {
+                                  "const": "ready"
+                                }
+                              },
+                              "required_for_import": {
+                                "const": true
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "pilot_camera"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "task_reference_result": {
+                        "properties": {
+                          "readiness": {
+                            "not": {
+                              "const": "ready"
+                            }
+                          },
+                          "required_for_import": {
+                            "const": true
+                          }
+                        },
+                        "required": [
+                          "required_for_import",
+                          "readiness"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "task_reference_result"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            {
+              "not": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "ECG": {
+                            "properties": {
+                              "readiness": {
+                                "enum": [
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "ECG"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "EEG": {
+                            "properties": {
+                              "readiness": {
+                                "enum": [
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "EEG"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "G": {
+                            "properties": {
+                              "readiness": {
+                                "enum": [
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "G"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "I": {
+                            "properties": {
+                              "readiness": {
+                                "enum": [
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "I"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "U": {
+                            "properties": {
+                              "readiness": {
+                                "enum": [
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "U"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "X": {
+                            "properties": {
+                              "readiness": {
+                                "enum": [
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "X"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "pilot_camera": {
+                            "properties": {
+                              "readiness": {
+                                "enum": [
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "readiness"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "pilot_camera"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "task_reference_result": {
+                        "properties": {
+                          "readiness": {
+                            "not": {
+                              "const": "ready"
+                            }
+                          }
+                        },
+                        "required": [
+                          "readiness"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "task_reference_result"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "can_continue_to_synchronization": {
+              "const": true
+            },
+            "disposition": {
+              "const": "ready"
+            }
+          },
+          "required": [
+            "disposition",
+            "can_continue_to_synchronization"
+          ]
+        }
+      ]
     }
   ],
   "properties": {
@@ -628,6 +1950,78 @@
           "$ref": "#/$defs/StreamReadinessResult"
         }
       },
+      "properties": {
+        "ECG": {
+          "properties": {
+            "modality": {
+              "const": "ECG"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "EEG": {
+          "properties": {
+            "modality": {
+              "const": "EEG"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "G": {
+          "properties": {
+            "modality": {
+              "const": "G"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "I": {
+          "properties": {
+            "modality": {
+              "const": "I"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "U": {
+          "properties": {
+            "modality": {
+              "const": "U"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "X": {
+          "properties": {
+            "modality": {
+              "const": "X"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "pilot_camera": {
+          "properties": {
+            "modality": {
+              "const": "pilot_camera"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        }
+      },
       "propertyNames": {
         "enum": [
           "ECG",
@@ -673,7 +2067,10 @@
                 "modality": {
                   "const": "task_reference"
                 }
-              }
+              },
+              "required": [
+                "modality"
+              ]
             }
           ]
         },
@@ -707,10 +2104,7 @@
   "type": "object",
   "x-contract-version": "0.1.0",
   "x-runtime-invariants": [
-    "stream result keys must equal the seven core modalities",
-    "stream result map key must equal result.modality",
-    "task_reference_result modality must be task_reference",
-    "disposition and continuation must match required and non-ready results",
-    "formal_run_authorized is always false at the M2 boundary"
+    "source_snapshot_fingerprint is recomputed from canonical source identity",
+    "source paths and checksums remain stable throughout content inspection"
   ]
 }

@@ -197,10 +197,12 @@
       "properties": {
         "biometric_modalities_export_pending": {
           "items": {
-            "maxLength": 128,
-            "minLength": 1,
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
-            "type": "string"
+            "enum": [
+              "ECG",
+              "EEG",
+              "G",
+              "pilot_camera"
+            ]
           },
           "title": "Biometric Modalities Export Pending",
           "type": "array",
@@ -815,6 +817,7 @@
           "then": {
             "properties": {
               "stream_id": {
+                "const": "task_reference",
                 "maxLength": 128,
                 "minLength": 1,
                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
@@ -877,6 +880,593 @@
   "$id": "urn:cranfield:pilot-assessment:schema:session-manifest:0.1.0",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "not": {
+                  "contains": {
+                    "const": "ECG"
+                  }
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      },
+      "if": {
+        "properties": {
+          "streams": {
+            "properties": {
+              "ECG": {
+                "properties": {
+                  "status": {
+                    "const": "export_pending"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "ECG"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "streams"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "contains": {
+                  "const": "ECG"
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "else": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "not": {
+                  "contains": {
+                    "const": "EEG"
+                  }
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      },
+      "if": {
+        "properties": {
+          "streams": {
+            "properties": {
+              "EEG": {
+                "properties": {
+                  "status": {
+                    "const": "export_pending"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "EEG"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "streams"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "contains": {
+                  "const": "EEG"
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "else": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "not": {
+                  "contains": {
+                    "const": "G"
+                  }
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      },
+      "if": {
+        "properties": {
+          "streams": {
+            "properties": {
+              "G": {
+                "properties": {
+                  "status": {
+                    "const": "export_pending"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "G"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "streams"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "contains": {
+                  "const": "G"
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "else": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "not": {
+                  "contains": {
+                    "const": "pilot_camera"
+                  }
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      },
+      "if": {
+        "properties": {
+          "streams": {
+            "properties": {
+              "pilot_camera": {
+                "properties": {
+                  "status": {
+                    "const": "export_pending"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "pilot_camera"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "streams"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "contains": {
+                  "const": "pilot_camera"
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "classification": {
+                "const": "synthetic-test-data"
+              }
+            },
+            "required": [
+              "classification"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "maxItems": 0
+              },
+              "contains_biometric_data": {
+                "const": false
+              }
+            },
+            "required": [
+              "contains_biometric_data",
+              "biometric_modalities_export_pending"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "allOf": [
+          {
+            "not": {
+              "properties": {
+                "privacy": {
+                  "properties": {
+                    "classification": {
+                      "const": "synthetic-test-data"
+                    }
+                  },
+                  "required": [
+                    "classification"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "privacy"
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "anyOf": [
+              {
+                "properties": {
+                  "streams": {
+                    "properties": {
+                      "ECG": {
+                        "properties": {
+                          "status": {
+                            "enum": [
+                              "present",
+                              "invalid"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "status"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "ECG"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "streams"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "streams": {
+                    "properties": {
+                      "EEG": {
+                        "properties": {
+                          "status": {
+                            "enum": [
+                              "present",
+                              "invalid"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "status"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "EEG"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "streams"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "streams": {
+                    "properties": {
+                      "G": {
+                        "properties": {
+                          "status": {
+                            "enum": [
+                              "present",
+                              "invalid"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "status"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "G"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "streams"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "streams": {
+                    "properties": {
+                      "pilot_camera": {
+                        "properties": {
+                          "status": {
+                            "enum": [
+                              "present",
+                              "invalid"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "status"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "pilot_camera"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "streams"
+                ],
+                "type": "object"
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "contains_biometric_data": {
+                "const": true
+              }
+            },
+            "required": [
+              "contains_biometric_data"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "else": {
+        "properties": {
+          "streams": {
+            "not": {
+              "required": [
+                "task_reference"
+              ]
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "task": {
+            "properties": {
+              "reference": {
+                "properties": {
+                  "source": {
+                    "const": "bundle"
+                  }
+                },
+                "required": [
+                  "source"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "reference"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "streams": {
+            "properties": {
+              "task_reference": {
+                "properties": {
+                  "checksums": {
+                    "propertyNames": {
+                      "pattern": "^references/"
+                    }
+                  },
+                  "modality": {
+                    "const": "task_reference"
+                  },
+                  "paths": {
+                    "items": {
+                      "pattern": "^references/",
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "modality",
+                  "paths",
+                  "checksums"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "task_reference"
+            ]
+          },
+          "task": {
+            "properties": {
+              "reference": {
+                "properties": {
+                  "stream_id": {
+                    "const": "task_reference"
+                  }
+                },
+                "required": [
+                  "stream_id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
   "properties": {
     "annotations": {
       "$ref": "#/$defs/AnnotationReferences"
@@ -946,6 +1536,88 @@
           "$ref": "#/$defs/StreamDescriptor"
         }
       },
+      "properties": {
+        "ECG": {
+          "properties": {
+            "modality": {
+              "const": "ECG"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "EEG": {
+          "properties": {
+            "modality": {
+              "const": "EEG"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "G": {
+          "properties": {
+            "modality": {
+              "const": "G"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "I": {
+          "properties": {
+            "modality": {
+              "const": "I"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "U": {
+          "properties": {
+            "modality": {
+              "const": "U"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "X": {
+          "properties": {
+            "modality": {
+              "const": "X"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "pilot_camera": {
+          "properties": {
+            "modality": {
+              "const": "pilot_camera"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "task_reference": {
+          "properties": {
+            "modality": {
+              "const": "task_reference"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        }
+      },
       "propertyNames": {
         "maxLength": 128,
         "minLength": 1
@@ -984,9 +1656,8 @@
   "type": "object",
   "x-contract-version": "0.1.0",
   "x-runtime-invariants": [
-    "stream map key must equal descriptor.modality",
-    "present stream checksum keys must exactly match paths",
-    "declared paths are unique under Windows case folding",
-    "bundle_schema_version major must be supported by the reader"
+    "non-core optional stream map key must equal descriptor.modality",
+    "present or invalid stream checksum keys must exactly match paths",
+    "declared paths are unique under Windows case folding"
   ]
 }

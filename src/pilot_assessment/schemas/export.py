@@ -14,7 +14,11 @@ from pilot_assessment.contracts.common import (
     BUNDLE_RELATIVE_PATH_PATTERN,
 )
 from pilot_assessment.contracts.ingestion import IngestionReadinessReport
-from pilot_assessment.contracts.session import CORE_MODALITIES, SessionManifest
+from pilot_assessment.contracts.session import (
+    BIOMETRIC_MODALITIES,
+    CORE_MODALITIES,
+    SessionManifest,
+)
 
 CONTRACT_VERSION = "0.1.0"
 SCHEMA_DIALECT = "https://json-schema.org/draft/2020-12/schema"
@@ -66,10 +70,9 @@ def _session_manifest_schema() -> dict[str, Any]:
         schema_id=SESSION_MANIFEST_SCHEMA_ID,
         title=SESSION_MANIFEST_SCHEMA_TITLE,
         runtime_invariants=[
-            "stream map key must equal descriptor.modality",
-            "present stream checksum keys must exactly match paths",
+            "non-core optional stream map key must equal descriptor.modality",
+            "present or invalid stream checksum keys must exactly match paths",
             "declared paths are unique under Windows case folding",
-            "bundle_schema_version major must be supported by the reader",
         ],
     )
     stream_inventory = schema["properties"]["streams"]
@@ -81,6 +84,13 @@ def _session_manifest_schema() -> dict[str, Any]:
     stream_inventory["x-optional-stream-policy"] = (
         "same-major optional stable stream IDs are preserved"
     )
+    stream_inventory["properties"] = {
+        modality: {
+            "properties": {"modality": {"const": modality}},
+            "required": ["modality"],
+        }
+        for modality in sorted(CORE_MODALITIES | {"task_reference"})
+    }
 
     descriptor = schema["$defs"]["StreamDescriptor"]
     descriptor["allOf"] = [
@@ -153,6 +163,7 @@ def _session_manifest_schema() -> dict[str, Any]:
                 "required": ["stream_id"],
                 "properties": {
                     "stream_id": {
+                        "const": "task_reference",
                         "type": "string",
                         "minLength": 1,
                         "maxLength": 128,
@@ -164,7 +175,172 @@ def _session_manifest_schema() -> dict[str, Any]:
         }
     ]
     privacy = schema["$defs"]["PrivacyDefinition"]
-    privacy["properties"]["biometric_modalities_export_pending"]["uniqueItems"] = True
+    pending_biometrics = privacy["properties"]["biometric_modalities_export_pending"]
+    pending_biometrics["uniqueItems"] = True
+    pending_biometrics["items"] = {"enum": sorted(BIOMETRIC_MODALITIES)}
+
+    def stream_status(modality: str, statuses: tuple[str, ...]) -> dict[str, Any]:
+        status_match: dict[str, Any] = (
+            {"const": statuses[0]} if len(statuses) == 1 else {"enum": list(statuses)}
+        )
+        return {
+            "properties": {
+                "streams": {
+                    "properties": {
+                        modality: {
+                            "properties": {"status": status_match},
+                            "required": ["status"],
+                            "type": "object",
+                        }
+                    },
+                    "required": [modality],
+                    "type": "object",
+                }
+            },
+            "required": ["streams"],
+            "type": "object",
+        }
+
+    def pending_membership(modality: str, *, present: bool) -> dict[str, Any]:
+        membership: dict[str, Any] = {"contains": {"const": modality}}
+        if not present:
+            membership = {"not": membership}
+        return {
+            "properties": {
+                "privacy": {
+                    "properties": {
+                        "biometric_modalities_export_pending": membership,
+                    },
+                    "required": ["biometric_modalities_export_pending"],
+                    "type": "object",
+                }
+            },
+            "required": ["privacy"],
+            "type": "object",
+        }
+
+    synthetic_privacy = {
+        "properties": {
+            "privacy": {
+                "properties": {
+                    "classification": {"const": "synthetic-test-data"},
+                },
+                "required": ["classification"],
+                "type": "object",
+            }
+        },
+        "required": ["privacy"],
+        "type": "object",
+    }
+    exported_biometrics = {
+        "anyOf": [
+            stream_status(modality, ("present", "invalid"))
+            for modality in sorted(BIOMETRIC_MODALITIES)
+        ]
+    }
+    bundle_task_reference = {
+        "properties": {
+            "task": {
+                "properties": {
+                    "reference": {
+                        "properties": {"source": {"const": "bundle"}},
+                        "required": ["source"],
+                        "type": "object",
+                    }
+                },
+                "required": ["reference"],
+                "type": "object",
+            }
+        },
+        "required": ["task"],
+        "type": "object",
+    }
+    task_reference_descriptor = {
+        "properties": {
+            "modality": {"const": "task_reference"},
+            "paths": {
+                "items": {"pattern": "^references/", "type": "string"},
+            },
+            "checksums": {
+                "propertyNames": {"pattern": "^references/"},
+            },
+        },
+        "required": ["modality", "paths", "checksums"],
+        "type": "object",
+    }
+    schema["allOf"] = [
+        *[
+            {
+                "if": stream_status(modality, ("export_pending",)),
+                "then": pending_membership(modality, present=True),
+                "else": pending_membership(modality, present=False),
+            }
+            for modality in sorted(BIOMETRIC_MODALITIES)
+        ],
+        {
+            "if": synthetic_privacy,
+            "then": {
+                "properties": {
+                    "privacy": {
+                        "properties": {
+                            "contains_biometric_data": {"const": False},
+                            "biometric_modalities_export_pending": {"maxItems": 0},
+                        },
+                        "required": [
+                            "contains_biometric_data",
+                            "biometric_modalities_export_pending",
+                        ],
+                    }
+                }
+            },
+        },
+        {
+            "if": {
+                "allOf": [
+                    {"not": synthetic_privacy},
+                    exported_biometrics,
+                ]
+            },
+            "then": {
+                "properties": {
+                    "privacy": {
+                        "properties": {
+                            "contains_biometric_data": {"const": True},
+                        },
+                        "required": ["contains_biometric_data"],
+                    }
+                }
+            },
+        },
+        {
+            "if": bundle_task_reference,
+            "then": {
+                "properties": {
+                    "task": {
+                        "properties": {
+                            "reference": {
+                                "properties": {
+                                    "stream_id": {"const": "task_reference"},
+                                },
+                                "required": ["stream_id"],
+                            }
+                        }
+                    },
+                    "streams": {
+                        "properties": {
+                            "task_reference": task_reference_descriptor,
+                        },
+                        "required": ["task_reference"],
+                    },
+                }
+            },
+            "else": {
+                "properties": {
+                    "streams": {"not": {"required": ["task_reference"]}},
+                }
+            },
+        },
+    ]
     return schema
 
 
@@ -250,16 +426,20 @@ def _ingestion_readiness_schema() -> dict[str, Any]:
         schema_id=INGESTION_READINESS_SCHEMA_ID,
         title=INGESTION_READINESS_SCHEMA_TITLE,
         runtime_invariants=[
-            "stream result keys must equal the seven core modalities",
-            "stream result map key must equal result.modality",
-            "task_reference_result modality must be task_reference",
-            "disposition and continuation must match required and non-ready results",
-            "formal_run_authorized is always false at the M2 boundary",
+            "source_snapshot_fingerprint is recomputed from canonical source identity",
+            "source paths and checksums remain stable throughout content inspection",
         ],
     )
     stream_results = schema["properties"]["stream_results"]
     stream_results["required"] = sorted(CORE_MODALITIES)
     stream_results["propertyNames"] = {"enum": sorted(CORE_MODALITIES)}
+    stream_results["properties"] = {
+        modality: {
+            "properties": {"modality": {"const": modality}},
+            "required": ["modality"],
+        }
+        for modality in sorted(CORE_MODALITIES)
+    }
 
     readiness_result = schema["$defs"]["StreamReadinessResult"]
     readiness_result["allOf"] = [
@@ -280,9 +460,7 @@ def _ingestion_readiness_schema() -> dict[str, Any]:
         {
             "if": {
                 "properties": {
-                    "readiness": {
-                        "enum": ["unavailable", "unsupported", "not_applicable"]
-                    }
+                    "readiness": {"enum": ["unavailable", "unsupported", "not_applicable"]}
                 },
                 "required": ["readiness"],
             },
@@ -305,26 +483,123 @@ def _ingestion_readiness_schema() -> dict[str, Any]:
     task_reference["anyOf"][0] = {
         "allOf": [
             {"$ref": "#/$defs/StreamReadinessResult"},
-            {"properties": {"modality": {"const": "task_reference"}}},
+            {
+                "properties": {"modality": {"const": "task_reference"}},
+                "required": ["modality"],
+            },
         ]
     }
+
+    def core_result_matches(modality: str, result_rule: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "properties": {
+                "stream_results": {
+                    "properties": {modality: result_rule},
+                    "required": [modality],
+                    "type": "object",
+                }
+            },
+            "required": ["stream_results"],
+            "type": "object",
+        }
+
+    def task_reference_matches(result_rule: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "properties": {
+                "task_reference_result": result_rule,
+            },
+            "required": ["task_reference_result"],
+            "type": "object",
+        }
+
+    required_non_ready = {
+        "properties": {
+            "required_for_import": {"const": True},
+            "readiness": {"not": {"const": "ready"}},
+        },
+        "required": ["required_for_import", "readiness"],
+        "type": "object",
+    }
+    degraded_core = {
+        "properties": {
+            "readiness": {
+                "enum": ["unavailable", "invalid", "unsupported"],
+            }
+        },
+        "required": ["readiness"],
+        "type": "object",
+    }
+    non_ready_reference = {
+        "properties": {"readiness": {"not": {"const": "ready"}}},
+        "required": ["readiness"],
+        "type": "object",
+    }
+    blocked = {
+        "anyOf": [
+            *[
+                core_result_matches(modality, required_non_ready)
+                for modality in sorted(CORE_MODALITIES)
+            ],
+            task_reference_matches(required_non_ready),
+        ]
+    }
+    degraded = {
+        "anyOf": [
+            *[core_result_matches(modality, degraded_core) for modality in sorted(CORE_MODALITIES)],
+            task_reference_matches(non_ready_reference),
+        ]
+    }
+
     schema["allOf"] = [
         {
             "if": {
-                "properties": {
-                    "source_classification": {"const": "synthetic-test-data"}
-                },
+                "properties": {"source_classification": {"const": "synthetic-test-data"}},
                 "required": ["source_classification"],
             },
             "then": {
                 "properties": {
-                    "synthetic_provenance": {
-                        "$ref": "#/$defs/SyntheticSourceProvenance"
-                    }
+                    "synthetic_provenance": {"$ref": "#/$defs/SyntheticSourceProvenance"}
                 }
             },
             "else": {"properties": {"synthetic_provenance": {"type": "null"}}},
-        }
+        },
+        {
+            "oneOf": [
+                {
+                    "allOf": [blocked],
+                    "properties": {
+                        "disposition": {"const": "blocked"},
+                        "can_continue_to_synchronization": {"const": False},
+                    },
+                    "required": [
+                        "disposition",
+                        "can_continue_to_synchronization",
+                    ],
+                },
+                {
+                    "allOf": [{"not": blocked}, degraded],
+                    "properties": {
+                        "disposition": {"const": "ready_partial"},
+                        "can_continue_to_synchronization": {"const": True},
+                    },
+                    "required": [
+                        "disposition",
+                        "can_continue_to_synchronization",
+                    ],
+                },
+                {
+                    "allOf": [{"not": blocked}, {"not": degraded}],
+                    "properties": {
+                        "disposition": {"const": "ready"},
+                        "can_continue_to_synchronization": {"const": True},
+                    },
+                    "required": [
+                        "disposition",
+                        "can_continue_to_synchronization",
+                    ],
+                },
+            ]
+        },
     ]
     return schema
 
@@ -338,9 +613,7 @@ def render_schemas() -> dict[str, bytes]:
 
     return {
         "anchor-result-0.1.0.schema.json": _render_json(_anchor_result_schema()),
-        "ingestion-readiness-report-0.1.0.schema.json": _render_json(
-            _ingestion_readiness_schema()
-        ),
+        "ingestion-readiness-report-0.1.0.schema.json": _render_json(_ingestion_readiness_schema()),
         "session-manifest-0.1.0.schema.json": _render_json(_session_manifest_schema()),
     }
 

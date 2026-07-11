@@ -46,6 +46,55 @@ def _make_present(manifest: dict[str, object], modality: str, path: str) -> None
     )
 
 
+def _task_reference_descriptor(manifest: dict[str, object]) -> dict[str, object]:
+    streams = manifest["streams"]
+    assert isinstance(streams, dict)
+    descriptor = copy.deepcopy(streams["X"])
+    assert isinstance(descriptor, dict)
+    path = "references/commanded_path.parquet"
+    descriptor.update(
+        modality="task_reference",
+        required_for_import=False,
+        paths=[path],
+        format="parquet",
+        schema_id="task-reference-path-raw-v0.1",
+        units="task-reference-units-v0.1",
+        quality_summary=None,
+        checksums={path: "d" * 64},
+        metadata={"artifact_role": "task_reference"},
+    )
+    return descriptor
+
+
+def _make_uninspected_readiness_result(
+    result: dict[str, object],
+    *,
+    declared_status: str,
+    readiness: str,
+    required_for_import: bool,
+) -> None:
+    result.update(
+        declared_status=declared_status,
+        required_for_import=required_for_import,
+        readiness=readiness,
+        adapter_id=None,
+        adapter_version=None,
+        source_paths=[],
+        source_checksums={},
+        normalized_schema_id=None,
+        row_count=None,
+        artifact_row_counts={},
+        source_time_start_s=None,
+        source_time_end_s=None,
+        observed_sample_rate_hz=None,
+        canonical_fields=[],
+        units={},
+        quality_summary={},
+        assumptions=[],
+        issues=[],
+    )
+
+
 def test_rendered_schemas_are_deterministic_and_valid_draft_2020_12() -> None:
     first = render_schemas()
     second = render_schemas()
@@ -66,9 +115,7 @@ def test_schema_ids_titles_and_cross_language_invariants_are_frozen() -> None:
     rendered = render_schemas()
     session_schema = json.loads(rendered["session-manifest-0.1.0.schema.json"])
     anchor_schema = json.loads(rendered["anchor-result-0.1.0.schema.json"])
-    readiness_schema = json.loads(
-        rendered["ingestion-readiness-report-0.1.0.schema.json"]
-    )
+    readiness_schema = json.loads(rendered["ingestion-readiness-report-0.1.0.schema.json"])
 
     assert session_schema["$id"] == SESSION_MANIFEST_SCHEMA_ID
     assert session_schema["title"] == SESSION_MANIFEST_SCHEMA_TITLE
@@ -181,9 +228,7 @@ def test_session_schema_rejects_values_rejected_by_runtime_contract() -> None:
         "source": "bundle",
         "reference_id": "commanded-path-v0.1",
     }
-    invalid_cases.append(
-        ("bundle reference without stream id", bundle_reference_without_stream_id)
-    )
+    invalid_cases.append(("bundle reference without stream id", bundle_reference_without_stream_id))
 
     unsupported_reference_source = copy.deepcopy(valid)
     unsupported_reference_source["task"]["reference"] = {
@@ -203,9 +248,7 @@ def test_session_schema_rejects_values_rejected_by_runtime_contract() -> None:
     invalid_cases.append(("invalid stream without files", invalid_without_files))
 
     export_pending_with_quality = copy.deepcopy(valid)
-    export_pending_with_quality["streams"]["I"]["quality_summary"] = {
-        "coverage_ratio": 0.5
-    }
+    export_pending_with_quality["streams"]["I"]["quality_summary"] = {"coverage_ratio": 0.5}
     invalid_cases.append(("export pending quality", export_pending_with_quality))
 
     missing_with_clock = copy.deepcopy(valid)
@@ -223,9 +266,7 @@ def test_session_schema_rejects_values_rejected_by_runtime_contract() -> None:
     invalid_cases.append(("required not applicable", required_not_applicable))
 
     duplicate_pending_biometric = copy.deepcopy(valid)
-    duplicate_pending_biometric["privacy"][
-        "biometric_modalities_export_pending"
-    ].append("EEG")
+    duplicate_pending_biometric["privacy"]["biometric_modalities_export_pending"].append("EEG")
     invalid_cases.append(("duplicate pending biometric", duplicate_pending_biometric))
 
     for label, candidate in invalid_cases:
@@ -236,9 +277,7 @@ def test_session_schema_rejects_values_rejected_by_runtime_contract() -> None:
 
 def test_session_schema_accepts_synthetic_present_biometrics() -> None:
     schema = json.loads(render_schemas()["session-manifest-0.1.0.schema.json"])
-    candidate = json.loads(
-        (FIXTURES / "session_manifest_valid.json").read_text(encoding="utf-8")
-    )
+    candidate = json.loads((FIXTURES / "session_manifest_valid.json").read_text(encoding="utf-8"))
     for modality in ("G", "EEG", "ECG", "pilot_camera"):
         _make_present(candidate, modality, f"streams/{modality}.parquet")
     candidate["privacy"].update(
@@ -252,14 +291,169 @@ def test_session_schema_accepts_synthetic_present_biometrics() -> None:
     Draft202012Validator(schema).validate(candidate)
 
 
-def test_readiness_schema_rejects_public_contract_contradictions() -> None:
-    schema = json.loads(
-        render_schemas()["ingestion-readiness-report-0.1.0.schema.json"]
-    )
+def test_session_schema_enforces_biometric_pending_membership_and_privacy() -> None:
+    schema = json.loads(render_schemas()["session-manifest-0.1.0.schema.json"])
     validator = Draft202012Validator(schema)
-    valid = json.loads(
-        (FIXTURES / "ingestion_readiness_ready.json").read_text(encoding="utf-8")
+    valid = json.loads((FIXTURES / "session_manifest_valid.json").read_text(encoding="utf-8"))
+
+    invalid_cases: list[tuple[str, dict[str, object]]] = []
+
+    missing_pending_member = copy.deepcopy(valid)
+    missing_pending_member["privacy"]["biometric_modalities_export_pending"].remove("EEG")
+    invalid_cases.append(("export pending EEG omitted from privacy", missing_pending_member))
+
+    stale_pending_member = copy.deepcopy(valid)
+    stale_pending_member["streams"]["EEG"].update(
+        status="missing",
+        clock_sync=None,
     )
+    invalid_cases.append(("missing EEG retained in pending privacy list", stale_pending_member))
+
+    non_biometric_pending_member = copy.deepcopy(valid)
+    non_biometric_pending_member["privacy"]["biometric_modalities_export_pending"].append("I")
+    invalid_cases.append(
+        ("non-biometric I appears in pending privacy list", non_biometric_pending_member)
+    )
+
+    synthetic_with_pending = copy.deepcopy(valid)
+    synthetic_with_pending["privacy"].update(
+        classification="synthetic-test-data",
+        contains_biometric_data=False,
+        permitted_use="software-testing-only",
+    )
+    invalid_cases.append(("synthetic bundle declares pending biometrics", synthetic_with_pending))
+
+    synthetic_with_real_biometric_flag = copy.deepcopy(valid)
+    for modality in ("G", "EEG", "ECG", "pilot_camera"):
+        _make_present(
+            synthetic_with_real_biometric_flag,
+            modality,
+            f"streams/{modality}.parquet",
+        )
+    synthetic_with_real_biometric_flag["privacy"].update(
+        classification="synthetic-test-data",
+        contains_biometric_data=True,
+        biometric_modalities_export_pending=[],
+        permitted_use="software-testing-only",
+    )
+    invalid_cases.append(
+        ("synthetic bundle claims real biometric data", synthetic_with_real_biometric_flag)
+    )
+
+    real_export_without_biometric_flag = copy.deepcopy(valid)
+    _make_present(real_export_without_biometric_flag, "EEG", "streams/EEG.parquet")
+    real_export_without_biometric_flag["privacy"]["biometric_modalities_export_pending"].remove(
+        "EEG"
+    )
+    invalid_cases.append(
+        ("real present EEG omits biometric data flag", real_export_without_biometric_flag)
+    )
+
+    for label, candidate in invalid_cases:
+        with pytest.raises(ValidationError):
+            SessionManifest.model_validate(candidate)
+        assert list(validator.iter_errors(candidate)), f"JSON Schema accepted {label}"
+
+
+def test_session_schema_accepts_complete_biometric_status_privacy_matrix() -> None:
+    schema = json.loads(render_schemas()["session-manifest-0.1.0.schema.json"])
+    validator = Draft202012Validator(schema)
+    valid = json.loads((FIXTURES / "session_manifest_valid.json").read_text(encoding="utf-8"))
+
+    for modality in ("G", "EEG", "ECG", "pilot_camera"):
+        for status in ("present", "invalid", "export_pending", "missing", "not_applicable"):
+            candidate = copy.deepcopy(valid)
+            stream = candidate["streams"][modality]
+            pending = candidate["privacy"]["biometric_modalities_export_pending"]
+            if status in {"present", "invalid"}:
+                _make_present(candidate, modality, f"streams/{modality}.parquet")
+                stream["status"] = status
+                pending.remove(modality)
+                candidate["privacy"]["contains_biometric_data"] = True
+            elif status != "export_pending":
+                stream.update(
+                    status=status,
+                    required_for_import=False,
+                    paths=[],
+                    clock_sync=None,
+                    quality_summary=None,
+                    checksums={},
+                )
+                pending.remove(modality)
+
+            SessionManifest.model_validate(candidate)
+            validator.validate(candidate)
+
+
+def test_session_schema_enforces_bundle_task_reference_ownership() -> None:
+    schema = json.loads(render_schemas()["session-manifest-0.1.0.schema.json"])
+    validator = Draft202012Validator(schema)
+    valid = json.loads((FIXTURES / "session_manifest_valid.json").read_text(encoding="utf-8"))
+
+    valid_bundle_reference = copy.deepcopy(valid)
+    valid_bundle_reference["task"]["reference"] = {
+        "source": "bundle",
+        "reference_id": "commanded-path-v0.1",
+        "stream_id": "task_reference",
+    }
+    valid_bundle_reference["streams"]["task_reference"] = _task_reference_descriptor(
+        valid_bundle_reference
+    )
+    SessionManifest.model_validate(valid_bundle_reference)
+    validator.validate(valid_bundle_reference)
+
+    invalid_cases: list[tuple[str, dict[str, object]]] = []
+
+    unowned_descriptor = copy.deepcopy(valid)
+    unowned_descriptor["streams"]["task_reference"] = _task_reference_descriptor(unowned_descriptor)
+    invalid_cases.append(("unowned task reference descriptor", unowned_descriptor))
+
+    missing_descriptor = copy.deepcopy(valid)
+    missing_descriptor["task"]["reference"] = {
+        "source": "bundle",
+        "reference_id": "commanded-path-v0.1",
+        "stream_id": "task_reference",
+    }
+    invalid_cases.append(("bundle reference without descriptor", missing_descriptor))
+
+    wrong_owner_stream = copy.deepcopy(valid)
+    wrong_owner_stream["task"]["reference"] = {
+        "source": "bundle",
+        "reference_id": "commanded-path-v0.1",
+        "stream_id": "X",
+    }
+    invalid_cases.append(("bundle reference points to X", wrong_owner_stream))
+
+    outside_reference_directory = copy.deepcopy(valid_bundle_reference)
+    outside_reference_directory["streams"]["task_reference"]["paths"] = [
+        "streams/commanded_path.parquet"
+    ]
+    outside_reference_directory["streams"]["task_reference"]["checksums"] = {
+        "streams/commanded_path.parquet": "d" * 64
+    }
+    invalid_cases.append(
+        ("bundle reference artifact outside references", outside_reference_directory)
+    )
+
+    model_bundle_with_descriptor = copy.deepcopy(valid_bundle_reference)
+    model_bundle_with_descriptor["task"]["reference"] = {
+        "source": "model_bundle",
+        "reference_id": "commanded-path-v0.1",
+    }
+    invalid_cases.append(
+        ("model bundle reference owns local descriptor", model_bundle_with_descriptor)
+    )
+
+    for label, candidate in invalid_cases:
+        with pytest.raises(ValidationError):
+            SessionManifest.model_validate(candidate)
+        assert list(validator.iter_errors(candidate)), f"JSON Schema accepted {label}"
+
+
+def test_readiness_schema_rejects_public_contract_contradictions() -> None:
+    schema = json.loads(render_schemas()["ingestion-readiness-report-0.1.0.schema.json"])
+    validator = Draft202012Validator(schema)
+    valid = json.loads((FIXTURES / "ingestion_readiness_ready.json").read_text(encoding="utf-8"))
 
     invalid_cases: list[tuple[str, dict[str, object]]] = []
 
@@ -272,9 +466,7 @@ def test_readiness_schema_rejects_public_contract_contradictions() -> None:
     invalid_cases.append(("missing core result", missing_core))
 
     extra_core = copy.deepcopy(valid)
-    extra_core["stream_results"]["THERMAL"] = copy.deepcopy(
-        extra_core["stream_results"]["I"]
-    )
+    extra_core["stream_results"]["THERMAL"] = copy.deepcopy(extra_core["stream_results"]["I"])
     extra_core["stream_results"]["THERMAL"]["modality"] = "THERMAL"
     invalid_cases.append(("extra core result", extra_core))
 
@@ -295,15 +487,194 @@ def test_readiness_schema_rejects_public_contract_contradictions() -> None:
     )
 
     provenance_on_real_data = copy.deepcopy(valid)
-    provenance_on_real_data["source_classification"] = (
-        "restricted-research-pseudonymous"
-    )
+    provenance_on_real_data["source_classification"] = "restricted-research-pseudonymous"
     invalid_cases.append(("synthetic provenance on real data", provenance_on_real_data))
 
     for label, candidate in invalid_cases:
         with pytest.raises(ValidationError):
             IngestionReadinessReport.model_validate(candidate)
         assert list(validator.iter_errors(candidate)), f"JSON Schema accepted {label}"
+
+
+def test_readiness_schema_enforces_result_ownership_and_disposition_matrix() -> None:
+    schema = json.loads(render_schemas()["ingestion-readiness-report-0.1.0.schema.json"])
+    validator = Draft202012Validator(schema)
+    valid = json.loads((FIXTURES / "ingestion_readiness_ready.json").read_text(encoding="utf-8"))
+
+    invalid_cases: list[tuple[str, dict[str, object]]] = []
+
+    wrong_core_owner = copy.deepcopy(valid)
+    wrong_core_owner["stream_results"]["X"]["modality"] = "U"
+    invalid_cases.append(("X result claims U modality", wrong_core_owner))
+
+    wrong_reference_owner = copy.deepcopy(valid)
+    wrong_reference_owner["task_reference_result"]["modality"] = "X"
+    invalid_cases.append(("task reference result claims X modality", wrong_reference_owner))
+
+    optional_unavailable_claims_ready = copy.deepcopy(valid)
+    _make_uninspected_readiness_result(
+        optional_unavailable_claims_ready["stream_results"]["I"],
+        declared_status="export_pending",
+        readiness="unavailable",
+        required_for_import=False,
+    )
+    invalid_cases.append(
+        ("optional unavailable core claims ready", optional_unavailable_claims_ready)
+    )
+
+    required_unavailable_claims_partial = copy.deepcopy(valid)
+    _make_uninspected_readiness_result(
+        required_unavailable_claims_partial["stream_results"]["I"],
+        declared_status="missing",
+        readiness="unavailable",
+        required_for_import=True,
+    )
+    required_unavailable_claims_partial.update(
+        disposition="ready_partial",
+        can_continue_to_synchronization=True,
+    )
+    invalid_cases.append(
+        ("required unavailable core claims partial", required_unavailable_claims_partial)
+    )
+
+    optional_not_applicable_claims_partial = copy.deepcopy(valid)
+    _make_uninspected_readiness_result(
+        optional_not_applicable_claims_partial["stream_results"]["I"],
+        declared_status="not_applicable",
+        readiness="not_applicable",
+        required_for_import=False,
+    )
+    optional_not_applicable_claims_partial.update(
+        disposition="ready_partial",
+        can_continue_to_synchronization=True,
+    )
+    invalid_cases.append(
+        ("optional not applicable core claims partial", optional_not_applicable_claims_partial)
+    )
+
+    optional_reference_unavailable_claims_ready = copy.deepcopy(valid)
+    reference_result = optional_reference_unavailable_claims_ready["task_reference_result"]
+    assert isinstance(reference_result, dict)
+    _make_uninspected_readiness_result(
+        reference_result,
+        declared_status="missing",
+        readiness="unavailable",
+        required_for_import=False,
+    )
+    invalid_cases.append(
+        (
+            "optional unavailable task reference claims ready",
+            optional_reference_unavailable_claims_ready,
+        )
+    )
+
+    required_reference_unavailable_claims_partial = copy.deepcopy(valid)
+    reference_result = required_reference_unavailable_claims_partial["task_reference_result"]
+    assert isinstance(reference_result, dict)
+    _make_uninspected_readiness_result(
+        reference_result,
+        declared_status="missing",
+        readiness="unavailable",
+        required_for_import=True,
+    )
+    required_reference_unavailable_claims_partial.update(
+        disposition="ready_partial",
+        can_continue_to_synchronization=True,
+    )
+    invalid_cases.append(
+        (
+            "required unavailable task reference claims partial",
+            required_reference_unavailable_claims_partial,
+        )
+    )
+
+    ready_cannot_stop_synchronization = copy.deepcopy(valid)
+    ready_cannot_stop_synchronization["can_continue_to_synchronization"] = False
+    invalid_cases.append(
+        ("ready report cannot stop synchronization", ready_cannot_stop_synchronization)
+    )
+
+    for label, candidate in invalid_cases:
+        with pytest.raises(ValidationError):
+            IngestionReadinessReport.model_validate(candidate)
+        assert list(validator.iter_errors(candidate)), f"JSON Schema accepted {label}"
+
+
+def test_readiness_schema_accepts_complete_core_and_reference_state_matrix() -> None:
+    schema = json.loads(render_schemas()["ingestion-readiness-report-0.1.0.schema.json"])
+    validator = Draft202012Validator(schema)
+    valid = json.loads((FIXTURES / "ingestion_readiness_ready.json").read_text(encoding="utf-8"))
+    non_ready_states = (
+        ("unavailable", "missing"),
+        ("invalid", "invalid"),
+        ("unsupported", "present"),
+        ("not_applicable", "not_applicable"),
+    )
+
+    for modality in ("X", "U", "I", "G", "EEG", "ECG", "pilot_camera"):
+        for readiness, declared_status in (("ready", "present"), *non_ready_states):
+            for required in (False, True):
+                candidate = copy.deepcopy(valid)
+                result = candidate["stream_results"][modality]
+                if readiness == "invalid":
+                    result.update(
+                        declared_status=declared_status,
+                        required_for_import=required,
+                        readiness=readiness,
+                    )
+                elif readiness != "ready":
+                    _make_uninspected_readiness_result(
+                        result,
+                        declared_status=declared_status,
+                        readiness=readiness,
+                        required_for_import=required,
+                    )
+                else:
+                    result["required_for_import"] = required
+
+                blocked = required and readiness != "ready"
+                degraded = readiness in {"unavailable", "invalid", "unsupported"}
+                candidate["disposition"] = (
+                    "blocked" if blocked else "ready_partial" if degraded else "ready"
+                )
+                candidate["can_continue_to_synchronization"] = not blocked
+                IngestionReadinessReport.model_validate(candidate)
+                validator.validate(candidate)
+
+    for readiness, declared_status in (("ready", "present"), *non_ready_states):
+        for required in (False, True):
+            candidate = copy.deepcopy(valid)
+            result = candidate["task_reference_result"]
+            assert isinstance(result, dict)
+            if readiness == "invalid":
+                result.update(
+                    declared_status=declared_status,
+                    required_for_import=required,
+                    readiness=readiness,
+                )
+            elif readiness != "ready":
+                _make_uninspected_readiness_result(
+                    result,
+                    declared_status=declared_status,
+                    readiness=readiness,
+                    required_for_import=required,
+                )
+            else:
+                result["required_for_import"] = required
+
+            blocked = required and readiness != "ready"
+            degraded = readiness != "ready"
+            candidate["disposition"] = (
+                "blocked" if blocked else "ready_partial" if degraded else "ready"
+            )
+            candidate["can_continue_to_synchronization"] = not blocked
+            IngestionReadinessReport.model_validate(candidate)
+            validator.validate(candidate)
+
+    without_reference = copy.deepcopy(valid)
+    without_reference["task_reference_result"] = None
+    IngestionReadinessReport.model_validate(without_reference)
+    validator.validate(without_reference)
 
 
 def test_anchor_schema_rejects_common_invalid_runtime_values() -> None:
