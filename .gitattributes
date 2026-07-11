@@ -1,0 +1,12 @@
+# Ruff enforces LF line endings (pyproject.toml [tool.ruff.format] line-ending = "lf").
+# Normalize all text files to LF in both the repository and the working tree.
+* text=auto eol=lf
+
+# Binary artifacts
+*.png binary
+*.jpg binary
+*.mp4 binary
+*.parquet binary
+*.edf binary
+*.whl binary
+*.exe binary
