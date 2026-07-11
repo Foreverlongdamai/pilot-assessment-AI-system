@@ -1,0 +1,385 @@
+{
+  "catalog_version": "0.1.0",
+  "profiles": [
+    {
+      "kind": "csv",
+      "schema_id": "cranfield-simulator-combined-csv-raw-v0.1",
+      "format": "csv",
+      "delimiter": ",",
+      "encodings": ["utf-8", "utf-8-sig"],
+      "header_normalization": "trim_outer_ascii_whitespace_v1",
+      "source_row_index_dtype": "u64",
+      "source_timestamp_column": "source_time_s",
+      "expected_sample_rate_hz": 100.0,
+      "sample_rate_tolerance_fraction": 0.01,
+      "gap_multiplier": 1.5,
+      "min_valid_fraction": 0.98,
+      "columns": [
+        {"source_header": "Simulation time", "canonical_name": "source_time_s", "role": "X", "unit": "s", "engineering_assumption": "simulation-time-is-seconds-v0.1"},
+        {"source_header": "Xe m", "canonical_name": "position.earth.x_m", "role": "X", "unit": "m", "engineering_assumption": "earth-frame-convention-unconfirmed-v0.1"},
+        {"source_header": "Ye m", "canonical_name": "position.earth.y_m", "role": "X", "unit": "m", "engineering_assumption": "earth-frame-convention-unconfirmed-v0.1"},
+        {"source_header": "Ze m", "canonical_name": "position.earth.z_m", "role": "X", "unit": "m", "engineering_assumption": "earth-frame-convention-unconfirmed-v0.1"},
+        {"source_header": "Ground Elevation m", "canonical_name": "environment.ground_elevation_m", "role": "X", "unit": "m", "engineering_assumption": "vertical-datum-unconfirmed-v0.1"},
+        {"source_header": "V_ex m/s", "canonical_name": "velocity.earth.x_m_s", "role": "X", "unit": "m/s", "engineering_assumption": "earth-frame-convention-unconfirmed-v0.1"},
+        {"source_header": "V_ey m/s", "canonical_name": "velocity.earth.y_m_s", "role": "X", "unit": "m/s", "engineering_assumption": "earth-frame-convention-unconfirmed-v0.1"},
+        {"source_header": "V_ez m/s", "canonical_name": "velocity.earth.z_m_s", "role": "X", "unit": "m/s", "engineering_assumption": "earth-frame-convention-unconfirmed-v0.1"},
+        {"source_header": "V_ex kts", "canonical_name": "quality.velocity.earth.x_kt", "role": "quality_check", "unit": "kt"},
+        {"source_header": "V_ey kts", "canonical_name": "quality.velocity.earth.y_kt", "role": "quality_check", "unit": "kt"},
+        {"source_header": "V_ez kts", "canonical_name": "quality.velocity.earth.z_kt", "role": "quality_check", "unit": "kt"},
+        {"source_header": "V_bx m/s", "canonical_name": "velocity.body.x_m_s", "role": "X", "unit": "m/s", "engineering_assumption": "body-frame-convention-unconfirmed-v0.1"},
+        {"source_header": "V_by m/s", "canonical_name": "velocity.body.y_m_s", "role": "X", "unit": "m/s", "engineering_assumption": "body-frame-convention-unconfirmed-v0.1"},
+        {"source_header": "V_bz m/s", "canonical_name": "velocity.body.z_m_s", "role": "X", "unit": "m/s", "engineering_assumption": "body-frame-convention-unconfirmed-v0.1"},
+        {"source_header": "phi deg", "canonical_name": "attitude.roll_deg", "role": "X", "unit": "deg", "engineering_assumption": "euler-convention-unconfirmed-v0.1"},
+        {"source_header": "theta deg", "canonical_name": "attitude.pitch_deg", "role": "X", "unit": "deg", "engineering_assumption": "euler-convention-unconfirmed-v0.1"},
+        {"source_header": "psi deg", "canonical_name": "attitude.yaw_deg", "role": "X", "unit": "deg", "engineering_assumption": "euler-convention-unconfirmed-v0.1"},
+        {"source_header": "p deg/s", "canonical_name": "angular_rate.body.p_deg_s", "role": "X", "unit": "deg/s", "engineering_assumption": "body-rate-sign-unconfirmed-v0.1"},
+        {"source_header": "q deg/s", "canonical_name": "angular_rate.body.q_deg_s", "role": "X", "unit": "deg/s", "engineering_assumption": "body-rate-sign-unconfirmed-v0.1"},
+        {"source_header": "r deg/s", "canonical_name": "angular_rate.body.r_deg_s", "role": "X", "unit": "deg/s", "engineering_assumption": "body-rate-sign-unconfirmed-v0.1"},
+        {"source_header": "ax m/s^2", "canonical_name": "acceleration.source.x_m_s2", "role": "X", "unit": "m/s2", "engineering_assumption": "acceleration-frame-gravity-unconfirmed-v0.1"},
+        {"source_header": "ay m/s^2", "canonical_name": "acceleration.source.y_m_s2", "role": "X", "unit": "m/s2", "engineering_assumption": "acceleration-frame-gravity-unconfirmed-v0.1"},
+        {"source_header": "az m/s^2", "canonical_name": "acceleration.source.z_m_s2", "role": "X", "unit": "m/s2", "engineering_assumption": "acceleration-frame-gravity-unconfirmed-v0.1"},
+        {"source_header": "alpha deg", "canonical_name": "aero.alpha_deg", "role": "X", "unit": "deg", "engineering_assumption": "aero-angle-sign-unconfirmed-v0.1"},
+        {"source_header": "beta deg", "canonical_name": "aero.beta_deg", "role": "X", "unit": "deg", "engineering_assumption": "aero-angle-sign-unconfirmed-v0.1"},
+        {"source_header": "Control_Mode", "canonical_name": "context.control_mode_raw", "role": "context", "unit": "unknown_raw"},
+        {"source_header": "Pilot Yaw", "canonical_name": "control.yaw_raw", "role": "U", "unit": "unknown_raw"},
+        {"source_header": "Pilot Lon", "canonical_name": "control.longitudinal_raw", "role": "U", "unit": "unknown_raw"},
+        {"source_header": "Pilot Lat", "canonical_name": "control.lateral_raw", "role": "U", "unit": "unknown_raw"},
+        {"source_header": "Pilot Heave", "canonical_name": "control.heave_raw", "role": "U", "unit": "unknown_raw"},
+        {"source_header": "Time Delay s", "canonical_name": "context.time_delay_s", "role": "context", "unit": "s"},
+        {"source_header": "Lon Frequency rad/s", "canonical_name": "context.longitudinal_frequency_rad_s", "role": "context", "unit": "rad/s"},
+        {"source_header": "Long Damping", "canonical_name": "context.longitudinal_damping_ratio", "role": "context", "unit": "ratio"}
+      ],
+      "context_columns": [
+        "context.control_mode_raw",
+        "context.time_delay_s",
+        "context.longitudinal_frequency_rad_s",
+        "context.longitudinal_damping_ratio"
+      ],
+      "unit_consistency_checks": [
+        {"source_metric_column": "velocity.earth.x_m_s", "comparison_column": "quality.velocity.earth.x_kt", "comparison_per_metric": 1.9438444924406048, "warning_tolerance": 0.002, "invalid_tolerance": 0.02, "tolerance_unit": "kt"},
+        {"source_metric_column": "velocity.earth.y_m_s", "comparison_column": "quality.velocity.earth.y_kt", "comparison_per_metric": 1.9438444924406048, "warning_tolerance": 0.002, "invalid_tolerance": 0.02, "tolerance_unit": "kt"},
+        {"source_metric_column": "velocity.earth.z_m_s", "comparison_column": "quality.velocity.earth.z_kt", "comparison_per_metric": 1.9438444924406048, "warning_tolerance": 0.002, "invalid_tolerance": 0.02, "tolerance_unit": "kt"}
+      ],
+      "allow_extra_columns": true,
+      "extensions": {
+        "source_profile_status": "provisional_pending_data_dictionary"
+      }
+    },
+    {
+      "kind": "table",
+      "schema_id": "vr-frame-index-raw-v0.1",
+      "media_type": "application/vnd.apache.parquet",
+      "columns": [
+        {"name": "frame_id", "dtype": "u64", "nullable": false, "unit": "index"},
+        {"name": "source_timestamp_s", "dtype": "f64", "nullable": false, "unit": "s", "minimum": 0.0},
+        {"name": "image_path", "dtype": "utf8", "nullable": false, "unit": "bundle_relative_path", "is_bundle_path": true},
+        {"name": "width", "dtype": "u32", "nullable": false, "unit": "pixel"},
+        {"name": "height", "dtype": "u32", "nullable": false, "unit": "pixel"},
+        {"name": "head_x_m", "dtype": "f32", "nullable": false, "unit": "m"},
+        {"name": "head_y_m", "dtype": "f32", "nullable": false, "unit": "m"},
+        {"name": "head_z_m", "dtype": "f32", "nullable": false, "unit": "m"},
+        {"name": "head_qx", "dtype": "f32", "nullable": false, "unit": "unit_quaternion"},
+        {"name": "head_qy", "dtype": "f32", "nullable": false, "unit": "unit_quaternion"},
+        {"name": "head_qz", "dtype": "f32", "nullable": false, "unit": "unit_quaternion"},
+        {"name": "head_qw", "dtype": "f32", "nullable": false, "unit": "unit_quaternion"},
+        {"name": "horizontal_fov_deg", "dtype": "f32", "nullable": false, "unit": "deg", "minimum": 0.0, "maximum": 360.0},
+        {"name": "vertical_fov_deg", "dtype": "f32", "nullable": false, "unit": "deg", "minimum": 0.0, "maximum": 180.0},
+        {"name": "phase_id", "dtype": "utf8", "nullable": false, "unit": "id"},
+        {"name": "frame_valid", "dtype": "bool", "nullable": false, "unit": "bool"},
+        {"name": "generator_version", "dtype": "utf8", "nullable": false, "unit": "id"}
+      ],
+      "sort_key": ["source_timestamp_s", "frame_id"],
+      "source_timestamp_column": "source_timestamp_s",
+      "expected_sample_rate_hz": 30.0,
+      "sample_rate_tolerance_fraction": 0.01,
+      "min_valid_fraction": 0.98,
+      "allow_extra_columns": false
+    },
+    {
+      "kind": "table",
+      "schema_id": "vr-aoi-instance-raw-v0.1",
+      "media_type": "application/vnd.apache.parquet",
+      "columns": [
+        {"name": "frame_id", "dtype": "u64", "nullable": false, "unit": "index"},
+        {"name": "aoi_id", "dtype": "utf8", "nullable": false, "unit": "id"},
+        {"name": "taxonomy_version", "dtype": "utf8", "nullable": false, "unit": "id"},
+        {"name": "bbox_x_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "bbox_y_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "bbox_w_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "bbox_h_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "visible", "dtype": "bool", "nullable": false, "unit": "bool"},
+        {"name": "confidence", "dtype": "f32", "nullable": false, "unit": "probability", "minimum": 0.0, "maximum": 1.0}
+      ],
+      "sort_key": ["frame_id", "aoi_id"],
+      "min_valid_fraction": 0.98,
+      "allow_extra_columns": false
+    },
+    {
+      "kind": "table",
+      "schema_id": "gaze-sample-raw-v0.1",
+      "media_type": "application/vnd.apache.parquet",
+      "columns": [
+        {"name": "gaze_sample_id", "dtype": "u64", "nullable": false, "unit": "index"},
+        {"name": "source_timestamp_s", "dtype": "f64", "nullable": false, "unit": "s", "minimum": 0.0},
+        {"name": "scene_frame_id", "dtype": "u64", "nullable": false, "unit": "index"},
+        {"name": "viewport_x_norm", "dtype": "f32", "nullable": true, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "viewport_y_norm", "dtype": "f32", "nullable": true, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "origin_x_m", "dtype": "f32", "nullable": true, "unit": "m"},
+        {"name": "origin_y_m", "dtype": "f32", "nullable": true, "unit": "m"},
+        {"name": "origin_z_m", "dtype": "f32", "nullable": true, "unit": "m"},
+        {"name": "ray_x", "dtype": "f32", "nullable": true, "unit": "unit_vector"},
+        {"name": "ray_y", "dtype": "f32", "nullable": true, "unit": "unit_vector"},
+        {"name": "ray_z", "dtype": "f32", "nullable": true, "unit": "unit_vector"},
+        {"name": "left_pupil_mm", "dtype": "f32", "nullable": true, "unit": "mm", "minimum": 0.0},
+        {"name": "right_pupil_mm", "dtype": "f32", "nullable": true, "unit": "mm", "minimum": 0.0},
+        {"name": "binocular_valid", "dtype": "bool", "nullable": false, "unit": "bool"},
+        {"name": "confidence", "dtype": "f32", "nullable": false, "unit": "probability", "minimum": 0.0, "maximum": 1.0},
+        {"name": "blink", "dtype": "bool", "nullable": false, "unit": "bool"},
+        {"name": "assigned_aoi_id", "dtype": "utf8", "nullable": true, "unit": "id"},
+        {"name": "assignment_confidence", "dtype": "f32", "nullable": true, "unit": "probability", "minimum": 0.0, "maximum": 1.0}
+      ],
+      "sort_key": ["source_timestamp_s", "gaze_sample_id"],
+      "source_timestamp_column": "source_timestamp_s",
+      "expected_sample_rate_hz": 120.0,
+      "sample_rate_tolerance_fraction": 0.01,
+      "min_valid_fraction": 0.98,
+      "allow_extra_columns": false
+    },
+    {
+      "kind": "table",
+      "schema_id": "gaze-fixation-raw-v0.1",
+      "media_type": "application/vnd.apache.parquet",
+      "columns": [
+        {"name": "fixation_id", "dtype": "u64", "nullable": false, "unit": "index"},
+        {"name": "start_source_timestamp_s", "dtype": "f64", "nullable": false, "unit": "s", "minimum": 0.0},
+        {"name": "end_source_timestamp_s", "dtype": "f64", "nullable": false, "unit": "s", "minimum": 0.0},
+        {"name": "duration_ms", "dtype": "f32", "nullable": false, "unit": "ms", "minimum": 0.0},
+        {"name": "centroid_x_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "centroid_y_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "ray_x", "dtype": "f32", "nullable": false, "unit": "unit_vector"},
+        {"name": "ray_y", "dtype": "f32", "nullable": false, "unit": "unit_vector"},
+        {"name": "ray_z", "dtype": "f32", "nullable": false, "unit": "unit_vector"},
+        {"name": "first_scene_frame_id", "dtype": "u64", "nullable": false, "unit": "index"},
+        {"name": "last_scene_frame_id", "dtype": "u64", "nullable": false, "unit": "index"},
+        {"name": "aoi_id", "dtype": "utf8", "nullable": true, "unit": "id"},
+        {"name": "fixation_valid", "dtype": "bool", "nullable": false, "unit": "bool"},
+        {"name": "confidence", "dtype": "f32", "nullable": false, "unit": "probability", "minimum": 0.0, "maximum": 1.0},
+        {"name": "detector_version", "dtype": "utf8", "nullable": false, "unit": "id"}
+      ],
+      "sort_key": ["start_source_timestamp_s", "fixation_id"],
+      "source_timestamp_column": "start_source_timestamp_s",
+      "min_valid_fraction": 0.98,
+      "allow_extra_columns": false
+    },
+    {
+      "kind": "table",
+      "schema_id": "eeg-sample-raw-v0.1",
+      "media_type": "application/vnd.apache.parquet",
+      "columns": [
+        {"name": "sample_index", "dtype": "u64", "nullable": false, "unit": "index"},
+        {"name": "source_timestamp_s", "dtype": "f64", "nullable": false, "unit": "s", "minimum": 0.0},
+        {"name": "Fp1_uV", "dtype": "f32", "nullable": true, "unit": "uV"},
+        {"name": "Fp2_uV", "dtype": "f32", "nullable": true, "unit": "uV"},
+        {"name": "F3_uV", "dtype": "f32", "nullable": true, "unit": "uV"},
+        {"name": "F4_uV", "dtype": "f32", "nullable": true, "unit": "uV"},
+        {"name": "C3_uV", "dtype": "f32", "nullable": true, "unit": "uV"},
+        {"name": "C4_uV", "dtype": "f32", "nullable": true, "unit": "uV"},
+        {"name": "P3_uV", "dtype": "f32", "nullable": true, "unit": "uV"},
+        {"name": "P4_uV", "dtype": "f32", "nullable": true, "unit": "uV"},
+        {"name": "signal_valid", "dtype": "bool", "nullable": false, "unit": "bool"},
+        {"name": "artifact_code", "dtype": "utf8", "nullable": true, "unit": "code"}
+      ],
+      "sort_key": ["source_timestamp_s", "sample_index"],
+      "source_timestamp_column": "source_timestamp_s",
+      "expected_sample_rate_hz": 256.0,
+      "sample_rate_tolerance_fraction": 0.01,
+      "min_valid_fraction": 0.98,
+      "allow_extra_columns": false,
+      "extensions": {
+        "nullable_measurement_guard": "signal_valid_false_or_artifact_code_present"
+      }
+    },
+    {
+      "kind": "table",
+      "schema_id": "ecg-sample-raw-v0.1",
+      "media_type": "application/vnd.apache.parquet",
+      "columns": [
+        {"name": "sample_index", "dtype": "u64", "nullable": false, "unit": "index"},
+        {"name": "source_timestamp_s", "dtype": "f64", "nullable": false, "unit": "s", "minimum": 0.0},
+        {"name": "synthetic_lead_ii_mV", "dtype": "f32", "nullable": true, "unit": "mV"},
+        {"name": "signal_valid", "dtype": "bool", "nullable": false, "unit": "bool"},
+        {"name": "artifact_code", "dtype": "utf8", "nullable": true, "unit": "code"}
+      ],
+      "sort_key": ["source_timestamp_s", "sample_index"],
+      "source_timestamp_column": "source_timestamp_s",
+      "expected_sample_rate_hz": 250.0,
+      "sample_rate_tolerance_fraction": 0.01,
+      "min_valid_fraction": 0.98,
+      "allow_extra_columns": false,
+      "extensions": {
+        "nullable_measurement_guard": "signal_valid_false_or_artifact_code_present"
+      }
+    },
+    {
+      "kind": "table",
+      "schema_id": "ecg-r-peak-raw-v0.1",
+      "media_type": "application/vnd.apache.parquet",
+      "columns": [
+        {"name": "peak_id", "dtype": "u64", "nullable": false, "unit": "index"},
+        {"name": "source_timestamp_s", "dtype": "f64", "nullable": false, "unit": "s", "minimum": 0.0},
+        {"name": "rr_interval_ms", "dtype": "f32", "nullable": true, "unit": "ms", "minimum": 0.0},
+        {"name": "detection_confidence", "dtype": "f32", "nullable": false, "unit": "probability", "minimum": 0.0, "maximum": 1.0},
+        {"name": "generator_version", "dtype": "utf8", "nullable": false, "unit": "id"}
+      ],
+      "sort_key": ["source_timestamp_s", "peak_id"],
+      "source_timestamp_column": "source_timestamp_s",
+      "min_valid_fraction": 0.98,
+      "allow_extra_columns": false
+    },
+    {
+      "kind": "table",
+      "schema_id": "pilot-camera-frame-index-raw-v0.1",
+      "media_type": "application/vnd.apache.parquet",
+      "columns": [
+        {"name": "frame_id", "dtype": "u64", "nullable": false, "unit": "index"},
+        {"name": "source_timestamp_s", "dtype": "f64", "nullable": false, "unit": "s", "minimum": 0.0},
+        {"name": "image_path", "dtype": "utf8", "nullable": false, "unit": "bundle_relative_path", "is_bundle_path": true},
+        {"name": "width", "dtype": "u32", "nullable": false, "unit": "pixel"},
+        {"name": "height", "dtype": "u32", "nullable": false, "unit": "pixel"},
+        {"name": "head_bbox_x_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "head_bbox_y_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "head_bbox_w_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "head_bbox_h_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "left_eye_bbox_x_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "left_eye_bbox_y_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "left_eye_bbox_w_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "left_eye_bbox_h_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "right_eye_bbox_x_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "right_eye_bbox_y_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "right_eye_bbox_w_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "right_eye_bbox_h_norm", "dtype": "f32", "nullable": false, "unit": "normalized", "minimum": 0.0, "maximum": 1.0},
+        {"name": "frame_valid", "dtype": "bool", "nullable": false, "unit": "bool"},
+        {"name": "privacy_class", "dtype": "utf8", "nullable": false, "unit": "id"},
+        {"name": "generator_version", "dtype": "utf8", "nullable": false, "unit": "id"}
+      ],
+      "sort_key": ["source_timestamp_s", "frame_id"],
+      "source_timestamp_column": "source_timestamp_s",
+      "expected_sample_rate_hz": 15.0,
+      "sample_rate_tolerance_fraction": 0.01,
+      "min_valid_fraction": 0.98,
+      "allow_extra_columns": false
+    },
+    {
+      "kind": "table",
+      "schema_id": "task-reference-path-raw-v0.1",
+      "media_type": "application/vnd.apache.parquet",
+      "columns": [
+        {"name": "reference_sample_id", "dtype": "u64", "nullable": false, "unit": "index"},
+        {"name": "source_timestamp_s", "dtype": "f64", "nullable": false, "unit": "s", "minimum": 0.0},
+        {"name": "target_x_m", "dtype": "f32", "nullable": false, "unit": "m"},
+        {"name": "target_y_m", "dtype": "f32", "nullable": false, "unit": "m"},
+        {"name": "target_z_m", "dtype": "f32", "nullable": false, "unit": "m"},
+        {"name": "target_vx_m_s", "dtype": "f32", "nullable": false, "unit": "m/s"},
+        {"name": "target_vy_m_s", "dtype": "f32", "nullable": false, "unit": "m/s"},
+        {"name": "target_vz_m_s", "dtype": "f32", "nullable": false, "unit": "m/s"},
+        {"name": "target_roll_deg", "dtype": "f32", "nullable": false, "unit": "deg"},
+        {"name": "target_pitch_deg", "dtype": "f32", "nullable": false, "unit": "deg"},
+        {"name": "target_yaw_deg", "dtype": "f32", "nullable": false, "unit": "deg"},
+        {"name": "envelope_profile_id", "dtype": "utf8", "nullable": false, "unit": "id"}
+      ],
+      "sort_key": ["source_timestamp_s", "reference_sample_id"],
+      "source_timestamp_column": "source_timestamp_s",
+      "expected_sample_rate_hz": 100.0,
+      "sample_rate_tolerance_fraction": 0.01,
+      "min_valid_fraction": 0.98,
+      "allow_extra_columns": false
+    },
+    {
+      "kind": "image",
+      "schema_id": "png-rgb8-v0.1",
+      "media_type": "image/png",
+      "mode": "RGB",
+      "bit_depth": 8,
+      "allowed_dimensions": [
+        {"width": 64, "height": 36},
+        {"width": 48, "height": 48}
+      ],
+      "max_pixels": 16000000,
+      "allow_animation": false,
+      "allow_ancillary_metadata": false,
+      "extensions": {
+        "png_compress_level": 9,
+        "png_optimize": false
+      }
+    },
+    {
+      "kind": "json",
+      "schema_id": "eeg-sidecar-v0.1",
+      "media_type": "application/json",
+      "fields": [
+        {"name": "schema_id", "field_type": "utf8", "required": true},
+        {"name": "montage_id", "field_type": "utf8", "required": true},
+        {"name": "reference", "field_type": "utf8", "required": true},
+        {"name": "channel_order", "field_type": "string_list", "required": true},
+        {"name": "channel_units", "field_type": "string_map", "required": true},
+        {"name": "sample_rate_hz", "field_type": "f64", "required": true},
+        {"name": "clock_id", "field_type": "utf8", "required": true},
+        {"name": "generator_id", "field_type": "utf8", "required": true},
+        {"name": "seed", "field_type": "i64", "required": true},
+        {"name": "synthetic_not_neurophysiological", "field_type": "bool", "required": true}
+      ],
+      "allow_extra_fields": false
+    },
+    {
+      "kind": "composite",
+      "schema_id": "vr-scene-source-bundle-v0.1",
+      "format": "image_sequence+parquet_index",
+      "primary_role": "frame_index",
+      "artifact_roles": {
+        "frame_index": {"matcher": {"kind": "exact_paths", "paths": ["streams/vr_scene/frame_index.parquet"]}, "media_type": "application/vnd.apache.parquet", "schema_id": "vr-frame-index-raw-v0.1", "required": true},
+        "aoi_instances": {"matcher": {"kind": "exact_paths", "paths": ["streams/vr_scene/aoi_instances.parquet"]}, "media_type": "application/vnd.apache.parquet", "schema_id": "vr-aoi-instance-raw-v0.1", "required": true},
+        "frame_images": {"matcher": {"kind": "path_prefix", "path_prefix": "streams/vr_scene/frames/"}, "media_type": "image/png", "schema_id": "png-rgb8-v0.1", "required": true}
+      }
+    },
+    {
+      "kind": "composite",
+      "schema_id": "gaze-source-bundle-v0.1",
+      "format": "parquet",
+      "primary_role": "gaze_samples",
+      "artifact_roles": {
+        "gaze_samples": {"matcher": {"kind": "exact_paths", "paths": ["streams/gaze/gaze_samples.parquet"]}, "media_type": "application/vnd.apache.parquet", "schema_id": "gaze-sample-raw-v0.1", "required": true},
+        "fixations": {"matcher": {"kind": "exact_paths", "paths": ["streams/gaze/fixations.parquet"]}, "media_type": "application/vnd.apache.parquet", "schema_id": "gaze-fixation-raw-v0.1", "required": true}
+      }
+    },
+    {
+      "kind": "composite",
+      "schema_id": "eeg-source-bundle-v0.1",
+      "format": "parquet+json_sidecar",
+      "primary_role": "samples",
+      "artifact_roles": {
+        "samples": {"matcher": {"kind": "exact_paths", "paths": ["streams/eeg/eeg_samples.parquet"]}, "media_type": "application/vnd.apache.parquet", "schema_id": "eeg-sample-raw-v0.1", "required": true},
+        "sidecar": {"matcher": {"kind": "exact_paths", "paths": ["streams/eeg/eeg_sidecar.json"]}, "media_type": "application/json", "schema_id": "eeg-sidecar-v0.1", "required": true}
+      }
+    },
+    {
+      "kind": "composite",
+      "schema_id": "ecg-source-bundle-v0.1",
+      "format": "parquet",
+      "primary_role": "samples",
+      "artifact_roles": {
+        "samples": {"matcher": {"kind": "exact_paths", "paths": ["streams/ecg/ecg_samples.parquet"]}, "media_type": "application/vnd.apache.parquet", "schema_id": "ecg-sample-raw-v0.1", "required": true},
+        "r_peaks": {"matcher": {"kind": "exact_paths", "paths": ["streams/ecg/r_peaks.parquet"]}, "media_type": "application/vnd.apache.parquet", "schema_id": "ecg-r-peak-raw-v0.1", "required": true}
+      }
+    },
+    {
+      "kind": "composite",
+      "schema_id": "pilot-camera-source-bundle-v0.1",
+      "format": "image_sequence+parquet_index",
+      "primary_role": "frame_index",
+      "artifact_roles": {
+        "frame_index": {"matcher": {"kind": "exact_paths", "paths": ["streams/pilot_camera/frame_index.parquet"]}, "media_type": "application/vnd.apache.parquet", "schema_id": "pilot-camera-frame-index-raw-v0.1", "required": true},
+        "frame_images": {"matcher": {"kind": "path_prefix", "path_prefix": "streams/pilot_camera/frames/"}, "media_type": "image/png", "schema_id": "png-rgb8-v0.1", "required": true}
+      }
+    }
+  ]
+}
