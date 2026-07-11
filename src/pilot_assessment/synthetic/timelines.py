@@ -21,11 +21,14 @@ def source_grid(*, duration_s: float, sample_rate_hz: float) -> tuple[float, ...
 
     _positive_finite(duration_s, "duration_s")
     _positive_finite(sample_rate_hz, "sample_rate_hz")
-    count = int(
-        (Decimal(str(duration_s)) * Decimal(str(sample_rate_hz))).to_integral_value(
-            rounding=ROUND_FLOOR
+    count = (
+        int(
+            (Decimal(str(duration_s)) * Decimal(str(sample_rate_hz))).to_integral_value(
+                rounding=ROUND_FLOOR
+            )
         )
-    ) + 1
+        + 1
+    )
     return tuple(index / sample_rate_hz for index in range(count))
 
 
@@ -37,11 +40,7 @@ def map_source_seconds_to_session_ns(
 ) -> int:
     """Apply session=scale*source+offset and round the result to signed int64 ns."""
 
-    if (
-        isinstance(source_time_s, bool)
-        or not math.isfinite(source_time_s)
-        or source_time_s < 0.0
-    ):
+    if isinstance(source_time_s, bool) or not math.isfinite(source_time_s) or source_time_s < 0.0:
         raise ValueError("source_time_s must be non-negative and finite")
     if isinstance(offset_ns, bool) or not _INT64_MIN <= offset_ns <= _INT64_MAX:
         raise ValueError("offset_ns must be a signed int64")
@@ -65,11 +64,7 @@ def in_session_window(session_t_ns: int, *, duration_s: float) -> bool:
     _positive_finite(duration_s, "duration_s")
     if isinstance(session_t_ns, bool) or not _INT64_MIN <= session_t_ns <= _INT64_MAX:
         raise ValueError("session_t_ns must be a signed int64")
-    end_ns = int(
-        (Decimal(str(duration_s)) * _BILLION).to_integral_value(
-            rounding=ROUND_HALF_EVEN
-        )
-    )
+    end_ns = int((Decimal(str(duration_s)) * _BILLION).to_integral_value(rounding=ROUND_HALF_EVEN))
     return 0 <= session_t_ns <= end_ns
 
 

@@ -58,9 +58,7 @@ def uniform53(
 ) -> float:
     """Return a deterministic open-interval uniform value from a counter coordinate."""
 
-    digest = hashlib.sha256(
-        _counter_payload(seed, modality, channel, index, lane)
-    ).digest()
+    digest = hashlib.sha256(_counter_payload(seed, modality, channel, index, lane)).digest()
     mantissa = int.from_bytes(digest[:8], "big") >> 11
     return (mantissa + 0.5) / _UNIFORM_DENOMINATOR
 

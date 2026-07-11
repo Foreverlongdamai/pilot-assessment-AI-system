@@ -120,9 +120,7 @@ class CompositeStreamAdapter:
                     )
                 generator_id, seed = _synthetic_provenance(descriptor)
                 channel_order = tuple(
-                    name.removesuffix("_uV")
-                    for name in samples.columns
-                    if name.endswith("_uV")
+                    name.removesuffix("_uV") for name in samples.columns if name.endswith("_uV")
                 )
                 payload = inspect_eeg_sidecar(
                     resolved_paths[paths[0]],

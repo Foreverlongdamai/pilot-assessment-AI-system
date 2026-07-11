@@ -148,9 +148,7 @@ class IngestionReadinessReport(StrictContractModel):
             for result in self.stream_results.values()
         )
         if self.task_reference_result is not None:
-            degraded = (
-                degraded or self.task_reference_result.readiness is not StreamReadiness.READY
-            )
+            degraded = degraded or self.task_reference_result.readiness is not StreamReadiness.READY
 
         expected = (
             ReadinessDisposition.BLOCKED

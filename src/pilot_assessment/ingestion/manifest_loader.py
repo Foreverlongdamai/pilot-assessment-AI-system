@@ -353,9 +353,7 @@ class ManifestLoader:
     ) -> None:
         by_casefold: dict[str, list[tuple[str, str]]] = {}
         for relative_path, kind in declared_paths:
-            by_casefold.setdefault(relative_path.casefold(), []).append(
-                (relative_path, kind)
-            )
+            by_casefold.setdefault(relative_path.casefold(), []).append((relative_path, kind))
 
         invalid_duplicates: list[list[str]] = []
         for entries in by_casefold.values():

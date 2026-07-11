@@ -9,9 +9,7 @@ from pilot_assessment.synthetic.prng import float32, triangular_noise, uniform53
 
 def test_sha256_counter_prng_has_frozen_golden_values() -> None:
     assert uniform53(20260711, "EEG", "Fp1", 0, 0).hex() == "0x1.6af3eebf91787p-2"
-    assert triangular_noise(20260711, "EEG", "Fp1", 0).hex() == (
-        "-0x1.4d47ba0000000p-2"
-    )
+    assert triangular_noise(20260711, "EEG", "Fp1", 0).hex() == ("-0x1.4d47ba0000000p-2")
 
 
 def test_prng_is_deterministic_bounded_and_lane_specific() -> None:

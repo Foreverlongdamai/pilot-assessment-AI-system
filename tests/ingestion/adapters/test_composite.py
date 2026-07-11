@@ -174,11 +174,7 @@ def _build_request(
 
         if isinstance(artifact_profile, TableProfile):
             image_paths = next(
-                (
-                    paths
-                    for image_role, paths in role_paths.items()
-                    if image_role == "frame_images"
-                ),
+                (paths for image_role, paths in role_paths.items() if image_role == "frame_images"),
                 (),
             )
             if role == "frame_index" and not image_paths:
@@ -309,22 +305,24 @@ def test_trusted_composite_adapter_routes_every_approved_modality(
         for role, definition in profile.artifact_roles.items()
         if definition.media_type == "image/png"
     }
-    assert {summary.role for summary in result.artifact_summaries} == set(
-        profile.artifact_roles
-    )
+    assert {summary.role for summary in result.artifact_summaries} == set(profile.artifact_roles)
     assert not result.context
     assert not result.issues
 
 
 def test_composite_adapter_registers_only_the_five_approved_exact_keys() -> None:
-    assert CompositeStreamAdapter.keys == COMPOSITE_KEYS == frozenset(
-        {
-            ("image_sequence+parquet_index", "vr-scene-source-bundle-v0.1"),
-            ("parquet", "gaze-source-bundle-v0.1"),
-            ("parquet+json_sidecar", "eeg-source-bundle-v0.1"),
-            ("parquet", "ecg-source-bundle-v0.1"),
-            ("image_sequence+parquet_index", "pilot-camera-source-bundle-v0.1"),
-        }
+    assert (
+        CompositeStreamAdapter.keys
+        == COMPOSITE_KEYS
+        == frozenset(
+            {
+                ("image_sequence+parquet_index", "vr-scene-source-bundle-v0.1"),
+                ("parquet", "gaze-source-bundle-v0.1"),
+                ("parquet+json_sidecar", "eeg-source-bundle-v0.1"),
+                ("parquet", "ecg-source-bundle-v0.1"),
+                ("image_sequence+parquet_index", "pilot-camera-source-bundle-v0.1"),
+            }
+        )
     )
 
 
@@ -336,10 +334,7 @@ def _replace_inventory(
     profile: CompositeProfile | None = None,
 ) -> AdapterRequest:
     descriptor = next(iter(request.descriptors.values()))
-    digests = {
-        path: request.verified_digests.get(path, "0" * 64)
-        for path in paths
-    }
+    digests = {path: request.verified_digests.get(path, "0" * 64) for path in paths}
     replaced = descriptor.model_copy(
         update={
             "paths": list(paths),

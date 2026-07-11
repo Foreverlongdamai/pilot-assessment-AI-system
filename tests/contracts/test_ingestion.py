@@ -174,9 +174,7 @@ def test_uninspected_result_cannot_claim_normalized_content(
 def test_artifact_row_counts_are_strict_nonnegative_integers(
     readiness_data: dict[str, Any], bad_count: object
 ) -> None:
-    readiness_data["stream_results"]["I"]["artifact_row_counts"]["frame_index"] = (
-        bad_count
-    )
+    readiness_data["stream_results"]["I"]["artifact_row_counts"]["frame_index"] = bad_count
 
     with pytest.raises(ValidationError):
         IngestionReadinessReport.model_validate(readiness_data)

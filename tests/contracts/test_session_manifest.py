@@ -85,17 +85,13 @@ def test_bundle_reference_resolves_task_reference_stream(
         "reference_id": "commanded-path-v0.1",
         "stream_id": "task_reference",
     }
-    manifest_data["streams"]["task_reference"] = _task_reference_descriptor(
-        manifest_data
-    )
+    manifest_data["streams"]["task_reference"] = _task_reference_descriptor(manifest_data)
 
     manifest = SessionManifest.model_validate(manifest_data)
 
     assert manifest.task.reference is not None
     assert manifest.task.reference.stream_id == "task_reference"
-    assert manifest.streams["task_reference"].paths == [
-        "references/commanded_path.parquet"
-    ]
+    assert manifest.streams["task_reference"].paths == ["references/commanded_path.parquet"]
 
 
 @pytest.mark.parametrize(
@@ -152,9 +148,7 @@ def test_bundle_reference_artifacts_must_stay_below_references(
 def test_unreferenced_task_reference_descriptor_is_rejected(
     manifest_data: dict[str, Any],
 ) -> None:
-    manifest_data["streams"]["task_reference"] = _task_reference_descriptor(
-        manifest_data
-    )
+    manifest_data["streams"]["task_reference"] = _task_reference_descriptor(manifest_data)
 
     with pytest.raises(ValidationError):
         SessionManifest.model_validate(manifest_data)

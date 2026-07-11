@@ -105,31 +105,20 @@ class StreamDescriptor(StrictContractModel):
             if not self.paths:
                 raise ValueError(f"{self.status.value} streams require at least one path")
             if set(self.paths) != set(self.checksums):
-                raise ValueError(
-                    f"{self.status.value} stream checksums must match paths exactly"
-                )
+                raise ValueError(f"{self.status.value} stream checksums must match paths exactly")
             if self.status is StreamStatus.PRESENT and self.clock_sync is None:
                 raise ValueError("present streams require a clock_sync mapping")
         else:
             if self.paths or self.checksums:
-                raise ValueError(
-                    f"{self.status.value} streams must not claim exported files"
-                )
+                raise ValueError(f"{self.status.value} streams must not claim exported files")
             if self.quality_summary is not None:
-                raise ValueError(
-                    f"{self.status.value} streams must not claim a quality summary"
-                )
+                raise ValueError(f"{self.status.value} streams must not claim a quality summary")
             if (
                 self.status in {StreamStatus.MISSING, StreamStatus.NOT_APPLICABLE}
                 and self.clock_sync is not None
             ):
-                raise ValueError(
-                    f"{self.status.value} streams must not claim clock sync"
-                )
-            if (
-                self.status is StreamStatus.NOT_APPLICABLE
-                and self.required_for_import
-            ):
+                raise ValueError(f"{self.status.value} streams must not claim clock sync")
+            if self.status is StreamStatus.NOT_APPLICABLE and self.required_for_import:
                 raise ValueError("not_applicable streams cannot be required for import")
         return self
 
@@ -253,20 +242,14 @@ class SessionManifest(StrictContractModel):
             if descriptor is None:
                 raise ValueError("bundle reference stream_id does not exist")
             if descriptor.modality != "task_reference":
-                raise ValueError(
-                    "bundle reference stream_id must resolve to task_reference"
-                )
+                raise ValueError("bundle reference stream_id must resolve to task_reference")
             outside_references = [
                 path for path in descriptor.paths if not path.startswith("references/")
             ]
             if outside_references:
-                raise ValueError(
-                    "bundle task reference paths must stay below references/"
-                )
+                raise ValueError("bundle task reference paths must stay below references/")
         elif task_reference_descriptor is not None:
-            raise ValueError(
-                "task_reference descriptor requires a bundle task.reference owner"
-            )
+            raise ValueError("task_reference descriptor requires a bundle task.reference owner")
 
         expected_pending = {
             modality
@@ -281,8 +264,7 @@ class SessionManifest(StrictContractModel):
 
         synthetic = self.privacy.classification == "synthetic-test-data"
         exported_biometrics = any(
-            self.streams[modality].status
-            in {StreamStatus.PRESENT, StreamStatus.INVALID}
+            self.streams[modality].status in {StreamStatus.PRESENT, StreamStatus.INVALID}
             for modality in BIOMETRIC_MODALITIES
         )
         if synthetic:
