@@ -143,7 +143,7 @@ def build_scene(*, duration_s: float, seed: int) -> SceneArtifacts:
             "visible": pl.Series("visible", [True] * aoi_count, dtype=pl.Boolean),
             "confidence": _f32("confidence", [1.0] * aoi_count),
         }
-    )
+    ).sort("frame_id", "aoi_id")
     return SceneArtifacts(frame_index=frame_index, aoi_instances=aoi_instances)
 
 

@@ -30,6 +30,9 @@ def test_scene_gaze_and_camera_tables_have_frozen_rates_and_foreign_keys() -> No
     assert scene.frame_index.schema["frame_id"] == pl.UInt64
     assert scene.frame_index.schema["head_qw"] == pl.Float32
     assert set(scene.aoi_instances["frame_id"]) <= set(scene.frame_index["frame_id"])
+    assert scene.aoi_instances.select("frame_id", "aoi_id").equals(
+        scene.aoi_instances.sort("frame_id", "aoi_id").select("frame_id", "aoi_id")
+    )
     assert gaze.samples.height == 241
     assert gaze.samples.schema["viewport_x_norm"] == pl.Float32
     assert set(gaze.samples["scene_frame_id"]) <= set(scene.frame_index["frame_id"])
