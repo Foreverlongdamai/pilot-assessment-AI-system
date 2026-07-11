@@ -105,16 +105,16 @@ uv build
 
 ## 5. 下一里程碑
 
-建议 M2 聚焦“可运行的 minimal-XU ingestion/preflight”，继续保持完整多模态接口：
+根据用户确认的完整闭环方向，M2 扩展为“多模态理想合同 + synthetic full bundle + ingestion preflight”：
 
 1. 定义 adapter registry、RawStream/NormalizedStream 与 `PreflightReport`；
-2. 为当前真实模拟器 CSV 建 X/U adapter，不把列名写死到通用合同；
-3. 建 synthetic minimal-XU bundle 和损坏/缺列/错单位 fixtures；
-4. 读取但不改变 source timestamp，生成标准化只读数据；
-5. 对 I/G/EEG/ECG 的 export_pending 返回明确 availability，而不是占位数值；
-6. 通过 M2 unit/component tests 后再进入 synchronization。
+2. 为当前真实模拟器 CSV 建共享 X/U adapter，不把列名写死到通用合同；
+3. 固化 I/G/EEG/ECG/pilot_camera 的理想第一版文件合同；
+4. 以真实 X/U 时间范围生成独立 synthetic scene、gaze、EEG、ECG 和 pilot-camera 文件；
+5. 生成七个 core modalities 全 present 的 synthetic bundle，并完成全模态 ingestion preflight；
+6. 通过 M2 后依次进入 M3 synchronization、M4 18-anchor/evidence、M5 BN、M6 端到端 runner。
 
-M2 不应提前实现 BN，也不应把当前 CSV 样本误当作完整产品数据合同。
+详细 review candidate 见 [M2 Multimodal Synthetic Foundation Design](specs/2026-07-11-multimodal-synthetic-foundation-design.md)。M2 不应提前实现 BN，也不应把 synthetic 信号或当前 CSV 样本误当作科学有效的完整产品数据。
 
 ## 6. M1 独立自审
 
