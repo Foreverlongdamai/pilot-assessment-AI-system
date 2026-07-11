@@ -4,8 +4,10 @@ import csv
 import hashlib
 import io
 import json
+from collections.abc import Callable
 from pathlib import Path
 
+import polars as pl
 import pytest
 
 from pilot_assessment.contracts.session import (
@@ -13,6 +15,7 @@ from pilot_assessment.contracts.session import (
     SessionManifest,
     StreamStatus,
 )
+from pilot_assessment.ingestion import readiness as readiness_module
 from pilot_assessment.ingestion.adapters.base import AdapterInspectionError
 from pilot_assessment.ingestion.manifest_loader import ManifestLoader
 from pilot_assessment.ingestion.parquet_io import read_profiled_parquet_metadata
@@ -56,7 +59,12 @@ HEADERS = (
 KNOTS_PER_METRE_PER_SECOND = 1.9438444924406048
 
 
-def _write_simulator_csv(path: Path, *, duration_s: float = 2.0) -> bytes:
+def _write_simulator_csv(
+    path: Path,
+    *,
+    duration_s: float = 2.0,
+    control_lon: Callable[[float], float] | None = None,
+) -> bytes:
     count = round(duration_s * 100.0) + 1
     output = io.StringIO(newline="")
     writer = csv.writer(output, lineterminator="\n")
@@ -87,7 +95,9 @@ def _write_simulator_csv(path: Path, *, duration_s: float = 2.0) -> bytes:
                 "0",
                 "1",
                 "0",
-                str(-100.0 * index / (count - 1)),
+                str(
+                    control_lon(time_s) if control_lon is not None else -100.0 * index / (count - 1)
+                ),
                 "0",
                 "0",
                 "0.2",
@@ -173,6 +183,10 @@ def test_generator_writes_a_complete_deterministic_bundle(
     assert synthetic["seed"] == 20260711
     assert synthetic["lock_fingerprint"]
     assert synthetic["source_xu_sha256"] == hashlib.sha256(source_bytes).hexdigest()
+    assert synthetic["parameters"]["control_activity_definition"] == (
+        "min(1,abs(control.longitudinal_raw)/100)"
+    )
+    assert synthetic["parameters"]["physiology_activity_resampling"] == ("linear-clamped-v0.1")
 
     expected_clocks = {
         "X": (0, 0.0),
@@ -240,6 +254,56 @@ def test_seed_changes_content_and_provenance_but_not_inventory(
     assert (first / "streams" / "simulator.csv").read_bytes() == (
         second / "streams" / "simulator.csv"
     ).read_bytes()
+
+
+def test_generator_couples_eeg_and_ecg_to_source_control_activity_windows(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "activity-step.csv"
+    _write_simulator_csv(
+        source,
+        duration_s=8.0,
+        control_lon=lambda time_s: 0.0 if time_s < 4.0 else -100.0,
+    )
+
+    bundle = generate_synthetic_bundle(source, tmp_path / "bundle", seed=20260711)
+    eeg = pl.read_parquet(bundle / "streams" / "eeg" / "eeg_samples.parquet")
+    peaks = pl.read_parquet(bundle / "streams" / "ecg" / "r_peaks.parquet")
+
+    low_eeg = eeg.filter(pl.col("source_timestamp_s").is_between(1.0, 3.0, closed="both"))["Fp1_uV"]
+    high_eeg = eeg.filter(pl.col("source_timestamp_s").is_between(5.0, 7.0, closed="both"))[
+        "Fp1_uV"
+    ]
+    low_rms = float((low_eeg.cast(pl.Float64).pow(2).mean()) ** 0.5)
+    high_rms = float((high_eeg.cast(pl.Float64).pow(2).mean()) ** 0.5)
+    assert high_rms > 2.0 * low_rms
+
+    low_rr = peaks.filter(pl.col("source_timestamp_s") < 3.5)["rr_interval_ms"]
+    high_rr = peaks.filter(pl.col("source_timestamp_s") > 4.5)["rr_interval_ms"]
+    assert float(low_rr.mean()) == pytest.approx(60_000.0 / 70.0, abs=1.0)
+    assert float(high_rr.mean()) == pytest.approx(60_000.0 / 90.0, abs=1.0)
+
+
+def test_generator_runs_the_m2_readiness_self_check(
+    tmp_path: Path,
+    simulator_micro_csv: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[Path] = []
+    original = readiness_module.inspect_ingestion_readiness
+
+    def counted(bundle_root: str | Path) -> object:
+        calls.append(Path(bundle_root))
+        return original(bundle_root)
+
+    monkeypatch.setattr(readiness_module, "inspect_ingestion_readiness", counted)
+    bundle = generate_synthetic_bundle(
+        simulator_micro_csv,
+        tmp_path / "self-checked",
+        seed=20260711,
+    )
+
+    assert calls == [bundle]
 
 
 def test_generator_rejects_nonempty_output_without_modifying_it(

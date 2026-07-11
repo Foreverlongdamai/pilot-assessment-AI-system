@@ -18,6 +18,7 @@ from pilot_assessment.synthetic.modalities import (
     build_task_reference,
     write_rgb8_png,
 )
+from pilot_assessment.synthetic.prng import float32, triangular_noise
 
 
 def test_scene_gaze_and_camera_tables_have_frozen_rates_and_foreign_keys() -> None:
@@ -75,6 +76,74 @@ def test_eeg_and_ecg_are_deterministic_typed_and_explicitly_synthetic() -> None:
     assert peak_end <= 2.0
 
 
+def test_eeg_and_ecg_follow_interpolated_time_varying_control_activity() -> None:
+    source_times = tuple(index / 100.0 for index in range(801))
+    activity = tuple(0.0 if time < 4.0 else 1.0 for time in source_times)
+
+    eeg = build_eeg(
+        duration_s=8.0,
+        seed=20260711,
+        control_source_times_s=source_times,
+        control_activity=activity,
+    )
+    repeated_eeg = build_eeg(
+        duration_s=8.0,
+        seed=20260711,
+        control_source_times_s=source_times,
+        control_activity=activity,
+    )
+    ecg = build_ecg(
+        duration_s=8.0,
+        seed=20260711,
+        control_source_times_s=source_times,
+        control_activity=activity,
+    )
+    repeated_ecg = build_ecg(
+        duration_s=8.0,
+        seed=20260711,
+        control_source_times_s=source_times,
+        control_activity=activity,
+    )
+
+    assert eeg.samples.equals(repeated_eeg.samples)
+    assert ecg.samples.equals(repeated_ecg.samples)
+    assert ecg.r_peaks.equals(repeated_ecg.r_peaks)
+    assert eeg.samples.schema["Fp1_uV"] == pl.Float32
+    assert ecg.r_peaks.schema["rr_interval_ms"] == pl.Float32
+    assert eeg.sidecar["synthetic_not_neurophysiological"] is True
+    assert ecg.sidecar["synthetic_not_physiological"] is True
+
+    low_eeg = eeg.samples.filter(pl.col("source_timestamp_s").is_between(1.0, 3.0, closed="both"))[
+        "Fp1_uV"
+    ]
+    high_eeg = eeg.samples.filter(pl.col("source_timestamp_s").is_between(5.0, 7.0, closed="both"))[
+        "Fp1_uV"
+    ]
+    low_rms = float((low_eeg.cast(pl.Float64).pow(2).mean()) ** 0.5)
+    high_rms = float((high_eeg.cast(pl.Float64).pow(2).mean()) ** 0.5)
+    assert high_rms > 2.0 * low_rms
+
+    low_rr = ecg.r_peaks.filter(pl.col("source_timestamp_s") < 3.5)["rr_interval_ms"]
+    high_rr = ecg.r_peaks.filter(pl.col("source_timestamp_s") > 4.5)["rr_interval_ms"]
+    assert low_rr.len() >= 3
+    assert high_rr.len() >= 3
+    assert float(low_rr.mean()) == pytest.approx(60_000.0 / 70.0, abs=1.0)
+    assert float(high_rr.mean()) == pytest.approx(60_000.0 / 90.0, abs=1.0)
+
+
+def test_control_activity_trace_is_linearly_interpolated_on_the_eeg_grid() -> None:
+    eeg = build_eeg(
+        duration_s=2.0,
+        seed=20260711,
+        control_source_times_s=(0.0, 1.0, 2.0),
+        control_activity=(0.0, 1.0, 0.0),
+    )
+
+    # At t=0.53125 s (sample 136), activity is 0.53125 and the 8 Hz carrier is +1.
+    expected = float32(8.0 + 12.0 * 0.53125 + 1.5 * triangular_noise(20260711, "EEG", "Fp1", 136))
+    assert eeg.samples["Fp1_uV"][136] == expected
+
+
 def test_reference_and_annotations_have_stable_software_test_semantics() -> None:
     reference = build_task_reference(
         source_times_s=(0.0, 0.01, 0.02),
@@ -101,9 +170,9 @@ def test_png_writer_is_byte_deterministic_rgb8_and_metadata_free(tmp_path: Path)
     write_rgb8_png(first, width=64, height=36, seed=20260711, modality="I", index=3)
     write_rgb8_png(second, width=64, height=36, seed=20260711, modality="I", index=3)
 
-    assert hashlib.sha256(first.read_bytes()).digest() == hashlib.sha256(
-        second.read_bytes()
-    ).digest()
+    assert (
+        hashlib.sha256(first.read_bytes()).digest() == hashlib.sha256(second.read_bytes()).digest()
+    )
     with Image.open(first) as image:
         assert image.mode == "RGB"
         assert image.size == (64, 36)

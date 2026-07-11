@@ -52,6 +52,8 @@ _GENERATOR_PARAMETERS: Final[dict[str, JsonValue]] = {
     "pilot_camera_width": 48,
     "pilot_camera_height": 48,
     "duration_mode": "source",
+    "control_activity_definition": "min(1,abs(control.longitudinal_raw)/100)",
+    "physiology_activity_resampling": "linear-clamped-v0.1",
 }
 
 
@@ -534,7 +536,7 @@ def generate_synthetic_bundle(
     duration_s = source_times[-1]
     if duration_s <= 0.0:
         raise ValueError("source CSV duration must be positive")
-    control_activity = sum(min(1.0, abs(value) / 100.0) for value in controls) / len(controls)
+    control_activity = tuple(min(1.0, abs(value) / 100.0) for value in controls)
 
     path_count = _declared_path_count(duration_s)
     max_declared_paths = ManifestLoaderLimits().max_declared_paths
@@ -553,10 +555,16 @@ def generate_synthetic_bundle(
 
     scene = build_scene(duration_s=duration_s, seed=seed)
     gaze = build_gaze(duration_s=duration_s, seed=seed, scene=scene)
-    eeg = build_eeg(duration_s=duration_s, seed=seed)
+    eeg = build_eeg(
+        duration_s=duration_s,
+        seed=seed,
+        control_source_times_s=source_times,
+        control_activity=control_activity,
+    )
     ecg = build_ecg(
         duration_s=duration_s,
         seed=seed,
+        control_source_times_s=source_times,
         control_activity=control_activity,
     )
     pilot_camera = build_pilot_camera(duration_s=duration_s, seed=seed)
@@ -674,6 +682,15 @@ def generate_synthetic_bundle(
     loaded = ManifestLoader().load(root)
     if loaded.manifest != manifest:
         raise RuntimeError("M1 self-validation did not reproduce the generated manifest")
+    from pilot_assessment.ingestion import readiness as readiness_module
+
+    readiness = readiness_module.inspect_ingestion_readiness(root)
+    if (
+        readiness.report.disposition.value != "ready"
+        or readiness.prepared_session is None
+        or readiness.report.formal_run_authorized
+    ):
+        raise RuntimeError("M2 self-validation did not produce a ready software-test bundle")
     if source.read_bytes() != source_payload:
         raise RuntimeError("source CSV changed during synthetic bundle generation")
     return root

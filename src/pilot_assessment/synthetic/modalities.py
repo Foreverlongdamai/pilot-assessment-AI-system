@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import math
+from bisect import bisect_right
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -67,6 +69,59 @@ def _f32(name: str, values: list[float]) -> pl.Series:
     return pl.Series(name, [float32(value) for value in values], dtype=pl.Float32)
 
 
+def _control_activity_on_grid(
+    *,
+    target_times_s: tuple[float, ...],
+    control_activity: float | Sequence[float],
+    control_source_times_s: Sequence[float] | None,
+) -> tuple[float, ...]:
+    """Return a bounded control-activity trace on one synthetic modality grid."""
+
+    if isinstance(control_activity, bool):
+        raise ValueError("control_activity must contain real numbers within [0, 1]")
+    if isinstance(control_activity, (int, float)):
+        activity = float(control_activity)
+        if not math.isfinite(activity) or not 0.0 <= activity <= 1.0:
+            raise ValueError("control_activity must be within [0, 1]")
+        if control_source_times_s is not None:
+            raise ValueError("control_source_times_s is only valid with a control_activity trace")
+        return (activity,) * len(target_times_s)
+
+    if control_source_times_s is None:
+        raise ValueError("control_source_times_s is required for a control_activity trace")
+    source_times = tuple(float(value) for value in control_source_times_s)
+    source_activity = tuple(float(value) for value in control_activity)
+    if not source_times or len(source_times) != len(source_activity):
+        raise ValueError(
+            "control_source_times_s and control_activity must have the same non-zero length"
+        )
+    if any(not math.isfinite(value) for value in source_times):
+        raise ValueError("control_source_times_s must contain only finite values")
+    if any(right <= left for left, right in zip(source_times, source_times[1:], strict=False)):
+        raise ValueError("control_source_times_s must be strictly increasing")
+    if any(not math.isfinite(value) or not 0.0 <= value <= 1.0 for value in source_activity):
+        raise ValueError("control_activity must contain only finite values within [0, 1]")
+
+    interpolated: list[float] = []
+    for target_time in target_times_s:
+        if target_time <= source_times[0]:
+            interpolated.append(source_activity[0])
+            continue
+        if target_time >= source_times[-1]:
+            interpolated.append(source_activity[-1])
+            continue
+        right_index = bisect_right(source_times, target_time)
+        left_index = right_index - 1
+        left_time = source_times[left_index]
+        right_time = source_times[right_index]
+        fraction = (target_time - left_time) / (right_time - left_time)
+        left_activity = source_activity[left_index]
+        interpolated.append(
+            left_activity + fraction * (source_activity[right_index] - left_activity)
+        )
+    return tuple(interpolated)
+
+
 def build_scene(*, duration_s: float, seed: int) -> SceneArtifacts:
     """Build 30 Hz first-person scene indices and two stable AOIs per frame."""
 
@@ -83,22 +138,15 @@ def build_scene(*, duration_s: float, seed: int) -> SceneArtifacts:
             ),
             "width": _u32("width", [64] * count),
             "height": _u32("height", [36] * count),
-            "head_x_m": _f32(
-                "head_x_m", [0.01 * math.sin(0.7 * time) for time in times]
-            ),
+            "head_x_m": _f32("head_x_m", [0.01 * math.sin(0.7 * time) for time in times]),
             "head_y_m": _f32("head_y_m", [0.0] * count),
             "head_z_m": _f32("head_z_m", [1.15] * count),
             "head_qx": _f32("head_qx", [0.0] * count),
             "head_qy": _f32("head_qy", [0.0] * count),
-            "head_qz": _f32(
-                "head_qz", [0.02 * math.sin(0.4 * time) for time in times]
-            ),
+            "head_qz": _f32("head_qz", [0.02 * math.sin(0.4 * time) for time in times]),
             "head_qw": _f32(
                 "head_qw",
-                [
-                    math.sqrt(max(0.0, 1.0 - (0.02 * math.sin(0.4 * time)) ** 2))
-                    for time in times
-                ],
+                [math.sqrt(max(0.0, 1.0 - (0.02 * math.sin(0.4 * time)) ** 2)) for time in times],
             ),
             "horizontal_fov_deg": _f32("horizontal_fov_deg", [92.0] * count),
             "vertical_fov_deg": _f32("vertical_fov_deg", [58.0] * count),
@@ -202,9 +250,7 @@ def build_gaze(
                     for index in range(count)
                 ],
             ),
-            "binocular_valid": pl.Series(
-                "binocular_valid", [True] * count, dtype=pl.Boolean
-            ),
+            "binocular_valid": pl.Series("binocular_valid", [True] * count, dtype=pl.Boolean),
             "confidence": _f32("confidence", [0.98] * count),
             "blink": pl.Series(
                 "blink", [index % 241 in {119, 120} for index in range(count)], dtype=pl.Boolean
@@ -229,10 +275,7 @@ def build_gaze(
             "end_source_timestamp_s": _f64("end_source_timestamp_s", ends),
             "duration_ms": _f32(
                 "duration_ms",
-                [
-                    (end - start) * 1000.0
-                    for start, end in zip(starts, ends, strict=True)
-                ],
+                [(end - start) * 1000.0 for start, end in zip(starts, ends, strict=True)],
             ),
             "centroid_x_norm": _f32(
                 "centroid_x_norm", [0.72 if off else 0.35 for off in fixation_off_task]
@@ -266,10 +309,21 @@ def build_gaze(
     return GazeArtifacts(samples=samples, fixations=fixations)
 
 
-def build_eeg(*, duration_s: float, seed: int) -> EegArtifacts:
+def build_eeg(
+    *,
+    duration_s: float,
+    seed: int,
+    control_activity: float | Sequence[float] = 0.0,
+    control_source_times_s: Sequence[float] | None = None,
+) -> EegArtifacts:
     """Build deterministic 256 Hz multichannel software-test EEG-like data."""
 
     times = source_grid(duration_s=duration_s, sample_rate_hz=256.0)
+    activity = _control_activity_on_grid(
+        target_times_s=times,
+        control_activity=control_activity,
+        control_source_times_s=control_source_times_s,
+    )
     count = len(times)
     data: dict[str, pl.Series] = {
         "sample_index": _u64("sample_index", range(count)),
@@ -280,15 +334,14 @@ def build_eeg(*, duration_s: float, seed: int) -> EegArtifacts:
         data[f"{channel}_uV"] = _f32(
             f"{channel}_uV",
             [
-                12.0 * math.sin(2.0 * math.pi * frequency * time + channel_index * 0.2)
+                (8.0 + 12.0 * activity[index])
+                * math.sin(2.0 * math.pi * frequency * time + channel_index * 0.2)
                 + 1.5 * triangular_noise(seed, "EEG", channel, index)
                 for index, time in enumerate(times)
             ],
         )
     data["signal_valid"] = pl.Series("signal_valid", [True] * count, dtype=pl.Boolean)
-    data["artifact_code"] = pl.Series(
-        "artifact_code", [None] * count, dtype=pl.String
-    )
+    data["artifact_code"] = pl.Series("artifact_code", [None] * count, dtype=pl.String)
     sidecar: dict[str, JsonValue] = {
         "schema_id": "eeg-sidecar-v0.1",
         "montage_id": "synthetic-10-20-eight-channel-v0.1",
@@ -308,22 +361,30 @@ def build_ecg(
     *,
     duration_s: float,
     seed: int,
-    control_activity: float,
+    control_activity: float | Sequence[float],
+    control_source_times_s: Sequence[float] | None = None,
 ) -> EcgArtifacts:
     """Build deterministic 250 Hz ECG-like data and derived synthetic R peaks."""
 
-    if not 0.0 <= control_activity <= 1.0:
-        raise ValueError("control_activity must be within [0, 1]")
     times = source_grid(duration_s=duration_s, sample_rate_hz=250.0)
-    heart_rate_bpm = 70.0 + 20.0 * control_activity
-    period_s = 60.0 / heart_rate_bpm
+    activity = _control_activity_on_grid(
+        target_times_s=times,
+        control_activity=control_activity,
+        control_source_times_s=control_source_times_s,
+    )
+    heart_rate_bpm = tuple(70.0 + 20.0 * value for value in activity)
+    cycle_positions = [0.0]
+    for index in range(1, len(times)):
+        delta_s = times[index] - times[index - 1]
+        mean_rate_hz = (heart_rate_bpm[index - 1] + heart_rate_bpm[index]) / 120.0
+        cycle_positions.append(cycle_positions[-1] + mean_rate_hz * delta_s)
     values: list[float] = []
-    for index, time in enumerate(times):
-        phase = (time % period_s) / period_s
-        r_wave = math.exp(-((phase - 0.08) / 0.018) ** 2)
+    for index, (time, cycle_position) in enumerate(zip(times, cycle_positions, strict=True)):
+        phase = cycle_position % 1.0
+        r_wave = math.exp(-(((phase - 0.08) / 0.018) ** 2))
         baseline = 0.08 * math.sin(2.0 * math.pi * 1.2 * time)
         noise = 0.008 * triangular_noise(seed, "ECG", "lead_ii", index)
-        values.append(0.9 * r_wave + baseline + noise)
+        values.append((0.85 + 0.10 * activity[index]) * r_wave + baseline + noise)
     count = len(times)
     samples = pl.DataFrame(
         {
@@ -331,22 +392,34 @@ def build_ecg(
             "source_timestamp_s": _f64("source_timestamp_s", times),
             "synthetic_lead_ii_mV": _f32("synthetic_lead_ii_mV", values),
             "signal_valid": pl.Series("signal_valid", [True] * count, dtype=pl.Boolean),
-            "artifact_code": pl.Series(
-                "artifact_code", [None] * count, dtype=pl.String
-            ),
+            "artifact_code": pl.Series("artifact_code", [None] * count, dtype=pl.String),
         }
     )
     peak_times: list[float] = []
-    peak_time = 0.08 * period_s
-    while peak_time <= duration_s:
-        peak_times.append(peak_time)
-        peak_time += period_s
+    peak_activity: list[float] = []
+    next_peak_cycle = 0.08
+    for index in range(1, len(times)):
+        left_cycle = cycle_positions[index - 1]
+        right_cycle = cycle_positions[index]
+        while next_peak_cycle <= right_cycle:
+            fraction = (next_peak_cycle - left_cycle) / (right_cycle - left_cycle)
+            peak_times.append(times[index - 1] + fraction * (times[index] - times[index - 1]))
+            peak_activity.append(
+                activity[index - 1] + fraction * (activity[index] - activity[index - 1])
+            )
+            next_peak_cycle += 1.0
+    rr_intervals_ms: list[float] = []
+    if peak_activity:
+        rr_intervals_ms.append(60_000.0 / (70.0 + 20.0 * peak_activity[0]))
+        rr_intervals_ms.extend(
+            (right - left) * 1000.0 for left, right in zip(peak_times, peak_times[1:], strict=False)
+        )
     peak_count = len(peak_times)
     r_peaks = pl.DataFrame(
         {
             "peak_id": _u64("peak_id", range(peak_count)),
             "source_timestamp_s": _f64("source_timestamp_s", peak_times),
-            "rr_interval_ms": _f32("rr_interval_ms", [period_s * 1000.0] * peak_count),
+            "rr_interval_ms": _f32("rr_interval_ms", rr_intervals_ms),
             "detection_confidence": _f32("detection_confidence", [1.0] * peak_count),
             "generator_version": pl.Series(
                 "generator_version", [_GENERATOR_ID] * peak_count, dtype=pl.String
