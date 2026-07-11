@@ -57,6 +57,10 @@ def test_ready_fixture_round_trips_with_all_core_modalities_and_reference(
     assert report.disposition is ReadinessDisposition.READY
     assert report.can_continue_to_synchronization is True
     assert report.formal_run_authorized is False
+    assert report.source_classification == "synthetic-test-data"
+    assert report.synthetic_provenance is not None
+    assert report.synthetic_provenance.scientific_validation_status == "not_supported"
+    assert report.synthetic_provenance.formal_assessment_supported is False
     assert set(report.stream_results) == set(CORE_MODALITIES)
     assert report.task_reference_result is not None
     assert report.task_reference_result.modality == "task_reference"
@@ -69,6 +73,24 @@ def test_ready_fixture_round_trips_with_all_core_modalities_and_reference(
 
 def test_formal_run_authorized_cannot_be_true(readiness_data: dict[str, Any]) -> None:
     readiness_data["formal_run_authorized"] = True
+
+    with pytest.raises(ValidationError):
+        IngestionReadinessReport.model_validate(readiness_data)
+
+
+def test_synthetic_classification_requires_visible_provenance(
+    readiness_data: dict[str, Any],
+) -> None:
+    readiness_data["synthetic_provenance"] = None
+
+    with pytest.raises(ValidationError):
+        IngestionReadinessReport.model_validate(readiness_data)
+
+
+def test_non_synthetic_report_rejects_synthetic_provenance(
+    readiness_data: dict[str, Any],
+) -> None:
+    readiness_data["source_classification"] = "restricted-research-pseudonymous"
 
     with pytest.raises(ValidationError):
         IngestionReadinessReport.model_validate(readiness_data)

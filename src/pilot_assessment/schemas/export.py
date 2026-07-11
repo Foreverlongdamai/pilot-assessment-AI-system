@@ -308,6 +308,24 @@ def _ingestion_readiness_schema() -> dict[str, Any]:
             {"properties": {"modality": {"const": "task_reference"}}},
         ]
     }
+    schema["allOf"] = [
+        {
+            "if": {
+                "properties": {
+                    "source_classification": {"const": "synthetic-test-data"}
+                },
+                "required": ["source_classification"],
+            },
+            "then": {
+                "properties": {
+                    "synthetic_provenance": {
+                        "$ref": "#/$defs/SyntheticSourceProvenance"
+                    }
+                }
+            },
+            "else": {"properties": {"synthetic_provenance": {"type": "null"}}},
+        }
+    ]
     return schema
 
 

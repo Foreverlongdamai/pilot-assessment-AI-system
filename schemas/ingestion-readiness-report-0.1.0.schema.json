@@ -467,11 +467,99 @@
       ],
       "title": "StreamStatus",
       "type": "string"
+    },
+    "SyntheticSourceProvenance": {
+      "additionalProperties": false,
+      "description": "Visible D-012 provenance for software-only synthetic or hybrid bundles.",
+      "properties": {
+        "formal_assessment_supported": {
+          "const": false,
+          "title": "Formal Assessment Supported",
+          "type": "boolean"
+        },
+        "generator_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Generator Id",
+          "type": "string"
+        },
+        "lock_fingerprint": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Lock Fingerprint",
+          "type": "string"
+        },
+        "provenance_scope": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Provenance Scope",
+          "type": "string"
+        },
+        "scientific_validation_status": {
+          "const": "not_supported",
+          "title": "Scientific Validation Status",
+          "type": "string"
+        },
+        "seed": {
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "source_xu_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Source Xu Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "generator_id",
+        "seed",
+        "scientific_validation_status",
+        "source_xu_sha256",
+        "lock_fingerprint",
+        "provenance_scope",
+        "formal_assessment_supported"
+      ],
+      "title": "SyntheticSourceProvenance",
+      "type": "object"
     }
   },
   "$id": "urn:cranfield:pilot-assessment:schema:ingestion-readiness-report:0.1.0",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "synthetic_provenance": {
+            "type": "null"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "source_classification": {
+            "const": "synthetic-test-data"
+          }
+        },
+        "required": [
+          "source_classification"
+        ]
+      },
+      "then": {
+        "properties": {
+          "synthetic_provenance": {
+            "$ref": "#/$defs/SyntheticSourceProvenance"
+          }
+        }
+      }
+    }
+  ],
   "properties": {
     "can_continue_to_synchronization": {
       "title": "Can Continue To Synchronization",
@@ -520,6 +608,13 @@
       "title": "Session Id",
       "type": "string"
     },
+    "source_classification": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Source Classification",
+      "type": "string"
+    },
     "source_snapshot_fingerprint": {
       "maxLength": 64,
       "minLength": 64,
@@ -556,6 +651,16 @@
       "title": "Stream Results",
       "type": "object"
     },
+    "synthetic_provenance": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SyntheticSourceProvenance"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "task_reference_result": {
       "anyOf": [
         {
@@ -588,6 +693,8 @@
     "validation_scope",
     "session_id",
     "manifest_version",
+    "source_classification",
+    "synthetic_provenance",
     "disposition",
     "can_continue_to_synchronization",
     "formal_run_authorized",

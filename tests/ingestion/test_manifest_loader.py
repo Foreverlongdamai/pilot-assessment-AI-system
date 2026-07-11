@@ -377,6 +377,23 @@ def test_shared_xu_requires_identical_descriptor_digest(tmp_path: Path) -> None:
     assert caught.value.error.error_code == "INVALID_MANIFEST"
 
 
+def test_shared_xu_requires_both_logical_views_to_be_present(tmp_path: Path) -> None:
+    manifest = _build_valid_bundle(tmp_path)
+    _configure_shared_xu(tmp_path, manifest)
+    manifest["streams"]["X"].update(
+        status="invalid",
+        clock_sync=None,
+        quality_summary=None,
+    )
+    _write_manifest(tmp_path, manifest)
+
+    with pytest.raises(ManifestLoadError) as caught:
+        ManifestLoader().load(tmp_path)
+
+    assert caught.value.error.error_code == "INVALID_MANIFEST"
+    assert caught.value.error.diagnostics["duplicate_paths"]
+
+
 def test_shared_xu_rejects_case_only_path_alias(tmp_path: Path) -> None:
     manifest = _build_valid_bundle(tmp_path)
     _configure_shared_xu(tmp_path, manifest)

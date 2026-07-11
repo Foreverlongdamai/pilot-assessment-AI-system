@@ -149,6 +149,17 @@ def test_bundle_reference_artifacts_must_stay_below_references(
         SessionManifest.model_validate(manifest_data)
 
 
+def test_unreferenced_task_reference_descriptor_is_rejected(
+    manifest_data: dict[str, Any],
+) -> None:
+    manifest_data["streams"]["task_reference"] = _task_reference_descriptor(
+        manifest_data
+    )
+
+    with pytest.raises(ValidationError):
+        SessionManifest.model_validate(manifest_data)
+
+
 @pytest.mark.parametrize("status", ["export_pending", "missing", "not_applicable"])
 def test_bundle_reference_can_preserve_fileless_status(
     manifest_data: dict[str, Any], status: str

@@ -288,6 +288,18 @@ def test_readiness_schema_rejects_public_contract_contradictions() -> None:
     unavailable_claim["disposition"] = "ready_partial"
     invalid_cases.append(("unavailable result claims inspection", unavailable_claim))
 
+    missing_synthetic_provenance = copy.deepcopy(valid)
+    missing_synthetic_provenance["synthetic_provenance"] = None
+    invalid_cases.append(
+        ("synthetic classification without provenance", missing_synthetic_provenance)
+    )
+
+    provenance_on_real_data = copy.deepcopy(valid)
+    provenance_on_real_data["source_classification"] = (
+        "restricted-research-pseudonymous"
+    )
+    invalid_cases.append(("synthetic provenance on real data", provenance_on_real_data))
+
     for label, candidate in invalid_cases:
         with pytest.raises(ValidationError):
             IngestionReadinessReport.model_validate(candidate)

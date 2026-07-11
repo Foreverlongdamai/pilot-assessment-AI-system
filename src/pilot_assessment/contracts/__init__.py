@@ -31,6 +31,7 @@ from pilot_assessment.contracts.ingestion import (
     ReadinessDisposition,
     StreamReadiness,
     StreamReadinessResult,
+    SyntheticSourceProvenance,
 )
 from pilot_assessment.contracts.session import (
     CORE_MODALITIES,
@@ -88,6 +89,7 @@ __all__ = [
     "StreamDescriptor",
     "StreamReadiness",
     "StreamReadinessResult",
+    "SyntheticSourceProvenance",
     "StreamStatus",
     "StrictContractModel",
     "TaskDefinition",

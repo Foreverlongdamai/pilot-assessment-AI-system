@@ -3,6 +3,16 @@
   "validation_scope": "inspect_only_ingestion_content_v1",
   "session_id": "synthetic-session-20260711-001",
   "manifest_version": "0.1.0",
+  "source_classification": "synthetic-test-data",
+  "synthetic_provenance": {
+    "generator_id": "synthetic-multimodal-generator-v0.1",
+    "seed": 20260711,
+    "scientific_validation_status": "not_supported",
+    "source_xu_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "lock_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "provenance_scope": "real-xu-plus-synthetic-modalities",
+    "formal_assessment_supported": false
+  },
   "disposition": "ready",
   "can_continue_to_synchronization": true,
   "formal_run_authorized": false,

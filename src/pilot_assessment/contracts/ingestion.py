@@ -38,6 +38,18 @@ class ReadinessDisposition(StrEnum):
     BLOCKED = "blocked"
 
 
+class SyntheticSourceProvenance(StrictContractModel):
+    """Visible D-012 provenance for software-only synthetic or hybrid bundles."""
+
+    generator_id: StableId
+    seed: NonNegativeInt
+    scientific_validation_status: Literal["not_supported"]
+    source_xu_sha256: Sha256Digest
+    lock_fingerprint: Sha256Digest
+    provenance_scope: StableId
+    formal_assessment_supported: Literal[False]
+
+
 class StreamReadinessResult(StrictContractModel):
     modality: StableId
     declared_status: StreamStatus
@@ -91,6 +103,8 @@ class IngestionReadinessReport(StrictContractModel):
     validation_scope: Literal["inspect_only_ingestion_content_v1"]
     session_id: StableId
     manifest_version: BundleSchemaVersion
+    source_classification: StableId
+    synthetic_provenance: SyntheticSourceProvenance | None
     disposition: ReadinessDisposition
     can_continue_to_synchronization: StrictBool
     formal_run_authorized: Literal[False]
@@ -102,6 +116,11 @@ class IngestionReadinessReport(StrictContractModel):
 
     @model_validator(mode="after")
     def validate_disposition(self) -> Self:
+        is_synthetic = self.source_classification == "synthetic-test-data"
+        if is_synthetic != (self.synthetic_provenance is not None):
+            raise ValueError(
+                "synthetic-test-data classification and provenance must appear together"
+            )
         if set(self.stream_results) != set(CORE_MODALITIES):
             raise ValueError("readiness report requires exactly seven core modalities")
         if any(key != result.modality for key, result in self.stream_results.items()):
@@ -152,4 +171,5 @@ __all__ = [
     "ReadinessDisposition",
     "StreamReadiness",
     "StreamReadinessResult",
+    "SyntheticSourceProvenance",
 ]

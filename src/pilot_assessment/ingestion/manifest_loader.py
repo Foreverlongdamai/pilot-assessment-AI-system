@@ -390,7 +390,9 @@ class ManifestLoader:
         x_shared_id = x_stream.metadata.get("shared_source_id")
         u_shared_id = u_stream.metadata.get("shared_source_id")
         return (
-            x_stream.paths == u_stream.paths
+            x_stream.status is StreamStatus.PRESENT
+            and u_stream.status is StreamStatus.PRESENT
+            and x_stream.paths == u_stream.paths
             and x_stream.checksums == u_stream.checksums
             and x_stream.format == u_stream.format
             and x_stream.schema_id == u_stream.schema_id

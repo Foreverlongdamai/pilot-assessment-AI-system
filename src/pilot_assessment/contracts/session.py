@@ -246,6 +246,7 @@ class SessionManifest(StrictContractModel):
             raise ValueError(f"stream keys must match descriptor modality: {mismatched}")
 
         reference = self.task.reference
+        task_reference_descriptor = self.streams.get("task_reference")
         if reference is not None and reference.source == "bundle":
             assert reference.stream_id is not None
             descriptor = self.streams.get(reference.stream_id)
@@ -262,6 +263,10 @@ class SessionManifest(StrictContractModel):
                 raise ValueError(
                     "bundle task reference paths must stay below references/"
                 )
+        elif task_reference_descriptor is not None:
+            raise ValueError(
+                "task_reference descriptor requires a bundle task.reference owner"
+            )
 
         expected_pending = {
             modality
