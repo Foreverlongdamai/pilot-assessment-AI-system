@@ -49,6 +49,15 @@ def test_scene_gaze_and_camera_tables_have_frozen_rates_and_foreign_keys() -> No
     assert camera["privacy_class"].unique().to_list() == ["synthetic-no-identity"]
 
 
+def test_fixations_end_on_the_retained_gaze_grid_for_fractional_duration() -> None:
+    scene = build_scene(duration_s=29.01, seed=20260711)
+    gaze = build_gaze(duration_s=29.01, seed=20260711, scene=scene)
+
+    assert gaze.fixations["end_source_timestamp_s"].max() == pytest.approx(
+        gaze.samples["source_timestamp_s"].max()
+    )
+
+
 def test_eeg_and_ecg_are_deterministic_typed_and_explicitly_synthetic() -> None:
     first_eeg = build_eeg(duration_s=2.0, seed=20260711)
     second_eeg = build_eeg(duration_s=2.0, seed=20260711)

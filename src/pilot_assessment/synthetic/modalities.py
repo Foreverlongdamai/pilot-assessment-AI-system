@@ -264,9 +264,10 @@ def build_gaze(
         }
     )
 
-    fixation_count = max(1, math.ceil(duration_s / 0.5))
+    retained_gaze_end_s = times[-1]
+    fixation_count = max(1, math.ceil(retained_gaze_end_s / 0.5))
     starts = [index * 0.5 for index in range(fixation_count)]
-    ends = [min(duration_s, start + 0.5) for start in starts]
+    ends = [min(retained_gaze_end_s, start + 0.5) for start in starts]
     fixation_off_task = [int(start * 2.0) % 5 == 3 for start in starts]
     fixations = pl.DataFrame(
         {
