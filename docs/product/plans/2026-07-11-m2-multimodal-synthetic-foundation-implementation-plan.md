@@ -1,5 +1,7 @@
 # M2 Multimodal Synthetic Foundation Implementation Plan
 
+**Status:** Completed and verified on 2026-07-11. The checked steps below are retained as implementation and handoff evidence.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a tested M2 ingestion foundation that reads the real combined simulator CSV as shared X/U, validates ideal I/G/EEG/ECG/pilot-camera source contracts, generates a deterministic synthetic multimodal Session Bundle, and emits an `IngestionReadinessReport` that can enter M3 but never authorize a formal assessment run.
@@ -116,7 +118,7 @@ git commit -m "docs: reconcile M2 contracts and plan implementation"
 - Modify: `uv.lock`
 - Modify: `tests/test_package_metadata.py`
 
-- [ ] **Step 1: Write the failing dependency smoke test**
+- [x] **Step 1: Write the failing dependency smoke test**
 
 Add this behavior to `tests/test_package_metadata.py`:
 
@@ -129,7 +131,7 @@ def test_m2_runtime_dependencies_are_importable() -> None:
     assert PIL.__version__
 ~~~
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run:
 
@@ -139,7 +141,7 @@ Run:
 
 Expected: FAIL because Polars and/or Pillow are not project dependencies.
 
-- [ ] **Step 3: Add dependencies through uv**
+- [x] **Step 3: Add dependencies through uv**
 
 Run:
 
@@ -149,7 +151,7 @@ Run:
 
 Expected: `pyproject.toml` and `uv.lock` change; no requirements file is created.
 
-- [ ] **Step 4: Run GREEN and the existing suite**
+- [x] **Step 4: Run GREEN and the existing suite**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/test_package_metadata.py -v
@@ -158,7 +160,7 @@ Expected: `pyproject.toml` and `uv.lock` change; no requirements file is created
 
 Expected: all tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ~~~powershell
 git add pyproject.toml uv.lock tests/test_package_metadata.py
@@ -178,7 +180,7 @@ git commit -m "build: add M2 columnar and image dependencies"
 - Modify: `tests/fixtures/session_manifest_valid.json`
 - Regenerate: `schemas/session-manifest-0.1.0.schema.json`
 
-- [ ] **Step 1: Write failing contract tests**
+- [x] **Step 1: Write failing contract tests**
 
 Add focused tests that exercise the wished-for API:
 
@@ -218,7 +220,7 @@ def test_non_synthetic_real_biometrics_require_privacy_flag(
 
 Also add schema symmetry cases for `stream_id`, each status row, duplicate pending modalities, and synthetic-present physiology.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/contracts/test_session_manifest.py tests/schemas/test_schema_export.py -v
@@ -226,7 +228,7 @@ Also add schema symmetry cases for `stream_id`, each status row, duplicate pendi
 
 Expected: FAIL because `TaskReference.stream_id` and the full cross-field validators do not exist.
 
-- [ ] **Step 3: Implement the contract**
+- [x] **Step 3: Implement the contract**
 
 Implement these public shapes in `contracts/session.py`:
 
@@ -250,7 +252,7 @@ Extend `StreamDescriptor.validate_status_and_files()` with the approved five-row
 
 Update schema runtime invariants and conditional status rules so JSON Schema rejects every value rejected by Pydantic.
 
-- [ ] **Step 4: Run GREEN and regenerate schema**
+- [x] **Step 4: Run GREEN and regenerate schema**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/contracts/test_session_manifest.py tests/schemas/test_schema_export.py -v
@@ -260,7 +262,7 @@ Update schema runtime invariants and conditional status rules so JSON Schema rej
 
 Expected: contract and schema tests pass; committed schema equals deterministic export.
 
-- [ ] **Step 5: Write and verify shared X/U loader tests**
+- [x] **Step 5: Write and verify shared X/U loader tests**
 
 Add tests that construct X/U descriptors with the same exact path and assert:
 
@@ -275,7 +277,7 @@ Negative tests must change exactly one of digest, format, schema ID, shared sour
 
 Run the new tests and confirm RED because M1 currently rejects every duplicate path.
 
-- [ ] **Step 6: Implement safe physical-artifact grouping**
+- [x] **Step 6: Implement safe physical-artifact grouping**
 
 Replace untyped `(path, kind)` tuples with an immutable declaration:
 
@@ -294,7 +296,7 @@ class DeclaredArtifactReference:
 
 Validate that only the owner set `{X, U}` may share an exact path and that every D-011 field matches. Reject case-fold aliases and cross-role collisions. Deduplicate only after validation, then resolve/hash by unique path. Include `invalid` stream paths in integrity verification.
 
-- [ ] **Step 7: Run GREEN and commit**
+- [x] **Step 7: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/contracts/test_session_manifest.py tests/ingestion/test_manifest_loader.py tests/schemas/test_schema_export.py -v
@@ -313,7 +315,7 @@ git commit -m "feat: support shared XU and bundle task references"
 - Create: `tests/fixtures/ingestion_readiness_ready.json`
 - Create: `schemas/ingestion-readiness-report-0.1.0.schema.json`
 
-- [ ] **Step 1: Write failing DTO tests**
+- [x] **Step 1: Write failing DTO tests**
 
 ~~~python
 def test_ready_report_never_authorizes_a_formal_run() -> None:
@@ -332,7 +334,7 @@ def test_formal_run_authorized_cannot_be_true() -> None:
         IngestionReadinessReport.model_validate(candidate)
 ~~~
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/contracts/test_ingestion.py -v
@@ -340,7 +342,7 @@ def test_formal_run_authorized_cannot_be_true() -> None:
 
 Expected: import failure because the contract module does not exist.
 
-- [ ] **Step 3: Implement strict DTOs**
+- [x] **Step 3: Implement strict DTOs**
 
 Create enums `StreamReadiness` and `ReadinessDisposition`, then implement:
 
@@ -445,7 +447,7 @@ class IngestionReadinessReport(StrictContractModel):
 
 `READY` is valid only when every applicable core result is ready and the declared bundle reference is ready; `READY_PARTIAL` covers optional unavailable/invalid/unsupported inputs; `BLOCKED` covers any non-ready required input. Add negative tests for contradictory disposition/continuation flags, wrong task-reference modality, and payload fields that falsely claim an adapter inspected an unavailable stream.
 
-- [ ] **Step 4: Export and test JSON Schema**
+- [x] **Step 4: Export and test JSON Schema**
 
 Add the third schema to `render_schemas()`, validate Draft 2020-12, compare Pydantic/Schema negative cases, and regenerate committed files.
 
@@ -456,7 +458,7 @@ Add the third schema to `render_schemas()`, validate Draft 2020-12, compare Pyda
 
 Expected: all tests pass and the export contains exactly three schema files.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/contracts src/pilot_assessment/schemas tests schemas
@@ -475,7 +477,7 @@ git commit -m "feat: define ingestion readiness report contract"
 - Create: `src/pilot_assessment/ingestion/adapters/registry.py`
 - Create: `tests/ingestion/test_profiles.py`
 
-- [ ] **Step 1: Write failing profile and registry tests**
+- [x] **Step 1: Write failing profile and registry tests**
 
 ~~~python
 def test_packaged_m2_profiles_load_with_unique_schema_ids() -> None:
@@ -492,7 +494,7 @@ def test_registry_uses_exact_trusted_keys() -> None:
         registry.resolve("csv", "unregistered-v0.1")
 ~~~
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/ingestion/test_profiles.py -v
@@ -500,7 +502,7 @@ def test_registry_uses_exact_trusted_keys() -> None:
 
 Expected: import failure because profiles and registry do not exist.
 
-- [ ] **Step 3: Implement focused internal units**
+- [x] **Step 3: Implement focused internal units**
 
 Use frozen dataclasses for Polars-bearing objects:
 
@@ -575,7 +577,7 @@ The protocol ellipsis is Python's required stub body, not an omitted implementat
 
 Define strict Pydantic profile DTOs for exact columns/dtypes, sort keys, rate, artifact roles, header mappings, context columns, and unit checks. Load only the packaged JSON through `importlib.resources`; reject duplicate schema IDs. `AdapterRegistry` accepts concrete trusted adapter instances and never imports a class named by a manifest.
 
-- [ ] **Step 4: Test installed-resource behavior**
+- [x] **Step 4: Test installed-resource behavior**
 
 Build a wheel, install it into an isolated uv environment, and import the profile resource:
 
@@ -588,7 +590,7 @@ $wheel=(Get-ChildItem -LiteralPath dist -Filter '*.whl' | Sort-Object LastWriteT
 
 Expected: profile tests pass from source, the package build succeeds, and the isolated wheel process prints a positive profile count.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/ingestion tests/ingestion/test_profiles.py
@@ -602,7 +604,7 @@ git commit -m "feat: add versioned ingestion profiles and registry"
 - Create: `tests/ingestion/adapters/test_profiled_csv.py`
 - Create: `tests/fixtures/m2/simulator_micro.csv`
 
-- [ ] **Step 1: Write the valid-case failing test**
+- [x] **Step 1: Write the valid-case failing test**
 
 ~~~python
 def test_combined_csv_produces_x_u_and_context(csv_request: AdapterRequest) -> None:
@@ -615,7 +617,7 @@ def test_combined_csv_produces_x_u_and_context(csv_request: AdapterRequest) -> N
     assert result.streams["X"].primary_table.schema["source_row_index"] == pl.UInt64
 ~~~
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/ingestion/adapters/test_profiled_csv.py::test_combined_csv_produces_x_u_and_context -v
@@ -623,7 +625,7 @@ def test_combined_csv_produces_x_u_and_context(csv_request: AdapterRequest) -> N
 
 Expected: import failure because the adapter does not exist.
 
-- [ ] **Step 3: Implement minimal valid parsing**
+- [x] **Step 3: Implement minimal valid parsing**
 
 The adapter must strict-decode UTF-8/UTF-8-SIG, use `csv.reader` to preserve and validate raw headers/row width, then use `pl.read_csv` with explicit schema overrides. It must add stable UInt64 `source_row_index`, map normalized headers from the packaged profile, preserve `source_time_s`, create independent X/U DataFrames, and promote constant experiment-condition columns to canonical `context.*` keys.
 
@@ -657,11 +659,11 @@ class ProfiledCsvAdapter:
 
 The implementation body must return typed `DomainErrorData` through `AdapterInspectionError`; it must not expose Polars in public contracts.
 
-- [ ] **Step 4: Add one failing test per quality rule, then make each green**
+- [x] **Step 4: Add one failing test per quality rule, then make each green**
 
 Cover malformed row width, trim collision, missing required column, non-numeric value, null, NaN/Inf, duplicate/out-of-order time, 100 Hz tolerance, gap, non-constant context, and m/s↔kt warning/error. For each case: write the fixture mutation, run the single test to observe the expected RED, add the smallest validation branch, then rerun GREEN.
 
-- [ ] **Step 5: Run the adapter suite and commit**
+- [x] **Step 5: Run the adapter suite and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/ingestion/adapters/test_profiled_csv.py -v
@@ -677,7 +679,7 @@ git commit -m "feat: ingest combined simulator CSV as shared XU"
 - Create: `src/pilot_assessment/ingestion/adapters/parquet_table.py`
 - Create: `tests/ingestion/adapters/test_parquet_table.py`
 
-- [ ] **Step 1: Write failing exact-schema tests**
+- [x] **Step 1: Write failing exact-schema tests**
 
 ~~~python
 def test_parquet_table_requires_profile_schema_id(tmp_path: Path, gaze_profile: TableProfile) -> None:
@@ -690,7 +692,7 @@ def test_parquet_table_requires_profile_schema_id(tmp_path: Path, gaze_profile: 
 
 Add independent cases for ordered columns, exact Polars dtype, required nulls, sort-key uniqueness/order, finite values, normalized ranges, and observed sample rate.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/ingestion/adapters/test_parquet_table.py -v
@@ -698,7 +700,7 @@ Add independent cases for ordered columns, exact Polars dtype, required nulls, s
 
 Expected: import failure because the table inspector does not exist.
 
-- [ ] **Step 3: Implement the isolated Parquet wrapper**
+- [x] **Step 3: Implement the isolated Parquet wrapper**
 
 Use native Polars only:
 
@@ -730,11 +732,11 @@ def inspect_parquet_table(path: Path, profile: TableProfile) -> pl.DataFrame:
 
 Put `write_profiled_parquet` in `ingestion/parquet_io.py`; `adapters/parquet_table.py` imports it only in tests, and `synthetic/modalities.py` imports the same writer for generation. This is the single metadata/compression/row-group authority. Keep experimental metadata read/write calls behind these two focused modules and pin them through `uv.lock` plus golden tests.
 
-- [ ] **Step 4: Add strict sidecar validation**
+- [x] **Step 4: Add strict sidecar validation**
 
 Test and implement strict UTF-8 JSON parsing with duplicate-key rejection for `eeg_sidecar.json`; validate schema ID, channel order/units, rate, clock ID, generator/seed, and `synthetic_not_neurophysiological=true` for synthetic data.
 
-- [ ] **Step 5: Run GREEN and commit**
+- [x] **Step 5: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/ingestion/adapters/test_parquet_table.py -v
@@ -751,7 +753,7 @@ git commit -m "feat: validate profiled Parquet and sidecar artifacts"
 - Create: `tests/ingestion/adapters/test_image_sequence.py`
 - Create: `tests/ingestion/adapters/test_composite.py`
 
-- [ ] **Step 1: Write failing PNG safety tests**
+- [x] **Step 1: Write failing PNG safety tests**
 
 ~~~python
 def test_scene_image_must_match_index_dimensions(scene_artifacts: SceneArtifacts) -> None:
@@ -763,15 +765,15 @@ def test_scene_image_must_match_index_dimensions(scene_artifacts: SceneArtifacts
 
 Add tests for RGB8, exact synthetic sizes, missing/undeclared images, animated images, ancillary metadata, path traversal, and the 16-megapixel ceiling.
 
-- [ ] **Step 2: Run RED, implement bounded image inspection, run GREEN**
+- [x] **Step 2: Run RED, implement bounded image inspection, run GREEN**
 
 Open each image with Pillow under decompression-bomb warnings-as-errors; call `verify()`, reopen for mode/size/frame count, and close immediately. Keep only index rows and paths in `PreparedSession`; never retain decoded pixels.
 
-- [ ] **Step 3: Write failing composite-role tests**
+- [x] **Step 3: Write failing composite-role tests**
 
 Test exact/prefix `artifact_roles`, one-role-per-path, required roles, and no filename guessing. Then test scene frame↔AOI, EEG channel↔sidecar, ECG peak range, and camera index↔PNG.
 
-- [ ] **Step 4: Implement composite adapters and cross-file checks**
+- [x] **Step 4: Implement composite adapters and cross-file checks**
 
 Register trusted composite adapters for:
 
@@ -787,7 +789,7 @@ COMPOSITE_KEYS = {
 
 The single-file task reference is handled directly by the profiled Parquet adapter with schema ID `task-reference-path-raw-v0.1`.
 
-- [ ] **Step 5: Run GREEN and commit**
+- [x] **Step 5: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/ingestion/adapters/test_image_sequence.py tests/ingestion/adapters/test_composite.py -v
@@ -806,7 +808,7 @@ git commit -m "feat: validate image sequences and composite streams"
 - Create: `tests/synthetic/test_timelines.py`
 - Create: `tests/synthetic/test_modalities.py`
 
-- [ ] **Step 1: Write the PRNG golden test**
+- [x] **Step 1: Write the PRNG golden test**
 
 ~~~python
 def test_sha256_counter_prng_has_frozen_golden_values() -> None:
@@ -816,11 +818,11 @@ def test_sha256_counter_prng_has_frozen_golden_values() -> None:
 
 The constants above come from the accepted byte formula and are independent of production code. Observe RED because the production functions are absent.
 
-- [ ] **Step 2: Implement the exact hash-counter algorithm**
+- [x] **Step 2: Implement the exact hash-counter algorithm**
 
 Use SHA-256 over the approved prefix, ASCII seed/modality/channel, big-endian index/lane; convert the high 53 bits with `(m+0.5)/2**53`; combine lanes as `u0+u1-1`; quantize output through little-endian IEEE-754 Float32 packing.
 
-- [ ] **Step 3: Write and implement timeline tests**
+- [x] **Step 3: Write and implement timeline tests**
 
 ~~~python
 def test_source_grid_includes_the_last_sample_not_after_duration() -> None:
@@ -832,11 +834,11 @@ def test_source_grid_includes_the_last_sample_not_after_duration() -> None:
 
 Also freeze offset/drift mapping and in-session boundary cases.
 
-- [ ] **Step 4: Write and implement modality generator tests**
+- [x] **Step 4: Write and implement modality generator tests**
 
 Generate pure Polars tables for scene/AOI, gaze/fixations, EEG/sidecar, ECG/R-peaks, camera index, commanded reference, and annotation JSON. Assert exact columns/dtypes/rates, deterministic values, valid foreign keys, and the synthetic flags. Write PNGs as RGB8 with compression level 9, `optimize=False`, and no ancillary metadata.
 
-- [ ] **Step 5: Run GREEN and commit**
+- [x] **Step 5: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synthetic/test_prng.py tests/synthetic/test_timelines.py tests/synthetic/test_modalities.py -v
@@ -853,7 +855,7 @@ git commit -m "feat: add deterministic multimodal synthetic primitives"
 - Modify: `pyproject.toml`
 - Create: `tests/synthetic/test_generator.py`
 
-- [ ] **Step 1: Write the failing micro-bundle test**
+- [x] **Step 1: Write the failing micro-bundle test**
 
 ~~~python
 def test_generator_writes_a_complete_deterministic_bundle(
@@ -896,7 +898,7 @@ def test_generator_writes_a_complete_deterministic_bundle(
     }
 ~~~
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synthetic/test_generator.py::test_generator_writes_a_complete_deterministic_bundle -v
@@ -904,7 +906,7 @@ def test_generator_writes_a_complete_deterministic_bundle(
 
 Expected: import failure because the generator does not exist.
 
-- [ ] **Step 3: Implement generation and canonical integrity**
+- [x] **Step 3: Implement generation and canonical integrity**
 
 The generator must:
 
@@ -919,7 +921,7 @@ The generator must:
 9. run `ManifestLoader` on the result before returning; Task 10 upgrades this final self-check to include M2 readiness as soon as the orchestrator exists;
 10. refuse output outside the caller-selected directory, path counts above loader limits, existing non-empty output, network access, system time, random UUIDs, or host metadata.
 
-- [ ] **Step 4: Add CLI and negative tests**
+- [x] **Step 4: Add CLI and negative tests**
 
 Expose:
 
@@ -929,7 +931,7 @@ Expose:
 
 Test non-empty output, bad CSV, path budget, changed seed, and source bytes unchanged.
 
-- [ ] **Step 5: Run GREEN and commit**
+- [x] **Step 5: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synthetic/test_generator.py -v
@@ -946,7 +948,7 @@ git commit -m "feat: generate deterministic synthetic session bundles"
 - Modify: `tests/synthetic/test_generator.py`
 - Create: `tests/ingestion/test_readiness.py`
 
-- [ ] **Step 1: Write failing status-matrix tests**
+- [x] **Step 1: Write failing status-matrix tests**
 
 ~~~python
 def test_minimal_xu_is_ready_partial_and_can_enter_sync(minimal_xu_bundle: Path) -> None:
@@ -960,7 +962,7 @@ def test_minimal_xu_is_ready_partial_and_can_enter_sync(minimal_xu_bundle: Path)
 
 Parametrize present/export_pending/missing/invalid/not_applicable and required/optional combinations. Test deterministic issue ordering and the separate task-reference result.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/ingestion/test_readiness.py -v
@@ -968,7 +970,7 @@ Parametrize present/export_pending/missing/invalid/not_applicable and required/o
 
 Expected: import failure because readiness orchestration does not exist.
 
-- [ ] **Step 3: Implement orchestration**
+- [x] **Step 3: Implement orchestration**
 
 Implement:
 
@@ -999,13 +1001,13 @@ def inspect_ingestion_readiness(
 
 Use real in-process fake adapters only for narrow failure injection; normal tests use actual adapters. Convert adapter exceptions to stable `DomainErrorData`. Re-hash each artifact after content inspection and return `SOURCE_CHANGED_DURING_READINESS` if it differs from the verified descriptor.
 
-- [ ] **Step 4: Add cross-modal and deterministic fingerprint tests**
+- [x] **Step 4: Add cross-modal and deterministic fingerprint tests**
 
 Validate gaze scene-frame/AOI membership after all streams load. Build the fingerprint from canonical manifest version, sorted source checksums, profile versions, adapter versions, report statuses, and issues; exclude absolute paths and runtime timestamps.
 
 Then change `generate_synthetic_bundle()` to call `inspect_ingestion_readiness(output_root)` after `ManifestLoader`. Reject the generated bundle unless disposition is `ready`, task reference is ready, `can_continue_to_synchronization=true`, and `formal_run_authorized=false`. Add a generator regression test that injects a broken gaze frame reference and observes generation fail at this final self-check.
 
-- [ ] **Step 5: Run GREEN and commit**
+- [x] **Step 5: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/ingestion/test_readiness.py -v
@@ -1021,7 +1023,7 @@ git commit -m "feat: orchestrate deterministic ingestion readiness"
 - Modify: `docs/product/11_IMPLEMENTATION_STATUS.md`
 - Modify: `docs/product/README.md`
 
-- [ ] **Step 1: Write and run the failing micro end-to-end test**
+- [x] **Step 1: Write and run the failing micro end-to-end test**
 
 ~~~python
 def test_micro_bundle_runs_from_csv_to_ready_report(tmp_path: Path) -> None:
@@ -1036,7 +1038,7 @@ def test_micro_bundle_runs_from_csv_to_ready_report(tmp_path: Path) -> None:
 
 Run it before integration and observe the first unmet contract as RED; integrate only the minimum missing registration/profile until GREEN.
 
-- [ ] **Step 2: Add the opt-in real CSV test**
+- [x] **Step 2: Add the opt-in real CSV test**
 
 ~~~python
 REAL_CSV_ENV = "PILOT_ASSESSMENT_REAL_CSV"
@@ -1069,7 +1071,7 @@ def test_real_csv_full_bundle_is_ready(tmp_path: Path) -> None:
     assert hashlib.sha256(source.read_bytes()).hexdigest() == source_hash
 ~~~
 
-- [ ] **Step 3: Run both end-to-end paths**
+- [x] **Step 3: Run both end-to-end paths**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/e2e/test_m2_micro_bundle.py -v
@@ -1080,11 +1082,11 @@ Remove-Item Env:PILOT_ASSESSMENT_REAL_CSV
 
 Expected: both pass; the real source hash remains `19bf804253d841de9c9de299ac96e9e1b693b2dbfae2f3eaeac5d7dc044e4f52`.
 
-- [ ] **Step 4: Update implementation status with measured evidence**
+- [x] **Step 4: Update implementation status with measured evidence**
 
 Record the exact dependency versions, test counts, generated modality row/frame counts, report disposition, source hash, local output boundary, and deferred M3 checks. Do not call synthetic output scientifically validated.
 
-- [ ] **Step 5: Run the full completion gate**
+- [x] **Step 5: Run the full completion gate**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest -q
@@ -1099,20 +1101,30 @@ git ls-files local_data '*.edf' '*.mp4' '*.parquet'
 
 Expected: tests, format, lint, type check, and build exit 0; diff check is clean; no real/local bundle is tracked. Committed synthetic Parquet is allowed only below `tests/fixtures/` and must carry synthetic provenance.
 
-- [ ] **Step 6: Wheel smoke and final commit**
+- [x] **Step 6: Wheel smoke and final commit**
 
 Install the built wheel into a temporary uv environment, load packaged profiles, generate the micro bundle, and inspect readiness. Then commit only source, tests, schemas, lockfile, and docs:
 
 ~~~powershell
 $wheel=(Get-ChildItem -LiteralPath dist -Filter '*.whl' | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
-$smoke=Join-Path $env:TEMP 'pilot-assessment-m2-wheel-smoke'
-$resolvedSmoke=[IO.Path]::GetFullPath($smoke)
+$smokeRoot=Join-Path $env:TEMP 'pilot-assessment-m2-wheel-smoke'
+$resolvedSmoke=[IO.Path]::GetFullPath($smokeRoot)
 $resolvedTemp=[IO.Path]::GetFullPath($env:TEMP).TrimEnd([IO.Path]::DirectorySeparatorChar)+[IO.Path]::DirectorySeparatorChar
 if(-not $resolvedSmoke.StartsWith($resolvedTemp,[StringComparison]::OrdinalIgnoreCase)){throw 'Wheel smoke path escaped TEMP'}
-if(Test-Path -LiteralPath $smoke){Remove-Item -Recurse -Force -LiteralPath $smoke}
-& .\.tools\uv\uv.exe run --isolated --no-project --with $wheel python -m pilot_assessment.synthetic --xu-csv tests/fixtures/m2/simulator_micro.csv --output $smoke --seed 20260711
-& .\.tools\uv\uv.exe run --isolated --no-project --with $wheel python -c "from pathlib import Path; from pilot_assessment.ingestion import inspect_ingestion_readiness; r=inspect_ingestion_readiness(Path(r'$smoke')).report; assert r.disposition.value == 'ready'; assert r.formal_run_authorized is False"
-Remove-Item -Recurse -Force -LiteralPath $smoke
+if(Test-Path -LiteralPath $smokeRoot){Remove-Item -Recurse -Force -LiteralPath $smokeRoot}
+try {
+  New-Item -ItemType Directory -Path $smokeRoot | Out-Null
+  $micro=Join-Path $smokeRoot 'simulator_micro.csv'
+  $bundle=Join-Path $smokeRoot 'bundle'
+  & .\.tools\uv\uv.exe run python -c "import runpy; from pathlib import Path; runpy.run_path(r'tests/e2e/test_m2_micro_bundle.py')['_write_micro_csv'](Path(r'$micro'))"
+  if($LASTEXITCODE -ne 0){throw 'Micro CSV preparation failed'}
+  & .\.tools\uv\uv.exe run --isolated --no-project --with $wheel python -m pilot_assessment.synthetic --xu-csv $micro --output $bundle --seed 20260711
+  if($LASTEXITCODE -ne 0){throw 'Installed-wheel generation failed'}
+  & .\.tools\uv\uv.exe run --isolated --no-project --with $wheel python -c "from pathlib import Path; from pilot_assessment.ingestion import inspect_ingestion_readiness; r=inspect_ingestion_readiness(Path(r'$bundle')).report; assert r.disposition.value == 'ready'; assert r.formal_run_authorized is False"
+  if($LASTEXITCODE -ne 0){throw 'Installed-wheel readiness inspection failed'}
+} finally {
+  if(Test-Path -LiteralPath $smokeRoot){Remove-Item -Recurse -Force -LiteralPath $smokeRoot}
+}
 git add pyproject.toml uv.lock src tests schemas docs/product
 git commit -m "feat: complete M2 multimodal synthetic ingestion"
 ~~~

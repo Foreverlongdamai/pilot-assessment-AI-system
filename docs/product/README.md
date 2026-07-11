@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | v0.1 |
 | 基线日期 | 2026-07-10 |
-| 产品阶段 | M2 多模态合成基础规格已批准；实现进行中 |
+| 产品阶段 | M2 多模态合成基础已实现并验证；下一里程碑为 M3 synchronization |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -73,7 +73,7 @@
 
 ## 5. 当前实现边界
 
-截至 2026-07-11，Python Core 已实现严格 SessionManifest/StreamDescriptor/AnchorResult 合同、inspect-only directory-bundle manifest/integrity loader、结构化错误和确定性 JSON Schema。M2 多模态合成基础规格已批准，正在实现 shared X/U、理想模态 adapter、deterministic generator 与 ingestion readiness。该 loader 不授权正式 import；受管理存储的同句柄验证与复制仍待实现。同步、anchor 算法、evidence scorer、BN、sidecar 和 WinUI 也尚未实现。完整状态与复现命令见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+截至 2026-07-11，Python Core 已完成 M1 与 M2：严格 SessionManifest/StreamDescriptor/AnchorResult 合同、inspect-only directory-bundle integrity gate、shared X/U、版本化理想模态 profiles/adapters、deterministic multimodal generator，以及 `IngestionReadinessReport`。Micro fixture 与 repository-external 真实 simulator CSV 的端到端路径均已验证。M2 只允许进入 M3 synchronization，始终保持 `formal_run_authorized=false`；受管理存储 importer、同步、anchor 算法、evidence scorer、BN、sidecar 和 WinUI 尚未实现。完整状态、实测数据与复现命令见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
 ## 6. 维护规则
 
