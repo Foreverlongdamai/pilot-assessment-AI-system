@@ -13,6 +13,7 @@ from pilot_assessment.contracts.common import (
     BUNDLE_RELATIVE_PATH_JSON_SCHEMA_PATTERN,
     BUNDLE_RELATIVE_PATH_PATTERN,
 )
+from pilot_assessment.contracts.ingestion import IngestionReadinessReport
 from pilot_assessment.contracts.session import CORE_MODALITIES, SessionManifest
 
 CONTRACT_VERSION = "0.1.0"
@@ -21,6 +22,10 @@ SESSION_MANIFEST_SCHEMA_ID = "urn:cranfield:pilot-assessment:schema:session-mani
 SESSION_MANIFEST_SCHEMA_TITLE = "Pilot Assessment Session Manifest 0.1.0"
 ANCHOR_RESULT_SCHEMA_ID = "urn:cranfield:pilot-assessment:schema:anchor-result:0.1.0"
 ANCHOR_RESULT_SCHEMA_TITLE = "Pilot Assessment Anchor Result 0.1.0"
+INGESTION_READINESS_SCHEMA_ID = (
+    "urn:cranfield:pilot-assessment:schema:ingestion-readiness-report:0.1.0"
+)
+INGESTION_READINESS_SCHEMA_TITLE = "Pilot Assessment Ingestion Readiness Report 0.1.0"
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[3]
 _DEFAULT_OUTPUT_DIRECTORY = _PROJECT_ROOT / "schemas"
@@ -239,6 +244,73 @@ def _anchor_result_schema() -> dict[str, Any]:
     return schema
 
 
+def _ingestion_readiness_schema() -> dict[str, Any]:
+    schema = _base_schema(
+        IngestionReadinessReport,
+        schema_id=INGESTION_READINESS_SCHEMA_ID,
+        title=INGESTION_READINESS_SCHEMA_TITLE,
+        runtime_invariants=[
+            "stream result keys must equal the seven core modalities",
+            "stream result map key must equal result.modality",
+            "task_reference_result modality must be task_reference",
+            "disposition and continuation must match required and non-ready results",
+            "formal_run_authorized is always false at the M2 boundary",
+        ],
+    )
+    stream_results = schema["properties"]["stream_results"]
+    stream_results["required"] = sorted(CORE_MODALITIES)
+    stream_results["propertyNames"] = {"enum": sorted(CORE_MODALITIES)}
+
+    readiness_result = schema["$defs"]["StreamReadinessResult"]
+    readiness_result["allOf"] = [
+        {
+            "if": {
+                "properties": {"readiness": {"const": "ready"}},
+                "required": ["readiness"],
+            },
+            "then": {
+                "properties": {
+                    "adapter_id": {"type": "string"},
+                    "adapter_version": {"type": "string"},
+                    "normalized_schema_id": {"type": "string"},
+                    "row_count": {"type": "integer", "minimum": 0},
+                }
+            },
+        },
+        {
+            "if": {
+                "properties": {
+                    "readiness": {
+                        "enum": ["unavailable", "unsupported", "not_applicable"]
+                    }
+                },
+                "required": ["readiness"],
+            },
+            "then": {
+                "properties": {
+                    "adapter_id": {"type": "null"},
+                    "adapter_version": {"type": "null"},
+                    "normalized_schema_id": {"type": "null"},
+                    "row_count": {"type": "null"},
+                    "artifact_row_counts": {"maxProperties": 0},
+                    "source_time_start_s": {"type": "null"},
+                    "source_time_end_s": {"type": "null"},
+                    "observed_sample_rate_hz": {"type": "null"},
+                }
+            },
+        },
+    ]
+
+    task_reference = schema["properties"]["task_reference_result"]
+    task_reference["anyOf"][0] = {
+        "allOf": [
+            {"$ref": "#/$defs/StreamReadinessResult"},
+            {"properties": {"modality": {"const": "task_reference"}}},
+        ]
+    }
+    return schema
+
+
 def _render_json(schema: dict[str, Any]) -> bytes:
     return (json.dumps(schema, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
 
@@ -248,6 +320,9 @@ def render_schemas() -> dict[str, bytes]:
 
     return {
         "anchor-result-0.1.0.schema.json": _render_json(_anchor_result_schema()),
+        "ingestion-readiness-report-0.1.0.schema.json": _render_json(
+            _ingestion_readiness_schema()
+        ),
         "session-manifest-0.1.0.schema.json": _render_json(_session_manifest_schema()),
     }
 
@@ -280,6 +355,8 @@ __all__ = [
     "ANCHOR_RESULT_SCHEMA_ID",
     "ANCHOR_RESULT_SCHEMA_TITLE",
     "CONTRACT_VERSION",
+    "INGESTION_READINESS_SCHEMA_ID",
+    "INGESTION_READINESS_SCHEMA_TITLE",
     "SCHEMA_DIALECT",
     "SESSION_MANIFEST_SCHEMA_ID",
     "SESSION_MANIFEST_SCHEMA_TITLE",

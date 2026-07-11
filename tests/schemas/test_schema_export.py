@@ -11,10 +11,13 @@ from jsonschema import Draft202012Validator
 from pydantic import ValidationError
 
 from pilot_assessment.contracts.anchor import AnchorResult
+from pilot_assessment.contracts.ingestion import IngestionReadinessReport
 from pilot_assessment.contracts.session import SessionManifest
 from pilot_assessment.schemas.export import (
     ANCHOR_RESULT_SCHEMA_ID,
     ANCHOR_RESULT_SCHEMA_TITLE,
+    INGESTION_READINESS_SCHEMA_ID,
+    INGESTION_READINESS_SCHEMA_TITLE,
     SCHEMA_DIALECT,
     SESSION_MANIFEST_SCHEMA_ID,
     SESSION_MANIFEST_SCHEMA_TITLE,
@@ -50,6 +53,7 @@ def test_rendered_schemas_are_deterministic_and_valid_draft_2020_12() -> None:
     assert first == second
     assert set(first) == {
         "anchor-result-0.1.0.schema.json",
+        "ingestion-readiness-report-0.1.0.schema.json",
         "session-manifest-0.1.0.schema.json",
     }
     for payload in first.values():
@@ -62,11 +66,16 @@ def test_schema_ids_titles_and_cross_language_invariants_are_frozen() -> None:
     rendered = render_schemas()
     session_schema = json.loads(rendered["session-manifest-0.1.0.schema.json"])
     anchor_schema = json.loads(rendered["anchor-result-0.1.0.schema.json"])
+    readiness_schema = json.loads(
+        rendered["ingestion-readiness-report-0.1.0.schema.json"]
+    )
 
     assert session_schema["$id"] == SESSION_MANIFEST_SCHEMA_ID
     assert session_schema["title"] == SESSION_MANIFEST_SCHEMA_TITLE
     assert anchor_schema["$id"] == ANCHOR_RESULT_SCHEMA_ID
     assert anchor_schema["title"] == ANCHOR_RESULT_SCHEMA_TITLE
+    assert readiness_schema["$id"] == INGESTION_READINESS_SCHEMA_ID
+    assert readiness_schema["title"] == INGESTION_READINESS_SCHEMA_TITLE
 
     stream_rules = session_schema["properties"]["streams"]
     assert set(stream_rules["allOf"][0]["required"]) == {
@@ -93,6 +102,10 @@ def test_published_schemas_accept_the_canonical_json_fixtures() -> None:
     pairs = [
         ("session-manifest-0.1.0.schema.json", "session_manifest_valid.json"),
         ("anchor-result-0.1.0.schema.json", "anchor_result_computed.json"),
+        (
+            "ingestion-readiness-report-0.1.0.schema.json",
+            "ingestion_readiness_ready.json",
+        ),
     ]
     for schema_name, fixture_name in pairs:
         schema = json.loads(rendered[schema_name])
@@ -237,6 +250,48 @@ def test_session_schema_accepts_synthetic_present_biometrics() -> None:
 
     SessionManifest.model_validate(candidate)
     Draft202012Validator(schema).validate(candidate)
+
+
+def test_readiness_schema_rejects_public_contract_contradictions() -> None:
+    schema = json.loads(
+        render_schemas()["ingestion-readiness-report-0.1.0.schema.json"]
+    )
+    validator = Draft202012Validator(schema)
+    valid = json.loads(
+        (FIXTURES / "ingestion_readiness_ready.json").read_text(encoding="utf-8")
+    )
+
+    invalid_cases: list[tuple[str, dict[str, object]]] = []
+
+    formal_authorization = copy.deepcopy(valid)
+    formal_authorization["formal_run_authorized"] = True
+    invalid_cases.append(("formal authorization", formal_authorization))
+
+    missing_core = copy.deepcopy(valid)
+    del missing_core["stream_results"]["ECG"]
+    invalid_cases.append(("missing core result", missing_core))
+
+    extra_core = copy.deepcopy(valid)
+    extra_core["stream_results"]["THERMAL"] = copy.deepcopy(
+        extra_core["stream_results"]["I"]
+    )
+    extra_core["stream_results"]["THERMAL"]["modality"] = "THERMAL"
+    invalid_cases.append(("extra core result", extra_core))
+
+    unavailable_claim = copy.deepcopy(valid)
+    unavailable_claim["stream_results"]["I"].update(
+        declared_status="export_pending",
+        readiness="unavailable",
+        source_paths=[],
+        source_checksums={},
+    )
+    unavailable_claim["disposition"] = "ready_partial"
+    invalid_cases.append(("unavailable result claims inspection", unavailable_claim))
+
+    for label, candidate in invalid_cases:
+        with pytest.raises(ValidationError):
+            IngestionReadinessReport.model_validate(candidate)
+        assert list(validator.iter_errors(candidate)), f"JSON Schema accepted {label}"
 
 
 def test_anchor_schema_rejects_common_invalid_runtime_values() -> None:

@@ -26,6 +26,12 @@ from pilot_assessment.contracts.common import (
     UnitInterval,
 )
 from pilot_assessment.contracts.errors import DomainErrorData, ErrorSeverity
+from pilot_assessment.contracts.ingestion import (
+    IngestionReadinessReport,
+    ReadinessDisposition,
+    StreamReadiness,
+    StreamReadinessResult,
+)
 from pilot_assessment.contracts.session import (
     CORE_MODALITIES,
     AnnotationReferences,
@@ -65,11 +71,13 @@ __all__ = [
     "EventResult",
     "ErrorSeverity",
     "IntegrityDefinition",
+    "IngestionReadinessReport",
     "Participant",
     "PrimaryValue",
     "PrivacyDefinition",
     "Provenance",
     "QualitySummary",
+    "ReadinessDisposition",
     "Sha256Digest",
     "SessionManifest",
     "SessionTimebase",
@@ -78,6 +86,8 @@ __all__ = [
     "SourceWindow",
     "StableId",
     "StreamDescriptor",
+    "StreamReadiness",
+    "StreamReadinessResult",
     "StreamStatus",
     "StrictContractModel",
     "TaskDefinition",

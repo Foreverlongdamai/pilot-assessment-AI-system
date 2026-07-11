@@ -1,0 +1,258 @@
+{
+  "contract_version": "0.1.0",
+  "validation_scope": "inspect_only_ingestion_content_v1",
+  "session_id": "synthetic-session-20260711-001",
+  "manifest_version": "0.1.0",
+  "disposition": "ready",
+  "can_continue_to_synchronization": true,
+  "formal_run_authorized": false,
+  "stream_results": {
+    "X": {
+      "modality": "X",
+      "declared_status": "present",
+      "required_for_import": true,
+      "readiness": "ready",
+      "adapter_id": "cranfield-simulator-csv",
+      "adapter_version": "0.1.0",
+      "source_paths": ["streams/simulator.csv"],
+      "source_checksums": {
+        "streams/simulator.csv": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "normalized_schema_id": "flight-state-normalized-v0.1",
+      "row_count": 2902,
+      "artifact_row_counts": {
+        "simulator_csv": 2902
+      },
+      "source_time_start_s": 0.0,
+      "source_time_end_s": 29.01,
+      "observed_sample_rate_hz": 100.0,
+      "canonical_fields": ["position_x_m", "velocity_x_m_s"],
+      "units": {
+        "position_x_m": "m",
+        "velocity_x_m_s": "m/s"
+      },
+      "quality_summary": {
+        "valid_fraction": 1.0,
+        "gap_count": 0
+      },
+      "assumptions": ["simulation_time_seconds"],
+      "issues": []
+    },
+    "U": {
+      "modality": "U",
+      "declared_status": "present",
+      "required_for_import": true,
+      "readiness": "ready",
+      "adapter_id": "cranfield-simulator-csv",
+      "adapter_version": "0.1.0",
+      "source_paths": ["streams/simulator.csv"],
+      "source_checksums": {
+        "streams/simulator.csv": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "normalized_schema_id": "control-input-normalized-v0.1",
+      "row_count": 2902,
+      "artifact_row_counts": {
+        "simulator_csv": 2902
+      },
+      "source_time_start_s": 0.0,
+      "source_time_end_s": 29.01,
+      "observed_sample_rate_hz": 100.0,
+      "canonical_fields": ["pilot_lon_raw", "pilot_lat_raw"],
+      "units": {
+        "pilot_lon_raw": "source-unit-unknown",
+        "pilot_lat_raw": "source-unit-unknown"
+      },
+      "quality_summary": {
+        "valid_fraction": 1.0,
+        "gap_count": 0
+      },
+      "assumptions": ["control_units_unconfirmed"],
+      "issues": []
+    },
+    "I": {
+      "modality": "I",
+      "declared_status": "present",
+      "required_for_import": false,
+      "readiness": "ready",
+      "adapter_id": "image-sequence",
+      "adapter_version": "0.1.0",
+      "source_paths": ["streams/vr_scene/frame_index.parquet"],
+      "source_checksums": {
+        "streams/vr_scene/frame_index.parquet": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "normalized_schema_id": "vr-scene-normalized-v0.1",
+      "row_count": 871,
+      "artifact_row_counts": {
+        "frame_index": 871,
+        "aoi_instances": 1742
+      },
+      "source_time_start_s": 0.0,
+      "source_time_end_s": 29.0,
+      "observed_sample_rate_hz": 30.0,
+      "canonical_fields": ["frame_id", "image_path"],
+      "units": {
+        "image_path": "bundle-relative-path"
+      },
+      "quality_summary": {
+        "valid_fraction": 1.0
+      },
+      "assumptions": [],
+      "issues": []
+    },
+    "G": {
+      "modality": "G",
+      "declared_status": "present",
+      "required_for_import": false,
+      "readiness": "ready",
+      "adapter_id": "parquet-timeseries",
+      "adapter_version": "0.1.0",
+      "source_paths": ["streams/gaze/gaze_samples.parquet"],
+      "source_checksums": {
+        "streams/gaze/gaze_samples.parquet": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "normalized_schema_id": "gaze-normalized-v0.1",
+      "row_count": 3482,
+      "artifact_row_counts": {
+        "gaze_samples": 3482,
+        "fixations": 58
+      },
+      "source_time_start_s": 0.0,
+      "source_time_end_s": 29.0083333333,
+      "observed_sample_rate_hz": 120.0,
+      "canonical_fields": ["gaze_sample_id", "viewport_x_norm"],
+      "units": {
+        "viewport_x_norm": "normalized"
+      },
+      "quality_summary": {
+        "valid_fraction": 1.0
+      },
+      "assumptions": [],
+      "issues": []
+    },
+    "EEG": {
+      "modality": "EEG",
+      "declared_status": "present",
+      "required_for_import": false,
+      "readiness": "ready",
+      "adapter_id": "parquet-timeseries",
+      "adapter_version": "0.1.0",
+      "source_paths": ["streams/eeg/eeg_samples.parquet"],
+      "source_checksums": {
+        "streams/eeg/eeg_samples.parquet": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "normalized_schema_id": "eeg-normalized-v0.1",
+      "row_count": 7427,
+      "artifact_row_counts": {
+        "eeg_samples": 7427
+      },
+      "source_time_start_s": 0.0,
+      "source_time_end_s": 29.0078125,
+      "observed_sample_rate_hz": 256.0,
+      "canonical_fields": ["sample_index", "Fp1_uV"],
+      "units": {
+        "Fp1_uV": "uV"
+      },
+      "quality_summary": {
+        "valid_fraction": 1.0
+      },
+      "assumptions": ["synthetic_not_neurophysiological"],
+      "issues": []
+    },
+    "ECG": {
+      "modality": "ECG",
+      "declared_status": "present",
+      "required_for_import": false,
+      "readiness": "ready",
+      "adapter_id": "parquet-timeseries",
+      "adapter_version": "0.1.0",
+      "source_paths": ["streams/ecg/ecg_samples.parquet"],
+      "source_checksums": {
+        "streams/ecg/ecg_samples.parquet": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      },
+      "normalized_schema_id": "ecg-normalized-v0.1",
+      "row_count": 7253,
+      "artifact_row_counts": {
+        "ecg_samples": 7253,
+        "r_peaks": 34
+      },
+      "source_time_start_s": 0.0,
+      "source_time_end_s": 29.008,
+      "observed_sample_rate_hz": 250.0,
+      "canonical_fields": ["sample_index", "lead_ii_mV"],
+      "units": {
+        "lead_ii_mV": "mV"
+      },
+      "quality_summary": {
+        "valid_fraction": 1.0
+      },
+      "assumptions": ["synthetic_not_physiological"],
+      "issues": []
+    },
+    "pilot_camera": {
+      "modality": "pilot_camera",
+      "declared_status": "present",
+      "required_for_import": false,
+      "readiness": "ready",
+      "adapter_id": "image-sequence",
+      "adapter_version": "0.1.0",
+      "source_paths": ["streams/pilot_camera/frame_index.parquet"],
+      "source_checksums": {
+        "streams/pilot_camera/frame_index.parquet": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "normalized_schema_id": "pilot-camera-normalized-v0.1",
+      "row_count": 436,
+      "artifact_row_counts": {
+        "frame_index": 436
+      },
+      "source_time_start_s": 0.0,
+      "source_time_end_s": 29.0,
+      "observed_sample_rate_hz": 15.0,
+      "canonical_fields": ["frame_id", "image_path"],
+      "units": {
+        "image_path": "bundle-relative-path"
+      },
+      "quality_summary": {
+        "valid_fraction": 1.0
+      },
+      "assumptions": ["synthetic_no_real_identity"],
+      "issues": []
+    }
+  },
+  "task_reference_result": {
+    "modality": "task_reference",
+    "declared_status": "present",
+    "required_for_import": true,
+    "readiness": "ready",
+    "adapter_id": "parquet-timeseries",
+    "adapter_version": "0.1.0",
+    "source_paths": ["references/commanded_path.parquet"],
+    "source_checksums": {
+      "references/commanded_path.parquet": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+    },
+    "normalized_schema_id": "task-reference-normalized-v0.1",
+    "row_count": 2902,
+    "artifact_row_counts": {
+      "commanded_path": 2902
+    },
+    "source_time_start_s": 0.0,
+    "source_time_end_s": 29.01,
+    "observed_sample_rate_hz": 100.0,
+    "canonical_fields": ["reference_sample_id", "target_x_m"],
+    "units": {
+      "target_x_m": "m"
+    },
+    "quality_summary": {
+      "valid_fraction": 1.0
+    },
+    "assumptions": ["synthetic_reference_only"],
+    "issues": []
+  },
+  "global_issues": [],
+  "deferred_checks": [
+    "synchronization",
+    "annotation_semantics",
+    "anchor_availability",
+    "bn_inference"
+  ],
+  "source_snapshot_fingerprint": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+}
