@@ -1,13 +1,50 @@
+# --- Python ---
 .venv/
-.tools/
-dist/
-build/
-*.egg-info/
 __pycache__/
 *.py[cod]
+*.egg-info/
+build/
+dist/
+
+# --- Tooling caches ---
+.tools/
 .pytest_cache/
 .ruff_cache/
 .ty/
 .coverage
+.coverage.*
+coverage.xml
 htmlcov/
 
+# --- IDE / editor ---
+.vscode/
+.idea/
+.vs/
+
+# --- OS junk ---
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# --- Logs, temp, local secrets ---
+*.log
+*.tmp
+.env
+.env.*
+
+# --- Future WinUI / .NET frontend build outputs ---
+bin/
+obj/
+*.user
+
+# --- Local session data (NEVER commit real session bundles) ---
+# Real bundles contain sensitive biometric data (gaze, EEG, ECG, pilot camera).
+# Keep them outside the repo or under local_data/.
+local_data/
+*.edf
+*.parquet
+*.mp4
+# Synthetic test fixtures are the only allowed exception and must stay synthetic:
+!tests/fixtures/**/*.edf
+!tests/fixtures/**/*.parquet
+!tests/fixtures/**/*.mp4
