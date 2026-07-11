@@ -1,0 +1,84 @@
+{
+  "anchor_id": "O1",
+  "model_version": "reference-model-v0.1",
+  "calculation_status": "computed",
+  "evidence_state": "adequate",
+  "continuous_score": 0.5,
+  "evidence_likelihood": {
+    "state_order": ["unacceptable", "adequate", "desired"],
+    "values": [0.0, 1.0, 0.0]
+  },
+  "raw_metrics": {
+    "translation_precision_pct": 94.2,
+    "deceleration_precision_pct": 88.1,
+    "hover_precision_pct": 91.0
+  },
+  "primary_value": {
+    "value": 88.1,
+    "unit": "percent"
+  },
+  "phase_results": {
+    "translation": "desired",
+    "deceleration": "adequate",
+    "hover": "desired"
+  },
+  "event_results": [],
+  "source_windows": [
+    {
+      "start_t_ns": 0,
+      "end_t_ns": 29010000000,
+      "phase": "session"
+    }
+  ],
+  "derived_artifacts": [
+    {
+      "artifact_id": "O1-window-trace",
+      "kind": "window_metric_trace",
+      "path": "artifacts/anchors/O1_window_trace.parquet",
+      "schema_id": "anchor-window-trace-v1",
+      "window_grid_id": "control-quality-grid-v1",
+      "window_length_s": 1.0,
+      "step_s": 0.5,
+      "alignment": "left",
+      "min_valid_fraction": 0.8,
+      "partial_window_policy": "drop"
+    }
+  ],
+  "quality": {
+    "passed": true,
+    "score": 1.0,
+    "valid_coverage": 0.982,
+    "sync_error_ms": 12.0,
+    "flags": []
+  },
+  "thresholds_used": {
+    "desired_min": 90.0,
+    "adequate_min": 70.0
+  },
+  "parameters_used": {
+    "aggregation": "worst_phase",
+    "scoring_transform": "hard_threshold_v1",
+    "continuous_score_transform": "ordinal_expectation_v1",
+    "quality_transform": "binary_quality_v1",
+    "config_version": "project-default-v0.1"
+  },
+  "parameter_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "dependencies": {
+    "available": ["X", "phase_markers", "phase_envelopes"],
+    "missing": []
+  },
+  "input_status_snapshot": {
+    "X": "present",
+    "phase_markers": "present",
+    "phase_envelopes": "present"
+  },
+  "provenance": {
+    "source_files": [],
+    "sample_ranges": [],
+    "extractor_version": "0.1.0",
+    "evidence_grade": "B"
+  },
+  "diagnostics": [],
+  "extensions": {}
+}
+

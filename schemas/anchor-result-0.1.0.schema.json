@@ -1,0 +1,944 @@
+{
+  "$defs": {
+    "AnchorQuality": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "flags": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Flags",
+          "type": "array"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "score": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Score",
+          "type": "number"
+        },
+        "sync_error_ms": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sync Error Ms"
+        },
+        "valid_coverage": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Valid Coverage",
+          "type": "number"
+        }
+      },
+      "required": [
+        "passed",
+        "score",
+        "valid_coverage",
+        "sync_error_ms",
+        "flags"
+      ],
+      "title": "AnchorQuality",
+      "type": "object"
+    },
+    "CalculationStatus": {
+      "enum": [
+        "computed",
+        "invalid_quality",
+        "missing_input",
+        "not_applicable",
+        "not_computable",
+        "dependency_missing",
+        "extractor_error"
+      ],
+      "title": "CalculationStatus",
+      "type": "string"
+    },
+    "Dependencies": {
+      "additionalProperties": false,
+      "properties": {
+        "available": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Available",
+          "type": "array"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "missing": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Missing",
+          "type": "array"
+        }
+      },
+      "required": [
+        "available",
+        "missing"
+      ],
+      "title": "Dependencies",
+      "type": "object"
+    },
+    "DerivedArtifact": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "window_metric_trace"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "alignment": {
+                "type": "string"
+              },
+              "min_valid_fraction": {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "partial_window_policy": {
+                "type": "string"
+              },
+              "step_s": {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              "window_grid_id": {
+                "type": "string"
+              },
+              "window_length_s": {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              }
+            },
+            "required": [
+              "window_grid_id",
+              "window_length_s",
+              "step_s",
+              "alignment",
+              "min_valid_fraction",
+              "partial_window_policy"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "alignment": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Alignment"
+        },
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "kind": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "min_valid_fraction": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min Valid Fraction"
+        },
+        "partial_window_policy": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Partial Window Policy"
+        },
+        "path": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+          "title": "Path",
+          "type": "string",
+          "x-runtime-invariants": [
+            "segments are not empty, '.' or '..'",
+            "segments do not end in a dot or space",
+            "resolved files remain below the owning artifact root"
+          ]
+        },
+        "schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Schema Id",
+          "type": "string"
+        },
+        "step_s": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Step S"
+        },
+        "window_grid_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Window Grid Id"
+        },
+        "window_length_s": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Window Length S"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "kind",
+        "path",
+        "schema_id"
+      ],
+      "title": "DerivedArtifact",
+      "type": "object"
+    },
+    "Diagnostic": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "details": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Details",
+          "type": "object"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "field_or_path": {
+          "anyOf": [
+            {
+              "maxLength": 2048,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Field Or Path"
+        },
+        "message": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "remediation": {
+          "anyOf": [
+            {
+              "maxLength": 2048,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Remediation"
+        },
+        "severity": {
+          "$ref": "#/$defs/DiagnosticSeverity"
+        }
+      },
+      "required": [
+        "code",
+        "severity",
+        "message"
+      ],
+      "title": "Diagnostic",
+      "type": "object"
+    },
+    "DiagnosticSeverity": {
+      "enum": [
+        "info",
+        "warning",
+        "error",
+        "fatal"
+      ],
+      "title": "DiagnosticSeverity",
+      "type": "string"
+    },
+    "EventResult": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "evidence_state": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EvidenceState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "raw_metrics": {
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "type": "number"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "title": "Raw Metrics",
+          "type": "object"
+        }
+      },
+      "required": [
+        "event_id",
+        "evidence_state",
+        "raw_metrics"
+      ],
+      "title": "EventResult",
+      "type": "object"
+    },
+    "EvidenceLikelihood": {
+      "additionalProperties": false,
+      "properties": {
+        "state_order": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "const": "unacceptable",
+              "type": "string"
+            },
+            {
+              "const": "adequate",
+              "type": "string"
+            },
+            {
+              "const": "desired",
+              "type": "string"
+            }
+          ],
+          "title": "State Order",
+          "type": "array"
+        },
+        "values": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            }
+          ],
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "state_order",
+        "values"
+      ],
+      "title": "EvidenceLikelihood",
+      "type": "object"
+    },
+    "EvidenceState": {
+      "enum": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "title": "EvidenceState",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "PrimaryValue": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "unit": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "value",
+        "unit"
+      ],
+      "title": "PrimaryValue",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_grade": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Evidence Grade",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "extractor_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Extractor Version",
+          "type": "string"
+        },
+        "sample_ranges": {
+          "items": {
+            "$ref": "#/$defs/SampleRange"
+          },
+          "title": "Sample Ranges",
+          "type": "array"
+        },
+        "source_files": {
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+            "type": "string",
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Source Files",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source_files",
+        "sample_ranges",
+        "extractor_version",
+        "evidence_grade"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "SampleRange": {
+      "additionalProperties": false,
+      "properties": {
+        "end_index": {
+          "minimum": 0,
+          "title": "End Index",
+          "type": "integer"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "source_file": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+          "title": "Source File",
+          "type": "string",
+          "x-runtime-invariants": [
+            "segments are not empty, '.' or '..'",
+            "segments do not end in a dot or space",
+            "resolved files remain below the owning artifact root"
+          ]
+        },
+        "start_index": {
+          "minimum": 0,
+          "title": "Start Index",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "source_file",
+        "start_index",
+        "end_index"
+      ],
+      "title": "SampleRange",
+      "type": "object"
+    },
+    "SourceWindow": {
+      "additionalProperties": false,
+      "properties": {
+        "end_t_ns": {
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "End T Ns",
+          "type": "integer"
+        },
+        "event_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Event Id"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "phase": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Phase"
+        },
+        "start_t_ns": {
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "Start T Ns",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start_t_ns",
+        "end_t_ns"
+      ],
+      "title": "SourceWindow",
+      "type": "object"
+    },
+    "StreamStatus": {
+      "enum": [
+        "present",
+        "export_pending",
+        "missing",
+        "invalid",
+        "not_applicable"
+      ],
+      "title": "StreamStatus",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:anchor-result:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "continuous_score": {
+            "type": "null"
+          },
+          "evidence_likelihood": {
+            "type": "null"
+          },
+          "evidence_state": {
+            "type": "null"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "calculation_status": {
+            "const": "computed"
+          }
+        },
+        "required": [
+          "calculation_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "continuous_score": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "type": "number"
+          },
+          "evidence_likelihood": {
+            "$ref": "#/$defs/EvidenceLikelihood"
+          },
+          "evidence_state": {
+            "$ref": "#/$defs/EvidenceState"
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "anchor_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Anchor Id",
+      "type": "string"
+    },
+    "calculation_status": {
+      "$ref": "#/$defs/CalculationStatus"
+    },
+    "continuous_score": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Continuous Score"
+    },
+    "dependencies": {
+      "$ref": "#/$defs/Dependencies"
+    },
+    "derived_artifacts": {
+      "items": {
+        "$ref": "#/$defs/DerivedArtifact"
+      },
+      "title": "Derived Artifacts",
+      "type": "array"
+    },
+    "diagnostics": {
+      "items": {
+        "$ref": "#/$defs/Diagnostic"
+      },
+      "title": "Diagnostics",
+      "type": "array"
+    },
+    "event_results": {
+      "items": {
+        "$ref": "#/$defs/EventResult"
+      },
+      "title": "Event Results",
+      "type": "array"
+    },
+    "evidence_likelihood": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EvidenceLikelihood"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "evidence_state": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EvidenceState"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "extensions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Extensions",
+      "type": "object"
+    },
+    "input_status_snapshot": {
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+          "$ref": "#/$defs/StreamStatus"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 128,
+        "minLength": 1
+      },
+      "title": "Input Status Snapshot",
+      "type": "object"
+    },
+    "model_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Model Version",
+      "type": "string"
+    },
+    "parameter_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Parameter Hash",
+      "type": "string"
+    },
+    "parameters_used": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Parameters Used",
+      "type": "object"
+    },
+    "phase_results": {
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+          "$ref": "#/$defs/EvidenceState"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 128,
+        "minLength": 1
+      },
+      "title": "Phase Results",
+      "type": "object"
+    },
+    "primary_value": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PrimaryValue"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quality": {
+      "$ref": "#/$defs/AnchorQuality"
+    },
+    "raw_metrics": {
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+          "type": "number"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 128,
+        "minLength": 1
+      },
+      "title": "Raw Metrics",
+      "type": "object"
+    },
+    "source_windows": {
+      "items": {
+        "$ref": "#/$defs/SourceWindow"
+      },
+      "title": "Source Windows",
+      "type": "array"
+    },
+    "thresholds_used": {
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+          "type": "number"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 128,
+        "minLength": 1
+      },
+      "title": "Thresholds Used",
+      "type": "object"
+    }
+  },
+  "required": [
+    "anchor_id",
+    "model_version",
+    "calculation_status",
+    "evidence_state",
+    "continuous_score",
+    "evidence_likelihood",
+    "raw_metrics",
+    "primary_value",
+    "phase_results",
+    "event_results",
+    "source_windows",
+    "derived_artifacts",
+    "quality",
+    "thresholds_used",
+    "parameters_used",
+    "parameter_hash",
+    "dependencies",
+    "input_status_snapshot",
+    "provenance",
+    "diagnostics"
+  ],
+  "title": "Pilot Assessment Anchor Result 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "likelihood values sum to one within absolute tolerance 1e-9",
+    "computed continuous_score equals ordinal_expectation_v1",
+    "hard_threshold_v1 likelihood is one-hot and matches evidence_state",
+    "soft likelihood ties declare an explicit tie_policy",
+    "non-computed results omit all evidence observation fields",
+    "binary_quality_v1 computed results have passed=true and score=1"
+  ],
+  "x-soft-tie-policies": [
+    "prefer_adequate",
+    "prefer_desired",
+    "prefer_unacceptable"
+  ]
+}

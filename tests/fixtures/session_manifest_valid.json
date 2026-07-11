@@ -1,0 +1,194 @@
+{
+  "bundle_schema_version": "0.1.0",
+  "session_id": "session-p001-20260710-001",
+  "created_at": "2026-07-10T14:00:00Z",
+  "source_session": {
+    "system": "cranfield-vr-simulator",
+    "source_id": "S_101500_P_1",
+    "campaign": "longitudinal-deceleration-hover"
+  },
+  "participant": {
+    "pseudonymous_id": "P001"
+  },
+  "task": {
+    "task_profile_id": "hover-deceleration-v0",
+    "scenario_id": "longitudinal-01",
+    "expected_phases": [
+      "translation",
+      "deceleration",
+      "hover_stabilization"
+    ],
+    "reference": {
+      "source": "model_bundle",
+      "reference_id": "hover-deceleration-commanded-path-v0"
+    }
+  },
+  "session_timebase": {
+    "origin": "session_start",
+    "unit": "ns",
+    "master_clock_id": "sim_clock"
+  },
+  "streams": {
+    "X": {
+      "modality": "X",
+      "status": "present",
+      "required_for_import": true,
+      "paths": ["streams/flight_state.parquet"],
+      "format": "parquet",
+      "schema_id": "flight-state-v0",
+      "clock_id": "sim_clock",
+      "clock_sync": {
+        "method": "master_clock",
+        "scale": 1.0,
+        "offset_ns": 0,
+        "drift_ppm": 0.0,
+        "residual_rms_ms": 0.0,
+        "residual_max_ms": 0.0
+      },
+      "sample_rate_hz": 100.0,
+      "units": "flight-state-units-v0",
+      "quality_summary": {
+        "coverage_ratio": 1.0,
+        "gap_count": 0
+      },
+      "checksums": {
+        "streams/flight_state.parquet": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "metadata": {
+        "coordinate_frame": "earth-fixed"
+      }
+    },
+    "U": {
+      "modality": "U",
+      "status": "present",
+      "required_for_import": true,
+      "paths": ["streams/control_input.parquet"],
+      "format": "parquet",
+      "schema_id": "control-input-v0",
+      "clock_id": "sim_clock",
+      "clock_sync": {
+        "method": "master_clock",
+        "scale": 1.0,
+        "offset_ns": 0,
+        "drift_ppm": 0.0,
+        "residual_rms_ms": 0.0,
+        "residual_max_ms": 0.0
+      },
+      "sample_rate_hz": 100.0,
+      "units": "percent-full-deflection",
+      "quality_summary": {
+        "coverage_ratio": 1.0,
+        "gap_count": 0
+      },
+      "checksums": {
+        "streams/control_input.parquet": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "metadata": {
+        "active_channels": ["longitudinal"]
+      }
+    },
+    "I": {
+      "modality": "I",
+      "status": "export_pending",
+      "required_for_import": false,
+      "paths": [],
+      "format": "mp4+frame_index",
+      "schema_id": "vr-first-person-scene-v0",
+      "clock_id": "vr_clock",
+      "clock_sync": null,
+      "sample_rate_hz": null,
+      "units": "pixels-and-head-pose",
+      "quality_summary": null,
+      "checksums": {},
+      "metadata": {
+        "view": "pilot-first-person-head-coupled"
+      }
+    },
+    "G": {
+      "modality": "G",
+      "status": "export_pending",
+      "required_for_import": false,
+      "paths": [],
+      "format": "parquet",
+      "schema_id": "gaze-ray-point-aoi-v0",
+      "clock_id": "eye_tracker_clock",
+      "clock_sync": null,
+      "sample_rate_hz": null,
+      "units": "normalized-viewport-and-metre-ray",
+      "quality_summary": null,
+      "checksums": {},
+      "metadata": {
+        "scene_binding": "I.frame_id"
+      }
+    },
+    "EEG": {
+      "modality": "EEG",
+      "status": "export_pending",
+      "required_for_import": false,
+      "paths": [],
+      "format": "parquet",
+      "schema_id": "eeg-multichannel-v0",
+      "clock_id": "eeg_clock",
+      "clock_sync": null,
+      "sample_rate_hz": null,
+      "units": "microvolt",
+      "quality_summary": null,
+      "checksums": {},
+      "metadata": {}
+    },
+    "ECG": {
+      "modality": "ECG",
+      "status": "export_pending",
+      "required_for_import": false,
+      "paths": [],
+      "format": "parquet",
+      "schema_id": "ecg-v0",
+      "clock_id": "ecg_clock",
+      "clock_sync": null,
+      "sample_rate_hz": null,
+      "units": "millivolt",
+      "quality_summary": null,
+      "checksums": {},
+      "metadata": {}
+    },
+    "pilot_camera": {
+      "modality": "pilot_camera",
+      "status": "export_pending",
+      "required_for_import": false,
+      "paths": [],
+      "format": "mp4+frame_index",
+      "schema_id": "pilot-camera-v0",
+      "clock_id": "pilot_camera_clock",
+      "clock_sync": null,
+      "sample_rate_hz": null,
+      "units": "pixels",
+      "quality_summary": null,
+      "checksums": {},
+      "metadata": {
+        "privacy_class": "sensitive-biometric-imagery"
+      }
+    }
+  },
+  "annotations": {
+    "revision": "annotations-v1",
+    "phases": "annotations/phases.json",
+    "events": "annotations/events.json",
+    "baseline_intervals": "annotations/baseline_intervals.json"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "manifest_canonicalization": "json-canonicalization-v1",
+    "checksum_file": "integrity/checksums.sha256"
+  },
+  "privacy": {
+    "classification": "restricted-research",
+    "direct_identifiers_removed": true,
+    "contains_biometric_data": false,
+    "biometric_modalities_export_pending": ["G", "EEG", "ECG", "pilot_camera"],
+    "permitted_use": "approved-cranfield-research"
+  },
+  "extensions": {
+    "lab_note": "contract-fixture"
+  }
+}
+
