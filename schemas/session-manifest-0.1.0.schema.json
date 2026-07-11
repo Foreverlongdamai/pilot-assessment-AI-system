@@ -203,7 +203,8 @@
             "type": "string"
           },
           "title": "Biometric Modalities Export Pending",
-          "type": "array"
+          "type": "array",
+          "uniqueItems": true
         },
         "classification": {
           "maxLength": 128,
@@ -423,6 +424,25 @@
           "if": {
             "properties": {
               "status": {
+                "const": "invalid"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "paths": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
                 "const": "export_pending"
               }
             },
@@ -437,6 +457,116 @@
               },
               "paths": {
                 "maxItems": 0
+              },
+              "quality_summary": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "missing"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "checksums": {
+                "maxProperties": 0
+              },
+              "paths": {
+                "maxItems": 0
+              },
+              "quality_summary": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_applicable"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "checksums": {
+                "maxProperties": 0
+              },
+              "paths": {
+                "maxItems": 0
+              },
+              "quality_summary": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "missing"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "clock_sync": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_applicable"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "clock_sync": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_applicable"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "required_for_import": {
+                "const": false
               }
             }
           }
@@ -663,6 +793,40 @@
     },
     "TaskReference": {
       "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "properties": {
+              "stream_id": {
+                "type": "null"
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "source": {
+                "const": "bundle"
+              }
+            },
+            "required": [
+              "source"
+            ]
+          },
+          "then": {
+            "properties": {
+              "stream_id": {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "stream_id"
+            ]
+          }
+        }
+      ],
       "properties": {
         "extensions": {
           "additionalProperties": {
@@ -679,11 +843,27 @@
           "type": "string"
         },
         "source": {
-          "maxLength": 128,
-          "minLength": 1,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "enum": [
+            "bundle",
+            "model_bundle"
+          ],
           "title": "Source",
           "type": "string"
+        },
+        "stream_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stream Id"
         }
       },
       "required": [

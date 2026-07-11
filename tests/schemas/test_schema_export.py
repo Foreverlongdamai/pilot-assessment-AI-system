@@ -26,6 +26,23 @@ PROJECT_ROOT = Path(__file__).parents[2]
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures"
 
 
+def _make_present(manifest: dict[str, object], modality: str, path: str) -> None:
+    streams = manifest["streams"]
+    assert isinstance(streams, dict)
+    stream = streams[modality]
+    assert isinstance(stream, dict)
+    x_stream = streams["X"]
+    assert isinstance(x_stream, dict)
+    stream.update(
+        status="present",
+        required_for_import=False,
+        paths=[path],
+        clock_sync=copy.deepcopy(x_stream["clock_sync"]),
+        quality_summary=None,
+        checksums={path: "c" * 64},
+    )
+
+
 def test_rendered_schemas_are_deterministic_and_valid_draft_2020_12() -> None:
     first = render_schemas()
     second = render_schemas()
@@ -146,10 +163,80 @@ def test_session_schema_rejects_values_rejected_by_runtime_contract() -> None:
     number_string["streams"]["X"]["sample_rate_hz"] = "100.0"
     invalid_cases.append(("string number", number_string))
 
+    bundle_reference_without_stream_id = copy.deepcopy(valid)
+    bundle_reference_without_stream_id["task"]["reference"] = {
+        "source": "bundle",
+        "reference_id": "commanded-path-v0.1",
+    }
+    invalid_cases.append(
+        ("bundle reference without stream id", bundle_reference_without_stream_id)
+    )
+
+    unsupported_reference_source = copy.deepcopy(valid)
+    unsupported_reference_source["task"]["reference"] = {
+        "source": "external",
+        "reference_id": "commanded-path-v0.1",
+    }
+    invalid_cases.append(("unsupported reference source", unsupported_reference_source))
+
+    invalid_without_files = copy.deepcopy(valid)
+    invalid_without_files["streams"]["X"].update(
+        status="invalid",
+        paths=[],
+        clock_sync=None,
+        quality_summary=None,
+        checksums={},
+    )
+    invalid_cases.append(("invalid stream without files", invalid_without_files))
+
+    export_pending_with_quality = copy.deepcopy(valid)
+    export_pending_with_quality["streams"]["I"]["quality_summary"] = {
+        "coverage_ratio": 0.5
+    }
+    invalid_cases.append(("export pending quality", export_pending_with_quality))
+
+    missing_with_clock = copy.deepcopy(valid)
+    missing_with_clock["streams"]["I"].update(
+        status="missing",
+        clock_sync=copy.deepcopy(valid["streams"]["X"]["clock_sync"]),
+    )
+    invalid_cases.append(("missing stream clock", missing_with_clock))
+
+    required_not_applicable = copy.deepcopy(valid)
+    required_not_applicable["streams"]["I"].update(
+        status="not_applicable",
+        required_for_import=True,
+    )
+    invalid_cases.append(("required not applicable", required_not_applicable))
+
+    duplicate_pending_biometric = copy.deepcopy(valid)
+    duplicate_pending_biometric["privacy"][
+        "biometric_modalities_export_pending"
+    ].append("EEG")
+    invalid_cases.append(("duplicate pending biometric", duplicate_pending_biometric))
+
     for label, candidate in invalid_cases:
         with pytest.raises(ValidationError):
             SessionManifest.model_validate(candidate)
         assert list(validator.iter_errors(candidate)), f"JSON Schema accepted {label}"
+
+
+def test_session_schema_accepts_synthetic_present_biometrics() -> None:
+    schema = json.loads(render_schemas()["session-manifest-0.1.0.schema.json"])
+    candidate = json.loads(
+        (FIXTURES / "session_manifest_valid.json").read_text(encoding="utf-8")
+    )
+    for modality in ("G", "EEG", "ECG", "pilot_camera"):
+        _make_present(candidate, modality, f"streams/{modality}.parquet")
+    candidate["privacy"].update(
+        classification="synthetic-test-data",
+        contains_biometric_data=False,
+        biometric_modalities_export_pending=[],
+        permitted_use="software-testing-only",
+    )
+
+    SessionManifest.model_validate(candidate)
+    Draft202012Validator(schema).validate(candidate)
 
 
 def test_anchor_schema_rejects_common_invalid_runtime_values() -> None:

@@ -50,6 +50,7 @@ class CoreModality(StrEnum):
 
 
 CORE_MODALITIES = frozenset(modality.value for modality in CoreModality)
+BIOMETRIC_MODALITIES = frozenset({"G", "EEG", "ECG", "pilot_camera"})
 
 
 class StreamStatus(StrEnum):
@@ -100,16 +101,36 @@ class StreamDescriptor(StrictContractModel):
         if len(normalized_paths) != len(set(normalized_paths)):
             raise ValueError("stream paths must be unique under Windows case folding")
 
-        if self.status is StreamStatus.PRESENT:
+        if self.status in {StreamStatus.PRESENT, StreamStatus.INVALID}:
             if not self.paths:
-                raise ValueError("present streams require at least one path")
+                raise ValueError(f"{self.status.value} streams require at least one path")
             if set(self.paths) != set(self.checksums):
-                raise ValueError("present stream checksums must match paths exactly")
-            if self.clock_sync is None:
+                raise ValueError(
+                    f"{self.status.value} stream checksums must match paths exactly"
+                )
+            if self.status is StreamStatus.PRESENT and self.clock_sync is None:
                 raise ValueError("present streams require a clock_sync mapping")
-        elif self.status is StreamStatus.EXPORT_PENDING:
+        else:
             if self.paths or self.checksums:
-                raise ValueError("export_pending streams must not claim exported files")
+                raise ValueError(
+                    f"{self.status.value} streams must not claim exported files"
+                )
+            if self.quality_summary is not None:
+                raise ValueError(
+                    f"{self.status.value} streams must not claim a quality summary"
+                )
+            if (
+                self.status in {StreamStatus.MISSING, StreamStatus.NOT_APPLICABLE}
+                and self.clock_sync is not None
+            ):
+                raise ValueError(
+                    f"{self.status.value} streams must not claim clock sync"
+                )
+            if (
+                self.status is StreamStatus.NOT_APPLICABLE
+                and self.required_for_import
+            ):
+                raise ValueError("not_applicable streams cannot be required for import")
         return self
 
 
@@ -127,9 +148,18 @@ class Participant(StrictContractModel):
 
 
 class TaskReference(StrictContractModel):
-    source: StableId
+    source: Literal["bundle", "model_bundle"]
     reference_id: StableId
+    stream_id: StableId | None = None
     extensions: dict[str, JsonValue] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def validate_source(self) -> Self:
+        if self.source == "bundle" and self.stream_id is None:
+            raise ValueError("bundle references require stream_id")
+        if self.source == "model_bundle" and self.stream_id is not None:
+            raise ValueError("model_bundle references must not declare stream_id")
+        return self
 
 
 class TaskDefinition(StrictContractModel):
@@ -170,6 +200,13 @@ class PrivacyDefinition(StrictContractModel):
     permitted_use: StableId
     extensions: dict[str, JsonValue] = Field(default_factory=dict)
 
+    @field_validator("biometric_modalities_export_pending")
+    @classmethod
+    def require_unique_pending_modalities(cls, value: list[StableId]) -> list[StableId]:
+        if len(value) != len(set(value)):
+            raise ValueError("pending biometric modalities must be unique")
+        return value
+
 
 class SessionManifest(StrictContractModel):
     bundle_schema_version: BundleSchemaVersion
@@ -207,6 +244,53 @@ class SessionManifest(StrictContractModel):
         ]
         if mismatched:
             raise ValueError(f"stream keys must match descriptor modality: {mismatched}")
+
+        reference = self.task.reference
+        if reference is not None and reference.source == "bundle":
+            assert reference.stream_id is not None
+            descriptor = self.streams.get(reference.stream_id)
+            if descriptor is None:
+                raise ValueError("bundle reference stream_id does not exist")
+            if descriptor.modality != "task_reference":
+                raise ValueError(
+                    "bundle reference stream_id must resolve to task_reference"
+                )
+            outside_references = [
+                path for path in descriptor.paths if not path.startswith("references/")
+            ]
+            if outside_references:
+                raise ValueError(
+                    "bundle task reference paths must stay below references/"
+                )
+
+        expected_pending = {
+            modality
+            for modality in BIOMETRIC_MODALITIES
+            if self.streams[modality].status is StreamStatus.EXPORT_PENDING
+        }
+        declared_pending = set(self.privacy.biometric_modalities_export_pending)
+        if declared_pending != expected_pending:
+            raise ValueError(
+                "pending biometric modalities must exactly match export_pending streams"
+            )
+
+        synthetic = self.privacy.classification == "synthetic-test-data"
+        exported_biometrics = any(
+            self.streams[modality].status
+            in {StreamStatus.PRESENT, StreamStatus.INVALID}
+            for modality in BIOMETRIC_MODALITIES
+        )
+        if synthetic:
+            if self.privacy.contains_biometric_data:
+                raise ValueError("synthetic test data cannot claim real biometric data")
+            if declared_pending:
+                raise ValueError(
+                    "synthetic test data cannot claim pending real biometric modalities"
+                )
+        elif exported_biometrics and not self.privacy.contains_biometric_data:
+            raise ValueError(
+                "non-synthetic biometric artifacts require contains_biometric_data=true"
+            )
         return self
 
 

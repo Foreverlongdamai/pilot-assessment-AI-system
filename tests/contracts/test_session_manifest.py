@@ -23,6 +23,39 @@ def manifest_data() -> dict[str, Any]:
     return json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
 
 
+def _make_present(
+    manifest_data: dict[str, Any],
+    modality: str,
+    path: str,
+) -> None:
+    stream = manifest_data["streams"][modality]
+    stream.update(
+        status="present",
+        required_for_import=False,
+        paths=[path],
+        clock_sync=copy.deepcopy(manifest_data["streams"]["X"]["clock_sync"]),
+        quality_summary=None,
+        checksums={path: "c" * 64},
+    )
+
+
+def _task_reference_descriptor(manifest_data: dict[str, Any]) -> dict[str, Any]:
+    descriptor = copy.deepcopy(manifest_data["streams"]["X"])
+    path = "references/commanded_path.parquet"
+    descriptor.update(
+        modality="task_reference",
+        required_for_import=False,
+        paths=[path],
+        format="parquet",
+        schema_id="task-reference-path-raw-v0.1",
+        units="task-reference-units-v0.1",
+        quality_summary=None,
+        checksums={path: "d" * 64},
+        metadata={"artifact_role": "task_reference"},
+    )
+    return descriptor
+
+
 def test_valid_manifest_round_trips_and_preserves_export_pending(
     manifest_data: dict[str, Any],
 ) -> None:
@@ -32,6 +65,113 @@ def test_valid_manifest_round_trips_and_preserves_export_pending(
     assert manifest.streams["I"].status is StreamStatus.EXPORT_PENDING
     assert manifest.extensions == {"lab_note": "contract-fixture"}
     assert manifest.model_dump(mode="json")["streams"]["I"]["status"] == "export_pending"
+
+
+def test_model_bundle_reference_remains_backward_compatible(
+    manifest_data: dict[str, Any],
+) -> None:
+    manifest = SessionManifest.model_validate(manifest_data)
+
+    assert manifest.task.reference is not None
+    assert manifest.task.reference.source == "model_bundle"
+    assert manifest.task.reference.stream_id is None
+
+
+def test_bundle_reference_resolves_task_reference_stream(
+    manifest_data: dict[str, Any],
+) -> None:
+    manifest_data["task"]["reference"] = {
+        "source": "bundle",
+        "reference_id": "commanded-path-v0.1",
+        "stream_id": "task_reference",
+    }
+    manifest_data["streams"]["task_reference"] = _task_reference_descriptor(
+        manifest_data
+    )
+
+    manifest = SessionManifest.model_validate(manifest_data)
+
+    assert manifest.task.reference is not None
+    assert manifest.task.reference.stream_id == "task_reference"
+    assert manifest.streams["task_reference"].paths == [
+        "references/commanded_path.parquet"
+    ]
+
+
+@pytest.mark.parametrize(
+    "reference",
+    [
+        {"source": "bundle", "reference_id": "commanded-path-v0.1"},
+        {
+            "source": "model_bundle",
+            "reference_id": "commanded-path-v0.1",
+            "stream_id": "task_reference",
+        },
+        {"source": "external", "reference_id": "commanded-path-v0.1"},
+    ],
+)
+def test_task_reference_source_controls_stream_id(
+    manifest_data: dict[str, Any], reference: dict[str, str]
+) -> None:
+    manifest_data["task"]["reference"] = reference
+
+    with pytest.raises(ValidationError):
+        SessionManifest.model_validate(manifest_data)
+
+
+def test_bundle_reference_must_resolve_existing_task_reference_stream(
+    manifest_data: dict[str, Any],
+) -> None:
+    manifest_data["task"]["reference"] = {
+        "source": "bundle",
+        "reference_id": "commanded-path-v0.1",
+        "stream_id": "task_reference",
+    }
+
+    with pytest.raises(ValidationError):
+        SessionManifest.model_validate(manifest_data)
+
+
+def test_bundle_reference_artifacts_must_stay_below_references(
+    manifest_data: dict[str, Any],
+) -> None:
+    descriptor = _task_reference_descriptor(manifest_data)
+    descriptor["paths"] = ["streams/commanded_path.parquet"]
+    descriptor["checksums"] = {"streams/commanded_path.parquet": "d" * 64}
+    manifest_data["streams"]["task_reference"] = descriptor
+    manifest_data["task"]["reference"] = {
+        "source": "bundle",
+        "reference_id": "commanded-path-v0.1",
+        "stream_id": "task_reference",
+    }
+
+    with pytest.raises(ValidationError):
+        SessionManifest.model_validate(manifest_data)
+
+
+@pytest.mark.parametrize("status", ["export_pending", "missing", "not_applicable"])
+def test_bundle_reference_can_preserve_fileless_status(
+    manifest_data: dict[str, Any], status: str
+) -> None:
+    descriptor = _task_reference_descriptor(manifest_data)
+    descriptor.update(
+        status=status,
+        required_for_import=False,
+        paths=[],
+        clock_sync=None,
+        quality_summary=None,
+        checksums={},
+    )
+    manifest_data["streams"]["task_reference"] = descriptor
+    manifest_data["task"]["reference"] = {
+        "source": "bundle",
+        "reference_id": "commanded-path-v0.1",
+        "stream_id": "task_reference",
+    }
+
+    manifest = SessionManifest.model_validate(manifest_data)
+
+    assert manifest.streams["task_reference"].status.value == status
 
 
 @pytest.mark.parametrize("field", ["session_id", "task", "streams", "privacy"])
@@ -121,6 +261,149 @@ def test_export_pending_requires_empty_paths_and_checksums(
     manifest_data["streams"]["I"]["checksums"] = {"streams/scene.mp4": "c" * 64}
     with pytest.raises(ValidationError):
         SessionManifest.model_validate(manifest_data)
+
+
+def test_invalid_stream_requires_paths_and_matching_checksums(
+    manifest_data: dict[str, Any],
+) -> None:
+    valid_invalid = copy.deepcopy(manifest_data)
+    valid_invalid["streams"]["X"].update(
+        status="invalid",
+        clock_sync=None,
+        quality_summary=None,
+    )
+    manifest = SessionManifest.model_validate(valid_invalid)
+    assert manifest.streams["X"].status is StreamStatus.INVALID
+
+    without_files = copy.deepcopy(manifest_data)
+    without_files["streams"]["X"].update(
+        status="invalid",
+        paths=[],
+        clock_sync=None,
+        quality_summary=None,
+        checksums={},
+    )
+    with pytest.raises(ValidationError):
+        SessionManifest.model_validate(without_files)
+
+
+@pytest.mark.parametrize("status", ["export_pending", "missing", "not_applicable"])
+def test_fileless_stream_statuses_reject_paths_and_checksums(
+    manifest_data: dict[str, Any], status: str
+) -> None:
+    stream = manifest_data["streams"]["I"]
+    stream.update(
+        status=status,
+        required_for_import=False,
+        paths=["streams/scene.mp4"],
+        clock_sync=None,
+        quality_summary=None,
+        checksums={"streams/scene.mp4": "c" * 64},
+    )
+
+    with pytest.raises(ValidationError):
+        SessionManifest.model_validate(manifest_data)
+
+
+@pytest.mark.parametrize("status", ["export_pending", "missing", "not_applicable"])
+def test_fileless_stream_statuses_reject_quality_summary(
+    manifest_data: dict[str, Any], status: str
+) -> None:
+    stream = manifest_data["streams"]["I"]
+    stream.update(
+        status=status,
+        required_for_import=False,
+        paths=[],
+        clock_sync=None,
+        quality_summary={"coverage_ratio": 0.5},
+        checksums={},
+    )
+
+    with pytest.raises(ValidationError):
+        SessionManifest.model_validate(manifest_data)
+
+
+@pytest.mark.parametrize("status", ["missing", "not_applicable"])
+def test_missing_and_not_applicable_reject_clock_sync(
+    manifest_data: dict[str, Any], status: str
+) -> None:
+    stream = manifest_data["streams"]["I"]
+    stream.update(
+        status=status,
+        required_for_import=False,
+        paths=[],
+        clock_sync=copy.deepcopy(manifest_data["streams"]["X"]["clock_sync"]),
+        quality_summary=None,
+        checksums={},
+    )
+
+    with pytest.raises(ValidationError):
+        SessionManifest.model_validate(manifest_data)
+
+
+def test_not_applicable_cannot_be_required_for_import(
+    manifest_data: dict[str, Any],
+) -> None:
+    manifest_data["streams"]["I"].update(
+        status="not_applicable",
+        required_for_import=True,
+        paths=[],
+        clock_sync=None,
+        quality_summary=None,
+        checksums={},
+    )
+
+    with pytest.raises(ValidationError):
+        SessionManifest.model_validate(manifest_data)
+
+
+def test_pending_biometric_modalities_are_unique_and_match_stream_status(
+    manifest_data: dict[str, Any],
+) -> None:
+    duplicate = copy.deepcopy(manifest_data)
+    duplicate["privacy"]["biometric_modalities_export_pending"].append("EEG")
+    with pytest.raises(ValidationError):
+        SessionManifest.model_validate(duplicate)
+
+    incomplete = copy.deepcopy(manifest_data)
+    incomplete["privacy"]["biometric_modalities_export_pending"].remove("EEG")
+    with pytest.raises(ValidationError):
+        SessionManifest.model_validate(incomplete)
+
+
+@pytest.mark.parametrize("status", ["present", "invalid"])
+def test_non_synthetic_real_biometrics_require_privacy_flag(
+    manifest_data: dict[str, Any], status: str
+) -> None:
+    _make_present(manifest_data, "EEG", "streams/eeg.parquet")
+    manifest_data["streams"]["EEG"]["status"] = status
+    if status == "invalid":
+        manifest_data["streams"]["EEG"]["clock_sync"] = None
+    manifest_data["privacy"]["biometric_modalities_export_pending"].remove("EEG")
+
+    with pytest.raises(ValidationError):
+        SessionManifest.model_validate(manifest_data)
+
+    manifest_data["privacy"]["contains_biometric_data"] = True
+    manifest = SessionManifest.model_validate(manifest_data)
+    assert manifest.privacy.contains_biometric_data is True
+
+
+def test_synthetic_present_biometrics_are_not_real_biometric_data(
+    manifest_data: dict[str, Any],
+) -> None:
+    for modality in ("G", "EEG", "ECG", "pilot_camera"):
+        _make_present(manifest_data, modality, f"streams/{modality}.parquet")
+    manifest_data["privacy"].update(
+        classification="synthetic-test-data",
+        contains_biometric_data=False,
+        biometric_modalities_export_pending=[],
+        permitted_use="software-testing-only",
+    )
+
+    manifest = SessionManifest.model_validate(manifest_data)
+
+    assert manifest.privacy.contains_biometric_data is False
 
 
 @pytest.mark.parametrize("sample_rate", [0, -1, math.inf, math.nan])

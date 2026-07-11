@@ -93,17 +93,73 @@ def _session_manifest_schema() -> dict[str, Any]:
         },
         {
             "if": {
-                "properties": {"status": {"const": "export_pending"}},
+                "properties": {"status": {"const": "invalid"}},
                 "required": ["status"],
             },
             "then": {
                 "properties": {
-                    "paths": {"maxItems": 0},
-                    "checksums": {"maxProperties": 0},
+                    "paths": {"minItems": 1},
                 }
             },
         },
+        *[
+            {
+                "if": {
+                    "properties": {"status": {"const": status}},
+                    "required": ["status"],
+                },
+                "then": {
+                    "properties": {
+                        "paths": {"maxItems": 0},
+                        "checksums": {"maxProperties": 0},
+                        "quality_summary": {"type": "null"},
+                    }
+                },
+            }
+            for status in ("export_pending", "missing", "not_applicable")
+        ],
+        *[
+            {
+                "if": {
+                    "properties": {"status": {"const": status}},
+                    "required": ["status"],
+                },
+                "then": {"properties": {"clock_sync": {"type": "null"}}},
+            }
+            for status in ("missing", "not_applicable")
+        ],
+        {
+            "if": {
+                "properties": {"status": {"const": "not_applicable"}},
+                "required": ["status"],
+            },
+            "then": {"properties": {"required_for_import": {"const": False}}},
+        },
     ]
+
+    task_reference = schema["$defs"]["TaskReference"]
+    task_reference["allOf"] = [
+        {
+            "if": {
+                "properties": {"source": {"const": "bundle"}},
+                "required": ["source"],
+            },
+            "then": {
+                "required": ["stream_id"],
+                "properties": {
+                    "stream_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+                    }
+                },
+            },
+            "else": {"properties": {"stream_id": {"type": "null"}}},
+        }
+    ]
+    privacy = schema["$defs"]["PrivacyDefinition"]
+    privacy["properties"]["biometric_modalities_export_pending"]["uniqueItems"] = True
     return schema
 
 

@@ -5,8 +5,10 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
+from types import MappingProxyType
 from typing import Final, Literal, NoReturn
 
 from pydantic import JsonValue, TypeAdapter, ValidationError
@@ -60,6 +62,9 @@ class LoadedManifest:
     bundle_root: Path
     manifest_path: Path
     verified_paths: tuple[str, ...]
+    verified_digests: Mapping[str, str]
+    declared_reference_count: int
+    unique_artifact_count: int
     validation_scope: Literal["inspect_only_structure_and_declared_file_integrity"] = (
         _VALIDATION_SCOPE
     )
@@ -99,7 +104,7 @@ class ManifestLoader:
                 observed=len(declared_paths),
                 field_or_path="manifest.json",
             )
-        self._reject_duplicate_paths(declared_paths)
+        self._validate_path_sharing(manifest, declared_paths)
         resolved_declared = {
             relative_path: self._resolve_declared_file(root, relative_path, kind)
             for relative_path, kind in declared_paths
@@ -115,6 +120,7 @@ class ManifestLoader:
         )
 
         verified_paths: list[str] = []
+        verified_digests: dict[str, str] = {}
         total_hashed_bytes = 0
         for relative_path in required_paths:
             expected_digest = checksum_entries[relative_path]
@@ -153,12 +159,16 @@ class ManifestLoader:
                     },
                 )
             verified_paths.append(relative_path)
+            verified_digests[relative_path] = actual_digest
 
         return LoadedManifest(
             manifest=manifest,
             bundle_root=root,
             manifest_path=manifest_path,
             verified_paths=tuple(sorted(verified_paths)),
+            verified_digests=MappingProxyType(dict(sorted(verified_digests.items()))),
+            declared_reference_count=len(declared_paths),
+            unique_artifact_count=len({path.casefold() for path, _ in declared_paths}),
         )
 
     def _resolve_bundle_root(self, bundle_root: Path) -> Path:
@@ -323,9 +333,9 @@ class ManifestLoader:
 
     def _declared_local_paths(self, manifest: SessionManifest) -> list[tuple[str, str]]:
         declared: list[tuple[str, str]] = []
-        for descriptor in manifest.streams.values():
-            if descriptor.status is StreamStatus.PRESENT:
-                declared.extend((path, "stream") for path in descriptor.paths)
+        for stream_id, descriptor in manifest.streams.items():
+            if descriptor.status in {StreamStatus.PRESENT, StreamStatus.INVALID}:
+                declared.extend((path, f"stream:{stream_id}") for path in descriptor.paths)
         declared.extend(
             [
                 (manifest.annotations.phases, "annotation"),
@@ -336,22 +346,63 @@ class ManifestLoader:
         )
         return declared
 
-    def _reject_duplicate_paths(self, declared_paths: list[tuple[str, str]]) -> None:
-        by_casefold: dict[str, list[str]] = {}
-        for relative_path, _kind in declared_paths:
-            by_casefold.setdefault(relative_path.casefold(), []).append(relative_path)
-        duplicates = [paths for paths in by_casefold.values() if len(paths) > 1]
-        if duplicates:
-            self._fail(
-                error_code="INVALID_MANIFEST",
-                message="Bundle declares duplicate paths under Windows case-insensitive rules",
-                field_or_path="manifest.json",
-                remediation="Give every declared artifact a unique canonical relative path.",
-                diagnostics={"duplicate_paths": duplicates},
+    def _validate_path_sharing(
+        self,
+        manifest: SessionManifest,
+        declared_paths: list[tuple[str, str]],
+    ) -> None:
+        by_casefold: dict[str, list[tuple[str, str]]] = {}
+        for relative_path, kind in declared_paths:
+            by_casefold.setdefault(relative_path.casefold(), []).append(
+                (relative_path, kind)
             )
 
+        invalid_duplicates: list[list[str]] = []
+        for entries in by_casefold.values():
+            if len(entries) == 1:
+                continue
+            paths = [path for path, _kind in entries]
+            kinds = {kind for _path, kind in entries}
+            if (
+                len(entries) != 2
+                or len(set(paths)) != 1
+                or kinds != {"stream:X", "stream:U"}
+                or not self._is_valid_shared_xu(manifest)
+            ):
+                invalid_duplicates.append(paths)
+
+        if invalid_duplicates:
+            self._fail(
+                error_code="INVALID_MANIFEST",
+                message="Bundle declares unsupported duplicate artifact paths",
+                field_or_path="manifest.json",
+                remediation=(
+                    "Use unique canonical paths, except for one explicitly profiled "
+                    "shared X/U source with distinct logical views."
+                ),
+                diagnostics={"duplicate_paths": invalid_duplicates},
+            )
+
+    @staticmethod
+    def _is_valid_shared_xu(manifest: SessionManifest) -> bool:
+        x_stream = manifest.streams["X"]
+        u_stream = manifest.streams["U"]
+        x_shared_id = x_stream.metadata.get("shared_source_id")
+        u_shared_id = u_stream.metadata.get("shared_source_id")
+        return (
+            x_stream.paths == u_stream.paths
+            and x_stream.checksums == u_stream.checksums
+            and x_stream.format == u_stream.format
+            and x_stream.schema_id == u_stream.schema_id
+            and isinstance(x_shared_id, str)
+            and bool(x_shared_id)
+            and x_shared_id == u_shared_id
+            and x_stream.metadata.get("view_id") == "X"
+            and u_stream.metadata.get("view_id") == "U"
+        )
+
     def _resolve_declared_file(self, root: Path, relative_path: str, kind: str) -> Path:
-        error_code = "STREAM_MISSING" if kind == "stream" else "INVALID_MANIFEST"
+        error_code = "STREAM_MISSING" if kind.startswith("stream:") else "INVALID_MANIFEST"
         return self._resolve_file_below_root(
             root,
             relative_path,
@@ -489,7 +540,7 @@ class ManifestLoader:
             )
 
         for descriptor in manifest.streams.values():
-            if descriptor.status is not StreamStatus.PRESENT:
+            if descriptor.status not in {StreamStatus.PRESENT, StreamStatus.INVALID}:
                 continue
             for relative_path, descriptor_digest in descriptor.checksums.items():
                 checksum_digest = checksum_entries.get(relative_path)

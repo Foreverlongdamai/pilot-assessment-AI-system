@@ -37,6 +37,30 @@ def _write_manifest(root: Path, manifest: dict[str, Any]) -> None:
     )
 
 
+def _write_declared_checksums(root: Path, manifest: dict[str, Any]) -> None:
+    paths = {
+        path
+        for descriptor in manifest["streams"].values()
+        if descriptor["status"] in {"present", "invalid"}
+        for path in descriptor["paths"]
+    }
+    paths.update(
+        {
+            manifest["annotations"]["phases"],
+            manifest["annotations"]["events"],
+            manifest["annotations"]["baseline_intervals"],
+        }
+    )
+    checksum_lines = []
+    for relative_path in sorted(paths):
+        artifact = root / Path(*relative_path.split("/"))
+        checksum_lines.append(f"{_sha256(artifact.read_bytes())}  {relative_path}")
+    _write(
+        root / "integrity" / "checksums.sha256",
+        ("\n".join(checksum_lines) + "\n").encode(),
+    )
+
+
 def _build_valid_bundle(root: Path) -> dict[str, Any]:
     manifest: dict[str, Any] = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
     files = {
@@ -67,6 +91,54 @@ def _build_valid_bundle(root: Path) -> dict[str, Any]:
     return manifest
 
 
+def _configure_shared_xu(root: Path, manifest: dict[str, Any]) -> dict[str, Any]:
+    path = "streams/simulator.csv"
+    payload = b"time,state,control\n0.0,1.0,0.0\n"
+    _write(root / "streams" / "simulator.csv", payload)
+    digest = _sha256(payload)
+    for modality in ("X", "U"):
+        manifest["streams"][modality].update(
+            paths=[path],
+            format="csv",
+            schema_id="cranfield-simulator-combined-csv-raw-v0.1",
+            checksums={path: digest},
+            metadata={
+                "adapter_profile_id": "cranfield-simulator-combined-csv-raw-v0.1",
+                "shared_source_id": "simulator-main",
+                "view_id": modality,
+            },
+        )
+    _write_declared_checksums(root, manifest)
+    _write_manifest(root, manifest)
+    return manifest
+
+
+def _add_bundle_task_reference(root: Path, manifest: dict[str, Any]) -> None:
+    path = "references/commanded_path.parquet"
+    payload = b"synthetic commanded path\n"
+    _write(root / "references" / "commanded_path.parquet", payload)
+    descriptor = copy.deepcopy(manifest["streams"]["X"])
+    descriptor.update(
+        modality="task_reference",
+        required_for_import=False,
+        paths=[path],
+        format="parquet",
+        schema_id="task-reference-path-raw-v0.1",
+        units="task-reference-units-v0.1",
+        quality_summary=None,
+        checksums={path: _sha256(payload)},
+        metadata={"artifact_role": "task_reference"},
+    )
+    manifest["streams"]["task_reference"] = descriptor
+    manifest["task"]["reference"] = {
+        "source": "bundle",
+        "reference_id": "commanded-path-v0.1",
+        "stream_id": "task_reference",
+    }
+    _write_declared_checksums(root, manifest)
+    _write_manifest(root, manifest)
+
+
 def _snapshot_files(root: Path) -> dict[str, bytes]:
     return {
         path.relative_to(root).as_posix(): path.read_bytes()
@@ -87,6 +159,8 @@ def test_valid_directory_bundle_loads_without_mutating_sources(tmp_path: Path) -
     assert "streams/flight_state.parquet" in loaded.verified_paths
     assert "streams/scene.mp4" not in loaded.verified_paths
     assert not (tmp_path / "streams" / "scene.mp4").exists()
+    assert loaded.declared_reference_count == 6
+    assert loaded.unique_artifact_count == 6
     assert _snapshot_files(tmp_path) == before
 
 
@@ -249,6 +323,132 @@ def test_hash_budget_is_enforced_before_unbounded_io(tmp_path: Path) -> None:
 
     assert caught.value.error.error_code == "INVALID_MANIFEST"
     assert caught.value.error.diagnostics["limit_name"] == "max_single_file_bytes"
+
+
+def test_shared_xu_artifact_is_verified_once_and_counts_logical_views(
+    tmp_path: Path,
+) -> None:
+    manifest = _build_valid_bundle(tmp_path)
+    _configure_shared_xu(tmp_path, manifest)
+
+    loaded = ManifestLoader().load(tmp_path)
+
+    assert loaded.declared_reference_count == 6
+    assert loaded.unique_artifact_count == 5
+    assert loaded.verified_paths.count("streams/simulator.csv") == 1
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("format", "parquet"),
+        ("schema_id", "other-combined-schema-v0.1"),
+        ("shared_source_id", "other-source"),
+        ("view_id", "X"),
+    ],
+)
+def test_shared_xu_requires_identical_physical_identity_and_distinct_views(
+    tmp_path: Path, field: str, value: str
+) -> None:
+    manifest = _build_valid_bundle(tmp_path)
+    _configure_shared_xu(tmp_path, manifest)
+    if field in {"shared_source_id", "view_id"}:
+        manifest["streams"]["U"]["metadata"][field] = value
+    else:
+        manifest["streams"]["U"][field] = value
+    _write_manifest(tmp_path, manifest)
+
+    with pytest.raises(ManifestLoadError) as caught:
+        ManifestLoader().load(tmp_path)
+
+    assert caught.value.error.error_code == "INVALID_MANIFEST"
+    assert caught.value.error.diagnostics["duplicate_paths"]
+
+
+def test_shared_xu_requires_identical_descriptor_digest(tmp_path: Path) -> None:
+    manifest = _build_valid_bundle(tmp_path)
+    _configure_shared_xu(tmp_path, manifest)
+    manifest["streams"]["U"]["checksums"]["streams/simulator.csv"] = "f" * 64
+    _write_manifest(tmp_path, manifest)
+
+    with pytest.raises(ManifestLoadError) as caught:
+        ManifestLoader().load(tmp_path)
+
+    assert caught.value.error.error_code == "INVALID_MANIFEST"
+
+
+def test_shared_xu_rejects_case_only_path_alias(tmp_path: Path) -> None:
+    manifest = _build_valid_bundle(tmp_path)
+    _configure_shared_xu(tmp_path, manifest)
+    digest = manifest["streams"]["U"]["checksums"].pop("streams/simulator.csv")
+    manifest["streams"]["U"]["paths"] = ["STREAMS/simulator.csv"]
+    manifest["streams"]["U"]["checksums"] = {"STREAMS/simulator.csv": digest}
+    _write_manifest(tmp_path, manifest)
+
+    with pytest.raises(ManifestLoadError) as caught:
+        ManifestLoader().load(tmp_path)
+
+    assert caught.value.error.error_code == "INVALID_MANIFEST"
+
+
+def test_only_x_and_u_may_share_a_stream_artifact(tmp_path: Path) -> None:
+    manifest = _build_valid_bundle(tmp_path)
+    _configure_shared_xu(tmp_path, manifest)
+    manifest["streams"]["THERMAL"] = copy.deepcopy(manifest["streams"]["X"])
+    manifest["streams"]["THERMAL"].update(
+        modality="THERMAL",
+        metadata={
+            **manifest["streams"]["X"]["metadata"],
+            "view_id": "THERMAL",
+        },
+    )
+    _write_manifest(tmp_path, manifest)
+
+    with pytest.raises(ManifestLoadError) as caught:
+        ManifestLoader().load(tmp_path)
+
+    assert caught.value.error.error_code == "INVALID_MANIFEST"
+
+
+def test_stream_artifact_cannot_share_an_annotation_role(tmp_path: Path) -> None:
+    manifest = _build_valid_bundle(tmp_path)
+    _configure_shared_xu(tmp_path, manifest)
+    manifest["annotations"]["phases"] = "streams/simulator.csv"
+    _write_manifest(tmp_path, manifest)
+
+    with pytest.raises(ManifestLoadError) as caught:
+        ManifestLoader().load(tmp_path)
+
+    assert caught.value.error.error_code == "INVALID_MANIFEST"
+
+
+def test_invalid_stream_artifacts_still_cross_integrity_gate(tmp_path: Path) -> None:
+    manifest = _build_valid_bundle(tmp_path)
+    manifest["streams"]["X"].update(
+        status="invalid",
+        clock_sync=None,
+        quality_summary=None,
+    )
+    _write_manifest(tmp_path, manifest)
+
+    loaded = ManifestLoader().load(tmp_path)
+    assert "streams/flight_state.parquet" in loaded.verified_paths
+
+    (tmp_path / "streams" / "flight_state.parquet").write_bytes(b"tampered")
+    with pytest.raises(ManifestLoadError) as caught:
+        ManifestLoader().load(tmp_path)
+    assert caught.value.error.error_code == "CHECKSUM_MISMATCH"
+
+
+def test_bundle_task_reference_is_verified_as_reference_artifact(tmp_path: Path) -> None:
+    manifest = _build_valid_bundle(tmp_path)
+    _add_bundle_task_reference(tmp_path, manifest)
+
+    loaded = ManifestLoader().load(tmp_path)
+
+    assert "references/commanded_path.parquet" in loaded.verified_paths
+    assert loaded.declared_reference_count == 7
+    assert loaded.unique_artifact_count == 7
 
 
 def test_case_insensitive_duplicate_declared_paths_are_rejected(tmp_path: Path) -> None:
