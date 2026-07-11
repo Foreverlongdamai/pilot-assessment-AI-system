@@ -5,6 +5,7 @@
 | 设计状态 | 已批准实施 |
 | 日期 | 2026-07-11 |
 | 用户批准 | 2026-07-11 |
+| M3 口径修订 | 2026-07-12：session window 权威移交 M3 §7 / D-018 |
 | 上位基线 | Product design v0.1 + Backend Foundation M1 |
 | 本阶段 | M2：理想多模态合同、合成 bundle、全模态 ingestion readiness inspection |
 | 科学状态 | synthetic_test_only / not_supported |
@@ -352,7 +353,7 @@ M2 synthetic profile 使用 15 Hz、48×48 RGB8 PNG image sequence；生产 prof
 | ECG | +9 ms | +10 ppm |
 | pilot_camera | +15 ms | 0 ppm |
 
-Source grid 始终从 0 开始，因此 source timestamp 非负；offset 可使映射后的 session time 落在 `[0,T]` 之外。M3 必须先以 round-half-even 生成 int64 ns，再以 `0 <= t_ns <= round(T×10^9)` 标记 in-session rows，不删除 RawStream。这样正负 offset、drift、端点与 sample count 都有唯一 golden answer。
+Source grid 始终从 0 开始，因此 source timestamp 非负；offset 可使映射后的 session time 落在 session window 之外。本文最初以 `0 <= t_ns <= round(T×10^9)` 描述 M3 synthetic golden mask；自 2026-07-12 批准的 M3 规格 §7 与 D-018 起，权威规则改为 `0 <= t_ns <= max(mapped X primary-table t_ns)`，window source 固定为 `master-clock-x-mapped-coverage-v1`，且不删除 RawStream。当前 2.0 s micro 与 29.01 s real-X/U golden 中，X 末样本恰好等于 T，所以两种表达得到完全相同的 frozen counts；未来 `T×f` 非整数时必须以 M3 §7 为准，不再使用 `round(T×10^9)` 推断 session end。
 
 这满足 M1 对 present stream 必须声明 `clock_sync` 的结构要求。M2 只验证并保留 source timestamp 与 mapping，不执行对齐，也不生成最终 authoritative `t_ns`；M3 负责应用 mapping、生成统一 session timebase，并与上述 synthetic truth 做 golden comparison。
 

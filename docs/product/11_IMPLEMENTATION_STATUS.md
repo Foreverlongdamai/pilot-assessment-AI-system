@@ -203,7 +203,7 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 1. 对每个 RawStream 应用 `clock_sync.scale/offset/drift`；
 2. 使用 round-half-even 生成 int64 session `t_ns`；
 3. 保留 raw source rows，并显式标记 in-session/out-of-session；
-4. 建立统一 analysis/window grids 与 coverage；
+4. 建立 native-rate temporal coverage、gap、duplicate 和越界指标；anchor-specific analysis/window grid 留给 M4；
 5. 验证 phase/event/baseline/reference 的 session-time 语义；
 6. 输出可供 M4 anchor engine 消费的 aligned session，同时继续保持 `formal_run_authorized=false`。
 
