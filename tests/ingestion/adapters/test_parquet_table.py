@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
+from dataclasses import replace
 from pathlib import Path
 
 import polars as pl
@@ -9,6 +10,10 @@ import pytest
 from pydantic import JsonValue
 
 from pilot_assessment.ingestion.adapters.base import AdapterInspectionError
+from pilot_assessment.ingestion.adapters.limits import (
+    DEFAULT_ADAPTER_RESOURCE_LIMITS,
+    AdapterResourceLimits,
+)
 from pilot_assessment.ingestion.adapters.parquet_table import (
     inspect_eeg_sidecar,
     inspect_parquet_table,
@@ -97,6 +102,20 @@ def test_parquet_table_accepts_exact_profile_and_nullable_measurements(tmp_path:
     inspected = inspect_parquet_table(path, profile)
 
     assert inspected.equals(frame)
+
+
+def test_gaze_null_measurement_requires_invalid_binocular_signal_or_blink(
+    tmp_path: Path,
+) -> None:
+    profile = _table_profile("gaze-sample-raw-v0.1")
+    frame = _gaze_frame().with_columns(pl.Series("blink", [False, False, False], dtype=pl.Boolean))
+    path = tmp_path / "gaze_samples.parquet"
+    write_profiled_parquet(frame, path, schema_id=profile.schema_id)
+
+    with pytest.raises(AdapterInspectionError) as caught:
+        inspect_parquet_table(path, profile)
+
+    assert caught.value.issue.error_code == "STREAM_TYPE_INVALID"
 
 
 @pytest.mark.parametrize(
@@ -281,7 +300,11 @@ def _valid_sidecar() -> dict[str, object]:
     }
 
 
-def _inspect_sidecar(path: Path) -> dict[str, JsonValue]:
+def _inspect_sidecar(
+    path: Path,
+    *,
+    limits: AdapterResourceLimits = DEFAULT_ADAPTER_RESOURCE_LIMITS,
+) -> dict[str, JsonValue]:
     return inspect_eeg_sidecar(
         path,
         _sidecar_profile(),
@@ -291,6 +314,7 @@ def _inspect_sidecar(path: Path) -> dict[str, JsonValue]:
         expected_sample_rate_hz=256.0,
         expected_generator_id="synthetic-multimodal-generator-v0.1",
         expected_seed=20260711,
+        limits=limits,
     )
 
 
@@ -372,3 +396,72 @@ def test_eeg_sidecar_rejects_non_strict_json(tmp_path: Path, payload: bytes) -> 
         _inspect_sidecar(path)
 
     assert caught.value.issue.error_code == "STREAM_FORMAT_INVALID"
+
+
+def test_parquet_byte_row_and_column_limits_precede_eager_table_read(
+    tmp_path: Path,
+) -> None:
+    profile = _table_profile("gaze-sample-raw-v0.1")
+    frame = _gaze_frame()
+
+    byte_path = tmp_path / "byte_limit.parquet"
+    write_profiled_parquet(frame, byte_path, schema_id=profile.schema_id)
+    byte_limits = replace(
+        DEFAULT_ADAPTER_RESOURCE_LIMITS,
+        max_parquet_bytes=byte_path.stat().st_size - 1,
+    )
+    with pytest.raises(AdapterInspectionError) as byte_error:
+        inspect_parquet_table(byte_path, profile, limits=byte_limits)
+    assert byte_error.value.issue.diagnostics["limit_name"] == "max_parquet_bytes"
+
+    row_path = tmp_path / "row_limit.parquet"
+    write_profiled_parquet(frame, row_path, schema_id=profile.schema_id)
+    row_limits = replace(DEFAULT_ADAPTER_RESOURCE_LIMITS, max_parquet_rows=2)
+    with pytest.raises(AdapterInspectionError) as row_error:
+        inspect_parquet_table(row_path, profile, limits=row_limits)
+    assert row_error.value.issue.diagnostics["limit_name"] == "max_parquet_rows"
+
+    column_path = tmp_path / "column_limit.parquet"
+    write_profiled_parquet(frame, column_path, schema_id=profile.schema_id)
+    column_limits = replace(
+        DEFAULT_ADAPTER_RESOURCE_LIMITS,
+        max_parquet_columns=len(frame.columns) - 1,
+    )
+    with pytest.raises(AdapterInspectionError) as column_error:
+        inspect_parquet_table(column_path, profile, limits=column_limits)
+    assert column_error.value.issue.diagnostics["limit_name"] == "max_parquet_columns"
+
+
+def test_parquet_string_limit_is_checked_before_full_table_materialization(
+    tmp_path: Path,
+) -> None:
+    profile = _table_profile("gaze-sample-raw-v0.1")
+    path = tmp_path / "gaze_samples.parquet"
+    write_profiled_parquet(_gaze_frame(), path, schema_id=profile.schema_id)
+    limits = replace(DEFAULT_ADAPTER_RESOURCE_LIMITS, max_parquet_string_chars=2)
+
+    with pytest.raises(AdapterInspectionError) as caught:
+        inspect_parquet_table(path, profile, limits=limits)
+
+    assert caught.value.issue.error_code == "ADAPTER_RESOURCE_LIMIT_EXCEEDED"
+    assert caught.value.issue.diagnostics["limit_name"] == "max_parquet_string_chars"
+
+
+def test_json_byte_and_string_limits_are_enforced(tmp_path: Path) -> None:
+    payload = json.dumps(_valid_sidecar()).encode("utf-8")
+    byte_path = tmp_path / "byte_limit.json"
+    byte_path.write_bytes(payload)
+    byte_limits = replace(
+        DEFAULT_ADAPTER_RESOURCE_LIMITS,
+        max_json_bytes=len(payload) - 1,
+    )
+    with pytest.raises(AdapterInspectionError) as byte_error:
+        _inspect_sidecar(byte_path, limits=byte_limits)
+    assert byte_error.value.issue.diagnostics["limit_name"] == "max_json_bytes"
+
+    string_path = tmp_path / "string_limit.json"
+    string_path.write_bytes(payload)
+    string_limits = replace(DEFAULT_ADAPTER_RESOURCE_LIMITS, max_json_string_chars=4)
+    with pytest.raises(AdapterInspectionError) as string_error:
+        _inspect_sidecar(string_path, limits=string_limits)
+    assert string_error.value.issue.diagnostics["limit_name"] == "max_json_string_chars"

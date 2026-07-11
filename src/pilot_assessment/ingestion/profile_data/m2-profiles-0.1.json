@@ -143,7 +143,22 @@
       "expected_sample_rate_hz": 120.0,
       "sample_rate_tolerance_fraction": 0.01,
       "min_valid_fraction": 0.98,
-      "allow_extra_columns": false
+      "allow_extra_columns": false,
+      "extensions": {
+        "nullable_measurement_guard": "binocular_valid_false_or_blink_true",
+        "nullable_measurement_columns": [
+          "viewport_x_norm",
+          "viewport_y_norm",
+          "origin_x_m",
+          "origin_y_m",
+          "origin_z_m",
+          "ray_x",
+          "ray_y",
+          "ray_z",
+          "left_pupil_mm",
+          "right_pupil_mm"
+        ]
+      }
     },
     {
       "kind": "table",

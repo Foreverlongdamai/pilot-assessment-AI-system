@@ -20,6 +20,11 @@ from pilot_assessment.ingestion.adapters.base import (
     AdapterRequest,
     AdapterResult,
 )
+from pilot_assessment.ingestion.adapters.limits import (
+    DEFAULT_ADAPTER_RESOURCE_LIMITS,
+    AdapterResourceLimits,
+    enforce_resource_limit,
+)
 from pilot_assessment.ingestion.models import NormalizedStream
 from pilot_assessment.ingestion.profiles import CsvColumnRole, CsvProfile
 
@@ -30,6 +35,12 @@ class ProfiledCsvAdapter:
     adapter_id = "profiled-csv"
     adapter_version = "0.1.0"
     keys = frozenset({("csv", "cranfield-simulator-combined-csv-raw-v0.1")})
+
+    def __init__(
+        self,
+        limits: AdapterResourceLimits = DEFAULT_ADAPTER_RESOURCE_LIMITS,
+    ) -> None:
+        self._limits = limits
 
     def inspect(self, request: AdapterRequest) -> AdapterResult:
         profile = request.profile
@@ -48,16 +59,7 @@ class ProfiledCsvAdapter:
 
         relative_path = request.source_paths[0]
         source_path = _safe_source_path(request.bundle_root, relative_path)
-        try:
-            payload = source_path.read_bytes()
-        except OSError as error:
-            _fail(
-                "SOURCE_CHANGED_DURING_READINESS",
-                "Verified CSV source can no longer be read",
-                field_or_path=relative_path,
-                remediation="Re-run Session Bundle integrity inspection.",
-                diagnostics={"exception_type": type(error).__name__},
-            )
+        payload = _read_bounded_csv(source_path, relative_path, self._limits)
         expected_digest = request.verified_digests[relative_path]
         if hashlib.sha256(payload).hexdigest() != expected_digest:
             _fail(
@@ -67,7 +69,12 @@ class ProfiledCsvAdapter:
                 remediation="Stop ingestion and re-run Session Bundle integrity inspection.",
             )
 
-        raw_headers = _validate_csv_structure(payload, profile, relative_path)
+        raw_headers = _validate_csv_structure(
+            payload,
+            profile,
+            relative_path,
+            self._limits,
+        )
         frame = _read_numeric_frame(payload, raw_headers, relative_path)
         canonical = _canonicalize_and_validate(frame, raw_headers, profile, relative_path)
         context = _extract_context(canonical, profile, relative_path)
@@ -75,8 +82,12 @@ class ProfiledCsvAdapter:
         streams = _build_views(canonical, request, profile)
 
         try:
-            changed_during_read = source_path.read_bytes() != payload
-        except OSError:
+            changed_during_read = (
+                _read_bounded_csv(source_path, relative_path, self._limits) != payload
+            )
+        except AdapterInspectionError as error:
+            if error.issue.error_code == "ADAPTER_RESOURCE_LIMIT_EXCEEDED":
+                raise
             changed_during_read = True
         if changed_during_read:
             _fail(
@@ -126,6 +137,7 @@ def _validate_csv_structure(
     payload: bytes,
     profile: CsvProfile,
     relative_path: str,
+    limits: AdapterResourceLimits,
 ) -> tuple[str, ...]:
     try:
         text = payload.decode("utf-8-sig", errors="strict")
@@ -140,6 +152,26 @@ def _validate_csv_structure(
     try:
         rows = csv.reader(io.StringIO(text, newline=""), strict=True)
         raw_headers = tuple(next(rows))
+        enforce_resource_limit(
+            limit_name="max_csv_columns",
+            limit=limits.max_csv_columns,
+            observed=len(raw_headers),
+            field_or_path=relative_path,
+        )
+        header_bytes = len(",".join(raw_headers).encode("utf-8"))
+        enforce_resource_limit(
+            limit_name="max_csv_header_bytes",
+            limit=limits.max_csv_header_bytes,
+            observed=header_bytes,
+            field_or_path=relative_path,
+        )
+        longest_header = max((len(header) for header in raw_headers), default=0)
+        enforce_resource_limit(
+            limit_name="max_csv_field_chars",
+            limit=limits.max_csv_field_chars,
+            observed=longest_header,
+            field_or_path=relative_path,
+        )
         normalized = tuple(header.strip(" \t") for header in raw_headers)
         if not raw_headers or any(not header for header in normalized):
             raise ValueError("CSV header contains an empty normalized name")
@@ -162,6 +194,12 @@ def _validate_csv_structure(
                 diagnostics={"missing_headers": missing},
             )
         for row_number, row in enumerate(rows, start=2):
+            enforce_resource_limit(
+                limit_name="max_csv_rows",
+                limit=limits.max_csv_rows,
+                observed=row_number - 1,
+                field_or_path=relative_path,
+            )
             if len(row) != len(raw_headers):
                 _fail(
                     "STREAM_FORMAT_INVALID",
@@ -174,6 +212,13 @@ def _validate_csv_structure(
                         "actual_columns": len(row),
                     },
                 )
+            longest_field = max((len(value) for value in row), default=0)
+            enforce_resource_limit(
+                limit_name="max_csv_field_chars",
+                limit=limits.max_csv_field_chars,
+                observed=longest_field,
+                field_or_path=relative_path,
+            )
     except (csv.Error, StopIteration, ValueError) as error:
         _fail(
             "STREAM_FORMAT_INVALID",
@@ -183,6 +228,40 @@ def _validate_csv_structure(
             diagnostics={"exception_type": type(error).__name__},
         )
     return raw_headers
+
+
+def _read_bounded_csv(
+    source_path: Path,
+    relative_path: str,
+    limits: AdapterResourceLimits,
+) -> bytes:
+    try:
+        observed_size = source_path.stat().st_size
+        enforce_resource_limit(
+            limit_name="max_csv_bytes",
+            limit=limits.max_csv_bytes,
+            observed=observed_size,
+            field_or_path=relative_path,
+        )
+        with source_path.open("rb") as source:
+            payload = source.read(limits.max_csv_bytes + 1)
+    except AdapterInspectionError:
+        raise
+    except OSError as error:
+        _fail(
+            "SOURCE_CHANGED_DURING_READINESS",
+            "Verified CSV source can no longer be read",
+            field_or_path=relative_path,
+            remediation="Re-run Session Bundle integrity inspection.",
+            diagnostics={"exception_type": type(error).__name__},
+        )
+    enforce_resource_limit(
+        limit_name="max_csv_bytes",
+        limit=limits.max_csv_bytes,
+        observed=len(payload),
+        field_or_path=relative_path,
+    )
+    return payload
 
 
 def _read_numeric_frame(

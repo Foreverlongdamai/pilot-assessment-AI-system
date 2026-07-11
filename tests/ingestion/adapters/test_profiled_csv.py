@@ -4,6 +4,7 @@ import csv
 import hashlib
 import io
 from collections.abc import Callable
+from dataclasses import replace
 from pathlib import Path
 
 import polars as pl
@@ -11,6 +12,7 @@ import pytest
 
 from pilot_assessment.contracts.session import StreamDescriptor
 from pilot_assessment.ingestion.adapters.base import AdapterInspectionError, AdapterRequest
+from pilot_assessment.ingestion.adapters.limits import DEFAULT_ADAPTER_RESOURCE_LIMITS
 from pilot_assessment.ingestion.adapters.profiled_csv import ProfiledCsvAdapter
 from pilot_assessment.ingestion.profiles import CsvProfile, load_builtin_profiles
 
@@ -134,9 +136,7 @@ def _request(tmp_path: Path, payload: bytes) -> AdapterRequest:
     source.parent.mkdir(parents=True)
     source.write_bytes(payload)
     digest = hashlib.sha256(payload).hexdigest()
-    profile = load_builtin_profiles()[
-        "cranfield-simulator-combined-csv-raw-v0.1"
-    ]
+    profile = load_builtin_profiles()["cranfield-simulator-combined-csv-raw-v0.1"]
     assert isinstance(profile, CsvProfile)
     return AdapterRequest(
         bundle_root=tmp_path,
@@ -252,9 +252,7 @@ def test_unit_residual_has_warning_and_invalid_thresholds(tmp_path: Path) -> Non
     warning_result = ProfiledCsvAdapter().inspect(
         _request(tmp_path / "warning", _csv_bytes(HEADERS, warning_rows))
     )
-    assert [issue.error_code for issue in warning_result.issues] == [
-        "STREAM_UNIT_MISMATCH"
-    ]
+    assert [issue.error_code for issue in warning_result.issues] == ["STREAM_UNIT_MISMATCH"]
 
     invalid_rows = _rows()
     invalid_rows[50][8] = str(float(invalid_rows[50][8]) + 0.03)
@@ -267,11 +265,68 @@ def test_unit_residual_has_warning_and_invalid_thresholds(tmp_path: Path) -> Non
 
 def test_source_digest_change_is_rejected(tmp_path: Path) -> None:
     request = _request(tmp_path, _csv_bytes(HEADERS, _rows()))
-    request.bundle_root.joinpath(*request.source_paths[0].split("/")).write_bytes(
-        b"changed"
-    )
+    request.bundle_root.joinpath(*request.source_paths[0].split("/")).write_bytes(b"changed")
 
     with pytest.raises(AdapterInspectionError) as caught:
         ProfiledCsvAdapter().inspect(request)
 
     assert caught.value.issue.error_code == "SOURCE_CHANGED_DURING_READINESS"
+
+
+def test_csv_byte_limit_is_enforced_before_payload_materialization(tmp_path: Path) -> None:
+    payload = _csv_bytes(HEADERS, _rows())
+    request = _request(tmp_path, payload)
+    limits = replace(DEFAULT_ADAPTER_RESOURCE_LIMITS, max_csv_bytes=len(payload) - 1)
+
+    with pytest.raises(AdapterInspectionError) as caught:
+        ProfiledCsvAdapter(limits=limits).inspect(request)
+
+    assert caught.value.issue.error_code == "ADAPTER_RESOURCE_LIMIT_EXCEEDED"
+    assert caught.value.issue.diagnostics["limit_name"] == "max_csv_bytes"
+
+
+def test_csv_row_limit_is_enforced_before_polars_read(tmp_path: Path) -> None:
+    request = _request(tmp_path, _csv_bytes(HEADERS, _rows()))
+    limits = replace(DEFAULT_ADAPTER_RESOURCE_LIMITS, max_csv_rows=200)
+
+    with pytest.raises(AdapterInspectionError) as caught:
+        ProfiledCsvAdapter(limits=limits).inspect(request)
+
+    assert caught.value.issue.error_code == "ADAPTER_RESOURCE_LIMIT_EXCEEDED"
+    assert caught.value.issue.diagnostics["limit_name"] == "max_csv_rows"
+
+
+def test_csv_column_and_header_limits_are_enforced_before_polars_read(
+    tmp_path: Path,
+) -> None:
+    request = _request(tmp_path / "columns", _csv_bytes(HEADERS, _rows()))
+    column_limits = replace(
+        DEFAULT_ADAPTER_RESOURCE_LIMITS,
+        max_csv_columns=len(HEADERS) - 1,
+    )
+    with pytest.raises(AdapterInspectionError) as column_error:
+        ProfiledCsvAdapter(limits=column_limits).inspect(request)
+    assert column_error.value.issue.diagnostics["limit_name"] == "max_csv_columns"
+
+    header_request = _request(tmp_path / "header", _csv_bytes(HEADERS, _rows()))
+    header_limits = replace(DEFAULT_ADAPTER_RESOURCE_LIMITS, max_csv_header_bytes=16)
+    with pytest.raises(AdapterInspectionError) as header_error:
+        ProfiledCsvAdapter(limits=header_limits).inspect(header_request)
+    assert header_error.value.issue.diagnostics["limit_name"] == "max_csv_header_bytes"
+
+
+def test_csv_field_length_limit_is_enforced_before_polars_read(tmp_path: Path) -> None:
+    rows = _rows()
+    longest_header = max(len(header) for header in HEADERS)
+    rows[0][1] = "9" * (longest_header + 1)
+    request = _request(tmp_path, _csv_bytes(HEADERS, rows))
+    limits = replace(
+        DEFAULT_ADAPTER_RESOURCE_LIMITS,
+        max_csv_field_chars=longest_header,
+    )
+
+    with pytest.raises(AdapterInspectionError) as caught:
+        ProfiledCsvAdapter(limits=limits).inspect(request)
+
+    assert caught.value.issue.error_code == "ADAPTER_RESOURCE_LIMIT_EXCEEDED"
+    assert caught.value.issue.diagnostics["limit_name"] == "max_csv_field_chars"

@@ -15,6 +15,11 @@ from pydantic import JsonValue
 from pilot_assessment.contracts.common import INT64_MAX, INT64_MIN
 from pilot_assessment.contracts.errors import DomainErrorData, ErrorSeverity
 from pilot_assessment.ingestion.adapters.base import AdapterInspectionError
+from pilot_assessment.ingestion.adapters.limits import (
+    DEFAULT_ADAPTER_RESOURCE_LIMITS,
+    AdapterResourceLimits,
+    enforce_resource_limit,
+)
 from pilot_assessment.ingestion.parquet_io import read_profiled_parquet_metadata
 from pilot_assessment.ingestion.profiles import (
     JsonFieldType,
@@ -31,17 +36,24 @@ _VALIDITY_COLUMNS = (
     "binocular_valid",
     "fixation_valid",
 )
-_NULLABLE_MEASUREMENT_GUARD = "signal_valid_false_or_artifact_code_present"
+_SIGNAL_NULLABLE_MEASUREMENT_GUARD = "signal_valid_false_or_artifact_code_present"
+_GAZE_NULLABLE_MEASUREMENT_GUARD = "binocular_valid_false_or_blink_true"
 
 
 class _DuplicateJsonKey(ValueError):
     pass
 
 
-def inspect_parquet_table(path: str | Path, profile: TableProfile) -> pl.DataFrame:
+def inspect_parquet_table(
+    path: str | Path,
+    profile: TableProfile,
+    *,
+    limits: AdapterResourceLimits = DEFAULT_ADAPTER_RESOURCE_LIMITS,
+) -> pl.DataFrame:
     """Read one immutable Parquet artifact only after exact profile validation."""
 
     source = Path(path)
+    _validate_file_size(source, limits.max_parquet_bytes, "max_parquet_bytes")
     metadata = _read_metadata(source)
     if metadata != {
         "contract_version": _CONTRACT_VERSION,
@@ -63,6 +75,12 @@ def inspect_parquet_table(path: str | Path, profile: TableProfile) -> pl.DataFra
         physical_schema = list(pl.read_parquet_schema(source).items())
     except (OSError, pl.exceptions.PolarsError) as error:
         _format_failure(source, error, "Parquet physical schema cannot be read")
+    enforce_resource_limit(
+        limit_name="max_parquet_columns",
+        limit=limits.max_parquet_columns,
+        observed=len(physical_schema),
+        field_or_path=source,
+    )
     if physical_schema != expected_schema:
         _fail(
             "STREAM_SCHEMA_MISMATCH",
@@ -74,6 +92,8 @@ def inspect_parquet_table(path: str | Path, profile: TableProfile) -> pl.DataFra
                 "actual_schema": _schema_diagnostics(physical_schema),
             },
         )
+
+    _validate_parquet_statistics(source, profile, limits)
 
     try:
         frame = pl.read_parquet(source)
@@ -112,11 +132,12 @@ def inspect_eeg_sidecar(
     expected_sample_rate_hz: float,
     expected_generator_id: str,
     expected_seed: int,
+    limits: AdapterResourceLimits = DEFAULT_ADAPTER_RESOURCE_LIMITS,
 ) -> dict[str, JsonValue]:
     """Validate the strict M2 synthetic EEG sidecar and its table linkage."""
 
     source = Path(path)
-    payload = _parse_profiled_json(source, profile)
+    payload = _parse_profiled_json(source, profile, limits)
     if payload["schema_id"] != profile.schema_id:
         _sidecar_mismatch(source, "schema_id", profile.schema_id, payload["schema_id"])
 
@@ -237,40 +258,75 @@ def _validate_nullable_measurement_guard(
     guard = profile.extensions.get("nullable_measurement_guard")
     if guard is None:
         return
-    if guard != _NULLABLE_MEASUREMENT_GUARD:
+    if guard == _SIGNAL_NULLABLE_MEASUREMENT_GUARD:
+        required_guard_columns = {"signal_valid", "artifact_code"}
+        guarded = (~frame["signal_valid"]) | (
+            frame["artifact_code"].fill_null("").str.len_chars() > 0
+        )
+        remediation = "Set signal_valid=false or provide a non-empty artifact_code."
+    elif guard == _GAZE_NULLABLE_MEASUREMENT_GUARD:
+        required_guard_columns = {"binocular_valid", "blink"}
+        guarded = (~frame["binocular_valid"]) | frame["blink"]
+        remediation = "Set binocular_valid=false or blink=true for unavailable gaze samples."
+    else:
         _fail(
             "ADAPTER_CONFIG_INVALID",
             "Table profile declares an unsupported nullable-measurement guard",
             source,
             remediation="Use a guard implemented by this adapter version.",
         )
-    required_guard_columns = {"signal_valid", "artifact_code"}
     if not required_guard_columns.issubset(frame.columns):
         _fail(
             "ADAPTER_CONFIG_INVALID",
-            "Nullable-measurement guard requires signal_valid and artifact_code columns",
+            "Nullable-measurement guard is missing its required validity columns",
             source,
             remediation="Repair the packaged table profile.",
         )
-    measurement_columns = [
-        column.name
-        for column in profile.columns
-        if column.nullable and column.name != "artifact_code"
-    ]
+    measurement_columns = _guarded_measurement_columns(profile, source)
     if not measurement_columns:
         return
     has_null = frame[measurement_columns[0]].is_null()
     for column_name in measurement_columns[1:]:
         has_null = has_null | frame[column_name].is_null()
-    artifact_present = frame["artifact_code"].fill_null("").str.len_chars() > 0
-    guarded = (~frame["signal_valid"]) | artifact_present
     if (has_null & ~guarded).any():
         _fail(
             "STREAM_TYPE_INVALID",
-            "A nullable signal measurement lacks an invalid flag or artifact code",
+            "A nullable measurement lacks the profile-declared unavailable-sample guard",
             source,
-            remediation="Set signal_valid=false or provide a non-empty artifact_code.",
+            remediation=remediation,
         )
+
+
+def _guarded_measurement_columns(profile: TableProfile, source: Path) -> list[str]:
+    declared_nullable = {
+        column.name
+        for column in profile.columns
+        if column.nullable and column.name != "artifact_code"
+    }
+    configured = profile.extensions.get("nullable_measurement_columns")
+    if configured is None:
+        return sorted(declared_nullable)
+    if (
+        not isinstance(configured, list)
+        or not configured
+        or any(type(item) is not str or not item for item in configured)
+        or len(configured) != len(set(cast(list[str], configured)))
+    ):
+        _fail(
+            "ADAPTER_CONFIG_INVALID",
+            "nullable_measurement_columns must be a non-empty unique string list",
+            source,
+            remediation="Repair the packaged table profile.",
+        )
+    measurement_columns = cast(list[str], configured)
+    if not set(measurement_columns).issubset(declared_nullable):
+        _fail(
+            "ADAPTER_CONFIG_INVALID",
+            "nullable_measurement_columns references a non-nullable or unknown column",
+            source,
+            remediation="Repair the packaged table profile.",
+        )
+    return measurement_columns
 
 
 def _validate_valid_fraction(
@@ -367,14 +423,29 @@ def _validate_sample_rate(frame: pl.DataFrame, profile: TableProfile, source: Pa
         )
 
 
-def _parse_profiled_json(source: Path, profile: JsonProfile) -> dict[str, JsonValue]:
+def _parse_profiled_json(
+    source: Path,
+    profile: JsonProfile,
+    limits: AdapterResourceLimits,
+) -> dict[str, JsonValue]:
     try:
-        text = source.read_bytes().decode("utf-8", errors="strict")
+        _validate_file_size(source, limits.max_json_bytes, "max_json_bytes")
+        with source.open("rb") as input_file:
+            payload_bytes = input_file.read(limits.max_json_bytes + 1)
+        enforce_resource_limit(
+            limit_name="max_json_bytes",
+            limit=limits.max_json_bytes,
+            observed=len(payload_bytes),
+            field_or_path=source,
+        )
+        text = payload_bytes.decode("utf-8", errors="strict")
         raw = json.loads(
             text,
             object_pairs_hook=_object_without_duplicate_keys,
             parse_constant=_reject_json_constant,
         )
+    except AdapterInspectionError:
+        raise
     except (OSError, UnicodeDecodeError, json.JSONDecodeError, _DuplicateJsonKey) as error:
         _format_failure(source, error, "EEG sidecar is not strict UTF-8 JSON")
     if not isinstance(raw, dict):
@@ -385,6 +456,7 @@ def _parse_profiled_json(source: Path, profile: JsonProfile) -> dict[str, JsonVa
             remediation="Export the sidecar as one object matching its profile.",
         )
     payload = cast(dict[str, JsonValue], raw)
+    _validate_json_string_lengths(payload, source, limits)
     declared_fields = {field.name: field for field in profile.fields}
     required_fields = {field.name for field in profile.fields if field.required}
     if not required_fields.issubset(payload) or set(payload) - set(declared_fields):
@@ -409,6 +481,85 @@ def _parse_profiled_json(source: Path, profile: JsonProfile) -> dict[str, JsonVa
                 field_or_path=field_name,
             )
     return payload
+
+
+def _validate_file_size(source: Path, limit: int, limit_name: str) -> None:
+    try:
+        observed = source.stat().st_size
+    except OSError as error:
+        _format_failure(source, error, "Artifact size cannot be read")
+    enforce_resource_limit(
+        limit_name=limit_name,
+        limit=limit,
+        observed=observed,
+        field_or_path=source,
+    )
+
+
+def _validate_parquet_statistics(
+    source: Path,
+    profile: TableProfile,
+    limits: AdapterResourceLimits,
+) -> None:
+    try:
+        scan = pl.scan_parquet(source)
+        row_count = int(scan.select(pl.len().alias("row_count")).collect(engine="streaming").item())
+    except (OSError, pl.exceptions.PolarsError) as error:
+        _format_failure(source, error, "Parquet row metadata cannot be read")
+    enforce_resource_limit(
+        limit_name="max_parquet_rows",
+        limit=limits.max_parquet_rows,
+        observed=row_count,
+        field_or_path=source,
+    )
+
+    string_columns = [
+        column.name for column in profile.columns if column.dtype is PhysicalDType.UTF8
+    ]
+    if not string_columns:
+        return
+    try:
+        statistics_frame = scan.select(
+            [pl.col(name).str.len_chars().max().fill_null(0).alias(name) for name in string_columns]
+        ).collect(engine="streaming")
+    except (OSError, pl.exceptions.PolarsError) as error:
+        _format_failure(source, error, "Parquet string statistics cannot be read")
+    for name in string_columns:
+        observed = int(statistics_frame[name][0])
+        enforce_resource_limit(
+            limit_name="max_parquet_string_chars",
+            limit=limits.max_parquet_string_chars,
+            observed=observed,
+            field_or_path=name,
+        )
+
+
+def _validate_json_string_lengths(
+    value: JsonValue,
+    source: Path,
+    limits: AdapterResourceLimits,
+) -> None:
+    pending: list[JsonValue] = [value]
+    while pending:
+        item = pending.pop()
+        if isinstance(item, str):
+            enforce_resource_limit(
+                limit_name="max_json_string_chars",
+                limit=limits.max_json_string_chars,
+                observed=len(item),
+                field_or_path=source,
+            )
+        elif isinstance(item, list):
+            pending.extend(item)
+        elif isinstance(item, dict):
+            for key, child in item.items():
+                enforce_resource_limit(
+                    limit_name="max_json_string_chars",
+                    limit=limits.max_json_string_chars,
+                    observed=len(key),
+                    field_or_path=source,
+                )
+                pending.append(child)
 
 
 def _matches_json_field_type(value: JsonValue, field_type: JsonFieldType) -> bool:
