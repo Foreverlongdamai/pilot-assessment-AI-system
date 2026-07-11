@@ -30,6 +30,8 @@
 | not_applicable | 当前任务/阶段没有该证据适用条件，例如没有扰动事件；不是表现等级。 |
 | Quality | evidence 对应数据的可用性与置信度，和 evidence state 分开记录。 |
 | Coverage | 本次评估实际可用证据相对于模型期望证据的覆盖程度。 |
+| Ingestion readiness inspection | M2 对 source artifact 内容、schema、质量和 adapter 可用性的只读检查；输出 `IngestionReadinessReport`，只允许进入 M3，且永不授权正式 run。 |
+| Run preflight | `run.preflight` 在 aligned session、annotation/reference 和锁定 model revision 上执行的正式运行门；输出 `RunPreflightReport` 并决定能否创建 AssessmentRun。 |
 | BN | Bayesian Network，贝叶斯网络。 |
 | CPT | Conditional Probability Table，节点在给定 parent state 下的条件概率表。 |
 | Virtual evidence | 用似然权重而非硬状态表达不确定 evidence；低质量时向均匀分布收缩。 |

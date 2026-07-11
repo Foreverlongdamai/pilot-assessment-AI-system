@@ -34,7 +34,7 @@ WinUI 图编辑器至少支持：
 
 Guided 模式服务于一般研究人员和专家，提供以下限制与辅助：
 
-- 使用 competency、subskill/latent、evidence/anchor、context 四类顶层节点；derived_evidence 是 evidence 的受控 subtype；
+- reference-model-v0.1 palette 只使用 competency、subskill/latent、evidence/anchor 三类节点；context 是 BN 外 session metadata，derived evidence 通过 binding metadata 表达；
 - 根据节点类型限制可创建 edge；
 - 新增 edge 时打开 CPT 初始化向导；
 - 删除 edge 或 node 前显示 CPT 迁移预览；
@@ -46,12 +46,10 @@ Guided 模式默认 edge 规则：
 
 | Source | Target | 默认允许 |
 |---|---|---|
-| context | subskill | 允许，用于显式 context modulation |
-| context | evidence | 允许 |
-| context | derived_evidence | 允许 |
 | competency | subskill | 允许 |
 | subskill | evidence | 允许 |
-| evidence | derived_evidence | 允许 |
+| context | 任意节点 | reference-model-v0.1 禁止 |
+| evidence | derived_evidence | reference-model-v0.1 禁止，使用 `likelihood_strength` |
 | 其他组合 |  | 禁止或要求切换 Advanced 模式 |
 
 ### 2.3 Advanced DAG 模式
@@ -64,6 +62,8 @@ Advanced 模式面向模型设计人员：
 - 可以删除或替换默认 competency、subskill 和 evidence；
 - 可以改变节点状态数量；
 - 可以创建不符合默认三层语义的研究 draft。
+
+Context node 与 structural derived-evidence edge 只有在目标 model profile 明确声明其状态、CPT、编译和推理语义时才可启用。从 reference-model-v0.1 切换到这种结构必须建立新的 major model profile；Advanced draft 可以保存实验结构，但不能以 reference-model-v0.1 发布。
 
 Advanced 模式仍然不能绕过以下硬约束：
 
@@ -222,10 +222,10 @@ Add node 必须包含：
 | Node 类型 | 默认初始化 |
 |---|---|
 | competency / generic root latent | uniform prior |
-| context | 用户给定 prior；未给定时 uniform |
 | subskill | 若同时提供 parent，使用单父有序 CPT；否则标记 unconfigured |
 | evidence | 若同时提供 parents，使用单父表或 ranked-node generator；否则标记 unconfigured |
-| derived_evidence | 根据 evidence parents 生成 CPT；否则标记 unconfigured |
+
+Context 与 structural derived-evidence 的初始化器不属于 reference-model-v0.1；只有通过新 major model profile 注册后才出现在 palette 和 CPT 向导中。
 
 Draft 可以暂时保存 unconfigured node，但不能运行或发布。Guided 模式应优先把 add node、add edge 和 CPT init 合并为同一事务。
 
@@ -241,6 +241,7 @@ target:
   plugin_id: gaze_aoi_dwell
   plugin_version: 0.1.0
 required_inputs: [I, G, dynamic_aoi_map]
+modality_attribution_weights: {I: 0.5, G: 0.5}
 parameter_schema_id: anchor-gaze-aoi-dwell-v1
 output_contract: AnchorResult-v1
 binding_version: 1
@@ -255,6 +256,8 @@ mode 支持：
 - safe_formula：使用 safe-expr-v1 白名单表达式，显式列出 upstream fields/anchors、单位和 aggregation。
 
 binding.create、binding.update 和 binding.remove 都是 semantic operation，与 node/edge/CPT 一起走 graph.operations.apply 并增加 graph_version。Binding validation 至少检查 node 类型、target 存在、插件兼容、参数 schema、输入/单位、依赖无环、safe formula AST 白名单和 AnchorResult 输出合同。
+
+`modality_attribution_weights` 的 key 只能是 `required_inputs` 中声明的 core stream modality；`dynamic_aoi_map` 等非模态依赖不进入该 map。权重必须 finite、非负且和为 1；省略时对 distinct required core modalities 等分。该字段进入 binding content hash，供 per-modality coverage 使用。
 
 安装新插件不属于图 transaction。plugin.install 只能通过受信任的管理员流程完成签名、manifest 和兼容性检查；UI 不得把任意 Python 文本当作插件执行。未绑定 evidence node 可以保存在 incomplete draft，但不能运行或发布。
 

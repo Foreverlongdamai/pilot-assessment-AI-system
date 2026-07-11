@@ -144,6 +144,8 @@ node/edge/anchor.parameters/cpt 的便利写方法同样必须携带 draft_id、
 | diagnostics.bundle.export | 导出脱敏支持包 |
 | audit.events.list | 查询模型修改、发布、导入与运行审计事件 |
 
+`run.preflight` 返回 `RunPreflightReport`，它与 M2 的 `IngestionReadinessReport` 不是同一 DTO：后者只允许 source data 进入 synchronization，且 `formal_run_authorized` 固定为 false；前者基于 aligned session 与锁定 model revision 决定是否可以创建 AssessmentRun。
+
 ## 7. 大数据与路径合同
 
 session.inspect 可以接收用户选择的绝对 bundle 路径。正式 import 后，后端把文件复制或以明确策略注册到受管理 project storage，并生成 session_id。后续运行只使用 session_id。
@@ -201,7 +203,7 @@ run.start 硬性要求 published revision_id，并生成正式可追溯 Assessme
 {"jsonrpc":"2.0","method":"run.progress","params":{"run_id":"run-88","stage":"anchors","completed":7,"total":18,"percent":38.9,"message":"Computed O7 Control Reversal Rate"}}
 ~~~
 
-阶段至少包括 preflight、ingestion、synchronization、anchors、evidence、inference、reporting。run.cancel 是请求，不保证瞬时停止；结果状态必须区分 cancelling、cancelled、failed 和 completed。完成或失败后，后端发送 run.completed 或 run.failed notification，同时状态仍可通过 run.status 恢复。
+`run.preflight` 在创建 run_id 之前完成，若未来异步化，其 stage 名固定为 `run_preflight`，不能与 ingestion readiness 混用。run.start/run.preview 成功后的阶段至少包括 snapshot_validation、ingestion、synchronization、anchors、evidence、inference、reporting。run.cancel 是请求，不保证瞬时停止；结果状态必须区分 cancelling、cancelled、failed 和 completed。完成或失败后，后端发送 run.completed 或 run.failed notification，同时状态仍可通过 run.status 恢复。
 
 ## 10. 错误模型
 

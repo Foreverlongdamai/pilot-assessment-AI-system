@@ -226,7 +226,7 @@ v0.1 为派生 anchor 保留以下可配置字段：
 
 L_model = s × L_quality + (1-s) × U
 
-普通非派生 evidence 使用 s=1。该凸混合对 one-hot 也会降低强度，避免幂次 tempering 对 one-hot 完全无效。后续若建立明确的 evidence-to-derived-evidence CPT，可切换到 structural dependence 模式；切换必须发布新 revision。
+普通非派生 evidence 使用 s=1。该凸混合对 one-hot 也会降低强度，避免幂次 tempering 对 one-hot 完全无效。Reference-model-v0.1 不允许 evidence-to-derived-evidence 结构边；若未来建立明确 CPT，必须切换到声明 structural dependence 语义的新 major model profile，并提供编译与 golden tests，不能只发布同 profile 的新 revision。
 
 ## 6. Evidence 输入、缺失和质量
 
@@ -341,7 +341,7 @@ coverage =
 1. per-sub-skill：使用上式和该 sub-skill 内归一化 relation weights；
 2. per-competency：对其 child sub-skills 使用 model profile 中的 subskill_coverage_weight；未配置时等权；
 3. overall：对适用的四个 competency 等权；profile 可以显式给权重；
-4. per-modality：AnchorBinding 为每条 relation 提供 modality_attribution_weights；多 required modalities 未配置时等分，再在目标 modality 内重新归一化；
+4. per-modality：每条 subskill→evidence relation 的 coverage contribution 按目标 evidence 的 `AnchorBinding.modality_attribution_weights` 分摊；该 map 只包含 binding 的 required core modalities，未配置时对 distinct required core modalities 等分，再在目标 modality 内重新归一化；
 5. per-phase：从 AnchorResult.phase_results 的 applicable/available 状态计算数据准备度诊断，不重复注入 BN，也不改变 competency assessability。
 
 系统至少输出：

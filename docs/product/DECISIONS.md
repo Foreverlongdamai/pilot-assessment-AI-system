@@ -71,3 +71,38 @@
 - 决策：“计算按规范执行”与“评分真实有效”分别管理、显示和验收。
 - 理由：高测试覆盖率不能证明 anchor 阈值或 CPT 具有真实世界效度。
 - 影响：产品必须携带 software_verification_status 与 scientific_validation_status；reference v0.1 的初始 scientific_validation_status 为 engineering_default。
+
+## D-011：X/U 可以共享一个受验证的物理 artifact
+
+- 状态：已接受
+- 决策：v0.1 允许 `X` 与 `U` 两个 `present` logical stream view 引用完全相同的 bundle-relative path。两者必须声明相同 checksum、format、schema_id 和 `metadata.shared_source_id`，并分别声明 `metadata.view_id=X/U`；checksum 文件只登记该物理文件一次。其他 stream sharing、大小写不同的路径别名，以及同一路径被两个独立声明赋予 stream/annotation/reference/integrity 跨角色所有权均拒绝。D-014 的 `task_reference` descriptor 是 reference artifact 的唯一 owner，不构成跨角色 sharing。
+- 理由：当前 simulator CSV 同时包含 flight state 与 pilot control；强行复制文件既浪费空间，也会制造两个可能漂移的“原始”副本。
+- 影响：loader 分别报告 logical reference count 与 unique artifact count，路径安全、读取、hash 和资源预算按 unique artifact 执行；同一物理文件仍只有一个 canonical identity。
+
+## D-012：Synthetic full bundle 只用于软件验证
+
+- 状态：已接受
+- 决策：真实 X/U 加 synthetic I/G/EEG/ECG/pilot_camera 的混合 bundle 必须标记 `synthetic-test-data`、`software-testing-only` 和 `scientific_validation_status=not_supported`；所有结果显示 `SYNTHETIC TEST DATA`，不得转换为正式飞行员评估结果。
+- 理由：格式正确、可重复的合成信号可以验证软件闭环，但不能证明 anchor、阈值、CPT 或能力结论对真人有效。
+- 影响：生成器、报告、前端和导出都必须保留 synthetic provenance；synthetic 生理/相机数据不计为真实人体 biometric data。
+
+## D-013：Ingestion readiness 与 Run preflight 是不同阶段
+
+- 状态：已接受
+- 决策：M2 输出 `IngestionReadinessReport`，scope 固定为 `inspect_only_ingestion_content_v1`，只回答 source artifact 能否进入 M3 synchronization；其中 `formal_run_authorized` 永远为 false。完成同步、annotation/reference 语义检查并锁定 model revision 后，`run.preflight` 才输出 `RunPreflightReport` 并决定是否允许创建 AssessmentRun。
+- 理由：两种检查共用“preflight”名称会让前端和审计记录误以为通过 ingestion 就已获准评分。
+- 影响：M2 raw schemas 不伪造 authoritative `t_ns`；M3 生成 aligned schemas。DTO、协议、术语表和界面必须使用完整名称。
+
+## D-014：Bundle-local task reference 通过可选 stream 间接声明
+
+- 状态：已接受
+- 决策：session-local commanded/reference path 的文件位于 `references/`，由可选 `streams.task_reference` descriptor 声明 format、schema、clock、units、paths 和 checksums；`task.reference` 使用 `source=bundle` 与 `stream_id=task_reference` 指向它。`source=model_bundle` 时禁止 `stream_id`，由锁定的 model bundle 根据 `reference_id` 解析。
+- 理由：reference 是可采样的时序 artifact，复用 StreamDescriptor 可避免第二套路径、checksum 和时钟权威，同时保持它不属于七个 core modalities。
+- 影响：bundle reference 必须通过普通路径安全、integrity 和 adapter gate，但在 readiness/coverage 中单独报告，不能伪装成飞行员输入模态。
+
+## D-015：Reference-model-v0.1 固定为 33 节点三层 BN
+
+- 状态：已接受
+- 决策：reference-model-v0.1 的 Guided palette 只包含 competency、subskill 和 evidence，结构边只允许 competency→subskill 与 subskill→evidence。Phase/task context 保留在 BN 外供 AnchorPlugin 使用；O8/O13 通过 `derived_from`、`dependence_group` 和 `likelihood_strength` 处理相关性，不创建 evidence→derived_evidence 结构边。
+- 理由：当前 CPT 和推理语义只定义了四 competency、十一 sub-skill、十八 evidence 的三层网络；允许未定义的 context 或派生结构边会产生无法解释的 CPT。
+- 影响：context node 或 structural derived evidence 只能在明确声明其语义、CPT、编译和 golden tests 的新 model profile 中启用；从 reference-v0.1 切换必须使用新的 major model profile，不能只改 draft/revision 标识。

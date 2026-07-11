@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | v0.1 |
 | 基线日期 | 2026-07-10 |
-| 产品阶段 | 正式设计；后端基础 M1 已实现 |
+| 产品阶段 | M2 多模态合成基础规格已批准；实现进行中 |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -40,7 +40,14 @@
 | 13 | [REFERENCES.md](REFERENCES.md) | 审查者、领域专家 | 公开文献、DOI 与证据用途 |
 | 14 | [10_DESIGN_SELF_REVIEW.md](10_DESIGN_SELF_REVIEW.md) | 审查者 | 本轮设计自审、发现和遗留风险 |
 | 15 | [后端 M1 实施计划](plans/2026-07-11-backend-foundation-m1-implementation-plan.md) | 开发、审查者 | RED/GREEN 任务、范围和完成定义 |
-| 16 | [M2 多模态合成基础规格](specs/2026-07-11-multimodal-synthetic-foundation-design.md) | 开发、数据、审查者 | Review candidate：理想 I/G/EEG/ECG/camera 合同、合成 bundle 与 ingestion |
+| 16 | [M2 多模态合成基础规格](specs/2026-07-11-multimodal-synthetic-foundation-design.md) | 开发、数据、审查者 | 已批准：理想 I/G/EEG/ECG/camera 合同、合成 bundle 与 ingestion readiness |
+| 17 | [M2 实施计划](plans/2026-07-11-m2-multimodal-synthetic-foundation-implementation-plan.md) | 开发、审查者 | shared X/U、adapter、generator、readiness 与本地 E2E 的 TDD 步骤 |
+
+### 2.1 文档目录的职责
+
+- `docs/product/` 根目录中的编号文档、`DECISIONS.md` 和 `GLOSSARY.md` 是当前产品基线；
+- `docs/product/specs/` 保存单个里程碑或子系统的状态受控设计合同，只有标记为“已批准”的规格才进入实施；
+- `docs/product/plans/` 保存从已批准规格派生的 TDD 实施步骤、验证命令和提交边界，计划不能覆盖 `DECISIONS.md` 或已批准规格；完成后继续保留，作为产品如何实现和验证的移交证据。
 
 ## 3. 权威性规则
 
@@ -66,7 +73,7 @@
 
 ## 5. 当前实现边界
 
-截至 2026-07-11，Python Core 已实现严格 SessionManifest/StreamDescriptor/AnchorResult 合同、inspect-only directory-bundle manifest/integrity loader、结构化错误和确定性 JSON Schema。该 loader 不授权正式 import；受管理存储的同句柄验证与复制仍待实现。真实流 adapter、同步、anchor 算法、evidence scorer、BN、sidecar 和 WinUI 也尚未实现。完整状态与复现命令见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+截至 2026-07-11，Python Core 已实现严格 SessionManifest/StreamDescriptor/AnchorResult 合同、inspect-only directory-bundle manifest/integrity loader、结构化错误和确定性 JSON Schema。M2 多模态合成基础规格已批准，正在实现 shared X/U、理想模态 adapter、deterministic generator 与 ingestion readiness。该 loader 不授权正式 import；受管理存储的同句柄验证与复制仍待实现。同步、anchor 算法、evidence scorer、BN、sidecar 和 WinUI 也尚未实现。完整状态与复现命令见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
 ## 6. 维护规则
 

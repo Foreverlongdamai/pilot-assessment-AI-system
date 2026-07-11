@@ -105,16 +105,18 @@ uv build
 
 ## 5. 下一里程碑
 
-根据用户确认的完整闭环方向，M2 扩展为“多模态理想合同 + synthetic full bundle + ingestion preflight”：
+根据已批准的完整闭环方向，M2 范围为“多模态理想合同 + synthetic full bundle + ingestion readiness inspection”：
 
-1. 定义 adapter registry、RawStream/NormalizedStream 与 `PreflightReport`；
+1. 定义 adapter registry、RawStream/NormalizedStream 与 `IngestionReadinessReport`；
 2. 为当前真实模拟器 CSV 建共享 X/U adapter，不把列名写死到通用合同；
 3. 固化 I/G/EEG/ECG/pilot_camera 的理想第一版文件合同；
 4. 以真实 X/U 时间范围生成独立 synthetic scene、gaze、EEG、ECG 和 pilot-camera 文件；
-5. 生成七个 core modalities 全 present 的 synthetic bundle，并完成全模态 ingestion preflight；
+5. 生成七个 core modalities 全 present 的 synthetic bundle，并完成全模态 ingestion readiness inspection；
 6. 通过 M2 后依次进入 M3 synchronization、M4 18-anchor/evidence、M5 BN、M6 端到端 runner。
 
-详细 review candidate 见 [M2 Multimodal Synthetic Foundation Design](specs/2026-07-11-multimodal-synthetic-foundation-design.md)。M2 不应提前实现 BN，也不应把 synthetic 信号或当前 CSV 样本误当作科学有效的完整产品数据。
+详细已批准规格见 [M2 Multimodal Synthetic Foundation Design](specs/2026-07-11-multimodal-synthetic-foundation-design.md)。M2 不应提前实现 BN，也不应把 synthetic 信号或当前 CSV 样本误当作科学有效的完整产品数据。
+
+逐任务 RED/GREEN 顺序见 [M2 Implementation Plan](plans/2026-07-11-m2-multimodal-synthetic-foundation-implementation-plan.md)。
 
 ## 6. M1 独立自审
 

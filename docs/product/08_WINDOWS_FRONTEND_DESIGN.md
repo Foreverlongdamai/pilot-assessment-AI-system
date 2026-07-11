@@ -63,7 +63,7 @@
 
 安装包模式由前端自动启动 backend。开发模式可显示“连接开发 runtime”，但普通用户不需要配置 Python。
 
-### 4.2 Session Import 与 Preflight
+### 4.2 Session Import 与 Ingestion Readiness
 
 输入能力面板按模态展示：
 

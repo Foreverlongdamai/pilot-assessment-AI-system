@@ -74,7 +74,7 @@
 
 ### 2.4 Integration tests
 
-- 多模态 bundle → preflight → aligned session；
+- 多模态 bundle → ingestion readiness → aligned session → run preflight；
 - aligned session → 18 AnchorResult → evidence；
 - evidence → BN posterior、coverage、explanation；
 - graph/binding edit → CPT migration → validate → publish；
