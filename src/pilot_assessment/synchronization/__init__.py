@@ -30,6 +30,7 @@ from pilot_assessment.synchronization.profiles import (
     load_builtin_temporal_catalog,
     parse_temporal_binding_catalog,
 )
+from pilot_assessment.synchronization.service import synchronize_bundle, synchronize_session
 
 __all__ = [
     "AlignedAnnotations",
@@ -56,4 +57,6 @@ __all__ = [
     "hash_part",
     "load_builtin_temporal_catalog",
     "parse_temporal_binding_catalog",
+    "synchronize_bundle",
+    "synchronize_session",
 ]
