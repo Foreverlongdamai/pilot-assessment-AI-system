@@ -4,7 +4,7 @@
 
 **Goal:** Convert one M2-validated multimodal Session Bundle into deterministic native-rate aligned views and a public `SynchronizationReport`, while preserving every raw row and keeping formal assessment authorization false.
 
-**Implementation status (2026-07-12):** Tasks 0–13 and Task 14 Steps 1–5 are implemented and measured. Task 14 Step 6 deliberately remains open until the local handoff commit exists; a follow-up docs-only closure commit must then tick that final checkbox.
+**Implementation status (2026-07-12):** Completed. Tasks 0–14 are implemented, measured and committed; the verified M3 handoff commit is `175b2f6`, followed by this docs-only plan-closure commit.
 
 **Architecture:** A single M1 `LoadedManifest` snapshot feeds M2 inspection and an internal `SynchronizationInput`. Versioned temporal bindings route point, interval, inherited, and untimed artifact roles through one Decimal/round-half-even clock kernel; the service returns an in-process immutable `AlignedSession` plus a Pydantic/JSON-Schema report. M3 performs no interpolation or resampling; M4 owns anchor-specific grids and windows.
 
@@ -2702,7 +2702,7 @@ assert len(load_builtin_temporal_catalog().streams) == 8
 
 Expected: the wheel is freshly built with the frozen size/hash and required members; with the repository root absent from `PYTHONPATH`, import origin stays outside the repository, both M2/M3 catalogs and both public synchronization service APIs/DTOs load, and the frozen micro M1→M3 E2E passes; cleanup occurs only after TEMP-prefix and reparse-point checks. Python smoke code is delivered on stdin so Windows command-line quote parsing cannot truncate `-c` source.
 
-- [ ] **Step 6: Commit the verified M3 handoff**
+- [x] **Step 6: Commit the verified M3 handoff**
 
 ~~~powershell
 git add README.md `
@@ -2718,7 +2718,7 @@ git commit -m "feat: complete M3 native time synchronization"
 
 Do not push unless the user explicitly requests a remote update.
 
-This checkbox remains open until the command above creates the handoff commit. After that commit exists, make one follow-up docs-only closure commit that changes only this Step 6 checkbox and the implementation-status line at the top of this plan; do not rewrite measured evidence.
+The handoff commit `175b2f6` now exists. This follow-up docs-only closure changes only the administrative plan status; measured evidence remains unchanged.
 
 ## Plan self-review checklist
 
