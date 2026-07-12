@@ -23,7 +23,10 @@ from pilot_assessment.contracts.synchronization import (
 )
 from pilot_assessment.ingestion.manifest_loader import LoadedManifest, ManifestLoader
 from pilot_assessment.ingestion.models import PreparedSession
-from pilot_assessment.ingestion.readiness import inspect_loaded_ingestion_readiness
+from pilot_assessment.ingestion.readiness import (
+    inspect_loaded_ingestion_readiness,
+    source_snapshot_fingerprint,
+)
 from pilot_assessment.synchronization.models import (
     AlignedAnnotations,
     AlignedSession,
@@ -275,6 +278,163 @@ def test_synchronization_input_accepts_frozen_xu_physical_to_logical_count_mappi
             loaded_manifest=loaded,
             readiness_report=report,
             prepared_session=forged,
+        )
+
+
+def test_synchronization_input_rejects_core_clock_mismatch_with_loaded_manifest(
+    tmp_path: Path,
+) -> None:
+    loaded, report, prepared = _ready_parts(tmp_path)
+    streams = dict(prepared.streams)
+    streams["I"] = replace(streams["I"], clock_id="forged-clock")
+
+    with pytest.raises(ValueError, match="clock.*loaded manifest"):
+        SynchronizationInput(
+            loaded_manifest=loaded,
+            readiness_report=report,
+            prepared_session=PreparedSession(
+                streams=streams,
+                context=prepared.context,
+                task_reference=prepared.task_reference,
+            ),
+        )
+
+
+def test_synchronization_input_rejects_reference_clock_mismatch_with_loaded_manifest(
+    tmp_path: Path,
+) -> None:
+    loaded, report, prepared = _ready_parts(tmp_path)
+    reference = prepared.task_reference
+    assert reference is not None
+
+    with pytest.raises(ValueError, match="clock.*loaded manifest"):
+        SynchronizationInput(
+            loaded_manifest=loaded,
+            readiness_report=report,
+            prepared_session=PreparedSession(
+                streams=prepared.streams,
+                context=prepared.context,
+                task_reference=replace(reference, clock_id="forged-reference-clock"),
+            ),
+        )
+
+
+def test_synchronization_input_rejects_consistently_forged_core_source_identity(
+    tmp_path: Path,
+) -> None:
+    loaded, report, prepared = _ready_parts(tmp_path)
+    forged_path = "streams/I/forged.parquet"
+    forged_checksums = {forged_path: "f" * 64}
+    streams = dict(prepared.streams)
+    streams["I"] = replace(
+        streams["I"],
+        source_paths=(forged_path,),
+        source_checksums=forged_checksums,
+    )
+    stream_results = dict(report.stream_results)
+    stream_results["I"] = stream_results["I"].model_copy(
+        update={
+            "source_paths": (forged_path,),
+            "source_checksums": forged_checksums,
+        }
+    )
+
+    with pytest.raises(ValueError, match="source identity.*loaded manifest"):
+        SynchronizationInput(
+            loaded_manifest=loaded,
+            readiness_report=report.model_copy(update={"stream_results": stream_results}),
+            prepared_session=PreparedSession(
+                streams=streams,
+                context=prepared.context,
+                task_reference=prepared.task_reference,
+            ),
+        )
+
+
+def test_synchronization_input_rejects_consistently_forged_reference_source_identity(
+    tmp_path: Path,
+) -> None:
+    loaded, report, prepared = _ready_parts(tmp_path)
+    reference = prepared.task_reference
+    reference_result = report.task_reference_result
+    assert reference is not None
+    assert reference_result is not None
+    forged_path = "references/forged.csv"
+    forged_checksums = {forged_path: "f" * 64}
+
+    with pytest.raises(ValueError, match="source identity.*loaded manifest"):
+        SynchronizationInput(
+            loaded_manifest=loaded,
+            readiness_report=report.model_copy(
+                update={
+                    "task_reference_result": reference_result.model_copy(
+                        update={
+                            "source_paths": (forged_path,),
+                            "source_checksums": forged_checksums,
+                        }
+                    )
+                }
+            ),
+            prepared_session=PreparedSession(
+                streams=prepared.streams,
+                context=prepared.context,
+                task_reference=replace(
+                    reference,
+                    source_paths=(forged_path,),
+                    source_checksums=forged_checksums,
+                ),
+            ),
+        )
+
+
+def test_synchronization_input_accepts_shared_xu_loaded_source_identity(
+    tmp_path: Path,
+) -> None:
+    loaded, report, prepared = _ready_parts(tmp_path)
+
+    accepted = SynchronizationInput(
+        loaded_manifest=loaded,
+        readiness_report=report,
+        prepared_session=prepared,
+    )
+
+    x_stream = accepted.prepared_session.streams["X"]
+    u_stream = accepted.prepared_session.streams["U"]
+    x_descriptor = loaded.manifest.streams["X"]
+    u_descriptor = loaded.manifest.streams["U"]
+    expected_checksums = {path: loaded.verified_digests[path] for path in x_descriptor.paths}
+    assert x_stream.source_paths == u_stream.source_paths == tuple(x_descriptor.paths)
+    assert x_descriptor.paths == u_descriptor.paths
+    assert dict(x_stream.source_checksums) == dict(u_stream.source_checksums)
+    assert dict(x_stream.source_checksums) == expected_checksums
+
+
+def test_synchronization_input_bounds_missing_loaded_reference_descriptor(
+    tmp_path: Path,
+) -> None:
+    loaded, report, prepared = _ready_parts(tmp_path)
+    manifest_streams = dict(loaded.manifest.streams)
+    manifest_streams.pop("task_reference")
+    loaded_without_reference = replace(
+        loaded,
+        manifest=loaded.manifest.model_copy(
+            update={
+                "streams": manifest_streams,
+                "task": loaded.manifest.task.model_copy(update={"reference": None}),
+            }
+        ),
+    )
+    forged_report = report.model_copy(
+        update={
+            "source_snapshot_fingerprint": source_snapshot_fingerprint(loaded_without_reference)
+        }
+    )
+
+    with pytest.raises(ValueError, match="ready inventory.*loaded manifest"):
+        SynchronizationInput(
+            loaded_manifest=loaded_without_reference,
+            readiness_report=forged_report,
+            prepared_session=prepared,
         )
 
 

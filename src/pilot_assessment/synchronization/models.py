@@ -16,7 +16,7 @@ from pilot_assessment.contracts.ingestion import (
     StreamReadiness,
     StreamReadinessResult,
 )
-from pilot_assessment.contracts.session import CORE_MODALITIES
+from pilot_assessment.contracts.session import CORE_MODALITIES, StreamDescriptor
 from pilot_assessment.contracts.synchronization import (
     BaselineInterval,
     EventMarker,
@@ -75,7 +75,31 @@ def _validate_ready_stream_snapshot(
     modality: str,
     stream: NormalizedStream,
     result: StreamReadinessResult,
+    descriptor: StreamDescriptor,
+    verified_digests: Mapping[str, str],
 ) -> None:
+    if stream.clock_id != descriptor.clock_id:
+        raise ValueError("prepared stream clock must match loaded manifest descriptor")
+
+    descriptor_paths = tuple(descriptor.paths)
+    try:
+        loaded_checksums = {path: verified_digests[path] for path in descriptor_paths}
+    except KeyError as error:
+        raise ValueError(
+            "prepared session and report ready inventory source identity must match "
+            "loaded manifest verified files"
+        ) from error
+    if (
+        tuple(stream.source_paths) != descriptor_paths
+        or result.source_paths != descriptor_paths
+        or dict(stream.source_checksums) != loaded_checksums
+        or result.source_checksums != loaded_checksums
+    ):
+        raise ValueError(
+            "prepared session and report ready inventory source identity must match "
+            "loaded manifest snapshot"
+        )
+
     if stream.schema_id != result.normalized_schema_id:
         raise ValueError("prepared session and report ready inventory schemas must match")
     if (
@@ -143,6 +167,8 @@ class SynchronizationInput:
                 modality=modality,
                 stream=stream,
                 result=ready_results[modality],
+                descriptor=self.loaded_manifest.manifest.streams[modality],
+                verified_digests=self.loaded_manifest.verified_digests,
             )
 
         reference_result = report.task_reference_result
@@ -153,10 +179,18 @@ class SynchronizationInput:
         if reference_is_ready != (prepared_reference is not None):
             raise ValueError("prepared task reference and report ready inventory must match")
         if reference_is_ready and prepared_reference is not None and reference_result is not None:
+            reference_descriptor = self.loaded_manifest.manifest.streams.get("task_reference")
+            if reference_descriptor is None:
+                raise ValueError(
+                    "prepared task reference and report ready inventory must match "
+                    "loaded manifest descriptor"
+                )
             _validate_ready_stream_snapshot(
                 modality="task_reference",
                 stream=prepared_reference,
                 result=reference_result,
+                descriptor=reference_descriptor,
+                verified_digests=self.loaded_manifest.verified_digests,
             )
 
 
