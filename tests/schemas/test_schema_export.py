@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from pilot_assessment.contracts.anchor import AnchorResult
 from pilot_assessment.contracts.ingestion import IngestionReadinessReport
 from pilot_assessment.contracts.session import SessionManifest
+from pilot_assessment.contracts.synchronization import SynchronizationReport
 from pilot_assessment.schemas.export import (
     ANCHOR_RESULT_SCHEMA_ID,
     ANCHOR_RESULT_SCHEMA_TITLE,
@@ -27,6 +28,112 @@ from pilot_assessment.schemas.export import (
 
 PROJECT_ROOT = Path(__file__).parents[2]
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures"
+
+
+def _synchronization_fixture() -> dict[str, object]:
+    return json.loads((FIXTURES / "synchronization_report_ready.json").read_text(encoding="utf-8"))
+
+
+def _assert_synchronization_valid(
+    candidate: dict[str, object], validator: Draft202012Validator
+) -> None:
+    SynchronizationReport.model_validate(candidate)
+    validator.validate(candidate)
+
+
+def _assert_synchronization_invalid(
+    candidate: dict[str, object], validator: Draft202012Validator
+) -> None:
+    with pytest.raises(ValidationError):
+        SynchronizationReport.model_validate(candidate)
+    assert list(validator.iter_errors(candidate))
+
+
+def _make_core_unaligned(
+    candidate: dict[str, object],
+    modality: str,
+    *,
+    status: str,
+    readiness: str,
+    required: bool,
+) -> None:
+    stream_results = candidate["stream_results"]
+    assert isinstance(stream_results, dict)
+    result = stream_results[modality]
+    assert isinstance(result, dict)
+    result.update(
+        declared_status="invalid" if readiness == "invalid" else "missing",
+        required_for_import=required,
+        input_readiness=readiness,
+        synchronization_status=status,
+        aligned_schema_id=None,
+        artifacts={},
+        scene_gaze_metrics=None,
+    )
+
+
+def _make_bundle_reference_unaligned(candidate: dict[str, object], *, required: bool) -> None:
+    result = candidate["task_reference_result"]
+    assert isinstance(result, dict)
+    result.update(
+        declared_status="invalid",
+        required_for_import=required,
+        input_readiness="invalid",
+        synchronization_status="invalid",
+        aligned_schema_id=None,
+        artifacts={},
+    )
+
+
+def _make_annotation_invalid(candidate: dict[str, object]) -> None:
+    result = candidate["annotation_result"]
+    assert isinstance(result, dict)
+    result.update(
+        synchronization_status="invalid",
+        revision=None,
+        phase_schema_id=None,
+        event_schema_id=None,
+        baseline_schema_id=None,
+        phase_count=None,
+        event_count=None,
+        baseline_count=None,
+        unannotated_intervals=[],
+        synthetic_semantics_unvalidated=None,
+    )
+
+
+def _model_bundle_reference() -> dict[str, object]:
+    return {
+        "reference_id": "model-bundle-commanded-path-v0.1",
+        "source": "model_bundle",
+        "declared_status": None,
+        "required_for_import": None,
+        "input_readiness": None,
+        "synchronization_status": "deferred_model_bundle_resolution",
+        "clock": None,
+        "source_schema_id": None,
+        "aligned_schema_id": None,
+        "source_checksums": {},
+        "artifacts": {},
+        "issues": [],
+    }
+
+
+def _blocking_synchronization_issue() -> dict[str, object]:
+    return {
+        "error_code": "SYNCHRONIZATION_INPUT_BLOCKED",
+        "severity": "fatal",
+        "recoverable": False,
+        "message": "fixture blocking issue",
+        "field_or_path": None,
+        "node_or_anchor_id": None,
+        "remediation": "repair the fixture",
+        "request_id": None,
+        "trace_id": None,
+        "transaction_id": None,
+        "diagnostics": {},
+        "extensions": {},
+    }
 
 
 def _make_present(manifest: dict[str, object], modality: str, path: str) -> None:
@@ -104,6 +211,7 @@ def test_rendered_schemas_are_deterministic_and_valid_draft_2020_12() -> None:
         "anchor-result-0.1.0.schema.json",
         "ingestion-readiness-report-0.1.0.schema.json",
         "session-manifest-0.1.0.schema.json",
+        "synchronization-report-0.1.0.schema.json",
     }
     for payload in first.values():
         schema = json.loads(payload)
@@ -153,6 +261,10 @@ def test_published_schemas_accept_the_canonical_json_fixtures() -> None:
             "ingestion-readiness-report-0.1.0.schema.json",
             "ingestion_readiness_ready.json",
         ),
+        (
+            "synchronization-report-0.1.0.schema.json",
+            "synchronization_report_ready.json",
+        ),
     ]
     for schema_name, fixture_name in pairs:
         schema = json.loads(rendered[schema_name])
@@ -168,6 +280,301 @@ def test_exported_schemas_match_committed_contracts(tmp_path: Path) -> None:
     for name, payload in rendered.items():
         assert (tmp_path / name).read_bytes() == payload
         assert (PROJECT_ROOT / "schemas" / name).read_bytes() == payload
+
+
+def test_synchronization_report_schema_matches_checked_in_artifact() -> None:
+    rendered = render_schemas()["synchronization-report-0.1.0.schema.json"]
+    checked_in = PROJECT_ROOT / "schemas" / "synchronization-report-0.1.0.schema.json"
+    assert rendered == checked_in.read_bytes()
+
+
+def test_schema_and_pydantic_agree_on_exact_core_inventory() -> None:
+    schema = json.loads(render_schemas()["synchronization-report-0.1.0.schema.json"])
+    validator = Draft202012Validator(schema)
+    valid = _synchronization_fixture()
+    _assert_synchronization_valid(valid, validator)
+
+    missing = copy.deepcopy(valid)
+    stream_results = missing["stream_results"]
+    assert isinstance(stream_results, dict)
+    del stream_results["ECG"]
+
+    extra = copy.deepcopy(valid)
+    stream_results = extra["stream_results"]
+    assert isinstance(stream_results, dict)
+    extra_result = copy.deepcopy(stream_results["I"])
+    assert isinstance(extra_result, dict)
+    extra_result["modality"] = "THERMAL"
+    stream_results["THERMAL"] = extra_result
+
+    wrong_owner = copy.deepcopy(valid)
+    stream_results = wrong_owner["stream_results"]
+    assert isinstance(stream_results, dict)
+    x_result = stream_results["X"]
+    assert isinstance(x_result, dict)
+    x_result["modality"] = "U"
+
+    deferred = copy.deepcopy(valid)
+    _make_core_unaligned(
+        deferred,
+        "I",
+        status="deferred_model_bundle_resolution",
+        readiness="unavailable",
+        required=False,
+    )
+    deferred["disposition"] = "ready_partial"
+
+    for candidate in (missing, extra, wrong_owner, deferred):
+        _assert_synchronization_invalid(candidate, validator)
+
+
+def test_schema_and_pydantic_agree_on_aligned_payload_invariants() -> None:
+    schema = json.loads(render_schemas()["synchronization-report-0.1.0.schema.json"])
+    validator = Draft202012Validator(schema)
+    valid = _synchronization_fixture()
+    _assert_synchronization_valid(valid, validator)
+
+    aligned_missing = copy.deepcopy(valid)
+    stream_results = aligned_missing["stream_results"]
+    assert isinstance(stream_results, dict)
+    x_result = stream_results["X"]
+    assert isinstance(x_result, dict)
+    x_result["declared_status"] = "missing"
+
+    aligned_without_artifacts = copy.deepcopy(valid)
+    stream_results = aligned_without_artifacts["stream_results"]
+    assert isinstance(stream_results, dict)
+    x_result = stream_results["X"]
+    assert isinstance(x_result, dict)
+    x_result["artifacts"] = {}
+
+    gaze_without_relationship = copy.deepcopy(valid)
+    stream_results = gaze_without_relationship["stream_results"]
+    assert isinstance(stream_results, dict)
+    gaze_result = stream_results["G"]
+    assert isinstance(gaze_result, dict)
+    gaze_result["scene_gaze_metrics"] = None
+
+    non_aligned_claims_output = copy.deepcopy(valid)
+    stream_results = non_aligned_claims_output["stream_results"]
+    assert isinstance(stream_results, dict)
+    scene_result = stream_results["I"]
+    assert isinstance(scene_result, dict)
+    scene_result.update(
+        declared_status="invalid",
+        input_readiness="invalid",
+        synchronization_status="invalid",
+    )
+    non_aligned_claims_output["disposition"] = "ready_partial"
+
+    non_gaze_relationship = copy.deepcopy(valid)
+    _make_core_unaligned(
+        non_gaze_relationship,
+        "I",
+        status="invalid",
+        readiness="invalid",
+        required=False,
+    )
+    stream_results = non_gaze_relationship["stream_results"]
+    assert isinstance(stream_results, dict)
+    scene_result = stream_results["I"]
+    gaze_result = stream_results["G"]
+    assert isinstance(scene_result, dict)
+    assert isinstance(gaze_result, dict)
+    scene_result["scene_gaze_metrics"] = copy.deepcopy(gaze_result["scene_gaze_metrics"])
+    non_gaze_relationship["disposition"] = "ready_partial"
+
+    point_interpolation_boolean = copy.deepcopy(valid)
+    stream_results = point_interpolation_boolean["stream_results"]
+    assert isinstance(stream_results, dict)
+    x_result = stream_results["X"]
+    assert isinstance(x_result, dict)
+    x_artifacts = x_result["artifacts"]
+    assert isinstance(x_artifacts, dict)
+    x_samples = x_artifacts["samples"]
+    assert isinstance(x_samples, dict)
+    x_samples["interpolated_rows"] = False
+
+    interval_interpolation_boolean = copy.deepcopy(valid)
+    stream_results = interval_interpolation_boolean["stream_results"]
+    assert isinstance(stream_results, dict)
+    gaze_result = stream_results["G"]
+    assert isinstance(gaze_result, dict)
+    gaze_artifacts = gaze_result["artifacts"]
+    assert isinstance(gaze_artifacts, dict)
+    fixations = gaze_artifacts["fixations"]
+    assert isinstance(fixations, dict)
+    fixations["interpolated_rows"] = False
+
+    for candidate in (
+        aligned_missing,
+        aligned_without_artifacts,
+        gaze_without_relationship,
+        non_aligned_claims_output,
+        non_gaze_relationship,
+        point_interpolation_boolean,
+        interval_interpolation_boolean,
+    ):
+        _assert_synchronization_invalid(candidate, validator)
+
+    invalid_gaze_with_diagnostics = copy.deepcopy(valid)
+    stream_results = invalid_gaze_with_diagnostics["stream_results"]
+    assert isinstance(stream_results, dict)
+    gaze_result = stream_results["G"]
+    assert isinstance(gaze_result, dict)
+    retained_metrics = gaze_result["scene_gaze_metrics"]
+    _make_core_unaligned(
+        invalid_gaze_with_diagnostics,
+        "G",
+        status="invalid",
+        readiness="invalid",
+        required=False,
+    )
+    gaze_result = stream_results["G"]
+    assert isinstance(gaze_result, dict)
+    gaze_result["scene_gaze_metrics"] = retained_metrics
+    invalid_gaze_with_diagnostics["disposition"] = "ready_partial"
+    _assert_synchronization_valid(invalid_gaze_with_diagnostics, validator)
+
+
+def test_schema_and_pydantic_agree_on_synthetic_provenance_coupling() -> None:
+    schema = json.loads(render_schemas()["synchronization-report-0.1.0.schema.json"])
+    validator = Draft202012Validator(schema)
+    valid = _synchronization_fixture()
+    _assert_synchronization_valid(valid, validator)
+
+    real_source = copy.deepcopy(valid)
+    real_source["source_classification"] = "restricted-research-pseudonymous"
+    real_source["synthetic_provenance"] = None
+    _assert_synchronization_valid(real_source, validator)
+
+    synthetic_without_provenance = copy.deepcopy(valid)
+    synthetic_without_provenance["synthetic_provenance"] = None
+    _assert_synchronization_invalid(synthetic_without_provenance, validator)
+
+    real_with_provenance = copy.deepcopy(valid)
+    real_with_provenance["source_classification"] = "restricted-research-pseudonymous"
+    _assert_synchronization_invalid(real_with_provenance, validator)
+
+
+def test_schema_and_pydantic_agree_on_window_and_continuation() -> None:
+    schema = json.loads(render_schemas()["synchronization-report-0.1.0.schema.json"])
+    validator = Draft202012Validator(schema)
+    valid = _synchronization_fixture()
+    _assert_synchronization_valid(valid, validator)
+
+    blocked = copy.deepcopy(valid)
+    _make_annotation_invalid(blocked)
+    blocked.update(
+        session_window=None,
+        disposition="blocked",
+        can_continue_to_anchor_availability=False,
+    )
+    _assert_synchronization_valid(blocked, validator)
+
+    ready_without_window = copy.deepcopy(valid)
+    ready_without_window["session_window"] = None
+
+    boolean_window_start = copy.deepcopy(valid)
+    session_window = boolean_window_start["session_window"]
+    assert isinstance(session_window, dict)
+    session_window["start_t_ns"] = False
+
+    zero_window_end = copy.deepcopy(valid)
+    session_window = zero_window_end["session_window"]
+    assert isinstance(session_window, dict)
+    session_window["end_t_ns"] = 0
+
+    blocked_but_continuing = copy.deepcopy(blocked)
+    blocked_but_continuing["can_continue_to_anchor_availability"] = True
+
+    ready_but_stopped = copy.deepcopy(valid)
+    ready_but_stopped["can_continue_to_anchor_availability"] = False
+
+    formal_authorization = copy.deepcopy(valid)
+    formal_authorization["formal_run_authorized"] = True
+
+    integer_formal_authorization = copy.deepcopy(valid)
+    integer_formal_authorization["formal_run_authorized"] = 0
+
+    for candidate in (
+        ready_without_window,
+        boolean_window_start,
+        zero_window_end,
+        blocked_but_continuing,
+        ready_but_stopped,
+        formal_authorization,
+        integer_formal_authorization,
+    ):
+        _assert_synchronization_invalid(candidate, validator)
+
+
+def test_schema_and_pydantic_agree_on_reference_annotation_disposition() -> None:
+    schema = json.loads(render_schemas()["synchronization-report-0.1.0.schema.json"])
+    validator = Draft202012Validator(schema)
+    valid = _synchronization_fixture()
+    _assert_synchronization_valid(valid, validator)
+
+    ready_annotation_invalid = copy.deepcopy(valid)
+    _make_annotation_invalid(ready_annotation_invalid)
+    _assert_synchronization_invalid(ready_annotation_invalid, validator)
+    ready_annotation_invalid.update(
+        disposition="blocked",
+        can_continue_to_anchor_availability=False,
+    )
+    _assert_synchronization_valid(ready_annotation_invalid, validator)
+
+    ready_required_reference_invalid = copy.deepcopy(valid)
+    _make_bundle_reference_unaligned(ready_required_reference_invalid, required=True)
+    _assert_synchronization_invalid(ready_required_reference_invalid, validator)
+    ready_required_reference_invalid.update(
+        disposition="blocked",
+        can_continue_to_anchor_availability=False,
+    )
+    _assert_synchronization_valid(ready_required_reference_invalid, validator)
+
+    ready_model_reference_deferred = copy.deepcopy(valid)
+    ready_model_reference_deferred["task_reference_result"] = _model_bundle_reference()
+    _assert_synchronization_valid(ready_model_reference_deferred, validator)
+
+    partial_optional_reference_invalid = copy.deepcopy(valid)
+    _make_bundle_reference_unaligned(partial_optional_reference_invalid, required=False)
+    partial_optional_reference_invalid["disposition"] = "ready_partial"
+    _assert_synchronization_valid(partial_optional_reference_invalid, validator)
+
+    ready_blocking_global_error = copy.deepcopy(valid)
+    ready_blocking_global_error["global_issues"] = [_blocking_synchronization_issue()]
+    _assert_synchronization_invalid(ready_blocking_global_error, validator)
+    ready_blocking_global_error.update(
+        disposition="blocked",
+        can_continue_to_anchor_availability=False,
+    )
+    _assert_synchronization_valid(ready_blocking_global_error, validator)
+
+    partial_optional_core_invalid = copy.deepcopy(valid)
+    _make_core_unaligned(
+        partial_optional_core_invalid,
+        "I",
+        status="invalid",
+        readiness="invalid",
+        required=False,
+    )
+    partial_optional_core_invalid["disposition"] = "ready_partial"
+    _assert_synchronization_valid(partial_optional_core_invalid, validator)
+
+    blocked_required_core_invalid = copy.deepcopy(valid)
+    _make_core_unaligned(
+        blocked_required_core_invalid,
+        "X",
+        status="invalid",
+        readiness="invalid",
+        required=True,
+    )
+    blocked_required_core_invalid.update(
+        disposition="blocked",
+        can_continue_to_anchor_availability=False,
+    )
+    _assert_synchronization_valid(blocked_required_core_invalid, validator)
 
 
 def test_schema_export_module_runs_without_preload_warning() -> None:
