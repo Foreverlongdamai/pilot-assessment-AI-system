@@ -11,7 +11,12 @@ import pytest
 from pilot_assessment.contracts.ingestion import ReadinessDisposition, StreamReadiness
 from pilot_assessment.contracts.session import SessionManifest
 from pilot_assessment.ingestion.adapters.profiled_csv import ProfiledCsvAdapter
-from pilot_assessment.ingestion.readiness import inspect_ingestion_readiness
+from pilot_assessment.ingestion.manifest_loader import LoadedManifest, ManifestLoader
+from pilot_assessment.ingestion.readiness import (
+    inspect_ingestion_readiness,
+    inspect_loaded_ingestion_readiness,
+    source_snapshot_fingerprint,
+)
 from pilot_assessment.synthetic.generator import generate_synthetic_bundle
 
 HEADERS = (
@@ -248,6 +253,37 @@ def test_shared_xu_source_is_dispatched_once(
     inspect_ingestion_readiness(bundle)
 
     assert calls == 1
+
+
+def test_loaded_readiness_reuses_the_exact_m1_snapshot(tmp_path: Path) -> None:
+    ready_bundle = _full_bundle(tmp_path)
+    loaded = ManifestLoader().load(ready_bundle)
+
+    outcome = inspect_loaded_ingestion_readiness(loaded)
+
+    assert outcome.report.source_snapshot_fingerprint == source_snapshot_fingerprint(loaded)
+    assert outcome.prepared_session is not None
+
+
+def test_path_readiness_loads_manifest_exactly_once(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ready_bundle = _full_bundle(tmp_path)
+    calls = 0
+    original = ManifestLoader.load
+
+    def counted(self: ManifestLoader, bundle_root: str | Path) -> LoadedManifest:
+        nonlocal calls
+        calls += 1
+        return original(self, bundle_root)
+
+    monkeypatch.setattr(ManifestLoader, "load", counted)
+
+    outcome = inspect_ingestion_readiness(ready_bundle)
+
+    assert calls == 1
+    assert outcome.prepared_session is not None
 
 
 def test_fingerprint_and_report_are_independent_of_bundle_root(tmp_path: Path) -> None:

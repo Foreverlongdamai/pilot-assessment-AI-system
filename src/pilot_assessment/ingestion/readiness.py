@@ -138,6 +138,30 @@ def inspect_ingestion_readiness(
     """Inspect M2 source content without aligning clocks or authorizing a run."""
 
     loaded = (loader or ManifestLoader()).load(bundle_root)
+    return inspect_loaded_ingestion_readiness(loaded, registry=registry)
+
+
+def source_snapshot_fingerprint(loaded: LoadedManifest) -> str:
+    """Return the stable fingerprint for one already verified M1 snapshot."""
+
+    return _source_fingerprint(loaded)
+
+
+def inspect_loaded_ingestion_readiness(
+    loaded: LoadedManifest,
+    *,
+    registry: AdapterRegistry | None = None,
+) -> IngestionReadinessOutcome:
+    """Inspect one loaded M1 result without loading its manifest a second time."""
+
+    return _inspect_loaded_ingestion_readiness(loaded, registry=registry)
+
+
+def _inspect_loaded_ingestion_readiness(
+    loaded: LoadedManifest,
+    *,
+    registry: AdapterRegistry | None = None,
+) -> IngestionReadinessOutcome:
     active_registry = registry or build_default_registry()
     catalog = load_builtin_profiles()
     results: dict[str, StreamReadinessResult] = {}
@@ -745,4 +769,6 @@ __all__ = [
     "IngestionReadinessOutcome",
     "build_default_registry",
     "inspect_ingestion_readiness",
+    "inspect_loaded_ingestion_readiness",
+    "source_snapshot_fingerprint",
 ]

@@ -10,6 +10,8 @@ from pilot_assessment.ingestion.readiness import (
     IngestionReadinessOutcome,
     build_default_registry,
     inspect_ingestion_readiness,
+    inspect_loaded_ingestion_readiness,
+    source_snapshot_fingerprint,
 )
 
 __all__ = [
@@ -20,4 +22,6 @@ __all__ = [
     "IngestionReadinessOutcome",
     "build_default_registry",
     "inspect_ingestion_readiness",
+    "inspect_loaded_ingestion_readiness",
+    "source_snapshot_fingerprint",
 ]
