@@ -1627,7 +1627,7 @@ if clock.residual_max_ms < clock.residual_rms_ms:
     raise ValueError("CLOCK_DECLARATION_INCONSISTENT")
 ~~~
 
-`validate_same_clock_mappings` groups ready descriptors by `clock_id` and compares method/scale/offset/drift only; residual values may differ.
+`validate_same_clock_mappings` accepts only the exact M2 `READY` descriptor inventory, including a `READY` bundle reference, groups that filtered inventory by `clock_id`, and compares method/scale/offset/drift only; residual values may differ. A non-ready optional descriptor never enters this validator and therefore cannot contaminate or block a ready same-clock group.
 
 - [ ] **Step 6: Run GREEN and commit**
 
@@ -2088,8 +2088,19 @@ git commit -m "feat: report native synchronization quality"
 **Files:**
 - Create: `src/pilot_assessment/synchronization/service.py`
 - Modify: `src/pilot_assessment/synchronization/__init__.py`
+- Modify: `src/pilot_assessment/synchronization/models.py`
 - Create: `tests/synchronization/test_reference.py`
 - Create: `tests/synchronization/test_service.py`
+- Modify: `tests/synchronization/test_models.py`
+
+- [ ] **Step 0: Land the loaded-snapshot input hardening prerequisite**
+
+Before service orchestration, bind every M2-ready core stream and ready bundle reference to the same loaded identity: normalized `clock_id` equals the manifest descriptor; `PreparedSession` and readiness paths/checksums equal descriptor paths and the corresponding `LoadedManifest.verified_digests`; D-011 shared X/U remains the one legal same-path case. Cover core/reference clock mismatch, consistently forged report+prepared identity, a missing loaded reference descriptor, and accepted shared X/U identity. This is a separate prerequisite commit referenced by Task 11:
+
+~~~powershell
+git add src/pilot_assessment/synchronization/models.py tests/synchronization/test_models.py
+git commit -m "fix: bind synchronization input to loaded snapshot"
+~~~
 
 - [ ] **Step 1: Write reference RED tests**
 
@@ -2109,6 +2120,9 @@ Add:
 - `test_ready_outcome_has_aligned_session_and_anchor_continuation`
 - `test_all_service_paths_keep_formal_run_unauthorized`
 - `test_global_issues_are_sorted_deterministically`
+- `test_real_prepared_shared_xu_maps_identically`
+
+The D-011 test must obtain an actual `PreparedSession` through production `ManifestLoader` plus `inspect_loaded_ingestion_readiness`, align its independent X and U normalized tables, and assert identical `source_row_index`, `source_time_s`, mapped `t_ns`, and `in_session` row by row. A hand-built pair of tables is not sufficient for this integration assertion.
 
 - [ ] **Step 3: Run RED**
 
@@ -2234,7 +2248,7 @@ The two orchestration helper signatures are frozen as `_blocked_from_ingestion(l
 4. use `session_window=None`, `aligned_time_parts={}`, aligned annotation JSON `null`, sorted status/issue canonical JSON, the Task 6 policy/catalog fingerprint functions, and then the synchronization fingerprint;
 5. construct a strict blocked `SynchronizationReport` and return `SynchronizationOutcome(report=report, aligned_session=None)`.
 
-`_synchronize_valid_input` processes in this exact order: load catalog/hash → policy hash → validate clock inventory → map X once → derive X window → align all M2-ready core streams → translate non-ready optional streams → align/defer reference → align annotations → compute quality and scene/gaze checks → sort issues → derive disposition → build framed fingerprint inputs → compute synchronization fingerprint → construct report → construct `AlignedSession` only when non-blocked. The same fingerprint is written into report and aligned session. Any required failure returns no aligned session; `ready_partial` keeps only successfully aligned optional streams and still returns an aligned session. All result constructors populate every Task 2 field from M2 readiness, descriptor clock, binding profile, metrics, checksums, and bounded issues; no raw Polars/Pydantic/OS exception crosses the service boundary.
+`_synchronize_valid_input` processes in this exact order: load catalog/hash → policy hash → build the exact M2 `READY` descriptor inventory (ready core plus ready bundle reference) and group it by `clock_id` for `validate_same_clock_mappings` → map X once → derive X window → align all M2-ready core streams → translate non-ready optional streams without adding their descriptors to clock validation → align/defer reference → align annotations → compute quality and scene/gaze checks → sort issues → derive disposition → build framed fingerprint inputs → compute synchronization fingerprint → construct report → construct `AlignedSession` only when non-blocked. The same fingerprint is written into report and aligned session. Any required failure returns no aligned session; `ready_partial` keeps only successfully aligned optional streams and still returns an aligned session. All result constructors populate every Task 2 field from M2 readiness, descriptor clock, binding profile, metrics, checksums, and bounded issues; no raw Polars/Pydantic/OS exception crosses the service boundary.
 
 Freeze exception translation in tests and implementation:
 
@@ -2242,11 +2256,13 @@ Freeze exception translation in tests and implementation:
 |---|---|---|
 | `TemporalAlignmentError` on a core/reference role | affected item `invalid`; required blocks, optional degrades | the contained temporal issue |
 | missing built-in binding | affected item `unsupported`; required blocks, optional degrades | `TEMPORAL_BINDING_NOT_FOUND` |
-| clock declaration conflict | all affected same-clock items `invalid` | `CLOCK_DECLARATION_INCONSISTENT` |
-| mapped int64 overflow | affected item `invalid` | `TIMESTAMP_OUT_OF_INT64_RANGE` |
+| clock declaration conflict | affected M2-ready same-clock items `invalid`; required item/reference or X blocks, optional-only failure degrades | `CLOCK_DECLARATION_INCONSISTENT` |
+| mapped int64 overflow | affected item `invalid`; required item/reference or X/session-window overflow blocks, optional-only failure degrades | `TIMESTAMP_OUT_OF_INT64_RANGE` |
 | `AnnotationAlignmentError` | annotation `invalid` or `unsupported`; always blocks | contained annotation/source-changed issue |
-| source/snapshot digest change | no aligned session | `SOURCE_CHANGED_DURING_SYNCHRONIZATION` |
+| annotation bytes differ from the loaded digest | no aligned session | `SOURCE_CHANGED_DURING_SYNCHRONIZATION` |
 | unexpected implementation exception | no aligned session; no raw message/type in diagnostics | bounded `SYNCHRONIZATION_INTERNAL_ERROR` |
+
+Measurement and bundle-reference files are not reopened by M3. Their snapshot failure is instead the bounded three-way `SynchronizationInput` identity rejection from Step 0 (`PreparedSession` ↔ readiness ↔ `LoadedManifest`); only annotation files are re-read and re-digested here.
 
 - [ ] **Step 5: Implement status translation and reference semantics**
 
