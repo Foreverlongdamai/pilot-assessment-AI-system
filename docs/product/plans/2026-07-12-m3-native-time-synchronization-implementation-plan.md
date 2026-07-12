@@ -4,6 +4,8 @@
 
 **Goal:** Convert one M2-validated multimodal Session Bundle into deterministic native-rate aligned views and a public `SynchronizationReport`, while preserving every raw row and keeping formal assessment authorization false.
 
+**Implementation status (2026-07-12):** Tasks 0–13 and Task 14 Steps 1–5 are implemented and measured. Task 14 Step 6 deliberately remains open until the local handoff commit exists; a follow-up docs-only closure commit must then tick that final checkbox.
+
 **Architecture:** A single M1 `LoadedManifest` snapshot feeds M2 inspection and an internal `SynchronizationInput`. Versioned temporal bindings route point, interval, inherited, and untimed artifact roles through one Decimal/round-half-even clock kernel; the service returns an in-process immutable `AlignedSession` plus a Pydantic/JSON-Schema report. M3 performs no interpolation or resampling; M4 owns anchor-specific grids and windows.
 
 **Tech Stack:** Python 3.11, Pydantic 2, Polars 1.x, Decimal, importlib.resources, JSON Schema Draft 2020-12, pytest, Ruff, ty, uv.
@@ -82,7 +84,7 @@ Task 0 and Task 1 run first. After Task 2, Tasks 3–5 are independent and may r
 - Modify: `README.md`
 - Modify: `docs/product/specs/2026-07-12-m3-native-time-synchronization-design.md`
 
-- [ ] **Step 1: Run the decision/read-order check and observe RED**
+- [x] **Step 1: Run the decision/read-order check and observe RED**
 
 ~~~powershell
 $decisionText = Get-Content -Raw -Encoding UTF8 docs/product/DECISIONS.md
@@ -97,7 +99,7 @@ if ($Error.Count) { throw 'M3 decisions are not ratified' }
 
 Expected: RED because D-016–D-020 are not yet in `DECISIONS.md`.
 
-- [ ] **Step 2: Append the five accepted decisions**
+- [x] **Step 2: Append the five accepted decisions**
 
 Write full decision records with these exact semantics:
 
@@ -138,7 +140,7 @@ Write full decision records with these exact semantics:
 - 影响：SynchronizationReport 与 IngestionReadinessReport/RunPreflightReport 分离，始终 formal_run_authorized=false，并绑定 source/policy/catalog/alignment fingerprints。
 ~~~
 
-- [ ] **Step 3: Reconcile the formal product documents**
+- [x] **Step 3: Reconcile the formal product documents**
 
 Apply all of the following literal changes:
 
@@ -152,7 +154,7 @@ Apply all of the following literal changes:
 
 Do not label M3 implemented or verified in this task.
 
-- [ ] **Step 4: Run the document acceptance gate**
+- [x] **Step 4: Run the document acceptance gate**
 
 ~~~powershell
 $required = @(
@@ -200,7 +202,7 @@ git diff --check
 
 Expected: all checks exit 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ~~~powershell
 git add README.md docs/product
@@ -218,7 +220,7 @@ git commit -m "docs: ratify M3 synchronization contracts"
 - Modify: `tests/fixtures/ingestion_readiness_ready.json`
 - Move: `tests/e2e/test_real_csv_local.py` → `tests/e2e/test_format_sample_csv_local.py`
 
-- [ ] **Step 1: Write the failing provenance-boundary test**
+- [x] **Step 1: Write the failing provenance-boundary test**
 
 Extend the generator test with:
 
@@ -263,7 +265,7 @@ def test_ready_fixture_uses_actual_runtime_stream_schema_ids(
     )
 ~~~
 
-- [ ] **Step 2: Run provenance RED**
+- [x] **Step 2: Run provenance RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synthetic/test_generator.py::test_generator_writes_a_complete_deterministic_bundle -v
@@ -271,13 +273,13 @@ def test_ready_fixture_uses_actual_runtime_stream_schema_ids(
 
 Expected: FAIL on the old `real-simulator-xu`/task/reference wording.
 
-- [ ] **Step 3: Implement unambiguous software-fixture provenance**
+- [x] **Step 3: Implement unambiguous software-fixture provenance**
 
 Update the generator docstring and manifest payload to use the exact values from Step 1. Also change `build_task_reference` documentation to state that source X values are copied only to exercise the reference schema/time path, not to define a commanded or acceptable trajectory. State that the internally named `control_activity` trace is only a `synthetic_control_driver` with no workload, control-quality, physiology, O13, or performance meaning. Set every row's `envelope_profile_id` to `synthetic-format-fixture-envelope-v0.1`.
 
 Update the canonical readiness fixture provenance scope to `captured-format-sample-xu-plus-synthetic-modalities`. Also replace its five stale invented composite `*-normalized-v0.1` IDs with the actual runtime `NormalizedStream.schema_id` values asserted above. Do not change the source SHA-256, row values, clock truth, or `scientific_validation_status=not_supported`.
 
-- [ ] **Step 4: Run provenance GREEN**
+- [x] **Step 4: Run provenance GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synthetic/test_generator.py tests/contracts/test_ingestion.py -q
@@ -285,7 +287,7 @@ Update the canonical readiness fixture provenance scope to `captured-format-samp
 
 Expected: generator/ingestion provenance tests pass.
 
-- [ ] **Step 5: Write the failing frame-boundary regression**
+- [x] **Step 5: Write the failing frame-boundary regression**
 
 Add:
 
@@ -305,7 +307,7 @@ def test_gaze_frame_binding_uses_exact_rate_indices_at_scene_boundaries() -> Non
     assert gaze.samples["scene_frame_id"].to_list() == expected
 ~~~
 
-- [ ] **Step 6: Run frame-boundary RED**
+- [x] **Step 6: Run frame-boundary RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synthetic/test_modalities.py::test_gaze_frame_binding_uses_exact_rate_indices_at_scene_boundaries -v
@@ -313,7 +315,7 @@ def test_gaze_frame_binding_uses_exact_rate_indices_at_scene_boundaries() -> Non
 
 Expected: FAIL with `actual 122`, `expected 123`.
 
-- [ ] **Step 7: Replace float multiplication with exact rate-index arithmetic**
+- [x] **Step 7: Replace float multiplication with exact rate-index arithmetic**
 
 In `build_gaze`, define integer rates and calculate IDs from the stable sample index:
 
@@ -331,7 +333,7 @@ frame_ids = [
 
 Do not change sample counts, timestamps, PRNG coordinates, or §17 golden counts.
 
-- [ ] **Step 8: Rename the opt-in M2 E2E around its actual role**
+- [x] **Step 8: Rename the opt-in M2 E2E around its actual role**
 
 Move the test file and rename:
 
@@ -350,7 +352,7 @@ def test_format_sample_csv_generates_a_full_ready_bundle_without_source_mutation
 
 The skip reason must say `repository-external captured format-sample simulator CSV not configured`. Keep all byte/hash/row assertions; add no flight-performance assertion.
 
-- [ ] **Step 9: Run GREEN and the synthetic/M2 suites**
+- [x] **Step 9: Run GREEN and the synthetic/M2 suites**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synthetic/test_modalities.py::test_gaze_frame_binding_uses_exact_rate_indices_at_scene_boundaries -v
@@ -359,7 +361,7 @@ The skip reason must say `repository-external captured format-sample simulator C
 
 Expected: the new regression and all synthetic tests pass.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/synthetic tests/synthetic tests/contracts/test_ingestion.py tests/fixtures/ingestion_readiness_ready.json tests/e2e/test_format_sample_csv_local.py
@@ -378,7 +380,7 @@ git commit -m "fix: label format sample and bind exact gaze frames"
 - Create: `tests/fixtures/synchronization_report_ready.json`
 - Create: `schemas/synchronization-report-0.1.0.schema.json`
 
-- [ ] **Step 1: Write the first public-contract RED tests**
+- [x] **Step 1: Write the first public-contract RED tests**
 
 Create tests with these exact names:
 
@@ -433,7 +435,7 @@ def test_report_requires_exact_seven_core_stream_result_keys() -> None:
 
 Also add separate negative tests for `ready + can_continue=false`, `blocked + can_continue=true`, non-blocked without window, deferred core status, task-reference mixed into core, aligned core/reference with non-present declaration or inconsistent clock, `formal_run_authorized=true`, and string-coerced JSON scalars. Freeze the v0.1 numeric window boundary: `end_t_ns=2**52-1` is accepted, `2**52` is rejected, and bool/float values remain invalid for the strict integer field.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/contracts/test_synchronization.py -v
@@ -441,7 +443,7 @@ Also add separate negative tests for `ready + can_continue=false`, `blocked + ca
 
 Expected: import failure because `contracts.synchronization` does not exist.
 
-- [ ] **Step 3: Implement the strict public DTOs**
+- [x] **Step 3: Implement the strict public DTOs**
 
 Freeze the following exact imports/types and public DTO fields. `SynchronizationPolicy` v0.1 uses literals so callers cannot silently change engineering parameters while retaining the same policy ID; a future tunable policy requires a new contract/policy revision.
 
@@ -1197,7 +1199,7 @@ def test_ready_fixture_matches_canonical_builder() -> None:
 
 Create `tests/fixtures/synchronization_report_ready.json` with `apply_patch` so its decoded value exactly equals `ready_fixture_data()`; the bidirectional test is the drift guard. The task-reference stream/artifact aligned schema is deliberately the single approved `task-reference-path-aligned-v0.1`, not a newly invented `task-reference-aligned-v0.1`.
 
-- [ ] **Step 4: Run contract GREEN**
+- [x] **Step 4: Run contract GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/contracts/test_synchronization.py -v
@@ -1205,7 +1207,7 @@ Create `tests/fixtures/synchronization_report_ready.json` with `apply_patch` so 
 
 Expected: all synchronization contract tests pass.
 
-- [ ] **Step 5: Add exporter/schema parity and observe RED**
+- [x] **Step 5: Add exporter/schema parity and observe RED**
 
 Update schema tests to expect exactly four files and add:
 
@@ -1218,7 +1220,7 @@ def test_synchronization_report_schema_matches_checked_in_artifact() -> None:
 
 Add acceptance-matrix cases for dispositions, exact core keys, deferred core, formal authorization, strict scalar types, and the inclusive `SessionWindow.end_t_ns` maximum `2**52-1`. Run the test and observe RED because the exporter has no fourth schema.
 
-- [ ] **Step 6: Export the fourth public schema and run GREEN**
+- [x] **Step 6: Export the fourth public schema and run GREEN**
 
 Add schema ID/title constants and a `_synchronization_report_schema()` builder. Pydantic model validators are not automatically represented in JSON Schema, so manually encode these five groups with Draft 2020-12 `properties/required/additionalProperties:false` plus `allOf` `if/then/else` clauses:
 
@@ -1237,7 +1239,7 @@ Add paired Pydantic/JSON-Schema tests named `test_schema_and_pydantic_agree_on_e
 
 Expected: committed schema parity and Pydantic/JSON-Schema acceptance matrix pass; session-manifest schema bytes remain unchanged.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/contracts src/pilot_assessment/schemas tests/contracts/test_synchronization.py tests/schemas/test_schema_export.py tests/fixtures/synchronization_report_ready.json schemas
@@ -1251,7 +1253,7 @@ git commit -m "feat: define synchronization report contract"
 - Modify: `src/pilot_assessment/ingestion/__init__.py`
 - Modify: `tests/ingestion/test_readiness.py`
 
-- [ ] **Step 1: Write the loaded-snapshot seam RED tests**
+- [x] **Step 1: Write the loaded-snapshot seam RED tests**
 
 Add tests that load once, call the new `inspect_loaded_ingestion_readiness` API, and assert the fingerprint:
 
@@ -1266,7 +1268,7 @@ def test_loaded_readiness_reuses_the_exact_m1_snapshot(tmp_path: Path) -> None:
 
 Add a monkeypatch count test proving `inspect_ingestion_readiness(path)` invokes `ManifestLoader.load` exactly once.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/ingestion/test_readiness.py -v
@@ -1274,7 +1276,7 @@ Add a monkeypatch count test proving `inspect_ingestion_readiness(path)` invokes
 
 Expected: import failure for `inspect_loaded_ingestion_readiness` and `source_snapshot_fingerprint`.
 
-- [ ] **Step 3: Extract the loaded entry without changing M2 behavior**
+- [x] **Step 3: Extract the loaded entry without changing M2 behavior**
 
 Use these signatures:
 
@@ -1303,7 +1305,7 @@ def inspect_ingestion_readiness(
 
 Move the current body after `ManifestLoader().load` into the loaded function. Keep report bytes, issue ordering, adapter dispatch, and old public imports source-compatible.
 
-- [ ] **Step 4: Run GREEN and full M2 regression**
+- [x] **Step 4: Run GREEN and full M2 regression**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/ingestion/test_readiness.py tests/e2e/test_m2_micro_bundle.py -v
@@ -1311,7 +1313,7 @@ Move the current body after `ManifestLoader().load` into the loaded function. Ke
 
 Expected: new seam and all existing M2 behavior pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/ingestion tests/ingestion/test_readiness.py
@@ -1328,7 +1330,7 @@ git commit -m "refactor: expose loaded ingestion snapshot"
 - Create: `tests/synchronization/test_profiles.py`
 - Modify: `tests/test_package_metadata.py`
 
-- [ ] **Step 1: Write catalog/resource RED tests**
+- [x] **Step 1: Write catalog/resource RED tests**
 
 Create tests named:
 
@@ -1358,7 +1360,7 @@ def test_task_reference_binding_uses_commanded_path_role_from_m2() -> None:
 
 Also add `test_temporal_catalog_matches_m2_profile_artifact_roles`. It loads `load_builtin_profiles()` and compares every catalog `expected_artifact_schema_id` to the packaged M2 authority: five `CompositeProfile.artifact_roles` role-by-role; X/U against their runtime normalized schema IDs; task reference against the packaged `task-reference-path-raw-v0.1` `TableProfile`. Then test duplicate schema/role rejection, no heuristic fallback, only `-aligned-v0.1` output IDs, stable catalog fingerprint, and installed-resource presence.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_profiles.py tests/test_package_metadata.py -v
@@ -1366,7 +1368,7 @@ Also add `test_temporal_catalog_matches_m2_profile_artifact_roles`. It loads `lo
 
 Expected: import/resource failure because the synchronization package/catalog does not exist.
 
-- [ ] **Step 3: Implement strict profile DTOs and loader**
+- [x] **Step 3: Implement strict profile DTOs and loader**
 
 Define the binding DTOs and read-only lookup properties exactly:
 
@@ -1494,7 +1496,7 @@ class TemporalBindingCatalog(StrictContractModel):
 
 The loader must expose `load_builtin_temporal_catalog() -> TemporalBindingCatalog` and `builtin_temporal_catalog_fingerprint() -> str`, use `importlib.resources.files`, strict UTF-8 JSON, duplicate-key/NaN rejection, immutable lookups, and SHA-256 over the exact packaged bytes. On first load it cross-validates the catalog against `load_builtin_profiles()` using the same rules as `test_temporal_catalog_matches_m2_profile_artifact_roles`; a mismatch is a packaged configuration error, not an observed DataFrame schema. Service trusts only this cross-validated built-in catalog. Unknown schema/role returns `TEMPORAL_BINDING_NOT_FOUND`; there is no heuristic fallback. The parent `synchronization/__init__.py` is created here and initially exports only the catalog DTO/loader/fingerprint API so the Task 4 wheel import is valid; later tasks extend the same public module.
 
-- [ ] **Step 4: Write the complete catalog**
+- [x] **Step 4: Write the complete catalog**
 
 Declare 11 timed roles and three untimed roles. Freeze stream-level aligned IDs as `flight-state-aligned-v0.1`, `control-input-aligned-v0.1`, `vr-scene-aligned-v0.1`, `gaze-aligned-v0.1`, `eeg-aligned-v0.1`, `ecg-aligned-v0.1`, `pilot-camera-aligned-v0.1`, and (because it is a single-table stream) `task-reference-path-aligned-v0.1`:
 
@@ -1516,7 +1518,7 @@ Untimed bindings are scene `frame_images/png-rgb8-v0.1`, EEG `sidecar/eeg-sideca
 
 Every point binding uses `source_time_s` only for X/U and `source_timestamp_s` for all other point roles, appending `t_ns/in_session`. The fixation interval uses `start_source_timestamp_s/end_source_timestamp_s` and appends `start_t_ns/end_t_ns/overlaps_session/fully_in_session`. AOI inherit uses `parent_role=frame_index`, `parent_key_columns=("frame_id",)`, `foreign_key_columns=("frame_id",)`, and `stable_keys=("frame_id","aoi_id")`; all other stable keys are exactly those in the final table column.
 
-- [ ] **Step 5: Run GREEN and wheel-resource smoke**
+- [x] **Step 5: Run GREEN and wheel-resource smoke**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_profiles.py tests/test_package_metadata.py -v
@@ -1527,7 +1529,7 @@ $wheel=(Get-ChildItem dist -Filter '*.whl' | Sort-Object LastWriteTime -Descendi
 
 Expected: source tests and isolated wheel resource load pass.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/synchronization tests/synchronization/test_profiles.py tests/test_package_metadata.py
@@ -1542,7 +1544,7 @@ git commit -m "feat: add M3 temporal binding catalog"
 - Modify: `src/pilot_assessment/synthetic/timelines.py`
 - Modify: `tests/synthetic/test_timelines.py`
 
-- [ ] **Step 1: Write scalar round/mapping RED tests**
+- [x] **Step 1: Write scalar round/mapping RED tests**
 
 Add tests for positive/negative half-even ties, exact signed-int64 boundaries, both overflows, scale applied once, and Decimal string semantics:
 
@@ -1565,7 +1567,7 @@ def test_clock_mapping_uses_decimal_string_semantics() -> None:
 
 Test `round_decimal_ns(Decimal("0.5")) == 0`, `1.5→2`, `2.5→2`, `-0.5→0`, `-1.5→-2`, `-2.5→-2`.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_clock.py -v
@@ -1573,7 +1575,7 @@ Test `round_decimal_ns(Decimal("0.5")) == 0`, `1.5→2`, `2.5→2`, `-0.5→0`, 
 
 Expected: import failure because the clock kernel does not exist.
 
-- [ ] **Step 3: Implement the sole scalar mapper**
+- [x] **Step 3: Implement the sole scalar mapper**
 
 Use only Decimal string semantics:
 
@@ -1609,11 +1611,11 @@ def map_source_seconds_to_session_ns(
 
 Add `session_seconds_to_ns` as scale=1/offset=0. Make `synthetic.timelines.map_source_seconds_to_session_ns` a compatibility wrapper that derives scale once from drift and calls this kernel; do not maintain a second rounding implementation.
 
-- [ ] **Step 4: Add clock-declaration RED tests**
+- [x] **Step 4: Add clock-declaration RED tests**
 
 Test exact tolerance acceptance, over-tolerance rejection, residual max below RMS, same-clock mapping mismatch, and same-clock different residual acceptance.
 
-- [ ] **Step 5: Implement declaration/inventory validation**
+- [x] **Step 5: Implement declaration/inventory validation**
 
 `validate_clock_declaration(clock, policy)` must compare:
 
@@ -1629,7 +1631,7 @@ if clock.residual_max_ms < clock.residual_rms_ms:
 
 `validate_same_clock_mappings` accepts only the exact M2 `READY` descriptor inventory, including a `READY` bundle reference, groups that filtered inventory by `clock_id`, and compares method/scale/offset/drift only; residual values may differ. A non-ready optional descriptor never enters this validator and therefore cannot contaminate or block a ready same-clock group.
 
-- [ ] **Step 6: Run GREEN and commit**
+- [x] **Step 6: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_clock.py tests/synthetic/test_timelines.py -v
@@ -1646,7 +1648,7 @@ git commit -m "feat: add deterministic session clock mapping"
 - Create: `tests/synchronization/test_models.py`
 - Create: `tests/synchronization/test_fingerprint.py`
 
-- [ ] **Step 1: Write internal-model RED tests**
+- [x] **Step 1: Write internal-model RED tests**
 
 Add tests named:
 
@@ -1661,7 +1663,7 @@ Add tests named:
 
 Use production `ManifestLoader`/M2 outcomes for input tests and small Polars tables for immutability.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_models.py tests/synchronization/test_fingerprint.py -v
@@ -1669,7 +1671,7 @@ Use production `ManifestLoader`/M2 outcomes for input tests and small Polars tab
 
 Expected: import failure because models/fingerprint primitives do not exist.
 
-- [ ] **Step 3: Implement exact frozen dataclasses**
+- [x] **Step 3: Implement exact frozen dataclasses**
 
 ~~~python
 @dataclass(frozen=True, slots=True)
@@ -1795,7 +1797,7 @@ def fingerprint_synchronization(
 
 `fingerprint_synchronization` sorts `aligned_time_parts` by logical `stream/role/column` key and feeds every part through `hash_part`. Int64 payloads use signed little-endian 8-byte values; booleans use single bytes `0`/`1`. Canonical JSON uses UTF-8, sorted keys, compact separators, and `allow_nan=False`. Absolute paths, host/wall time, issue insertion order, and the output fingerprint field itself are forbidden inputs.
 
-- [ ] **Step 4: Run GREEN and commit**
+- [x] **Step 4: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_models.py tests/synchronization/test_fingerprint.py -v
@@ -1809,7 +1811,7 @@ git commit -m "feat: add aligned models and fingerprint primitives"
 - Create: `src/pilot_assessment/synchronization/bindings.py`
 - Create: `tests/synchronization/test_bindings.py`
 
-- [ ] **Step 1: Write point/window RED tests**
+- [x] **Step 1: Write point/window RED tests**
 
 Implement the exact tests listed below one at a time:
 
@@ -1827,7 +1829,7 @@ Implement the exact tests listed below one at a time:
 
 The first table must include mapped values `[-1, 0, end, end+1]` and assert masks `[False, True, True, False]` without filtering.
 
-- [ ] **Step 2: Run the first RED**
+- [x] **Step 2: Run the first RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_bindings.py::test_point_binding_appends_int64_time_and_boolean_mask_without_mutating_raw -v
@@ -1835,7 +1837,7 @@ The first table must include mapped values `[-1, 0, end, end+1]` and assert mask
 
 Expected: import failure because the binding executor does not exist.
 
-- [ ] **Step 3: Implement point mapping without sorting/filtering**
+- [x] **Step 3: Implement point mapping without sorting/filtering**
 
 `map_point_artifact(frame, binding, clock)` converts the declared source column to a Polars Int64 target series and validates existing `(t_ns, stable_keys)` order. `apply_point_window(frame, binding, window)` appends Boolean mask. Both return new DataFrames; no mutation, aggregation, sort, or filter.
 
@@ -1851,7 +1853,7 @@ inside = [window.start_t_ns <= value <= window.end_t_ns for value in mapped]
 return aligned.with_columns(pl.Series(binding.in_session_column, inside, dtype=pl.Boolean))
 ~~~
 
-- [ ] **Step 4: Implement D-018 window derivation**
+- [x] **Step 4: Implement D-018 window derivation**
 
 Use the already mapped X table; do not map X a second time. The exact signature is:
 
@@ -1888,7 +1890,7 @@ def derive_session_window(
 
 Ignore `extensions.synthetic.duration_s` as authority; a test sets it to a conflicting value. Add an exact boundary test proving mapped X at `MAX_SESSION_END_NS_V0_1+1` is translated to stable `ValueError("SESSION_WINDOW_UNAVAILABLE")` rather than leaking a Pydantic validation error.
 
-- [ ] **Step 5: Run all point/window GREEN tests and commit**
+- [x] **Step 5: Run all point/window GREEN tests and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_bindings.py -k "point or session_window or shared_xu" -v
@@ -1902,7 +1904,7 @@ git commit -m "feat: align native point streams"
 - Modify: `src/pilot_assessment/synchronization/bindings.py`
 - Modify: `tests/synchronization/test_bindings.py`
 
-- [ ] **Step 1: Write secondary-role RED tests**
+- [x] **Step 1: Write secondary-role RED tests**
 
 Add:
 
@@ -1917,7 +1919,7 @@ Add:
 
 Run the first test and confirm RED because interval support is absent.
 
-- [ ] **Step 2: Implement interval mapping**
+- [x] **Step 2: Implement interval mapping**
 
 Freeze the callable boundary as `map_interval_artifact(frame: pl.DataFrame, binding: IntervalBinding, clock: ClockSync, window: SessionWindow) -> pl.DataFrame`. All point/interval/inherit executors translate structural failures through one internal `TemporalAlignmentError(issue: DomainErrorData)`; service catches that type and never a raw Polars/KeyError/ValueError.
 
@@ -1930,17 +1932,17 @@ fully_inside = start_t_ns >= window.start_t_ns and end_t_ns <= window.end_t_ns
 
 Preserve source duration, raw order, and every row.
 
-- [ ] **Step 3: Implement inherited time**
+- [x] **Step 3: Implement inherited time**
 
 Freeze the callable boundary as `inherit_point_time(child: pl.DataFrame, parent: pl.DataFrame, binding: InheritBinding) -> pl.DataFrame`.
 
 Build a unique parent key→(`t_ns`,`in_session`) mapping, reject missing/duplicate keys with `TEMPORAL_PARENT_KEY_INVALID`, and append values to children in existing child order. Do not use a Polars join that changes order without an explicit stable row index assertion.
 
-- [ ] **Step 4: Preserve untimed artifacts**
+- [x] **Step 4: Preserve untimed artifacts**
 
 Return the existing immutable JSON/file mappings unchanged; do not add time columns or assign an aligned artifact schema to PNG/sidecar roles.
 
-- [ ] **Step 5: Run GREEN and commit**
+- [x] **Step 5: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_bindings.py -v
@@ -1954,11 +1956,11 @@ git commit -m "feat: align secondary temporal artifacts"
 - Create: `src/pilot_assessment/synchronization/annotations.py`
 - Create: `tests/synchronization/test_annotations.py`
 
-- [ ] **Step 1: Write bounded strict-reader RED tests**
+- [x] **Step 1: Write bounded strict-reader RED tests**
 
 Add exact cases for invalid UTF-8, duplicate JSON keys, NaN/Infinity, file >4 MiB, >100,000 records, path/snapshot digest change. Each must produce a domain-safe code, especially `SOURCE_CHANGED_DURING_SYNCHRONIZATION`, rather than leak JSON/OS exceptions.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_annotations.py -k "reader" -v
@@ -1966,7 +1968,7 @@ Add exact cases for invalid UTF-8, duplicate JSON keys, NaN/Infinity, file >4 Mi
 
 Expected: import failure because annotation reader does not exist.
 
-- [ ] **Step 3: Implement verified bounded JSON reading**
+- [x] **Step 3: Implement verified bounded JSON reading**
 
 Use these exact public-within-package APIs:
 
@@ -1990,7 +1992,7 @@ The frozen function signatures are:
 
 `read_verified_annotation` resolves below `loaded.bundle_root`, rejects link/path escape, requires the path/digest in `loaded.verified_digests`, reads at most `max_bytes + 1`, rechecks SHA-256, strict-decodes UTF-8, rejects duplicate keys and non-standard constants, requires the target value to be a list, and caps it at `max_records`. Snapshot/path/digest changes raise `SOURCE_CHANGED_DURING_SYNCHRONIZATION`; bounded decode/shape failures raise `ANNOTATION_SEMANTICS_INVALID`; unknown schema IDs raise `ANNOTATION_SCHEMA_UNSUPPORTED`. All OS/JSON exceptions are translated to bounded `DomainErrorData` without raw payloads.
 
-- [ ] **Step 4: Write and run annotation temporal-structure/self-consistency RED tests**
+- [x] **Step 4: Write and run annotation temporal-structure/self-consistency RED tests**
 
 Add:
 
@@ -2008,7 +2010,7 @@ Add:
 - `test_invalid_baseline_requires_exclusion_reason`
 - `test_baseline_phase_overlap_is_allowed`
 
-- [ ] **Step 5: Implement the six registered annotation schemas**
+- [x] **Step 5: Implement the six registered annotation schemas**
 
 Support exactly the three current synthetic schemas plus `phases-session-time-v0.1`, `events-session-time-v0.1`, and `baseline-intervals-session-time-v0.1`. Synthetic seconds call `session_seconds_to_ns` and preserve `synthetic_semantics_unvalidated=true`; canonical ns values are strict int64 and receive no clock transform. Implement §9 phase/event/baseline temporal contract/self-consistency rules and return `AlignedAnnotations` plus `AnnotationSynchronizationResult`; passing them never asserts expert-label or task correctness.
 
@@ -2023,7 +2025,7 @@ Freeze these six minimal registered shapes in parameterized tests (extra fields 
 {"schema_id":"baseline-intervals-session-time-v0.1","annotation_revision":"expert-revision-1","timebase":{"origin":"session_start","unit":"ns"},"annotation_source":"expert","baseline_intervals":[{"interval_id":"b1","start_t_ns":0,"end_t_ns":200000000,"condition":"nominal","valid":true}]}
 ~~~
 
-- [ ] **Step 6: Run GREEN and commit**
+- [x] **Step 6: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_annotations.py -v
@@ -2038,11 +2040,11 @@ git commit -m "feat: align session annotations"
 - Create: `tests/synchronization/test_quality.py`
 - Create: `tests/synchronization/test_scene_gaze.py`
 
-- [ ] **Step 1: Write point-quality RED tests**
+- [x] **Step 1: Write point-quality RED tests**
 
 Add tests for before/inside/after counts; `[0,0,1,2,2,2]` as 2 duplicate groups/5 participating rows; strict `delta > 5×median` gap rule; equality not counted; single-row null period/zero span; interpolated rows zero; descriptor residuals preserved. At the maximum accepted session window `2**52-1`, lock an even-delta `.5` median and its half-even threshold exactly so float precision and Int64 threshold safety cannot regress.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_quality.py -v
@@ -2050,7 +2052,7 @@ Add tests for before/inside/after counts; `[0,0,1,2,2,2]` as 2 duplicate groups/
 
 Expected: import failure because quality metrics do not exist.
 
-- [ ] **Step 3: Implement point/interval metrics**
+- [x] **Step 3: Implement point/interval metrics**
 
 Freeze these call boundaries:
 
@@ -2059,11 +2061,11 @@ Freeze these call boundaries:
 
 Count duplicate timestamp groups/participating rows across all mapped rows, including rows outside the session window; equal timestamps belong to one group even when their rows are non-adjacent. Compute period/gap metrics only from rows with `in_session=true`. A `PointBinding` uses its preserved stable order and rejects a decreasing mapped-time sequence; an `InheritBinding` may legally preserve a non-temporal child order, so diagnostics use a temporary `(t_ns, stable_keys...)` ordered view without changing the DataFrame. Remove zero deltas from the period/gap sequence and never silently discard a negative delta. The median is the exact median of positive integer deltas (an even-sized sample may yield `.5`), `gap_threshold_ns=round_half_even(median_period_ns × policy.gap_detection_multiplier)`, and a gap is counted only when `delta > gap_threshold_ns`. `max_gap_ns` is the maximum positive delta when a median exists. Zero/one usable timestamp yields `median_period_ns/gap_threshold_ns/max_gap_ns=None`, `gap_count=0`, and no NaN/Infinity. `session_span_ratio` is the in-session min/max span divided by `window.end_t_ns-window.start_t_ns`; one in-session row reports `0.0`, while no in-session row reports `None`. The Task 2 `SessionWindow.end_t_ns <= 2**52-1` gate guarantees every permitted integer/half-integer median remains exactly reportable by the existing float DTO and `5×` threshold remains signed-Int64-safe. Report the exact DTO fields; diagnostics never alter DataFrames or disposition.
 
-- [ ] **Step 4: Write scene/gaze RED tests**
+- [x] **Step 4: Write scene/gaze RED tests**
 
 Add exact interval-boundary, last-frame, out-of-session exclusion, delta min/max, and invalid-count tests. With Task 1 applied, micro and 29.01 s synthetic inputs must report zero invalid in-session associations.
 
-- [ ] **Step 5: Implement presentation-interval validation**
+- [x] **Step 5: Implement presentation-interval validation**
 
 Freeze the call boundary as `validate_scene_gaze_time(scene_frames: pl.DataFrame, gaze_samples: pl.DataFrame, window: SessionWindow, *, max_examples: int = 10) -> SceneGazeMetrics`.
 
@@ -2075,7 +2077,7 @@ frame_t_ns <= gaze_t_ns < next_frame_t_ns
 
 When there is no next frame at or before the session end, treat the current active terminal frame as covering through `<= session_window.end_t_ns`. Missing references and interval mismatches are association failures reported through `SceneGazeMetrics`; duplicate frame IDs or malformed structural columns are structural failures. `max_examples` must be an exact integer in `[0,10]`, with zero meaning no example IDs. Report `SCENE_GAZE_TIME_MISMATCH` with bounded example IDs when invalid; service marks G `invalid` but preserves `SceneGazeMetrics` as diagnostics, so optional G degrades and required G blocks. Out-of-session rows remain counted but not classified as relationship errors.
 
-- [ ] **Step 6: Run GREEN and commit**
+- [x] **Step 6: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_quality.py tests/synchronization/test_scene_gaze.py -v
@@ -2093,7 +2095,7 @@ git commit -m "feat: report native synchronization quality"
 - Create: `tests/synchronization/test_service.py`
 - Modify: `tests/synchronization/test_models.py`
 
-- [ ] **Step 0: Land the loaded-snapshot input hardening prerequisite**
+- [x] **Step 0: Land the loaded-snapshot input hardening prerequisite**
 
 Before service orchestration, bind every M2-ready core stream and ready bundle reference to the same loaded identity: normalized `clock_id` equals the manifest descriptor; `PreparedSession` and readiness paths/checksums equal descriptor paths and the corresponding `LoadedManifest.verified_digests`; D-011 shared X/U remains the one legal same-path case. Cover core/reference clock mismatch, consistently forged report+prepared identity, a missing loaded reference descriptor, and accepted shared X/U identity. This is a separate prerequisite commit referenced by Task 11:
 
@@ -2102,11 +2104,11 @@ git add src/pilot_assessment/synchronization/models.py tests/synchronization/tes
 git commit -m "fix: bind synchronization input to loaded snapshot"
 ~~~
 
-- [ ] **Step 1: Write reference RED tests**
+- [x] **Step 1: Write reference RED tests**
 
 Add bundle-reference own-clock/checksum alignment, required no-in-session block, clock failure block, model reference deferred, and separation from core metrics.
 
-- [ ] **Step 2: Write service/disposition RED tests**
+- [x] **Step 2: Write service/disposition RED tests**
 
 Add:
 
@@ -2124,7 +2126,7 @@ Add:
 
 The D-011 test must obtain an actual `PreparedSession` through production `ManifestLoader` plus `inspect_loaded_ingestion_readiness`, align its independent X and U normalized tables, and assert identical `source_row_index`, `source_time_s`, mapped `t_ns`, and `in_session` row by row. A hand-built pair of tables is not sufficient for this integration assertion.
 
-- [ ] **Step 3: Run RED**
+- [x] **Step 3: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_reference.py tests/synchronization/test_service.py -v
@@ -2132,7 +2134,7 @@ The D-011 test must obtain an actual `PreparedSession` through production `Manif
 
 Expected: import failure because service API does not exist.
 
-- [ ] **Step 4: Implement the exact service API**
+- [x] **Step 4: Implement the exact service API**
 
 ~~~python
 def synchronize_session(
@@ -2264,11 +2266,11 @@ Freeze exception translation in tests and implementation:
 
 Measurement and bundle-reference files are not reopened by M3. Their snapshot failure is instead the bounded three-way `SynchronizationInput` identity rejection from Step 0 (`PreparedSession` ↔ readiness ↔ `LoadedManifest`); only annotation files are re-read and re-digested here.
 
-- [ ] **Step 5: Implement status translation and reference semantics**
+- [x] **Step 5: Implement status translation and reference semantics**
 
 Add direct tests for each helper mapping and disposition branch. M2 blocked gets seven complete core results using `not_attempted` or the original unavailable/invalid/unsupported/not-applicable status. Bundle reference uses `task-reference-normalized-v0.1/commanded_path` and the single-table aligned stream schema `task-reference-path-aligned-v0.1`; model reference returns `deferred_model_bundle_resolution` and does not block. Annotation error names containing “semantics” refer only to the frozen session-time contract/self-consistency rules, never expert-label or task correctness.
 
-- [ ] **Step 6: Run GREEN and M2 regression**
+- [x] **Step 6: Run GREEN and M2 regression**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_reference.py tests/synchronization/test_service.py tests/ingestion/test_readiness.py -v
@@ -2276,7 +2278,7 @@ Add direct tests for each helper mapping and disposition branch. M2 blocked gets
 
 Expected: all new service/reference and old readiness tests pass.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/synchronization tests/synchronization/test_reference.py tests/synchronization/test_service.py
@@ -2290,11 +2292,11 @@ git commit -m "feat: orchestrate native session synchronization"
 - Modify: `src/pilot_assessment/synchronization/service.py`
 - Modify: `tests/synchronization/test_fingerprint.py`
 
-- [ ] **Step 1: Write fingerprint RED tests**
+- [x] **Step 1: Write fingerprint RED tests**
 
 Add replay-stable, root-independent, policy-fingerprint-sensitive, aligned-time-sensitive, and issue-order-independent tests. Because the v0.1 policy fields are literals, the sensitivity test changes the `policy_fingerprint` input to `fingerprint_synchronization`; it does not construct an invalid v0.1 policy.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_fingerprint.py -v
@@ -2302,7 +2304,7 @@ Add replay-stable, root-independent, policy-fingerprint-sensitive, aligned-time-
 
 Expected: primitive framing tests already pass, while at least one full-outcome replay/root/order/mutation test exposes a missing canonical input or incorrect service integration.
 
-- [ ] **Step 3: Implement canonical fingerprinting**
+- [x] **Step 3: Implement canonical fingerprinting**
 
 Harden the Task 6 primitive and service integration so the full outcome hashes, in order:
 
@@ -2316,7 +2318,7 @@ Harden the Task 6 primitive and service integration so the full outcome hashes, 
 
 Every item is length-framed with `hash_part`; do not concatenate unframed strings/arrays. Do not include absolute roots, wall time, host, Polars serialization, or issue insertion order.
 
-- [ ] **Step 4: Run GREEN and commit**
+- [x] **Step 4: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/synchronization/test_fingerprint.py -v
@@ -2329,7 +2331,7 @@ git commit -m "feat: fingerprint aligned session time"
 **Files:**
 - Create: `tests/e2e/test_m3_micro_bundle.py`
 
-- [ ] **Step 1: Write the full micro RED test**
+- [x] **Step 1: Write the full micro RED test**
 
 Generate the same 2 s/201-row CSV shape as M2 E2E, snapshot all generated raw files, call `synchronize_bundle`, and assert:
 
@@ -2355,7 +2357,7 @@ task_reference commanded_path 201/201.
 
 Freeze secondary metrics: AOI 122/120; fixations 4 total/4 overlap/3 full; R-peaks 3/3; scene/gaze invalid 0. Assert every pre/post raw checksum and source CSV byte sequence is identical.
 
-- [ ] **Step 2: Run RED, then integrate only missing registrations**
+- [x] **Step 2: Run RED, then integrate only missing registrations**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/e2e/test_m3_micro_bundle.py -v
@@ -2363,7 +2365,7 @@ Freeze secondary metrics: AOI 122/120; fixations 4 total/4 overlap/3 full; R-pea
 
 Expected: first unmet registration/metric fails; do not relax frozen counts.
 
-- [ ] **Step 3: Run GREEN and commit**
+- [x] **Step 3: Run GREEN and commit**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/e2e/test_m3_micro_bundle.py tests/e2e/test_m2_micro_bundle.py -v
@@ -2379,10 +2381,11 @@ git commit -m "test: prove M3 micro synchronization workflow"
 - Modify: `docs/product/README.md`
 - Modify: `README.md`
 - Modify: `docs/product/09_VALIDATION_AND_HANDOFF.md`
+- Modify: `docs/product/10_DESIGN_SELF_REVIEW.md`
 - Modify: `docs/product/specs/2026-07-12-m3-native-time-synchronization-design.md`
 - Modify: `docs/product/plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md`
 
-- [ ] **Step 1: Write the opt-in format-sample E2E test**
+- [x] **Step 1: Write the opt-in format-sample E2E test**
 
 Use `PILOT_ASSESSMENT_FORMAT_SAMPLE_CSV`, verify source SHA-256 `19bf804253d841de9c9de299ac96e9e1b693b2dbfae2f3eaeac5d7dc044e4f52`, generate a fresh bundle after Task 1, snapshot all raw Parquet/PNG/annotation/reference hashes, and assert only software-interface/time facts:
 
@@ -2398,7 +2401,7 @@ Assert source and every raw bundle hash remain unchanged after synchronization.
 
 Also assert captured-format provenance, `task_validity=not_asserted`, `ground_truth_status=absent`, synthetic reference validity, `scientific_validation_status=not_supported`, and `formal_run_authorized=false`. Do not assert trajectory accuracy, phase correctness, control quality, anchor values, or pilot ability.
 
-- [ ] **Step 2: Run the format-sample E2E**
+- [x] **Step 2: Run the format-sample E2E**
 
 ~~~powershell
 try {
@@ -2412,11 +2415,11 @@ try {
 
 Expected: `1 passed`; invalid association must be zero, never the pre-fix value 10. Passing means format/time/interface compatibility only.
 
-- [ ] **Step 3: Update implementation/handoff status with measured evidence**
+- [x] **Step 3: Update implementation/handoff status with measured evidence**
 
 Change M3 status only after fresh results. Record exact test count, primary/secondary golden counts, report/fingerprint scope, source hash, no-resampling boundary, synthetic scientific status, and M4 as next milestone. Mark this plan completed by changing all checkboxes only after their commits exist.
 
-- [ ] **Step 4: Run the full completion gate**
+- [x] **Step 4: Run the full completion gate**
 
 ~~~powershell
 Set-StrictMode -Version Latest
@@ -2449,36 +2452,99 @@ try {
 }
 
 Invoke-NativeChecked 'JSON Schema regeneration' $uv @('run','python','-m','pilot_assessment.schemas.export')
-Invoke-NativeChecked 'full pytest suite' $uv @('run','pytest','-q')
+Invoke-NativeChecked 'JSON Schema tracked no-diff' $git @('diff','--exit-code','--','schemas')
+
+$fullSuitePrevious=[Environment]::GetEnvironmentVariable($envName,[EnvironmentVariableTarget]::Process)
+try {
+  [Environment]::SetEnvironmentVariable($envName,$null,[EnvironmentVariableTarget]::Process)
+  Invoke-NativeChecked 'full pytest suite with opt-in CSV disabled' $uv @('run','pytest','-q')
+} finally {
+  [Environment]::SetEnvironmentVariable($envName,$fullSuitePrevious,[EnvironmentVariableTarget]::Process)
+}
+
 Invoke-NativeChecked 'Ruff format check' $uv @('run','ruff','format','--check','.')
 Invoke-NativeChecked 'Ruff lint check' $uv @('run','ruff','check','.')
 Invoke-NativeChecked 'ty type check' $uv @('run','ty','check','src')
 Invoke-NativeChecked 'package build' $uv @('build')
 Invoke-NativeChecked 'git diff whitespace check' $git @('diff','--check')
 
-$trackedPathspecs=@(
+$trackedRawPathspecs=@(
   ':(icase,glob)local_data/**',
+  ':(icase,glob)data/**',
+  ':(icase,glob)**/*.csv',
+  ':(icase,glob)**/*.tsv',
+  ':(icase,glob)**/*.parquet',
+  ':(icase,glob)**/*.feather',
+  ':(icase,glob)**/*.arrow',
   ':(icase,glob)**/*.edf',
   ':(icase,glob)**/*.edf+',
+  ':(icase,glob)**/*.bdf',
+  ':(icase,glob)**/*.vhdr',
+  ':(icase,glob)**/*.vmrk',
+  ':(icase,glob)**/*.eeg',
   ':(icase,glob)**/*.mp4',
-  ':(icase,glob)**/*.parquet'
+  ':(icase,glob)**/*.avi',
+  ':(icase,glob)**/*.mov',
+  ':(icase,glob)**/*.mkv',
+  ':(icase,glob)**/*.png',
+  ':(icase,glob)**/*.jpg',
+  ':(icase,glob)**/*.jpeg',
+  ':(icase,glob)**/*.tif',
+  ':(icase,glob)**/*.tiff',
+  ':(icase,glob)**/*.bmp',
+  ':(icase,glob)**/*.wav',
+  ':(icase,glob)**/*.flac'
 )
-$trackedDataRaw=@(& $git ls-files -- $trackedPathspecs)
+$trackedRawFixtureAllowlist=@(
+  # Add only small, reviewed, synthetic fixture paths here; v0.1 intentionally has none.
+)
+$trackedDataRaw=@(& $git ls-files -- $trackedRawPathspecs)
 $gitExitCode=$LASTEXITCODE
 if($gitExitCode -ne 0){throw "git ls-files failed with exit code $gitExitCode"}
 $trackedData=@(
-  $trackedDataRaw | Where-Object {-not [string]::IsNullOrWhiteSpace([string]$_)}
+  $trackedDataRaw |
+    Where-Object {-not [string]::IsNullOrWhiteSpace([string]$_)} |
+    ForEach-Object {([string]$_).Replace('\','/')}
 )
-if($trackedData.Count -ne 0){throw "Tracked local/full data is forbidden:`n$($trackedData -join "`n")"}
+$unexpectedTrackedData=@(
+  $trackedData | Where-Object {$_ -notin $trackedRawFixtureAllowlist}
+)
+if($unexpectedTrackedData.Count -ne 0){
+  throw "Unexpected tracked raw/full data is forbidden:`n$($unexpectedTrackedData -join "`n")"
+}
 
 $expectedWheel=Join-Path $repoRoot 'dist\pilot_assessment_system-0.1.0-py3-none-any.whl'
 if(-not (Test-Path -LiteralPath $expectedWheel -PathType Leaf)){throw "Expected wheel not produced: $expectedWheel"}
-Invoke-NativeChecked 'git status inspection' $git @('status','--short')
+
+$allowedStatusPaths=@(
+  'README.md',
+  'docs/product/README.md',
+  'docs/product/09_VALIDATION_AND_HANDOFF.md',
+  'docs/product/10_DESIGN_SELF_REVIEW.md',
+  'docs/product/11_IMPLEMENTATION_STATUS.md',
+  'docs/product/specs/2026-07-12-m3-native-time-synchronization-design.md',
+  'docs/product/plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md',
+  'tests/e2e/test_m3_format_sample_csv_local.py'
+)
+$statusRaw=@(& $git status --porcelain=v1 --untracked-files=all)
+if($LASTEXITCODE -ne 0){throw "git status failed with exit code $LASTEXITCODE"}
+$unexpectedStatus=@(
+  $statusRaw | ForEach-Object {
+    $line=[string]$_
+    if($line.Length -lt 4){throw "Malformed git status line: $line"}
+    $path=$line.Substring(3).Replace('\','/')
+    if($path -notin $allowedStatusPaths){$line}
+  }
+)
+if($unexpectedStatus.Count -ne 0){
+  throw "Unexpected final git status entries:`n$($unexpectedStatus -join "`n")"
+}
+$statusRaw
 ~~~
 
-Expected: all commands exit 0; two default skips are allowed only for the opt-in M2/M3 format-sample tests; no local/full data is tracked.
+Expected: all commands exit 0; schema regeneration produces no tracked diff; the full suite runs with the opt-in environment variable cleared and has exactly the two M2/M3 captured-format skips; only the eight Task 14 handoff paths may be dirty; no tracked raw/full data exists outside the explicit reviewed fixture allowlist.
 
-- [ ] **Step 5: Run isolated-wheel API/resource/micro smoke**
+- [x] **Step 5: Run isolated-wheel API/resource/micro smoke**
 
 ~~~powershell
 Set-StrictMode -Version Latest
@@ -2487,6 +2553,13 @@ $ErrorActionPreference = "Stop"
 function Invoke-NativeChecked {
   param([string]$Label,[string]$FilePath,[string[]]$Arguments)
   & $FilePath @Arguments
+  $exitCode=$LASTEXITCODE
+  if($exitCode -ne 0){throw "$Label failed with exit code $exitCode"}
+}
+
+function Invoke-UvPythonStdinChecked {
+  param([string]$Label,[string]$Uv,[string[]]$Arguments,[string]$Code)
+  $Code | & $Uv @Arguments
   $exitCode=$LASTEXITCODE
   if($exitCode -ne 0){throw "$Label failed with exit code $exitCode"}
 }
@@ -2532,10 +2605,43 @@ $repoRoot=(Resolve-Path -LiteralPath ([string]$repoRootText).Trim()).Path
 Set-Location -LiteralPath $repoRoot
 $uv=(Resolve-Path -LiteralPath '.\.tools\uv\uv.exe').Path
 $microTest=(Resolve-Path -LiteralPath 'tests\e2e\test_m3_micro_bundle.py').Path
-Invoke-NativeChecked 'fresh wheel build' $uv @('build')
 $wheelCandidate=Join-Path $repoRoot 'dist\pilot_assessment_system-0.1.0-py3-none-any.whl'
+if(Test-Path -LiteralPath $wheelCandidate){
+  $existingWheel=(Resolve-Path -LiteralPath $wheelCandidate).Path
+  if(-not $existingWheel.Equals($wheelCandidate,[StringComparison]::OrdinalIgnoreCase)){
+    throw "Refusing to remove unexpected wheel path: $existingWheel"
+  }
+  Remove-Item -LiteralPath $existingWheel -Force -ErrorAction Stop
+}
+Invoke-NativeChecked 'fresh wheel build' $uv @('build')
 if(-not (Test-Path -LiteralPath $wheelCandidate -PathType Leaf)){throw "Expected wheel not produced: $wheelCandidate"}
 $wheel=(Resolve-Path -LiteralPath $wheelCandidate).Path
+$wheelInfo=Get-Item -LiteralPath $wheel -ErrorAction Stop
+if($wheelInfo.Length -ne 127101){throw "Unexpected fresh wheel size: $($wheelInfo.Length)"}
+$wheelHash=(Get-FileHash -LiteralPath $wheel -Algorithm SHA256).Hash.ToLowerInvariant()
+if($wheelHash -ne 'bc9476f209c8ee851a58d6de037ddb98fac3356c819957d61c587e253a744342'){
+  throw "Unexpected fresh wheel SHA-256: $wheelHash"
+}
+$wheelMemberSmoke=@'
+from pathlib import Path
+from sys import argv
+from zipfile import ZipFile
+
+wheel = Path(argv[1])
+required = {
+    "pilot_assessment/contracts/synchronization.py",
+    "pilot_assessment/ingestion/profile_data/m2-profiles-0.1.json",
+    "pilot_assessment/synchronization/profile_data/m3-temporal-bindings-0.1.json",
+    "pilot_assessment/synchronization/service.py",
+}
+with ZipFile(wheel) as archive:
+    members = set(archive.namelist())
+missing = sorted(required - members)
+assert not missing, f"missing wheel members: {missing}"
+'@
+Invoke-UvPythonStdinChecked 'fresh wheel member smoke' $uv @(
+  'run','python','-',$wheel
+) $wheelMemberSmoke
 $smokeCandidate=Join-Path ([IO.Path]::GetTempPath()) ('pilot-assessment-m3-wheel-smoke-'+[Guid]::NewGuid().ToString('N'))
 $smokeRoot=Get-VerifiedSmokePath $smokeCandidate
 if(Test-Path -LiteralPath $smokeRoot){throw "Unique smoke path unexpectedly exists: $smokeRoot"}
@@ -2544,17 +2650,36 @@ $previousPythonPath=[Environment]::GetEnvironmentVariable('PYTHONPATH',[Environm
 try {
   Set-Location -LiteralPath $smokeRoot
   [Environment]::SetEnvironmentVariable('PYTHONPATH',$null,[EnvironmentVariableTarget]::Process)
-  $catalogSmoke=@"
+  $catalogSmoke=@'
+from inspect import isclass
 from importlib.metadata import version
+from pathlib import Path
+from sys import argv
+
+import pilot_assessment
+from pilot_assessment.contracts.synchronization import (
+    SessionWindow,
+    SynchronizationPolicy,
+    SynchronizationReport,
+)
+from pilot_assessment.ingestion.profiles import load_builtin_profiles
 from pilot_assessment.synchronization import synchronize_bundle
+from pilot_assessment.synchronization import synchronize_session
 from pilot_assessment.synchronization.profiles import load_builtin_temporal_catalog
+
+repo_root = Path(argv[1]).resolve()
+import_origin = Path(pilot_assessment.__file__).resolve()
+assert not import_origin.is_relative_to(repo_root), (import_origin, repo_root)
 assert version("pilot-assessment-system") == "0.1.0"
 assert callable(synchronize_bundle)
+assert callable(synchronize_session)
+assert all(isclass(dto) for dto in (SessionWindow, SynchronizationPolicy, SynchronizationReport))
+assert len(load_builtin_profiles()) == 17
 assert len(load_builtin_temporal_catalog().streams) == 8
-"@
-  Invoke-NativeChecked 'isolated wheel API/resource smoke' $uv @(
-    'run','--isolated','--no-project','--with',$wheel,'python','-c',$catalogSmoke
-  )
+'@
+  Invoke-UvPythonStdinChecked 'isolated wheel API/resource/import-origin smoke' $uv @(
+    'run','--isolated','--no-project','--with',$wheel,'python','-',$repoRoot
+  ) $catalogSmoke
   $pytestTemp=Join-Path $smokeRoot 'pytest-temp'
   Invoke-NativeChecked 'isolated wheel micro M1-to-M3 E2E' $uv @(
     'run','--isolated','--no-project','--with',$wheel,'--with','pytest==9.1.1',
@@ -2575,16 +2700,25 @@ assert len(load_builtin_temporal_catalog().streams) == 8
 }
 ~~~
 
-Expected: with the repository root absent from `PYTHONPATH`, the isolated wheel exposes the public API/resource and passes the frozen micro M1→M3 E2E; cleanup occurs only after TEMP-prefix and reparse-point checks.
+Expected: the wheel is freshly built with the frozen size/hash and required members; with the repository root absent from `PYTHONPATH`, import origin stays outside the repository, both M2/M3 catalogs and both public synchronization service APIs/DTOs load, and the frozen micro M1→M3 E2E passes; cleanup occurs only after TEMP-prefix and reparse-point checks. Python smoke code is delivered on stdin so Windows command-line quote parsing cannot truncate `-c` source.
 
 - [ ] **Step 6: Commit the verified M3 handoff**
 
 ~~~powershell
-git add README.md docs/product tests/e2e/test_m3_format_sample_csv_local.py
+git add README.md `
+  docs/product/README.md `
+  docs/product/09_VALIDATION_AND_HANDOFF.md `
+  docs/product/10_DESIGN_SELF_REVIEW.md `
+  docs/product/11_IMPLEMENTATION_STATUS.md `
+  docs/product/specs/2026-07-12-m3-native-time-synchronization-design.md `
+  docs/product/plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md `
+  tests/e2e/test_m3_format_sample_csv_local.py
 git commit -m "feat: complete M3 native time synchronization"
 ~~~
 
 Do not push unless the user explicitly requests a remote update.
+
+This checkbox remains open until the command above creates the handoff commit. After that commit exists, make one follow-up docs-only closure commit that changes only this Step 6 checkbox and the implementation-status line at the top of this plan; do not rewrite measured evidence.
 
 ## Plan self-review checklist
 

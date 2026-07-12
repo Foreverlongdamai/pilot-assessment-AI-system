@@ -5,7 +5,7 @@
 | 设计基线 | v0.1 |
 | 日期 | 2026-07-12 |
 | 范围决策 | 用户已批准 A：native-rate alignment，不插值、不重采样 |
-| 实施门 | 用户已批准规格与实施计划；D-016–D-020 已接受，M3 同步代码尚未实现 |
+| 实施门 | D-016–D-020、实现、golden E2E、工程完成门与 handoff/计划关闭均已通过 |
 | 上游 | M1 Session integrity + M2 Ingestion readiness |
 | 下游 | M4 Anchor/evidence availability |
 
@@ -468,6 +468,21 @@ Micro 2 s golden primary counts：
 | task_reference | 2,902 | 2,902 |
 
 E2E 还必须确认原 CSV bytes/hash、raw Parquet 和 PNG bytes 均未改变。Synthetic output仍标记 `not_supported`，不能成为正式 assessment result。
+
+### 17.1 Measured implementation record（2026-07-12）
+
+§17 的 primary golden 数字未作任何修改。实测 secondary goldens 为：
+
+| Golden | AOI total/in-session | Fixations total/overlap/full | R-peaks total/in-session | invalid in-session scene/gaze associations |
+|---|---:|---:|---:|---:|
+| 2 s micro | 122/120 | 4/4/3 | 3/3 | 0 |
+| 29.01 s captured-format + synthetic modalities | 1,742/1,742 | 59/59/58 | 37/37 | 0 |
+
+Captured-format source SHA-256 为 `19bf804253d841de9c9de299ac96e9e1b693b2dbfae2f3eaeac5d7dc044e4f52`。配置该 source 后，最终 M2/M3 opt-in E2E pair 为 `2 passed in 37.08s`；清除环境变量后的最终 full suite 为 `694 passed, 2 skipped in 219.23s`，两个 skip 且仅两个 skip 分别属于 M2/M3 opt-in tests。四份 schema 重新生成且 diff 为零，Ruff format（75 files）/lint、`ty check src`、build、whitespace diff 与 broader tracked raw-data scan 均通过。
+
+Final fresh wheel 为 127,101 bytes，SHA-256 `bc9476f209c8ee851a58d6de037ddb98fac3356c819957d61c587e253a744342`。隔离环境确认 import origin 位于 repository 之外、17 个 M2 profiles、8 个 M3 temporal streams、public `synchronize_bundle`/`synchronize_session` 与 DTO 可用；最终隔离 micro E2E 为 `1 passed in 4.34s`，TEMP cleanup 已确认。
+
+实测 report scope 为 `native_rate_session_time_alignment_v1`，report 与非 blocked `AlignedSession` 保存同一 deterministic、root-independent synchronization fingerprint。同步前后外部 source 与生成 bundle 的全部文件逐字节不变。M3 仍不插值、不重采样、不创建 analysis/window grid，所有 timed metrics 的 `interpolated_rows=0`；M4 继续拥有 anchor-specific grids/windows。Captured-format CSV 仍仅为随意飞行产生的格式样例，synthetic fixture 仍为 `not_supported`，所有 report 路径仍为 `formal_run_authorized=false`，这些实测不支持任何任务、轨迹、表现、生理、anchor 或飞行员能力结论。
 
 ## 18. Cross-document decisions ratified for implementation
 

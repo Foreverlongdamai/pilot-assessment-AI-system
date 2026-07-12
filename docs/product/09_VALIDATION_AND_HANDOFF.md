@@ -3,8 +3,8 @@
 | 字段 | 值 |
 |---|---|
 | 设计版本 | v0.1 |
-| 当前软件状态 | in_progress（M1/M2 verified；M3 规格与实施计划已批准，代码尚未实现） |
-| 当前科学状态 | engineering_default（not scientifically validated） |
+| 当前软件状态 | in_progress（M1/M2/M3 后端里程碑已 engineering verified；完整 Core alpha 与 Gate B 尚未完成） |
+| 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
 ## 1. 两条独立的验证轴
@@ -91,6 +91,35 @@
 3. de-identified-reference：经批准的真实 session，用于回归，不进入公开仓库。
 
 通过 WinUI 执行：创建项目、导入、修复或接受 warning、编辑图、发布模型、运行、查看 trace、导出结果。
+
+### 2.6 M3 engineering verification record（2026-07-12）
+
+M3 完成门在同一工作树上取得以下实测证据：
+
+- 显式配置 repository-external CSV 后，最终 M2 与 M3 captured-format E2E：`2 passed in 37.08s`；
+- 清除该环境变量后，最终 full suite：`694 passed, 2 skipped in 219.23s`；两个 skip 分别且仅分别属于 M2/M3 opt-in captured-format tests；
+- 四份 public JSON Schema 重新生成，tracked schema diff 为零；Ruff format 检查 75 个文件、Ruff lint、`ty check src`、build 与 whitespace diff 全部通过；
+- tracked raw-data 扫描结果为零；本地完整 bundle、外部 CSV、EDF、视频、Parquet、图像或其他采集 artifact 未进入 Git；
+- final fresh wheel `pilot_assessment_system-0.1.0-py3-none-any.whl` 为 127,101 bytes，SHA-256 为 `bc9476f209c8ee851a58d6de037ddb98fac3356c819957d61c587e253a744342`；
+- 隔离环境中的 import origin 位于 repository 之外，wheel 可读取 17 个 M2 profiles、8 个 M3 temporal streams，公开 `synchronize_bundle`、`synchronize_session` 与 synchronization DTO 可导入；最终隔离 micro M1→M2→M3 E2E 为 `1 passed in 4.34s`，TEMP 目录经安全检查后已清理。
+
+Primary golden counts 使用 `raw/aligned rows / in-session rows`：
+
+| Golden | X | U | I | G | EEG | ECG | pilot_camera | task_reference |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 2 s micro | 201/201 | 201/201 | 61/60 | 241/240 | 513/509 | 501/498 | 31/30 | 201/201 |
+| 29.01 s captured-format + synthetic modalities | 2,902/2,902 | 2,902/2,902 | 871/871 | 3,482/3,481 | 7,427/7,423 | 7,253/7,251 | 436/435 | 2,902/2,902 |
+
+Secondary golden counts：
+
+| Golden | AOI total/in-session | Fixations total/overlap/full | R-peaks total/in-session | invalid in-session scene/gaze associations |
+|---|---:|---:|---:|---:|
+| 2 s micro | 122/120 | 4/4/3 | 3/3 | 0 |
+| 29.01 s captured-format + synthetic modalities | 1,742/1,742 | 59/59/58 | 37/37 | 0 |
+
+Captured-format source SHA-256 固定为 `19bf804253d841de9c9de299ac96e9e1b693b2dbfae2f3eaeac5d7dc044e4f52`。测试在 synchronization 前后逐字节比较外部 CSV 与生成 bundle 的全部文件；这些证据只说明格式、接口、时间映射和文件不变性，不支持轨迹精度、phase 正确性、控制质量、工作负荷、生理解释、anchor 值或飞行员能力结论。
+
+Public `SynchronizationReport.validation_scope` 为 `native_rate_session_time_alignment_v1`。同一确定性 `synchronization_fingerprint` 写入 report 与非 blocked `AlignedSession`；fingerprint 覆盖 M2 source snapshot、policy、temporal catalog、aligned time/flags、canonical annotations 与排序后的 status/issues，并排除绝对路径和 host/wall time。M3 不插值、不重采样、不建立 analysis/window grid，所有 timed artifact 的 `interpolated_rows=0`；M4 才按 AnchorPlugin revision 建立 anchor-specific grids/windows。所有 M3 路径继续保持 `formal_run_authorized=false`，synthetic scientific status 为 `not_supported`。
 
 ## 3. 子系统验证矩阵
 
@@ -298,4 +327,4 @@ PilotAssessment/
 - reference trajectory、phase/event annotation 的生产方式需与实验团队确认；
 - shared-evidence 多 parent CPT 会指数增长；v0.1 已设 parent/row/cell/size 硬上限，但数值仍需性能基准和专家审查后才能提高；
 - WinUI 图编辑控件选型和无障碍支持需原型验证；
-- 后端 M1/M2 已有合同、directory-bundle loader、JSON Schema、版本化 adapters、deterministic multimodal software fixtures、`IngestionReadinessReport` 和自动化测试；M3 native-rate synchronization 规格与实施计划已批准但代码尚未实现，18 个 AnchorPlugin、BN、runtime 与 WinUI 也尚未实现。因此完整产品 software verification 仍为 in_progress，Gate B 尚未通过。
+- 后端 M1/M2/M3 已有合同、directory-bundle loader、JSON Schema、版本化 adapters/bindings、deterministic multimodal software fixtures、`IngestionReadinessReport`、native-rate `AlignedSession`/`SynchronizationReport` 和自动化测试。18 个 AnchorPlugin、evidence scorer、BN、assessment runner、受管理 importer、sidecar 与 WinUI 仍未实现；因此只有 M3 里程碑为 engineering verified，完整产品 software verification 仍为 in_progress，Gate B 尚未通过。
