@@ -71,6 +71,27 @@ def test_ready_fixture_round_trips_with_all_core_modalities_and_reference(
     assert report.model_dump(mode="json") == readiness_data
 
 
+def test_ready_fixture_uses_actual_runtime_stream_schema_ids(
+    readiness_data: dict[str, Any],
+) -> None:
+    expected = {
+        "X": "flight-state-normalized-v0.1",
+        "U": "control-input-normalized-v0.1",
+        "I": "vr-scene-source-bundle-v0.1",
+        "G": "gaze-source-bundle-v0.1",
+        "EEG": "eeg-source-bundle-v0.1",
+        "ECG": "ecg-source-bundle-v0.1",
+        "pilot_camera": "pilot-camera-source-bundle-v0.1",
+    }
+    assert {
+        modality: result["normalized_schema_id"]
+        for modality, result in readiness_data["stream_results"].items()
+    } == expected
+    assert readiness_data["task_reference_result"]["normalized_schema_id"] == (
+        "task-reference-normalized-v0.1"
+    )
+
+
 def test_formal_run_authorized_cannot_be_true(readiness_data: dict[str, Any]) -> None:
     readiness_data["formal_run_authorized"] = True
 

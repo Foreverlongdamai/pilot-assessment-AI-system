@@ -58,6 +58,21 @@ def test_fixations_end_on_the_retained_gaze_grid_for_fractional_duration() -> No
     )
 
 
+def test_gaze_frame_binding_uses_exact_rate_indices_at_scene_boundaries() -> None:
+    scene = build_scene(duration_s=29.01, seed=20260711)
+    gaze = build_gaze(duration_s=29.01, seed=20260711, scene=scene)
+
+    boundary = gaze.samples.filter(pl.col("gaze_sample_id") == 492).row(0, named=True)
+    assert boundary["source_timestamp_s"] == 4.1
+    assert boundary["scene_frame_id"] == 123
+
+    expected = [
+        min((sample_id * 30) // 120, scene.frame_index.height - 1)
+        for sample_id in gaze.samples["gaze_sample_id"].to_list()
+    ]
+    assert gaze.samples["scene_frame_id"].to_list() == expected
+
+
 def test_eeg_and_ecg_are_deterministic_typed_and_explicitly_synthetic() -> None:
     first_eeg = build_eeg(duration_s=2.0, seed=20260711)
     second_eeg = build_eeg(duration_s=2.0, seed=20260711)
@@ -85,7 +100,7 @@ def test_eeg_and_ecg_are_deterministic_typed_and_explicitly_synthetic() -> None:
     assert peak_end <= 2.0
 
 
-def test_eeg_and_ecg_follow_interpolated_time_varying_control_activity() -> None:
+def test_eeg_and_ecg_follow_interpolated_time_varying_synthetic_driver() -> None:
     source_times = tuple(index / 100.0 for index in range(801))
     activity = tuple(0.0 if time < 4.0 else 1.0 for time in source_times)
 
@@ -140,7 +155,7 @@ def test_eeg_and_ecg_follow_interpolated_time_varying_control_activity() -> None
     assert float(high_rr.mean()) == pytest.approx(60_000.0 / 90.0, abs=1.0)
 
 
-def test_control_activity_trace_is_linearly_interpolated_on_the_eeg_grid() -> None:
+def test_synthetic_driver_trace_is_linearly_interpolated_on_the_eeg_grid() -> None:
     eeg = build_eeg(
         duration_s=2.0,
         seed=20260711,
@@ -162,6 +177,9 @@ def test_reference_and_annotations_have_stable_software_test_semantics() -> None
 
     assert reference.schema["reference_sample_id"] == pl.UInt64
     assert reference["target_x_m"].to_list() == pytest.approx([0.0, 0.1, 0.2])
+    assert (
+        reference["envelope_profile_id"].to_list() == ["synthetic-format-fixture-envelope-v0.1"] * 3
+    )
     assert set(annotations) == {"phases", "events", "baseline_intervals"}
     assert annotations["phases"]["synthetic_semantics_unvalidated"] is True
     phases = cast(list[dict[str, object]], annotations["phases"]["phases"])

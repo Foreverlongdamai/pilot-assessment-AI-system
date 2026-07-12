@@ -75,7 +75,7 @@ def _control_activity_on_grid(
     control_activity: float | Sequence[float],
     control_source_times_s: Sequence[float] | None,
 ) -> tuple[float, ...]:
-    """Return a bounded control-activity trace on one synthetic modality grid."""
+    """Map a synthetic driver with no scientific or performance meaning to a grid."""
 
     if isinstance(control_activity, bool):
         raise ValueError("control_activity must contain real numbers within [0, 1]")
@@ -203,10 +203,14 @@ def build_gaze(
 ) -> GazeArtifacts:
     """Build 120 Hz gaze samples and deterministic half-second fixations."""
 
-    times = source_grid(duration_s=duration_s, sample_rate_hz=120.0)
+    gaze_rate_hz = 120
+    scene_rate_hz = 30
+    times = source_grid(duration_s=duration_s, sample_rate_hz=float(gaze_rate_hz))
     count = len(times)
     last_frame_id = scene.frame_index.height - 1
-    frame_ids = [min(int(time * 30.0), last_frame_id) for time in times]
+    frame_ids = [
+        min((index * scene_rate_hz) // gaze_rate_hz, last_frame_id) for index in range(count)
+    ]
     off_task = [int(time * 2.0) % 5 == 3 for time in times]
     x_values = [
         float32((0.72 if off else 0.35) + 0.015 * triangular_noise(seed, "G", "x", index))
@@ -317,7 +321,7 @@ def build_eeg(
     control_activity: float | Sequence[float] = 0.0,
     control_source_times_s: Sequence[float] | None = None,
 ) -> EegArtifacts:
-    """Build deterministic 256 Hz multichannel software-test EEG-like data."""
+    """Build 256 Hz EEG-like software data with no neurophysiological meaning."""
 
     times = source_grid(duration_s=duration_s, sample_rate_hz=256.0)
     activity = _control_activity_on_grid(
@@ -365,7 +369,7 @@ def build_ecg(
     control_activity: float | Sequence[float],
     control_source_times_s: Sequence[float] | None = None,
 ) -> EcgArtifacts:
-    """Build deterministic 250 Hz ECG-like data and derived synthetic R peaks."""
+    """Build 250 Hz ECG-like software data with no physiological meaning."""
 
     times = source_grid(duration_s=duration_s, sample_rate_hz=250.0)
     activity = _control_activity_on_grid(
@@ -484,7 +488,10 @@ def build_task_reference(
     source_times_s: tuple[float, ...],
     source_x_m: tuple[float, ...],
 ) -> pl.DataFrame:
-    """Build a deterministic software-test commanded path on the X source grid."""
+    """Copy X values only to exercise reference schema and time-path software.
+
+    The result is neither a commanded nor an acceptable trajectory.
+    """
 
     if len(source_times_s) != len(source_x_m) or not source_times_s:
         raise ValueError("reference time and X arrays must have the same non-zero length")
@@ -514,7 +521,9 @@ def build_task_reference(
             "target_pitch_deg": _f32("target_pitch_deg", [0.0] * count),
             "target_yaw_deg": _f32("target_yaw_deg", [270.0] * count),
             "envelope_profile_id": pl.Series(
-                "envelope_profile_id", ["synthetic-envelope-v0.1"] * count, dtype=pl.String
+                "envelope_profile_id",
+                ["synthetic-format-fixture-envelope-v0.1"] * count,
+                dtype=pl.String,
             ),
         }
     )

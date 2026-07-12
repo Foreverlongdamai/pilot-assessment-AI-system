@@ -10,7 +10,7 @@
     "scientific_validation_status": "not_supported",
     "source_xu_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "lock_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    "provenance_scope": "real-xu-plus-synthetic-modalities",
+    "provenance_scope": "captured-format-sample-xu-plus-synthetic-modalities",
     "formal_assessment_supported": false
   },
   "disposition": "ready",
@@ -90,7 +90,7 @@
       "source_checksums": {
         "streams/vr_scene/frame_index.parquet": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
       },
-      "normalized_schema_id": "vr-scene-normalized-v0.1",
+      "normalized_schema_id": "vr-scene-source-bundle-v0.1",
       "row_count": 871,
       "artifact_row_counts": {
         "frame_index": 871,
@@ -120,7 +120,7 @@
       "source_checksums": {
         "streams/gaze/gaze_samples.parquet": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
       },
-      "normalized_schema_id": "gaze-normalized-v0.1",
+      "normalized_schema_id": "gaze-source-bundle-v0.1",
       "row_count": 3482,
       "artifact_row_counts": {
         "gaze_samples": 3482,
@@ -150,7 +150,7 @@
       "source_checksums": {
         "streams/eeg/eeg_samples.parquet": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
       },
-      "normalized_schema_id": "eeg-normalized-v0.1",
+      "normalized_schema_id": "eeg-source-bundle-v0.1",
       "row_count": 7427,
       "artifact_row_counts": {
         "eeg_samples": 7427
@@ -179,7 +179,7 @@
       "source_checksums": {
         "streams/ecg/ecg_samples.parquet": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
       },
-      "normalized_schema_id": "ecg-normalized-v0.1",
+      "normalized_schema_id": "ecg-source-bundle-v0.1",
       "row_count": 7253,
       "artifact_row_counts": {
         "ecg_samples": 7253,
@@ -209,7 +209,7 @@
       "source_checksums": {
         "streams/pilot_camera/frame_index.parquet": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
       },
-      "normalized_schema_id": "pilot-camera-normalized-v0.1",
+      "normalized_schema_id": "pilot-camera-source-bundle-v0.1",
       "row_count": 436,
       "artifact_row_counts": {
         "frame_index": 436

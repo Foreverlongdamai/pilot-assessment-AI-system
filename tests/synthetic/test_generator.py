@@ -168,11 +168,20 @@ def test_generator_writes_a_complete_deterministic_bundle(
     manifest = _manifest(first)
     assert manifest.streams["X"].paths == manifest.streams["U"].paths
     assert manifest.streams["X"].checksums == manifest.streams["U"].checksums
+    source_extensions = manifest.source_session.extensions
+    assert source_extensions["source_artifact_role"] == "captured-format-sample-xu"
+    assert source_extensions["task_validity"] == "not_asserted"
+    assert source_extensions["ground_truth_status"] == "absent"
+    assert manifest.task.task_profile_id == "synthetic-interface-fixture-v0.1"
+    assert manifest.task.scenario_id == "synthetic-format-sample-01"
     assert manifest.task.reference is not None
+    assert manifest.task.reference.reference_id == "synthetic-format-fixture-path-v0.1"
     assert manifest.task.reference.stream_id == "task_reference"
     reference = manifest.streams["task_reference"]
     assert reference.paths == ["references/commanded_path.parquet"]
     assert reference.schema_id == "task-reference-path-raw-v0.1"
+    assert reference.metadata["reference_validity"] == "synthetic-format-fixture-only"
+    assert reference.metadata["trajectory_standard_status"] == "not_asserted"
     assert all(manifest.streams[key].status is StreamStatus.PRESENT for key in CORE_MODALITIES)
     assert manifest.privacy.classification == "synthetic-test-data"
     assert manifest.privacy.contains_biometric_data is False
@@ -186,7 +195,17 @@ def test_generator_writes_a_complete_deterministic_bundle(
     assert synthetic["parameters"]["control_activity_definition"] == (
         "min(1,abs(control.longitudinal_raw)/100)"
     )
+    assert synthetic["parameters"]["control_activity_role"] == "synthetic_control_driver"
+    assert synthetic["parameters"]["control_activity_scientific_semantics"] == "none"
+    assert synthetic["parameters"]["control_activity_not_ground_truth_for"] == [
+        "workload",
+        "control_quality",
+        "physiology",
+        "O13",
+        "performance",
+    ]
     assert synthetic["parameters"]["physiology_activity_resampling"] == ("linear-clamped-v0.1")
+    assert synthetic["provenance_scope"] == ("captured-format-sample-xu-plus-synthetic-modalities")
 
     expected_clocks = {
         "X": (0, 0.0),
@@ -256,7 +275,7 @@ def test_seed_changes_content_and_provenance_but_not_inventory(
     ).read_bytes()
 
 
-def test_generator_couples_eeg_and_ecg_to_source_control_activity_windows(
+def test_generator_uses_source_controls_only_as_a_synthetic_signal_driver(
     tmp_path: Path,
 ) -> None:
     source = tmp_path / "activity-step.csv"

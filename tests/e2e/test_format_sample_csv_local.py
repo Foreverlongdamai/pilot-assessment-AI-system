@@ -10,21 +10,23 @@ from pilot_assessment.contracts.ingestion import ReadinessDisposition, StreamRea
 from pilot_assessment.ingestion import inspect_ingestion_readiness
 from pilot_assessment.synthetic import generate_synthetic_bundle
 
-REAL_CSV_ENV = "PILOT_ASSESSMENT_REAL_CSV"
-EXPECTED_REAL_CSV_SHA256 = "19bf804253d841de9c9de299ac96e9e1b693b2dbfae2f3eaeac5d7dc044e4f52"
+FORMAT_SAMPLE_CSV_ENV = "PILOT_ASSESSMENT_FORMAT_SAMPLE_CSV"
+EXPECTED_FORMAT_SAMPLE_CSV_SHA256 = (
+    "19bf804253d841de9c9de299ac96e9e1b693b2dbfae2f3eaeac5d7dc044e4f52"
+)
 
 
 @pytest.mark.skipif(
-    REAL_CSV_ENV not in os.environ,
-    reason="repository-external real simulator CSV not configured",
+    FORMAT_SAMPLE_CSV_ENV not in os.environ,
+    reason="repository-external captured format-sample simulator CSV not configured",
 )
-def test_real_csv_generates_a_full_ready_bundle_without_source_mutation(
+def test_format_sample_csv_generates_a_full_ready_bundle_without_source_mutation(
     tmp_path: Path,
 ) -> None:
-    source = Path(os.environ[REAL_CSV_ENV])
+    source = Path(os.environ[FORMAT_SAMPLE_CSV_ENV])
     source_bytes = source.read_bytes()
     source_hash = hashlib.sha256(source_bytes).hexdigest()
-    assert source_hash == EXPECTED_REAL_CSV_SHA256
+    assert source_hash == EXPECTED_FORMAT_SAMPLE_CSV_SHA256
 
     bundle = generate_synthetic_bundle(source, tmp_path / "full", seed=20260711)
     outcome = inspect_ingestion_readiness(bundle)

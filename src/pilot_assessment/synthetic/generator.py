@@ -1,4 +1,4 @@
-"""Deterministic real-X/U plus synthetic-multimodal Session Bundle generator."""
+"""Generate deterministic software fixtures from a captured-format X/U sample."""
 
 from __future__ import annotations
 
@@ -53,6 +53,15 @@ _GENERATOR_PARAMETERS: Final[dict[str, JsonValue]] = {
     "pilot_camera_height": 48,
     "duration_mode": "source",
     "control_activity_definition": "min(1,abs(control.longitudinal_raw)/100)",
+    "control_activity_role": "synthetic_control_driver",
+    "control_activity_scientific_semantics": "none",
+    "control_activity_not_ground_truth_for": [
+        "workload",
+        "control_quality",
+        "physiology",
+        "O13",
+        "performance",
+    ],
     "physiology_activity_resampling": "linear-clamped-v0.1",
 }
 
@@ -430,6 +439,8 @@ def _build_manifest(
                 "adapter_profile_id": "task-reference-path-raw-v0.1",
                 "generator_id": GENERATOR_ID,
                 "seed": seed,
+                "reference_validity": "synthetic-format-fixture-only",
+                "trajectory_standard_status": "not_asserted",
             },
             required_for_import=True,
         ),
@@ -445,7 +456,9 @@ def _build_manifest(
                 "campaign": "synthetic-multimodal-software-test",
                 "extensions": {
                     "source_xu_sha256": source_digest,
-                    "source_artifact_role": "real-simulator-xu",
+                    "source_artifact_role": "captured-format-sample-xu",
+                    "task_validity": "not_asserted",
+                    "ground_truth_status": "absent",
                 },
             },
             "participant": {
@@ -453,8 +466,8 @@ def _build_manifest(
                 "research_attributes": {"synthetic_identity": True},
             },
             "task": {
-                "task_profile_id": "synthetic-hover-deceleration-v0.1",
-                "scenario_id": "synthetic-longitudinal-01",
+                "task_profile_id": "synthetic-interface-fixture-v0.1",
+                "scenario_id": "synthetic-format-sample-01",
                 "expected_phases": [
                     "translation",
                     "deceleration",
@@ -462,7 +475,7 @@ def _build_manifest(
                 ],
                 "reference": {
                     "source": "bundle",
-                    "reference_id": "commanded-path-v0.1",
+                    "reference_id": "synthetic-format-fixture-path-v0.1",
                     "stream_id": "task_reference",
                 },
             },
@@ -499,7 +512,7 @@ def _build_manifest(
                     "lock_fingerprint": _lock_fingerprint(),
                     "duration_s": duration_s,
                     "parameters": _GENERATOR_PARAMETERS,
-                    "provenance_scope": "real-xu-plus-synthetic-modalities",
+                    "provenance_scope": ("captured-format-sample-xu-plus-synthetic-modalities"),
                     "formal_assessment_supported": False,
                 }
             },
@@ -536,7 +549,10 @@ def generate_synthetic_bundle(
     duration_s = source_times[-1]
     if duration_s <= 0.0:
         raise ValueError("source CSV duration must be positive")
-    control_activity = tuple(min(1.0, abs(value) / 100.0) for value in controls)
+    # This bounded trace is only a deterministic synthetic signal driver. It is
+    # not workload, control quality, physiology, O13, performance, or any other
+    # scientific/assessment ground truth.
+    synthetic_control_driver = tuple(min(1.0, abs(value) / 100.0) for value in controls)
 
     path_count = _declared_path_count(duration_s)
     max_declared_paths = ManifestLoaderLimits().max_declared_paths
@@ -559,13 +575,13 @@ def generate_synthetic_bundle(
         duration_s=duration_s,
         seed=seed,
         control_source_times_s=source_times,
-        control_activity=control_activity,
+        control_activity=synthetic_control_driver,
     )
     ecg = build_ecg(
         duration_s=duration_s,
         seed=seed,
         control_source_times_s=source_times,
-        control_activity=control_activity,
+        control_activity=synthetic_control_driver,
     )
     pilot_camera = build_pilot_camera(duration_s=duration_s, seed=seed)
     task_reference = build_task_reference(
