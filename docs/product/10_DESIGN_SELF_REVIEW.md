@@ -6,12 +6,12 @@
 | 审查日期 | 2026-07-10 |
 | 审查范围 | pilot_assessment_system 产品文档、项目入口说明、历史草案状态 |
 | 结论 | 设计文档可作为实现与交接基线 |
-| 软件状态 | 审查时尚无实现；当前后端 M1 为 in_progress，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
+| 软件状态 | 2026-07-10 审查时尚无实现；当前 M1/M2 已完成软件验证，M3 规格与实施计划已批准但同步代码尚未实现，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
 | 科学状态 | engineering_default / not scientifically validated |
 
 ## 1. 结论边界
 
-本文固定记录 2026-07-10 的**产品与计算设计闭环**审查，不是软件实现验收，也不是航空评估科学有效性证明。后续实现证据以 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) 为准。
+本文固定记录 2026-07-10 的**产品与计算设计闭环**审查，表格中的审查日期不随实现推进而改写；当前实现状态仅作后续注记。本文不是软件实现验收，也不是航空评估科学有效性证明。后续实现证据以 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) 为准。
 
 通过本轮自审后，文档已经能够让接手者明确：
 
@@ -101,13 +101,13 @@
 
 ### 5.3 实现风险
 
-- 当前 pilot_assessment_system 尚无正式代码、schema 文件或自动化测试；
+- M1/M2 已有正式代码、schema、自动化测试和 Git history；M3 native-rate synchronization 仍处于已批准、计划待实现状态；
+- M3 的 public report schema、temporal binding catalog、clock/annotation/reference 实现与 golden E2E 尚需按批准计划完成；
 - WinUI graph control、无障碍和大 CPT 编辑体验需要原型；
-- Python/.NET 打包、插件签名、升级和 crash recovery 需要实际验证；
-- 当前项目的 .git 目录不可用，尚无可验证的 commit history。
+- Python/.NET 打包、插件签名、升级和 crash recovery 需要实际验证。
 
 ## 6. 下一阶段入口
 
-下一阶段应以 [09_VALIDATION_AND_HANDOFF.md](09_VALIDATION_AND_HANDOFF.md) 的 Gate A/B 为准，先实现 backend contracts、schemas、synthetic fixtures 和 tests，再实现 ingestion、synchronization、18 AnchorPlugin、BN adapter 与 runtime。前端可以用 fake backend 并行开发，但不能另建一套模型状态。
+截至 2026-07-12，backend M1 contracts/integrity 与 M2 multimodal ingestion foundation 已完成；下一阶段按已批准的 [M3 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) 和 [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) 实现 `SynchronizationInput`、native-rate `AlignedSession` 与公共 `SynchronizationReport`。M3 不插值、重采样或建立 anchor-specific grid；这些连同 18 AnchorPlugin 进入 M4，之后再进入 BN adapter、runtime 与 WinUI。前端可以用 fake backend 并行开发，但不能另建一套模型状态。
 
 任何专家修改都通过新 draft/revision 完成；不需要重新修改本设计中的 Python 业务结构。

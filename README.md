@@ -2,13 +2,15 @@
 
 本目录是 “Development of AI-Based System for Evaluating eVTOL Pilot Training Effectiveness” 项目的产品化工作区。系统目标是把多模态飞行训练 session 转换为可追溯的证据锚点，并通过可编辑的贝叶斯网络输出飞行员能力后验分布。
 
-当前状态：**产品设计基线 v0.1 已建立；后端基础里程碑 M1 已实现并通过软件检查；真实流 adapter、同步、18 个 anchor、BN、runtime 和 WinUI 尚未实现。科学状态仍为 `engineering_default`。**
+当前状态：**产品设计基线 v0.1 已建立；后端 M1/M2 已实现并通过软件检查；M3 native-rate synchronization 的规格、D-016–D-020 和实施计划已批准，但同步代码尚未实现。18 个 anchor、BN、runtime 和 WinUI 也尚未实现。科学状态仍为 `engineering_default`。**
 
 ## 从这里开始
 
 - 产品设计文档中心：[docs/product/README.md](docs/product/README.md)
 - 当前实现状态与验证命令：[docs/product/11_IMPLEMENTATION_STATUS.md](docs/product/11_IMPLEMENTATION_STATUS.md)
 - 后端 M1 实施计划：[docs/product/plans/2026-07-11-backend-foundation-m1-implementation-plan.md](docs/product/plans/2026-07-11-backend-foundation-m1-implementation-plan.md)
+- M3 Native-Rate Time Synchronization 规格：[docs/product/specs/2026-07-12-m3-native-time-synchronization-design.md](docs/product/specs/2026-07-12-m3-native-time-synchronization-design.md)
+- M3 实施计划：[docs/product/plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md](docs/product/plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md)
 - 当前设计决策：[docs/product/DECISIONS.md](docs/product/DECISIONS.md)
 - 术语表：[docs/product/GLOSSARY.md](docs/product/GLOSSARY.md)
 - 历史后端草案：[docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md](docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md)（仅保留追溯，不再是实现依据）
@@ -40,7 +42,7 @@ uv run ty check
 uv build
 ```
 
-上述命令验证的是 M1 软件合同与构建，不代表完整评估系统已经可以运行。
+上述命令验证当前已实现的 M1/M2 软件合同与构建；M3 synchronization 代码、完整 anchor/BN pipeline 和 Windows 应用仍未完成，因此不代表完整评估系统已经可以运行。
 
 ## 当前产品方向
 

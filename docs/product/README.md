@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | v0.1 |
 | 基线日期 | 2026-07-12 |
-| 产品阶段 | M2 多模态合成基础已实现并验证；M3 synchronization 规格已批准、实施计划待执行 |
+| 产品阶段 | M2 多模态合成基础已实现并验证；M3 D-016–D-020 与跨文档合同已批准，synchronization 代码尚未实现 |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -43,7 +43,7 @@
 | 16 | [M2 多模态合成基础规格](specs/2026-07-11-multimodal-synthetic-foundation-design.md) | 开发、数据、审查者 | 已批准：理想 I/G/EEG/ECG/camera 合同、合成 bundle 与 ingestion readiness |
 | 17 | [M2 实施计划](plans/2026-07-11-m2-multimodal-synthetic-foundation-implementation-plan.md) | 开发、审查者 | shared X/U、adapter、generator、readiness 与本地 E2E 的 TDD 步骤 |
 | 18 | [M3 Native-Rate Time Synchronization 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) | 开发、数据、审查者 | 已批准：native-rate clock mapping、session window、aligned views 与同步报告 |
-| 19 | [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) | 开发、审查者 | 待执行：D-016–D-020、同步合同、TDD、E2E 与完成门 |
+| 19 | [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) | 开发、审查者 | 执行中：Task 0 已收口 D-016–D-020 与产品文档；同步代码、TDD、E2E 与完成门仍待实施 |
 
 ### 2.1 文档目录的职责
 
@@ -76,7 +76,7 @@
 
 ## 5. 当前实现边界
 
-截至 2026-07-12，Python Core 已完成 M1 与 M2：严格 SessionManifest/StreamDescriptor/AnchorResult 合同、inspect-only directory-bundle integrity gate、shared X/U、版本化理想模态 profiles/adapters、deterministic multimodal generator，以及 `IngestionReadinessReport`。Micro fixture 与 repository-external 采集格式样例 CSV 的端到端软件路径均已验证；这不验证样例飞行的任务或表现。M3 synchronization 规格已批准并形成实施计划，但代码尚未实现。M2 始终保持 `formal_run_authorized=false`；受管理存储 importer、同步、anchor 算法、evidence scorer、BN、sidecar 和 WinUI 尚未实现。完整状态、实测数据与复现命令见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+截至 2026-07-12，Python Core 已完成 M1 与 M2：严格 SessionManifest/StreamDescriptor/AnchorResult 合同、inspect-only directory-bundle integrity gate、shared X/U、版本化理想模态 profiles/adapters、deterministic multimodal generator，以及 `IngestionReadinessReport`。Micro fixture 与 repository-external 采集格式样例 CSV 的端到端软件路径均已验证；这不验证样例飞行的任务或表现。M3 synchronization 规格、D-016–D-020 和跨文档合同已批准并形成实施计划，但同步代码尚未实现。M2 与未来 M3 report 都保持 `formal_run_authorized=false`；受管理存储 importer、同步、anchor 算法、evidence scorer、BN、sidecar 和 WinUI 尚未实现。完整状态、实测数据与复现命令见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
 ## 6. 维护规则
 

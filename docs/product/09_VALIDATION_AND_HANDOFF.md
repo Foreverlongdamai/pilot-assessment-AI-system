@@ -3,7 +3,7 @@
 | 字段 | 值 |
 |---|---|
 | 设计版本 | v0.1 |
-| 当前软件状态 | in_progress（Backend Foundation M1 verified） |
+| 当前软件状态 | in_progress（M1/M2 verified；M3 规格与实施计划已批准，代码尚未实现） |
 | 当前科学状态 | engineering_default（not scientifically validated） |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
@@ -52,7 +52,8 @@
 ### 2.2 Unit 与 property tests
 
 - ingestion adapter：正常、缺列、错单位、损坏、gap、duplicate、out-of-order；
-- synchronization：已知 offset/drift 的合成数据、边界插值、残差门槛；
+- M3 synchronization：Decimal round-half-even、已知 scale/offset、scale/drift 一致性、same-clock mapping、int64 边界/overflow、master-clock X session window、negative/tail rows、duplicate mapped ns、稳定排序和 source-row preservation；
+- M4 AnchorPlugin temporal processing：按 anchor revision 测试 interpolation/resampling、analysis/window grid、partial-window policy、valid-fraction 与 sampling-rate invariance；
 - 每个 AnchorPlugin：手算 golden case、阈值边界、sampling-rate invariance、missing/invalid/not_applicable；
 - evidence scoring：D/A/U 单调性和边界包含规则；
 - CPT：维度、非负、有限数、每行和为 1；
@@ -74,7 +75,7 @@
 
 ### 2.4 Integration tests
 
-- 多模态 bundle → ingestion readiness → aligned session → run preflight；
+- 多模态 bundle → `IngestionReadinessReport` → `SynchronizationInput` → native-rate `AlignedSession` + `SynchronizationReport` → model lock/reference resolution → `RunPreflightReport`；
 - aligned session → 18 AnchorResult → evidence；
 - evidence → BN posterior、coverage、explanation；
 - graph/binding edit → CPT migration → validate → publish；
@@ -85,7 +86,7 @@
 
 至少维护三类 golden bundle：
 
-1. minimal-XU：只有当前模拟器 X/U，用于缺失模态处理；
+1. format-sample-XU：只有 simulator 采集格式样例 X/U，用于接口、解析、时间与缺失模态处理；该记录不提供标准轨迹、任务 ground truth 或能力标签；
 2. synthetic-multimodal：含可控 offset/drift、VR/gaze、EEG/ECG 和已知答案；
 3. de-identified-reference：经批准的真实 session，用于回归，不进入公开仓库。
 
@@ -96,7 +97,8 @@
 | 子系统 | 必须证明 | 主要证据 |
 |---|---|---|
 | Session bundle | 格式、checksum、单位、状态语义正确 | schema tests、corrupt fixtures |
-| 时间同步 | 多采样率数据对齐且误差可见 | synthetic offset/drift tests |
+| 时间同步 | native-rate rows 按唯一 clock mapping 对齐、window/越界/重复/误差可见且不改 source 值 | half-even、scale/offset、overflow、same-clock、window、duplicate 和 row-preservation synthetic tests |
+| Anchor temporal processing | 插值、重采样与 analysis/window grid 只按锁定 AnchorPlugin/model revision 建立 | M4 per-anchor interpolation/window/sampling-rate tests |
 | Anchors | 实现与正式定义、参数和质量门一致 | per-anchor golden tests |
 | Evidence | 阈值方向和缺失策略正确 | boundary/property tests |
 | BN/CPT | 图合法、概率正确、缺失可边缘化 | hand-computable BN tests |
@@ -296,4 +298,4 @@ PilotAssessment/
 - reference trajectory、phase/event annotation 的生产方式需与实验团队确认；
 - shared-evidence 多 parent CPT 会指数增长；v0.1 已设 parent/row/cell/size 硬上限，但数值仍需性能基准和专家审查后才能提高；
 - WinUI 图编辑控件选型和无障碍支持需原型验证；
-- 后端基础 M1 已有合同、directory-bundle loader、JSON Schema 和自动化测试；但 adapter、同步、18 个 AnchorPlugin、BN、runtime 与 WinUI 尚未实现，因此完整产品 software verification 仍为 in_progress，Gate B 尚未通过。
+- 后端 M1/M2 已有合同、directory-bundle loader、JSON Schema、版本化 adapters、deterministic multimodal software fixtures、`IngestionReadinessReport` 和自动化测试；M3 native-rate synchronization 规格与实施计划已批准但代码尚未实现，18 个 AnchorPlugin、BN、runtime 与 WinUI 也尚未实现。因此完整产品 software verification 仍为 in_progress，Gate B 尚未通过。

@@ -30,7 +30,14 @@
 | not_applicable | 当前任务/阶段没有该证据适用条件，例如没有扰动事件；不是表现等级。 |
 | Quality | evidence 对应数据的可用性与置信度，和 evidence state 分开记录。 |
 | Coverage | 本次评估实际可用证据相对于模型期望证据的覆盖程度。 |
+| Native-rate alignment | M3 保留每个 source artifact 的原生采样行和值，只追加统一 session time 与 window flags 的对齐方式；不插值、不重采样，也不建立 anchor-specific analysis/window grid。 |
+| Clock mapping | 把 source seconds 映射到 session `t_ns` 的确定性规则：`round_half_even(source_s × scale × 1e9 + offset_ns)`；scale 是唯一计算权威，drift_ppm 只作一致性审计。 |
+| Session window | v0.1 的闭区间 `[0,max(mapped X primary t_ns)]`，source 为 `master-clock-x-mapped-coverage-v1`；X 只提供技术时间边界，不代表 commanded trajectory、任务标准或能力 ground truth。 |
 | Ingestion readiness inspection | M2 对 source artifact 内容、schema、质量和 adapter 可用性的只读检查；输出 `IngestionReadinessReport`，只允许进入 M3，且永不授权正式 run。 |
+| SynchronizationInput | M3 内部不可变输入，组合同一次 `LoadedManifest`、`PreparedSession` 和 `IngestionReadinessReport`；blocked readiness 不构造该对象。 |
+| AlignedStreamView | M3 内部只读视图；保留 raw columns、rows 和 values，并按显式 temporal binding 在末尾追加 authoritative int64 `t_ns`/interval ns 与 Boolean window flags；schema ID 使用 `*-aligned-v0.1`。 |
+| AlignedSession | M3 内部不可变结果，包含 native-rate aligned streams、session window、aligned annotations、bundle task reference 和同步 fingerprints；不作为公共 JSON-RPC 大数据 DTO。 |
+| SynchronizationReport | M3 公共同步报告，记录七个 core modality、task reference、annotation、clock/coverage/window 质量与 source/policy/catalog/alignment fingerprints；只允许进入 anchor availability，始终 `formal_run_authorized=false`。 |
 | Run preflight | `run.preflight` 在 aligned session、annotation/reference 和锁定 model revision 上执行的正式运行门；输出 `RunPreflightReport` 并决定能否创建 AssessmentRun。 |
 | BN | Bayesian Network，贝叶斯网络。 |
 | CPT | Conditional Probability Table，节点在给定 parent state 下的条件概率表。 |

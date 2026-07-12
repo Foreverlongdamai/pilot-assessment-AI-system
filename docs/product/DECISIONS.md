@@ -106,3 +106,38 @@
 - 决策：reference-model-v0.1 的 Guided palette 只包含 competency、subskill 和 evidence，结构边只允许 competency→subskill 与 subskill→evidence。Phase/task context 保留在 BN 外供 AnchorPlugin 使用；O8/O13 通过 `derived_from`、`dependence_group` 和 `likelihood_strength` 处理相关性，不创建 evidence→derived_evidence 结构边。
 - 理由：当前 CPT 和推理语义只定义了四 competency、十一 sub-skill、十八 evidence 的三层网络；允许未定义的 context 或派生结构边会产生无法解释的 CPT。
 - 影响：context node 或 structural derived evidence 只能在明确声明其语义、CPT、编译和 golden tests 的新 model profile 中启用；从 reference-v0.1 切换必须使用新的 major model profile，不能只改 draft/revision 标识。
+
+## D-016：M3 只产生 native-rate aligned views
+
+- 状态：已接受
+- 决策：M3 只映射原生采样行并追加 aligned time/flags；不插值、不重采样、不建立 anchor-specific analysis/window grid。
+- 理由：插值和窗口参数依赖 AnchorPlugin/model revision，提前全局冻结会制造未经专家批准的信号值。
+- 影响：M3 报告 interpolated_rows=0；M4 按 anchor 定义建立 grid/window。
+
+## D-017：Clock scale 是唯一映射权威
+
+- 状态：已接受
+- 决策：唯一公式为 round-half-even(source_s × scale × 1e9 + offset_ns)；drift_ppm 只与 scale 做一致性审计，不再次参与计算。同 clock_id 必须共享 method/scale/offset/drift mapping；per-stream residual 可以不同。
+- 理由：同时施加 scale 和 drift 会重复校正并破坏可复现性。
+- 影响：M3 对 scale/drift、residual 顺序、same-clock mapping 和 int64 overflow 执行结构门；task/anchor-specific residual tolerance 留给后续 gate。
+
+## D-018：v0.1 session window 由 master-clock X 推导
+
+- 状态：已接受
+- 决策：v0.1 只支持 origin=session_start；window 为 [0,max(mapped X primary t_ns)]，source=master-clock-x-mapped-coverage-v1。
+- 理由：manifest 0.1 没有独立 duration/end；X 仅是 v0.1 session-end 的技术时间边界来源，不是 commanded trajectory、任务标准或表现权威。
+- 影响：synthetic duration_s 仅作 golden cross-check；未来显式 window 必须走新的 schema/decision。
+
+## D-019：Annotation 与 reference 在 M3 分流
+
+- 状态：已接受
+- 决策：synthetic annotation 的 *_s 是 session-relative seconds；正式 session-time annotation 直接声明 t_ns。Bundle reference 在 M3 对齐；model-bundle reference 返回 deferred_model_bundle_resolution。
+- 理由：annotation 没有 device clock，而 model reference 只有锁定 revision 后才能解析。
+- 影响：M3 不猜 annotation clock/response semantics，也不把 deferred model reference 误报 missing。
+
+## D-020：M3 使用独立 snapshot input 和 report
+
+- 状态：已接受
+- 决策：内部 SynchronizationInput 组合同一次 LoadedManifest、PreparedSession 和 IngestionReadinessReport；输出内部 AlignedSession 与公共 SynchronizationReport。
+- 理由：PreparedSession 不应吸收 bundle I/O/clock/annotation 责任，M1 也不应重复 load/hash。
+- 影响：SynchronizationReport 与 IngestionReadinessReport/RunPreflightReport 分离，始终 formal_run_authorized=false，并绑定 source/policy/catalog/alignment fingerprints。

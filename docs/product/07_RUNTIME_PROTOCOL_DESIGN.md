@@ -99,9 +99,11 @@ stopped → starting → ready ↔ busy → stopping → stopped
 | project.export | 生成可移交、脱敏的项目包 |
 | session.inspect | 只读检查外部 bundle，不导入 |
 | session.import | 校验后复制/注册到托管项目 |
-| session.validate | 重新执行 schema、checksum、同步和质量检查 |
+| session.validate | 按已实现阶段重新执行 M1/M2 source 检查，并在 M3 可用后返回独立的 `SynchronizationReport`；不能用单一 boolean 混装各阶段 |
 | session.get | 获取 session metadata 与 modality coverage |
 | session.artifact.get | 获取可展示 artifact 的受控文件引用 |
+
+Runtime DTO 必须保持阶段顺序和命名：`IngestionReadinessReport`（source content）→ `SynchronizationReport`（native-rate session-time alignment）→ 锁定 model revision/reference resolution → `RunPreflightReport`（正式运行门）。M3 同步实现完成前，capabilities/session.validate 必须把该阶段标记为 unavailable/unimplemented，不能伪造同步成功。
 
 ### 6.3 Model、graph、anchor 与 CPT
 
@@ -144,7 +146,7 @@ node/edge/anchor.parameters/cpt 的便利写方法同样必须携带 draft_id、
 | diagnostics.bundle.export | 导出脱敏支持包 |
 | audit.events.list | 查询模型修改、发布、导入与运行审计事件 |
 
-`run.preflight` 返回 `RunPreflightReport`，它与 M2 的 `IngestionReadinessReport` 不是同一 DTO：后者只允许 source data 进入 synchronization，且 `formal_run_authorized` 固定为 false；前者基于 aligned session 与锁定 model revision 决定是否可以创建 AssessmentRun。
+`run.preflight` 返回 `RunPreflightReport`，它与 M2 的 `IngestionReadinessReport`、M3 的 `SynchronizationReport` 都不是同一 DTO：M2/M3 两份报告分别只允许 source data 进入 synchronization、允许 aligned session 进入 anchor availability，且 `formal_run_authorized` 固定为 false；只有 `RunPreflightReport` 基于 `AlignedSession`、已解析 reference 与锁定 model revision 决定是否可以创建 AssessmentRun。
 
 ## 7. 大数据与路径合同
 
