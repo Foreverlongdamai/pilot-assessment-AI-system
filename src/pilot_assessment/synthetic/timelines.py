@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import math
-from decimal import ROUND_FLOOR, ROUND_HALF_EVEN, Decimal
+from decimal import ROUND_FLOOR, Decimal
 
-_BILLION = Decimal(1_000_000_000)
+from pilot_assessment.synchronization.clock import (
+    map_source_seconds_to_session_ns as _map_source_seconds_to_session_ns,
+)
+from pilot_assessment.synchronization.clock import session_seconds_to_ns
+
 _MILLION = Decimal(1_000_000)
 _INT64_MIN = -(2**63)
 _INT64_MAX = 2**63 - 1
@@ -38,7 +42,7 @@ def map_source_seconds_to_session_ns(
     offset_ns: int,
     drift_ppm: float,
 ) -> int:
-    """Apply session=scale*source+offset and round the result to signed int64 ns."""
+    """Translate synthetic drift to scale and delegate to the M3 clock kernel."""
 
     if isinstance(source_time_s, bool) or not math.isfinite(source_time_s) or source_time_s < 0.0:
         raise ValueError("source_time_s must be non-negative and finite")
@@ -49,13 +53,11 @@ def map_source_seconds_to_session_ns(
     scale = Decimal(1) + Decimal(str(drift_ppm)) / _MILLION
     if scale <= 0:
         raise ValueError("declared clock scale must be positive")
-    mapped = (
-        Decimal(str(source_time_s)) * scale * _BILLION + Decimal(offset_ns)
-    ).to_integral_value(rounding=ROUND_HALF_EVEN)
-    value = int(mapped)
-    if not _INT64_MIN <= value <= _INT64_MAX:
-        raise ValueError("mapped session timestamp is outside signed int64")
-    return value
+    return _map_source_seconds_to_session_ns(
+        source_time_s,
+        scale=float(scale),
+        offset_ns=offset_ns,
+    )
 
 
 def in_session_window(session_t_ns: int, *, duration_s: float) -> bool:
@@ -64,7 +66,7 @@ def in_session_window(session_t_ns: int, *, duration_s: float) -> bool:
     _positive_finite(duration_s, "duration_s")
     if isinstance(session_t_ns, bool) or not _INT64_MIN <= session_t_ns <= _INT64_MAX:
         raise ValueError("session_t_ns must be a signed int64")
-    end_ns = int((Decimal(str(duration_s)) * _BILLION).to_integral_value(rounding=ROUND_HALF_EVEN))
+    end_ns = session_seconds_to_ns(duration_s)
     return 0 <= session_t_ns <= end_ns
 
 

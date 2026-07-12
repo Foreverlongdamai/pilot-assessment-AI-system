@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+import pilot_assessment.synthetic.timelines as timelines
 from pilot_assessment.synthetic.timelines import (
     in_session_window,
     map_source_seconds_to_session_ns,
@@ -53,6 +54,36 @@ def test_clock_mapping_uses_declared_offset_drift_and_half_even_rounding() -> No
     )
     assert map_source_seconds_to_session_ns(0.0000000005, offset_ns=0, drift_ppm=0.0) == 0
     assert map_source_seconds_to_session_ns(0.0000000015, offset_ns=0, drift_ppm=0.0) == 2
+
+
+def test_synthetic_clock_wrapper_delegates_to_shared_kernel(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    received: dict[str, float | int] = {}
+
+    def fake_mapper(source_time_s: float, *, scale: float, offset_ns: int) -> int:
+        received.update(
+            source_time_s=source_time_s,
+            scale=scale,
+            offset_ns=offset_ns,
+        )
+        return 123
+
+    monkeypatch.setattr(timelines, "_map_source_seconds_to_session_ns", fake_mapper)
+
+    assert (
+        timelines.map_source_seconds_to_session_ns(
+            4.25,
+            offset_ns=7_000_000,
+            drift_ppm=20.0,
+        )
+        == 123
+    )
+    assert received == {
+        "source_time_s": 4.25,
+        "scale": 1.00002,
+        "offset_ns": 7_000_000,
+    }
 
 
 def test_in_session_window_keeps_boundaries() -> None:
