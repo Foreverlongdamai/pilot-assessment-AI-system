@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import io
+import json
 import operator
 from collections.abc import MutableSequence
 from dataclasses import replace
@@ -125,6 +126,47 @@ def _ready_parts(
     outcome = inspect_loaded_ingestion_readiness(loaded)
     assert outcome.prepared_session is not None
     return loaded, outcome.report, outcome.prepared_session
+
+
+def _ready_parts_without_bundle_reference(
+    tmp_path: Path,
+    *,
+    owner: str,
+) -> tuple[LoadedManifest, IngestionReadinessReport, PreparedSession]:
+    loaded, _report, _prepared = _ready_parts(tmp_path)
+    manifest_path = loaded.bundle_root / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    descriptor = manifest["streams"].pop("task_reference")
+    reference_path = descriptor["paths"][0]
+    if owner == "model_bundle":
+        manifest["task"]["reference"] = {
+            "source": "model_bundle",
+            "reference_id": "model-reference-fixture-v0.1",
+            "extensions": {},
+        }
+    else:
+        assert owner == "none"
+        manifest["task"]["reference"] = None
+    manifest_path.write_text(
+        json.dumps(manifest, ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    checksum_path = loaded.bundle_root / "integrity" / "checksums.sha256"
+    checksum_lines = [
+        line
+        for line in checksum_path.read_text(encoding="utf-8").splitlines()
+        if not line.endswith(reference_path)
+    ]
+    checksum_path.write_text(
+        "\n".join(checksum_lines) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    reloaded = ManifestLoader().load(loaded.bundle_root)
+    outcome = inspect_loaded_ingestion_readiness(reloaded)
+    assert outcome.prepared_session is not None
+    return reloaded, outcome.report, outcome.prepared_session
 
 
 def test_synchronization_input_rejects_blocked_readiness(tmp_path: Path) -> None:
@@ -420,7 +462,6 @@ def test_synchronization_input_bounds_missing_loaded_reference_descriptor(
         manifest=loaded.manifest.model_copy(
             update={
                 "streams": manifest_streams,
-                "task": loaded.manifest.task.model_copy(update={"reference": None}),
             }
         ),
     )
@@ -436,6 +477,65 @@ def test_synchronization_input_bounds_missing_loaded_reference_descriptor(
             readiness_report=forged_report,
             prepared_session=prepared,
         )
+
+
+def test_synchronization_input_requires_bundle_reference_readiness_inventory(
+    tmp_path: Path,
+) -> None:
+    loaded, report, prepared = _ready_parts(tmp_path)
+    payload = report.model_dump(mode="json")
+    payload["task_reference_result"] = None
+    missing_inventory = IngestionReadinessReport.model_validate(payload)
+
+    with pytest.raises(ValueError, match="bundle task reference.*readiness inventory"):
+        SynchronizationInput(
+            loaded_manifest=loaded,
+            readiness_report=missing_inventory,
+            prepared_session=replace(prepared, task_reference=None),
+        )
+
+
+@pytest.mark.parametrize("owner", ["none", "model_bundle"])
+def test_synchronization_input_rejects_orphan_bundle_reference_readiness_inventory(
+    tmp_path: Path,
+    owner: str,
+) -> None:
+    loaded, report, prepared = _ready_parts_without_bundle_reference(tmp_path, owner=owner)
+    payload = report.model_dump(mode="json")
+    payload["task_reference_result"] = {
+        "modality": "task_reference",
+        "declared_status": "missing",
+        "required_for_import": False,
+        "readiness": "unavailable",
+        "source_paths": [],
+        "source_checksums": {},
+    }
+    payload["disposition"] = "ready_partial"
+    orphan_inventory = IngestionReadinessReport.model_validate(payload)
+
+    with pytest.raises(ValueError, match="non-bundle task reference.*readiness inventory"):
+        SynchronizationInput(
+            loaded_manifest=loaded,
+            readiness_report=orphan_inventory,
+            prepared_session=prepared,
+        )
+
+
+@pytest.mark.parametrize("owner", ["none", "model_bundle"])
+def test_synchronization_input_accepts_nonbundle_reference_without_bundle_inventory(
+    tmp_path: Path,
+    owner: str,
+) -> None:
+    loaded, report, prepared = _ready_parts_without_bundle_reference(tmp_path, owner=owner)
+
+    accepted = SynchronizationInput(
+        loaded_manifest=loaded,
+        readiness_report=report,
+        prepared_session=prepared,
+    )
+
+    assert accepted.readiness_report.task_reference_result is None
+    assert accepted.prepared_session.task_reference is None
 
 
 def _aligned_view(modality: str = "X") -> AlignedStreamView:

@@ -172,6 +172,18 @@ class SynchronizationInput:
             )
 
         reference_result = report.task_reference_result
+        manifest_reference = self.loaded_manifest.manifest.task.reference
+        owns_bundle_reference = (
+            manifest_reference is not None and manifest_reference.source == "bundle"
+        )
+        if owns_bundle_reference != (reference_result is not None):
+            if owns_bundle_reference:
+                raise ValueError(
+                    "bundle task reference requires a matching readiness inventory result"
+                )
+            raise ValueError(
+                "non-bundle task reference must not claim a bundle readiness inventory result"
+            )
         reference_is_ready = (
             reference_result is not None and reference_result.readiness is StreamReadiness.READY
         )
