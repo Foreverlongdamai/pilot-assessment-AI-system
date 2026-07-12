@@ -317,6 +317,7 @@ def _sort_issues(issues: Iterable[DomainErrorData]) -> list[DomainErrorData]:
             issue.error_code,
             issue.severity.value,
             issue.message,
+            canonical_json_bytes(issue.model_dump(mode="json")),
         ),
     )
 
