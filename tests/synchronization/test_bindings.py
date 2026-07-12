@@ -10,13 +10,20 @@ from pilot_assessment.contracts.ingestion import StreamReadiness
 from pilot_assessment.contracts.session import ClockSync
 from pilot_assessment.contracts.synchronization import SessionWindow
 from pilot_assessment.synchronization.bindings import (
+    TemporalAlignmentError,
     apply_point_window,
     derive_session_window,
+    inherit_point_time,
+    map_interval_artifact,
     map_point_artifact,
+    preserve_untimed_artifact,
 )
 from pilot_assessment.synchronization.models import SynchronizationInput
 from pilot_assessment.synchronization.profiles import (
+    InheritBinding,
+    IntervalBinding,
     PointBinding,
+    UntimedBinding,
     load_builtin_temporal_catalog,
 )
 
@@ -29,6 +36,31 @@ def _point_binding(*, stable_keys: tuple[str, ...] = ("sample_id",)) -> PointBin
         aligned_artifact_schema_id="fixture-aligned-v0.1",
         source_timestamp_column="source_timestamp_s",
         stable_keys=stable_keys,
+    )
+
+
+def _interval_binding() -> IntervalBinding:
+    return IntervalBinding(
+        mode="interval",
+        artifact_role="fixations",
+        expected_artifact_schema_id="fixture-interval-source-v0.1",
+        aligned_artifact_schema_id="fixture-interval-aligned-v0.1",
+        source_start_column="start_source_timestamp_s",
+        source_end_column="end_source_timestamp_s",
+        stable_keys=("fixation_id",),
+    )
+
+
+def _inherit_binding() -> InheritBinding:
+    return InheritBinding(
+        mode="inherit",
+        artifact_role="aoi_instances",
+        expected_artifact_schema_id="fixture-child-source-v0.1",
+        aligned_artifact_schema_id="fixture-child-aligned-v0.1",
+        parent_role="frame_index",
+        parent_key_columns=("frame_id",),
+        foreign_key_columns=("frame_id",),
+        stable_keys=("frame_id", "aoi_id"),
     )
 
 
@@ -182,15 +214,17 @@ def test_point_binding_preserves_duplicate_mapped_ns_in_stable_key_order() -> No
     assert aligned["value"].to_list() == [1.0, 2.0, 3.0]
 
     duplicate_key = source.with_columns(pl.Series("sample_id", [10, 10, 12]))
-    with pytest.raises(ValueError, match="TEMPORAL_ORDER_INVALID"):
+    with pytest.raises(TemporalAlignmentError) as caught:
         map_point_artifact(duplicate_key, _point_binding(), _clock())
+    assert caught.value.issue.error_code == "TEMPORAL_ORDER_INVALID"
 
 
 def test_point_binding_requires_declared_stable_keys() -> None:
     source = pl.DataFrame({"source_timestamp_s": [0.0, 0.1]})
 
-    with pytest.raises(ValueError, match="TEMPORAL_ORDER_INVALID"):
+    with pytest.raises(TemporalAlignmentError) as caught:
         map_point_artifact(source, _point_binding(), _clock())
+    assert caught.value.issue.error_code == "TEMPORAL_ORDER_INVALID"
 
 
 def test_session_window_uses_max_mapped_x_time_not_synthetic_duration() -> None:
@@ -294,8 +328,9 @@ def test_point_binding_rejects_null_or_nonfinite_source_times(bad_time: float | 
         }
     )
 
-    with pytest.raises(ValueError, match="source timestamps must be finite Float64"):
+    with pytest.raises(TemporalAlignmentError) as caught:
         map_point_artifact(source, _point_binding(), _clock())
+    assert caught.value.issue.error_code == "TEMPORAL_ORDER_INVALID"
 
 
 def test_point_binding_rejects_non_float64_source_time_and_null_stable_key() -> None:
@@ -305,8 +340,9 @@ def test_point_binding_rejects_non_float64_source_time_and_null_stable_key() -> 
             "source_timestamp_s": pl.Series([0, 1], dtype=pl.Int64),
         }
     )
-    with pytest.raises(ValueError, match="source timestamps must be finite Float64"):
+    with pytest.raises(TemporalAlignmentError) as integer_caught:
         map_point_artifact(integer_time, _point_binding(), _clock())
+    assert integer_caught.value.issue.error_code == "TEMPORAL_ORDER_INVALID"
 
     null_key = pl.DataFrame(
         {
@@ -314,8 +350,9 @@ def test_point_binding_rejects_non_float64_source_time_and_null_stable_key() -> 
             "source_timestamp_s": [0.0, 0.1],
         }
     )
-    with pytest.raises(ValueError, match="stable keys must be present and non-null"):
+    with pytest.raises(TemporalAlignmentError) as null_caught:
         map_point_artifact(null_key, _point_binding(), _clock())
+    assert null_caught.value.issue.error_code == "TEMPORAL_ORDER_INVALID"
 
 
 @pytest.mark.parametrize("existing_column", ["t_ns", "in_session"])
@@ -328,8 +365,9 @@ def test_point_binding_rejects_output_column_collisions(existing_column: str) ->
         }
     )
 
-    with pytest.raises(ValueError, match="output columns already exist"):
+    with pytest.raises(TemporalAlignmentError) as caught:
         map_point_artifact(source, _point_binding(), _clock())
+    assert caught.value.issue.error_code == "TEMPORAL_ORDER_INVALID"
 
 
 def test_point_binding_accepts_empty_typed_table_and_rejects_int64_overflow() -> None:
@@ -349,8 +387,9 @@ def test_point_binding_accepts_empty_typed_table_and_rejects_int64_overflow() ->
             "source_timestamp_s": [float(2**63)],
         }
     )
-    with pytest.raises(ValueError, match="TIMESTAMP_OUT_OF_INT64_RANGE"):
+    with pytest.raises(TemporalAlignmentError) as caught:
         map_point_artifact(overflow, _point_binding(), _clock())
+    assert caught.value.issue.error_code == "TIMESTAMP_OUT_OF_INT64_RANGE"
 
 
 def test_point_binding_rejects_nonmonotonic_time_or_stable_key_order() -> None:
@@ -360,8 +399,9 @@ def test_point_binding_rejects_nonmonotonic_time_or_stable_key_order() -> None:
             "source_timestamp_s": [1.0, 0.0],
         }
     )
-    with pytest.raises(ValueError, match="TEMPORAL_ORDER_INVALID"):
+    with pytest.raises(TemporalAlignmentError) as time_caught:
         map_point_artifact(nonmonotonic_time, _point_binding(), _clock())
+    assert time_caught.value.issue.error_code == "TEMPORAL_ORDER_INVALID"
 
     unstable_collision = pl.DataFrame(
         {
@@ -369,8 +409,9 @@ def test_point_binding_rejects_nonmonotonic_time_or_stable_key_order() -> None:
             "source_timestamp_s": [0.0, 0.0000000004],
         }
     )
-    with pytest.raises(ValueError, match="TEMPORAL_ORDER_INVALID"):
+    with pytest.raises(TemporalAlignmentError) as key_caught:
         map_point_artifact(unstable_collision, _point_binding(), _clock())
+    assert key_caught.value.issue.error_code == "TEMPORAL_ORDER_INVALID"
 
 
 def test_session_window_rejects_nonready_x_and_non_int64_mapped_time() -> None:
@@ -411,3 +452,352 @@ def test_session_window_rejects_null_mapped_time_with_stable_domain_error() -> N
             null_time,
             _point_binding(),
         )
+
+
+def test_fixation_interval_maps_both_endpoints_and_classifies_window_relation() -> None:
+    source = pl.DataFrame(
+        {
+            "fixation_id": [0, 1, 2, 3, 4],
+            "start_source_timestamp_s": [
+                -0.000000002,
+                -0.000000001,
+                0.0,
+                0.000000009,
+                0.000000010,
+            ],
+            "end_source_timestamp_s": [
+                -0.000000001,
+                0.0,
+                0.000000005,
+                0.000000011,
+                0.000000011,
+            ],
+        }
+    )
+
+    aligned = map_interval_artifact(
+        source,
+        _interval_binding(),
+        _clock(),
+        _session_window(),
+    )
+
+    assert aligned["start_t_ns"].to_list() == [-2, -1, 0, 9, 10]
+    assert aligned["end_t_ns"].to_list() == [-1, 0, 5, 11, 11]
+    assert aligned["overlaps_session"].to_list() == [False, True, True, True, True]
+    assert aligned["fully_in_session"].to_list() == [False, False, True, False, False]
+
+
+def test_fixation_interval_preserves_source_duration_and_row_count() -> None:
+    source = pl.DataFrame(
+        {
+            "fixation_id": [8, 9, 10],
+            "start_source_timestamp_s": [0.1, 0.3, 0.8],
+            "end_source_timestamp_s": [0.2, 0.7, 1.1],
+            "duration_s": [0.1, 0.4, 0.3],
+            "label": ["first", "second", "third"],
+        }
+    )
+
+    aligned = map_interval_artifact(
+        source,
+        _interval_binding(),
+        _clock(),
+        _session_window(1_000_000_000),
+    )
+
+    assert aligned.columns == [
+        *source.columns,
+        "start_t_ns",
+        "end_t_ns",
+        "overlaps_session",
+        "fully_in_session",
+    ]
+    assert aligned.select(source.columns).equals(source)
+    assert aligned["duration_s"].to_list() == [0.1, 0.4, 0.3]
+    assert aligned.height == source.height
+
+
+@pytest.mark.parametrize(
+    ("start_s", "end_s"),
+    [(0.1, 0.1), (0.2, 0.1), (0.0, 0.0000000004)],
+)
+def test_interval_binding_rejects_end_not_after_start(start_s: float, end_s: float) -> None:
+    source = pl.DataFrame(
+        {
+            "fixation_id": [0],
+            "start_source_timestamp_s": [start_s],
+            "end_source_timestamp_s": [end_s],
+        }
+    )
+
+    with pytest.raises(TemporalAlignmentError) as caught:
+        map_interval_artifact(source, _interval_binding(), _clock(), _session_window())
+
+    assert caught.value.issue.error_code == "TEMPORAL_ORDER_INVALID"
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        pl.DataFrame(
+            {
+                "fixation_id": [0],
+                "start_source_timestamp_s": pl.Series([0], dtype=pl.Int64),
+                "end_source_timestamp_s": [0.1],
+            }
+        ),
+        pl.DataFrame(
+            {
+                "fixation_id": [0],
+                "start_source_timestamp_s": [0.0],
+                "end_source_timestamp_s": [float("nan")],
+            }
+        ),
+        pl.DataFrame(
+            {
+                "fixation_id": [0],
+                "start_source_timestamp_s": [0.0],
+                "end_source_timestamp_s": [0.1],
+                "start_t_ns": [0],
+            }
+        ),
+    ],
+    ids=["non-float64", "nonfinite", "output-collision"],
+)
+def test_interval_binding_translates_invalid_structure(source: pl.DataFrame) -> None:
+    with pytest.raises(TemporalAlignmentError) as caught:
+        map_interval_artifact(source, _interval_binding(), _clock(), _session_window())
+
+    assert caught.value.issue.error_code == "TEMPORAL_ORDER_INVALID"
+
+
+def test_interval_binding_translates_mapped_int64_overflow() -> None:
+    source = pl.DataFrame(
+        {
+            "fixation_id": [0],
+            "start_source_timestamp_s": [float(2**63)],
+            "end_source_timestamp_s": [float(2**63) + 4096.0],
+        }
+    )
+
+    with pytest.raises(TemporalAlignmentError) as caught:
+        map_interval_artifact(source, _interval_binding(), _clock(), _session_window())
+
+    assert caught.value.issue.error_code == "TIMESTAMP_OUT_OF_INT64_RANGE"
+
+
+def test_ecg_r_peaks_are_aligned_as_an_independent_point_role() -> None:
+    catalog = load_builtin_temporal_catalog()
+    ecg = catalog.streams_by_schema["ecg-source-bundle-v0.1"]
+    binding = cast(PointBinding, ecg.bindings_by_role["r_peaks"])
+    peaks = pl.DataFrame(
+        {
+            "peak_id": [41, 42, 43],
+            "source_timestamp_s": [0.25, 0.75, 1.25],
+            "rr_interval_s": [0.8, 0.5, 0.5],
+        }
+    )
+
+    aligned = apply_point_window(
+        map_point_artifact(peaks, binding, _clock()),
+        binding,
+        _session_window(1_000_000_000),
+    )
+
+    assert binding.artifact_role == "r_peaks"
+    assert binding.aligned_artifact_schema_id == "ecg-r-peak-aligned-v0.1"
+    assert aligned["peak_id"].to_list() == [41, 42, 43]
+    assert aligned["t_ns"].to_list() == [250_000_000, 750_000_000, 1_250_000_000]
+    assert aligned["in_session"].to_list() == [True, True, False]
+    assert aligned.height == peaks.height
+
+
+def test_aoi_rows_inherit_frame_time_without_reordering_children() -> None:
+    parent = pl.DataFrame(
+        {
+            "frame_id": [10, 11, 12],
+            "t_ns": pl.Series([100, 200, 300], dtype=pl.Int64),
+            "in_session": [True, True, False],
+        }
+    )
+    child = pl.DataFrame(
+        {
+            "frame_id": [11, 10, 12, 11],
+            "aoi_id": ["panel-b", "panel-a", "outside", "panel-a"],
+            "x_min": [20, 10, 0, 15],
+        }
+    )
+
+    aligned = inherit_point_time(child, parent, _inherit_binding())
+
+    assert aligned.columns == [*child.columns, "t_ns", "in_session"]
+    assert aligned.select(child.columns).equals(child)
+    assert aligned["frame_id"].to_list() == [11, 10, 12, 11]
+    assert aligned["aoi_id"].to_list() == ["panel-b", "panel-a", "outside", "panel-a"]
+    assert aligned["t_ns"].to_list() == [200, 100, 300, 200]
+    assert aligned["in_session"].to_list() == [True, True, False, True]
+
+
+def test_inherit_binding_rejects_missing_parent_key() -> None:
+    parent = pl.DataFrame(
+        {
+            "frame_id": [10],
+            "t_ns": pl.Series([100], dtype=pl.Int64),
+            "in_session": [True],
+        }
+    )
+    child = pl.DataFrame({"frame_id": [10, 11], "aoi_id": ["a", "b"]})
+
+    with pytest.raises(TemporalAlignmentError) as caught:
+        inherit_point_time(child, parent, _inherit_binding())
+
+    assert caught.value.issue.error_code == "TEMPORAL_PARENT_KEY_INVALID"
+
+
+def test_inherit_binding_rejects_duplicate_parent_key() -> None:
+    parent = pl.DataFrame(
+        {
+            "frame_id": [10, 10],
+            "t_ns": pl.Series([100, 101], dtype=pl.Int64),
+            "in_session": [True, True],
+        }
+    )
+    child = pl.DataFrame({"frame_id": [10], "aoi_id": ["a"]})
+
+    with pytest.raises(TemporalAlignmentError) as caught:
+        inherit_point_time(child, parent, _inherit_binding())
+
+    assert caught.value.issue.error_code == "TEMPORAL_PARENT_KEY_INVALID"
+
+
+def test_inherit_binding_rejects_null_child_stable_key() -> None:
+    parent = pl.DataFrame(
+        {
+            "frame_id": [10],
+            "t_ns": pl.Series([100], dtype=pl.Int64),
+            "in_session": [True],
+        }
+    )
+    child = pl.DataFrame(
+        {
+            "frame_id": [10],
+            "aoi_id": pl.Series([None], dtype=pl.String),
+        }
+    )
+
+    with pytest.raises(TemporalAlignmentError) as caught:
+        inherit_point_time(child, parent, _inherit_binding())
+
+    assert caught.value.issue.error_code == "TEMPORAL_PARENT_KEY_INVALID"
+
+
+@pytest.mark.parametrize(
+    ("foreign_key", "foreign_dtype"),
+    [
+        (1, pl.UInt64),
+        (1.0, pl.Float64),
+        (True, pl.Boolean),
+    ],
+    ids=["uint64-vs-int64", "float64-vs-int64", "boolean-vs-int64"],
+)
+def test_inherit_binding_rejects_parent_child_key_dtype_mismatch(
+    foreign_key: int | float | bool,
+    foreign_dtype: type[pl.DataType],
+) -> None:
+    parent = pl.DataFrame(
+        {
+            "frame_id": pl.Series([1], dtype=pl.Int64),
+            "t_ns": pl.Series([100], dtype=pl.Int64),
+            "in_session": [True],
+        }
+    )
+    child = pl.DataFrame(
+        {
+            "frame_id": pl.Series([foreign_key], dtype=foreign_dtype),
+            "aoi_id": ["a"],
+        }
+    )
+
+    with pytest.raises(TemporalAlignmentError) as caught:
+        inherit_point_time(child, parent, _inherit_binding())
+
+    assert caught.value.issue.error_code == "TEMPORAL_PARENT_KEY_INVALID"
+
+
+@pytest.mark.parametrize(
+    ("parent", "child"),
+    [
+        (
+            pl.DataFrame(
+                {
+                    "frame_id": [10],
+                    "t_ns": pl.Series([100.0], dtype=pl.Float64),
+                    "in_session": [True],
+                }
+            ),
+            pl.DataFrame({"frame_id": [10], "aoi_id": ["a"]}),
+        ),
+        (
+            pl.DataFrame(
+                {
+                    "frame_id": [10],
+                    "t_ns": pl.Series([100], dtype=pl.Int64),
+                    "in_session": pl.Series([None], dtype=pl.Boolean),
+                }
+            ),
+            pl.DataFrame({"frame_id": [10], "aoi_id": ["a"]}),
+        ),
+        (
+            pl.DataFrame(
+                {
+                    "frame_id": [10],
+                    "t_ns": pl.Series([100], dtype=pl.Int64),
+                    "in_session": [True],
+                }
+            ),
+            pl.DataFrame(
+                {
+                    "frame_id": [10],
+                    "aoi_id": ["a"],
+                    "t_ns": pl.Series([100], dtype=pl.Int64),
+                }
+            ),
+        ),
+    ],
+    ids=["parent-time-dtype", "parent-mask-null", "output-collision"],
+)
+def test_inherit_binding_translates_invalid_structure(
+    parent: pl.DataFrame,
+    child: pl.DataFrame,
+) -> None:
+    with pytest.raises(TemporalAlignmentError) as caught:
+        inherit_point_time(child, parent, _inherit_binding())
+
+    assert caught.value.issue.error_code == "TEMPORAL_PARENT_KEY_INVALID"
+
+
+def test_untimed_sidecars_and_image_paths_remain_byte_and_value_identical() -> None:
+    catalog = load_builtin_temporal_catalog()
+    eeg_sidecar_binding = cast(
+        UntimedBinding,
+        catalog.streams_by_schema["eeg-source-bundle-v0.1"].bindings_by_role["sidecar"],
+    )
+    image_binding = cast(
+        UntimedBinding,
+        catalog.streams_by_schema["vr-scene-source-bundle-v0.1"].bindings_by_role["frame_images"],
+    )
+    sidecar = {"schema_id": "eeg-sidecar-v0.1", "channel_order": ("Fz", "Cz")}
+    sidecar_bytes = b'{"schema_id":"eeg-sidecar-v0.1"}'
+    image_paths = ("streams/vr_scene/frames/000000.png", "streams/vr_scene/frames/000001.png")
+    source_checksums = {
+        "streams/eeg/eeg_sidecar.json": "a" * 64,
+        "streams/vr_scene/frames/000000.png": "b" * 64,
+    }
+
+    assert preserve_untimed_artifact(sidecar, eeg_sidecar_binding) == sidecar
+    assert preserve_untimed_artifact(sidecar_bytes, eeg_sidecar_binding) == sidecar_bytes
+    assert preserve_untimed_artifact(image_paths, image_binding) == image_paths
+    assert preserve_untimed_artifact(source_checksums, image_binding) == source_checksums
+    assert not hasattr(eeg_sidecar_binding, "aligned_artifact_schema_id")
+    assert not hasattr(image_binding, "aligned_artifact_schema_id")
