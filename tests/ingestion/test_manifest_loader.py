@@ -164,6 +164,25 @@ def test_valid_directory_bundle_loads_without_mutating_sources(tmp_path: Path) -
     assert _snapshot_files(tmp_path) == before
 
 
+def test_synthetic_manifest_without_provenance_is_rejected_at_m1(tmp_path: Path) -> None:
+    manifest = _build_valid_bundle(tmp_path)
+    for modality in ("G", "EEG", "ECG", "pilot_camera"):
+        manifest["streams"][modality].update(status="missing", clock_sync=None)
+    manifest["privacy"].update(
+        classification="synthetic-test-data",
+        contains_biometric_data=False,
+        biometric_modalities_export_pending=[],
+        permitted_use="software-testing-only",
+    )
+    _write_manifest(tmp_path, manifest)
+
+    with pytest.raises(ManifestLoadError) as caught:
+        ManifestLoader().load(tmp_path)
+
+    assert caught.value.error.error_code == "INVALID_MANIFEST"
+    assert caught.value.error.field_or_path == "manifest.json"
+
+
 def test_bundle_root_must_be_a_directory(tmp_path: Path) -> None:
     bundle_file = tmp_path / "bundle.zip"
     bundle_file.write_bytes(b"not-supported-in-m1")

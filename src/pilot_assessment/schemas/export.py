@@ -18,6 +18,7 @@ from pilot_assessment.contracts.session import (
     BIOMETRIC_MODALITIES,
     CORE_MODALITIES,
     SessionManifest,
+    SyntheticSourceProvenance,
 )
 from pilot_assessment.contracts.synchronization import (
     BLOCKING_SYNCHRONIZATION_ERROR_CODES,
@@ -82,8 +83,13 @@ def _session_manifest_schema() -> dict[str, Any]:
             "non-core optional stream map key must equal descriptor.modality",
             "present or invalid stream checksum keys must exactly match paths",
             "declared paths are unique under Windows case folding",
+            "synthetic-test-data requires complete D-012 provenance in extensions.synthetic",
         ],
     )
+    synthetic_provenance_schema = SyntheticSourceProvenance.model_json_schema(mode="validation")
+    _replace_runtime_only_path_patterns(synthetic_provenance_schema)
+    synthetic_provenance_schema["additionalProperties"] = True
+    schema["$defs"]["SyntheticSourceProvenance"] = synthetic_provenance_schema
     stream_inventory = schema["properties"]["streams"]
     stream_inventory["allOf"] = [
         {"required": sorted(CORE_MODALITIES)},
@@ -290,6 +296,15 @@ def _session_manifest_schema() -> dict[str, Any]:
             "if": synthetic_privacy,
             "then": {
                 "properties": {
+                    "extensions": {
+                        "properties": {
+                            "synthetic": {
+                                "$ref": "#/$defs/SyntheticSourceProvenance",
+                            }
+                        },
+                        "required": ["synthetic"],
+                        "type": "object",
+                    },
                     "privacy": {
                         "properties": {
                             "contains_biometric_data": {"const": False},
@@ -299,8 +314,9 @@ def _session_manifest_schema() -> dict[str, Any]:
                             "contains_biometric_data",
                             "biometric_modalities_export_pending",
                         ],
-                    }
-                }
+                    },
+                },
+                "required": ["extensions"],
             },
         },
         {

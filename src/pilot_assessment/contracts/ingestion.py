@@ -21,6 +21,7 @@ from pilot_assessment.contracts.session import (
     CORE_MODALITIES,
     BundleSchemaVersion,
     StreamStatus,
+    SyntheticSourceProvenance,
 )
 
 
@@ -36,18 +37,6 @@ class ReadinessDisposition(StrEnum):
     READY = "ready"
     READY_PARTIAL = "ready_partial"
     BLOCKED = "blocked"
-
-
-class SyntheticSourceProvenance(StrictContractModel):
-    """Visible D-012 provenance for software-only synthetic or hybrid bundles."""
-
-    generator_id: StableId
-    seed: NonNegativeInt
-    scientific_validation_status: Literal["not_supported"]
-    source_xu_sha256: Sha256Digest
-    lock_fingerprint: Sha256Digest
-    provenance_scope: StableId
-    formal_assessment_supported: Literal[False]
 
 
 class StreamReadinessResult(StrictContractModel):

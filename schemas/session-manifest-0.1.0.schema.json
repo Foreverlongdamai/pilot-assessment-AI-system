@@ -739,6 +739,66 @@
       "title": "StreamStatus",
       "type": "string"
     },
+    "SyntheticSourceProvenance": {
+      "additionalProperties": true,
+      "description": "Visible D-012 provenance for software-only synthetic or hybrid bundles.",
+      "properties": {
+        "formal_assessment_supported": {
+          "const": false,
+          "title": "Formal Assessment Supported",
+          "type": "boolean"
+        },
+        "generator_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Generator Id",
+          "type": "string"
+        },
+        "lock_fingerprint": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Lock Fingerprint",
+          "type": "string"
+        },
+        "provenance_scope": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Provenance Scope",
+          "type": "string"
+        },
+        "scientific_validation_status": {
+          "const": "not_supported",
+          "title": "Scientific Validation Status",
+          "type": "string"
+        },
+        "seed": {
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "source_xu_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Source Xu Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "generator_id",
+        "seed",
+        "scientific_validation_status",
+        "source_xu_sha256",
+        "lock_fingerprint",
+        "provenance_scope",
+        "formal_assessment_supported"
+      ],
+      "title": "SyntheticSourceProvenance",
+      "type": "object"
+    },
     "TaskDefinition": {
       "additionalProperties": false,
       "properties": {
@@ -1195,6 +1255,17 @@
       },
       "then": {
         "properties": {
+          "extensions": {
+            "properties": {
+              "synthetic": {
+                "$ref": "#/$defs/SyntheticSourceProvenance"
+              }
+            },
+            "required": [
+              "synthetic"
+            ],
+            "type": "object"
+          },
           "privacy": {
             "properties": {
               "biometric_modalities_export_pending": {
@@ -1209,7 +1280,10 @@
               "biometric_modalities_export_pending"
             ]
           }
-        }
+        },
+        "required": [
+          "extensions"
+        ]
       }
     },
     {
@@ -1658,6 +1732,7 @@
   "x-runtime-invariants": [
     "non-core optional stream map key must equal descriptor.modality",
     "present or invalid stream checksum keys must exactly match paths",
-    "declared paths are unique under Windows case folding"
+    "declared paths are unique under Windows case folding",
+    "synthetic-test-data requires complete D-012 provenance in extensions.synthetic"
   ]
 }

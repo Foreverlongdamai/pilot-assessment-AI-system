@@ -11,6 +11,7 @@ from pydantic import (
     JsonValue,
     StrictBool,
     StringConstraints,
+    ValidationError,
     field_validator,
     model_validator,
 )
@@ -35,6 +36,25 @@ BundleSchemaVersion = Annotated[
     StringConstraints(pattern=BUNDLE_SCHEMA_VERSION_PATTERN),
 ]
 NonEmptyString = Annotated[str, Field(min_length=1, max_length=512)]
+
+
+class SyntheticSourceProvenance(StrictContractModel):
+    """Visible D-012 provenance for software-only synthetic or hybrid bundles."""
+
+    generator_id: StableId
+    seed: NonNegativeInt
+    scientific_validation_status: Literal["not_supported"]
+    source_xu_sha256: Sha256Digest
+    lock_fingerprint: Sha256Digest
+    provenance_scope: StableId
+    formal_assessment_supported: Literal[False]
+
+    @field_validator("formal_assessment_supported", mode="before")
+    @classmethod
+    def require_exact_boolean(cls, value: object) -> object:
+        if type(value) is not bool:
+            raise ValueError("formal_assessment_supported must be an exact boolean")
+        return value
 
 
 class CoreModality(StrEnum):
@@ -268,6 +288,17 @@ class SessionManifest(StrictContractModel):
             for modality in BIOMETRIC_MODALITIES
         )
         if synthetic:
+            raw_provenance = self.extensions.get("synthetic")
+            if not isinstance(raw_provenance, dict):
+                raise ValueError("synthetic provenance must be an object for synthetic test data")
+            provenance_payload = {
+                field_name: raw_provenance.get(field_name)
+                for field_name in SyntheticSourceProvenance.model_fields
+            }
+            try:
+                SyntheticSourceProvenance.model_validate(provenance_payload)
+            except ValidationError as error:
+                raise ValueError("synthetic provenance is incomplete or invalid") from error
             if self.privacy.contains_biometric_data:
                 raise ValueError("synthetic test data cannot claim real biometric data")
             if declared_pending:
@@ -297,6 +328,7 @@ __all__ = [
     "SourceSession",
     "StreamDescriptor",
     "StreamStatus",
+    "SyntheticSourceProvenance",
     "TaskDefinition",
     "TaskReference",
 ]

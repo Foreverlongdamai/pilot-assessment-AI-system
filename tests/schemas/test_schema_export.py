@@ -156,6 +156,31 @@ def _make_present(manifest: dict[str, object], modality: str, path: str) -> None
     )
 
 
+def _make_synthetic_manifest(manifest: dict[str, object]) -> None:
+    for modality in ("G", "EEG", "ECG", "pilot_camera"):
+        _make_present(manifest, modality, f"streams/{modality}.parquet")
+    privacy = manifest["privacy"]
+    extensions = manifest["extensions"]
+    assert isinstance(privacy, dict) and isinstance(extensions, dict)
+    privacy.update(
+        classification="synthetic-test-data",
+        contains_biometric_data=False,
+        biometric_modalities_export_pending=[],
+        permitted_use="software-testing-only",
+    )
+    extensions["synthetic"] = {
+        "generator_id": "synthetic-multimodal-generator-v0.1",
+        "seed": 20260711,
+        "scientific_validation_status": "not_supported",
+        "source_xu_sha256": "a" * 64,
+        "lock_fingerprint": "b" * 64,
+        "provenance_scope": "captured-format-sample-xu-plus-synthetic-modalities",
+        "formal_assessment_supported": False,
+        "duration_s": 2.0,
+        "parameters": {"fixture": True},
+    }
+
+
 def _task_reference_descriptor(manifest: dict[str, object]) -> dict[str, object]:
     streams = manifest["streams"]
     assert isinstance(streams, dict)
@@ -706,14 +731,62 @@ def test_session_schema_rejects_values_rejected_by_runtime_contract() -> None:
 def test_session_schema_accepts_synthetic_present_biometrics() -> None:
     schema = json.loads(render_schemas()["session-manifest-0.1.0.schema.json"])
     candidate = json.loads((FIXTURES / "session_manifest_valid.json").read_text(encoding="utf-8"))
-    for modality in ("G", "EEG", "ECG", "pilot_camera"):
-        _make_present(candidate, modality, f"streams/{modality}.parquet")
-    candidate["privacy"].update(
-        classification="synthetic-test-data",
-        contains_biometric_data=False,
-        biometric_modalities_export_pending=[],
-        permitted_use="software-testing-only",
-    )
+    _make_synthetic_manifest(candidate)
+
+    SessionManifest.model_validate(candidate)
+    Draft202012Validator(schema).validate(candidate)
+
+
+def test_session_schema_requires_complete_synthetic_provenance() -> None:
+    schema = json.loads(render_schemas()["session-manifest-0.1.0.schema.json"])
+    validator = Draft202012Validator(schema)
+    valid = json.loads((FIXTURES / "session_manifest_valid.json").read_text(encoding="utf-8"))
+    _make_synthetic_manifest(valid)
+
+    invalid_cases: list[tuple[str, dict[str, object]]] = []
+    missing_object = copy.deepcopy(valid)
+    del missing_object["extensions"]["synthetic"]
+    invalid_cases.append(("missing synthetic object", missing_object))
+
+    scalar_object = copy.deepcopy(valid)
+    scalar_object["extensions"]["synthetic"] = "not-an-object"
+    invalid_cases.append(("scalar synthetic object", scalar_object))
+
+    for field_name in (
+        "generator_id",
+        "seed",
+        "scientific_validation_status",
+        "source_xu_sha256",
+        "lock_fingerprint",
+        "provenance_scope",
+        "formal_assessment_supported",
+    ):
+        missing_field = copy.deepcopy(valid)
+        del missing_field["extensions"]["synthetic"][field_name]
+        invalid_cases.append((f"missing {field_name}", missing_field))
+
+    for label, invalid_value in (
+        ("integer zero", 0),
+        ("float zero", 0.0),
+        ("boolean true", True),
+        ("string false", "false"),
+    ):
+        invalid_formal_support = copy.deepcopy(valid)
+        invalid_formal_support["extensions"]["synthetic"]["formal_assessment_supported"] = (
+            invalid_value
+        )
+        invalid_cases.append((f"formal assessment support {label}", invalid_formal_support))
+
+    for label, candidate in invalid_cases:
+        with pytest.raises(ValidationError):
+            SessionManifest.model_validate(candidate)
+        assert list(validator.iter_errors(candidate)), f"JSON Schema accepted {label}"
+
+
+def test_session_schema_leaves_non_synthetic_extensions_backward_compatible() -> None:
+    schema = json.loads(render_schemas()["session-manifest-0.1.0.schema.json"])
+    candidate = json.loads((FIXTURES / "session_manifest_valid.json").read_text(encoding="utf-8"))
+    candidate["extensions"]["synthetic"] = "legacy-non-authoritative-note"
 
     SessionManifest.model_validate(candidate)
     Draft202012Validator(schema).validate(candidate)

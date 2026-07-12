@@ -56,6 +56,32 @@ def _task_reference_descriptor(manifest_data: dict[str, Any]) -> dict[str, Any]:
     return descriptor
 
 
+def _synthetic_provenance() -> dict[str, Any]:
+    return {
+        "generator_id": "synthetic-multimodal-generator-v0.1",
+        "seed": 20260711,
+        "scientific_validation_status": "not_supported",
+        "source_xu_sha256": "a" * 64,
+        "lock_fingerprint": "b" * 64,
+        "provenance_scope": "captured-format-sample-xu-plus-synthetic-modalities",
+        "formal_assessment_supported": False,
+        "duration_s": 2.0,
+        "parameters": {"fixture": True},
+    }
+
+
+def _make_synthetic(manifest_data: dict[str, Any]) -> None:
+    for modality in ("G", "EEG", "ECG", "pilot_camera"):
+        _make_present(manifest_data, modality, f"streams/{modality}.parquet")
+    manifest_data["privacy"].update(
+        classification="synthetic-test-data",
+        contains_biometric_data=False,
+        biometric_modalities_export_pending=[],
+        permitted_use="software-testing-only",
+    )
+    manifest_data["extensions"]["synthetic"] = _synthetic_provenance()
+
+
 def test_valid_manifest_round_trips_and_preserves_export_pending(
     manifest_data: dict[str, Any],
 ) -> None:
@@ -397,18 +423,82 @@ def test_non_synthetic_real_biometrics_require_privacy_flag(
 def test_synthetic_present_biometrics_are_not_real_biometric_data(
     manifest_data: dict[str, Any],
 ) -> None:
-    for modality in ("G", "EEG", "ECG", "pilot_camera"):
-        _make_present(manifest_data, modality, f"streams/{modality}.parquet")
-    manifest_data["privacy"].update(
-        classification="synthetic-test-data",
-        contains_biometric_data=False,
-        biometric_modalities_export_pending=[],
-        permitted_use="software-testing-only",
-    )
+    _make_synthetic(manifest_data)
 
     manifest = SessionManifest.model_validate(manifest_data)
 
     assert manifest.privacy.contains_biometric_data is False
+
+
+@pytest.mark.parametrize(
+    "invalid_value",
+    [None, "not-an-object", []],
+)
+def test_synthetic_manifest_requires_provenance_object(
+    manifest_data: dict[str, Any], invalid_value: object
+) -> None:
+    _make_synthetic(manifest_data)
+    manifest_data["extensions"]["synthetic"] = invalid_value
+
+    with pytest.raises(ValidationError, match="synthetic provenance"):
+        SessionManifest.model_validate(manifest_data)
+
+
+@pytest.mark.parametrize(
+    "field_name",
+    [
+        "generator_id",
+        "seed",
+        "scientific_validation_status",
+        "source_xu_sha256",
+        "lock_fingerprint",
+        "provenance_scope",
+        "formal_assessment_supported",
+    ],
+)
+def test_synthetic_manifest_requires_complete_provenance_fields(
+    manifest_data: dict[str, Any], field_name: str
+) -> None:
+    _make_synthetic(manifest_data)
+    del manifest_data["extensions"]["synthetic"][field_name]
+
+    with pytest.raises(ValidationError, match="synthetic provenance"):
+        SessionManifest.model_validate(manifest_data)
+
+
+@pytest.mark.parametrize(
+    ("field_name", "invalid_value"),
+    [
+        ("generator_id", ""),
+        ("seed", -1),
+        ("scientific_validation_status", "expert_reviewed"),
+        ("source_xu_sha256", "not-a-sha256"),
+        ("lock_fingerprint", "not-a-sha256"),
+        ("provenance_scope", ""),
+        ("formal_assessment_supported", 0),
+        ("formal_assessment_supported", 0.0),
+        ("formal_assessment_supported", True),
+        ("formal_assessment_supported", "false"),
+    ],
+)
+def test_synthetic_manifest_rejects_invalid_provenance_fields(
+    manifest_data: dict[str, Any], field_name: str, invalid_value: object
+) -> None:
+    _make_synthetic(manifest_data)
+    manifest_data["extensions"]["synthetic"][field_name] = invalid_value
+
+    with pytest.raises(ValidationError, match="synthetic provenance"):
+        SessionManifest.model_validate(manifest_data)
+
+
+def test_non_synthetic_manifest_does_not_interpret_synthetic_extension(
+    manifest_data: dict[str, Any],
+) -> None:
+    manifest_data["extensions"]["synthetic"] = "legacy-non-authoritative-note"
+
+    manifest = SessionManifest.model_validate(manifest_data)
+
+    assert manifest.privacy.classification != "synthetic-test-data"
 
 
 @pytest.mark.parametrize("sample_rate", [0, -1, math.inf, math.nan])
