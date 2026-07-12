@@ -10,6 +10,7 @@ from pydantic import ValidationError
 
 from pilot_assessment.contracts import (
     CORE_MODALITIES,
+    MAX_SESSION_END_NS_V0_1,
     SynchronizationDisposition,
     SynchronizationPolicy,
     SynchronizationReport,
@@ -408,6 +409,33 @@ def test_session_window_start_requires_an_actual_integer_zero(value: object) -> 
 def test_session_window_end_must_be_positive() -> None:
     payload = ready_report_data()
     payload["session_window"]["end_t_ns"] = 0
+    with pytest.raises(ValidationError):
+        SynchronizationReport.model_validate(payload)
+
+
+def test_session_window_accepts_largest_exact_v0_1_end() -> None:
+    payload = ready_report_data()
+    payload["session_window"]["end_t_ns"] = MAX_SESSION_END_NS_V0_1
+
+    report = SynchronizationReport.model_validate(payload)
+
+    assert report.session_window is not None
+    assert report.session_window.end_t_ns == MAX_SESSION_END_NS_V0_1
+
+
+def test_session_window_rejects_end_beyond_exact_v0_1_limit() -> None:
+    payload = ready_report_data()
+    payload["session_window"]["end_t_ns"] = MAX_SESSION_END_NS_V0_1 + 1
+
+    with pytest.raises(ValidationError):
+        SynchronizationReport.model_validate(payload)
+
+
+@pytest.mark.parametrize("value", [True, 1.0, float(MAX_SESSION_END_NS_V0_1)])
+def test_session_window_end_remains_a_strict_integer(value: object) -> None:
+    payload = ready_report_data()
+    payload["session_window"]["end_t_ns"] = value
+
     with pytest.raises(ValidationError):
         SynchronizationReport.model_validate(payload)
 

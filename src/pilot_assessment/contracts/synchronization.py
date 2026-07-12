@@ -38,6 +38,9 @@ BLOCKING_SYNCHRONIZATION_ERROR_CODES = frozenset(
         "SYNCHRONIZATION_INTERNAL_ERROR",
     }
 )
+# Keeps integer/half-integer native-period diagnostics exact in the v0.1 float DTO
+# and the 5x diagnostic gap threshold safely inside signed Int64.
+MAX_SESSION_END_NS_V0_1 = 2**52 - 1
 
 
 class SynchronizationDisposition(StrEnum):
@@ -58,7 +61,7 @@ class SynchronizationItemStatus(StrEnum):
 
 class SessionWindow(StrictContractModel):
     start_t_ns: Literal[0] = 0
-    end_t_ns: NonNegativeInt64
+    end_t_ns: Annotated[int, Field(strict=True, ge=0, le=MAX_SESSION_END_NS_V0_1)]
     source: Literal["master-clock-x-mapped-coverage-v1"]
 
     @field_validator("start_t_ns", mode="before")
@@ -563,6 +566,7 @@ class SynchronizationReport(StrictContractModel):
 
 __all__ = [
     "BLOCKING_SYNCHRONIZATION_ERROR_CODES",
+    "MAX_SESSION_END_NS_V0_1",
     "AnnotationSynchronizationResult",
     "BaselineInterval",
     "ClockMappingSummary",

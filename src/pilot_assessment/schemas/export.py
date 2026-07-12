@@ -21,6 +21,7 @@ from pilot_assessment.contracts.session import (
 )
 from pilot_assessment.contracts.synchronization import (
     BLOCKING_SYNCHRONIZATION_ERROR_CODES,
+    MAX_SESSION_END_NS_V0_1,
     SynchronizationReport,
 )
 
@@ -621,12 +622,14 @@ def _synchronization_report_schema() -> dict[str, Any]:
             "artifact map keys equal artifact_role values",
             "point and interval row partitions equal total_rows",
             "mapped bounds, spans, duplicates, and gap statistics are internally consistent",
+            "session window end is at most the v0.1 exact-metrics bound",
             "source and synchronization fingerprints are recomputed from canonical inputs",
         ],
     )
 
     session_window = schema["$defs"]["SessionWindow"]
     session_window["properties"]["end_t_ns"]["minimum"] = 1
+    session_window["properties"]["end_t_ns"]["maximum"] = MAX_SESSION_END_NS_V0_1
 
     stream_results = schema["properties"]["stream_results"]
     stream_results.pop("patternProperties", None)

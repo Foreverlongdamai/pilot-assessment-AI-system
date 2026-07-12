@@ -162,7 +162,7 @@ source     = master-clock-x-mapped-coverage-v1
 额外约束：
 
 - X 必须通过 M2、存在于 `PreparedSession`，并使用 manifest 声明的 `master_clock_id`；
-- `end_t_ns` 必须大于 0；
+- `end_t_ns` 必须满足 `0 < end_t_ns <= MAX_SESSION_END_NS_V0_1 = 2^52 - 1 ns`（约 52.1 天）；超过上限的 session 在 v0.1 合同层拒绝，不能进入 quality 计算；`derive_session_window` 必须把该情况稳定翻译为 `SESSION_WINDOW_UNAVAILABLE`，不得泄露 Pydantic 内部异常；
 - window 使用闭区间 `[0, end_t_ns]`；
 - synthetic extension 中的 `duration_s` 只用于 golden cross-check，不成为另一套权威；
 - X 的 window authority 只是一条时间域工程规则，不授予该 X trajectory 任务标准或 ground-truth 身份；
@@ -282,7 +282,8 @@ Required bundle reference mapping失败、无 in-session rows或 source snapshot
 M2 已验证 gaze foreign key 和 frame-specific AOI membership；M3 增加时间验证：
 
 - 只评估 `in_session=true` 的 gaze rows；
-- scene frame presentation interval 为 `[frame_t_ns, next_frame_t_ns)`；最后一个 in-session frame 延伸到 session end；
+- scene frame 先按 `(t_ns, frame_id)` 建立只读确定性顺序；任意 `frame_t_ns <= session_end` 的 frame 都可承载 session 内 gaze，因此 session 开始前的活动 frame 不会仅因自身 `in_session=false` 而失效；
+- 若下一 frame 的 `t_ns <= session_end`，presentation interval 为 `[frame_t_ns, next_frame_t_ns)`；否则当前活动终止 frame 延伸为 `[frame_t_ns, session_end]`，包括 session end 端点；
 - gaze row 引用的 frame 必须覆盖该 gaze `t_ns`；
 - AOI row 从对应 frame 继承时间；
 - report 记录 gaze-to-frame-start delta 的 min/max 和 invalid association count；
@@ -305,6 +306,10 @@ Synthetic generator 的 gaze→scene frame assignment 必须按 sample index 与
 - source descriptor residual RMS/max；
 - interpolated rows 固定为 0；
 - schema/binding/clock identifiers。
+
+重复 timestamp group 与 participating-row count 对 artifact 的全部 mapped rows 统计，包括 session window 外的 rows；非相邻重复同样属于一个 group。Period/gap 只使用 `in_session=true` 的 rows。`point` binding 的该序列必须按既有稳定顺序单调非递减；`inherit` binding 允许保持原 child row order，因此只为 diagnostics 建立按 `(t_ns, stable_keys...)` 排序的临时视图，绝不重排 aligned artifact 本身。零 delta 在 period/gap 序列中剔除，负 delta 不得被静默过滤。`session_span_ratio=(in_session_max_t_ns-in_session_min_t_ns)/(session_end-session_start)`；单个 in-session row 的 ratio 为 `0.0`，没有 in-session row 时为 `null`。
+
+`SessionWindow.end_t_ns <= 2^52 - 1` 是 v0.1 的数值合同，不是任务时长或飞行性能标准。该上限保证：单个 integer median 仍可由 IEEE-754 binary64 精确表示；偶数个 positive delta 的 half-integer median 因总 span 受限也可精确表示；`round_half_even(median × 5.0)` 的最大结果仍远低于 signed Int64 上限。合同和 JSON Schema 必须同时拒绝 `2^52 ns`；Pydantic runtime contract 继续拒绝 bool/float 对严格 integer 字段的替代。
 
 `SynchronizationPolicy` 是严格、可 hash 的版本化 DTO。默认值精确为：
 

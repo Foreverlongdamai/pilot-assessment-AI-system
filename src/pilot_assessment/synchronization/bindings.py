@@ -11,7 +11,10 @@ import polars as pl
 from pilot_assessment.contracts.errors import DomainErrorData, ErrorSeverity
 from pilot_assessment.contracts.ingestion import StreamReadiness
 from pilot_assessment.contracts.session import ClockSync
-from pilot_assessment.contracts.synchronization import SessionWindow
+from pilot_assessment.contracts.synchronization import (
+    MAX_SESSION_END_NS_V0_1,
+    SessionWindow,
+)
 from pilot_assessment.synchronization.clock import map_source_seconds_to_session_ns
 from pilot_assessment.synchronization.models import SynchronizationInput
 from pilot_assessment.synchronization.profiles import (
@@ -512,11 +515,14 @@ def derive_session_window(
     ):
         raise ValueError("SESSION_WINDOW_UNAVAILABLE")
     mapped_x_times = cast(list[int], aligned_x[target].to_list())
-    if not mapped_x_times or max(mapped_x_times) <= 0:
+    if not mapped_x_times:
+        raise ValueError("SESSION_WINDOW_UNAVAILABLE")
+    end_t_ns = max(mapped_x_times)
+    if not 0 < end_t_ns <= MAX_SESSION_END_NS_V0_1:
         raise ValueError("SESSION_WINDOW_UNAVAILABLE")
     return SessionWindow(
         start_t_ns=0,
-        end_t_ns=max(mapped_x_times),
+        end_t_ns=end_t_ns,
         source="master-clock-x-mapped-coverage-v1",
     )
 

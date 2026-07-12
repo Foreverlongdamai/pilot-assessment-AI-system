@@ -52,6 +52,7 @@ from pilot_assessment.contracts.session import (
 )
 from pilot_assessment.contracts.synchronization import (
     BLOCKING_SYNCHRONIZATION_ERROR_CODES,
+    MAX_SESSION_END_NS_V0_1,
     AnnotationSynchronizationResult,
     BaselineInterval,
     ClockMappingSummary,
@@ -78,6 +79,7 @@ __all__ = [
     "AnchorResult",
     "AnnotationSynchronizationResult",
     "BLOCKING_SYNCHRONIZATION_ERROR_CODES",
+    "MAX_SESSION_END_NS_V0_1",
     "BaselineInterval",
     "BundleRelativePath",
     "CORE_MODALITIES",

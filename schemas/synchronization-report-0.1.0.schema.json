@@ -831,7 +831,7 @@
       "additionalProperties": false,
       "properties": {
         "end_t_ns": {
-          "maximum": 9223372036854775807,
+          "maximum": 4503599627370495,
           "minimum": 1,
           "title": "End T Ns",
           "type": "integer"
@@ -3531,6 +3531,7 @@
     "artifact map keys equal artifact_role values",
     "point and interval row partitions equal total_rows",
     "mapped bounds, spans, duplicates, and gap statistics are internally consistent",
+    "session window end is at most the v0.1 exact-metrics bound",
     "source and synchronization fingerprints are recomputed from canonical inputs"
   ]
 }

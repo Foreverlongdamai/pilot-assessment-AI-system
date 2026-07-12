@@ -13,7 +13,10 @@ from pydantic import ValidationError
 from pilot_assessment.contracts.anchor import AnchorResult
 from pilot_assessment.contracts.ingestion import IngestionReadinessReport
 from pilot_assessment.contracts.session import SessionManifest
-from pilot_assessment.contracts.synchronization import SynchronizationReport
+from pilot_assessment.contracts.synchronization import (
+    MAX_SESSION_END_NS_V0_1,
+    SynchronizationReport,
+)
 from pilot_assessment.schemas.export import (
     ANCHOR_RESULT_SCHEMA_ID,
     ANCHOR_RESULT_SCHEMA_TITLE,
@@ -485,6 +488,22 @@ def test_schema_and_pydantic_agree_on_window_and_continuation() -> None:
     assert isinstance(session_window, dict)
     session_window["end_t_ns"] = 0
 
+    maximum_window_end = copy.deepcopy(valid)
+    session_window = maximum_window_end["session_window"]
+    assert isinstance(session_window, dict)
+    session_window["end_t_ns"] = MAX_SESSION_END_NS_V0_1
+    _assert_synchronization_valid(maximum_window_end, validator)
+
+    oversized_window_end = copy.deepcopy(valid)
+    session_window = oversized_window_end["session_window"]
+    assert isinstance(session_window, dict)
+    session_window["end_t_ns"] = MAX_SESSION_END_NS_V0_1 + 1
+
+    boolean_window_end = copy.deepcopy(valid)
+    session_window = boolean_window_end["session_window"]
+    assert isinstance(session_window, dict)
+    session_window["end_t_ns"] = True
+
     blocked_but_continuing = copy.deepcopy(blocked)
     blocked_but_continuing["can_continue_to_anchor_availability"] = True
 
@@ -501,6 +520,8 @@ def test_schema_and_pydantic_agree_on_window_and_continuation() -> None:
         ready_without_window,
         boolean_window_start,
         zero_window_end,
+        oversized_window_end,
+        boolean_window_end,
         blocked_but_continuing,
         ready_but_stopped,
         formal_authorization,

@@ -431,7 +431,7 @@ def test_report_requires_exact_seven_core_stream_result_keys() -> None:
         SynchronizationReport.model_validate(payload)
 ~~~
 
-Also add separate negative tests for `ready + can_continue=false`, `blocked + can_continue=true`, non-blocked without window, deferred core status, task-reference mixed into core, aligned core/reference with non-present declaration or inconsistent clock, `formal_run_authorized=true`, and string-coerced JSON scalars.
+Also add separate negative tests for `ready + can_continue=false`, `blocked + can_continue=true`, non-blocked without window, deferred core status, task-reference mixed into core, aligned core/reference with non-present declaration or inconsistent clock, `formal_run_authorized=true`, and string-coerced JSON scalars. Freeze the v0.1 numeric window boundary: `end_t_ns=2**52-1` is accepted, `2**52` is rejected, and bool/float values remain invalid for the strict integer field.
 
 - [ ] **Step 2: Run RED**
 
@@ -475,6 +475,7 @@ BLOCKING_SYNCHRONIZATION_ERROR_CODES = frozenset(
         "SYNCHRONIZATION_INTERNAL_ERROR",
     }
 )
+MAX_SESSION_END_NS_V0_1 = 2**52 - 1
 
 
 class SynchronizationDisposition(StrEnum):
@@ -495,7 +496,7 @@ class SynchronizationItemStatus(StrEnum):
 
 class SessionWindow(StrictContractModel):
     start_t_ns: Literal[0] = 0
-    end_t_ns: NonNegativeInt64
+    end_t_ns: Annotated[int, Field(strict=True, ge=0, le=MAX_SESSION_END_NS_V0_1)]
     source: Literal["master-clock-x-mapped-coverage-v1"]
 
     @model_validator(mode="after")
@@ -1215,7 +1216,7 @@ def test_synchronization_report_schema_matches_checked_in_artifact() -> None:
     assert rendered == checked_in.read_bytes()
 ~~~
 
-Add acceptance-matrix cases for dispositions, exact core keys, deferred core, formal authorization, and strict scalar types. Run the test and observe RED because the exporter has no fourth schema.
+Add acceptance-matrix cases for dispositions, exact core keys, deferred core, formal authorization, strict scalar types, and the inclusive `SessionWindow.end_t_ns` maximum `2**52-1`. Run the test and observe RED because the exporter has no fourth schema.
 
 - [ ] **Step 6: Export the fourth public schema and run GREEN**
 
@@ -1224,7 +1225,7 @@ Add schema ID/title constants and a `_synchronization_report_schema()` builder. 
 1. `stream_results` has exactly the seven named properties, each required, no additional properties; each property fixes its own `modality` constant and prohibits deferred status;
 2. `synchronization_status=aligned` requires present declaration, ready input, consistent clock, aligned `-aligned-v0.1` schema, and non-empty artifacts (plus G scene/gaze metrics); every non-aligned status forbids aligned schema/artifacts, while only `modality=G,status=invalid` may retain scene/gaze diagnostic metrics;
 3. `source_classification=synthetic-test-data` requires non-null synthetic provenance, while every other classification requires `synthetic_provenance=null`;
-4. `disposition=blocked` requires continuation false; non-blocked requires non-null window and continuation true; `formal_run_authorized` is always false;
+4. `disposition=blocked` requires continuation false; non-blocked requires non-null window and continuation true; a non-null window requires strict integer `0 < end_t_ns <= 2**52-1`; `formal_run_authorized` is always false;
 5. required core/bundle-reference, non-aligned annotation, or a global `SYNCHRONIZATION_INPUT_BLOCKED`/`SOURCE_CHANGED_DURING_SYNCHRONIZATION`/`SYNCHRONIZATION_INTERNAL_ERROR` forces blocked; optional core/reference degradation forces `ready_partial`; model-bundle deferred is permitted and neutral.
 
 Add paired Pydantic/JSON-Schema tests named `test_schema_and_pydantic_agree_on_exact_core_inventory`, `..._aligned_payload_invariants`, `..._synthetic_provenance_coupling`, `..._window_and_continuation`, and `..._reference_annotation_disposition`. Each test feeds at least one valid and one invalid mutation to both validators; include ready+annotation-invalid, ready+required-reference-invalid, ready+model-reference-deferred, partial+optional-reference-invalid, and ready+blocking-global-error cases. Add the file to `render_schemas()`, run:
@@ -1873,16 +1874,19 @@ def derive_session_window(
     ):
         raise ValueError("SESSION_WINDOW_UNAVAILABLE")
     mapped_x_times = cast(list[int], aligned_x[binding.target_timestamp_column].to_list())
-    if not mapped_x_times or max(mapped_x_times) <= 0:
+    if not mapped_x_times:
+        raise ValueError("SESSION_WINDOW_UNAVAILABLE")
+    end_t_ns = max(mapped_x_times)
+    if not 0 < end_t_ns <= MAX_SESSION_END_NS_V0_1:
         raise ValueError("SESSION_WINDOW_UNAVAILABLE")
     return SessionWindow(
         start_t_ns=0,
-        end_t_ns=max(mapped_x_times),
+        end_t_ns=end_t_ns,
         source="master-clock-x-mapped-coverage-v1",
     )
 ~~~
 
-Ignore `extensions.synthetic.duration_s` as authority; a test sets it to a conflicting value.
+Ignore `extensions.synthetic.duration_s` as authority; a test sets it to a conflicting value. Add an exact boundary test proving mapped X at `MAX_SESSION_END_NS_V0_1+1` is translated to stable `ValueError("SESSION_WINDOW_UNAVAILABLE")` rather than leaking a Pydantic validation error.
 
 - [ ] **Step 5: Run all point/window GREEN tests and commit**
 
@@ -2036,7 +2040,7 @@ git commit -m "feat: align session annotations"
 
 - [ ] **Step 1: Write point-quality RED tests**
 
-Add tests for before/inside/after counts; `[0,0,1,2,2,2]` as 2 duplicate groups/5 participating rows; strict `delta > 5×median` gap rule; equality not counted; single-row null period/zero span; interpolated rows zero; descriptor residuals preserved.
+Add tests for before/inside/after counts; `[0,0,1,2,2,2]` as 2 duplicate groups/5 participating rows; strict `delta > 5×median` gap rule; equality not counted; single-row null period/zero span; interpolated rows zero; descriptor residuals preserved. At the maximum accepted session window `2**52-1`, lock an even-delta `.5` median and its half-even threshold exactly so float precision and Int64 threshold safety cannot regress.
 
 - [ ] **Step 2: Run RED**
 
@@ -2053,7 +2057,7 @@ Freeze these call boundaries:
 - `compute_point_metrics(frame: pl.DataFrame, binding: PointBinding | InheritBinding, clock: ClockMappingSummary, window: SessionWindow, policy: SynchronizationPolicy) -> PointTemporalArtifactMetrics`
 - `compute_interval_metrics(frame: pl.DataFrame, binding: IntervalBinding, clock: ClockMappingSummary, window: SessionWindow) -> IntervalTemporalArtifactMetrics`
 
-Compute period/gap metrics from mapped rows with `in_session=true` in their preserved stable order. Count duplicate timestamp groups/participating rows first, then remove zero deltas from the period/gap sequence; never reorder or deduplicate the DataFrame itself. The median is the exact median of positive integer deltas (an even-sized sample may yield `.5`), `gap_threshold_ns=round_half_even(median_period_ns × policy.gap_detection_multiplier)`, and a gap is counted only when `delta > gap_threshold_ns`. `max_gap_ns` is the maximum positive delta when a median exists. Zero/one usable timestamp yields `median_period_ns/gap_threshold_ns/max_gap_ns=None`, `gap_count=0`, and no NaN/Infinity. Report the exact DTO fields; diagnostics never alter DataFrames or disposition.
+Count duplicate timestamp groups/participating rows across all mapped rows, including rows outside the session window; equal timestamps belong to one group even when their rows are non-adjacent. Compute period/gap metrics only from rows with `in_session=true`. A `PointBinding` uses its preserved stable order and rejects a decreasing mapped-time sequence; an `InheritBinding` may legally preserve a non-temporal child order, so diagnostics use a temporary `(t_ns, stable_keys...)` ordered view without changing the DataFrame. Remove zero deltas from the period/gap sequence and never silently discard a negative delta. The median is the exact median of positive integer deltas (an even-sized sample may yield `.5`), `gap_threshold_ns=round_half_even(median_period_ns × policy.gap_detection_multiplier)`, and a gap is counted only when `delta > gap_threshold_ns`. `max_gap_ns` is the maximum positive delta when a median exists. Zero/one usable timestamp yields `median_period_ns/gap_threshold_ns/max_gap_ns=None`, `gap_count=0`, and no NaN/Infinity. `session_span_ratio` is the in-session min/max span divided by `window.end_t_ns-window.start_t_ns`; one in-session row reports `0.0`, while no in-session row reports `None`. The Task 2 `SessionWindow.end_t_ns <= 2**52-1` gate guarantees every permitted integer/half-integer median remains exactly reportable by the existing float DTO and `5×` threshold remains signed-Int64-safe. Report the exact DTO fields; diagnostics never alter DataFrames or disposition.
 
 - [ ] **Step 4: Write scene/gaze RED tests**
 
@@ -2063,13 +2067,13 @@ Add exact interval-boundary, last-frame, out-of-session exclusion, delta min/max
 
 Freeze the call boundary as `validate_scene_gaze_time(scene_frames: pl.DataFrame, gaze_samples: pl.DataFrame, window: SessionWindow, *, max_examples: int = 10) -> SceneGazeMetrics`.
 
-For each in-session gaze row, resolve its referenced frame and require:
+For each in-session gaze row, resolve its referenced frame from a read-only `(t_ns, frame_id)` scene order. A frame at or before session start may remain active in the session and is not rejected merely because its own `in_session` flag is false. Require:
 
 ~~~text
 frame_t_ns <= gaze_t_ns < next_frame_t_ns
 ~~~
 
-For the last in-session frame use `<= session_window.end_t_ns`. Report `SCENE_GAZE_TIME_MISMATCH` with bounded example IDs when invalid; service marks G `invalid` but preserves `SceneGazeMetrics` as diagnostics, so optional G degrades and required G blocks. Out-of-session rows remain counted but not classified as relationship errors.
+When there is no next frame at or before the session end, treat the current active terminal frame as covering through `<= session_window.end_t_ns`. Missing references and interval mismatches are association failures reported through `SceneGazeMetrics`; duplicate frame IDs or malformed structural columns are structural failures. `max_examples` must be an exact integer in `[0,10]`, with zero meaning no example IDs. Report `SCENE_GAZE_TIME_MISMATCH` with bounded example IDs when invalid; service marks G `invalid` but preserves `SceneGazeMetrics` as diagnostics, so optional G degrades and required G blocks. Out-of-session rows remain counted but not classified as relationship errors.
 
 - [ ] **Step 6: Run GREEN and commit**
 

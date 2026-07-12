@@ -11,6 +11,7 @@ import pytest
 
 from pilot_assessment.contracts.session import SessionManifest
 from pilot_assessment.contracts.synchronization import (
+    MAX_SESSION_END_NS_V0_1,
     SessionWindow,
     SynchronizationItemStatus,
 )
@@ -890,19 +891,19 @@ def test_duration_event_requires_positive_duration_and_session_overlap(tmp_path:
 
 
 def test_duration_event_rejects_int64_end_overflow(tmp_path: Path) -> None:
-    maximum = 2**63 - 1
+    int64_maximum = 2**63 - 1
     documents = _canonical_documents()
     phase = cast(list[dict[str, object]], documents["phases"]["phases"])[0]
-    phase["end_t_ns"] = maximum
+    phase["end_t_ns"] = MAX_SESSION_END_NS_V0_1
     event = cast(list[dict[str, object]], documents["events"]["events"])[0]
-    event.update({"t_ns": maximum - 1, "duration_ns": 10})
+    event.update({"t_ns": int64_maximum - 1, "duration_ns": 10})
 
     with pytest.raises(AnnotationAlignmentError) as caught:
         _align_documents(
             tmp_path,
             documents=documents,
             revision="expert-revision-1",
-            end_t_ns=maximum,
+            end_t_ns=MAX_SESSION_END_NS_V0_1,
         )
 
     _assert_annotation_error(caught)

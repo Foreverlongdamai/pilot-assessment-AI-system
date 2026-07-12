@@ -8,7 +8,10 @@ import pytest
 
 from pilot_assessment.contracts.ingestion import StreamReadiness
 from pilot_assessment.contracts.session import ClockSync
-from pilot_assessment.contracts.synchronization import SessionWindow
+from pilot_assessment.contracts.synchronization import (
+    MAX_SESSION_END_NS_V0_1,
+    SessionWindow,
+)
 from pilot_assessment.synchronization.bindings import (
     TemporalAlignmentError,
     apply_point_window,
@@ -281,6 +284,24 @@ def test_session_window_requires_positive_end(mapped: pl.Series) -> None:
     aligned_x = pl.DataFrame({"t_ns": mapped})
 
     with pytest.raises(ValueError, match="SESSION_WINDOW_UNAVAILABLE"):
+        derive_session_window(
+            _synchronization_input(),
+            aligned_x,
+            _point_binding(),
+        )
+
+
+def test_session_window_rejects_x_beyond_v0_1_exact_metrics_bound() -> None:
+    aligned_x = pl.DataFrame(
+        {
+            "t_ns": pl.Series(
+                [0, MAX_SESSION_END_NS_V0_1 + 1],
+                dtype=pl.Int64,
+            )
+        }
+    )
+
+    with pytest.raises(ValueError, match="^SESSION_WINDOW_UNAVAILABLE$"):
         derive_session_window(
             _synchronization_input(),
             aligned_x,
