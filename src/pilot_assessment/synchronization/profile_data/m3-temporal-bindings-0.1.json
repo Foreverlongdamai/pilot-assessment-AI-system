@@ -1,0 +1,159 @@
+{
+  "catalog_version": "0.1.0",
+  "streams": [
+    {
+      "stream_schema_id": "flight-state-normalized-v0.1",
+      "aligned_stream_schema_id": "flight-state-aligned-v0.1",
+      "bindings": [
+        {
+          "mode": "point",
+          "artifact_role": "samples",
+          "expected_artifact_schema_id": "flight-state-normalized-v0.1",
+          "aligned_artifact_schema_id": "flight-state-aligned-v0.1",
+          "source_timestamp_column": "source_time_s",
+          "stable_keys": ["source_row_index"]
+        }
+      ]
+    },
+    {
+      "stream_schema_id": "control-input-normalized-v0.1",
+      "aligned_stream_schema_id": "control-input-aligned-v0.1",
+      "bindings": [
+        {
+          "mode": "point",
+          "artifact_role": "samples",
+          "expected_artifact_schema_id": "control-input-normalized-v0.1",
+          "aligned_artifact_schema_id": "control-input-aligned-v0.1",
+          "source_timestamp_column": "source_time_s",
+          "stable_keys": ["source_row_index"]
+        }
+      ]
+    },
+    {
+      "stream_schema_id": "vr-scene-source-bundle-v0.1",
+      "aligned_stream_schema_id": "vr-scene-aligned-v0.1",
+      "bindings": [
+        {
+          "mode": "point",
+          "artifact_role": "frame_index",
+          "expected_artifact_schema_id": "vr-frame-index-raw-v0.1",
+          "aligned_artifact_schema_id": "vr-frame-index-aligned-v0.1",
+          "source_timestamp_column": "source_timestamp_s",
+          "stable_keys": ["frame_id"]
+        },
+        {
+          "mode": "inherit",
+          "artifact_role": "aoi_instances",
+          "expected_artifact_schema_id": "vr-aoi-instance-raw-v0.1",
+          "aligned_artifact_schema_id": "vr-aoi-instance-aligned-v0.1",
+          "parent_role": "frame_index",
+          "parent_key_columns": ["frame_id"],
+          "foreign_key_columns": ["frame_id"],
+          "stable_keys": ["frame_id", "aoi_id"]
+        },
+        {
+          "mode": "untimed",
+          "artifact_role": "frame_images",
+          "expected_artifact_schema_id": "png-rgb8-v0.1"
+        }
+      ]
+    },
+    {
+      "stream_schema_id": "gaze-source-bundle-v0.1",
+      "aligned_stream_schema_id": "gaze-aligned-v0.1",
+      "bindings": [
+        {
+          "mode": "point",
+          "artifact_role": "gaze_samples",
+          "expected_artifact_schema_id": "gaze-sample-raw-v0.1",
+          "aligned_artifact_schema_id": "gaze-sample-aligned-v0.1",
+          "source_timestamp_column": "source_timestamp_s",
+          "stable_keys": ["gaze_sample_id"]
+        },
+        {
+          "mode": "interval",
+          "artifact_role": "fixations",
+          "expected_artifact_schema_id": "gaze-fixation-raw-v0.1",
+          "aligned_artifact_schema_id": "gaze-fixation-aligned-v0.1",
+          "source_start_column": "start_source_timestamp_s",
+          "source_end_column": "end_source_timestamp_s",
+          "stable_keys": ["fixation_id"]
+        }
+      ]
+    },
+    {
+      "stream_schema_id": "eeg-source-bundle-v0.1",
+      "aligned_stream_schema_id": "eeg-aligned-v0.1",
+      "bindings": [
+        {
+          "mode": "point",
+          "artifact_role": "samples",
+          "expected_artifact_schema_id": "eeg-sample-raw-v0.1",
+          "aligned_artifact_schema_id": "eeg-sample-aligned-v0.1",
+          "source_timestamp_column": "source_timestamp_s",
+          "stable_keys": ["sample_index"]
+        },
+        {
+          "mode": "untimed",
+          "artifact_role": "sidecar",
+          "expected_artifact_schema_id": "eeg-sidecar-v0.1"
+        }
+      ]
+    },
+    {
+      "stream_schema_id": "ecg-source-bundle-v0.1",
+      "aligned_stream_schema_id": "ecg-aligned-v0.1",
+      "bindings": [
+        {
+          "mode": "point",
+          "artifact_role": "samples",
+          "expected_artifact_schema_id": "ecg-sample-raw-v0.1",
+          "aligned_artifact_schema_id": "ecg-sample-aligned-v0.1",
+          "source_timestamp_column": "source_timestamp_s",
+          "stable_keys": ["sample_index"]
+        },
+        {
+          "mode": "point",
+          "artifact_role": "r_peaks",
+          "expected_artifact_schema_id": "ecg-r-peak-raw-v0.1",
+          "aligned_artifact_schema_id": "ecg-r-peak-aligned-v0.1",
+          "source_timestamp_column": "source_timestamp_s",
+          "stable_keys": ["peak_id"]
+        }
+      ]
+    },
+    {
+      "stream_schema_id": "pilot-camera-source-bundle-v0.1",
+      "aligned_stream_schema_id": "pilot-camera-aligned-v0.1",
+      "bindings": [
+        {
+          "mode": "point",
+          "artifact_role": "frame_index",
+          "expected_artifact_schema_id": "pilot-camera-frame-index-raw-v0.1",
+          "aligned_artifact_schema_id": "pilot-camera-frame-index-aligned-v0.1",
+          "source_timestamp_column": "source_timestamp_s",
+          "stable_keys": ["frame_id"]
+        },
+        {
+          "mode": "untimed",
+          "artifact_role": "frame_images",
+          "expected_artifact_schema_id": "png-rgb8-v0.1"
+        }
+      ]
+    },
+    {
+      "stream_schema_id": "task-reference-normalized-v0.1",
+      "aligned_stream_schema_id": "task-reference-path-aligned-v0.1",
+      "bindings": [
+        {
+          "mode": "point",
+          "artifact_role": "commanded_path",
+          "expected_artifact_schema_id": "task-reference-path-raw-v0.1",
+          "aligned_artifact_schema_id": "task-reference-path-aligned-v0.1",
+          "source_timestamp_column": "source_timestamp_s",
+          "stable_keys": ["reference_sample_id"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,6 @@
 from importlib.metadata import version
+from importlib.resources import as_file, files
+from pathlib import Path
 
 import pilot_assessment
 
@@ -14,3 +16,11 @@ def test_m2_runtime_dependencies_are_importable() -> None:
 
     assert polars.__version__
     assert PIL.__version__
+
+
+def test_m3_temporal_binding_catalog_is_a_packaged_resource() -> None:
+    resource = files("pilot_assessment.synchronization.profile_data").joinpath(
+        "m3-temporal-bindings-0.1.json"
+    )
+    with as_file(resource) as path:
+        assert Path(path).is_file()
