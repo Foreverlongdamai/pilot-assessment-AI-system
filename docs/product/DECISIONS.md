@@ -82,7 +82,7 @@
 ## D-012：Synthetic full bundle 只用于软件验证
 
 - 状态：已接受
-- 决策：真实 X/U 加 synthetic I/G/EEG/ECG/pilot_camera 的混合 bundle 必须标记 `synthetic-test-data`、`software-testing-only` 和 `scientific_validation_status=not_supported`；所有结果显示 `SYNTHETIC TEST DATA`，不得转换为正式飞行员评估结果。
+- 决策：captured-format-sample X/U 加 synthetic I/G/EEG/ECG/pilot_camera 的混合 bundle 必须标记 `synthetic-test-data`、`software-testing-only` 和 `scientific_validation_status=not_supported`；该 X/U 只代表采集格式，不是有效任务 session、标准轨迹、ground truth 或能力证据。所有结果显示 `SYNTHETIC TEST DATA`，不得转换为正式飞行员评估结果。
 - 理由：格式正确、可重复的合成信号可以验证软件闭环，但不能证明 anchor、阈值、CPT 或能力结论对真人有效。
 - 影响：生成器、报告、前端和导出都必须保留 synthetic provenance；synthetic 生理/相机数据不计为真实人体 biometric data。
 

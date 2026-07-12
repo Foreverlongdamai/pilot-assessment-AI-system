@@ -12,15 +12,17 @@
 
 ## 1. 本轮结论
 
-M2 已实现并通过 micro fixture 与真实 simulator CSV 两条端到端路径。系统现在可以：
+M2 已实现并通过 micro fixture 与 simulator 采集格式样例 CSV 两条端到端路径。系统现在可以：
 
-1. 将当前 combined simulator CSV 作为一个受验证的共享物理文件，分别形成 X 与 U 两个逻辑 view；
+1. 将当前 combined simulator CSV 作为一个通过格式与文件完整性检查的共享物理文件，分别形成 X 与 U 两个逻辑 view；这里的检查不包含任务或表现有效性；
 2. 保留 I、G、EEG、ECG、pilot_camera 与 bundle-local task reference 的版本化理想输入合同；
-3. 使用真实 X/U 的时间范围与控制活动，生成确定性的 synthetic 多模态软件测试数据；
+3. 使用采集格式样例 X/U 的技术时间范围与无科学语义的 synthetic driver，生成确定性的多模态软件测试数据；
 4. 重新经过 M1 integrity gate 与 M2 content/adapter gate；
 5. 输出严格的 `IngestionReadinessReport` 与内部 `PreparedSession`，允许进入 M3 synchronization，但永远不授权正式 assessment run。
 
 本结论只证明当前合同与计算路径按规格运行。Synthetic scene、gaze、EEG、ECG、pilot-camera、annotation 与 commanded path 均是软件测试 fixture，不是航空、生理或训练评估有效性证据。
+
+其中 repository-external simulator CSV 只是一次随意飞行产生的采集格式样例，没有标准轨迹、任务 ground truth 或能力标签。对它的 E2E 验证只证明 33-column/100 Hz 格式可以被读取、保留和转换；不证明该飞行符合任务要求，也不支持任何表现或能力结论。
 
 ## 2. 已实现能力
 
@@ -85,7 +87,7 @@ uv run python -m pilot_assessment.synthetic `
 - 30 Hz VR scene + AOI、120 Hz gaze + fixation、256 Hz EEG、250 Hz ECG + R-peak、15 Hz pilot camera；
 - `references/commanded_path.parquet` 与三类 annotation JSON；
 - 固定 SHA-256 counter PRNG、binary32 量化、source grids 与 device clock truth；
-- 将 `control_activity(t)=min(1, abs(Pilot Lon)/100)` 线性重采样到 EEG/ECG source grid，形成可测试的时变 physio-control coupling；
+- 将内部名为 `control_activity(t)=min(1, abs(Pilot Lon)/100)` 的无科学语义测试驱动量线性重采样到 EEG/ECG source grid，形成确定性的跨流软件测试耦合；它不代表生理反应、工作负荷、控制质量或 O13 证据；
 - canonical manifest、checksum、stable session ID 与 synthetic provenance；
 - 生成后自动执行 M1 和 M2 自检；只要任一适用模态未 ready，就拒绝将 bundle 作为完成结果返回。
 
@@ -104,8 +106,8 @@ uv run python -m pilot_assessment.synthetic `
 
 2026-07-11 在当前工作树重新执行：
 
-- 默认测试集：`350 passed, 1 skipped`；skip 仅为需要显式外部 CSV 路径的 real-data E2E；
-- real CSV opt-in E2E：`1 passed`；
+- 默认测试集：`350 passed, 1 skipped`；skip 仅为需要显式外部 CSV 路径的采集格式样例 E2E；
+- captured format-sample CSV opt-in E2E：`1 passed`；
 - Ruff format check、Ruff lint、ty：全部通过；
 - `uv build`：成功生成 sdist 与 wheel；
 - 安装 wheel 的隔离环境可读取 packaged profiles、生成 micro bundle，并返回 `ready / true / false`（disposition / can-continue / formal-authorized）。
@@ -126,7 +128,7 @@ uv run python -m pilot_assessment.synthetic `
 
 结果为 `disposition=ready`、`can_continue_to_synchronization=true`、`formal_run_authorized=false`。
 
-### 3.4 Repository-external real CSV E2E
+### 3.4 Repository-external captured format-sample CSV E2E
 
 输入文件不进入 Git：
 
@@ -169,7 +171,7 @@ S_101500_Time_2026_05_14_16_48_54_P_1.csv
 local_data/m2_real_xu_synthetic_full_seed20260711/
 ```
 
-该目录不得提交或当作真实多模态采集数据。
+这是早期遗留目录名，其中 `real_xu` 只表示当时直接复制了 repository-external CSV bytes，不表示有效任务或 ground truth；该 bundle 在 M3 gaze/frame 修复后必须重新生成。该目录不得提交或当作真实多模态采集数据。
 
 ## 4. 本轮自审与关闭项
 
@@ -182,7 +184,7 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 5. standalone task-reference 缺少 trusted adapter；
 6. adapter 缺少 content resource limits；
 7. gaze nullable measurement 缺少 validity/blink guard；
-8. synthetic EEG/ECG 未使用时变 control activity；
+8. synthetic EEG/ECG 未使用时变 `synthetic_control_driver`（仅软件测试驱动量，不是生理/工作负荷/表现证据）；
 9. 29.01 s session 的最后 fixation 曾超过最后保留 gaze sample 约 1.67 ms，已由 fractional-duration 回归测试关闭。
 
 ## 5. 尚未实现
@@ -204,7 +206,7 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 2. 使用 round-half-even 生成 int64 session `t_ns`；
 3. 保留 raw source rows，并显式标记 in-session/out-of-session；
 4. 建立 native-rate temporal coverage、gap、duplicate 和越界指标；anchor-specific analysis/window grid 留给 M4；
-5. 验证 phase/event/baseline/reference 的 session-time 语义；
+5. 验证 synthetic phase/event/baseline/reference fixture 的 session-time 结构与自洽性，不验证标签真实性或任务正确性；
 6. 输出可供 M4 anchor engine 消费的 aligned session，同时继续保持 `formal_run_authorized=false`。
 
 M2 的批准规格与逐任务实施证据分别见：

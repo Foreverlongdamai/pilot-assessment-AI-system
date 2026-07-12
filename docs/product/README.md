@@ -3,8 +3,8 @@
 | 字段 | 当前值 |
 |---|---|
 | 设计基线 | v0.1 |
-| 基线日期 | 2026-07-10 |
-| 产品阶段 | M2 多模态合成基础已实现并验证；下一里程碑为 M3 synchronization |
+| 基线日期 | 2026-07-12 |
+| 产品阶段 | M2 多模态合成基础已实现并验证；M3 synchronization 规格已批准、实施计划待执行 |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -42,6 +42,8 @@
 | 15 | [后端 M1 实施计划](plans/2026-07-11-backend-foundation-m1-implementation-plan.md) | 开发、审查者 | RED/GREEN 任务、范围和完成定义 |
 | 16 | [M2 多模态合成基础规格](specs/2026-07-11-multimodal-synthetic-foundation-design.md) | 开发、数据、审查者 | 已批准：理想 I/G/EEG/ECG/camera 合同、合成 bundle 与 ingestion readiness |
 | 17 | [M2 实施计划](plans/2026-07-11-m2-multimodal-synthetic-foundation-implementation-plan.md) | 开发、审查者 | shared X/U、adapter、generator、readiness 与本地 E2E 的 TDD 步骤 |
+| 18 | [M3 Native-Rate Time Synchronization 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) | 开发、数据、审查者 | 已批准：native-rate clock mapping、session window、aligned views 与同步报告 |
+| 19 | [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) | 开发、审查者 | 待执行：D-016–D-020、同步合同、TDD、E2E 与完成门 |
 
 ### 2.1 文档目录的职责
 
@@ -70,10 +72,11 @@
 - 前端可以修改图；后端是模型状态、验证、CPT 迁移和发布的唯一权威。
 - 已发布 revision 不可变；正式 run 必须锁定 revision ID 与内容 hash。non-formal run.preview 锁定 exact draft_id + graph_version，不能产生正式结果。
 - 软件测试通过与科学有效性成立是两个独立结论。
+- 当前 repository-external 2,902-row simulator CSV 只是一次随意飞行产生的采集格式样例，仅用于接口、解析、时间和软件 E2E；它不是标准轨迹、任务 ground truth、专家 phase annotation 或能力证据。围绕它生成的 reference/annotations/biometrics 也只是 synthetic fixtures。
 
 ## 5. 当前实现边界
 
-截至 2026-07-11，Python Core 已完成 M1 与 M2：严格 SessionManifest/StreamDescriptor/AnchorResult 合同、inspect-only directory-bundle integrity gate、shared X/U、版本化理想模态 profiles/adapters、deterministic multimodal generator，以及 `IngestionReadinessReport`。Micro fixture 与 repository-external 真实 simulator CSV 的端到端路径均已验证。M2 只允许进入 M3 synchronization，始终保持 `formal_run_authorized=false`；受管理存储 importer、同步、anchor 算法、evidence scorer、BN、sidecar 和 WinUI 尚未实现。完整状态、实测数据与复现命令见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+截至 2026-07-12，Python Core 已完成 M1 与 M2：严格 SessionManifest/StreamDescriptor/AnchorResult 合同、inspect-only directory-bundle integrity gate、shared X/U、版本化理想模态 profiles/adapters、deterministic multimodal generator，以及 `IngestionReadinessReport`。Micro fixture 与 repository-external 采集格式样例 CSV 的端到端软件路径均已验证；这不验证样例飞行的任务或表现。M3 synchronization 规格已批准并形成实施计划，但代码尚未实现。M2 始终保持 `formal_run_authorized=false`；受管理存储 importer、同步、anchor 算法、evidence scorer、BN、sidecar 和 WinUI 尚未实现。完整状态、实测数据与复现命令见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
 ## 6. 维护规则
 

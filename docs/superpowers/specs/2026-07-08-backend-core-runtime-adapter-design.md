@@ -100,11 +100,11 @@ Owns input normalization.
 - `csv_loader.py`: loads the current simulator CSV format, including `Simulation time`, flight state columns, and pilot controls.
 - `modality_registry.py`: records whether `X(t)`, `U(t)`, `I(t)`, `G(t)`, and `P(t)` are present, missing, or future placeholders.
 
-The first real data sample is:
+The first captured-format sample is:
 
 `C:\Users\long\Desktop\CranfieldOffer\proj\data\S_101500_Time_2026_05_14_16_48_54_P_1.csv`
 
-It has 2902 rows, 33 columns, and covers 0 to 29.01 seconds at about 100 Hz. Phase 1 must support this file directly.
+It has 2902 rows, 33 columns, and covers 0 to 29.01 seconds at about 100 Hz. Phase 1 must support this file format directly. The recorded flight itself is arbitrary and supplies no valid trajectory, phase label, task ground truth, or pilot-performance evidence.
 
 ### `anchors`
 
@@ -123,7 +123,7 @@ Phase 1 active evidence follows `bn_design_v0.md`:
 - `H1`
 - `H4`
 
-Because current CSV only contains `X(t)` and `U(t)`, the first executable version should compute the supported objective anchors and mark H1/H4 as missing evidence. Missing evidence must not crash inference.
+The earlier assumption that objective anchors could be interpreted from the current CSV is superseded. Because this file is only a captured-format sample with no valid task/reference labels, the first executable path may test the loader and anchor-unavailable handling, but must not produce task-interpretable anchor or pilot-performance conclusions from it. Missing evidence must not crash inference.
 
 ### `bn`
 
@@ -238,12 +238,12 @@ No Windows UI work belongs in this slice.
 - Runtime adapter is command/sidecar ready, not HTTP-first.
 - BN graph and CPTs live in editable config files.
 - Missing modalities are first-class states.
-- Phase 1 focuses on real CSV-supported `X(t)` and `U(t)` while preserving interfaces for `I(t)`, `G(t)`, and `P(t)`.
+- Phase 1 focuses on captured-format CSV-supported `X(t)` and `U(t)` while preserving interfaces for `I(t)`, `G(t)`, and `P(t)`; it does not infer task validity from the sample flight.
 - The 18-vs-19 anchor mismatch is not silently resolved in code; configs should document the current active subset and full-spec ambiguity.
 
 ## Open Questions For Later
 
-- Exact phase segmentation for Translation, Deceleration, and Hover stabilization in the current CSV.
+- Exact phase segmentation for Translation, Deceleration, and Hover stabilization in future task-valid sessions; the current format sample has no expert phase ground truth.
 - Exact O1 envelope geometry and thresholds in simulator coordinates.
 - Exact W_min derivation for O5/O8.
 - Whether to implement inference with a lightweight internal discrete BN first or add an external BN library once graph/CPT requirements stabilize.

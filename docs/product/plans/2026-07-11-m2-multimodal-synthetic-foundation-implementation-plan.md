@@ -2,11 +2,13 @@
 
 **Status:** Completed and verified on 2026-07-11. The checked steps below are retained as implementation and handoff evidence.
 
+> **Data-role clarification (2026-07-12):** The repository-external 2,902-row CSV is an arbitrary-flight captured format sample, not a valid commanded trajectory, task ground truth, expert phase annotation, or pilot-performance record. Historical identifiers such as `real-X/U`, `REAL_CSV_ENV`, and `test_real_csv_local.py` below record the names used when M2 was implemented; they do not grant the data scientific or task validity and are superseded by the M3 plan's `format-sample` naming.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a tested M2 ingestion foundation that reads the real combined simulator CSV as shared X/U, validates ideal I/G/EEG/ECG/pilot-camera source contracts, generates a deterministic synthetic multimodal Session Bundle, and emits an `IngestionReadinessReport` that can enter M3 but never authorize a formal assessment run.
+**Goal:** Build a tested M2 ingestion foundation that reads the captured-format combined simulator CSV as shared X/U, validates ideal I/G/EEG/ECG/pilot-camera source contracts, generates a deterministic synthetic multimodal Session Bundle, and emits an `IngestionReadinessReport` that can enter M3 but never authorize a formal assessment run.
 
-**Architecture:** M1 remains the secure manifest/integrity boundary. M2 adds versioned package-resource profiles and trusted adapters that normalize raw source artifacts into an internal `PreparedSession`; Polars is internal only, while Pydantic/JSON Schema define the public readiness report. A deterministic generator creates a real-X/U plus synthetic-modalities bundle, which is re-read through the same M1/M2 path used for external data.
+**Architecture:** M1 remains the secure manifest/integrity boundary. M2 adds versioned package-resource profiles and trusted adapters that normalize raw source artifacts into an internal `PreparedSession`; Polars is internal only, while Pydantic/JSON Schema define the public readiness report. A deterministic generator creates a captured-format-sample-X/U plus synthetic-modalities bundle, which is re-read through the same M1/M2 path used for external data.
 
 **Tech Stack:** Python 3.11, uv, Pydantic 2, Polars 1.x native CSV/Parquet, Pillow 11/12, pytest, Ruff, ty, JSON Schema Draft 2020-12.
 
@@ -16,7 +18,7 @@
 
 This plan implements only M2. It does not align `t_ns`, calculate anchors, score evidence, run a Bayesian network, expose JSON-RPC, or build WinUI.
 
-- Slice A: the real combined CSV becomes X/U and returns `ready_partial` while unexported modalities remain explicit.
+- Slice A: the captured format-sample combined CSV becomes X/U and returns `ready_partial` while unexported modalities remain explicit.
 - Slice B: a two-second generated micro bundle returns `ready` for all seven core modalities and its task reference.
 - Slice C: the repository-external 29.01-second CSV generates and validates a local full bundle.
 
@@ -836,7 +838,7 @@ Also freeze offset/drift mapping and in-session boundary cases.
 
 - [x] **Step 4: Write and implement modality generator tests**
 
-Generate pure Polars tables for scene/AOI, gaze/fixations, EEG/sidecar, ECG/R-peaks, camera index, commanded reference, and annotation JSON. Assert exact columns/dtypes/rates, deterministic values, valid foreign keys, and the synthetic flags. Write PNGs as RGB8 with compression level 9, `optimize=False`, and no ancillary metadata.
+Generate pure Polars tables for scene/AOI, gaze/fixations, EEG/sidecar, ECG/R-peaks, camera index, a synthetic task-reference fixture, and annotation JSON. Assert exact columns/dtypes/rates, deterministic values, valid foreign keys, and the synthetic flags. The reference fixture is not a valid commanded trajectory. Write PNGs as RGB8 with compression level 9, `optimize=False`, and no ancillary metadata.
 
 - [x] **Step 5: Run GREEN and commit**
 
@@ -911,7 +913,7 @@ Expected: import failure because the generator does not exist.
 The generator must:
 
 1. copy the source CSV byte-for-byte to `streams/simulator.csv`;
-2. derive duration/control activity through the profiled CSV parser;
+2. derive a technical duration and a semantics-free synthetic driver through the profiled CSV parser; the driver does not represent activity level, workload, control quality, physiology, or performance;
 3. write all synthetic artifacts and annotations;
 4. derive a stable session ID from source hash, generator ID, and seed;
 5. use fixed or explicit RFC 3339 `created_at`;
@@ -1038,7 +1040,7 @@ def test_micro_bundle_runs_from_csv_to_ready_report(tmp_path: Path) -> None:
 
 Run it before integration and observe the first unmet contract as RED; integrate only the minimum missing registration/profile until GREEN.
 
-- [x] **Step 2: Add the opt-in real CSV test**
+- [x] **Step 2: Add the opt-in format-sample CSV test (historical code identifiers retained below)**
 
 ~~~python
 REAL_CSV_ENV = "PILOT_ASSESSMENT_REAL_CSV"
@@ -1080,7 +1082,7 @@ $env:PILOT_ASSESSMENT_REAL_CSV='C:\Users\long\Desktop\CranfieldOffer\proj\data\S
 Remove-Item Env:PILOT_ASSESSMENT_REAL_CSV
 ~~~
 
-Expected: both pass; the real source hash remains `19bf804253d841de9c9de299ac96e9e1b693b2dbfae2f3eaeac5d7dc044e4f52`.
+Expected: both pass; the captured format-sample source hash remains `19bf804253d841de9c9de299ac96e9e1b693b2dbfae2f3eaeac5d7dc044e4f52`.
 
 - [x] **Step 4: Update implementation status with measured evidence**
 
