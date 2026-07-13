@@ -14,7 +14,7 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted `docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md`, with the amendment taking precedence for verification scope.
 - Accepted decisions: D-021 through D-027 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Tasks 0 and 1 were completed in commits `bc544bf` and `f56365c`; Task 2 has not started.
+- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–2 were completed in commits `bc544bf`, `f56365c`, and `928e9a4`; Task 3 is next.
 - Current implementation truth: 18/18 reference anchors specified, 0/18 production plugins implemented; M4 is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
