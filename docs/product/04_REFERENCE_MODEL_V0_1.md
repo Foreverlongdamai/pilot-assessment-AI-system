@@ -6,7 +6,7 @@
 | 模型 profile | `reference-model-v0.1`（尚未发布为不可变 ModelBundle） |
 | 日期 | 2026-07-13 |
 | BN inventory | 4 competencies + 11 sub-skills + O1–O13/H1–H5，合计 33 nodes |
-| Anchor 实现状态 | 18/18 已设计，0/18 已实现；尚无 M4 实施计划 |
+| Anchor 实现状态 | 18/18 已设计，0/18 已实现；M4 实施计划已形成并等待用户批准 |
 | 科学状态 | engineering defaults，未完成航空、人因或医学验证 |
 
 本文件定义 `reference-model-v0.1` 的可实现模型摘要。M4 的精确合同、公式、typed dependencies、artifact、fingerprint、fixtures 和阶段完成门以 [M4 Anchor Calculation and Evidence Availability Design](./specs/2026-07-13-m4-anchor-evidence-availability-design.md) 为唯一详细规格；本文件不得另造一套 M4 语义。
@@ -285,4 +285,4 @@ Synthetic multimodal fixtures 只验证软件闭环，始终 `scientific_validat
 9. full tests、schema symmetry、lint/type、build 与 fresh-wheel isolated M1->M4 smoke 全部通过；
 10. 只有新鲜证据完成 M4-G 后才能把状态改为 M4 engineering-verified。
 
-M4 书面规格已经批准，现可生成实施计划；计划获批前仍不开始代码实现。
+M4 书面规格已经批准，实施计划已形成并等待用户批准；计划获批前仍不开始代码实现。

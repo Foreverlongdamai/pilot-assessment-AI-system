@@ -5,7 +5,7 @@
 | 设计基线 | v0.2 |
 | 日期 | 2026-07-13 |
 | 设计状态 | 完整书面规格已于 2026-07-13 获用户批准 |
-| 实现状态 | 18/18 已设计，0/18 已实现；M4 实施计划尚未生成 |
+| 实现状态 | 18/18 已设计，0/18 已实现；M4 实施计划已形成并等待用户批准 |
 | 上游 | M1 Session integrity + M2 Ingestion readiness + M3 native-rate synchronization |
 | 下游 | M5 ModelBundle/BN/CPT/inference；M6 formal run/persistence |
 | 正式运行授权 | `formal_run_authorized=false` |
@@ -190,7 +190,7 @@ AnchorEvaluationRequest
 - M3 disposition 不是 blocked，且 `AlignedSession` 存在；
 - semantic snapshot、annotation、reference、plan、plugin、parameter hashes 已冻结；
 - execution plan 已通过 ID、schema、unit、plugin compatibility、DAG 和 artifact recipe 校验；
-- plugin 只能看到其声明的 streams、context、reference、parameters、upstream results/artifacts。
+- plugin/provider 只能看到其分别声明的 streams、runtime context、semantic paths、reference、parameters 与 upstream results/artifacts；runtime context 和 semantic projection 使用不同字段，不做隐式路径分流。
 
 `AlignedSession` 不能单独作为 M4 输入，因为它不保留完整 stream lifecycle、units/source classification、reference validity 和任务语义。
 
@@ -660,12 +660,13 @@ Tabular artifact 的 `logical_content_sha256` 对 `[typed_schema_descriptor, can
 
 1. plan 只引用 exact version，不做 semver range 自动选择；
 2. duplicate `(plugin_id,plugin_version)`、同 key 不同 digest、duplicate anchor binding 或 resource/schema hash 不一致均 blocked；
-3. factory 必须实现 `definition() -> AnchorPluginDefinition` 和 `compute(context, parameters, dependencies) -> AnchorMeasurement`；
+3. anchor factory 必须实现 `definition() -> AnchorPluginDefinition`；其 plugin 必须实现 `compute(context, parameters, temporal_recipe, dependencies, artifacts) -> AnchorMeasurement`。其中 `temporal_recipe` 只能是当前 execution entry 的不可变投影，`artifacts` 只能暴露 staging，不能暴露 commit/abort/resolve 或存储路径；
 4. loader 只 import registry 明确列出的 `pilot_assessment.anchors.plugins.*`/受信任 packaged namespace，不扫描目录或 entry-point 环境；
 5. orchestrator 只按 registry/DAG 调 factory，禁止 O1/O2/... 中央 switch；
 6. `implementation_members` 是该 plugin 的完整本地行为闭包：factory module、所有直接/间接 imported shared preprocessing/scoring helper 和读取的 package resource。Build verifier 从 factory 做静态本地 import closure 并与声明集合精确比较；漏声明、多声明、dynamic local import 或 namespace 越界均阻断 build/plan。每个 member 以规范 package-relative path 与原始 bytes SHA-256 进入 digest。
 7. `numeric_runtime_dependencies` 至少锁定 Python implementation/major.minor.micro/ABI，以及 NumPy、SciPy、Polars/PyArrow 等该 plugin 实际使用的 distribution normalized name、exact version 和 installed `RECORD`/wheel content digest；声明集合必须与受控 import allowlist 一致。任何版本或 build digest 变化都改变 plugin build identity，即使 plugin source 未变。
-8. registry entry JCS、implementation member hashes、declared schema/resource hashes和 numeric-runtime lock JCS 共同形成 `implementation_digest`；registry fingerprint 再覆盖所有 entry/digest。Wheel 重建后任何行为闭包 bytes 变化都必须产生新 digest/plugin build identity，禁止在同一 identity 下漂移 DSP 数值实现。
+8. registry entry JCS、implementation member hashes、declared schema/resource hashes和 numeric-runtime lock JCS 共同形成 `implementation_digest`；registry fingerprint 再覆盖所有 entry/digest。Wheel 重建后任何行为闭包 bytes 变化都必须产生新 digest/plugin build identity，禁止在同一 identity 下漂移 DSP 数值实现；
+9. 同一 registry resource 使用独立 `preprocessors` map 注册共享预处理 provider；provider 遵守相同的 exact-version、namespace、closure、schema/resource hash 和 runtime identity 规则，实现 `definition() -> PreprocessingProviderDefinition` 与 `compute(context, recipe, scope, dependencies) -> TabularArtifactPayload | BlobArtifactPayload`，并且只接收其声明的正投影、当前 `PreprocessingScope` 与已解析的 provider dependencies。Provider entry 不计入 reference 18-anchor cardinality。
 
 ## 14. Fixtures 与验证
 
@@ -803,4 +804,4 @@ Isolated-wheel smoke 的 public entry 固定为 `python -m pilot_assessment.veri
 9. M4/M5/M6 ownership 与 coverage 公式不冲突；
 10. Git commit 只声称 design/documentation，不声称 M4 implemented。
 
-书面规格已通过用户复核；下一步是编写 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md`。在该计划批准前不得开始 M4 实现。
+书面规格已通过用户复核；`docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 已形成并等待单独批准。在该计划批准前不得开始 M4 实现。

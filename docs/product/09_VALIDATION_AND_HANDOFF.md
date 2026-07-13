@@ -3,7 +3,7 @@
 | 字段 | 值 |
 |---|---|
 | 设计版本 | v0.1 |
-| 当前软件状态 | in_progress（M1/M2/M3 后端里程碑已 engineering verified；M4 完整书面规格已批准、18/18 已设计、0/18 实现，实施计划正在生成；完整 Core alpha 与 Gate B 尚未完成） |
+| 当前软件状态 | in_progress（M1/M2/M3 后端里程碑已 engineering verified；M4 完整书面规格已批准、实施计划已形成并等待批准、18/18 已设计、0/18 实现；完整 Core alpha 与 Gate B 尚未完成） |
 | 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
@@ -126,7 +126,7 @@ Public `SynchronizationReport.validation_scope` 为 `native_rate_session_time_al
 
 ### 2.7 M4 书面设计状态（2026-07-13）
 
-[M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md) 已把 O1–O13、H1–H5 共 18 个 anchor、AnchorResult v0.2、typed dependency DAG、artifact/fingerprint、状态边界和 fixtures 写入获批书面设计。当前真实实现状态仍是 **18/18 已设计、0/18 已实现**；`src/pilot_assessment/anchors/` 尚未建立，实施计划正在生成，因此本节不是 M4 engineering verification record，不能据此声称任何 AnchorPlugin 已通过测试。
+[M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md) 已把 O1–O13、H1–H5 共 18 个 anchor、AnchorResult v0.2、typed dependency DAG、artifact/fingerprint、状态边界和 fixtures 写入获批书面设计。[M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 已形成并等待用户批准。当前真实实现状态仍是 **18/18 已设计、0/18 已实现**，`src/pilot_assessment/anchors/` 尚未建立；因此本节不是 M4 engineering verification record，不能据此声称任何 AnchorPlugin 已通过测试。
 
 M4 的职责边界是按已配置规则提取 evidence，而不是研究原始采集质量。进入 M4 的 aligned input 假定已经满足 M1–M3 的结构合同；coverage、gap、sample count 和 sync metrics 只作 diagnostics/provenance。数值再差仍应形成 D/A/U，特别是 `computed + Unacceptable` 必须作为有效负面 evidence，且 raw availability 与 computed D/A 一样为 1。
 
@@ -337,4 +337,4 @@ PilotAssessment/
 - reference trajectory、phase/event annotation 的生产方式需与实验团队确认；
 - shared-evidence 多 parent CPT 会指数增长；v0.1 已设 parent/row/cell/size 硬上限，但数值仍需性能基准和专家审查后才能提高；
 - WinUI 图编辑控件选型和无障碍支持需原型验证；
-- 后端 M1/M2/M3 已有合同、directory-bundle loader、JSON Schema、版本化 adapters/bindings、deterministic multimodal software fixtures、`IngestionReadinessReport`、native-rate `AlignedSession`/`SynchronizationReport` 和自动化测试。M4 已完成 18/18 anchor 的书面设计，但仍是 0/18 实现且实施计划尚未生成；evidence scorer、BN、assessment runner、受管理 importer、sidecar 与 WinUI 也仍未实现。因此只有 M3 里程碑为 engineering verified，完整产品 software verification 仍为 in_progress，Gate B 尚未通过。
+- 后端 M1/M2/M3 已有合同、directory-bundle loader、JSON Schema、版本化 adapters/bindings、deterministic multimodal software fixtures、`IngestionReadinessReport`、native-rate `AlignedSession`/`SynchronizationReport` 和自动化测试。M4 已完成 18/18 anchor 的书面设计，实施计划已形成并等待批准，但仍是 0/18 实现；evidence scorer、BN、assessment runner、受管理 importer、sidecar 与 WinUI 也仍未实现。因此只有 M3 里程碑为 engineering verified，完整产品 software verification 仍为 in_progress，Gate B 尚未通过。
