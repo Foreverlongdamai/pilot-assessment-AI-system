@@ -1,12 +1,13 @@
-# Implementation Status — M1/M2/M3 Engineering Verified
+# Implementation Status — M1/M2/M3 Engineering Verified; M4 Written Design Only
 
 | 字段 | 当前值 |
 |---|---|
-| 状态日期 | 2026-07-12 |
+| 状态日期 | 2026-07-13 |
 | 产品设计基线 | v0.1 |
 | 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization |
-| 下一里程碑 | M4 Anchor/evidence availability |
-| 软件状态 | `in_progress`（M1/M2/M3 engineering verified；完整 Assessment Core alpha 与 Gate B 尚未完成） |
+| M4 当前状态 | O1–O13、H1–H5 共 18/18 已完成书面设计；0/18 已实现；实施计划尚未生成 |
+| 下一里程碑 | 先复核 M4 书面规格，再编写并批准实施计划；之后才可按 M4-A–M4-G 开始 TDD，当前不得把书面设计计作实现 |
+| 软件状态 | `in_progress`（M1/M2/M3 engineering verified；M4 written design only；完整 Assessment Core alpha 与 Gate B 尚未完成） |
 | 科学状态 | synthetic 数据为 `not_supported`；评估模型仍待领域专家校准与验证 |
 | Python package | `pilot-assessment-system 0.1.0` |
 | 本地运行边界 | Windows、离线、目录形式 Session Bundle |
@@ -19,7 +20,7 @@ M1/M2/M3 已实现，并通过 micro fixture 与 simulator 采集格式样例 CS
 2. 保留 I、G、EEG、ECG、pilot_camera 与 bundle-local task reference 的版本化理想输入合同；
 3. 使用采集格式样例 X/U 的技术时间范围与无科学语义的 synthetic driver，生成确定性的多模态软件测试数据；
 4. 在同一个 M1 loaded snapshot 上经过 M2 content/adapter gate，并输出严格的 `IngestionReadinessReport` 与内部 `PreparedSession`；
-5. 对七个 core modalities、bundle-local task reference 与 annotations 执行版本化 native-rate temporal binding、Decimal round-half-even clock mapping、master-clock X session-window mask 和质量/scene-gaze 检查；
+5. 对七个 core modalities、bundle-local task reference 与 annotations 执行版本化 native-rate temporal binding、Decimal round-half-even clock mapping、master-clock X session-window mask，以及 non-gating synchronization/scene-gaze diagnostics；
 6. 输出只读 `AlignedSession` 与 public `SynchronizationReport`，使数据可以进入 M4 anchor/evidence availability，但永远不授权正式 assessment run。
 
 本结论只证明当前合同、文件不变性与 native-rate 时间计算路径按规格运行。Synthetic scene、gaze、EEG、ECG、pilot-camera、annotation 与 commanded path 均是软件测试 fixture，不是航空、生理或训练评估有效性证据。M3 不执行插值、重采样或 analysis/window grid；这些属于 M4 的 AnchorPlugin revision。
@@ -27,6 +28,10 @@ M1/M2/M3 已实现，并通过 micro fixture 与 simulator 采集格式样例 CS
 其中 repository-external simulator CSV 只是一次随意飞行产生的采集格式样例，没有标准轨迹、任务 ground truth 或能力标签。对它的 E2E 验证只证明 33-column/100 Hz 格式可以被读取、保留和转换；不证明该飞行符合任务要求，也不支持任何表现或能力结论。
 
 2026-07-12 已将 M3 的 D-016–D-020 正式写入决策记录并完成实现：M3 只做 native-rate alignment，使用 scale-only/round-half-even clock mapping 和 master-clock X 技术时间窗口，输出独立 `SynchronizationReport`。§3 记录的完成门已经实测通过；这仍不表示完整 Assessment Core、正式 assessment run 或科学有效性已经成立。
+
+2026-07-13 已新增 [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)，把 AnchorResult v0.2、18 个 anchor、typed dependency DAG、artifact/fingerprint、状态边界与 fixtures 写入待用户复核的书面设计。当前仓库仍没有 `src/pilot_assessment/anchors/`，没有任何 AnchorPlugin 实现，也没有 M4 实施计划；因此真实计数是 **18/18 specified、0/18 implemented**，M4 尚未 engineering verified。
+
+M4 书面设计明确采用 no-quality-gate 边界：进入 M4 的 aligned input 假定已满足 M1–M3 的结构合同，M4 不研究原始采集质量，也不按 coverage、gap、噪声、幅值或生理范围过滤表现 evidence。极差轨迹、剧烈控制、极端生理指标、未响应、未恢复或未注视均应按规则形成 `computed + Unacceptable`；该结果是有效负面 evidence，raw availability 与 computed D/A 一样为 1。
 
 ## 2. 已实现能力
 
@@ -51,6 +56,8 @@ M1/M2/M3 已实现，并通过 micro fixture 与 simulator 采集格式样例 CS
   - `ingestion-readiness-report-0.1.0.schema.json`
   - `synchronization-report-0.1.0.schema.json`
 - 可由 JSON Schema 表达的 status/privacy/task-reference/result ownership/disposition 约束已经与 Pydantic 对称；必须访问文件系统、重算 hash 或比较动态 path/checksum 集合的规则保留为 backend runtime invariant。
+
+其中 `anchor-result-0.1.0.schema.json` 和当前 Python `AnchorResult` 是 M1 阶段建立的 legacy 0.1 合同，仍包含 quality/`invalid_quality` 语义；它们不是 M4 AnchorResult v0.2 的实现证据。v0.2 必须在后续获批实施计划中作为显式 breaking contract 实现和验证，不能把 0.1 的存在误计为已完成 M4-A。
 
 ### 2.3 版本化 ingestion profiles
 
@@ -129,6 +136,8 @@ uv run python -m pilot_assessment.synthetic `
 - final fresh wheel：127,101 bytes，SHA-256 `bc9476f209c8ee851a58d6de037ddb98fac3356c819957d61c587e253a744342`；
 - 隔离安装的 import origin 位于 repository 之外，17 个 M2 profiles、8 个 M3 temporal streams、两项 public service API 与 public DTO 均可用；最终隔离 micro M1→M2→M3 E2E：`1 passed in 4.34s`，TEMP cleanup 已确认。
 
+2026-07-13 在 M4 design-only candidate 收口后再次执行 `.venv\Scripts\pytest.exe -q`：`694 passed, 2 skipped in 124.00s`。两个 skip 仍只对应未配置 repository-external CSV 的 M2/M3 opt-in tests。此结果证明文档变更没有破坏既有 M1–M3 回归基线；因为本轮没有 M4 code/schema/test，它**不是** M4 实现或验证证据。
+
 ### 3.3 Micro E2E
 
 2 秒、201 行 simulator fixture 的完整 M1→M2→M3 路径通过，session window 为 `0..2_000_000_000 ns`：
@@ -206,7 +215,8 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 
 ## 5. 尚未实现
 
-- M4：18 个 AnchorPlugin、window grid、evidence likelihood、coverage 与 O8/O13 派生证据；
+- M4：18 个 AnchorPlugin、AnchorResult v0.2、catalog/plan/report contracts、window grid、evidence likelihood、raw availability、artifact/fingerprint 与 O8/O13 派生证据；当前 18/18 已设计、0/18 已实现；
+- M4 实施计划：尚未生成，也尚未批准；不得从书面规格直接跳过计划进入代码；
 - M5：model bundle、33-node reference BN、CPT、missing-evidence inference、draft/revision/publish；
 - M6：端到端 assessment runner、artifact/report persistence；
 - JSON-RPC sidecar 与受管理存储 importer；
@@ -216,13 +226,21 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 
 ## 6. 下一里程碑
 
-下一步进入 M4 Anchor/evidence availability，不应提前跳到 BN、runner 或 WinUI：
+下一步不是直接写 AnchorPlugin，而是先完成 M4 书面规格复核，再从获批规格派生、审查并批准实施计划；在该计划存在前，不应提前跳到 M4 代码、BN、runner 或 WinUI。计划后续至少需要覆盖：
 
-1. 定义版本化 AnchorPlugin/AnchorBinding 与 18 个 anchor 的 availability contract；
-2. 让每个 AnchorPlugin 从 M3 native-rate aligned views 建立自己的 analysis/window grid、插值/重采样 policy 和 quality gate；
-3. 输出 missing/invalid/not_applicable 与 evidence availability，不把缺失状态伪装为表现等级；
-4. 保留 source/report/fingerprint/anchor revision 的 traceability，并继续保持 `formal_run_authorized=false`；
-5. 先以 synthetic fixtures 验证软件计算，不从 captured-format CSV 推断任务、表现、生理状态或飞行员能力。
+1. M4-A：AnchorResult v0.2、catalog、execution-plan、inventory/report schemas；
+2. M4-B：registry、typed DAG、temporal kernel、artifact sink、fingerprint 和 fake-plugin tests；
+3. M4-C–M4-F：依次实现 O1–O7、O8–O12、H1–H3、H4/H5/O13；
+4. M4-G：18-anchor E2E、扩展性、确定性、fresh-wheel 和文档关闭；
+5. 贯穿所有阶段的 no-quality-gate 回归：差表现必须 `computed + Unacceptable`，M4 不生成 `invalid_quality`，computed U 的 raw availability=1；
+6. 保留 source/report/fingerprint/anchor revision 的 traceability，并继续保持 `formal_run_authorized=false`；
+7. 使用独立的完整 all-D/all-U software fixtures 验证 18-anchor 闭环，不从 captured-format CSV 推断任务、表现、生理状态或飞行员能力。
+
+M4 当前待用户复核的书面规格见：
+
+- [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)
+
+此处有意不链接 M4 实施计划，因为截至本状态日期该文件不存在。
 
 M2 的批准规格与逐任务实施证据分别见：
 

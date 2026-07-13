@@ -136,7 +136,7 @@ node/edge/anchor.parameters/cpt 的便利写方法同样必须携带 draft_id、
 
 | 方法 | 用途 |
 |---|---|
-| run.preflight | 检查 session、model revision、证据覆盖和适用性 |
+| run.preflight | M6 检查 frozen session/model、任务前提、compiled execution plan、plugin/schema/engine compatibility 和正式运行授权；不预先按表现或 M4 实际 coverage 过滤 evidence |
 | run.start | 启动锁定 published revision_id 的正式评估 |
 | run.preview | 对 runnable draft 的 exact graph_version 执行 non-formal 临时预览 |
 | run.status | 查询阶段、进度和诊断 |
@@ -146,7 +146,7 @@ node/edge/anchor.parameters/cpt 的便利写方法同样必须携带 draft_id、
 | diagnostics.bundle.export | 导出脱敏支持包 |
 | audit.events.list | 查询模型修改、发布、导入与运行审计事件 |
 
-`run.preflight` 返回 `RunPreflightReport`，它与 M2 的 `IngestionReadinessReport`、M3 的 `SynchronizationReport` 都不是同一 DTO：M2/M3 两份报告分别只允许 source data 进入 synchronization、允许 aligned session 进入 anchor availability，且 `formal_run_authorized` 固定为 false；只有 `RunPreflightReport` 基于 `AlignedSession`、已解析 reference 与锁定 model revision 决定是否可以创建 AssessmentRun。
+`run.preflight` 是 M6 operation，返回 `RunPreflightReport`；它与 M2 的 `IngestionReadinessReport`、M3 的 `SynchronizationReport` 和 M4 的 `AnchorEvaluationReport` 都不是同一 DTO。M2/M3/M4 报告的 `formal_run_authorized` 固定为 false；只有 M6 基于 frozen `AlignedSession`、已解析 reference、锁定 model revision 和已编译 execution plan 决定是否可以创建 AssessmentRun。实际 AnchorResult/raw availability 要等 M4 执行后产生，model-weighted coverage 由 M5 计算，不属于 preflight 的伪预测值。
 
 ## 7. 大数据与路径合同
 
@@ -202,8 +202,10 @@ layout.update 不改变 graph_version 或 semantic hash。LAYOUT_VERSION_CONFLIC
 run.start 硬性要求 published revision_id，并生成正式可追溯 AssessmentResult。run.preview 要求 draft_id + graph_version，结果标记 non_formal、不得进入正式 result export。两者成功后均立即返回 run_id，不等待计算结束；进度通过 notification：
 
 ~~~json
-{"jsonrpc":"2.0","method":"run.progress","params":{"run_id":"run-88","stage":"anchors","completed":7,"total":18,"percent":38.9,"message":"Computed O7 Control Reversal Rate"}}
+{"jsonrpc":"2.0","method":"run.progress","params":{"run_id":"run-88","stage":"anchors","completed":7,"total":18,"percent":38.9,"message":"Computed O7 Control Reversal Rate","model_profile_id":"reference-model-v0.1"}}
 ~~~
+
+上例的 `total=18` 只因为 `reference-model-v0.1` active catalog 精确为 18；通用 runtime 必须从 locked execution plan 的 active catalog cardinality 读取 total，不能写死 18。
 
 `run.preflight` 在创建 run_id 之前完成，若未来异步化，其 stage 名固定为 `run_preflight`，不能与 ingestion readiness 混用。run.start/run.preview 成功后的阶段至少包括 snapshot_validation、ingestion、synchronization、anchors、evidence、inference、reporting。run.cancel 是请求，不保证瞬时停止；结果状态必须区分 cancelling、cancelled、failed 和 completed。完成或失败后，后端发送 run.completed 或 run.failed notification，同时状态仍可通过 run.status 恢复。
 
@@ -230,7 +232,7 @@ run.start 硬性要求 published revision_id，并生成正式可追溯 Assessme
 - RUN_NOT_FOUND、RUN_ALREADY_TERMINAL、CANCEL_FAILED；
 - INTERNAL_ERROR、SIDECAR_DEGRADED。
 
-export_pending、missing evidence 和 not_applicable 通常是 preflight/coverage 状态，不应自动升级为进程异常。
+`export_pending`、missing evidence 和 `not_applicable` 是结构化 domain/readiness/coverage 状态，不应自动升级为进程异常；preflight 只报告它在执行前可知的输入/适用性，实际 AnchorResult 状态由 M4 产生。
 
 ## 11. 并发、版本和幂等
 

@@ -6,6 +6,7 @@
 | 日期 | 2026-07-11 |
 | 用户批准 | 2026-07-11 |
 | M3 口径修订 | 2026-07-12：session window 权威移交 M3 §7 / D-018 |
+| M4 候选边界修订 | 2026-07-13：proposed D-021 随完整 M4 规格批准后取消 downstream residual/coverage/quality evidence gate；不改变 M2 实现或 golden |
 | 上位基线 | Product design v0.1 + Backend Foundation M1 |
 | 本阶段 | M2：理想多模态合同、合成 bundle、全模态 ingestion readiness inspection |
 | 科学状态 | synthetic_test_only / not_supported |
@@ -100,7 +101,7 @@ Header 含不一致的前导/尾随空格。Adapter 必须同时保留 raw heade
 
 ### D-013：M2 只产生 IngestionReadinessReport
 
-M2 `IngestionReadinessReport` 的 scope 是 `inspect_only_ingestion_content_v1`。它可以允许进入 M3 synchronization，但 `formal_run_authorized` 永远为 false。原始 source artifact 在 M2 可以只含 source timestamp 与声明的 `clock_sync`；`03_SESSION_BUNDLE_SPEC.md` 要求的 authoritative `t_ns` 解释为 M3 产出的 aligned view 字段，不由 M2 adapter 伪造。完成 M3 与 model/coverage 检查后，`run.preflight` 才产生独立的 `RunPreflightReport`。
+M2 `IngestionReadinessReport` 的 scope 是 `inspect_only_ingestion_content_v1`。它可以允许进入 M3 synchronization，但 `formal_run_authorized` 永远为 false。原始 source artifact 在 M2 可以只含 source timestamp 与声明的 `clock_sync`；`03_SESSION_BUNDLE_SPEC.md` 要求的 authoritative `t_ns` 解释为 M3 产出的 aligned view 字段，不由 M2 adapter 伪造。完成 M3 与 model/plan compatibility 检查后，`run.preflight` 才产生独立的 `RunPreflightReport`；M4 不按 residual、coverage 或所谓采集质量过滤表现 evidence。
 
 - M2 physical/profile schema 使用 `*-raw-v0.1`，内部产物为 `RawStream`/`PreparedSession`，不承诺 authoritative `t_ns`；
 - M3 产物为 `AlignedSession`，其中各 aligned schema 使用 `*-aligned-v0.1` 并包含严格递增或带稳定 index 的 int64 `t_ns`；
@@ -532,7 +533,7 @@ Git 只保存小型 synthetic fixtures：
 |---|---|---|
 | M2 | 理想多模态合同、generator、全模态 ingestion readiness | synthetic full bundle 七个 core modalities ready |
 | M3 | clock mapping、aligned t_ns、phase/event/baseline/reference | 已知 offset/drift golden tests 通过 |
-| M4 | O1–O13、H1–H5 plugin 与 evidence scoring | 18 AnchorResult + coverage/golden trace |
+| M4 | O1–O13、H1–H5 plugin 与 evidence scoring | 18 AnchorResult v0.2 + raw availability/golden trace；差表现仍为 computed evidence |
 | M5 | reference graph、CPT、missing/virtual evidence BN | 手算网络与 full synthetic posterior 通过 |
 | M6 | pipeline/CLI/report/provenance/replay | bundle→ingestion readiness→synchronization→run preflight→anchors→BN→report 一键跑通 |
 | M7 | JSON-RPC sidecar | Python contract 与 .NET fake-client tests 通过 |

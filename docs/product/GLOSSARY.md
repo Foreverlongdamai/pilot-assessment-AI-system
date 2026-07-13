@@ -4,7 +4,12 @@
 |---|---|
 | Assessment Core | 执行 session 载入、同步、anchor 计算、evidence 转换、BN 推理和结果构建的 Python 核心。 |
 | Anchor / Evidence anchor | 从原始或派生数据计算的可解释指标，例如 O2 Peak Tracking Excursion。 |
-| AnchorPlugin | 实现某个 anchor 算法、参数 schema、依赖声明和质量门的受控后端插件。 |
+| AnchorPlugin | 实现某个 anchor 算法、参数 schema、输入／依赖声明、measurement 与 artifact 合同的受控后端插件；不包含原始数据质量 admission gate。 |
+| AnchorCatalog | 某 model profile 的版本化 anchor inventory、definition、lifecycle 与 canonical order；generic M4 engine 不固定其数量。 |
+| AnchorExecutionPlan | M5 根据 exact model/session snapshot 编译、M4 消费的冻结计划；锁定 plugin、参数、输入、typed dependencies、grid/window、scorer 和 artifact recipe。 |
+| AnchorMeasurement | AnchorPlugin 在中央 scorer 之前产生的 raw metrics、phase/event breakdown、override candidate、typed artifacts 与 computation trace。 |
+| AnchorResult v0.2 | M4 的 per-anchor 结果合同（`anchor-result-0.2.0`）；记录 calculation status、raw metrics、D/A/U likelihood、override、artifact、diagnostics、provenance 和 fingerprint。 |
+| ComputationTrace | M4 保存的 sample/time range、grid/window、匹配方法和 technical diagnostics；只用于审计，不生成 quality score 或改变 likelihood。 |
 | Evidence node | BN 中接收 Desired / Adequate / Unacceptable 观测的节点。参考模型有 18 个。 |
 | Sub-skill | 不可直接观测的中间技能节点。参考模型有 11 个。 |
 | Aggregate competency | 顶层能力节点：TCP、PC、SM、OC。 |
@@ -23,25 +28,35 @@
 | Event | 扰动、提示、包线越界等带时间标记的离散事件。 |
 | Desired / D | 参考模型中的期望表现 evidence state。 |
 | Adequate / A | 参考模型中的可接受表现 evidence state。 |
-| Unacceptable / U | 参考模型中的不可接受表现 evidence state。 |
+| Unacceptable / U | 参考模型中的不可接受表现 evidence state；它是有效负面观测，`computed + U` 的 raw availability 为 1。 |
+| computed | M4 已执行公式并产生 D/A/U likelihood；D、A、U 都表示 evidence 已存在。 |
+| missing_input | M4 公式必需的模态或字段完全不存在，因此没有 D/A/U observation。 |
 | missing | 本应存在但文件或字段缺失；不是表现等级。 |
 | export_pending | 已知已采集但尚未导出到 session bundle；不是表现等级。 |
-| invalid | 数据存在但未通过格式、同步或质量检查；不是表现等级。 |
-| not_applicable | 当前任务/阶段没有该证据适用条件，例如没有扰动事件；不是表现等级。 |
-| Quality | evidence 对应数据的可用性与置信度，和 evidence state 分开记录。 |
-| Coverage | 本次评估实际可用证据相对于模型期望证据的覆盖程度。 |
+| invalid | M1–M3 的上游 stream 状态：数据存在，但接口、schema、类型、完整性或时间合同不成立；不是 M4 calculation status，也不是表现等级。 |
+| not_applicable | 当前任务／阶段没有该 anchor 的适用条件，例如没有扰动事件；M4 不生成 D/A/U observation，且该项不进入适用 evidence 的 coverage 分母。 |
+| not_computable | 输入存在且任务适用，但 reference、AOI、calibration 或公式必需参数未定义，M4 不能执行公式。 |
+| dependency_missing | M4 的已声明上游没有产生 required computed result 或 artifact，因此当前 anchor 没有 observation。 |
+| extractor_error | M4 plugin 异常、输出违约或 artifact 发布失败；这是软件错误，不是飞行表现等级。 |
+| invalid_quality | 仅供 legacy AnchorResult v0.1 reader 识别的旧状态；reference M4 和 AnchorResult v0.2 永不生成。 |
+| Quality / technical diagnostics | M1–M3 可记录 coverage、gap、clock residual、validity 和 artifact 等技术诊断；这些字段只用于排查与 provenance，不控制 M4 evidence admission、D/A/U 或 likelihood。 |
+| Raw availability | 对单个适用 anchor，`calculation_status=computed` 时为 1，否则为 0；`computed + Unacceptable` 同样为 1。 |
+| Model-used availability coverage | M5 对当前模型实际采用的适用 evidence 做 relation-weighted coverage；computed D/A/U 均贡献 1，但用户显式排除的 observation 对 model coverage 贡献 0，且不改写 M4 raw availability。 |
+| Coverage / evidence availability coverage | 本次评估成功产生并被当前模型使用的适用 evidence 相对于模型期望适用 evidence 的覆盖程度；它表示 evidence 是否存在/使用，不表示表现好坏。 |
+| classification_override | AnchorResult v0.2 的一等字段；当 missed response、no stable hover、no gaze 或退化生理计算无法用有限主值表达时，明确把结果分类为 U，并记录原因，禁止用 Infinity/NaN。 |
+| Poor performance is not invalid data | 轨迹偏差大、控制剧烈、生理数值极端、未响应、未注视或未稳定悬停属于可评价表现，通常必须输出 `computed + Unacceptable`，不能被标为 invalid、missing 或 `invalid_quality`。 |
 | Native-rate alignment | M3 保留每个 source artifact 的原生采样行和值，只追加统一 session time 与 window flags 的对齐方式；不插值、不重采样，也不建立 anchor-specific analysis/window grid。 |
 | Clock mapping | 把 source seconds 映射到 session `t_ns` 的确定性规则：`round_half_even(source_s × scale × 1e9 + offset_ns)`；scale 是唯一计算权威，drift_ppm 只作一致性审计。 |
 | Session window | v0.1 的闭区间 `[0,max(mapped X primary t_ns)]`，source 为 `master-clock-x-mapped-coverage-v1`；X 只提供技术时间边界，不代表 commanded trajectory、任务标准或能力 ground truth。 |
-| Ingestion readiness inspection | M2 对 source artifact 内容、schema、质量和 adapter 可用性的只读检查；输出 `IngestionReadinessReport`，只允许进入 M3，且永不授权正式 run。 |
+| Ingestion readiness inspection | M2 对 source artifact 内容、schema、完整性、技术诊断和 adapter 可用性的只读检查；输出 `IngestionReadinessReport`，只允许进入 M3，且永不授权正式 run。它不评价 M4 evidence 好坏。 |
 | SynchronizationInput | M3 内部不可变输入，组合同一次 `LoadedManifest`、`PreparedSession` 和 `IngestionReadinessReport`；blocked readiness 不构造该对象。 |
 | AlignedStreamView | M3 内部只读视图；保留 raw columns、rows 和 values，并按显式 temporal binding 在末尾追加 authoritative int64 `t_ns`/interval ns 与 Boolean window flags；schema ID 使用 `*-aligned-v0.1`。 |
 | AlignedSession | M3 内部不可变结果，包含 native-rate aligned streams、session window、aligned annotations、bundle task reference 和同步 fingerprints；不作为公共 JSON-RPC 大数据 DTO。 |
-| SynchronizationReport | M3 公共同步报告，记录七个 core modality、task reference、annotation、clock/coverage/window 质量与 source/policy/catalog/alignment fingerprints；只允许进入 anchor availability，始终 `formal_run_authorized=false`。 |
+| SynchronizationReport | M3 公共同步报告，记录七个 core modality、task reference、annotation、clock/coverage/window diagnostics 与 source/policy/catalog/alignment fingerprints；证明结构／时间合同并提供 non-gating diagnostics，始终 `formal_run_authorized=false`。 |
 | Run preflight | `run.preflight` 在 aligned session、annotation/reference 和锁定 model revision 上执行的正式运行门；输出 `RunPreflightReport` 并决定能否创建 AssessmentRun。 |
 | BN | Bayesian Network，贝叶斯网络。 |
 | CPT | Conditional Probability Table，节点在给定 parent state 下的条件概率表。 |
-| Virtual evidence | 用似然权重而非硬状态表达不确定 evidence；低质量时向均匀分布收缩。 |
+| Virtual evidence | M5 用显式、版本化 soft scorer 或 dependence-strength mixing 表达的 likelihood observation；不得因所谓原始数据质量向均匀分布收缩。 |
 | Model bundle | anchor catalog、任务 profile、图、CPT、schema、版本和 provenance 的可发布模型包。 |
 | Draft | 可编辑、尚未用于正式运行的模型工作副本。 |
 | Published revision | 验证并发布后不可变的模型版本。 |
@@ -49,7 +64,10 @@
 | layout_version | 仅版本化节点位置等显示布局；变化不影响 graph_version 或 scientific model hash。 |
 | draft_validation_state | draft_incomplete、draft_invalid、draft_runnable 或 draft_publishable，表示草稿完整性与可运行性。 |
 | revision_lifecycle | published、archived 或 superseded，表示不可变 model revision 的生命周期。 |
-| observation_mode | hard、virtual 或 omitted，表示某条 AnchorResult 是否以及如何进入 BN。 |
+| observation_mode | M5 的 hard、virtual 或 omitted 绑定方式，表示某条 AnchorResult 如何进入 BN；M4 不按技术诊断把 computed evidence 改为 omitted。 |
+| ready / ready_partial / blocked (M4) | `ready` 表示所有适用 anchor 均 computed；`ready_partial` 表示 inventory 完整但有 missing/config/dependency/error；`blocked` 表示 request、plan、global inventory 或原子提交失败。 |
+| plugin_unavailable / not_implemented / not_attempted | M4 capability/plan/report inventory 状态，不是 AnchorResult calculation status。缺 required plugin 会阻断 reference plan；blocked report 只列 inventory，不伪造结果。 |
+| DerivedArtifactSink | M4 通过依赖注入写入 typed、content-addressed 临时派生产物的 port；M6 才拥有正式 managed artifact root 和持久化生命周期。 |
 | revision_id | 标识不可变发布模型或其父版本的稳定 ID。 |
 | Sidecar | 由 Windows 前端启动和管理的本地 Python 后端进程。 |
 | JSON-RPC / JSONL | 每行一个 JSON-RPC 2.0 消息的 stdio 进程协议。 |

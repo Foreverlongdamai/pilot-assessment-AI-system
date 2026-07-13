@@ -119,7 +119,7 @@
 - 状态：已接受
 - 决策：唯一公式为 round-half-even(source_s × scale × 1e9 + offset_ns)；drift_ppm 只与 scale 做一致性审计，不再次参与计算。同 clock_id 必须共享 method/scale/offset/drift mapping；per-stream residual 可以不同。
 - 理由：同时施加 scale 和 drift 会重复校正并破坏可复现性。
-- 影响：M3 对 scale/drift、residual 顺序、same-clock mapping 和 int64 overflow 执行结构门；task/anchor-specific residual tolerance 留给后续 gate。
+- 影响：M3 对 scale/drift、residual 顺序、same-clock mapping 和 int64 overflow 执行结构门。M4 书面候选规格提议由 D-021 取代原先“task/anchor-specific residual tolerance 留给后续 gate”的影响说明；D-021 随完整 M4 规格获批后生效，届时 M4 不得把 residual、coverage 或所谓采集质量变成表现 evidence 的过滤门。
 
 ## D-018：v0.1 session window 由 master-clock X 推导
 
@@ -141,3 +141,38 @@
 - 决策：内部 SynchronizationInput 组合同一次 LoadedManifest、PreparedSession 和 IngestionReadinessReport；输出内部 AlignedSession 与公共 SynchronizationReport。
 - 理由：PreparedSession 不应吸收 bundle I/O/clock/annotation 责任，M1 也不应重复 load/hash。
 - 影响：SynchronizationReport 与 IngestionReadinessReport/RunPreflightReport 分离，始终 formal_run_authorized=false，并绑定 source/policy/catalog/alignment fingerprints。
+
+## D-021：M4 不承担原始数据质量研究
+
+- 状态：提议（设计方向已分段确认；待 M4 完整书面规格批准）
+- 决策：M4 假定其输入已经通过 M1–M3 的文件、schema、有限数值、字段和时间合同；M4 不再设置 coverage、noise、gap、residual、artifact、幅值或生理范围 quality gate，也不因这些 diagnostics 省略表现 evidence。M1–M3 的结构检查继续存在，但它们不是 M4 的评分门。
+- 理由：仿真采集系统负责交付有效数据；本产品负责按冻结规则评价飞行表现。把表现异常或数值极端重新解释为“低质量数据”会系统性掩盖真正的差表现，并把项目扩展成另一项采集质量研究。
+- 影响：`SessionQualityReport`、`IngestionReadinessReport` 和 `SynchronizationReport` 可以保留技术 diagnostics，但 M4 scorer 不读取它们形成 quality score，不做 outlier clipping、winsorization、artifact-based window deletion 或医学范围过滤；历史 M1–M3 合同仅作上游完整性边界。
+
+## D-022：差表现必须产生 Unacceptable evidence
+
+- 状态：提议（设计方向已分段确认；待 M4 完整书面规格批准）
+- 决策：输入、公式配置和任务适用条件存在时，极大轨迹误差、剧烈控制、极端但有限的生理指标、未捕获、未稳定悬停、未恢复、未响应和未注视均必须输出 `computed + Unacceptable`。无法用有限主值表达的观察使用受控 `classification_override`，不得使用 Infinity 或 NaN。
+- 理由：这些现象就是系统需要客观反映的负面表现，不是缺失证据。
+- 影响：`computed + Unacceptable` 与 Desired/Adequate 一样具有 raw availability 1 并提交给 M5；missing、not applicable、缺配置/依赖和软件错误使用单独状态，不能与差表现合并。
+
+## D-023：M4 使用可扩展 catalog、typed DAG 与 AnchorResult v0.2
+
+- 状态：提议（设计方向已分段确认；待 M4 完整书面规格批准）
+- 决策：M4 engine 按版本化 `AnchorCatalog` 与编译后的 `AnchorExecutionPlan` 运行可变数量插件；只有 `reference-model-v0.1` profile 精确包含 O1–O13、H1–H5。插件先产生 `AnchorMeasurement`，中央 scorer 生成 breaking contract `anchor-result-0.2.0`；其计算状态只允许 `computed`、`missing_input`、`not_applicable`、`not_computable`、`dependency_missing`、`extractor_error`。执行通过 typed dependency DAG、受控 artifact sink 和 canonical inventory 完成。
+- 理由：前端未来增、删、改 anchor 和算法时，orchestrator 不应写死 18 个分支；同时必须保留可验证、可重放的依赖与合同边界。
+- 影响：`anchor-result-0.1.0` 仅保留为只读 legacy 合同，M4 不写它，也不静默改写 schema ID。新增/retire anchor 发布新 catalog/model revision；参数变更产生新 parameter snapshot；公式变更必须发布新 plugin version。`plugin_unavailable`、`not_implemented`、`not_attempted` 只属于 capability/plan/report inventory，不冒充 session calculation status。
+
+## D-024：M5 不按所谓数据质量衰减 evidence
+
+- 状态：提议（设计方向已分段确认；待 M4 完整书面规格批准）
+- 决策：M5 直接消费 M4 的版本化 D/A/U likelihood，不使用 quality score 向均匀分布收缩。O8/O13 的默认 `likelihood_strength=0.50`，以及 H1/H3 `gaze_allocation` dependence group 的 reference strength `0.50 each`，只用于相关性和重复计数保护，不表示数据质量。
+- 理由：quality mixing 会把最差但有效的表现重新拉回无信息分布，违背 D-022。
+- 影响：coverage 衡量适用 evidence 是否成功产生：`computed` 的 D/A/U 都贡献完整 availability，`not_applicable` 不进入分母；模型影响强度可以另作 diagnostic，但不能命名为 coverage 或 quality。
+
+## D-025：M4 工程完成必须同时证明全好、全差与可扩展重放
+
+- 状态：提议（设计方向已分段确认；待 M4 完整书面规格批准）
+- 决策：M4-G 只有在逐 anchor 手算 golden、精确边界、状态矩阵、18/18 computed Desired、18/18 computed Unacceptable、扩展/retire/version replay、确定性 fingerprint、source immutability、完整测试、构建和隔离 wheel 全部通过后，才可声称 M4 engineering-verified。
+- 理由：只证明理想信号能运行不能发现“差表现被过滤”的核心失效模式，也不能证明专家未来修改 anchor 后仍可重放。
+- 影响：全 Unacceptable fixture 的 raw availability 必须为 1，M4 输出不得出现 `invalid_quality`；synthetic fixture 继续标记 `scientific_validation_status=not_supported`。M4-A 至 M4-F 的局部完成状态必须如实报告，不能冒充 M4 整体实现。

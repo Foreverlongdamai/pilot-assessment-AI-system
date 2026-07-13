@@ -239,11 +239,13 @@ node_id: 550e8400-e29b-41d4-a716-446655440051
 mode: plugin
 target:
   plugin_id: gaze_aoi_dwell
-  plugin_version: 0.1.0
+  plugin_version: 0.2.0
 required_inputs: [I, G, dynamic_aoi_map]
 modality_attribution_weights: {I: 0.5, G: 0.5}
-parameter_schema_id: anchor-gaze-aoi-dwell-v1
-output_contract: AnchorResult-v1
+parameter_schema_id: anchor-gaze-aoi-dwell-v2
+measurement_contract: anchor-measurement-0.1.0
+scorer_id: hard_threshold_v1
+result_contract: anchor-result-0.2.0
 binding_version: 1
 content_hash: sha256:...
 ~~~
@@ -255,11 +257,13 @@ mode 支持：
 - session_field：绑定已声明的 stream field、unit、aggregation 和 scoring；
 - safe_formula：使用 safe-expr-v1 白名单表达式，显式列出 upstream fields/anchors、单位和 aggregation。
 
-binding.create、binding.update 和 binding.remove 都是 semantic operation，与 node/edge/CPT 一起走 graph.operations.apply 并增加 graph_version。Binding validation 至少检查 node 类型、target 存在、插件兼容、参数 schema、输入/单位、依赖无环、safe formula AST 白名单和 AnchorResult 输出合同。
+四种 mode 在 publish/preview compile 时都必须变成同一版本化 `AnchorPluginDefinition`/`AnchorExecutionPlan` entry：`session_field` 由 packaged field-aggregation adapter 执行，`safe_formula` 由 packaged deterministic safe-expr interpreter 执行，两者只输出 `AnchorMeasurement`，再进入中央 scorer。它们不得动态生成/import Python，也不得绕过 registry、typed dependency、unit、artifact、fingerprint 或 AnchorResult v0.2 校验。
+
+binding.create、binding.update 和 binding.remove 都是 semantic operation，与 node/edge/CPT 一起走 graph.operations.apply 并增加 graph_version。Binding validation 至少检查 node 类型、target 存在、插件兼容、参数 schema、输入/单位、依赖无环、safe formula AST 白名单、AnchorMeasurement 输出合同、scorer compatibility 和 AnchorResult v0.2 结果合同。插件与 safe formula 只产生 measurement；中央 scorer 才产生 D/A/U result，不能让单个插件自行绕过统一状态/override 规则。
 
 `modality_attribution_weights` 的 key 只能是 `required_inputs` 中声明的 core stream modality；`dynamic_aoi_map` 等非模态依赖不进入该 map。权重必须 finite、非负且和为 1；省略时对 distinct required core modalities 等分。该字段进入 binding content hash，供 per-modality coverage 使用。
 
-安装新插件不属于图 transaction。plugin.install 只能通过受信任的管理员流程完成签名、manifest 和兼容性检查；UI 不得把任意 Python 文本当作插件执行。未绑定 evidence node 可以保存在 incomplete draft，但不能运行或发布。
+安装新插件不属于图 transaction。plugin.install 只能通过受信任的管理员流程完成签名、manifest 和兼容性检查；UI 不得把任意 Python 文本当作插件执行。未绑定或 target 尚不可用的 evidence node 可以保存在 incomplete draft，并明确显示 `plugin_unavailable` capability 状态，但不能编译 execution plan、运行或发布；它不得伪装成 session `not_computable`。
 
 ### 6.2 Add edge
 
@@ -562,7 +566,7 @@ Run 请求必须指定：
 - 0 ≤ p ≤ 1；
 - row sum = 1，容差 1e-9；
 - generator 参数合法；
-- evidence AnchorBinding 唯一、target 可解析、依赖无环且输出满足 AnchorResult contract；
+- evidence AnchorBinding 唯一、target 可解析、依赖无环，插件输出满足 `anchor-measurement-0.1.0`，中央 scorer 输出满足 `anchor-result-0.2.0`；
 - Guided Mode 每个节点最多 3 个 parents；Advanced DAG Mode 默认最多 6 个 parents；
 - 物化前计算 CPT 大小，默认不得超过 4096 rows、16384 probability cells 或 2 MiB serialized size；
 - migration 后概率质量守恒。

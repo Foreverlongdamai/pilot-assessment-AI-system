@@ -2,9 +2,9 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 设计基线 | v0.1 |
-| 基线日期 | 2026-07-12 |
-| 产品阶段 | M1/M2/M3 后端里程碑已工程验证；下一里程碑为 M4 Anchor/evidence availability，完整产品仍为 in_progress，Gate B 尚未通过 |
+| 设计基线 | 产品 v0.1；M4 AnchorResult/计算规格 v0.2 待用户复核 |
+| 基线日期 | 2026-07-13 |
+| 产品阶段 | M1/M2/M3 后端里程碑已工程验证；M4 为 18/18 已设计、0/18 已实现，实施计划尚未生成；完整产品仍为 in_progress，Gate B 尚未通过 |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -19,7 +19,7 @@
 4. Windows 前端如何展示并修改节点、边、参数和 CPT；
 5. 如何验证软件、校准评估模型并把产品交给下一位维护者。
 
-文档中的 v0.1 是一套**可运行参考设计**。算法、阈值、拓扑和 CPT 的默认值用于启动开发，不代表已经获得航空监管认可，也不应被表述为最终飞行员评估标准。
+文档中的 v0.1 是一套**可实现参考设计**。算法、阈值、拓扑和 CPT 的默认值用于启动开发，不代表已经获得航空监管认可，也不应被表述为最终飞行员评估标准。书面设计、实施计划、代码实现和工程验证是四种不同状态，不能相互替代。
 
 ## 2. 推荐阅读顺序
 
@@ -44,6 +44,7 @@
 | 17 | [M2 实施计划](plans/2026-07-11-m2-multimodal-synthetic-foundation-implementation-plan.md) | 开发、审查者 | shared X/U、adapter、generator、readiness 与本地 E2E 的 TDD 步骤 |
 | 18 | [M3 Native-Rate Time Synchronization 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) | 开发、数据、审查者 | 已批准：native-rate clock mapping、session window、aligned views 与同步报告 |
 | 19 | [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) | 开发、审查者 | 已完成：Task 0–14 的实现、实测完成门与 handoff/关闭记录 |
+| 20 | [M4 Anchor Calculation and Evidence Availability 规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md) | 开发、算法、审查者 | 待用户复核：AnchorResult v0.2、18 个 anchor、no-quality-gate、DAG、artifact/fingerprint 与 fixtures；18/18 已设计、0/18 已实现，实施计划尚未生成 |
 
 ### 2.1 文档目录的职责
 
@@ -67,7 +68,9 @@
 - 原始数据族：X(t) 飞行状态、U(t) 控制输入、I(t) 飞行员在 VR 中实际看到的第一视角场景、G(t) 在该动态场景上的 gaze/AOI、P(t) 生理信号（至少 EEG 与 ECG）。
 - 参考模型：O1–O13 与 H1–H5，共 18 个逻辑 evidence nodes；O1 的 T/D/H 分段值保留在节点内部。
 - 顶层输出：TCP、PC、SM、OC 四项 aggregate competencies；中间层为 11 个 latent sub-skills。
-- 证据等级：Desired、Adequate、Unacceptable。missing、export_pending、invalid 和 not_applicable 是数据/适用性状态，不进入 BN，也不是第四个表现等级。
+- 证据等级：Desired、Adequate、Unacceptable。`computed + Unacceptable` 是有效负面 evidence，raw availability 与 computed D/A 一样为 1；coverage/availability 表示证据是否形成，不表示表现好坏。
+- `export_pending/missing/invalid/not_applicable` 是 M1–M3 的 stream 生命周期或结构状态；M4 AnchorResult v0.2 的非 computed 状态固定为 `missing_input/not_applicable/not_computable/dependency_missing/extractor_error`，M4 不生成 `invalid_quality`。
+- M4 假定进入它的 aligned input 已满足上游结构合同，不判断原始采集“质量够不够好”，也不因 coverage、gap、噪声、幅值、生理范围或差表现过滤 evidence；这些技术统计只进入 diagnostics/provenance。
 - BN 生成方向：Competency → Sub-skill → Evidence；评估时由 evidence 反推 competency posterior。
 - 前端可以修改图；后端是模型状态、验证、CPT 迁移和发布的唯一权威。
 - 已发布 revision 不可变；正式 run 必须锁定 revision ID 与内容 hash。non-formal run.preview 锁定 exact draft_id + graph_version，不能产生正式结果。
@@ -76,7 +79,9 @@
 
 ## 5. 当前实现边界
 
-截至 2026-07-12，Python Core 已完成 M1、M2 与 M3：严格 SessionManifest/StreamDescriptor/AnchorResult 合同、inspect-only directory-bundle integrity gate、shared X/U、版本化 profiles/adapters、deterministic multimodal generator、`IngestionReadinessReport`，以及 native-rate `AlignedSession`/`SynchronizationReport`。M3 使用 master-clock X mapped coverage、Decimal round-half-even 与版本化 temporal bindings，保留所有 source rows，并输出确定性的 synchronization fingerprint；它不插值、不重采样，也不建立全局或 anchor window grid。完成门实测为 `694 passed, 2 skipped`，配置 repository-external CSV 后 M2/M3 格式样例 E2E 为 `2 passed`，隔离 wheel 的 M3 micro E2E 为 `1 passed`。这些结果不验证样例飞行的任务、表现或科学有效性；M2/M3 report 始终保持 `formal_run_authorized=false`，synthetic fixture 为 `not_supported`。M4 AnchorPlugin/evidence availability、受管理存储 importer、BN、runner、sidecar 和 WinUI 尚未实现。完整状态、golden counts 与复现证据见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+截至 2026-07-13，Python Core 已完成 M1、M2 与 M3：严格 SessionManifest/StreamDescriptor/legacy AnchorResult 0.1 合同、inspect-only directory-bundle integrity gate、shared X/U、版本化 profiles/adapters、deterministic multimodal generator、`IngestionReadinessReport`，以及 native-rate `AlignedSession`/`SynchronizationReport`。M3 使用 master-clock X mapped coverage、Decimal round-half-even 与版本化 temporal bindings，保留所有 source rows，并输出确定性的 synchronization fingerprint；它不插值、不重采样，也不建立全局或 anchor window grid。完成门实测仍为 `694 passed, 2 skipped`，配置 repository-external CSV 后 M2/M3 格式样例 E2E 为 `2 passed`，隔离 wheel 的 M3 micro E2E 为 `1 passed`。这些结果不验证样例飞行的任务、表现或科学有效性；M2/M3 report 始终保持 `formal_run_authorized=false`，synthetic fixture 为 `not_supported`。
+
+M4 已有一份待用户复核的正式书面规格，18/18 anchor 已设计，但 0/18 已实现；AnchorResult v0.2、AnchorPlugin registry/DAG、anchor-specific grids、evidence scorer、artifact/report 和 fingerprints 都尚未进入代码，M4 实施计划也尚未生成。受管理存储 importer、BN、runner、sidecar 和 WinUI 同样尚未实现。完整状态、golden counts 与复现证据见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
 ## 6. 维护规则
 

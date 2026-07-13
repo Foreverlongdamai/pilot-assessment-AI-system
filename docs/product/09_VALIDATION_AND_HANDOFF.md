@@ -3,7 +3,7 @@
 | 字段 | 值 |
 |---|---|
 | 设计版本 | v0.1 |
-| 当前软件状态 | in_progress（M1/M2/M3 后端里程碑已 engineering verified；完整 Core alpha 与 Gate B 尚未完成） |
+| 当前软件状态 | in_progress（M1/M2/M3 后端里程碑已 engineering verified；M4 已完成 18/18 书面设计并待用户复核、0/18 实现，且实施计划尚未生成；完整 Core alpha 与 Gate B 尚未完成） |
 | 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
@@ -53,11 +53,12 @@
 
 - ingestion adapter：正常、缺列、错单位、损坏、gap、duplicate、out-of-order；
 - M3 synchronization：Decimal round-half-even、已知 scale/offset、scale/drift 一致性、same-clock mapping、int64 边界/overflow、master-clock X session window、negative/tail rows、duplicate mapped ns、稳定排序和 source-row preservation；
-- M4 AnchorPlugin temporal processing：按 anchor revision 测试 interpolation/resampling、analysis/window grid、partial-window policy、valid-fraction 与 sampling-rate invariance；
-- 每个 AnchorPlugin：手算 golden case、阈值边界、sampling-rate invariance、missing/invalid/not_applicable；
+- M4 AnchorPlugin temporal processing：按 anchor revision 测试 interpolation/resampling、analysis/window grid、短 phase/尾窗规则、边界包含关系、deterministic replay 与 sampling-rate invariance；
+- 每个 AnchorPlugin：手算 D/A/U golden case、精确阈值边界、phase/event 聚合、classification override，以及 `missing_input/not_applicable/not_computable/dependency_missing/extractor_error`；
+- M4 no-quality-gate invariant：极差轨迹、剧烈控制、极端生理指标、未响应、未恢复或未注视必须形成 `computed + Unacceptable`，不得产生 `invalid_quality`；computed U 的 raw availability 必须为 1；
 - evidence scoring：D/A/U 单调性和边界包含规则；
 - CPT：维度、非负、有限数、每行和为 1；
-- BN：小型手算网络的 prior/posterior、缺失 evidence 边缘化和 virtual evidence；
+- BN：小型手算网络的 prior/posterior、缺失 evidence 边缘化，以及显式 soft scorer/依赖保护产生的 virtual evidence；不得按原始数据质量衰减 likelihood；
 - graph operations：cycle、duplicate、AnchorBinding、state migration、size caps、atomic rollback、undo/redo；
 - layout operations：layout_version conflict、批量位置保存且不改变 semantic hash；
 - model revision：hash、immutability、parent chain 和 publish gate。
@@ -75,8 +76,8 @@
 
 ### 2.4 Integration tests
 
-- 多模态 bundle → `IngestionReadinessReport` → `SynchronizationInput` → native-rate `AlignedSession` + `SynchronizationReport` → model lock/reference resolution → `RunPreflightReport`；
-- aligned session → 18 AnchorResult → evidence；
+- 未来 M6 全栈：多模态 bundle → `IngestionReadinessReport` → `SynchronizationInput` → native-rate `AlignedSession` + `SynchronizationReport` → model lock/reference resolution → `RunPreflightReport`；该链不属于 M4 自身完成门；
+- reference-model-v0.1：aligned session → 非 blocked 的精确 18 项 AnchorResult inventory → evidence；generic engine 测试从 active catalog 读取可变 cardinality；blocked report 只列 `not_attempted` inventory，不伪造 AnchorResult；
 - evidence → BN posterior、coverage、explanation；
 - graph/binding edit → CPT migration → validate → publish；
 - published revision → run → reproducible result；
@@ -84,11 +85,13 @@
 
 ### 2.5 End-to-end tests
 
-至少维护三类 golden bundle：
+至少维护五类互不混淆的 golden bundle：
 
 1. format-sample-XU：只有 simulator 采集格式样例 X/U，用于接口、解析、时间与缺失模态处理；该记录不提供标准轨迹、任务 ground truth 或能力标签；
-2. synthetic-multimodal：含可控 offset/drift、VR/gaze、EEG/ECG 和已知答案；
-3. de-identified-reference：经批准的真实 session，用于回归，不进入公开仓库。
+2. synthetic-multimodal-foundation：含可控 offset/drift、VR/gaze、EEG/ECG，用于 M2/M3 合同和同步，不默认声称 18-anchor 答案有效；
+3. m4-all-desired-v0.1：完整 reference、phase/event、AOI、control calibration、baseline 和参数，要求 18/18 `computed + Desired`；
+4. m4-all-unacceptable-v0.1：完整且刻意构造的差表现，要求 18/18 `computed + Unacceptable`、raw availability=100% 且 `invalid_quality` count=0；
+5. de-identified-reference：经批准的真实 session，用于回归，不进入公开仓库。
 
 通过 WinUI 执行：创建项目、导入、修复或接受 warning、编辑图、发布模型、运行、查看 trace、导出结果。
 
@@ -121,15 +124,21 @@ Captured-format source SHA-256 固定为 `19bf804253d841de9c9de299ac96e9e1b693b2
 
 Public `SynchronizationReport.validation_scope` 为 `native_rate_session_time_alignment_v1`。同一确定性 `synchronization_fingerprint` 写入 report 与非 blocked `AlignedSession`；fingerprint 覆盖 M2 source snapshot、policy、temporal catalog、aligned time/flags、canonical annotations 与排序后的 status/issues，并排除绝对路径和 host/wall time。M3 不插值、不重采样、不建立 analysis/window grid，所有 timed artifact 的 `interpolated_rows=0`；M4 才按 AnchorPlugin revision 建立 anchor-specific grids/windows。所有 M3 路径继续保持 `formal_run_authorized=false`，synthetic scientific status 为 `not_supported`。
 
+### 2.7 M4 书面设计状态（2026-07-13）
+
+[M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md) 已把 O1–O13、H1–H5 共 18 个 anchor、AnchorResult v0.2、typed dependency DAG、artifact/fingerprint、状态边界和 fixtures 写入待用户复核的书面设计。当前真实实现状态仍是 **18/18 已设计、0/18 已实现**；`src/pilot_assessment/anchors/` 尚未建立，M4 实施计划也尚未生成，因此本节不是 M4 engineering verification record，不能据此声称任何 AnchorPlugin 已通过测试。
+
+M4 的职责边界是按已配置规则提取 evidence，而不是研究原始采集质量。进入 M4 的 aligned input 假定已经满足 M1–M3 的结构合同；coverage、gap、sample count 和 sync metrics 只作 diagnostics/provenance。数值再差仍应形成 D/A/U，特别是 `computed + Unacceptable` 必须作为有效负面 evidence，且 raw availability 与 computed D/A 一样为 1。
+
 ## 3. 子系统验证矩阵
 
 | 子系统 | 必须证明 | 主要证据 |
 |---|---|---|
 | Session bundle | 格式、checksum、单位、状态语义正确 | schema tests、corrupt fixtures |
 | 时间同步 | native-rate rows 按唯一 clock mapping 对齐、window/越界/重复/误差可见且不改 source 值 | half-even、scale/offset、overflow、same-clock、window、duplicate 和 row-preservation synthetic tests |
-| Anchor temporal processing | 插值、重采样与 analysis/window grid 只按锁定 AnchorPlugin/model revision 建立 | M4 per-anchor interpolation/window/sampling-rate tests |
-| Anchors | 实现与正式定义、参数和质量门一致 | per-anchor golden tests |
-| Evidence | 阈值方向和缺失策略正确 | boundary/property tests |
+| Anchor temporal processing | 插值、重采样与 analysis/window grid 只按锁定 AnchorPlugin/model revision 建立，不使用原始数据质量门丢弃表现 evidence | M4 per-anchor interpolation/window/sampling-rate tests |
+| Anchors | 实现与正式定义、参数、聚合和 override 一致；差表现保持 computed U | per-anchor D/A/U golden、all-D/all-U workflow tests |
+| Evidence | 阈值方向、边界和 calculation status 正确；computed U availability=1 | boundary/property/no-quality-gate tests |
 | BN/CPT | 图合法、概率正确、缺失可边缘化 | hand-computable BN tests |
 | Graph editor | 前后端一一对应、失败原子回滚 | .NET/Python contract + UI tests |
 | Revisions | 发布不可变、运行可重现 | hash and replay tests |
@@ -160,7 +169,7 @@ draft 只有满足以下全部条件才能 publish：
 
 ### Stage S0：专家内容审查
 
-- 审查 18 个 anchor 的构念、公式、方向、适用阶段和质量门；
+- 审查 18 个 anchor 的构念、公式、方向、适用阶段、配置前提和 classification override；不把原始数据质量研究重新引入 M4；
 - 审查 11 个 sub-skill、4 个 competency 及共享 evidence 连接；
 - 确认 task profile、reference path、phase/event 与安全边界；
 - 对每条意见记录 accept/reject/defer 和理由。
@@ -191,7 +200,7 @@ draft 只有满足以下全部条件才能 publish：
 ### Stage S3：稳健性与推广
 
 - leave-one-modality-out 与 missingness ablation；
-- threshold、CPT、同步误差和 quality weighting 敏感性；
+- threshold、CPT 和同步误差敏感性；若未来研究采集质量或噪声鲁棒性，应作为独立科学研究，不得静默改成 M4 evidence omission 或 likelihood 衰减；
 - 不同 pilot、场景、任务难度、设备和日期的外部验证；
 - subgroup performance 和潜在偏差；
 - distribution shift 与 out-of-scope 检测；
@@ -211,7 +220,7 @@ draft 只有满足以下全部条件才能 publish：
 ### Gate B：Core alpha
 
 - minimal-XU 与 synthetic-multimodal bundle 可运行；
-- 18 个 AnchorPlugin 合同齐全，未有数据的插件正确返回状态；
+- reference-model-v0.1 的 18 个 AnchorPlugin 合同和实现齐全；完整好/差 fixtures 分别得到 18/18 D 与 18/18 U，且差表现不产生 `invalid_quality`；generic engine 同时通过非 18 cardinality extension fixture；
 - BN、missing evidence、coverage 和 provenance 可验证；
 - CLI/test harness 可在无 UI 情况运行。
 
@@ -240,7 +249,8 @@ Research release 不自动意味着 operational certification。
 - 使用了哪些 engine、plugin、algorithm 和 parameter version；
 - 哪些原始文件、phase/event 和 source window 支撑每个 anchor；
 - continuous value 如何转为 D/A/U；
-- 哪些 evidence 缺失、无效或不适用；
+- 哪些 evidence 为 `missing_input`、`not_applicable`、`not_computable`、`dependency_missing` 或 `extractor_error`；
+- 哪些 `computed + Unacceptable` 是有效负面 evidence，以及它们为何仍计入 availability；
 - 每项 competency 的 coverage；
 - 哪些 evidence 对 posterior 贡献最大；
 - 谁在何时发布模型，经过哪些验证。
@@ -316,7 +326,7 @@ PilotAssessment/
 4. 核对 I(t)/G(t)、EEG/ECG 和模态状态语义；
 5. 核对 frontend、runtime 与 backend 方法名；
 6. 核对新增/删除 edge 的 CPT migration；
-7. 核对 missing evidence、coverage 和 validation status；
+7. 核对 AnchorResult v0.2 calculation status、computed-U availability、missing evidence、coverage 和 validation status；确认 M4 正式文档未重新引入 `quality_gates`、`min_valid_coverage`、`binary_quality_v1` 或主动产生的 `invalid_quality`；
 8. 由未参与起草的人进行一次独立审查；
 9. 把发现、修复和遗留风险写入 10_DESIGN_SELF_REVIEW.md。
 
@@ -327,4 +337,4 @@ PilotAssessment/
 - reference trajectory、phase/event annotation 的生产方式需与实验团队确认；
 - shared-evidence 多 parent CPT 会指数增长；v0.1 已设 parent/row/cell/size 硬上限，但数值仍需性能基准和专家审查后才能提高；
 - WinUI 图编辑控件选型和无障碍支持需原型验证；
-- 后端 M1/M2/M3 已有合同、directory-bundle loader、JSON Schema、版本化 adapters/bindings、deterministic multimodal software fixtures、`IngestionReadinessReport`、native-rate `AlignedSession`/`SynchronizationReport` 和自动化测试。18 个 AnchorPlugin、evidence scorer、BN、assessment runner、受管理 importer、sidecar 与 WinUI 仍未实现；因此只有 M3 里程碑为 engineering verified，完整产品 software verification 仍为 in_progress，Gate B 尚未通过。
+- 后端 M1/M2/M3 已有合同、directory-bundle loader、JSON Schema、版本化 adapters/bindings、deterministic multimodal software fixtures、`IngestionReadinessReport`、native-rate `AlignedSession`/`SynchronizationReport` 和自动化测试。M4 已完成 18/18 anchor 的书面设计，但仍是 0/18 实现且实施计划尚未生成；evidence scorer、BN、assessment runner、受管理 importer、sidecar 与 WinUI 也仍未实现。因此只有 M3 里程碑为 engineering verified，完整产品 software verification 仍为 in_progress，Gate B 尚未通过。
