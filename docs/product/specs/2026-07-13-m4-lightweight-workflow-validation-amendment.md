@@ -6,8 +6,8 @@
 | 日期 | 2026-07-13 |
 | 方向状态 | 用户已确认并批准采用轻量测试方向 |
 | 书面状态 | 已于 2026-07-13 获用户批准并生效 |
-| 实现状态 | Task 0 暂停且未提交；18/18 specified、0/18 implemented |
-| 取代范围 | 立即取代 M4 主规格 §1.1 的完整 fixture 表述、§14.2–§14.4 的“四套 90 秒 full bundle + frozen full-workflow oracle”要求、§15 的 M4-G full-fixture 口径及 §17 的原计划执行授权；replacement plan 尚待单独批准 |
+| 实现状态 | Replacement plan 已批准并从 Task 0 获授权；Task 0 尚未开始；18/18 specified、0/18 implemented |
+| 取代范围 | 立即取代 M4 主规格 §1.1 的完整 fixture 表述、§14.2–§14.4 的“四套 90 秒 full bundle + frozen full-workflow oracle”要求、§15 的 M4-G full-fixture 口径及 §17 的原计划执行授权；replacement plan 已于 2026-07-13 单独批准 |
 | 不变范围 | 18 个 anchor、AnchorResult v0.2、DAG、算法、阈值、状态语义、no-quality-gate、M1/M2/M3 已发布合同 |
 | 科学状态 | 所有 synthetic 数据继续为 `not_supported`，只验证软件工作流 |
 
@@ -199,7 +199,7 @@ Expected vectors 与 input fixtures 存放在不同文件/模块。轻量 per-an
 
 ## 6. 对当前实施计划的约束
 
-依本已接受修订，已使用 writing-plans 流程形成 [replacement M4 实施计划](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) Review candidate；原实施计划保留为已被取代的历史文件，不再执行。Replacement plan 仍须单独复核和批准，并必须满足：
+依本已接受修订，已使用 writing-plans 流程形成并于 2026-07-13 单独批准 [replacement M4 实施计划](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)；原实施计划保留为已被取代的历史文件，不再执行。Replacement plan 从 Task 0 获得实施授权，并必须满足：
 
 1. Task 0 改为依赖锁、轻量 fixture 合同、防答案回灌 RED 和一次 10 秒 bundle gate；
 2. 删除四套 90 秒 physical bundle、逐帧 90/30 Hz 扩展资产、43,000-file manifest 和 full-workflow frozen oracle；
@@ -210,7 +210,7 @@ Expected vectors 与 input fixtures 存放在不同文件/模块。轻量 per-an
 7. M4-G、determinism 和 isolated-wheel smoke 复用同一个 10 秒 bundle；
 8. 计划的 specification-to-task matrix、Definition of Done、测试命令和 task count 必须同步更新。
 
-当前未提交的 provisional heavy fixture files 在 replacement plan 获批后删除，并从新的轻量 Task 0 RED 重新开始。不得把 provisional `8 passed` 记入 M4 完成证据；在 replacement plan 获批前不得恢复 M4 实施。
+当前未提交的 provisional heavy fixture files 将按已批准 replacement plan 的 Task 0 安全检查逐项删除，并从新的轻量 Task 0 RED 重新开始。不得把 provisional `8 passed` 记入 M4 完成证据；Task 0 当前尚未开始。
 
 ## 7. 决策与文档迁移
 
@@ -228,7 +228,7 @@ Expected vectors 与 input fixtures 存放在不同文件/模块。轻量 per-an
 本修订的设计批准已经完成；其实施仍只有在以下条件同时满足后才可称为落实：
 
 - [x] 用户复核并批准本文；
-- [ ] 修订后的 M4 实施计划另行获批；
+- [x] 修订后的 M4 实施计划另行获批；
 - [ ] provisional heavy fixture 未进入提交历史；
 - [ ] 新 Task 0 首先观察到缺少轻量能力的 RED；
 - [ ] 唯一 10 秒 bundle 满足 468 declared paths、452 PNG 和 `<=9,500 physical source-table rows` 预算；

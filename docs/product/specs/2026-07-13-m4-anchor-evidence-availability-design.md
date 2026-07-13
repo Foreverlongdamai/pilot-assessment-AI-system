@@ -5,7 +5,7 @@
 | 设计基线 | v0.2 |
 | 日期 | 2026-07-13 |
 | 设计状态 | 完整书面规格及轻量工作流验证修订均已于 2026-07-13 获用户批准；修订在其取代范围内优先 |
-| 实现状态 | 18/18 已设计，0/18 已实现；原 M4 实施计划已被轻量修订取代，replacement plan 尚待单独批准，当前不得执行 Task 0 |
+| 实现状态 | 18/18 已设计，0/18 已实现；原 M4 实施计划已被轻量修订取代，replacement plan 已于 2026-07-13 批准；Task 0 已获授权但尚未开始 |
 | 上游 | M1 Session integrity + M2 Ingestion readiness + M3 native-rate synchronization |
 | 下游 | M5 ModelBundle/BN/CPT/inference；M6 formal run/persistence |
 | 正式运行授权 | `formal_run_authorized=false` |
@@ -741,7 +741,7 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 
 ## 16. Documentation migration
 
-本节首先保留原 M4 规格在批准前执行 candidate alignment 的历史记录；当时只涉及 D-021–D-025，且不构成实现。2026-07-13 后续获批的轻量工作流验证修订又触发了第二次迁移：D-026/D-027、§1.1、§14.2–§14.4、§15/§17 和当前状态文档以轻量口径为准，原实施计划被取代，replacement plan 仍需单独批准。
+本节首先保留原 M4 规格在批准前执行 candidate alignment 的历史记录；当时只涉及 D-021–D-025，且不构成实现。2026-07-13 后续获批的轻量工作流验证修订又触发了第二次迁移：D-026/D-027、§1.1、§14.2–§14.4、§15/§17 和当前状态文档以轻量口径为准，原实施计划被取代；replacement plan 随后于同日单独获批，Task 0 尚未开始。
 
 本轮 candidate alignment 覆盖：
 
@@ -772,4 +772,4 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 9. M4/M5/M6 ownership 与 coverage 公式不冲突；
 10. Git commit 只声称 design/documentation，不声称 M4 implemented。
 
-原书面规格与轻量工作流验证修订均已通过用户复核，D-026/D-027 已接受。原 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 虽曾获批准，但其四套 90 秒 fixture 路线已被本修订取代，不再提供执行授权；[replacement plan](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 已形成 Review candidate，尚待单独批准。M4 当前保持 18/18 specified、0/18 implemented，在 replacement plan 获批前不得恢复 Task 0 或声称任何 M4 能力已实现。
+原书面规格、轻量工作流验证修订与 [replacement plan](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已通过用户复核，D-026/D-027 已接受。原 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 虽曾获批准，但其四套 90 秒 fixture 路线已被本修订取代，不再提供执行授权；replacement plan 已从 Task 0 获得实施授权，但 Task 0 尚未开始。M4 当前保持 18/18 specified、0/18 implemented，在相应完成门通过前不得声称任何 M4 能力已实现。

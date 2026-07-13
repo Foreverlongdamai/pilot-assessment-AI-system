@@ -14,7 +14,7 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted `docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md`, with the amendment taking precedence for verification scope.
 - Accepted decisions: D-021 through D-027 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-13: replacement review candidate written after the user approved the lightweight amendment; no implementation task is authorized until the user separately approves this replacement plan.
+- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; implementation is authorized from Task 0 under this replacement plan, and Task 0 has not started.
 - Current implementation truth: 18/18 reference anchors specified, 0/18 implemented.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
@@ -22,9 +22,9 @@
 - Data truth: the repository-external 2,902-row simulator CSV is only a captured-format sample. It is not a trajectory standard, commanded path, label, or M4 golden input.
 - Git boundary: commit each task separately, never push automatically, and stop for a design re-approval if implementation would change an accepted formula, state, threshold, fixture recipe, or ownership boundary.
 
-## Approval-recording precondition before Task 0
+## Approval-recording precondition before Task 0 — user approval received
 
-The explicit user approval of this replacement plan is a prerequisite, not part of Task 0. On approval, record authority in a docs-only commit before deleting provisional files or changing implementation code.
+The user explicitly approved this replacement plan on 2026-07-13. This authority migration is a docs-only prerequisite, not part of Task 0; it must be committed before deleting provisional files or changing implementation code.
 
 **Files:**
 - Modify: `README.md`
@@ -38,11 +38,11 @@ The explicit user approval of this replacement plan is a prerequisite, not part 
 - Modify: `docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md`
 - Modify: `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md`
 
-Required migration:
+Required migration performed by this docs-only change:
 
-1. change this plan from `replacement review candidate` to the exact approval date and state that execution is authorized from Task 0 under this plan;
+1. record the exact approval date and state that execution is authorized from Task 0 under this plan;
 2. check only the amendment §8 item for replacement-plan approval; leave every implementation/engineering-verification item unchecked;
-3. update current entry/status surfaces from `replacement plan pending` to `replacement plan approved; Task 0 not started`;
+3. update current entry/status surfaces to `replacement plan approved; Task 0 not started`;
 4. preserve `18/18 specified, 0/18 implemented`, `formal_run_authorized=false`, `engineering_default`, and synthetic `not_supported`;
 5. do not edit D-021-D-027 semantics or claim any RED/GREEN/test evidence.
 
@@ -59,15 +59,24 @@ $approvalFiles = @(
   'docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md',
   'docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md'
 )
-$stale = Select-String -Path $approvalFiles -Pattern 'replacement plan 尚待','replacement plan pending','Review candidate','no implementation task is authorized'
-if ($stale) { $stale; throw 'replacement-plan approval migration is incomplete' }
+$stalePatterns = @(
+  ('replacement plan ' + '尚待'),
+  ('replacement plan ' + 'pending'),
+  ('Review ' + 'candidate'),
+  ('no implementation task is ' + 'authorized'),
+  ('still requires separate ' + 'approval')
+)
+foreach ($pattern in $stalePatterns) {
+  $stale = Select-String -Path $approvalFiles -Pattern $pattern -SimpleMatch
+  if ($stale) { $stale; throw "replacement-plan approval migration is incomplete: $pattern" }
+}
 git diff --check
 git add -- $approvalFiles
 git diff --cached --stat
 git commit -m "docs: approve replacement lightweight M4 implementation plan"
 ~~~
 
-Only after this commit may Task 0 begin. If approval is withheld or changed, keep M4 paused and revise the plan instead of running implementation commands.
+Only after this docs-only authority commit may Task 0 begin. If the approval scope is later changed, pause M4 and revise the plan instead of running implementation commands.
 
 ## Subagent-driven execution protocol
 
