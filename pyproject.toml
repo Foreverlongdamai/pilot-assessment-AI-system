@@ -9,9 +9,12 @@ description = "Offline, interpretable multimodal pilot assessment core"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "numpy>=2.3.4,<2.4",
     "pillow>=11,<13",
     "polars>=1,<2",
     "pydantic>=2.12,<3",
+    "rfc8785>=0.1.4,<0.2",
+    "scipy>=1.17,<1.18",
 ]
 
 [dependency-groups]

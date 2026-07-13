@@ -1,0 +1,264 @@
+{
+  "asset_budget": {
+    "declared_path_references": 468,
+    "max_physical_source_table_rows": 9500,
+    "physical_source_table_rows": 9331,
+    "png_files": 452,
+    "unique_artifacts": 467,
+    "verified_paths": 466
+  },
+  "controls": {
+    "bindings": {
+      "event_response": "control.longitudinal_raw",
+      "hover_trim": "control.heave_raw",
+      "magnitude": "control.lateral_raw",
+      "workload_reversal": "control.yaw_raw"
+    },
+    "event_response": {
+      "amplitude_full_travel_fraction": 0.1,
+      "pulses_s": [
+        {
+          "correct_sign": 1,
+          "end_s": 4.64,
+          "event_id": "disturbance-001",
+          "start_s": 4.49
+        },
+        {
+          "correct_sign": 1,
+          "end_s": 6.54,
+          "event_id": "envelope-exit-001",
+          "start_s": 6.39
+        }
+      ]
+    },
+    "full_travel": {
+      "lower": -1.0,
+      "trim": 0.0,
+      "upper": 1.0
+    },
+    "hover_trim": {
+      "amplitude_full_travel_fraction": 0.01,
+      "frequency_hz": 1.0,
+      "span_s": [8.25, 9.75]
+    },
+    "magnitude": {
+      "constant_full_travel_fraction": 0.7,
+      "weight": 1.0
+    },
+    "workload_reversal": {
+      "amplitude_full_travel_fraction": 0.1,
+      "frequency_hz": 1.0,
+      "phase_reset": true,
+      "w_min_hz": 1.0
+    }
+  },
+  "created_at": "2000-01-01T00:00:00Z",
+  "ecg": {
+    "provided_r_peaks": {
+      "baseline_peak_times_s": [0.0, 1.0, 2.0, 3.0, 4.0],
+      "task_first_peak_s": 4.0,
+      "task_peak_index_start": 1,
+      "task_peak_count": 6,
+      "task_rr_step_s": 0.869565217
+    },
+    "raw_signal": {
+      "amplitude_mV": 1.0,
+      "frequency_hz": 1.15
+    }
+  },
+  "eeg": {
+    "components": {
+      "alpha": {
+        "amplitude_uV": 1.0,
+        "frequency_hz": 10.0
+      },
+      "beta": {
+        "baseline_amplitude_uV": 1.0,
+        "frequency_hz": 20.0,
+        "task_power_ratio": 1.35
+      },
+      "theta": {
+        "amplitude_uV": 1.0,
+        "frequency_hz": 6.0
+      }
+    },
+    "engagement_channels": ["Fp1", "Fp2", "C3", "C4"],
+    "epsilon": 1e-12,
+    "phase_radians": [0.0, 1.5707963267948966, 3.141592653589793, 4.71238898038469],
+    "pipeline": {
+      "bandpass_hz": [3.0, 35.0],
+      "bandpass_order": 4,
+      "common_average": true,
+      "mains_notch_q": 30.0,
+      "welch_segment_s": 2.0,
+      "window_s": 4.0,
+      "window_step_s": 2.0
+    },
+    "reference": "common-average",
+    "scale_to_volts": 1e-6,
+    "unit": "uV"
+  },
+  "events": [
+    {
+      "event_id": "disturbance-001",
+      "event_type": "disturbance",
+      "time_s": 4.25
+    },
+    {
+      "event_id": "envelope-exit-001",
+      "event_type": "envelope_exit",
+      "time_s": 6.25
+    },
+    {
+      "event_id": "visual-cue-001",
+      "event_type": "visual_cue",
+      "time_s": 6.75
+    },
+    {
+      "event_id": "deceleration-hover-boundary",
+      "event_type": "d_to_h_boundary",
+      "time_s": 8.0
+    }
+  ],
+  "fixture_contract": "m4-workflow-smoke-fixture-v1",
+  "fixture_id": "m4-workflow-smoke-v0.1",
+  "gaze": {
+    "aoi_geometry": [
+      {
+        "bbox_norm": [0.1, 0.1, 0.8, 0.8],
+        "catch_all": false,
+        "confidence": 1.0,
+        "priority": 1,
+        "role": "primary_flight_display",
+        "visible": true
+      },
+      {
+        "bbox_norm": [0.0, 0.0, 1.0, 1.0],
+        "catch_all": true,
+        "confidence": 1.0,
+        "priority": 0,
+        "role": "other_scene",
+        "visible": true
+      }
+    ],
+    "aoi_taxonomy_id": "m4-smoke-aoi-v0.1",
+    "compatibility_fixation": {
+      "detector_version": "compatibility-only-ignored-by-h2-v0.1",
+      "span_s": [0.0, 0.1]
+    },
+    "off_task_tail_s_per_phase": 0.3,
+    "other_scene_role": "other_scene",
+    "primary_role": "primary_flight_display",
+    "raw_viewport": {
+      "cue_motion_span_s": [6.75, 7.0],
+      "cue_motion_x_norm": [0.2, 0.8],
+      "off_task_xy_norm": [0.95, 0.5],
+      "on_task_xy_norm": [0.5, 0.5],
+      "ray_projection": "normalized-viewport-pinhole-v1"
+    },
+    "scene": {
+      "frame_valid": true,
+      "head_pose_m": [0.0, 0.0, 1.15],
+      "head_quaternion_xyzw": [0.0, 0.0, 0.0, 1.0],
+      "horizontal_fov_deg": 92.0,
+      "vertical_fov_deg": 58.0
+    }
+  },
+  "generator_id": "m4-lightweight-workflow-builder-v1",
+  "seed": 20260713,
+  "semantic_bindings": {
+    "arrival_axis": [1.0, 0.0, 0.0],
+    "coordinate_frame": "local_ned_m",
+    "metres_per_foot": 0.3048,
+    "hover_envelope_id": "m4-smoke-hover-envelope-v0.1",
+    "hover_target_m": [30.48, 0.0, 0.0],
+    "task_envelope_id": "m4-smoke-task-envelope-v0.1",
+    "visual_cue_relevant_role": "primary_flight_display"
+  },
+  "session": {
+    "baseline": [0, 4],
+    "end_s": 10,
+    "phases": [
+      {
+        "name": "Translation",
+        "span_s": [4, 6]
+      },
+      {
+        "name": "Deceleration",
+        "span_s": [6, 8]
+      },
+      {
+        "name": "Hover",
+        "span_s": [8, 10]
+      }
+    ],
+    "start_s": 0
+  },
+  "streams": {
+    "ecg": {
+      "clock_mapping": "identity",
+      "rate_hz": 250,
+      "schema_id": "ecg-source-bundle-v0.1"
+    },
+    "eeg": {
+      "clock_mapping": "identity",
+      "mains_frequency_hz": 50,
+      "rate_hz": 256,
+      "schema_id": "eeg-source-bundle-v0.1"
+    },
+    "gaze": {
+      "clock_mapping": "identity",
+      "rate_hz": 120,
+      "schema_id": "gaze-source-bundle-v0.1"
+    },
+    "pilot_camera": {
+      "clock_mapping": "identity",
+      "frame_valid": true,
+      "image_height": 48,
+      "image_mode": "RGB8",
+      "image_width": 48,
+      "privacy_class": "synthetic-no-identity",
+      "rate_hz": 15,
+      "schema_id": "pilot-camera-source-bundle-v0.1"
+    },
+    "task_reference": {
+      "clock_mapping": "identity",
+      "rate_hz": 100,
+      "schema_id": "task-reference-path-raw-v0.1"
+    },
+    "vr_scene": {
+      "clock_mapping": "identity",
+      "image_height": 36,
+      "image_mode": "RGB8",
+      "image_width": 64,
+      "rate_hz": 30,
+      "schema_id": "vr-scene-source-bundle-v0.1"
+    },
+    "xu": {
+      "clock_mapping": "identity",
+      "rate_hz": 100,
+      "schema_id": "cranfield-simulator-combined-csv-raw-v0.1"
+    }
+  },
+  "trajectory": {
+    "commanded_reference": {
+      "attitude_deg": [0.0, 0.0, 0.0],
+      "position_m": [30.48, 0.0, 0.0],
+      "velocity_m_s": [0.0, 0.0, 0.0]
+    },
+    "envelope_radius_m": 0.3048,
+    "kinematics": {
+      "angular_rate_body_deg_s": [0.0, 0.0, 0.0],
+      "velocity_body_m_s": [0.0, 0.0, 0.0],
+      "velocity_earth_m_s": [0.0, 0.0, 0.0]
+    },
+    "offset_axis": [1.0, 0.0, 0.0],
+    "offset_sign": 1,
+    "offset_spans_s": {
+      "Deceleration": [[6.25, 6.45]],
+      "Hover": [[8.0, 8.25], [9.75, 10.0]],
+      "Translation": [[4.25, 4.5]]
+    },
+    "tracking_offset_m": 0.9144
+  }
+}
