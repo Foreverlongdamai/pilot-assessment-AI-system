@@ -52,6 +52,10 @@
 | SynchronizationInput | M3 内部不可变输入，组合同一次 `LoadedManifest`、`PreparedSession` 和 `IngestionReadinessReport`；blocked readiness 不构造该对象。 |
 | AlignedStreamView | M3 内部只读视图；保留 raw columns、rows 和 values，并按显式 temporal binding 在末尾追加 authoritative int64 `t_ns`/interval ns 与 Boolean window flags；schema ID 使用 `*-aligned-v0.1`。 |
 | AlignedSession | M3 内部不可变结果，包含 native-rate aligned streams、session window、aligned annotations、bundle task reference 和同步 fingerprints；不作为公共 JSON-RPC 大数据 DTO。 |
+| Compact workflow fixture | M4 默认验证使用的紧凑 raw/aligned input：per-anchor micro fixture 或 all-Desired/all-Unacceptable/mixed real-plugin scenario。它可以覆盖 exact-18 inventory，但不要求每个场景都生成 physical Session Bundle。 |
+| Lightweight physical workflow smoke | 唯一的 10 秒全模态 synthetic Session Bundle；通过公开入口验证 M1→M4、source immutability、determinism 与 isolated-wheel packaging，不承担 18 个 anchor 的全部精确阈值 oracle。 |
+| Release-scale / performance fixture | 未来可选的长 session、full-rate、吞吐/内存/soak 测试资产；不属于 M4 Task 0、默认 pytest、isolated-wheel smoke 或 engineering-verification 必要门槛。 |
+| Answer leakage / 答案回灌 | 把 expected AnchorResult、state、likelihood、预计算 composite 或 production output 写入测试 input recipe，使测试只证明 builder/oracle 自洽而没有证明 raw/aligned data 驱动 evidence；D-027 明确禁止。 |
 | SynchronizationReport | M3 公共同步报告，记录七个 core modality、task reference、annotation、clock/coverage/window diagnostics 与 source/policy/catalog/alignment fingerprints；证明结构／时间合同并提供 non-gating diagnostics，始终 `formal_run_authorized=false`。 |
 | Run preflight | `run.preflight` 在 aligned session、annotation/reference 和锁定 model revision 上执行的正式运行门；输出 `RunPreflightReport` 并决定能否创建 AssessmentRun。 |
 | BN | Bayesian Network，贝叶斯网络。 |

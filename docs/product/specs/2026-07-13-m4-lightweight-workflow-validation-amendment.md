@@ -2,12 +2,12 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 文档类型 | M4 已批准规格的测试策略修订候选 |
+| 文档类型 | M4 已批准规格的已接受测试策略修订 |
 | 日期 | 2026-07-13 |
-| 方向状态 | 用户已确认采用轻量测试方向 |
-| 书面状态 | Review candidate；等待用户复核本文后生效 |
+| 方向状态 | 用户已确认并批准采用轻量测试方向 |
+| 书面状态 | 已于 2026-07-13 获用户批准并生效 |
 | 实现状态 | Task 0 暂停且未提交；18/18 specified、0/18 implemented |
-| 取代范围 | 获批后取代 M4 主规格 §14.2–§14.4 中“四套 90 秒 full bundle + frozen full-workflow oracle”的要求，并据此重写实施计划 Task 0 与 M4-G E2E |
+| 取代范围 | 立即取代 M4 主规格 §1.1 的完整 fixture 表述、§14.2–§14.4 的“四套 90 秒 full bundle + frozen full-workflow oracle”要求、§15 的 M4-G full-fixture 口径及 §17 的原计划执行授权；replacement plan 尚待单独批准 |
 | 不变范围 | 18 个 anchor、AnchorResult v0.2、DAG、算法、阈值、状态语义、no-quality-gate、M1/M2/M3 已发布合同 |
 | 科学状态 | 所有 synthetic 数据继续为 `not_supported`，只验证软件工作流 |
 
@@ -199,7 +199,7 @@ Expected vectors 与 input fixtures 存放在不同文件/模块。轻量 per-an
 
 ## 6. 对当前实施计划的约束
 
-本文获批后，必须使用 writing-plans 流程重写现有 M4 实施计划的相关部分：
+依本已接受修订，已使用 writing-plans 流程形成 [replacement M4 实施计划](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) Review candidate；原实施计划保留为已被取代的历史文件，不再执行。Replacement plan 仍须单独复核和批准，并必须满足：
 
 1. Task 0 改为依赖锁、轻量 fixture 合同、防答案回灌 RED 和一次 10 秒 bundle gate；
 2. 删除四套 90 秒 physical bundle、逐帧 90/30 Hz 扩展资产、43,000-file manifest 和 full-workflow frozen oracle；
@@ -210,24 +210,24 @@ Expected vectors 与 input fixtures 存放在不同文件/模块。轻量 per-an
 7. M4-G、determinism 和 isolated-wheel smoke 复用同一个 10 秒 bundle；
 8. 计划的 specification-to-task matrix、Definition of Done、测试命令和 task count 必须同步更新。
 
-当前未提交的 provisional heavy fixture files 在本文和修订计划获批后删除，并从新的轻量 Task 0 RED 重新开始。不得把 provisional `8 passed` 记入 M4 完成证据。
+当前未提交的 provisional heavy fixture files 在 replacement plan 获批后删除，并从新的轻量 Task 0 RED 重新开始。不得把 provisional `8 passed` 记入 M4 完成证据；在 replacement plan 获批前不得恢复 M4 实施。
 
 ## 7. 决策与文档迁移
 
-本文最终获批时应：
+本文获批已触发以下迁移：
 
-1. 在 `DECISIONS.md` 新增“默认 M4 验证采用轻量测试金字塔；长 session 属于独立性能验证”的已接受决定；
-2. 新增“raw/aligned inputs 必须机械驱动 expected anchors，禁止答案回灌”的已接受决定；
-3. 修改 M4 主规格 §14.2–§14.4、§15、§17；
-4. 修改 M4 实施计划 Task 0、M4-G、coverage matrix 与完成定义；
+1. 在 `DECISIONS.md` 新增 D-026“默认 M4 验证采用轻量测试金字塔；长 session 属于独立性能验证”；
+2. 新增 D-027“raw/aligned inputs 必须机械驱动 expected anchors，禁止答案回灌”；
+3. 修改 M4 主规格 §1.1、§14.2–§14.4、§15、§17；
+4. 把原 M4 实施计划标记为 superseded，并另行编写、复核和批准 replacement plan；
 5. 更新 `README.md`、`docs/product/README.md`、`09_VALIDATION_AND_HANDOFF.md`、`10_DESIGN_SELF_REVIEW.md` 和 `11_IMPLEMENTATION_STATUS.md`；
 6. 保留 M2/M3 已完成计划与历史实测数字，不回写或伪造其完成证据。
 
 ## 8. 验收标准
 
-本修订只有在以下条件同时满足后才可称为落实：
+本修订的设计批准已经完成；其实施仍只有在以下条件同时满足后才可称为落实：
 
-- [ ] 用户复核并批准本文；
+- [x] 用户复核并批准本文；
 - [ ] 修订后的 M4 实施计划另行获批；
 - [ ] provisional heavy fixture 未进入提交历史；
 - [ ] 新 Task 0 首先观察到缺少轻量能力的 RED；

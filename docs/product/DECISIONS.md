@@ -176,3 +176,17 @@
 - 决策：M4-G 只有在逐 anchor 手算 golden、精确边界、状态矩阵、18/18 computed Desired、18/18 computed Unacceptable、扩展/retire/version replay、确定性 fingerprint、source immutability、完整测试、构建和隔离 wheel 全部通过后，才可声称 M4 engineering-verified。
 - 理由：只证明理想信号能运行不能发现“差表现被过滤”的核心失效模式，也不能证明专家未来修改 anchor 后仍可重放。
 - 影响：全 Unacceptable fixture 的 raw availability 必须为 1，M4 输出不得出现 `invalid_quality`；synthetic fixture 继续标记 `scientific_validation_status=not_supported`。M4-A 至 M4-F 的局部完成状态必须如实报告，不能冒充 M4 整体实现。
+
+## D-026：M4 默认采用轻量分层验证
+
+- 状态：已接受
+- 决策：M4 的默认验证由合同/纯框架测试、18 个 per-anchor 定向微型测试、紧凑 all-Desired/all-Unacceptable/mixed aligned-input 场景、fault-hook state matrix，以及唯一一个 10 秒全模态 M1→M4 physical bundle smoke 组成。90 秒或更长的 full-rate bundle 不属于 Task 0、默认 pytest、isolated-wheel smoke 或 M4 engineering-verified 的必要条件；未来如需长 session 性能、内存或吞吐验证，必须作为独立且手动触发的 performance milestone。
+- 理由：原四套 90 秒 dense fixture 每次临时生成约 43,000 个文件且 focused gate 约需 160 秒，却没有比小型定向输入和单个物理工作流 smoke 提供更多 data-to-anchor 语义保证。验证规模不应阻塞 AnchorPlugin 的实现与频繁回归。
+- 影响：D-025 的 18/18 Desired、18/18 Unacceptable、状态矩阵、扩展重放、确定性和隔离 wheel 义务全部保留，但由正确层级分别证明；“完整”表示 exact-18 inventory、依赖、状态和结果完整，不表示每个场景都必须是 90 秒 physical Session Bundle。除唯一 workflow bundle 外，默认 M4 测试不得生成 dense image/file assets。
+
+## D-027：Expected evidence 必须由 raw/aligned inputs 机械驱动
+
+- 状态：已接受
+- 决策：M4 测试 input recipe 只能包含 source data、semantic/config bindings、reference、events 和 fault controls；expected vectors 必须存放在独立文件或模块，并由不 import `pilot_assessment.anchors` 的小型 oracle 或手算公式产生。Production plugin 不得读取 expected vectors，production result/artifact 也不得回写为后续测试输入。测试必须通过有针对性的输入扰动证明相关 anchor 随输入改变、无关 anchor 保持不变。
+- 理由：provisional heavy fixture 曾把部分 mixed anchor 结果保存为 recipe 输入；这种 builder/oracle 自洽即使通过 hash 和合同测试，也不能证明原始或 aligned data 真正驱动了 evidence。
+- 影响：recipe/schema 必须拒绝序列化 AnchorResult/AnchorMeasurement、result-like `anchor_id + primary_value/state/likelihood` 结构、预计算 `q_control` 或 O8/O13 composite，以及以 O1–O13/H1–H5 为键的 expected-result map。文件 checksum 只证明输入不可变，不能替代 data-to-anchor 语义断言；违反本决定的 provisional `8 passed` 不构成 M4 实现证据。
