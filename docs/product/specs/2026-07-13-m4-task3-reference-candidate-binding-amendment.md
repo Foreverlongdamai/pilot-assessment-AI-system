@@ -2,10 +2,10 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 文档类型 | M4 已批准规格与 replacement plan 的 Task 3 定向修订候选 |
+| 文档类型 | M4 已批准规格与 replacement plan 的 Task 3 正式定向修订 |
 | 日期 | 2026-07-13 |
 | 方向状态 | 用户已批准方案 A：新增独立 `ReferenceViewCandidate`，不修改 M3 |
-| 书面状态 | Review candidate；等待用户复核本文后生效 |
+| 书面状态 | 已于 2026-07-13 获用户明确批准；本文现为 Task 3 权威修订 |
 | 实现状态 | 尚未实施；不得把本文写作或审批方向视为 Task 3 代码完成 |
 | 取代范围 | 取代 replacement plan Task 3 原两参数 binder、未展开的 semantic/reference 字段口径和 `ResolvedReferenceSet` 缺失的 session identity；并为 Task 8、32、34、35 补充该端口的既有职责落点 |
 | 不变范围 | M1/M2/M3 合同、18 个 anchor 算法/阈值、AnchorResult v0.2、DAG、轻量测试策略及 M4 完成门均不变 |
@@ -33,7 +33,7 @@ def bind_resolved_reference_snapshot(
 
 ## 2. 权威性与适用范围
 
-本文获批后：
+本文获批并生效后：
 
 - 本文优先于 [replacement M4 实施计划](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) Task 3 原 binder 小节；
 - M4 主规格和轻量工作流修订继续是其余 M4 设计的权威来源；
@@ -150,7 +150,7 @@ SemanticEvent
 DynamicAoiSource
   stream_role: Literal["I"] = "I"
   table_role: StableId
-  aligned_schema_id: StableId
+  aligned_schema_id: StableId              # table-role-level aligned artifact schema
   coordinate_frame_id: StableId
   unit: UnitName
   frame_id_field: StableId
@@ -263,20 +263,26 @@ Task 3 只验证 digest 格式并原样保存；RFC 8785 规范化与 fingerprin
 
 `SessionSemanticSnapshot` 不是任意 UI JSON。M5 编译锁定 task/model/config 语义，M6 在 model/session lock 与 Run Preflight 中把它和同一个 `AlignedSession.annotations` 绑定，补充并冻结 target/envelope/AOI/control/channel/applicability snapshot；Task 32 只提供同规则的 test-only assembler。M4 evaluator 不构造 snapshot，也不从 pilot performance 反推这些语义。
 
-Task 4 request validation 必须在 evaluator、plugin、provider 和 sink 被访问前证明：
+Task 4 定义并由 `AnchorExecutionPlan.input_table_contracts` 保存 M5 从锁定 core-stream profile 编译出的 `ResolvedInputTableContract`；它至少冻结 `(modality,table_role)`、stream-level 与 table-role-level aligned schema、coordinate frame 以及物理列顺序中的 field name/dtype/unit/nullability，不从 live 数值反推。其 `dtype_id` 使用与 reference field 相同的 v0.1 primitive allowlist 和固定 Polars mapping。`AnchorExecutionPlan.entries` 只允许 `lifecycle=active`，plan contracts 必须精确覆盖全部 entries/preprocessing recipes 的 required-stream union 中每个 core modality 的完整 profile table inventory。Task 4 request validation 必须在 evaluator、plugin、provider 和 sink 被访问前证明：
 
 - session/source/synchronization/window identity 与 `AlignedSession` 完全相同；
+- `set(AlignedSession.streams)` 精确等于 `SynchronizationReport.stream_results` 中 `synchronization_status=aligned` 的 modality 集合；report=aligned/view 缺失或 report=non-aligned/view 注入均为 `request_session_mismatch`。非 blocked M3 的 optional `not_attempted/unavailable/invalid/unsupported/not_applicable` 均合法表示无 live view；若 plan 需要该 modality，受影响 anchor 后续以原状态 reason 产生 `missing_input`。required-for-import 非 aligned 已由 M3 blocked，不可进入 request；
 - `annotation_revision` 与 `synthetic_semantics_unvalidated` 原样等于 M3 `AlignedAnnotations`；
 - phase ID/start/end、event ID/type/time/duration，以及 baseline ID/start/end/condition/valid/exclusion 的 annotation identity 与 M3 对齐；`phase_type` 与 terminal ownership 由锁定 task profile 在不改变时间事实的前提下补充；snapshot 还可以补充 M3 没有的 target/AOI/control/channel 绑定，但不能改写 M3 时间或 audit 事实；
 - 每个 `BaselineDefinition.baseline_id` 解析到同 ID 的 M3 interval；
-- dynamic AOI source 精确解析到当前 I view 的 table/schema/fields；frame/unit 与 execution plan 锁定的 I profile contract 比较，不从列名或数值猜测；
-- applicability anchor IDs 与当前 execution plan/catalog inventory 相同，不允许额外、缺失或跨 revision 注入；
-- resolved-reference descriptor ID 集合必须精确等于所有 active `AnchorExecutionEntry.required_reference_ids` 与 `ResolvedPreprocessingRecipe.required_reference_ids` 的并集；missing/extra descriptor 均阻止 request，只有集合中显式的合法 `absent` descriptor 才能让下游按规则产生 `not_computable`；
-- 对每个 `source_kind=bundle` descriptor，`present` 时 `SynchronizationReport.task_reference_result` 必须存在，且其 `reference_id`、`source=bundle`、`synchronization_status=aligned`、clock ID/method/scale/offset/drift、source/aligned schema 与 source checksums 必须逐项等于 descriptor/candidate；`mapping_policy_id` 必须等于 `SynchronizationReport.policy.policy_id`。`absent` 时 M3 report 可以没有 task-reference record，或只含同一 reference ID 的合法非 aligned bundle record；若 M3 已有任意 aligned bundle view，或 report 指向不同 reference/source，则该 absent snapshot 不得覆盖它；
-- 对每个 `source_kind=model_bundle` descriptor，M3 `task_reference_result` 必须先证明同一 `reference_id`、`source=model_bundle` 且 status 精确为 `deferred_model_bundle_resolution`；随后才接受由 M6 resource/session lock 产生并与 candidate 精确一致的 ModelBundle mapping contract。若 M3 没有该 deferred record、报告了 bundle source 或 reference ID 不同，则在 request 构造前拒绝；
+- 对每个实际 aligned 的 required core stream，live table-role inventory 与该 modality 的 plan contracts 精确相等；`AlignedStreamView.aligned_schema_id` 等于 contract 的 stream-level schema，`SynchronizationReport.stream_results[modality].artifacts[table_role].aligned_schema_id` 等于 table-role-level schema，live field name/dtype 必须一致，contract 中 non-nullable 的列必须没有 null（nullable 列可以有或没有 null）。上一条允许的 optional non-aligned stream 没有 live exact-match，受影响 anchor 后续产生带原状态 reason 的 `missing_input`；
+- dynamic AOI source 无条件精确命中一个 `(I,table_role)` plan input-table contract；其 `aligned_schema_id` 是 table-role-level schema 并与 contract 相等，source frame 等于 contract coordinate frame，frame/AOI key fields 存在，所有 ordered geometry fields 的 contract unit 等于 source unit。只有 I 实际 aligned 时才进一步要求 current I view/report/table 满足上一条 live exact match；合法 optional non-aligned I 不阻断 request。不从列名或数值猜测，也不进行数据质量判断；core stream 数值有限性与值域由 M1–M3 结构合同负责，M4 request gate 不新增 finite/range 扫描；
+- applicability anchor IDs 精确等于 `AnchorExecutionPlan.entries` 的 anchor ID 集合；该 tuple 是编译后的 active catalog inventory，catalog fingerprint/plan validation 再证明其 catalog revision，因此 request gate 不依赖另一个未绑定的 catalog 对象。额外、缺失或跨 revision 注入均拒绝；
+- resolved-reference descriptor ID 集合必须精确等于所有 `AnchorExecutionEntry.required_reference_ids` 与 `ResolvedPreprocessingRecipe.required_reference_ids` 的并集；execution entries 已由合同保证全为 active。missing/extra descriptor 均阻止 request，只有集合中显式的合法 `absent` descriptor 才能让下游按规则产生 `not_computable`；
+- 对每个 `source_kind=bundle` descriptor，`present` 时 `SynchronizationReport.task_reference_result` 必须存在，且其 `reference_id`、`source=bundle`、`synchronization_status=aligned`、clock ID/method/scale/offset/drift、source/aligned schema 与 source checksums 必须逐项等于 descriptor 与已绑定 view；`mapping_policy_id` 必须等于 `SynchronizationReport.policy.policy_id`。candidate 的一致性已由 Task 3 binder 证明，Task 4 不再接收它。`absent` 时 M3 report 可以没有 task-reference record，或只含同一 reference ID 的合法非 aligned bundle record；若 M3 已有任意 aligned bundle view，或 report 指向不同 reference/source，则该 absent snapshot 不得覆盖它；
+- 对每个 `source_kind=model_bundle` descriptor，M3 `task_reference_result` 必须先证明同一 `reference_id`、`source=model_bundle` 且 status 精确为 `deferred_model_bundle_resolution`；随后才接受由 M6 resource/session lock 产生、经 Task 3 binder 验证并表示为 descriptor + bound view 的 ModelBundle mapping contract。若 M3 没有该 deferred record、报告了 bundle source 或 reference ID 不同，则在 request 构造前拒绝；
 - 上述 M3 report 比对发生在读取 evaluator/plugin/provider/sink 前；Task 3 binder 不新增 `SynchronizationReport` 参数，也不把 descriptor 与 candidate 的相互一致误当成 D-019 provenance 证明。
 
-语义 fingerprint 不一致或上述闭合校验失败会阻止 `AnchorEvaluationRequest` 构造；它不是某个 anchor 的 `not_computable`，也不生成 M4 evaluation report。
+语义 fingerprint 不一致或上述闭合校验失败会阻止 `AnchorEvaluationRequest` 构造；aligned stream/dynamic AOI/input-table 或 applicability inventory 错配使用 `request_semantic_identity_mismatch`。校验优先级固定为 session identity → semantic/annotation/input-table/applicability relation → reference inventory/provenance → canonical fingerprints；因此同一次篡改既破坏 semantic relation 又留下 stale fingerprint 时稳定返回 semantic code，只有前述关系均成立但 canonical digest 不一致时才返回 `request_fingerprint_mismatch`。合法 optional non-aligned stream 不属于上述 mismatch。它不是某个 anchor 的 `not_computable`，也不生成 M4 evaluation report。
+
+Task 4 为该 request-construction boundary 定义 `AnchorRequestValidationError(ValueError)`；v0.1 stable code allowlist 为 `request_session_mismatch`、`request_semantic_identity_mismatch`、`request_reference_inventory_mismatch`、`request_reference_provenance_mismatch`、`request_fingerprint_mismatch`。错误 details 只记录稳定字段/reason ID，不嵌入绝对路径、DataFrame repr 或其他可变对象表示。
+
+错误分为两个连续且不重叠的阶段：Task 3 binder 接收 candidate，并在失败时只抛 §8.4 的 `ReferenceBindingError`，此时 `ResolvedReferenceSet` 与 `AnchorEvaluationRequest` 都尚未产生；binder 成功后，Task 4 request constructor 只接收已经绑定的 `ResolvedReferenceSet`，不再接收或重新检测 candidate，随后对 session/semantic/plan/M3 provenance/canonical fingerprint 闭合失败抛 `AnchorRequestValidationError`。M6 可以在更外层把两者都记录为 Run Preflight blocked，但不得改写 stable code 或伪造 M4 report。
 
 ## 6. 可序列化 reference 合同
 
@@ -329,6 +335,7 @@ ReferenceResourceChecksum
 - Task 3 合同 validator 必须与 M3/D-018 一样先用 `Decimal(str(value))` 表示输入，再验证 `abs(declared_drift_ppm - (scale - 1) * 1_000_000) <= 0.000001 ppm`；`rounding_mode` 和 `in_session_policy` 必须保持上述 Literal 值。该 validator 只能排除内部不一致，不能证明这些值确实来自 M3，来源证明由 §5.6 的 request gate 完成；
 - `fields` 非空、field name 唯一，并按物理 DataFrame column order 冻结；
 - fields 必须精确包含 non-nullable `t_ns/i64/ns`、`in_session/bool/bool`，以及 non-nullable integer `stable_row_id_field`；`canonical_order_keys` 精确为 `(t_ns,stable_row_id_field)`；
+- `stable_row_id_field` 必须与 `t_ns`、`in_session` 是三个不同 field name，不能用时间列或 mask 列冒充稳定 row identity；
 - v0.1 dtype allowlist 精确为 `bool/i8/i16/i32/i64/u8/u16/u32/u64/f32/f64/utf8`，并使用固定 Polars primitive mapping；未知或 nested dtype 不按字符串相似度猜测；
 - non-nullable field 在 runtime table 中出现 null 时拒绝；nullable field 可以恰好没有 null；
 - runtime `stable_row_id_field` 全表唯一；row 的 order-key tuple 必须组合唯一并已按升序排列；binder 只验证，不静默重排 source rows；
@@ -399,7 +406,11 @@ Task 3 只校验/传播 digest；Task 8 必须在现有 `typed_json_sha256` 与 
 session_semantic_snapshot_fingerprint(snapshot) -> Sha256Digest
 reference_table_contract_fingerprint(contract) -> Sha256Digest
 reference_resource_fingerprint(descriptor) -> Sha256Digest
-aligned_reference_content_fingerprint(table, contract) -> Sha256Digest
+aligned_reference_content_fingerprint(
+  table,
+  aligned_schema_id,
+  contract,
+) -> Sha256Digest
 reference_alignment_fingerprint(
   descriptor: ResolvedReferenceDescriptor,
   session_identity: ReferenceSessionIdentity,
@@ -414,7 +425,7 @@ typed identity/version 与 payload 精确为：
 | semantic snapshot | `session-semantic-snapshot` / `0.1.0` | 完整 strict model dump，排除 `semantic_snapshot_fingerprint` 自字段 |
 | table contract | `reference-table-contract` / `0.1.0` | 完整 table contract，排除 `table_contract_fingerprint` 自字段 |
 | resource | `reference-resource` / `0.1.0` | `[reference_id,source_kind,runtime_view_role,source_schema_id,table_contract_fingerprint,[[path,checksum],...]]` |
-| aligned content | 现有 logical table typed framing | aligned schema ID、完整 ordered field descriptor、全部 rows、canonical order keys；不含物理路径/压缩/writer metadata |
+| aligned content | 现有 logical table typed framing | callable 的 `aligned_schema_id` 参数、完整 ordered field descriptor、全部 rows、canonical order keys；不含物理路径/压缩/writer metadata |
 | alignment | `reference-alignment` / `0.1.0` | 完整 `ReferenceSessionIdentity`、reference/source/runtime role、完整 `ReferenceAlignmentContract`、clock、source/aligned schema、table/resource/content fingerprints |
 | resolved set | `resolved-reference-set` / `0.1.0` | 完整 snapshot dump，排除 `reference_set_fingerprint` 自字段 |
 
@@ -548,7 +559,7 @@ Task 4 在其既有 request-contract focused tests 中另加最小 `Synchronizat
 2. 在 Task 3 files 中保留原四个 production files 与两个 test files，不扩大代码提交边界；
 3. 把 Step 1 明确为本文件 §9 的轻量 RED；
 4. 把 Step 2 明确为本文 §§4–8 的最小实现；
-5. Task 4 增加 semantic/reference/output session identity 的 request-construction gate，并逐字段绑定 `SynchronizationReport.task_reference_result`：bundle 校验同 reference 的 status/clock/schema/checksum/policy provenance，ModelBundle 校验同 reference 的 D-019 deferred record 后才接受 M6 mapping；
+5. Task 4 增加 plan-level `ResolvedInputFieldContract`/`ResolvedInputTableContract`、semantic/reference/output session identity 的 request-construction gate，并逐字段绑定所有 aligned required core views/report artifacts/plan input contracts、dynamic AOI/plan contract 与条件 aligned 的 live I view、完整 active applicability inventory 与 `SynchronizationReport.task_reference_result`；合法 optional `not_attempted/unavailable/invalid/unsupported/not_applicable` core stream 下沉为带原状态 reason 的 per-anchor `missing_input`。bundle 校验同 reference 的 status/clock/schema/checksum/policy provenance，ModelBundle 校验同 reference 的 D-019 deferred record 后才接受 M6 mapping；
 6. Task 8 增加 §6.4 callable、canonical payload 和 tamper tests；Task 13 在 evaluator 前重算验证；
 7. Task 32 明确区分 compact in-memory candidate 与 smoke M1–M3 candidate，Task 34 只使用后者；Task 35 明确 packaged verification bundle producer，并把“returns the precompiled request unchanged”改为“plan/sidecar bytes 保持不变，但 runtime request 必须由 live M1–M3 + candidate + binder 新建”；通用 bundle/ModelBundle producer 继续归 M5/M6；
 8. 更新 specification-to-task matrix，继续使用原 Task 3 code/test commit 边界，不提前执行 Task 4/8/13/32/34/35。

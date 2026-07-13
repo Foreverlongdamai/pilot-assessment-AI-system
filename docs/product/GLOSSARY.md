@@ -6,7 +6,11 @@
 | Anchor / Evidence anchor | 从原始或派生数据计算的可解释指标，例如 O2 Peak Tracking Excursion。 |
 | AnchorPlugin | 实现某个 anchor 算法、参数 schema、输入／依赖声明、measurement 与 artifact 合同的受控后端插件；不包含原始数据质量 admission gate。 |
 | AnchorCatalog | 某 model profile 的版本化 anchor inventory、definition、lifecycle 与 canonical order；generic M4 engine 不固定其数量。 |
-| AnchorExecutionPlan | M5 根据 exact model/session snapshot 编译、M4 消费的冻结计划；锁定 plugin、参数、输入、typed dependencies、grid/window、scorer 和 artifact recipe。 |
+| AnchorLifecycle | Anchor catalog definition 的 `active/deprecated/retired` 状态；M4 可执行 plan 只允许 `active` entry。 |
+| AnchorExecutionPlan | M5 根据 exact model/session snapshot 编译、M4 消费的冻结计划；锁定 plugin、参数、core-stream input-table contracts、typed dependencies、grid/window、scorer 和 artifact recipe。 |
+| ResolvedInputTableContract | M5 从锁定 core-stream profile 编译进 execution plan 的表合同；分别冻结 stream-level/table-role-level aligned schema、坐标系与有序 field name/dtype/unit/nullability。合法 optional non-aligned stream 下沉为 `missing_input`，aligned stream 的合同错配在 request 前拒绝。 |
+| ReferenceBindingError | Task 3 在 reference snapshot/candidate 三参数绑定阶段使用的稳定错误；发生时尚无 `ResolvedReferenceSet` 或 M4 request。 |
+| AnchorRequestValidationError | Task 4/13 在 binder 成功后对 session/semantic/reference provenance/fingerprint 闭合失败使用的稳定错误；不生成 M4 report。 |
 | AnchorMeasurement | AnchorPlugin 在中央 scorer 之前产生的 raw metrics、phase/event breakdown、override candidate、typed artifacts 与 computation trace。 |
 | AnchorResult v0.2 | M4 的 per-anchor 结果合同（`anchor-result-0.2.0`）；记录 calculation status、raw metrics、D/A/U likelihood、override、artifact、diagnostics、provenance 和 fingerprint。 |
 | ComputationTrace | M4 保存的 sample/time range、grid/window、匹配方法和 technical diagnostics；只用于审计，不生成 quality score 或改变 likelihood。 |
@@ -69,7 +73,7 @@
 | draft_validation_state | draft_incomplete、draft_invalid、draft_runnable 或 draft_publishable，表示草稿完整性与可运行性。 |
 | revision_lifecycle | published、archived 或 superseded，表示不可变 model revision 的生命周期。 |
 | observation_mode | M5 的 hard、virtual 或 omitted 绑定方式，表示某条 AnchorResult 如何进入 BN；M4 不按技术诊断把 computed evidence 改为 omitted。 |
-| ready / ready_partial / blocked (M4) | `ready` 表示所有适用 anchor 均 computed；`ready_partial` 表示 inventory 完整但有 missing/config/dependency/error；`blocked` 表示 request、plan、global inventory 或原子提交失败。 |
+| ready / ready_partial / blocked (M4) | `ready` 表示所有适用 anchor 均 computed；`ready_partial` 表示 inventory 完整但有 missing/config/dependency/error；`blocked` 只表示有效 request 之后的 plan/registry/DAG/global inventory/atomic commit 失败。pre-request rejection 不生成 M4 disposition/report。 |
 | plugin_unavailable / not_implemented / not_attempted | M4 capability/plan/report inventory 状态，不是 AnchorResult calculation status。缺 required plugin 会阻断 reference plan；blocked report 只列 inventory，不伪造结果。 |
 | DerivedArtifactSink | M4 通过依赖注入写入 typed、content-addressed 临时派生产物的 port；M6 才拥有正式 managed artifact root 和持久化生命周期。 |
 | revision_id | 标识不可变发布模型或其父版本的稳定 ID。 |

@@ -4,8 +4,8 @@
 |---|---|
 | 设计基线 | v0.2 |
 | 日期 | 2026-07-13 |
-| 设计状态 | 完整书面规格及轻量工作流验证修订均已于 2026-07-13 获用户批准；修订在其取代范围内优先 |
-| 实现状态 | 18/18 已设计，0/18 production plugins 已实现；原 M4 实施计划已被轻量修订取代；replacement Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，下一步为 Task 3；M4 尚未 engineering verified |
+| 设计状态 | 完整书面规格、轻量工作流验证修订及 [Task 3 Reference Candidate Binding 修订](2026-07-13-m4-task3-reference-candidate-binding-amendment.md) 均已于 2026-07-13 获用户批准；修订在各自取代范围内优先 |
+| 实现状态 | 18/18 已设计，0/18 production plugins 已实现；原 M4 实施计划已被轻量修订取代；replacement Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，Task 3 方案 A/D-028 已批准，下一步为修订后的 Task 3；M4 尚未 engineering verified |
 | 上游 | M1 Session integrity + M2 Ingestion readiness + M3 native-rate synchronization |
 | 下游 | M5 ModelBundle/BN/CPT/inference；M6 formal run/persistence |
 | 正式运行授权 | `formal_run_authorized=false` |
@@ -152,6 +152,7 @@ AlignedSession + SynchronizationReport + SessionSemanticSnapshot
 ### 5.2 M5 owns
 
 - editable AnchorBinding、ModelBundle draft/revision/publish；
+- 验证并冻结 ModelBundle 内不可变 reference resource、table/frame/unit contract 与 resource fingerprint；
 - 把 published revision 或 exact preview snapshot 编译为 M4 execution plan；
 - 33-node graph、CPT、BN observation 和 inference；
 - O8/O13 `likelihood_strength=0.50` 与 H1/H3 `gaze_allocation` group 的 reference `likelihood_strength=0.50 each` dependence protection；
@@ -161,6 +162,7 @@ AlignedSession + SynchronizationReport + SessionSemanticSnapshot
 ### 5.3 M6 owns
 
 - published model/session lock；
+- 在 model/session lock 后解析已冻结 bundle/ModelBundle reference，执行实际 session-time mapping，并构造与 D-028 一致的受信 `ReferenceViewCandidate`；
 - `RunPreflightReport` 和正式运行授权；
 - AssessmentRun orchestration、progress、cancel、cache；
 - managed artifact root、原子持久化、结果导出和 replay。
@@ -182,6 +184,8 @@ AnchorEvaluationRequest
 
 `DerivedArtifactSink` 作为 service dependency 注入，不进入可序列化 request。
 
+`SessionSemanticSnapshot` 与 `ResolvedReferenceSetSnapshot` 必须先和同一个 M3 session/report 完成精确绑定；reference 使用 `bind_resolved_reference_snapshot(snapshot, aligned_session, candidates)` 三参数 binder。candidate/session/table binding mismatch 由 binder 抛 `ReferenceBindingError`，此时 `ResolvedReferenceSet` 尚未产生；binder 成功后的 semantic/session/plan/M3 provenance/fingerprint 闭合 mismatch 由 request constructor 抛 `AnchorRequestValidationError`。两者都发生在有效 request 之前且不生成 M4 report；只有 request 已有效构造后的 plan/registry/DAG/transaction failure 才使用 M4 `blocked` report。
+
 强制不变量：
 
 - session ID 一致；
@@ -202,6 +206,7 @@ M4-A 必须分别定义并版本化以下合同，不能把它们折叠为一个
 - `AnchorCatalog`：profile 内 anchor definition、lifecycle、canonical order 和 required/optional policy；
 - `AnchorExecutionPlan`：对同一 snapshot 冻结后的可执行 catalog、插件、参数、DAG 和 artifact recipe；
 - `SessionSemanticSnapshot`：phase/event/AOI/control mapping/baseline 与 applicability 语义；
+- `ResolvedReferenceSetSnapshot`：可序列化 reference 期望、session identity 与 canonical fingerprint 合同；v0.1 完整字段以 [Task 3 定向修订](2026-07-13-m4-task3-reference-candidate-binding-amendment.md) 为准；
 - `AnchorEvaluationRequest`：不可变输入引用；
 - `AnchorMeasurement`：插件输出的原始数值、breakdown、override candidate 与 trace；
 - `AnchorResult` v0.2：中央 scorer 的 evidence 输出；
@@ -209,14 +214,44 @@ M4-A 必须分别定义并版本化以下合同，不能把它们折叠为一个
 - `AnchorEvaluationReport`：canonical inventory、disposition、availability 和 fingerprints；
 - `AnchorArtifactRef`：typed content-addressed derived artifact 引用。
 
+`ReferenceViewCandidate`、`ResolvedReference` 与 `ResolvedReferenceSet` 是含 immutable Polars view 的内部 frozen runtime dataclass，不是可序列化版本化合同，也不进入 JSON Schema export。
+
 ### 6.3 AnchorExecutionPlan
+
+`AnchorCatalogEntry.lifecycle` 的 v0.1 枚举精确为 `active/deprecated/retired`；`AnchorExecutionEntry.lifecycle` 则固定为 `Literal["active"]`。M5 compiler 只把 active catalog entries 放入 execution plan；deprecated/retired definition 可以留在 catalog/replay artifact 中，但不能出现在可执行 plan。
+
+`AnchorExecutionPlan` 还必须保存由 M5 从锁定输入 profile 编译出的 core-stream table contract，不能只保存 modality ID：
+
+```text
+ResolvedInputFieldContract
+  field_name: StableId
+  dtype_id: StableId
+  unit: UnitName
+  nullable: StrictBool
+
+ResolvedInputTableContract
+  modality: CoreModality
+  table_role: StableId
+  stream_aligned_schema_id: StableId
+  table_aligned_schema_id: StableId
+  coordinate_frame_id: StableId
+  fields: tuple[ResolvedInputFieldContract, ...]
+```
+
+`dtype_id` 的 v0.1 allowlist 精确为 `bool/i8/i16/i32/i64/u8/u16/u32/u64/f32/f64/utf8`，使用固定 Polars primitive mapping；nested dtype、alias 与未知字符串拒绝。table contract 以 `(modality,table_role)` 唯一并按该键排序；同一 modality 的 `stream_aligned_schema_id` 必须相同；`fields` 非空、field name 唯一并保持物理列顺序。`stream_aligned_schema_id` 对应 `AlignedStreamView.aligned_schema_id`，`table_aligned_schema_id` 对应 `SynchronizationReport.stream_results[modality].artifacts[table_role].aligned_schema_id`；两层 schema 不得混用。
+
+`input_table_contracts` 是 active entries 与 preprocessing recipes 的 `required_streams` 并集所需 core modalities 的完整 profile table 投影：每个 required modality 至少一个 contract，不允许未被计划需要的 modality contract。对当前实际 aligned 的 required stream，request gate 必须逐 modality 校验 live table-role inventory 与 plan contracts 精确相等，并逐 table 校验上述两层 schema、完整有序字段名/dtype 与 non-nullable 列无 null；nullable 列可以有或没有 null。合法 optional non-aligned stream 没有 live view 时不构成 request error，由受影响 anchor 产生 `missing_input`。
+
+在任何逐表校验之前，request gate 必须先证明 `set(AlignedSession.streams) == {m | SynchronizationReport.stream_results[m].synchronization_status == aligned}`；report 声称 aligned 但缺 view，或 report 非 aligned 却注入 view，都使用 `request_session_mismatch` 拒绝。非 blocked M3 中 optional stream 的合法非 aligned 状态为 `not_attempted/unavailable/invalid/unsupported/not_applicable`；这些状态都没有 live exact-match，若该 modality 被 plan 需要，则相关 anchor 产生带原状态 reason 的 `missing_input`。`required_for_import=true` 的非 aligned stream 已使 M3 blocked，不能构造 M4 request。
+
+dynamic AOI source 必须无条件精确命中一个 `I` plan table contract：其 `aligned_schema_id` 明确定义为 table-role-level schema，并等于 `table_aligned_schema_id`；coordinate frame、frame/AOI key、ordered geometry fields 与 geometry unit 也必须匹配。只有 I stream 实际 aligned 时才额外做 live I view/report/table exact match；合法 optional non-aligned I 不阻断整个 request。上述检查是 profile/schema 合同校验，不判断画面、轨迹或 AOI 数值“好不好”。core stream 数值有限性和值域已由 M1–M3 结构合同负责；M4 request gate 不重复 finite/range 扫描，也不能借此新增表现质量门。
 
 每个 active entry 至少锁定：
 
 - anchor ID、definition version 和 lifecycle；
 - plugin ID/version/API compatibility/implementation digest；
 - parameter schema ID、parameter snapshot 和 hash；
-- required inputs、applicability、phase/event scope；
+- required inputs、上述 input table contracts、applicability、phase/event scope；
 - typed dependencies；
 - measurement/output/artifact schemas；
 - temporal/grid/window recipe；
@@ -346,12 +381,15 @@ v0.2 规则：
 
 ### 8.1 Request/plan level
 
-以下情况使 evaluation `blocked`，且不运行插件：
+以下情况发生在有效 `AnchorEvaluationRequest` 之前：M3 outcome blocked 或没有 `AlignedSession`；session/source/synchronization/window identity 不一致；semantic snapshot 与 M3 annotation 不一致；reference required-ID inventory、descriptor、candidate、M3 `task_reference_result` provenance 或 canonical fingerprint 不一致。它们阻止 request 构造，evaluator/plugin/provider/sink 调用数均为零，且**不生成 M4 evaluation report**。其中 reference 的精确边界以 [Task 3 定向修订](2026-07-13-m4-task3-reference-candidate-binding-amendment.md) 为准。
 
-- snapshot/session/synchronization fingerprints 不一致；
+candidate inventory/ownership/identity/table mismatch 在三参数 binder 阶段使用 `ReferenceBindingError` stable code；binder 成功后，M3 blocked、semantic/session/required-reference inventory/provenance/fingerprint 闭合失败在 request-construction 阶段使用 `AnchorRequestValidationError` stable code。`AnchorEvaluationRequest` 只接收 `ResolvedReferenceSet`，不接收 candidate，因此不会重复检测或重新分类 binder error。两类 pre-request failure 都不复用 M4 report disposition 或 per-anchor calculation status。
+
+只有在有效 request 已经构造后，以下 plan/runtime 情况才使 evaluation 产生 `blocked` report，且不运行插件：
+
 - unknown/incompatible plugin、scorer 或 schema；
 - duplicate ID、missing dependency、DAG cycle；
-- parameter/unit/reference contract 无效；
+- execution plan 内 parameter/unit/artifact contract 无效或与已冻结 request identity 不兼容；
 - artifact root/recipe 越界；
 - reference-model-v0.1 不是精确 18-entry catalog；
 - plugin 宣称根据表现数值或所谓数据质量丢弃 observation。
@@ -373,15 +411,17 @@ v0.2 规则：
 
 | 情况 | 唯一结果 |
 |---|---|
-| request/catalog/plan/schema 文档本身不可解析，fingerprint 不一致，parameter 值不通过已声明 schema/unit，reference descriptor/hash 违约，unknown dependency/plugin/scorer，DAG cycle | 整次 `blocked`；零插件执行 |
-| 合法 plan 声明了 required stream，但当前 session inventory 为 missing/export_pending，或适用 span 内完全没有该 direct stream 的 temporal support | 该 anchor `missing_input`，reason 精确到 stream/span |
+| candidate/reference binding 违约 | binder 抛 `ReferenceBindingError`；无 resolved set/request/M4 report；evaluator/plugin/provider/sink 调用均为零 |
+| M3 blocked/无 aligned session，或 binder 成功后的 semantic/reference/session closure、M3 reference provenance、request-level fingerprint 违约 | request constructor 抛 `AnchorRequestValidationError`；无 M4 report；evaluator/plugin/provider/sink 调用均为零 |
+| 已构造有效 request，但 catalog/plan/registry/schema 不兼容，parameter 值不通过已声明 schema/unit，unknown dependency/plugin/scorer，DAG cycle | 整次 M4 evaluation `blocked`；零插件执行 |
+| 合法 plan 声明了 required stream，但当前 non-blocked M3 将该 optional stream 标为 `not_attempted/unavailable/invalid/unsupported/not_applicable`，或 aligned stream 在适用 span 内完全没有 direct temporal support | 该 anchor `missing_input`，reason 精确保留 M3 item status 或 stream/span |
 | 合法 plan 和 schema 已通过，但当前 session 没有解析出所需 target/reference/AOI/control mapping/baseline 定义；或者非空输入不足公式最小数学基数 | 该 anchor `not_computable`；不得称为 quality failure |
 | plan 引用的 dependency ID/type 不存在 | plan compile `blocked` |
 | dependency 合法存在，但执行后没有 required result/artifact/profile（包括其 missing/config/error 结果） | 下游 `dependency_missing`，记录 upstream status/fingerprint |
 | plugin 抛异常、measurement/result schema 违约、单插件 staging artifact 失败 | 该 anchor `extractor_error`；独立节点继续 |
 | 全局 report inventory 或最终原子提交失败 | 整次 `blocked`；丢弃 staging result refs，报告只保留 expected/not_attempted inventory 与 failure diagnostics |
 
-`ResolvedReferenceSet` 可以包含结构合法但 resolution status 为 absent 的 entry；它导致需要该 entry 的 anchor `not_computable`。Reference descriptor、checksum 或坐标合同本身无效则属于 request/plan `blocked`。由此避免“缺一个 session reference”和“提交了损坏的 reference contract”共用一个状态。
+`ResolvedReferenceSet` 可以包含结构合法但 resolution status 为 absent 的 entry；它导致需要该 entry 的 anchor `not_computable`。Reference candidate/binding 无效由 binder 拒绝；binder 成功后 descriptor/checksum/坐标的 canonical identity 或 M3 provenance 无效由 request constructor 拒绝。两者都不生成 M4 report。由此避免“缺一个 session reference”“提交了损坏的 reference contract”和“有效 request 后 plan 执行 blocked”共用一个状态。
 
 ## 9. Typed dependency DAG
 
@@ -437,7 +477,7 @@ Grid/window hash 至少覆盖 schema/version、ID、plugin version、rate、leng
 
 M4 不用 coverage fraction 决定“数据够不够好”，但也不能跨没有 observation 的时间伪造样本。统一规则如下：
 
-1. `support_interval_v1` 不要求 M3 另造 gap-interval DTO。M4 对每个 point/inherit artifact 只取 in-session aligned rows，按 `(t_ns,stable_source_row_id)` 排序，并读取同一 `SynchronizationReport` artifact metrics 的 `gap_threshold_ns`。相邻排序行的 positive delta 严格 `> gap_threshold_ns` 时，在后一行之前切开新 segment；等于 threshold 不切分，duplicate timestamp 不产生时长。`gap_threshold_ns=null` 表示没有可用于切分的 positive delta。M4 必须用同一规则重算 `gap_count/max_gap_ns` 并与 M3 report 对照；不一致属于 snapshot/report contract mismatch，使 request blocked。threshold、重建 segment 边界和 M3 metrics 都进入 trace/fingerprint。
+1. `support_interval_v1` 不要求 M3 另造 gap-interval DTO。M4 对每个 point/inherit artifact 只取 in-session aligned rows，按 `(t_ns,stable_source_row_id)` 排序，并读取同一 `SynchronizationReport` artifact metrics 的 `gap_threshold_ns`。相邻排序行的 positive delta 严格 `> gap_threshold_ns` 时，在后一行之前切开新 segment；等于 threshold 不切分，duplicate timestamp 不产生时长。`gap_threshold_ns=null` 表示没有可用于切分的 positive delta。共享 request validator 必须用同一规则重算 `gap_count/max_gap_ns` 并与 M3 report 对照；不一致属于 snapshot/report contract mismatch，抛 `AnchorRequestValidationError(code="request_semantic_identity_mismatch")`，不生成 M4 report。threshold、重建 segment 边界和 M3 metrics 都进入 trace/fingerprint。
 2. 同一重建 segment 内样本 `i` 的 left-hold support 为 `[t_i,t_{i+1})`；gap 前最后一行不延伸到 gap 后，segment 最后一行只延伸到该 segment 明确的 semantic end（若无 end，则不产生额外时长）。
 3. M3 gap diagnostic 只定义“这里没有 support”，不使整个 anchor invalid；M4 不跨 gap 插值、计 movement、形成 fixation/RR/PSD 窗或延长 stable run。
 4. 必需 direct stream descriptor/file/field 缺失，或 present stream 在整个适用 span 零 support，通常为 `missing_input + no_temporal_support`。唯一例外是插件已从独立 task/scene opportunity 明确观察到“没有行为事件”的受控 override，例如 I/cue/phase 存在且 G stream present 但没有 gaze/fixation dwell；这按 H1/H2/H3 规则为 computed U。存在非空 support 就按已观察 support 计算，不设置最小 coverage 百分比。
@@ -675,7 +715,7 @@ O13 <- O1/O5/O7 algorithm profile + H4 artifact
 
 - `ready`：所有 applicable anchors computed；not_applicable 不降低 disposition；
 - `ready_partial`：非 blocked 且 inventory 完整，但存在 missing/not-computable/dependency/error；
-- `blocked`：request/plan/global inventory/atomic commit 失败。
+- `blocked`：仅用于有效 request 已通过共享 validator 后的 plan/registry/DAG/global inventory/atomic commit 失败。pre-request rejection 不生成 report，因此不能使用此 disposition。
 
 非 blocked reference execution 必须有 18 个终态 AnchorResult。blocked report 只列 expected inventory/not_attempted，不伪造结果。
 
@@ -784,7 +824,7 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 
 | 阶段 | 范围 | 可声称状态 |
 |---|---|---|
-| M4-A | 本规格、轻量验证修订、D-021–D-027、AnchorResult v0.2、catalog/plan/report schema | 18/18 specified，0/18 implemented |
+| M4-A | 本规格、轻量验证修订、Task 3 Reference Candidate Binding 修订、D-021–D-028、AnchorResult v0.2、catalog/plan/report schema | 18/18 specified，0/18 implemented |
 | M4-B | registry、DAG、temporal kernel、artifact sink、fingerprint、fake-plugin tests | framework engineering-verified，0/18 plugins |
 | M4-C | O1–O7 | 7/18 software-verified |
 | M4-D | O8–O12 | 12/18 software-verified |
@@ -796,7 +836,7 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 
 ## 16. Documentation migration
 
-本节首先保留原 M4 规格在批准前执行 candidate alignment 的历史记录；当时只涉及 D-021–D-025，且不构成实现。2026-07-13 后续获批的轻量工作流验证修订又触发了第二次迁移：D-026/D-027、§1.1、§14.2–§14.4、§15/§17 和当前状态文档以轻量口径为准，原实施计划被取代；replacement plan 随后于同日单独获批，Task 0–2 已完成，下一步为 Task 3。
+本节首先保留原 M4 规格在批准前执行 candidate alignment 的历史记录；当时只涉及 D-021–D-025，且不构成实现。2026-07-13 后续获批的轻量工作流验证修订又触发了第二次迁移：D-026/D-027、§1.1、§14.2–§14.4、§15/§17 和当前状态文档以轻量口径为准，原实施计划被取代；replacement plan 随后于同日单独获批。Task 3 Reference Candidate Binding 修订构成第三次定向迁移：D-028、§6、§8.1、§8.3、README、状态文档与 replacement Tasks 3/4/8/13/32/34/35 以该修订为准。Task 0–2 已完成，下一步为修订后的 Task 3。
 
 本轮 candidate alignment 覆盖：
 
@@ -817,7 +857,7 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 本规格进入实施计划前必须满足：
 
 1. 用户复核并明确批准本书面文件；
-2. D-021–D-027 已写入并在独立 Git 轨迹中更新为“已接受”；
+2. D-021–D-028 已写入并在独立 Git 轨迹中更新为“已接受”；
 3. 所有列出的跨文档冲突已消除或明确标注 supersession；
 4. 无 TBD/TODO/placeholder；
 5. 18 个 anchor、阈值、boundary、override、dependency 和 artifact 均无歧义；
@@ -827,4 +867,4 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 9. M4/M5/M6 ownership 与 coverage 公式不冲突；
 10. Git commit 只声称 design/documentation，不声称 M4 implemented。
 
-原书面规格、轻量工作流验证修订与 [replacement plan](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已通过用户复核，D-026/D-027 已接受。原 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 虽曾获批准，但其四套 90 秒 fixture 路线已被本修订取代，不再提供执行授权。Replacement Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，下一步为 Task 3；M4 当前保持 18/18 specified、0/18 production plugins implemented，在相应完成门通过前不得声称 M4 已 engineering verified。
+原书面规格、轻量工作流验证修订、[Task 3 Reference Candidate Binding 修订](2026-07-13-m4-task3-reference-candidate-binding-amendment.md) 与 [replacement plan](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已通过用户复核，D-026–D-028 已接受。原 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 虽曾获批准，但其四套 90 秒 fixture 路线已被本修订取代，不再提供执行授权。Replacement Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，下一步为修订后的 Task 3；M4 当前保持 18/18 specified、0/18 production plugins implemented，在相应完成门通过前不得声称 M4 已 engineering verified。

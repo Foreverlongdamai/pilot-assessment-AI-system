@@ -8,7 +8,7 @@
 | 结论 | M1–M3 可作为已验证交接基线；M4 书面设计与轻量验证修订已获批准，replacement Task 0–2 已完成，但 M4 仍未工程验证 |
 | 软件状态 | 2026-07-10 审查时尚无实现；截至 2026-07-13，M1/M2/M3 已工程验证，M4 Task 0–2 已完成而 0/18 production plugins 已实现，完整 Core alpha 与 Gate B 仍未完成，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
 | 科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
-| M4 修订 | 2026-07-13 完成 anchor-computation 与 lightweight-workflow amendments 并获批准；D-026/D-027 与 replacement plan 已接受；replacement Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，下一步为 Task 3；18/18 anchor 已设计、0/18 production plugins 已实现 |
+| M4 修订 | 2026-07-13 完成 anchor-computation、lightweight-workflow 与 Task 3 candidate-binding amendments 并获批准；D-026–D-028 与 replacement plan 已接受；replacement Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，下一步为修订后的 Task 3；18/18 anchor 已设计、0/18 production plugins 已实现 |
 
 ## 1. 结论边界
 
@@ -23,7 +23,7 @@
 - 后端如何以 draft transaction、graph_version、layout_version 和 immutable revision 保持一一对应；
 - 正式 run、non-formal preview、结果 provenance 和验证状态如何区分。
 
-原始 2026-07-10 的结论只适用于当时产品设计闭环。2026-07-13 的 M4 anchor-computation amendment 已按独立复审修订其 P1 歧义并获得用户批准；其后获批的 lightweight-workflow amendment 又取代了原实施计划中的重 fixture 路线。Replacement plan 也已于 2026-07-13 单独获批；Task 0–2 已完成，下一步为 Task 3。默认阈值、拓扑和 CPT 仍等待专家与数据校准。
+原始 2026-07-10 的结论只适用于当时产品设计闭环。2026-07-13 的 M4 anchor-computation amendment 已按独立复审修订其 P1 歧义并获得用户批准；其后获批的 lightweight-workflow amendment 又取代了原实施计划中的重 fixture 路线。Replacement plan 与 Task 3 candidate-binding amendment 也已于 2026-07-13 单独获批，D-028 收口了 M3/reference provenance 与三参数 binder；Task 0–2 已完成，下一步为修订后的 Task 3。默认阈值、拓扑和 CPT 仍等待专家与数据校准。
 
 ## 2. 审查方法
 
@@ -109,7 +109,7 @@
 
 ## 6. 下一阶段入口
 
-截至 2026-07-13，backend M1 contracts/integrity、M2 multimodal ingestion foundation 与 M3 native-rate synchronization 已完成工程验证；[M3 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) 和 [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) 保留完整设计与实测证据。[M4 书面规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md)、[轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)、D-026/D-027 与 [replacement plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获用户批准；[M4 原 TDD 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 已被取代。Replacement Task 0–2 已完成，下一步为 Task 3；18/18 production plugins 仍为 0/18。M4 不设置基于表现好坏或异常数值的 quality gate。之后再进入 M5 BN adapter、M6 runtime 与 WinUI。前端可以用 fake backend 并行开发，但不能另建一套模型状态。
+截至 2026-07-13，backend M1 contracts/integrity、M2 multimodal ingestion foundation 与 M3 native-rate synchronization 已完成工程验证；[M3 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) 和 [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) 保留完整设计与实测证据。[M4 书面规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md)、[轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)、[Task 3 Reference Candidate Binding 修订](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、D-026–D-028 与 [replacement plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获用户批准；[M4 原 TDD 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 已被取代。Replacement Task 0–2 已完成，下一步为修订后的 Task 3；18/18 production plugins 仍为 0/18。M4 不设置基于表现好坏或异常数值的 quality gate。之后再进入 M5 BN adapter、M6 runtime 与 WinUI。前端可以用 fake backend 并行开发，但不能另建一套模型状态。
 
 任何专家修改都通过新 draft/revision 完成；不需要重新修改本设计中的 Python 业务结构。
 
@@ -120,7 +120,7 @@
 本 amendment 只关闭 M4 设计冲突，不构成实现或工程验证。当前状态严格为：
 
 - reference M4 anchors：**18/18 已设计，0/18 production plugins 已实现**；
-- M4 original implementation plan：**历史上已获用户批准，现已被轻量修订取代且不再授权执行；replacement plan 已于 2026-07-13 批准，Task 0–2 已完成，下一步为 Task 3**；
+- M4 original implementation plan：**历史上已获用户批准，现已被轻量修订取代且不再授权执行；replacement plan 与 Task 3 candidate-binding amendment 已于 2026-07-13 批准，Task 0–2 已完成，下一步为修订后的 Task 3**；
 - Task 0 的 input-only 10 秒 fixture 与独立 exact-18 expected vector、Task 1 的 numeric/JCS runtime provenance 审计、Task 2 的 breaking `AnchorResultV2` typed contract 已实现；v0.2 JSON Schema/export、18 个 production plugins、配置资源、完整 M1→M4 workflow 和 wheel smoke 均尚未实现；
 - M1/M2/M3 的既有工程验证结论不受影响；Gate B 仍未通过；
 - 本节不得被解释为真实数据科学验证、飞行员能力结论或医学诊断能力。
@@ -137,11 +137,11 @@
 | M4-SR-04 | O13 high/baseline 分组可能无窗口、分母退化且重复计数语义不稳定 | 发布 **O13 v2**，使用 **control-physio-grid-v2** 的连续逐窗耦合：`Q_control=0.50*qO1+0.25*qO5+0.25*qO7`，`activation=clip((delta_HR_pct-10)/10,0,1)`，`coupling_loss=100*activation*(1-Q_control)`，session 取最大值；短 phase 使用整个 phase，不设最低窗口数或 coverage gate |
 | M4-SR-05 | fixation-only 分母和 Unmapped 可能隐藏长期离题注视 | H1/H3 使用 **gaze-aoi-interval-v1** 对逐帧 gaze interval 做时间积分；H2 单独使用 raw gaze 重算的 `fixation-v1`。AOI taxonomy 必须有覆盖全视野的 `other_scene` catch-all，reference 默认计为 Off-task |
 | M4-SR-06 | ECG/EEG 极端或退化结果可能被 quality gate 丢弃 | ECG 配置/stream 存在但无法形成 R-R interval、HR0 非正或结果退化时返回 `computed + U` 与 ECG override；EEG role channels/baseline 定义根本缺失为 `not_computable`，配置与 stream 存在但谱/分母数值退化时返回 `computed + U` 与 EEG override。极端有限数值不截断，且不作医学诊断 |
-| M4-SR-07 | plan-level blocked 与 per-anchor missing/config/dependency/error 重叠 | 静态 request/plan/schema/digest 非法为 blocked；合法 plan 在本 session 缺 stream/context 为精确 anchor status；上游执行后缺 result/artifact 为 dependency_missing；plugin staging failure 与 global atomic failure 分开 |
+| M4-SR-07 | pre-request rejection、plan-level blocked 与 per-anchor missing/config/dependency/error 重叠 | M3/semantic/reference/session/request fingerprint 闭合失败抛稳定 pre-request error 且不生成 M4 report；只有有效 request 之后的 plan/registry/DAG/global inventory/atomic commit 失败使用 `blocked` report；合法 plan 在本 session 缺 stream/context 为精确 anchor status；上游执行后缺 result/artifact 为 dependency_missing；plugin staging failure 与 global atomic failure 分开 |
 | M4-SR-08 | 零 support、长 gap 与 terminal sample 可被不同实现解释为 hold、omit 或 invalid | 定义 support_interval_v1、segment-aware left-hold、零 support/最小数学基数状态、不得跨 gap，以及每类 metric 的固定 denominator；不重新引入 coverage fraction gate |
 | M4-SR-09 | O2/O3、control detector、event horizon、gaze/ECG/EEG DSP 参数不足以唯一实现 | 冻结 reference join、arrival axis/horizon/composite primary、O5 filter/padding/turning-point/duration、O6 normalization/integration、O10–O12 horizons/channel policy、gaze interval/tie/pooled aggregation、R-peak assignment 与完整 Welch/band/epsilon 参数 |
 | M4-SR-10 | artifact/fingerprint、registry 和 fixture verification 可由实现者各自定义 | 保留 RFC 8785 JCS + typed framing、logical-vs-storage hash、registry resource/factory/digest policy；验证改为 per-anchor micro oracle、紧凑 all-D/all-U/mixed real-plugin scenarios、fault-hook state matrix 和唯一 10 秒 physical bundle/isolated-wheel entrypoint。90 秒 full-rate bundle 只属未来性能测试 |
-| M4-SR-11 | 分段确认曾被误写成完整书面批准 | 候选阶段明确区分两者；用户于 2026-07-13 依次批准完整 M4 规格、后续轻量验证修订与 replacement plan，D-021～D-027 分别在受控迁移中转为 accepted；Task 0–2 已完成，下一步为 Task 3 |
+| M4-SR-11 | 分段确认曾被误写成完整书面批准 | 候选阶段明确区分两者；用户于 2026-07-13 依次批准完整 M4 规格、轻量验证修订、replacement plan 与 Task 3 candidate-binding amendment，D-021～D-028 分别在受控迁移中转为 accepted；Task 0–2 已完成，下一步为修订后的 Task 3 |
 | M4-SR-12 | phase/event 中 computed 与 non-computed 混合时，session result 可能静默忽略缺项 | 冻结 canonical applicable inventory、全项执行和 `extractor_error > dependency_missing > missing_input > not_computable` 的 session 状态优先级；任何 applicable 非 computed 都不生成 session D/A/U |
 | M4-SR-13 | M4 曾假定 M3 提供 gap intervals，O5 零平台与 H5 极短段也可能由不同实现自由解释 | M4 从 aligned rows + M3 `gap_threshold_ns` 精确重建/核对 segments；O5 run 使用 left-hold support duration 且零平台不计时；H5 固定短段 filter bypass、padlen、empty-band 与 baseline-degenerate computed-U 语义 |
 | M4-SR-14 | provisional full oracle 存在 recipe/expected 回灌、数值闭合和重 fixture 范围问题，plugin digest 也必须覆盖 helper/DSP runtime | 由 D-026/D-027 取代 full oracle：每个 anchor 用独立 micro oracle，真实插件场景只接收 raw/aligned inputs，定向扰动证明 data-to-anchor；implementation digest 继续覆盖本地 import closure、resources、schemas 和 exact numeric-runtime build identity |

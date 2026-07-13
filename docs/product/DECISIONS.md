@@ -190,3 +190,10 @@
 - 决策：M4 测试 input recipe 只能包含 source data、semantic/config bindings、reference、events 和 fault controls；expected vectors 必须存放在独立文件或模块，并由不 import `pilot_assessment.anchors` 的小型 oracle 或手算公式产生。Production plugin 不得读取 expected vectors，production result/artifact 也不得回写为后续测试输入。测试必须通过有针对性的输入扰动证明相关 anchor 随输入改变、无关 anchor 保持不变。
 - 理由：provisional heavy fixture 曾把部分 mixed anchor 结果保存为 recipe 输入；这种 builder/oracle 自洽即使通过 hash 和合同测试，也不能证明原始或 aligned data 真正驱动了 evidence。
 - 影响：recipe/schema 必须拒绝序列化 AnchorResult/AnchorMeasurement、result-like `anchor_id + primary_value/state/likelihood` 结构、预计算 `q_control` 或 O8/O13 composite，以及以 O1–O13/H1–H5 为键的 expected-result map。文件 checksum 只证明输入不可变，不能替代 data-to-anchor 语义断言；违反本决定的 provisional `8 passed` 不构成 M4 实现证据。
+
+## D-028：M4 reference 通过 session-bound candidate 精确绑定
+
+- 状态：已接受
+- 决策：M4 v0.1 使用可序列化 `ResolvedReferenceSetSnapshot` 与独立、受信的 runtime `ReferenceViewCandidate`。`bind_resolved_reference_snapshot(snapshot, aligned_session, candidates)` 只绑定 session/source/synchronization/window、reference/source、schema、clock mapping、table/frame/unit、resource/content/alignment fingerprint 全部精确一致的 candidate；不按列名、列数、shape 或相似 modality 猜测。v0.1 snapshot 总计最多一个 task reference，`bundle` 与 `model_bundle` 二选一。M3 合同、golden 和 `AlignedSession` 不变；bundle reference 的 M3 provenance 在 M4 request 构造前逐字段绑定 `SynchronizationReport.task_reference_result`。ModelBundle 必须先有同 reference ID 的 M3 `deferred_model_bundle_resolution` record；M5 验证并冻结不可变 reference resource，M6 在 model/session lock 后执行 session-time mapping 并在 M3 外构造同形的 immutable view container/candidate。
+- 理由：原两参数 binder 无法诚实证明 frame/unit 或接收 M3 明确 deferred 的 ModelBundle reference；只让 descriptor 与 runtime view 相互自证又可能绕过 D-019 的真实同步 provenance。独立 candidate port 保留 M3 边界，同时让 configuration expectation、source resolver 事实和 M3 report 可以机械交叉验证。
+- 影响：合法 `absent` reference 保留为 `aligned_view=None`，使依赖它的 anchor 产生 `not_computable`；present candidate 缺失、inventory/identity/contract 错配在有效 `AnchorEvaluationRequest` 之前失败，不生成 M4 evaluation report，也不能降级为 absent。Task 8 负责 canonical reference fingerprints，Task 13/35 在 evaluator 前重算；未来多 reference 支持必须版本化 M3 provenance 与本合同，不能只放宽 tuple cardinality。

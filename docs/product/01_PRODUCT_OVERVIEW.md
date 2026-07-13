@@ -1,6 +1,6 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0 设计基线（M4 完整书面规格、轻量工作流验证修订与 replacement plan 均已于 2026-07-13 获用户批准；D-026/D-027 已接受；原实施计划已被取代；Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，下一步为 Task 3；18/18 anchors 已设计，0/18 production plugins 已实现）
+**文档状态：** 产品 v0 设计基线（M4 完整书面规格、轻量工作流验证修订、Task 3 Reference Candidate Binding 修订与 replacement plan 均已于 2026-07-13 获用户批准；D-026–D-028 已接受；原实施计划已被取代；Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，下一步为修订后的 Task 3；18/18 anchors 已设计，0/18 production plugins 已实现）
 **日期：** 2026-07-13
 **适用目录：** `pilot_assessment_system/`
 
@@ -226,5 +226,6 @@ v0 完成必须同时满足：
 - [M4 Anchor Calculation and Evidence Availability 规格](./specs/2026-07-13-m4-anchor-evidence-availability-design.md)（已批准；18/18 已设计、0/18 production plugins 已实现）
 - [M4 Anchor Calculation and Evidence Availability 原实施计划](./plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（历史上已批准，现已被取代且不得执行）
 - [M4 Lightweight Workflow Validation Amendment](./specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)（已批准）
-- [M4 Anchor Calculation and Evidence Availability Replacement Implementation Plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已于 2026-07-13 批准；Task 0–2 已完成，下一步为 Task 3）
+- [M4 Task 3 Reference Candidate Binding Amendment](./specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)（已于 2026-07-13 批准；D-028）
+- [M4 Anchor Calculation and Evidence Availability Replacement Implementation Plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已于 2026-07-13 批准并修订；Task 0–2 已完成，下一步为修订后的 Task 3）
 - 既有后端方向稿：`docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md`

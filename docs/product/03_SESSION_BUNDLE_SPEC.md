@@ -391,7 +391,7 @@ M4 假定输入已经通过上述接口、结构和时间合同。锁定 executi
 
 上述前提成立就必须执行公式，不再判断原始数据质量。轨迹偏差大、控制剧烈、生理数值极端、未响应、未注视或未稳定悬停应产生 `AnchorResult v0.2` 的 `computed + Unacceptable`，raw availability 为 1；M4 不生成 `invalid_quality`。只有输入缺失、任务不适用、配置不足、依赖缺失或提取器错误才使用 `missing_input`、`not_applicable`、`not_computable`、`dependency_missing` 或 `extractor_error`。
 
-M5 根据 M4 的 per-anchor availability 计算 competency coverage 和 `assessable`、`partial`、`insufficient` 或 `prior_only`；D、A、U 的 `computed` evidence 均计为 available。fatal request/plan/global inventory 错误使用 blocked run/report 状态，不生成 posterior。
+M5 根据 M4 的 per-anchor availability 计算 competency coverage 和 `assessable`、`partial`、`insufficient` 或 `prior_only`；D、A、U 的 `computed` evidence 均计为 available。fatal pre-request closure 错误抛稳定 validation error、不生成 M4 report 或 posterior；有效 request 之后的 plan/registry/DAG/global inventory/atomic commit 错误才使用 M4 blocked report，同样不生成 posterior。
 
 Import 成功不代表所有 competency 都可评估。
 

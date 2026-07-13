@@ -3,7 +3,7 @@
 | 字段 | 值 |
 |---|---|
 | 设计版本 | v0.1 |
-| 当前软件状态 | in_progress（M1/M2/M3 已 engineering verified；M4 replacement Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，下一步为 Task 3；18/18 已设计、0/18 production plugins 已实现；完整 Core alpha 与 Gate B 尚未完成） |
+| 当前软件状态 | in_progress（M1/M2/M3 已 engineering verified；M4 replacement Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，Task 3 方案 A/D-028 已批准，下一步为修订后的 Task 3；18/18 已设计、0/18 production plugins 已实现；完整 Core alpha 与 Gate B 尚未完成） |
 | 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
@@ -127,7 +127,7 @@ Public `SynchronizationReport.validation_scope` 为 `native_rate_session_time_al
 
 ### 2.7 M4 书面设计状态（2026-07-13）
 
-[M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md) 已把 O1–O13、H1–H5 共 18 个 anchor、AnchorResult v0.2、typed dependency DAG、artifact/fingerprint 和状态边界写入获批书面设计；[轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)、D-026/D-027 与 [replacement plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 也已获用户批准。原 [M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 已被取代且不再授权执行。Replacement Task 0 已由 `bc544bf` 完成：正确 RED 已观察；旧 provisional heavy fixture 未进入历史；唯一 10 秒 fixture 的预算为 452 PNG、468 个 declared-path references、9,331 行 physical source tables；聚焦 gate 为 `6 passed in 9.36s`。Task 1 已由 `f56365c` 完成，三项 runtime constraints 与稳定 `RECORD` content identity 均通过；最终聚焦测试为 `10 passed in 1.69s`。Task 2 已由 `928e9a4` 完成 breaking `AnchorResultV2` typed contract；聚焦测试为 `85 passed`，contracts+schema 回归为 `297 passed`，legacy v0.1 bytes 未变。当前仍是 **18/18 已设计、0/18 production plugins 已实现**，`src/pilot_assessment/anchors/` 尚未建立；下一步为 Task 3。因此本节不是 M4 engineering verification record，不能据此声称任何 AnchorPlugin 已通过测试。
+[M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md) 已把 O1–O13、H1–H5 共 18 个 anchor、AnchorResult v0.2、typed dependency DAG、artifact/fingerprint 和状态边界写入获批书面设计；[轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)、[Task 3 Reference Candidate Binding 修订](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、D-026–D-028 与 [replacement plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 也已获用户批准。原 [M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 已被取代且不再授权执行。Replacement Task 0 已由 `bc544bf` 完成：正确 RED 已观察；旧 provisional heavy fixture 未进入历史；唯一 10 秒 fixture 的预算为 452 PNG、468 个 declared-path references、9,331 行 physical source tables；聚焦 gate 为 `6 passed in 9.36s`。Task 1 已由 `f56365c` 完成，三项 runtime constraints 与稳定 `RECORD` content identity 均通过；最终聚焦测试为 `10 passed in 1.69s`。Task 2 已由 `928e9a4` 完成 breaking `AnchorResultV2` typed contract；聚焦测试为 `85 passed`，contracts+schema 回归为 `297 passed`，legacy v0.1 bytes 未变。当前仍是 **18/18 已设计、0/18 production plugins 已实现**，`src/pilot_assessment/anchors/` 尚未建立；下一步为修订后的 Task 3。因此本节不是 M4 engineering verification record，不能据此声称任何 AnchorPlugin 已通过测试。
 
 M4 的职责边界是按已配置规则提取 evidence，而不是研究原始采集质量。进入 M4 的 aligned input 假定已经满足 M1–M3 的结构合同；coverage、gap、sample count 和 sync metrics 只作 diagnostics/provenance。数值再差仍应形成 D/A/U，特别是 `computed + Unacceptable` 必须作为有效负面 evidence，且 raw availability 与 computed D/A 一样为 1。
 
@@ -338,4 +338,4 @@ PilotAssessment/
 - reference trajectory、phase/event annotation 的生产方式需与实验团队确认；
 - shared-evidence 多 parent CPT 会指数增长；v0.1 已设 parent/row/cell/size 硬上限，但数值仍需性能基准和专家审查后才能提高；
 - WinUI 图编辑控件选型和无障碍支持需原型验证；
-- 后端 M1/M2/M3 已有合同、directory-bundle loader、JSON Schema、版本化 adapters/bindings、deterministic multimodal software fixtures、`IngestionReadinessReport`、native-rate `AlignedSession`/`SynchronizationReport` 和自动化测试。M4 已完成 18/18 anchor 的书面设计以及 replacement Task 0–2，breaking `AnchorResultV2` typed contract 已进入生产代码；轻量验证修订、D-026/D-027 与 replacement plan 已接受，原实施计划已被取代。下一步为 Task 3，仍是 0/18 production plugins；evidence scorer、BN、assessment runner、受管理 importer、sidecar 与 WinUI 也仍未实现。因此 M1/M2/M3 已 engineering verified，而 M4 与完整产品 software verification 仍为 in_progress，Gate B 尚未通过。
+- 后端 M1/M2/M3 已有合同、directory-bundle loader、JSON Schema、版本化 adapters/bindings、deterministic multimodal software fixtures、`IngestionReadinessReport`、native-rate `AlignedSession`/`SynchronizationReport` 和自动化测试。M4 已完成 18/18 anchor 的书面设计以及 replacement Task 0–2，breaking `AnchorResultV2` typed contract 已进入生产代码；轻量验证修订、Task 3 candidate-binding 修订、D-026–D-028 与 replacement plan 已接受，原实施计划已被取代。下一步为修订后的 Task 3，仍是 0/18 production plugins；evidence scorer、BN、assessment runner、受管理 importer、sidecar 与 WinUI 也仍未实现。因此 M1/M2/M3 已 engineering verified，而 M4 与完整产品 software verification 仍为 in_progress，Gate B 尚未通过。
