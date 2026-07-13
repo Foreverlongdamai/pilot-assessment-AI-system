@@ -484,7 +484,7 @@ No production `src/pilot_assessment/anchors/` file may enter this commit, and th
 - Modify: `tests/test_package_metadata.py`
 - Create: `tests/anchors/test_runtime_dependencies.py`
 
-- [ ] **Step 1: Add and run the post-lock dependency/provenance verification**
+- [x] **Step 1: Add and run the post-lock dependency/provenance verification**
 
 Assert that the runtime can import `numpy`, `scipy`, and `rfc8785`; that the resolved versions satisfy `numpy>=2.3.4,<2.4`, `scipy>=1.17,<1.18`, and `rfc8785>=0.1.4,<0.2`; and that stable distribution `RECORD` rows can be enumerated/verified without using an absolute installation path, installer-generated launcher, or mutable installation metadata as hash input.
 
@@ -494,14 +494,14 @@ Assert that the runtime can import `numpy`, `scipy`, and `rfc8785`; that the res
 
 Expected: PASS on first execution because Task 0 has already locked and synced the exact dependencies. This is an explicit verification-only task. If it fails, stop before M4-A and add a separately reviewed corrective task/commit naming the exact `pyproject.toml`/`uv.lock`/test change and rerunning Task 0's lightweight dependency/fixture gate; do not weaken the version, import, or stable-`RECORD` assertions inside Task 1.
 
-- [ ] **Step 2: Verify the lock and stable installed-distribution surface**
+- [x] **Step 2: Verify the lock and stable installed-distribution surface**
 
 ~~~powershell
 & .\.tools\uv\uv.exe lock --check
 & .\.tools\uv\uv.exe run python -c "import importlib.metadata as m; print([(n, m.version(n)) for n in ('numpy','scipy','rfc8785')])"
 ~~~
 
-- [ ] **Step 3: Re-run the focused verification**
+- [x] **Step 3: Re-run the focused verification**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/anchors/test_runtime_dependencies.py tests/test_package_metadata.py -v
@@ -510,7 +510,7 @@ Expected: PASS on first execution because Task 0 has already locked and synced t
 
 Expected: PASS. Record the exact resolved versions in the task handoff; do not hard-code an environment-specific `RECORD` digest in source.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add tests/test_package_metadata.py tests/anchors/test_runtime_dependencies.py

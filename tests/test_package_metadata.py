@@ -1,4 +1,4 @@
-from importlib.metadata import version
+from importlib.metadata import requires, version
 from importlib.resources import as_file, files
 from pathlib import Path
 
@@ -16,6 +16,16 @@ def test_m2_runtime_dependencies_are_importable() -> None:
 
     assert polars.__version__
     assert PIL.__version__
+
+
+def test_m4_runtime_constraints_are_published_in_package_metadata() -> None:
+    declared = set(requires("pilot-assessment-system") or ())
+
+    assert {
+        "numpy>=2.3.4,<2.4",
+        "rfc8785>=0.1.4,<0.2",
+        "scipy>=1.17,<1.18",
+    } <= declared
 
 
 def test_m3_temporal_binding_catalog_is_a_packaged_resource() -> None:
