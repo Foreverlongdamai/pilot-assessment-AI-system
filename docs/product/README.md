@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | 产品 v0.1；M4 AnchorResult/计算规格 v0.2 与轻量验证修订均已于 2026-07-13 获用户批准 |
 | 基线日期 | 2026-07-13 |
-| 产品阶段 | M1/M2/M3 后端里程碑已工程验证；M4 为 18/18 已设计、0/18 已实现；D-026/D-027、轻量验证修订与 replacement plan 已接受，原实施计划已被取代；Task 0 已获授权但尚未开始 |
+| 产品阶段 | M1/M2/M3 后端里程碑已工程验证；M4 replacement Task 0 已由 `bc544bf` 完成，Task 1 尚未开始；18/18 anchor 已设计，0/18 production plugins 已实现；M4 尚未工程验证 |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -44,10 +44,10 @@
 | 17 | [M2 实施计划](plans/2026-07-11-m2-multimodal-synthetic-foundation-implementation-plan.md) | 开发、审查者 | shared X/U、adapter、generator、readiness 与本地 E2E 的 TDD 步骤 |
 | 18 | [M3 Native-Rate Time Synchronization 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) | 开发、数据、审查者 | 已批准：native-rate clock mapping、session window、aligned views 与同步报告 |
 | 19 | [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) | 开发、审查者 | 已完成：Task 0–14 的实现、实测完成门与 handoff/关闭记录 |
-| 20 | [M4 Anchor Calculation and Evidence Availability 规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md) | 开发、算法、审查者 | 已批准：AnchorResult v0.2、18 个 anchor、no-quality-gate、DAG、artifact/fingerprint 与 fixtures；18/18 已设计、0/18 已实现 |
-| 21 | [M4 原实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) | 开发、算法、审查者 | 历史上已批准，现已被轻量验证修订取代且不得执行；Task 0 未完成或提交 |
+| 20 | [M4 Anchor Calculation and Evidence Availability 规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md) | 开发、算法、审查者 | 已批准：AnchorResult v0.2、18 个 anchor、no-quality-gate、DAG、artifact/fingerprint 与 fixtures；18/18 已设计、0/18 production plugins 已实现 |
+| 21 | [M4 原实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) | 开发、算法、审查者 | 历史上已批准，现已被轻量验证修订取代且不得执行；其 provisional heavy Task 0 未提交且未进入历史 |
 | 22 | [M4 轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md) | 开发、算法、审查者 | 已批准：以单个 10 秒全模态 bundle、per-anchor 微型测试和紧凑场景取代四套 90 秒重 fixture |
-| 23 | [M4 replacement 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) | 开发、算法、审查者 | 已于 2026-07-13 获用户批准；从 Task 0 获授权，Task 0 尚未开始 |
+| 23 | [M4 replacement 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) | 开发、算法、审查者 | 已于 2026-07-13 获用户批准；Task 0 已由 `bc544bf` 完成，Task 1 尚未开始 |
 
 ### 2.1 文档目录的职责
 
@@ -84,7 +84,7 @@
 
 截至 2026-07-13，Python Core 已完成 M1、M2 与 M3：严格 SessionManifest/StreamDescriptor/legacy AnchorResult 0.1 合同、inspect-only directory-bundle integrity gate、shared X/U、版本化 profiles/adapters、deterministic multimodal generator、`IngestionReadinessReport`，以及 native-rate `AlignedSession`/`SynchronizationReport`。M3 使用 master-clock X mapped coverage、Decimal round-half-even 与版本化 temporal bindings，保留所有 source rows，并输出确定性的 synchronization fingerprint；它不插值、不重采样，也不建立全局或 anchor window grid。完成门实测仍为 `694 passed, 2 skipped`，配置 repository-external CSV 后 M2/M3 格式样例 E2E 为 `2 passed`，隔离 wheel 的 M3 micro E2E 为 `1 passed`。这些结果不验证样例飞行的任务、表现或科学有效性；M2/M3 report 始终保持 `formal_run_authorized=false`，synthetic fixture 为 `not_supported`。
 
-M4 正式书面规格、[轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md) 与 [replacement plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已批准，D-026/D-027 已接受，18/18 anchor 已设计但 0/18 已实现。Task 0 的独立审查发现四套 90 秒 fixture 远超工作流验证所需，且 provisional oracle 没有真正证明 raw data 驱动 anchor；该工作未提交且不构成 M4 证据。原 [M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 已被取代；replacement plan 已从 Task 0 获得实施授权，但 Task 0 尚未开始。AnchorResult v0.2、AnchorPlugin registry/DAG、anchor-specific grids、evidence scorer、artifact/report 和 fingerprints 都尚未进入代码；受管理存储 importer、BN、runner、sidecar 和 WinUI 同样尚未实现。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+M4 正式书面规格、[轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md) 与 [replacement plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已批准，D-026/D-027 已接受。Replacement Task 0 已由 `bc544bf` 完成：旧 provisional heavy fixture 未进入提交历史；新的 10 秒 input-only fixture 以 452 PNG、468 个 manifest declared-path references 和 9,331 行 physical source tables 通过公开 M1→M2→M3 gate，聚焦测试为 `6 passed in 9.36s`。Task 1 尚未开始，`src/pilot_assessment/anchors/` 仍不存在，因此真实状态是 18/18 anchor 已设计、0/18 production plugins 已实现，M4 尚未 engineering verified。AnchorResult v0.2、AnchorPlugin registry/DAG、anchor-specific grids、evidence scorer、artifact/report 和 fingerprints 尚未进入生产代码；受管理存储 importer、BN、runner、sidecar 和 WinUI 同样尚未实现。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
 ## 6. 维护规则
 

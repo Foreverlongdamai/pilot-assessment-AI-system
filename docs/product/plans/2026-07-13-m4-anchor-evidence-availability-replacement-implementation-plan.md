@@ -14,8 +14,8 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted `docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md`, with the amendment taking precedence for verification scope.
 - Accepted decisions: D-021 through D-027 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; implementation is authorized from Task 0 under this replacement plan, and Task 0 has not started.
-- Current implementation truth: 18/18 reference anchors specified, 0/18 implemented.
+- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Task 0 was completed in commit `bc544bf`, and Task 1 has not started.
+- Current implementation truth: 18/18 reference anchors specified, 0/18 production plugins implemented; M4 is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
 - Scope truth: M4 consumes a compiled plan. Building/editing/publishing a ModelBundle, graph, CPT, or plan compiler belongs to M5.
@@ -42,7 +42,7 @@ Required migration performed by this docs-only change:
 
 1. record the exact approval date and state that execution is authorized from Task 0 under this plan;
 2. check only the amendment §8 item for replacement-plan approval; leave every implementation/engineering-verification item unchecked;
-3. update current entry/status surfaces to `replacement plan approved; Task 0 not started`;
+3. at approval time, update current entry/status surfaces to record that the replacement plan was approved and implementation had not yet begun;
 4. preserve `18/18 specified, 0/18 implemented`, `formal_run_authorized=false`, `engineering_default`, and synthetic `not_supported`;
 5. do not edit D-021-D-027 semantics or claim any RED/GREEN/test evidence.
 

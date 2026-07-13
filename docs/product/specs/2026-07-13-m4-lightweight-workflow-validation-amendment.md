@@ -6,7 +6,7 @@
 | 日期 | 2026-07-13 |
 | 方向状态 | 用户已确认并批准采用轻量测试方向 |
 | 书面状态 | 已于 2026-07-13 获用户批准并生效 |
-| 实现状态 | Replacement plan 已批准并从 Task 0 获授权；Task 0 尚未开始；18/18 specified、0/18 implemented |
+| 实现状态 | Replacement Task 0 已由 `bc544bf` 完成，Task 1 尚未开始；18/18 specified、0/18 production plugins implemented；M4 尚未 engineering verified |
 | 取代范围 | 立即取代 M4 主规格 §1.1 的完整 fixture 表述、§14.2–§14.4 的“四套 90 秒 full bundle + frozen full-workflow oracle”要求、§15 的 M4-G full-fixture 口径及 §17 的原计划执行授权；replacement plan 已于 2026-07-13 单独批准 |
 | 不变范围 | 18 个 anchor、AnchorResult v0.2、DAG、算法、阈值、状态语义、no-quality-gate、M1/M2/M3 已发布合同 |
 | 科学状态 | 所有 synthetic 数据继续为 `not_supported`，只验证软件工作流 |
@@ -26,7 +26,7 @@ multimodal Session Bundle
   -> AnchorResult v0.2 / report
 ```
 
-它不是图像吞吐、长 session 性能或采集规模测试。更重要的是，首次 provisional oracle 把部分 mixed anchor 结果保存为 recipe 输入，因此即使合同测试通过，也不能证明原始数据真正驱动了 evidence。当前 provisional Task 0 产物不是冻结基线，不得提交或继续修补。
+它不是图像吞吐、长 session 性能或采集规模测试。更重要的是，首次 provisional oracle 把部分 mixed anchor 结果保存为 recipe 输入，因此即使合同测试通过，也不能证明原始数据真正驱动了 evidence。当时的 provisional Task 0 产物不是冻结基线，现已移除且未进入提交历史。
 
 ## 2. 修订目标
 
@@ -135,7 +135,7 @@ state-matrix 的 inventory/count 继续冻结为 expected=18、executed=18、not
 
 10 秒 smoke 的 expected status/sentinel vector 与 input recipe 分文件保存。它至少冻结：O1=A、O2=A、O3=`capture_missed U`、O4=`1.5 s U`、O6=`70% U`、O10=`recovery_missed U`、O11=`250 ms D`、O12=`150 ms D`、H1=`85% D`、H2=`250 ms D`、H3=`15% U`、H4=D、H5=A；O5/O7/O8/O9/O13 的 exact raw/state 在修订计划中由各自轻量 per-anchor/scenario oracle机械复算后冻结，不能作为 recipe 输入。
 
-完整 18-anchor smoke expected vector 必须在任何 production AnchorPlugin 创建前由修订后 Task 0 冻结；后续实现若与该向量不一致，只能修复实现，或重新走规格复核，不能调 input recipe 迎合 production result。
+完整 18-anchor smoke expected vector 已在任何 production AnchorPlugin 创建前由 replacement Task 0 冻结；后续实现若与该向量不一致，只能修复实现，或重新走规格复核，不能调 input recipe 迎合 production result。
 
 H5 的 baseline `[0,4)` 含 1,024 个 analysis samples；每个 2 秒 task phase 含 512 个 analysis samples，Nyquist=128 Hz，满足 `>35 Hz`。O13 的每个 2 秒 whole-phase window 必须具有 X/U 与 provided-RR 数学 support。
 
@@ -210,7 +210,7 @@ Expected vectors 与 input fixtures 存放在不同文件/模块。轻量 per-an
 7. M4-G、determinism 和 isolated-wheel smoke 复用同一个 10 秒 bundle；
 8. 计划的 specification-to-task matrix、Definition of Done、测试命令和 task count 必须同步更新。
 
-当前未提交的 provisional heavy fixture files 将按已批准 replacement plan 的 Task 0 安全检查逐项删除，并从新的轻量 Task 0 RED 重新开始。不得把 provisional `8 passed` 记入 M4 完成证据；Task 0 当前尚未开始。
+Replacement Task 0 已完成批准的安全检查：provisional heavy fixture files 已逐项移除且未进入提交历史，随后首先观察到缺少轻量能力的正确 RED，再实现新的 input-only fixture。提交 `bc544bf` 冻结了 10 秒 recipe、独立 exact-18 expected vector 与 source hashes；聚焦 gate 为 `6 passed in 9.36s`。不得把旧 provisional `8 passed` 记入 M4 完成证据；Task 1 尚未开始，仍无 production AnchorPlugin。
 
 ## 7. 决策与文档迁移
 
@@ -229,9 +229,9 @@ Expected vectors 与 input fixtures 存放在不同文件/模块。轻量 per-an
 
 - [x] 用户复核并批准本文；
 - [x] 修订后的 M4 实施计划另行获批；
-- [ ] provisional heavy fixture 未进入提交历史；
-- [ ] 新 Task 0 首先观察到缺少轻量能力的 RED；
-- [ ] 唯一 10 秒 bundle 满足 468 declared paths、452 PNG 和 `<=9,500 physical source-table rows` 预算；
+- [x] provisional heavy fixture 未进入提交历史；
+- [x] 新 Task 0 首先观察到缺少轻量能力的 RED；
+- [x] 唯一 10 秒 bundle 满足 468 declared-path references、452 PNG 和 9,331（`<=9,500`）physical source-table rows 预算；
 - [ ] 18 个真实 plugins 的 per-anchor D/A/U 微型测试全部通过；
 - [ ] all-unacceptable 证明 18/18 `computed + U` 且无质量过滤；
 - [ ] mixed、精确 state matrix、extension/replay、扰动、防输出字段和轻量 per-anchor/scenario oracle 门全部通过；

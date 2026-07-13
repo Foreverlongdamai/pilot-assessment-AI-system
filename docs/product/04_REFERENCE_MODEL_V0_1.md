@@ -6,7 +6,7 @@
 | 模型 profile | `reference-model-v0.1`（尚未发布为不可变 ModelBundle） |
 | 日期 | 2026-07-13 |
 | BN inventory | 4 competencies + 11 sub-skills + O1–O13/H1–H5，合计 33 nodes |
-| Anchor 实现状态 | 18/18 已设计，0/18 已实现；原 M4 实施计划已被取代，replacement plan 已于 2026-07-13 批准；Task 0 已获授权但尚未开始 |
+| Anchor 实现状态 | 18/18 已设计，0/18 production plugins 已实现；原 M4 实施计划已被取代，replacement plan 已于 2026-07-13 批准；Task 0 已完成，Task 1 尚未开始 |
 | 科学状态 | engineering defaults，未完成航空、人因或医学验证 |
 
 本文件定义 `reference-model-v0.1` 的可实现模型摘要。M4 的精确合同、公式、typed dependencies、artifact、fingerprint、fixtures 和阶段完成门以 [M4 Anchor Calculation and Evidence Availability Design](./specs/2026-07-13-m4-anchor-evidence-availability-design.md) 为唯一详细规格；本文件不得另造一套 M4 语义。
@@ -272,7 +272,7 @@ Synthetic multimodal fixtures 只验证软件闭环，始终 `scientific_validat
 
 ## 11. 实现与验收边界
 
-当前只可声称 **18/18 anchors specified，0/18 implemented**。Reference M4 完成至少需要：
+当前只可声称 **18/18 anchors specified，0/18 production plugins implemented**。Reference M4 完成至少需要：
 
 1. `AnchorResult` v0.2、catalog/plan/report schemas 和 typed DAG 通过合同测试；
 2. 每个 anchor 的手算 D/A/U、精确边界、aggregation、override 和状态 golden；
@@ -285,4 +285,4 @@ Synthetic multimodal fixtures 只验证软件闭环，始终 `scientific_validat
 9. full tests、schema symmetry、lint/type、build，以及复用唯一 10 秒全模态 bundle 的 fresh-wheel isolated M1→M4 smoke 全部通过；
 10. 只有新鲜证据完成 M4-G 后才能把状态改为 M4 engineering-verified。
 
-M4 书面规格、轻量工作流验证修订与 [replacement plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已批准，D-026/D-027 已接受；原实施计划已被取代且不再提供执行授权。Replacement plan 已从 Task 0 获得实施授权，但 Task 0 尚未开始；在相应完成门通过前仍保持 0/18 implemented。
+M4 书面规格、轻量工作流验证修订与 [replacement plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已批准，D-026/D-027 已接受；原实施计划已被取代且不再提供执行授权。Replacement Task 0 已由 `bc544bf` 完成，Task 1 尚未开始；在相应 production-plugin 完成门通过前仍保持 0/18 implemented。
