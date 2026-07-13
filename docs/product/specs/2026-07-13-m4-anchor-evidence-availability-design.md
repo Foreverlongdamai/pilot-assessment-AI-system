@@ -5,7 +5,7 @@
 | 设计基线 | v0.2 |
 | 日期 | 2026-07-13 |
 | 设计状态 | 完整书面规格已于 2026-07-13 获用户批准 |
-| 实现状态 | 18/18 已设计，0/18 已实现；M4 实施计划已形成并等待用户批准 |
+| 实现状态 | 18/18 已设计，0/18 已实现；M4 实施计划已于 2026-07-13 获用户批准并授权从 Task 0 开始 |
 | 上游 | M1 Session integrity + M2 Ingestion readiness + M3 native-rate synchronization |
 | 下游 | M5 ModelBundle/BN/CPT/inference；M6 formal run/persistence |
 | 正式运行授权 | `formal_run_authorized=false` |
@@ -804,4 +804,4 @@ Isolated-wheel smoke 的 public entry 固定为 `python -m pilot_assessment.veri
 9. M4/M5/M6 ownership 与 coverage 公式不冲突；
 10. Git commit 只声称 design/documentation，不声称 M4 implemented。
 
-书面规格已通过用户复核；`docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 已形成并等待单独批准。在该计划批准前不得开始 M4 实现。
+书面规格已通过用户复核；`docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 也已于 2026-07-13 获得单独批准。M4 实施按计划从 Task 0 开始，在任务完成门通过前不得提前声称相应能力已实现。

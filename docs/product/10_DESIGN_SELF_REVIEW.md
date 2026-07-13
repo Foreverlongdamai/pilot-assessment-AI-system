@@ -8,7 +8,7 @@
 | 结论 | M1–M3 可作为已验证交接基线；M4 完整书面设计已于 2026-07-13 获用户批准，但仍不是实现或工程验证证据 |
 | 软件状态 | 2026-07-10 审查时尚无实现；截至 2026-07-12，M1/M2/M3 后端里程碑已完成工程验证，完整 Core alpha 与 Gate B 仍未完成，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
 | 科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
-| M4 修订 | 2026-07-13 完成 amendment 设计自审并获批准；18/18 anchor 已设计、0/18 已实现，实施计划已形成并等待批准 |
+| M4 修订 | 2026-07-13 完成 amendment 设计自审并获批准；18/18 anchor 已设计、0/18 已实现，实施计划也已获批准并授权从 Task 0 开始 |
 
 ## 1. 结论边界
 
@@ -23,7 +23,7 @@
 - 后端如何以 draft transaction、graph_version、layout_version 和 immutable revision 保持一一对应；
 - 正式 run、non-formal preview、结果 provenance 和验证状态如何区分。
 
-原始 2026-07-10 的结论只适用于当时产品设计闭环。2026-07-13 的 M4 amendment 已经按独立复审修订其 P1 歧义并获得用户批准；随后派生的实施计划仍需单独批准，且默认阈值、拓扑和 CPT 仍等待专家与数据校准。
+原始 2026-07-10 的结论只适用于当时产品设计闭环。2026-07-13 的 M4 amendment 已经按独立复审修订其 P1 歧义并获得用户批准；随后派生的实施计划也已单独获得用户批准，且默认阈值、拓扑和 CPT 仍等待专家与数据校准。
 
 ## 2. 审查方法
 
@@ -109,7 +109,7 @@
 
 ## 6. 下一阶段入口
 
-截至 2026-07-13，backend M1 contracts/integrity、M2 multimodal ingestion foundation 与 M3 native-rate synchronization 已完成工程验证；[M3 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) 和 [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) 保留完整设计与实测证据。[M4 书面规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md) 已获用户批准，[M4 TDD 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 已形成并等待用户批准；批准后才实现 18 个插件。M4 不设置基于表现好坏或异常数值的 quality gate。之后再进入 M5 BN adapter、M6 runtime 与 WinUI。前端可以用 fake backend 并行开发，但不能另建一套模型状态。
+截至 2026-07-13，backend M1 contracts/integrity、M2 multimodal ingestion foundation 与 M3 native-rate synchronization 已完成工程验证；[M3 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) 和 [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) 保留完整设计与实测证据。[M4 书面规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md) 与 [M4 TDD 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 均已获用户批准，实施按计划从 Task 0 开始。M4 不设置基于表现好坏或异常数值的 quality gate。之后再进入 M5 BN adapter、M6 runtime 与 WinUI。前端可以用 fake backend 并行开发，但不能另建一套模型状态。
 
 任何专家修改都通过新 draft/revision 完成；不需要重新修改本设计中的 Python 业务结构。
 
@@ -120,7 +120,7 @@
 本 amendment 只关闭 M4 设计冲突，不构成实现或工程验证。当前状态严格为：
 
 - reference M4 anchors：**18/18 已设计，0/18 已实现**；
-- M4 implementation plan：**已形成并等待用户批准，尚未开始执行**；
+- M4 implementation plan：**已获用户批准，已授权从 Task 0 开始执行**；
 - AnchorResult v0.2、18 个插件、配置资源、golden fixtures、完整 workflow 和 wheel smoke：均尚未实现；
 - M1/M2/M3 的既有工程验证结论不受影响；Gate B 仍未通过；
 - 本节不得被解释为真实数据科学验证、飞行员能力结论或医学诊断能力。

@@ -1,6 +1,6 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0 设计基线（M4 完整书面规格已于 2026-07-13 获用户批准；实施计划已形成并等待批准；18/18 anchors 已设计，0/18 已实现）
+**文档状态：** 产品 v0 设计基线（M4 完整书面规格与实施计划均已于 2026-07-13 获用户批准；已授权从 Task 0 开始；18/18 anchors 已设计，0/18 已实现）
 **日期：** 2026-07-13
 **适用目录：** `pilot_assessment_system/`
 
@@ -224,5 +224,5 @@ v0 完成必须同时满足：
 - [M3 Native-Rate Time Synchronization 规格](./specs/2026-07-12-m3-native-time-synchronization-design.md)
 - [M3 实施计划](./plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md)
 - [M4 Anchor Calculation and Evidence Availability 规格](./specs/2026-07-13-m4-anchor-evidence-availability-design.md)（已批准；18/18 已设计、0/18 已实现）
-- [M4 Anchor Calculation and Evidence Availability 实施计划](./plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（待用户批准；尚未开始 M4 业务代码）
+- [M4 Anchor Calculation and Evidence Availability 实施计划](./plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（已批准；从 Task 0 开始实施）
 - 既有后端方向稿：`docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md`

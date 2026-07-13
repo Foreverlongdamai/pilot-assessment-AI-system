@@ -2,7 +2,7 @@
 
 本目录是 “Development of AI-Based System for Evaluating eVTOL Pilot Training Effectiveness” 项目的产品化工作区。系统目标是把多模态飞行训练 session 转换为可追溯的证据锚点，并通过可编辑的贝叶斯网络输出飞行员能力后验分布。
 
-当前状态：**产品设计基线 v0.1 已建立；后端 M1/M2/M3 已实现并通过工程完成门。M3 只完成 native-rate 时间对齐，不包含插值、重采样或 anchor window grid。M4 的 O1–O13、H1–H5 完整书面规格已于 2026-07-13 获用户批准，TDD 实施计划已经形成并等待用户批准，真实状态仍为 18/18 已设计、0/18 已实现。完整产品仍为 `in_progress`，Gate B 尚未通过；18 个 AnchorPlugin、BN、runtime 和 WinUI 仍未实现。参考评估模型的科学状态仍为 `engineering_default`，synthetic fixture 为 `not_supported`。**
+当前状态：**产品设计基线 v0.1 已建立；后端 M1/M2/M3 已实现并通过工程完成门。M3 只完成 native-rate 时间对齐，不包含插值、重采样或 anchor window grid。M4 的 O1–O13、H1–H5 完整书面规格与 TDD 实施计划均已于 2026-07-13 获用户批准，现已授权从 Task 0 开始实施；真实状态仍为 18/18 已设计、0/18 已实现。完整产品仍为 `in_progress`，Gate B 尚未通过；18 个 AnchorPlugin、BN、runtime 和 WinUI 仍未实现。参考评估模型的科学状态仍为 `engineering_default`，synthetic fixture 为 `not_supported`。**
 
 ## 从这里开始
 
@@ -12,7 +12,7 @@
 - M3 Native-Rate Time Synchronization 规格：[docs/product/specs/2026-07-12-m3-native-time-synchronization-design.md](docs/product/specs/2026-07-12-m3-native-time-synchronization-design.md)
 - M3 实施计划：[docs/product/plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md](docs/product/plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md)
 - M4 Anchor Calculation and Evidence Availability 规格：[docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md](docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md)（已批准）
-- M4 实施计划：[docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md](docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（待用户批准；尚未开始代码实现）
+- M4 实施计划：[docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md](docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（已批准；从 Task 0 开始实施）
 - 当前设计决策：[docs/product/DECISIONS.md](docs/product/DECISIONS.md)
 - 术语表：[docs/product/GLOSSARY.md](docs/product/GLOSSARY.md)
 - 历史后端草案：[docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md](docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md)（仅保留追溯，不再是实现依据）
@@ -46,7 +46,7 @@ uv build
 
 2026-07-12 的 M3 完成门实测为 `694 passed, 2 skipped`；两个 skip 仅对应未显式提供 repository-external CSV 的 M2/M3 opt-in 格式样例测试。配置该 CSV 后，两条格式样例 E2E 为 `2 passed`。Schema regeneration、Ruff format/lint、`ty check src`、build、tracked raw-data scan 和隔离 wheel smoke 也均通过。详细数字、golden counts 与 wheel 证据见 [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md)。
 
-这些结果只验证 M1–M3 软件合同和 native-rate synchronization。格式样例是一次随意飞行记录，只用于格式、接口和时间路径；结果不证明轨迹、任务、表现、生理指标、anchor 或飞行员能力有效。M4 书面规格已经批准，实施计划已经形成并等待批准；在计划获批前不能把 18 个已设计 anchor 计作实现，也不能开始 M4 业务代码、BN 或 Windows 前端。
+这些结果只验证 M1–M3 软件合同和 native-rate synchronization。格式样例是一次随意飞行记录，只用于格式、接口和时间路径；结果不证明轨迹、任务、表现、生理指标、anchor 或飞行员能力有效。M4 书面规格与实施计划均已批准，当前只授权按计划从 Task 0 开始；在任务通过各自完成门前，不能把 18 个已设计 anchor 计作实现，也不能提前跳到 BN 或 Windows 前端。
 
 ## 当前产品方向
 

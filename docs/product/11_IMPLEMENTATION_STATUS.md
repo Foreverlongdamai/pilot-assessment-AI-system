@@ -5,9 +5,9 @@
 | 状态日期 | 2026-07-13 |
 | 产品设计基线 | v0.1 |
 | 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization |
-| M4 当前状态 | O1–O13、H1–H5 共 18/18 完整书面设计已获批准；实施计划已形成并等待用户批准；0/18 已实现 |
-| 下一里程碑 | 复核并批准 M4 实施计划；批准后才可按 M4-A–M4-G 开始 TDD，当前不得把书面设计或计划计作实现 |
-| 软件状态 | `in_progress`（M1/M2/M3 engineering verified；M4 plan awaiting approval；完整 Assessment Core alpha 与 Gate B 尚未完成） |
+| M4 当前状态 | O1–O13、H1–H5 共 18/18 完整书面设计与实施计划均已获批准；已授权从 Task 0 开始；0/18 已实现 |
+| 下一里程碑 | 按已批准计划完成 Task 0 的独立 fixture/runtime gate；当前不得把书面设计或计划计作实现 |
+| 软件状态 | `in_progress`（M1/M2/M3 engineering verified；M4 implementation authorized、Task 0 尚未完成；完整 Assessment Core alpha 与 Gate B 尚未完成） |
 | 科学状态 | synthetic 数据为 `not_supported`；评估模型仍待领域专家校准与验证 |
 | Python package | `pilot-assessment-system 0.1.0` |
 | 本地运行边界 | Windows、离线、目录形式 Session Bundle |
@@ -29,7 +29,7 @@ M1/M2/M3 已实现，并通过 micro fixture 与 simulator 采集格式样例 CS
 
 2026-07-12 已将 M3 的 D-016–D-020 正式写入决策记录并完成实现：M3 只做 native-rate alignment，使用 scale-only/round-half-even clock mapping 和 master-clock X 技术时间窗口，输出独立 `SynchronizationReport`。§3 记录的完成门已经实测通过；这仍不表示完整 Assessment Core、正式 assessment run 或科学有效性已经成立。
 
-2026-07-13 已新增并批准 [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)，把 AnchorResult v0.2、18 个 anchor、typed dependency DAG、artifact/fingerprint、状态边界与 fixtures 冻结为书面设计；随后派生的 [M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 已形成并等待用户批准。当前仓库仍没有 `src/pilot_assessment/anchors/`，没有任何 AnchorPlugin 实现；因此真实计数是 **18/18 specified、0/18 implemented**，M4 尚未 engineering verified。
+2026-07-13 已新增并批准 [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)，把 AnchorResult v0.2、18 个 anchor、typed dependency DAG、artifact/fingerprint、状态边界与 fixtures 冻结为书面设计；随后派生的 [M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 也已于 2026-07-13 获用户批准，实施已授权从 Task 0 开始。当前仓库仍没有 `src/pilot_assessment/anchors/`，没有任何 AnchorPlugin 实现；因此真实计数是 **18/18 specified、0/18 implemented**，M4 尚未 engineering verified。
 
 M4 书面设计明确采用 no-quality-gate 边界：进入 M4 的 aligned input 假定已满足 M1–M3 的结构合同，M4 不研究原始采集质量，也不按 coverage、gap、噪声、幅值或生理范围过滤表现 evidence。极差轨迹、剧烈控制、极端生理指标、未响应、未恢复或未注视均应按规则形成 `computed + Unacceptable`；该结果是有效负面 evidence，raw availability 与 computed D/A 一样为 1。
 
@@ -216,7 +216,7 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 ## 5. 尚未实现
 
 - M4：18 个 AnchorPlugin、AnchorResult v0.2、catalog/plan/report contracts、window grid、evidence likelihood、raw availability、artifact/fingerprint 与 O8/O13 派生证据；当前 18/18 已设计、0/18 已实现；
-- M4 实施计划：已形成但尚未批准；不得把计划存在误计为代码，也不得在批准前开始实现；
+- M4 实施计划：已获用户批准并授权从 Task 0 开始；不得把计划存在或任务授权误计为代码；
 - M5：model bundle、33-node reference BN、CPT、missing-evidence inference、draft/revision/publish；
 - M6：端到端 assessment runner、artifact/report persistence；
 - JSON-RPC sidecar 与受管理存储 importer；
@@ -226,7 +226,7 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 
 ## 6. 下一里程碑
 
-下一步不是直接写 AnchorPlugin，而是审查并批准已从获批规格派生的 M4 实施计划；在该计划获批前，不应提前跳到 M4 代码、BN、runner 或 WinUI。该计划已经覆盖：
+下一步不是直接写 AnchorPlugin，而是按已批准的 M4 实施计划先完成 Task 0 的独立 fixture/runtime gate；在 Task 0 完成前，不应提前跳到生产 AnchorPlugin、BN、runner 或 WinUI。该计划覆盖：
 
 1. M4-A：AnchorResult v0.2、catalog、execution-plan、inventory/report schemas；
 2. M4-B：registry、typed DAG、temporal kernel、artifact sink、fingerprint 和 fake-plugin tests；
@@ -240,7 +240,7 @@ M4 当前已批准的书面规格见：
 
 - [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)
 
-待批准的逐任务实施计划见：
+已批准的逐任务实施计划见：
 
 - [M4 Anchor Calculation and Evidence Availability Implementation Plan](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)
 

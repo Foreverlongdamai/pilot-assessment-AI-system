@@ -14,7 +14,7 @@
 
 - Design source of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md`.
 - Accepted decisions: D-021 through D-025 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-13: written for review; no task below is authorized until the user explicitly approves this implementation plan.
+- Plan status on 2026-07-13: explicitly approved by the user; execution is authorized from Task 0 under the protocol below.
 - Current implementation truth: 18/18 reference anchors specified, 0/18 implemented.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
@@ -3233,9 +3233,9 @@ Expected: clean tree. Only now may the project state say `M4 engineering-verifie
 | §14 fixtures and completion commands | 0, 32-36 |
 | §15 milestone completion gates | 6, 13, 20, 25, 28, 31, 36 |
 | §16 documentation migration | 36 |
-| §17 written-spec gate | Task 36 rechecks authority/status; the design gate itself was already satisfied by commit `bc08771`, while this plan still requires approval |
+| §17 written-spec gate | Task 36 rechecks authority/status; the design gate was satisfied by commit `bc08771`, and this implementation plan was separately approved by the user on 2026-07-13 |
 
-## Final self-review checklist before implementation approval
+## Final self-review checklist recorded before implementation approval
 
 - [x] Every design §1-§17 row maps to an executable task or an explicit already-satisfied precondition that is rechecked at closure.
 - [x] Every behavior-implementation task names exact create/modify/test files, a RED command/failure, minimal implementation behavior, a GREEN command, and a commit; verification-only/closure tasks instead name their first-run PASS gate and corrective protocol.
