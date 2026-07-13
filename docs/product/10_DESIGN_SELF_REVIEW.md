@@ -5,7 +5,7 @@
 | 设计基线 | 产品 v0.1；M4 candidate v0.2 |
 | 审查日期 | 原始审查 2026-07-10；M4 amendment 2026-07-13 |
 | 审查范围 | pilot_assessment_system 产品文档、项目入口说明、历史草案状态与 M4 跨文档一致性 |
-| 结论 | M1–M3 可作为已验证交接基线；M4 为已完成内部自审、待用户批准的书面设计，不是实现基线或实现证据 |
+| 结论 | M1–M3 可作为已验证交接基线；M4 完整书面设计已于 2026-07-13 获用户批准，但仍不是实现或工程验证证据 |
 | 软件状态 | 2026-07-10 审查时尚无实现；截至 2026-07-12，M1/M2/M3 后端里程碑已完成工程验证，完整 Core alpha 与 Gate B 仍未完成，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
 | 科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | M4 修订 | 2026-07-13 完成 amendment 设计自审；18/18 anchor 已设计、0/18 已实现，实施计划尚未生成 |
@@ -109,7 +109,7 @@
 
 ## 6. 下一阶段入口
 
-截至 2026-07-13，backend M1 contracts/integrity、M2 multimodal ingestion foundation 与 M3 native-rate synchronization 已完成工程验证；[M3 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) 和 [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) 保留完整设计与实测证据。下一阶段是先复核 [M4 书面规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md)；用户批准后才生成 M4 TDD 实施计划，计划再获批后才实现 18 个插件。M4 不设置基于表现好坏或异常数值的 quality gate。之后再进入 M5 BN adapter、M6 runtime 与 WinUI。前端可以用 fake backend 并行开发，但不能另建一套模型状态。
+截至 2026-07-13，backend M1 contracts/integrity、M2 multimodal ingestion foundation 与 M3 native-rate synchronization 已完成工程验证；[M3 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) 和 [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) 保留完整设计与实测证据。[M4 书面规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md) 已获用户批准；下一阶段是生成并复核 M4 TDD 实施计划，计划获批后才实现 18 个插件。M4 不设置基于表现好坏或异常数值的 quality gate。之后再进入 M5 BN adapter、M6 runtime 与 WinUI。前端可以用 fake backend 并行开发，但不能另建一套模型状态。
 
 任何专家修改都通过新 draft/revision 完成；不需要重新修改本设计中的 Python 业务结构。
 
@@ -141,7 +141,7 @@
 | M4-SR-08 | 零 support、长 gap 与 terminal sample 可被不同实现解释为 hold、omit 或 invalid | 定义 support_interval_v1、segment-aware left-hold、零 support/最小数学基数状态、不得跨 gap，以及每类 metric 的固定 denominator；不重新引入 coverage fraction gate |
 | M4-SR-09 | O2/O3、control detector、event horizon、gaze/ECG/EEG DSP 参数不足以唯一实现 | 冻结 reference join、arrival axis/horizon/composite primary、O5 filter/padding/turning-point/duration、O6 normalization/integration、O10–O12 horizons/channel policy、gaze interval/tie/pooled aggregation、R-peak assignment 与完整 Welch/band/epsilon 参数 |
 | M4-SR-10 | artifact/fingerprint、registry 和 full fixture 可由实现者各自定义 | 冻结 RFC 8785 JCS + typed framing、logical-vs-storage hash、registry resource/factory/digest policy、90 s all-D/all-U timeline、逐 anchor oracle/tolerance 和 isolated-wheel entrypoint |
-| M4-SR-11 | 分段确认被误写成完整书面批准 | M4 spec 明确为“设计方向已分段确认、完整书面规格待用户批准”；D-021～D-025 暂为 proposed，批准后再单独改为 accepted |
+| M4-SR-11 | 分段确认曾被误写成完整书面批准 | 候选阶段明确区分两者；用户于 2026-07-13 批准完整 M4 规格后，D-021～D-025 在独立 Git 轨迹中转为 accepted |
 | M4-SR-12 | phase/event 中 computed 与 non-computed 混合时，session result 可能静默忽略缺项 | 冻结 canonical applicable inventory、全项执行和 `extractor_error > dependency_missing > missing_input > not_computable` 的 session 状态优先级；任何 applicable 非 computed 都不生成 session D/A/U |
 | M4-SR-13 | M4 曾假定 M3 提供 gap intervals，O5 零平台与 H5 极短段也可能由不同实现自由解释 | M4 从 aligned rows + M3 `gap_threshold_ns` 精确重建/核对 segments；O5 run 使用 left-hold support duration 且零平台不计时；H5 固定短段 filter bypass、padlen、empty-band 与 baseline-degenerate computed-U 语义 |
 | M4-SR-14 | full oracle 的恢复/越界事件与 O1=100/O8=1 冲突，plugin digest 也未覆盖 helper/DSP runtime | 将 all-D O1/O8 修正为可共同推导的 90%/0.81，冻结独立 raw input recipe 与 builder/oracle 隔离；implementation digest 覆盖本地 import closure、resources、schemas 和 exact numeric-runtime build identity |

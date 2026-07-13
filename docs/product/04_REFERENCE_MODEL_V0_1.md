@@ -2,7 +2,7 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 文档状态 | 工程参考模型；M4 书面规格待用户复核 |
+| 文档状态 | 工程参考模型；M4 完整书面规格已于 2026-07-13 获用户批准 |
 | 模型 profile | `reference-model-v0.1`（尚未发布为不可变 ModelBundle） |
 | 日期 | 2026-07-13 |
 | BN inventory | 4 competencies + 11 sub-skills + O1–O13/H1–H5，合计 33 nodes |
@@ -285,4 +285,4 @@ Synthetic multimodal fixtures 只验证软件闭环，始终 `scientific_validat
 9. full tests、schema symmetry、lint/type、build 与 fresh-wheel isolated M1->M4 smoke 全部通过；
 10. 只有新鲜证据完成 M4-G 后才能把状态改为 M4 engineering-verified。
 
-书面规格获用户复核前，不生成 M4 实施计划；计划获批前，不开始代码实现。
+M4 书面规格已经批准，现可生成实施计划；计划获批前仍不开始代码实现。

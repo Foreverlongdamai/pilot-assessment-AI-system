@@ -6,7 +6,7 @@
 | 日期 | 2026-07-11 |
 | 用户批准 | 2026-07-11 |
 | M3 口径修订 | 2026-07-12：session window 权威移交 M3 §7 / D-018 |
-| M4 候选边界修订 | 2026-07-13：proposed D-021 随完整 M4 规格批准后取消 downstream residual/coverage/quality evidence gate；不改变 M2 实现或 golden |
+| M4 边界修订 | 2026-07-13：accepted D-021 取消 downstream residual/coverage/quality evidence gate；不改变 M2 实现或 golden |
 | 上位基线 | Product design v0.1 + Backend Foundation M1 |
 | 本阶段 | M2：理想多模态合同、合成 bundle、全模态 ingestion readiness inspection |
 | 科学状态 | synthetic_test_only / not_supported |

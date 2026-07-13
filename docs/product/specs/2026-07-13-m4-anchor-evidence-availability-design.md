@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | v0.2 |
 | 日期 | 2026-07-13 |
-| 设计状态 | 设计方向已在对话中分段确认；完整书面规格待用户批准 |
+| 设计状态 | 完整书面规格已于 2026-07-13 获用户批准 |
 | 实现状态 | 18/18 已设计，0/18 已实现；M4 实施计划尚未生成 |
 | 上游 | M1 Session integrity + M2 Ingestion readiness + M3 native-rate synchronization |
 | 下游 | M5 ModelBundle/BN/CPT/inference；M6 formal run/persistence |
@@ -793,7 +793,7 @@ Isolated-wheel smoke 的 public entry 固定为 `python -m pilot_assessment.veri
 本规格进入实施计划前必须满足：
 
 1. 用户复核并明确批准本书面文件；
-2. D-021–D-025 已写入；批准后其状态由 proposed 更新为“已接受”并单独留痕；
+2. D-021–D-025 已写入并在独立 Git 轨迹中更新为“已接受”；
 3. 所有列出的跨文档冲突已消除或明确标注 supersession；
 4. 无 TBD/TODO/placeholder；
 5. 18 个 anchor、阈值、boundary、override、dependency 和 artifact 均无歧义；
@@ -803,4 +803,4 @@ Isolated-wheel smoke 的 public entry 固定为 `python -m pilot_assessment.veri
 9. M4/M5/M6 ownership 与 coverage 公式不冲突；
 10. Git commit 只声称 design/documentation，不声称 M4 implemented。
 
-书面规格通过用户复核后，下一步才是编写 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md`。在该计划批准前不得开始 M4 实现。
+书面规格已通过用户复核；下一步是编写 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md`。在该计划批准前不得开始 M4 实现。

@@ -4,7 +4,7 @@
 
 - 文档版本：1.0
 - 对应模型版本：pilot-assessment-bn v0.1
-- 状态：第一版可实现设计，尚未实现或科学验证；2026-07-13 已与 proposed D-021～D-025 的 M4 evidence 候选语义对齐，待完整 M4 规格批准
+- 状态：第一版可实现设计，尚未实现或科学验证；2026-07-13 已与 accepted D-021～D-025 的 M4 evidence 语义对齐
 - 核心节点数：33
   - 4 个 aggregate competency 节点
   - 11 个 latent sub-skill 节点

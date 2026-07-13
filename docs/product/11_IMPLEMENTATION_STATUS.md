@@ -5,8 +5,8 @@
 | 状态日期 | 2026-07-13 |
 | 产品设计基线 | v0.1 |
 | 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization |
-| M4 当前状态 | O1–O13、H1–H5 共 18/18 已完成书面设计；0/18 已实现；实施计划尚未生成 |
-| 下一里程碑 | 先复核 M4 书面规格，再编写并批准实施计划；之后才可按 M4-A–M4-G 开始 TDD，当前不得把书面设计计作实现 |
+| M4 当前状态 | O1–O13、H1–H5 共 18/18 完整书面设计已获批准；0/18 已实现；实施计划正在生成 |
+| 下一里程碑 | 编写、复核并批准 M4 实施计划；之后才可按 M4-A–M4-G 开始 TDD，当前不得把书面设计计作实现 |
 | 软件状态 | `in_progress`（M1/M2/M3 engineering verified；M4 written design only；完整 Assessment Core alpha 与 Gate B 尚未完成） |
 | 科学状态 | synthetic 数据为 `not_supported`；评估模型仍待领域专家校准与验证 |
 | Python package | `pilot-assessment-system 0.1.0` |
@@ -29,7 +29,7 @@ M1/M2/M3 已实现，并通过 micro fixture 与 simulator 采集格式样例 CS
 
 2026-07-12 已将 M3 的 D-016–D-020 正式写入决策记录并完成实现：M3 只做 native-rate alignment，使用 scale-only/round-half-even clock mapping 和 master-clock X 技术时间窗口，输出独立 `SynchronizationReport`。§3 记录的完成门已经实测通过；这仍不表示完整 Assessment Core、正式 assessment run 或科学有效性已经成立。
 
-2026-07-13 已新增 [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)，把 AnchorResult v0.2、18 个 anchor、typed dependency DAG、artifact/fingerprint、状态边界与 fixtures 写入待用户复核的书面设计。当前仓库仍没有 `src/pilot_assessment/anchors/`，没有任何 AnchorPlugin 实现，也没有 M4 实施计划；因此真实计数是 **18/18 specified、0/18 implemented**，M4 尚未 engineering verified。
+2026-07-13 已新增并批准 [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)，把 AnchorResult v0.2、18 个 anchor、typed dependency DAG、artifact/fingerprint、状态边界与 fixtures 冻结为书面设计。当前仓库仍没有 `src/pilot_assessment/anchors/`，没有任何 AnchorPlugin 实现，实施计划正在生成；因此真实计数是 **18/18 specified、0/18 implemented**，M4 尚未 engineering verified。
 
 M4 书面设计明确采用 no-quality-gate 边界：进入 M4 的 aligned input 假定已满足 M1–M3 的结构合同，M4 不研究原始采集质量，也不按 coverage、gap、噪声、幅值或生理范围过滤表现 evidence。极差轨迹、剧烈控制、极端生理指标、未响应、未恢复或未注视均应按规则形成 `computed + Unacceptable`；该结果是有效负面 evidence，raw availability 与 computed D/A 一样为 1。
 
@@ -236,7 +236,7 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 6. 保留 source/report/fingerprint/anchor revision 的 traceability，并继续保持 `formal_run_authorized=false`；
 7. 使用独立的完整 all-D/all-U software fixtures 验证 18-anchor 闭环，不从 captured-format CSV 推断任务、表现、生理状态或飞行员能力。
 
-M4 当前待用户复核的书面规格见：
+M4 当前已批准的书面规格见：
 
 - [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)
 
