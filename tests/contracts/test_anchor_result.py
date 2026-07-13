@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -17,11 +18,23 @@ from pilot_assessment.contracts.anchor import (
 )
 
 FIXTURE_PATH = Path(__file__).parents[1] / "fixtures" / "anchor_result_computed.json"
+PROJECT_ROOT = Path(__file__).parents[2]
+
+LEGACY_ANCHOR_CONTRACT_SHA256 = "8e70b3e8adb65dcf87d8de7f4ae853700f40af62470827e7659b983ef7474526"
+LEGACY_ANCHOR_SCHEMA_SHA256 = "c8b6cea319c377b8a61923c5f1122c3e70a79b59f054637ff0334082b2deb5f5"
 
 
 @pytest.fixture
 def anchor_data() -> dict[str, Any]:
     return json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
+
+
+def test_legacy_anchor_contract_and_schema_bytes_are_frozen() -> None:
+    contract_bytes = (PROJECT_ROOT / "src/pilot_assessment/contracts/anchor.py").read_bytes()
+    schema_bytes = (PROJECT_ROOT / "schemas/anchor-result-0.1.0.schema.json").read_bytes()
+
+    assert hashlib.sha256(contract_bytes).hexdigest() == LEGACY_ANCHOR_CONTRACT_SHA256
+    assert hashlib.sha256(schema_bytes).hexdigest() == LEGACY_ANCHOR_SCHEMA_SHA256
 
 
 def test_computed_anchor_fixture_is_valid(anchor_data: dict[str, Any]) -> None:

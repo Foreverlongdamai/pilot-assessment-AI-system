@@ -1,0 +1,110 @@
+{
+  "contract_id": "anchor-result",
+  "contract_version": "0.2.0",
+  "anchor_id": "O11",
+  "calculation_status": "computed",
+  "evidence_state": "unacceptable",
+  "evidence_likelihood": {
+    "state_order": ["unacceptable", "adequate", "desired"],
+    "values": [1.0, 0.0, 0.0]
+  },
+  "continuous_score": 0.0,
+  "primary_value": null,
+  "primary_value_reason": "response_missed",
+  "classification_override": {
+    "code": "response_missed",
+    "details": {
+      "observed_wait_ms": 2000
+    }
+  },
+  "raw_metrics": {
+    "miss_count": {
+      "scalar_kind": "integer",
+      "value": 1,
+      "unit": "count"
+    },
+    "observed_wait_ms": {
+      "scalar_kind": "float",
+      "value": 2000.0,
+      "unit": "ms"
+    }
+  },
+  "phase_results": [],
+  "event_results": [
+    {
+      "breakdown_id": "response-event-1",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": ["unacceptable", "adequate", "desired"],
+        "values": [1.0, 0.0, 0.0]
+      },
+      "continuous_score": 0.0,
+      "primary_value": null,
+      "primary_value_reason": "response_missed",
+      "raw_metrics": {
+        "observed_wait_ms": {
+          "scalar_kind": "float",
+          "value": 2000.0,
+          "unit": "ms"
+        }
+      },
+      "classification_override": {
+        "code": "response_missed",
+        "details": {}
+      },
+      "trace": {
+        "sample_count": 201,
+        "source_start_t_ns": 0,
+        "source_end_t_ns": 2000000000,
+        "analysis_start_t_ns": 0,
+        "analysis_end_t_ns": 2000000000,
+        "grid_id": "response-grid-v1",
+        "window_ids": ["response-window-1"],
+        "interpolation_method": "linear-v1",
+        "matching_method": "event-onset-v1",
+        "diagnostics": []
+      },
+      "diagnostics": []
+    }
+  ],
+  "derived_artifacts": [
+    {
+      "artifact_id": "O11-response-trace",
+      "kind": "event-trace",
+      "schema_id": "anchor-event-trace-v1",
+      "logical_content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "storage_file_sha256": null,
+      "row_count": 201,
+      "start_t_ns": 0,
+      "end_t_ns": 2000000000,
+      "grid_hash": null,
+      "producer_anchor_id": "O11",
+      "producer_plugin_id": "reference-O11-plugin",
+      "producer_plugin_version": "0.1.0",
+      "parameter_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "dependency_fingerprints": []
+    }
+  ],
+  "diagnostics": [],
+  "provenance": {
+    "plugin_id": "reference-O11-plugin",
+    "plugin_version": "0.1.0",
+    "implementation_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "parameter_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "dependency_fingerprints": [],
+    "computation_trace": {
+      "sample_count": 201,
+      "source_start_t_ns": 0,
+      "source_end_t_ns": 2000000000,
+      "analysis_start_t_ns": 0,
+      "analysis_end_t_ns": 2000000000,
+      "grid_id": "response-grid-v1",
+      "window_ids": ["response-window-1"],
+      "interpolation_method": "linear-v1",
+      "matching_method": "event-onset-v1",
+      "diagnostics": []
+    }
+  },
+  "result_fingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+}

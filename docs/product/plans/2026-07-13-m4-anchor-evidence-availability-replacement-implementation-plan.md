@@ -528,7 +528,7 @@ git commit -m "test: verify locked M4 numeric runtime"
 - Create: `tests/fixtures/anchor_result_v2_computed.json`
 - Modify: `tests/contracts/test_anchor_result.py`
 
-- [ ] **Step 1: Write RED tests for the breaking contract**
+- [x] **Step 1: Write RED tests for the breaking contract**
 
 Freeze these current legacy SHA-256 values in the test:
 
@@ -548,7 +548,7 @@ Test computed/non-computed field matrices, finite JSON numbers, exact integer se
 
 Expected: RED because `AnchorResultV2` does not exist.
 
-- [ ] **Step 2: Implement the typed v0.2 result family**
+- [x] **Step 2: Implement the typed v0.2 result family**
 
 The module must define exactly the public v0.2 fields shown below; adding/removing a public field requires a new contract version:
 
@@ -649,7 +649,7 @@ class AnchorResultV2(StrictContractModel):
 
 Model validators must encode design §7 exactly. `scalar_kind=integer` requires a strict JSON integer (never bool or `1.0`), while `scalar_kind=float` requires a finite strict float; the declared measurement schema fixes the kind for every metric ID. Counts and t_ns values therefore remain exact JCS integers. An override may only select Unacceptable; it cannot force Adequate or Desired.
 
-- [ ] **Step 3: Run GREEN and verify legacy bytes**
+- [x] **Step 3: Run GREEN and verify legacy bytes**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/contracts/test_anchor_result.py tests/contracts/test_anchor_result_v2.py -v
@@ -658,7 +658,7 @@ git diff --exit-code -- src/pilot_assessment/contracts/anchor.py schemas/anchor-
 
 Expected: PASS and no legacy diff.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/contracts/anchor_v2.py src/pilot_assessment/contracts/__init__.py tests/contracts/test_anchor_result.py tests/contracts/test_anchor_result_v2.py tests/fixtures/anchor_result_v2_computed.json

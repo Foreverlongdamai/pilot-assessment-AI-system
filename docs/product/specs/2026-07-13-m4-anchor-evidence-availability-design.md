@@ -240,16 +240,71 @@ evidence_likelihood:
   values: [1.0, 0.0, 0.0]
 continuous_score: 0.0
 primary_value: null
+primary_value_reason: response_missed
 classification_override:
   code: response_missed
+  details:
+    observed_wait_ms: 2000
 raw_metrics:
-  miss_count: 1
-phase_results: {}
-event_results: []
+  miss_count:
+    scalar_kind: integer
+    value: 1
+    unit: count
+  observed_wait_ms:
+    scalar_kind: float
+    value: 2000.0
+    unit: ms
+phase_results: []
+event_results:
+  - breakdown_id: response-event-1
+    calculation_status: computed
+    evidence_state: unacceptable
+    evidence_likelihood:
+      state_order: [unacceptable, adequate, desired]
+      values: [1.0, 0.0, 0.0]
+    continuous_score: 0.0
+    primary_value: null
+    primary_value_reason: response_missed
+    raw_metrics:
+      observed_wait_ms:
+        scalar_kind: float
+        value: 2000.0
+        unit: ms
+    classification_override:
+      code: response_missed
+      details: {}
+    trace:
+      sample_count: 201
+      source_start_t_ns: 0
+      source_end_t_ns: 2000000000
+      analysis_start_t_ns: 0
+      analysis_end_t_ns: 2000000000
+      grid_id: response-grid-v1
+      window_ids: [response-window-1]
+      interpolation_method: linear-v1
+      matching_method: event-onset-v1
+      diagnostics: []
+    diagnostics: []
 derived_artifacts: []
 diagnostics: []
-provenance: {}
-result_fingerprint: sha256:...
+provenance:
+  plugin_id: reference-O11-plugin
+  plugin_version: 0.1.0
+  implementation_digest: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+  parameter_hash: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  dependency_fingerprints: []
+  computation_trace:
+    sample_count: 201
+    source_start_t_ns: 0
+    source_end_t_ns: 2000000000
+    analysis_start_t_ns: 0
+    analysis_end_t_ns: 2000000000
+    grid_id: response-grid-v1
+    window_ids: [response-window-1]
+    interpolation_method: linear-v1
+    matching_method: event-onset-v1
+    diagnostics: []
+result_fingerprint: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 ~~~
 
 v0.2 规则：
@@ -257,8 +312,8 @@ v0.2 规则：
 - active calculation status 只有 `computed`、`missing_input`、`not_applicable`、`not_computable`、`dependency_missing`、`extractor_error`；
 - `invalid_quality` 只存在于 legacy v0.1 reader，不由 M4 产生；
 - `computed` 必须提供 D/A/U likelihood；
-- 非 computed 结果不得携带 evidence state、likelihood 或 continuous score；
-- `primary_value` 在 missed/no-stable/no-gaze/degenerate physiology override，或 O3 等固有多指标 conjunction 没有诚实单一标量时允许为 null；此时必须提供枚举 `primary_value_reason` 和完整 typed `raw_metrics`；
+- 非 computed 结果不得携带 evidence state、likelihood、continuous score、primary value、primary-value reason 或 classification override；它可以保留失败前已经形成的 typed raw metrics、breakdown、artifact 和 diagnostics 以供审计，但这些字段不得被解释为 D/A/U observation；
+- `primary_value` 在 missed/no-stable/no-gaze/degenerate physiology override，或 O3 等固有多指标 conjunction 没有诚实单一标量时允许为 null；此时必须提供版本化受控的 `primary_value_reason` StableId code 和完整 typed `raw_metrics`；reason 的 allowlist 由 scorer/profile schema 校验，不在通用 result DTO 中封闭枚举；
 - 所有 JSON 数字必须有限；miss 不使用 Infinity，退化比值不使用 NaN；
 - phase/event breakdown 必须有自己的 calculation status、raw metrics、override 和 observation；
 - coverage、gap、sample count、artifact flags 和 sync metrics 只进入 diagnostics/provenance，不参与 scorer；
