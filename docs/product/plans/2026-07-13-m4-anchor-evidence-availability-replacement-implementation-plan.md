@@ -14,7 +14,7 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md`, the accepted `docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md`, and the accepted `docs/product/specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md`. The lightweight amendment takes precedence for verification scope; the Task 3 amendment takes precedence for semantic/reference contracts, binding, fingerprint ownership, and candidate producer boundaries.
 - Accepted decisions: D-021 through D-028 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–2 were completed in commits `bc544bf`, `f56365c`, and `928e9a4`; the user then explicitly approved the Task 3 candidate-binding amendment, and the revised Task 3 is next.
+- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–2 were completed in commits `bc544bf`, `f56365c`, and `928e9a4`; the user then explicitly approved the Task 3 candidate-binding amendment, Task 3 is complete under the checked section below, and Task 4 is next.
 - Current implementation truth: 18/18 reference anchors specified, 0/18 production plugins implemented; M4 is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
@@ -724,7 +724,7 @@ Expected: only the files listed above are staged; two independent internal P1 re
 - Create: `tests/contracts/test_anchor_execution.py`
 - Create: `tests/anchors/test_reference_resolution.py`
 
-- [ ] **Step 1: Write the complete lightweight RED matrix from the approved Task 3 amendment**
+- [x] **Step 1: Write the complete lightweight RED matrix from the approved Task 3 amendment**
 
 In `tests/contracts/test_anchor_execution.py`, cover the exact public surface and JSON round trip; strict/frozen/extra-forbid behavior; phase/event/opportunity/session bounds including terminal ownership and event duration; duplicate/dangling IDs; vector dimension/finite/frame/unit rules; dynamic/static AOI geometry; control/baseline/applicability matrices; reference present/absent fields; zero-or-one total descriptor cardinality; and rejection of multiple ModelBundle or mixed bundle/ModelBundle inventories.
 
@@ -736,7 +736,7 @@ In `tests/anchors/test_reference_resolution.py`, use one minimal `AlignedSession
 
 Expected: RED because `pilot_assessment.contracts.anchor_execution` and the `pilot_assessment.anchors` runtime binder do not exist. Record the exact import/collection failure before creating production files.
 
-- [ ] **Step 2: Implement the approved serializable contracts and internal runtime boundary**
+- [x] **Step 2: Implement the approved serializable contracts and internal runtime boundary**
 
 Implement every field, enum, canonical-order validator and cross-reference rule from the approved Task 3 amendment §§4–6 in `contracts/anchor_execution.py`. Reuse common strict types and `BundleRelativePath` safety semantics without changing `contracts/common.py`; do not export JSON Schema in this task. Use strict Pydantic for serializable snapshots and frozen dataclasses for objects containing Polars views:
 
@@ -782,7 +782,7 @@ def bind_resolved_reference_snapshot(
 
 Implement the exact session gate, candidate inventory, source ownership, table/schema/frame/unit/resource/alignment comparisons and stable `ReferenceBindingError.code` allowlist from amendment §8. Task 3 validates declared digests and Decimal scale/drift consistency but does not compute canonical fingerprints; Task 8 owns those callables. Bundle provenance against `SynchronizationReport` belongs to Task 4 request construction. An explicitly absent descriptor remains an entry with `aligned_view=None`; any present mismatch fails and never degrades to absent. Do not add a reference-table non-empty requirement or any performance/data-quality gate.
 
-- [ ] **Step 3: Run GREEN**
+- [x] **Step 3: Run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/contracts/test_anchor_execution.py tests/anchors/test_reference_resolution.py -v
@@ -790,7 +790,7 @@ Implement the exact session gate, candidate inventory, source ownership, table/s
 
 Expected: PASS. Runtime reference views remain immutable, the exact three-parameter binder passes the approved matrix, and no M3 contract or production AnchorPlugin is changed.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/contracts/anchor_execution.py src/pilot_assessment/anchors/__init__.py src/pilot_assessment/anchors/models.py src/pilot_assessment/anchors/reference_resolution.py tests/contracts/test_anchor_execution.py tests/anchors/test_reference_resolution.py
