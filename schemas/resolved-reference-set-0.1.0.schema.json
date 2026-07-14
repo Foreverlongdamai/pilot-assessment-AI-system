@@ -1,0 +1,451 @@
+{
+  "$defs": {
+    "ReferenceAlignmentContract": {
+      "additionalProperties": false,
+      "properties": {
+        "declared_drift_ppm": {
+          "title": "Declared Drift Ppm",
+          "type": "number"
+        },
+        "in_session_policy": {
+          "const": "m3_closed_source_row_mask_v0.1",
+          "default": "m3_closed_source_row_mask_v0.1",
+          "title": "In Session Policy",
+          "type": "string"
+        },
+        "mapping_method": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Mapping Method",
+          "type": "string"
+        },
+        "mapping_policy_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Mapping Policy Id",
+          "type": "string"
+        },
+        "offset_ns": {
+          "maximum": 9223372036854775807,
+          "minimum": -9223372036854775808,
+          "title": "Offset Ns",
+          "type": "integer"
+        },
+        "rounding_mode": {
+          "const": "decimal_round_half_even",
+          "default": "decimal_round_half_even",
+          "title": "Rounding Mode",
+          "type": "string"
+        },
+        "scale": {
+          "exclusiveMinimum": 0.0,
+          "title": "Scale",
+          "type": "number"
+        },
+        "source_clock_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Source Clock Id",
+          "type": "string"
+        },
+        "target_time_domain": {
+          "const": "session_time_ns",
+          "default": "session_time_ns",
+          "title": "Target Time Domain",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mapping_method",
+        "mapping_policy_id",
+        "source_clock_id",
+        "scale",
+        "offset_ns",
+        "declared_drift_ppm"
+      ],
+      "title": "ReferenceAlignmentContract",
+      "type": "object"
+    },
+    "ReferenceFieldContract": {
+      "additionalProperties": false,
+      "properties": {
+        "dtype_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Dtype Id",
+          "type": "string"
+        },
+        "field_name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Field Name",
+          "type": "string"
+        },
+        "nullable": {
+          "title": "Nullable",
+          "type": "boolean"
+        },
+        "unit": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9%*/^._-]+$",
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field_name",
+        "dtype_id",
+        "unit",
+        "nullable"
+      ],
+      "title": "ReferenceFieldContract",
+      "type": "object"
+    },
+    "ReferenceResolutionStatus": {
+      "enum": [
+        "present",
+        "absent"
+      ],
+      "title": "ReferenceResolutionStatus",
+      "type": "string"
+    },
+    "ReferenceResourceChecksum": {
+      "additionalProperties": false,
+      "properties": {
+        "checksum": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Checksum",
+          "type": "string"
+        },
+        "path": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+          "title": "Path",
+          "type": "string",
+          "x-runtime-invariants": [
+            "segments are not empty, '.' or '..'",
+            "segments do not end in a dot or space",
+            "resolved files remain below the owning artifact root"
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "checksum"
+      ],
+      "title": "ReferenceResourceChecksum",
+      "type": "object"
+    },
+    "ReferenceSessionIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "session_end_t_ns": {
+          "exclusiveMinimum": 0,
+          "maximum": 4503599627370495,
+          "title": "Session End T Ns",
+          "type": "integer"
+        },
+        "session_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "session_start_t_ns": {
+          "const": 0,
+          "default": 0,
+          "title": "Session Start T Ns",
+          "type": "integer"
+        },
+        "source_snapshot_fingerprint": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Source Snapshot Fingerprint",
+          "type": "string"
+        },
+        "synchronization_fingerprint": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Synchronization Fingerprint",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id",
+        "source_snapshot_fingerprint",
+        "synchronization_fingerprint",
+        "session_end_t_ns"
+      ],
+      "title": "ReferenceSessionIdentity",
+      "type": "object"
+    },
+    "ReferenceSourceKind": {
+      "enum": [
+        "bundle",
+        "model_bundle"
+      ],
+      "title": "ReferenceSourceKind",
+      "type": "string"
+    },
+    "ReferenceTableContract": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_order_keys": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Canonical Order Keys",
+          "type": "array"
+        },
+        "coordinate_frame_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Coordinate Frame Id",
+          "type": "string"
+        },
+        "fields": {
+          "items": {
+            "$ref": "#/$defs/ReferenceFieldContract"
+          },
+          "title": "Fields",
+          "type": "array"
+        },
+        "in_session_field": {
+          "const": "in_session",
+          "default": "in_session",
+          "title": "In Session Field",
+          "type": "string"
+        },
+        "session_time_field": {
+          "const": "t_ns",
+          "default": "t_ns",
+          "title": "Session Time Field",
+          "type": "string"
+        },
+        "stable_row_id_field": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Stable Row Id Field",
+          "type": "string"
+        },
+        "table_contract_fingerprint": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Table Contract Fingerprint",
+          "type": "string"
+        },
+        "table_role": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Table Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "table_role",
+        "coordinate_frame_id",
+        "stable_row_id_field",
+        "fields",
+        "canonical_order_keys",
+        "table_contract_fingerprint"
+      ],
+      "title": "ReferenceTableContract",
+      "type": "object"
+    },
+    "ResolvedReferenceDescriptor": {
+      "additionalProperties": false,
+      "properties": {
+        "absence_reason": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Absence Reason"
+        },
+        "aligned_content_fingerprint": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9A-Fa-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Aligned Content Fingerprint"
+        },
+        "aligned_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Aligned Schema Id",
+          "type": "string"
+        },
+        "alignment_contract": {
+          "$ref": "#/$defs/ReferenceAlignmentContract"
+        },
+        "alignment_fingerprint": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9A-Fa-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Alignment Fingerprint"
+        },
+        "clock_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Clock Id",
+          "type": "string"
+        },
+        "reference_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Reference Id",
+          "type": "string"
+        },
+        "resolution_status": {
+          "$ref": "#/$defs/ReferenceResolutionStatus"
+        },
+        "resource_checksums": {
+          "items": {
+            "$ref": "#/$defs/ReferenceResourceChecksum"
+          },
+          "title": "Resource Checksums",
+          "type": "array"
+        },
+        "resource_fingerprint": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9A-Fa-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Resource Fingerprint"
+        },
+        "runtime_view_role": {
+          "const": "task_reference",
+          "default": "task_reference",
+          "title": "Runtime View Role",
+          "type": "string"
+        },
+        "source_kind": {
+          "$ref": "#/$defs/ReferenceSourceKind"
+        },
+        "source_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Source Schema Id",
+          "type": "string"
+        },
+        "table_contract": {
+          "$ref": "#/$defs/ReferenceTableContract"
+        }
+      },
+      "required": [
+        "reference_id",
+        "resolution_status",
+        "source_kind",
+        "source_schema_id",
+        "aligned_schema_id",
+        "clock_id",
+        "alignment_contract",
+        "table_contract",
+        "resource_checksums"
+      ],
+      "title": "ResolvedReferenceDescriptor",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:resolved-reference-set:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_id": {
+      "const": "resolved-reference-set",
+      "default": "resolved-reference-set",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "descriptors": {
+      "items": {
+        "$ref": "#/$defs/ResolvedReferenceDescriptor"
+      },
+      "title": "Descriptors",
+      "type": "array"
+    },
+    "reference_set_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Reference Set Fingerprint",
+      "type": "string"
+    },
+    "session_identity": {
+      "$ref": "#/$defs/ReferenceSessionIdentity"
+    }
+  },
+  "required": [
+    "session_identity",
+    "descriptors",
+    "reference_set_fingerprint"
+  ],
+  "title": "Pilot Assessment Resolved Reference Set 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "reference descriptors are canonical and bind one exact session identity"
+  ]
+}

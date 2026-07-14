@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import copy
+import hashlib
+import importlib
 import json
 import subprocess
 import sys
@@ -31,6 +33,86 @@ from pilot_assessment.schemas.export import (
 
 PROJECT_ROOT = Path(__file__).parents[2]
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures"
+
+LEGACY_SCHEMA_SHA256 = {
+    "anchor-result-0.1.0.schema.json": (
+        "c8b6cea319c377b8a61923c5f1122c3e70a79b59f054637ff0334082b2deb5f5"
+    ),
+    "ingestion-readiness-report-0.1.0.schema.json": (
+        "0c91ba0e26819af8d90bd8e7ca661cdd71b9e57fd62eb0fbb489d5ffb49e94d7"
+    ),
+    "session-manifest-0.1.0.schema.json": (
+        "939d12c86bbdc0e337b125e1fddffd189369340f3a4556594efecbe360e08f58"
+    ),
+    "synchronization-report-0.1.0.schema.json": (
+        "f43a55f0666ddafd09a88f8c08c63929f22b6ddd69caea47e52d0492b4234bb8"
+    ),
+}
+
+M4_SCHEMA_METADATA = {
+    "anchor-result-0.2.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:anchor-result:0.2.0",
+        "Pilot Assessment Anchor Result 0.2.0",
+        "0.2.0",
+    ),
+    "anchor-measurement-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:anchor-measurement:0.1.0",
+        "Pilot Assessment Anchor Measurement 0.1.0",
+        "0.1.0",
+    ),
+    "anchor-plugin-definition-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:anchor-plugin-definition:0.1.0",
+        "Pilot Assessment Anchor Plugin Definition 0.1.0",
+        "0.1.0",
+    ),
+    "preprocessing-provider-definition-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:preprocessing-provider-definition:0.1.0",
+        "Pilot Assessment Preprocessing Provider Definition 0.1.0",
+        "0.1.0",
+    ),
+    "anchor-catalog-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:anchor-catalog:0.1.0",
+        "Pilot Assessment Anchor Catalog 0.1.0",
+        "0.1.0",
+    ),
+    "anchor-runtime-registry-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:anchor-runtime-registry:0.1.0",
+        "Pilot Assessment Anchor Runtime Registry 0.1.0",
+        "0.1.0",
+    ),
+    "anchor-execution-plan-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:anchor-execution-plan:0.1.0",
+        "Pilot Assessment Anchor Execution Plan 0.1.0",
+        "0.1.0",
+    ),
+    "session-semantic-snapshot-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:session-semantic-snapshot:0.1.0",
+        "Pilot Assessment Session Semantic Snapshot 0.1.0",
+        "0.1.0",
+    ),
+    "resolved-reference-set-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:resolved-reference-set:0.1.0",
+        "Pilot Assessment Resolved Reference Set 0.1.0",
+        "0.1.0",
+    ),
+    "anchor-evaluation-report-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:anchor-evaluation-report:0.1.0",
+        "Pilot Assessment Anchor Evaluation Report 0.1.0",
+        "0.1.0",
+    ),
+}
+
+ALL_SCHEMA_NAMES = frozenset(LEGACY_SCHEMA_SHA256) | frozenset(M4_SCHEMA_METADATA)
+QUALITY_GATE_FIELD_NAMES = {
+    "quality",
+    "quality_gate",
+    "quality_gates",
+    "quality_transform",
+    "min_valid_coverage",
+    "failed_quality",
+    "invalid_quality",
+    "binary_quality_v1",
+}
 
 
 def _synchronization_fixture() -> dict[str, object]:
@@ -235,15 +317,32 @@ def test_rendered_schemas_are_deterministic_and_valid_draft_2020_12() -> None:
     second = render_schemas()
 
     assert first == second
-    assert set(first) == {
-        "anchor-result-0.1.0.schema.json",
-        "ingestion-readiness-report-0.1.0.schema.json",
-        "session-manifest-0.1.0.schema.json",
-        "synchronization-report-0.1.0.schema.json",
-    }
+    assert set(first) == ALL_SCHEMA_NAMES
     for payload in first.values():
         schema = json.loads(payload)
         assert schema["$schema"] == SCHEMA_DIALECT
+        Draft202012Validator.check_schema(schema)
+
+
+def test_legacy_schema_bytes_and_hashes_remain_frozen() -> None:
+    rendered = render_schemas()
+
+    for name, expected_sha256 in LEGACY_SCHEMA_SHA256.items():
+        payload = rendered[name]
+        assert hashlib.sha256(payload).hexdigest() == expected_sha256
+        assert (PROJECT_ROOT / "schemas" / name).read_bytes() == payload
+
+
+def test_m4_schema_ids_titles_and_contract_versions_are_frozen() -> None:
+    rendered = render_schemas()
+
+    for name, (schema_id, title, contract_version) in M4_SCHEMA_METADATA.items():
+        schema = json.loads(rendered[name])
+        assert schema["$schema"] == SCHEMA_DIALECT
+        assert schema["$id"] == schema_id
+        assert schema["title"] == title
+        assert schema["x-contract-version"] == contract_version
+        assert schema["x-runtime-invariants"]
         Draft202012Validator.check_schema(schema)
 
 
@@ -300,14 +399,188 @@ def test_published_schemas_accept_the_canonical_json_fixtures() -> None:
         Draft202012Validator(schema).validate(fixture)
 
 
-def test_exported_schemas_match_committed_contracts(tmp_path: Path) -> None:
-    written = export_schemas(tmp_path)
+def _measurement_fixture_from_result(result: dict[str, object]) -> dict[str, object]:
+    provenance = result["provenance"]
+    assert isinstance(provenance, dict)
+    return {
+        "contract_id": "anchor-measurement",
+        "contract_version": "0.1.0",
+        "anchor_id": result["anchor_id"],
+        "calculation_status": result["calculation_status"],
+        "primary_value": result["primary_value"],
+        "primary_value_reason": result["primary_value_reason"],
+        "raw_metrics": result["raw_metrics"],
+        "phase_results": [],
+        "event_results": [],
+        "classification_override_candidate": result["classification_override"],
+        "source_windows": [],
+        "derived_artifacts": result["derived_artifacts"],
+        "trace": provenance["computation_trace"],
+        "diagnostics": [],
+    }
+
+
+def test_m4_public_fixtures_validate_against_published_schemas() -> None:
+    rendered = render_schemas()
+    pairs = (
+        ("anchor-result-0.2.0.schema.json", "anchor_result_v2_computed.json"),
+        ("anchor-evaluation-report-0.1.0.schema.json", "anchor_evaluation_report_ready.json"),
+    )
+    for schema_name, fixture_name in pairs:
+        schema = json.loads(rendered[schema_name])
+        fixture = json.loads((FIXTURES / fixture_name).read_text(encoding="utf-8"))
+        Draft202012Validator(schema).validate(fixture)
+
+    result_fixture = json.loads(
+        (FIXTURES / "anchor_result_v2_computed.json").read_text(encoding="utf-8")
+    )
+    measurement = _measurement_fixture_from_result(result_fixture)
+    measurement_schema = json.loads(rendered["anchor-measurement-0.1.0.schema.json"])
+    Draft202012Validator(measurement_schema).validate(measurement)
+
+
+def test_m4_schemas_reject_formal_authorization_and_quality_gate_fields() -> None:
     rendered = render_schemas()
 
+    report = json.loads(
+        (FIXTURES / "anchor_evaluation_report_ready.json").read_text(encoding="utf-8")
+    )
+    report["formal_run_authorized"] = True
+    report_schema = json.loads(rendered["anchor-evaluation-report-0.1.0.schema.json"])
+    assert list(Draft202012Validator(report_schema).iter_errors(report))
+
+    result = json.loads((FIXTURES / "anchor_result_v2_computed.json").read_text(encoding="utf-8"))
+    result["calculation_status"] = "invalid_quality"
+    result_schema = json.loads(rendered["anchor-result-0.2.0.schema.json"])
+    assert list(Draft202012Validator(result_schema).iter_errors(result))
+
+    measurement = _measurement_fixture_from_result(
+        json.loads((FIXTURES / "anchor_result_v2_computed.json").read_text(encoding="utf-8"))
+    )
+    measurement["quality_gate"] = {"passed": False}
+    measurement_schema = json.loads(rendered["anchor-measurement-0.1.0.schema.json"])
+    assert list(Draft202012Validator(measurement_schema).iter_errors(measurement))
+
+    plan_schema = json.loads(rendered["anchor-execution-plan-0.1.0.schema.json"])
+    profile_schema = {
+        "$schema": SCHEMA_DIALECT,
+        "$defs": plan_schema["$defs"],
+        **plan_schema["$defs"]["ResolvedAlgorithmProfile"],
+    }
+    profile = {
+        "profile_id": "filter-profile",
+        "profile_version": "0.1.0",
+        "parameters": {},
+        "parameter_hash": "a" * 64,
+        "implementation_digest": "b" * 64,
+        "output_schema_id": "filter-output-v0.1",
+    }
+    validator = Draft202012Validator(profile_schema)
+    validator.validate(profile)
+    for field_name in QUALITY_GATE_FIELD_NAMES:
+        for parameters in ({field_name: 1}, {"nested": {field_name: 1}}):
+            candidate = copy.deepcopy(profile)
+            candidate["parameters"] = parameters
+            assert list(validator.iter_errors(candidate)), (field_name, parameters)
+
+
+def test_exported_root_and_package_schemas_are_byte_symmetric(tmp_path: Path) -> None:
+    root_output = tmp_path / "schemas"
+    package_output = tmp_path / "schema_resources"
+    written = export_schemas(root_output, package_output)
+    rendered = render_schemas()
+
+    assert len(written) == 2 * len(rendered)
     assert {path.name for path in written} == set(rendered)
     for name, payload in rendered.items():
-        assert (tmp_path / name).read_bytes() == payload
+        assert (root_output / name).read_bytes() == payload
+        assert (package_output / name).read_bytes() == payload
         assert (PROJECT_ROOT / "schemas" / name).read_bytes() == payload
+        assert (
+            PROJECT_ROOT / "src" / "pilot_assessment" / "schema_resources" / name
+        ).read_bytes() == payload
+
+    first_bytes = {path: path.read_bytes() for path in written}
+    assert export_schemas(root_output, package_output) == written
+    assert {path: path.read_bytes() for path in written} == first_bytes
+
+
+def test_export_schemas_preserves_the_legacy_single_target_api(tmp_path: Path) -> None:
+    output = tmp_path / "legacy-single-target"
+    written = export_schemas(output)
+
+    assert len(written) == len(render_schemas())
+    assert {path.parent for path in written} == {output}
+
+
+def test_export_rejects_two_names_for_the_same_target_before_writing(tmp_path: Path) -> None:
+    target = tmp_path / "same-target"
+    alias = target / ".." / target.name
+
+    with pytest.raises(ValueError, match="targets must be distinct"):
+        export_schemas(target, alias)
+
+    assert not target.exists()
+
+
+@pytest.mark.parametrize("failure_type", [OSError, KeyboardInterrupt])
+def test_dual_target_export_rolls_back_every_destination_after_publish_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    failure_type: type[BaseException],
+) -> None:
+    root_output = tmp_path / "schemas"
+    package_output = tmp_path / "schema_resources"
+    original = render_schemas()
+    export_schemas(root_output, package_output)
+    original_bytes = {
+        path: path.read_bytes()
+        for output in (root_output, package_output)
+        for path in output.glob("*.schema.json")
+    }
+
+    module = importlib.import_module("pilot_assessment.schemas.export")
+    changed = {name: payload + b" " for name, payload in original.items()}
+    monkeypatch.setattr(module, "render_schemas", lambda: changed)
+    real_replace = Path.replace
+    replacement_count = 0
+
+    def fail_once_during_publish(source: Path, target: Path) -> Path:
+        nonlocal replacement_count
+        replacement_count += 1
+        if replacement_count == len(original) + 2:
+            raise failure_type("injected publish failure")
+        return real_replace(source, target)
+
+    monkeypatch.setattr(Path, "replace", fail_once_during_publish)
+    with pytest.raises(failure_type):
+        export_schemas(root_output, package_output)
+
+    assert {path: path.read_bytes() for path in original_bytes} == original_bytes
+    assert not tuple(tmp_path.rglob("*.tmp"))
+
+
+def test_export_cleans_the_current_temporary_file_after_stage_write_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    output = tmp_path / "schemas"
+    real_write_bytes = Path.write_bytes
+    write_count = 0
+
+    def fail_once_during_stage(path: Path, payload: bytes) -> int:
+        nonlocal write_count
+        write_count += 1
+        if write_count == 2:
+            real_write_bytes(path, payload[: max(1, len(payload) // 2)])
+            raise OSError("injected stage failure")
+        return real_write_bytes(path, payload)
+
+    monkeypatch.setattr(Path, "write_bytes", fail_once_during_stage)
+    with pytest.raises(OSError, match="injected stage failure"):
+        export_schemas(output)
+
+    assert not tuple(tmp_path.rglob("*.tmp"))
 
 
 def test_synchronization_report_schema_matches_checked_in_artifact() -> None:

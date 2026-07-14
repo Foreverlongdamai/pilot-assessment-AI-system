@@ -1,0 +1,1738 @@
+{
+  "$defs": {
+    "AnnotationReferences": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_intervals": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+          "title": "Baseline Intervals",
+          "type": "string",
+          "x-runtime-invariants": [
+            "segments are not empty, '.' or '..'",
+            "segments do not end in a dot or space",
+            "resolved files remain below the owning artifact root"
+          ]
+        },
+        "events": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+          "title": "Events",
+          "type": "string",
+          "x-runtime-invariants": [
+            "segments are not empty, '.' or '..'",
+            "segments do not end in a dot or space",
+            "resolved files remain below the owning artifact root"
+          ]
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "phases": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+          "title": "Phases",
+          "type": "string",
+          "x-runtime-invariants": [
+            "segments are not empty, '.' or '..'",
+            "segments do not end in a dot or space",
+            "resolved files remain below the owning artifact root"
+          ]
+        },
+        "revision": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Revision",
+          "type": "string"
+        }
+      },
+      "required": [
+        "revision",
+        "phases",
+        "events",
+        "baseline_intervals"
+      ],
+      "title": "AnnotationReferences",
+      "type": "object"
+    },
+    "ClockSync": {
+      "additionalProperties": false,
+      "properties": {
+        "drift_ppm": {
+          "title": "Drift Ppm",
+          "type": "number"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "method": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Method",
+          "type": "string"
+        },
+        "offset_ns": {
+          "maximum": 9223372036854775807,
+          "minimum": -9223372036854775808,
+          "title": "Offset Ns",
+          "type": "integer"
+        },
+        "residual_max_ms": {
+          "minimum": 0.0,
+          "title": "Residual Max Ms",
+          "type": "number"
+        },
+        "residual_rms_ms": {
+          "minimum": 0.0,
+          "title": "Residual Rms Ms",
+          "type": "number"
+        },
+        "scale": {
+          "exclusiveMinimum": 0.0,
+          "title": "Scale",
+          "type": "number"
+        }
+      },
+      "required": [
+        "method",
+        "scale",
+        "offset_ns",
+        "drift_ppm",
+        "residual_rms_ms",
+        "residual_max_ms"
+      ],
+      "title": "ClockSync",
+      "type": "object"
+    },
+    "IntegrityDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "const": "sha256",
+          "title": "Algorithm",
+          "type": "string"
+        },
+        "checksum_file": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+          "title": "Checksum File",
+          "type": "string",
+          "x-runtime-invariants": [
+            "segments are not empty, '.' or '..'",
+            "segments do not end in a dot or space",
+            "resolved files remain below the owning artifact root"
+          ]
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "manifest_canonicalization": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Manifest Canonicalization",
+          "type": "string"
+        }
+      },
+      "required": [
+        "algorithm",
+        "manifest_canonicalization",
+        "checksum_file"
+      ],
+      "title": "IntegrityDefinition",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "Participant": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "pseudonymous_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Pseudonymous Id",
+          "type": "string"
+        },
+        "research_attributes": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Research Attributes",
+          "type": "object"
+        }
+      },
+      "required": [
+        "pseudonymous_id"
+      ],
+      "title": "Participant",
+      "type": "object"
+    },
+    "PrivacyDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "biometric_modalities_export_pending": {
+          "items": {
+            "enum": [
+              "ECG",
+              "EEG",
+              "G",
+              "pilot_camera"
+            ]
+          },
+          "title": "Biometric Modalities Export Pending",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "classification": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Classification",
+          "type": "string"
+        },
+        "contains_biometric_data": {
+          "title": "Contains Biometric Data",
+          "type": "boolean"
+        },
+        "direct_identifiers_removed": {
+          "title": "Direct Identifiers Removed",
+          "type": "boolean"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "permitted_use": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Permitted Use",
+          "type": "string"
+        }
+      },
+      "required": [
+        "classification",
+        "direct_identifiers_removed",
+        "contains_biometric_data",
+        "biometric_modalities_export_pending",
+        "permitted_use"
+      ],
+      "title": "PrivacyDefinition",
+      "type": "object"
+    },
+    "QualitySummary": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_ratio": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Artifact Ratio"
+        },
+        "coverage_ratio": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Coverage Ratio"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "gap_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gap Count"
+        },
+        "validity_ratio": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Validity Ratio"
+        }
+      },
+      "title": "QualitySummary",
+      "type": "object"
+    },
+    "SessionTimebase": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "master_clock_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Master Clock Id",
+          "type": "string"
+        },
+        "origin": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Origin",
+          "type": "string"
+        },
+        "unit": {
+          "const": "ns",
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "origin",
+        "unit",
+        "master_clock_id"
+      ],
+      "title": "SessionTimebase",
+      "type": "object"
+    },
+    "SourceSession": {
+      "additionalProperties": false,
+      "properties": {
+        "campaign": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Campaign",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "source_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "system": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "System",
+          "type": "string"
+        }
+      },
+      "required": [
+        "system",
+        "source_id",
+        "campaign"
+      ],
+      "title": "SourceSession",
+      "type": "object"
+    },
+    "StreamDescriptor": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "present"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "clock_sync": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "paths": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "invalid"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "paths": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "export_pending"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "checksums": {
+                "maxProperties": 0
+              },
+              "paths": {
+                "maxItems": 0
+              },
+              "quality_summary": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "missing"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "checksums": {
+                "maxProperties": 0
+              },
+              "paths": {
+                "maxItems": 0
+              },
+              "quality_summary": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_applicable"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "checksums": {
+                "maxProperties": 0
+              },
+              "paths": {
+                "maxItems": 0
+              },
+              "quality_summary": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "missing"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "clock_sync": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_applicable"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "clock_sync": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_applicable"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "required_for_import": {
+                "const": false
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "checksums": {
+          "patternProperties": {
+            "^[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$": {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9A-Fa-f]{64}$",
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Checksums",
+          "type": "object"
+        },
+        "clock_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Clock Id",
+          "type": "string"
+        },
+        "clock_sync": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClockSync"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "format": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Format",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Metadata",
+          "type": "object"
+        },
+        "modality": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Modality",
+          "type": "string"
+        },
+        "paths": {
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+            "type": "string",
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Paths",
+          "type": "array"
+        },
+        "quality_summary": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualitySummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "required_for_import": {
+          "title": "Required For Import",
+          "type": "boolean"
+        },
+        "sample_rate_hz": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sample Rate Hz"
+        },
+        "schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Schema Id",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/StreamStatus"
+        },
+        "units": {
+          "anyOf": [
+            {
+              "maxLength": 512,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "additionalProperties": {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "object"
+            }
+          ],
+          "title": "Units"
+        }
+      },
+      "required": [
+        "modality",
+        "status",
+        "required_for_import",
+        "paths",
+        "format",
+        "schema_id",
+        "clock_id",
+        "clock_sync",
+        "sample_rate_hz",
+        "units",
+        "quality_summary",
+        "checksums",
+        "metadata"
+      ],
+      "title": "StreamDescriptor",
+      "type": "object"
+    },
+    "StreamStatus": {
+      "enum": [
+        "present",
+        "export_pending",
+        "missing",
+        "invalid",
+        "not_applicable"
+      ],
+      "title": "StreamStatus",
+      "type": "string"
+    },
+    "SyntheticSourceProvenance": {
+      "additionalProperties": true,
+      "description": "Visible D-012 provenance for software-only synthetic or hybrid bundles.",
+      "properties": {
+        "formal_assessment_supported": {
+          "const": false,
+          "title": "Formal Assessment Supported",
+          "type": "boolean"
+        },
+        "generator_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Generator Id",
+          "type": "string"
+        },
+        "lock_fingerprint": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Lock Fingerprint",
+          "type": "string"
+        },
+        "provenance_scope": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Provenance Scope",
+          "type": "string"
+        },
+        "scientific_validation_status": {
+          "const": "not_supported",
+          "title": "Scientific Validation Status",
+          "type": "string"
+        },
+        "seed": {
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "source_xu_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Source Xu Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "generator_id",
+        "seed",
+        "scientific_validation_status",
+        "source_xu_sha256",
+        "lock_fingerprint",
+        "provenance_scope",
+        "formal_assessment_supported"
+      ],
+      "title": "SyntheticSourceProvenance",
+      "type": "object"
+    },
+    "TaskDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_phases": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Expected Phases",
+          "type": "array"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaskReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scenario_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Scenario Id",
+          "type": "string"
+        },
+        "task_profile_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Task Profile Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_profile_id",
+        "scenario_id",
+        "expected_phases",
+        "reference"
+      ],
+      "title": "TaskDefinition",
+      "type": "object"
+    },
+    "TaskReference": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "properties": {
+              "stream_id": {
+                "type": "null"
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "source": {
+                "const": "bundle"
+              }
+            },
+            "required": [
+              "source"
+            ]
+          },
+          "then": {
+            "properties": {
+              "stream_id": {
+                "const": "task_reference",
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "stream_id"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "reference_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Reference Id",
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "bundle",
+            "model_bundle"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "stream_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stream Id"
+        }
+      },
+      "required": [
+        "source",
+        "reference_id"
+      ],
+      "title": "TaskReference",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:session-manifest:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "not": {
+                  "contains": {
+                    "const": "ECG"
+                  }
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      },
+      "if": {
+        "properties": {
+          "streams": {
+            "properties": {
+              "ECG": {
+                "properties": {
+                  "status": {
+                    "const": "export_pending"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "ECG"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "streams"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "contains": {
+                  "const": "ECG"
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "else": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "not": {
+                  "contains": {
+                    "const": "EEG"
+                  }
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      },
+      "if": {
+        "properties": {
+          "streams": {
+            "properties": {
+              "EEG": {
+                "properties": {
+                  "status": {
+                    "const": "export_pending"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "EEG"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "streams"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "contains": {
+                  "const": "EEG"
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "else": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "not": {
+                  "contains": {
+                    "const": "G"
+                  }
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      },
+      "if": {
+        "properties": {
+          "streams": {
+            "properties": {
+              "G": {
+                "properties": {
+                  "status": {
+                    "const": "export_pending"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "G"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "streams"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "contains": {
+                  "const": "G"
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "else": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "not": {
+                  "contains": {
+                    "const": "pilot_camera"
+                  }
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      },
+      "if": {
+        "properties": {
+          "streams": {
+            "properties": {
+              "pilot_camera": {
+                "properties": {
+                  "status": {
+                    "const": "export_pending"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "pilot_camera"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "streams"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "contains": {
+                  "const": "pilot_camera"
+                }
+              }
+            },
+            "required": [
+              "biometric_modalities_export_pending"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "classification": {
+                "const": "synthetic-test-data"
+              }
+            },
+            "required": [
+              "classification"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "privacy"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "extensions": {
+            "properties": {
+              "synthetic": {
+                "$ref": "#/$defs/SyntheticSourceProvenance"
+              }
+            },
+            "required": [
+              "synthetic"
+            ],
+            "type": "object"
+          },
+          "privacy": {
+            "properties": {
+              "biometric_modalities_export_pending": {
+                "maxItems": 0
+              },
+              "contains_biometric_data": {
+                "const": false
+              }
+            },
+            "required": [
+              "contains_biometric_data",
+              "biometric_modalities_export_pending"
+            ]
+          }
+        },
+        "required": [
+          "extensions"
+        ]
+      }
+    },
+    {
+      "if": {
+        "allOf": [
+          {
+            "not": {
+              "properties": {
+                "privacy": {
+                  "properties": {
+                    "classification": {
+                      "const": "synthetic-test-data"
+                    }
+                  },
+                  "required": [
+                    "classification"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "privacy"
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "anyOf": [
+              {
+                "properties": {
+                  "streams": {
+                    "properties": {
+                      "ECG": {
+                        "properties": {
+                          "status": {
+                            "enum": [
+                              "present",
+                              "invalid"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "status"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "ECG"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "streams"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "streams": {
+                    "properties": {
+                      "EEG": {
+                        "properties": {
+                          "status": {
+                            "enum": [
+                              "present",
+                              "invalid"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "status"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "EEG"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "streams"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "streams": {
+                    "properties": {
+                      "G": {
+                        "properties": {
+                          "status": {
+                            "enum": [
+                              "present",
+                              "invalid"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "status"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "G"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "streams"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "streams": {
+                    "properties": {
+                      "pilot_camera": {
+                        "properties": {
+                          "status": {
+                            "enum": [
+                              "present",
+                              "invalid"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "status"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "pilot_camera"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "streams"
+                ],
+                "type": "object"
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "properties": {
+          "privacy": {
+            "properties": {
+              "contains_biometric_data": {
+                "const": true
+              }
+            },
+            "required": [
+              "contains_biometric_data"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "else": {
+        "properties": {
+          "streams": {
+            "not": {
+              "required": [
+                "task_reference"
+              ]
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "task": {
+            "properties": {
+              "reference": {
+                "properties": {
+                  "source": {
+                    "const": "bundle"
+                  }
+                },
+                "required": [
+                  "source"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "reference"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "streams": {
+            "properties": {
+              "task_reference": {
+                "properties": {
+                  "checksums": {
+                    "propertyNames": {
+                      "pattern": "^references/"
+                    }
+                  },
+                  "modality": {
+                    "const": "task_reference"
+                  },
+                  "paths": {
+                    "items": {
+                      "pattern": "^references/",
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "modality",
+                  "paths",
+                  "checksums"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "task_reference"
+            ]
+          },
+          "task": {
+            "properties": {
+              "reference": {
+                "properties": {
+                  "stream_id": {
+                    "const": "task_reference"
+                  }
+                },
+                "required": [
+                  "stream_id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "annotations": {
+      "$ref": "#/$defs/AnnotationReferences"
+    },
+    "bundle_schema_version": {
+      "pattern": "^0\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+      "title": "Bundle Schema Version",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "extensions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Extensions",
+      "type": "object"
+    },
+    "integrity": {
+      "$ref": "#/$defs/IntegrityDefinition"
+    },
+    "participant": {
+      "$ref": "#/$defs/Participant"
+    },
+    "privacy": {
+      "$ref": "#/$defs/PrivacyDefinition"
+    },
+    "session_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "session_timebase": {
+      "$ref": "#/$defs/SessionTimebase"
+    },
+    "source_session": {
+      "$ref": "#/$defs/SourceSession"
+    },
+    "streams": {
+      "allOf": [
+        {
+          "required": [
+            "ECG",
+            "EEG",
+            "G",
+            "I",
+            "U",
+            "X",
+            "pilot_camera"
+          ]
+        },
+        {
+          "not": {
+            "required": [
+              "P"
+            ]
+          }
+        }
+      ],
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+          "$ref": "#/$defs/StreamDescriptor"
+        }
+      },
+      "properties": {
+        "ECG": {
+          "properties": {
+            "modality": {
+              "const": "ECG"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "EEG": {
+          "properties": {
+            "modality": {
+              "const": "EEG"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "G": {
+          "properties": {
+            "modality": {
+              "const": "G"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "I": {
+          "properties": {
+            "modality": {
+              "const": "I"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "U": {
+          "properties": {
+            "modality": {
+              "const": "U"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "X": {
+          "properties": {
+            "modality": {
+              "const": "X"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "pilot_camera": {
+          "properties": {
+            "modality": {
+              "const": "pilot_camera"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        },
+        "task_reference": {
+          "properties": {
+            "modality": {
+              "const": "task_reference"
+            }
+          },
+          "required": [
+            "modality"
+          ]
+        }
+      },
+      "propertyNames": {
+        "maxLength": 128,
+        "minLength": 1
+      },
+      "title": "Streams",
+      "type": "object",
+      "x-core-modalities": [
+        "ECG",
+        "EEG",
+        "G",
+        "I",
+        "U",
+        "X",
+        "pilot_camera"
+      ],
+      "x-optional-stream-policy": "same-major optional stable stream IDs are preserved"
+    },
+    "task": {
+      "$ref": "#/$defs/TaskDefinition"
+    }
+  },
+  "required": [
+    "bundle_schema_version",
+    "session_id",
+    "created_at",
+    "source_session",
+    "participant",
+    "task",
+    "session_timebase",
+    "streams",
+    "annotations",
+    "integrity",
+    "privacy"
+  ],
+  "title": "Pilot Assessment Session Manifest 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "non-core optional stream map key must equal descriptor.modality",
+    "present or invalid stream checksum keys must exactly match paths",
+    "declared paths are unique under Windows case folding",
+    "synthetic-test-data requires complete D-012 provenance in extensions.synthetic"
+  ]
+}

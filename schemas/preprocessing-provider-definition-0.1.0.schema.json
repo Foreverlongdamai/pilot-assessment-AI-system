@@ -1,0 +1,195 @@
+{
+  "$defs": {
+    "CoreModality": {
+      "description": "Modalities that every v0.x manifest must explicitly describe.",
+      "enum": [
+        "X",
+        "U",
+        "I",
+        "G",
+        "EEG",
+        "ECG",
+        "pilot_camera"
+      ],
+      "title": "CoreModality",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "PreprocessingDependencySpec": {
+      "additionalProperties": false,
+      "properties": {
+        "dependency_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Dependency Id",
+          "type": "string"
+        },
+        "expected_artifact_kind": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Expected Artifact Kind",
+          "type": "string"
+        },
+        "expected_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Expected Schema Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dependency_id",
+        "expected_schema_id",
+        "expected_artifact_kind"
+      ],
+      "title": "PreprocessingDependencySpec",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:preprocessing-provider-definition:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "api_version": {
+      "const": "0.1.0",
+      "title": "Api Version",
+      "type": "string"
+    },
+    "artifact_kind": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Artifact Kind",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "preprocessing-provider-definition",
+      "default": "preprocessing-provider-definition",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "dependencies": {
+      "items": {
+        "$ref": "#/$defs/PreprocessingDependencySpec"
+      },
+      "title": "Dependencies",
+      "type": "array"
+    },
+    "output_payload_kind": {
+      "enum": [
+        "table",
+        "blob"
+      ],
+      "title": "Output Payload Kind",
+      "type": "string"
+    },
+    "output_schema_descriptor": {
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+          "$ref": "#/$defs/JsonValue"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 128,
+        "minLength": 1
+      },
+      "title": "Output Schema Descriptor",
+      "type": "object"
+    },
+    "output_schema_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Output Schema Id",
+      "type": "string"
+    },
+    "parameter_schema_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Parameter Schema Id",
+      "type": "string"
+    },
+    "provider_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Provider Id",
+      "type": "string"
+    },
+    "provider_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Provider Version",
+      "type": "string"
+    },
+    "required_context_paths": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Required Context Paths",
+      "type": "array"
+    },
+    "required_reference_ids": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Required Reference Ids",
+      "type": "array"
+    },
+    "required_semantic_paths": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Required Semantic Paths",
+      "type": "array"
+    },
+    "required_streams": {
+      "items": {
+        "$ref": "#/$defs/CoreModality"
+      },
+      "title": "Required Streams",
+      "type": "array"
+    }
+  },
+  "required": [
+    "provider_id",
+    "provider_version",
+    "api_version",
+    "required_streams",
+    "required_context_paths",
+    "required_semantic_paths",
+    "required_reference_ids",
+    "dependencies",
+    "parameter_schema_id",
+    "output_schema_id",
+    "output_schema_descriptor",
+    "artifact_kind",
+    "output_payload_kind"
+  ],
+  "title": "Pilot Assessment Preprocessing Provider Definition 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "projection paths and preprocessing dependency slots are unique and typed"
+  ]
+}

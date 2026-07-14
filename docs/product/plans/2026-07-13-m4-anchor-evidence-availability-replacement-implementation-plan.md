@@ -14,7 +14,7 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md`, the accepted `docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md`, and the accepted `docs/product/specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md`. The lightweight amendment takes precedence for verification scope; the Task 3 amendment takes precedence for semantic/reference contracts, binding, fingerprint ownership, and candidate producer boundaries.
 - Accepted decisions: D-021 through D-028 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–2 were completed in commits `bc544bf`, `f56365c`, and `928e9a4`; the user then explicitly approved the Task 3 candidate-binding amendment, Tasks 3–5 are complete under the checked sections below, and Task 6 is next.
+- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–2 were completed in commits `bc544bf`, `f56365c`, and `928e9a4`; the user then explicitly approved the Task 3 candidate-binding amendment, Tasks 3–6 are complete under the checked sections below, and Task 7 is next.
 - Current implementation truth: 18/18 reference anchors specified, 0/18 production plugins implemented; M4 is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
@@ -1336,7 +1336,7 @@ git commit -m "feat: define M4 measurement and report contracts"
 - Modify: `tests/schemas/test_schema_export.py`
 - Modify: `tests/test_package_metadata.py`
 
-- [ ] **Step 1: Write RED export/symmetry tests**
+- [x] **Step 1: Write RED export/symmetry tests**
 
 Require deterministic root and package-resource bytes, Draft 2020-12 IDs/titles, public fixtures validating against schemas, `formal_run_authorized=false`, and explicit schema rejection of `invalid_quality` and quality-gate fields. Freeze the v0.1 root schema hash.
 
@@ -1346,15 +1346,15 @@ Require deterministic root and package-resource bytes, Draft 2020-12 IDs/titles,
 
 Expected: RED because M4 schemas/resources are absent.
 
-- [ ] **Step 2: Extend the authoritative exporter**
+- [x] **Step 2: Extend the authoritative exporter**
 
-Render every schema from the Pydantic contract and write the same bytes atomically to root `schemas/` and package `schema_resources/`. Do not hand-edit committed JSON.
+Render every schema from the Pydantic contract and write the same bytes to root `schemas/` and package `schema_resources/`. Preserve the existing single-target `export_schemas(custom_directory)` API; the CLI explicitly requests both authoritative targets. For dual-target publication, stage every member before publish, snapshot previous destination bytes, and roll back every destination after any `BaseException` (including interruption) so the two committed trees cannot remain split. Clean partial stage files and reject identical resolved targets. Do not hand-edit committed JSON.
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.schemas.export
 ~~~
 
-- [ ] **Step 3: Prove schema symmetry and build inclusion**
+- [x] **Step 3: Prove schema symmetry and build inclusion**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/contracts tests/schemas/test_schema_export.py tests/test_package_metadata.py -q
@@ -1365,7 +1365,7 @@ git diff --exit-code -- schemas src/pilot_assessment/schema_resources
 
 Expected: PASS; a second export is byte-identical and the wheel contains every M4 schema resource.
 
-- [ ] **Step 4: Commit and record the M4-A gate**
+- [x] **Step 4: Commit and record the M4-A gate**
 
 ~~~powershell
 git add src/pilot_assessment/schemas/export.py src/pilot_assessment/schema_resources schemas tests/schemas/test_schema_export.py tests/test_package_metadata.py

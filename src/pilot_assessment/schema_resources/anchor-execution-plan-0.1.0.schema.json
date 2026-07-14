@@ -1,0 +1,1178 @@
+{
+  "$defs": {
+    "AnchorArtifactRecipe": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "kind": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "payload_kind": {
+          "enum": [
+            "table",
+            "blob"
+          ],
+          "title": "Payload Kind",
+          "type": "string"
+        },
+        "schema_descriptor": {
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "$ref": "#/$defs/JsonValue"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "title": "Schema Descriptor",
+          "type": "object"
+        },
+        "schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Schema Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "kind",
+        "schema_id",
+        "schema_descriptor",
+        "payload_kind"
+      ],
+      "title": "AnchorArtifactRecipe",
+      "type": "object"
+    },
+    "AnchorDependency": {
+      "additionalProperties": false,
+      "properties": {
+        "dependency_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Dependency Id",
+          "type": "string"
+        },
+        "expected_artifact_kind": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Artifact Kind"
+        },
+        "expected_schema_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Schema Id"
+        },
+        "kind": {
+          "$ref": "#/$defs/DependencyKind"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "target_anchor_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Anchor Id"
+        },
+        "target_resource_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Resource Id"
+        }
+      },
+      "required": [
+        "dependency_id",
+        "kind",
+        "required"
+      ],
+      "title": "AnchorDependency",
+      "type": "object"
+    },
+    "AnchorExecutionEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Anchor Id",
+          "type": "string"
+        },
+        "api_version": {
+          "const": "0.1.0",
+          "title": "Api Version",
+          "type": "string"
+        },
+        "applicability": {
+          "$ref": "#/$defs/SemanticApplicabilityStatus"
+        },
+        "artifact_recipes": {
+          "items": {
+            "$ref": "#/$defs/AnchorArtifactRecipe"
+          },
+          "title": "Artifact Recipes",
+          "type": "array"
+        },
+        "canonical_order": {
+          "minimum": 0,
+          "title": "Canonical Order",
+          "type": "integer"
+        },
+        "definition_fingerprint": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Definition Fingerprint",
+          "type": "string"
+        },
+        "definition_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Definition Version",
+          "type": "string"
+        },
+        "dependencies": {
+          "items": {
+            "$ref": "#/$defs/AnchorDependency"
+          },
+          "title": "Dependencies",
+          "type": "array"
+        },
+        "event_scope": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Event Scope",
+          "type": "array"
+        },
+        "implementation_digest": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Implementation Digest",
+          "type": "string"
+        },
+        "lifecycle": {
+          "const": "active",
+          "title": "Lifecycle",
+          "type": "string"
+        },
+        "measurement_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Measurement Schema Id",
+          "type": "string"
+        },
+        "parameter_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Parameter Hash",
+          "type": "string"
+        },
+        "parameter_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Parameter Schema Id",
+          "type": "string"
+        },
+        "parameters": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "$ref": "#/$defs/QualityGateFreeJsonValue"
+            }
+          },
+          "propertyNames": {
+            "allOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1
+              },
+              {
+                "not": {
+                  "enum": [
+                    "binary_quality_v1",
+                    "failed_quality",
+                    "invalid_quality",
+                    "min_valid_coverage",
+                    "quality",
+                    "quality_gate",
+                    "quality_gates",
+                    "quality_transform"
+                  ]
+                }
+              }
+            ]
+          },
+          "title": "Parameters",
+          "type": "object"
+        },
+        "phase_scope": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Phase Scope",
+          "type": "array"
+        },
+        "plugin_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Plugin Id",
+          "type": "string"
+        },
+        "plugin_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Plugin Version",
+          "type": "string"
+        },
+        "required_context_paths": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Required Context Paths",
+          "type": "array"
+        },
+        "required_reference_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Required Reference Ids",
+          "type": "array"
+        },
+        "required_semantic_paths": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Required Semantic Paths",
+          "type": "array"
+        },
+        "required_streams": {
+          "items": {
+            "$ref": "#/$defs/CoreModality"
+          },
+          "title": "Required Streams",
+          "type": "array"
+        },
+        "result_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Result Schema Id",
+          "type": "string"
+        },
+        "scorer_policy": {
+          "$ref": "#/$defs/ScorerPolicy"
+        },
+        "temporal_recipe": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "$ref": "#/$defs/QualityGateFreeJsonValue"
+            }
+          },
+          "propertyNames": {
+            "allOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1
+              },
+              {
+                "not": {
+                  "enum": [
+                    "binary_quality_v1",
+                    "failed_quality",
+                    "invalid_quality",
+                    "min_valid_coverage",
+                    "quality",
+                    "quality_gate",
+                    "quality_gates",
+                    "quality_transform"
+                  ]
+                }
+              }
+            ]
+          },
+          "title": "Temporal Recipe",
+          "type": "object"
+        }
+      },
+      "required": [
+        "anchor_id",
+        "definition_version",
+        "lifecycle",
+        "canonical_order",
+        "plugin_id",
+        "plugin_version",
+        "api_version",
+        "definition_fingerprint",
+        "implementation_digest",
+        "parameter_schema_id",
+        "parameters",
+        "parameter_hash",
+        "required_streams",
+        "required_context_paths",
+        "required_semantic_paths",
+        "required_reference_ids",
+        "applicability",
+        "phase_scope",
+        "event_scope",
+        "dependencies",
+        "measurement_schema_id",
+        "result_schema_id",
+        "artifact_recipes",
+        "temporal_recipe",
+        "scorer_policy"
+      ],
+      "title": "AnchorExecutionEntry",
+      "type": "object"
+    },
+    "CoreModality": {
+      "description": "Modalities that every v0.x manifest must explicitly describe.",
+      "enum": [
+        "X",
+        "U",
+        "I",
+        "G",
+        "EEG",
+        "ECG",
+        "pilot_camera"
+      ],
+      "title": "CoreModality",
+      "type": "string"
+    },
+    "DependencyKind": {
+      "enum": [
+        "result_dependency",
+        "artifact_dependency",
+        "algorithm_profile_dependency",
+        "preprocessing_dependency"
+      ],
+      "title": "DependencyKind",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "PreprocessingDependencySpec": {
+      "additionalProperties": false,
+      "properties": {
+        "dependency_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Dependency Id",
+          "type": "string"
+        },
+        "expected_artifact_kind": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Expected Artifact Kind",
+          "type": "string"
+        },
+        "expected_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Expected Schema Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dependency_id",
+        "expected_schema_id",
+        "expected_artifact_kind"
+      ],
+      "title": "PreprocessingDependencySpec",
+      "type": "object"
+    },
+    "QualityGateFreeJsonValue": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/QualityGateFreeJsonValue"
+          },
+          "type": "array"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/QualityGateFreeJsonValue"
+          },
+          "propertyNames": {
+            "not": {
+              "enum": [
+                "binary_quality_v1",
+                "failed_quality",
+                "invalid_quality",
+                "min_valid_coverage",
+                "quality",
+                "quality_gate",
+                "quality_gates",
+                "quality_transform"
+              ]
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "ResolvedAlgorithmProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "implementation_digest": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Implementation Digest",
+          "type": "string"
+        },
+        "output_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Output Schema Id",
+          "type": "string"
+        },
+        "parameter_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Parameter Hash",
+          "type": "string"
+        },
+        "parameters": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "$ref": "#/$defs/QualityGateFreeJsonValue"
+            }
+          },
+          "propertyNames": {
+            "allOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1
+              },
+              {
+                "not": {
+                  "enum": [
+                    "binary_quality_v1",
+                    "failed_quality",
+                    "invalid_quality",
+                    "min_valid_coverage",
+                    "quality",
+                    "quality_gate",
+                    "quality_gates",
+                    "quality_transform"
+                  ]
+                }
+              }
+            ]
+          },
+          "title": "Parameters",
+          "type": "object"
+        },
+        "profile_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "profile_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Profile Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "profile_id",
+        "profile_version",
+        "parameters",
+        "parameter_hash",
+        "implementation_digest",
+        "output_schema_id"
+      ],
+      "title": "ResolvedAlgorithmProfile",
+      "type": "object"
+    },
+    "ResolvedInputFieldContract": {
+      "additionalProperties": false,
+      "properties": {
+        "dtype_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Dtype Id",
+          "type": "string"
+        },
+        "field_name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Field Name",
+          "type": "string"
+        },
+        "nullable": {
+          "title": "Nullable",
+          "type": "boolean"
+        },
+        "unit": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9%*/^._-]+$",
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field_name",
+        "dtype_id",
+        "unit",
+        "nullable"
+      ],
+      "title": "ResolvedInputFieldContract",
+      "type": "object"
+    },
+    "ResolvedInputTableContract": {
+      "additionalProperties": false,
+      "properties": {
+        "coordinate_frame_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Coordinate Frame Id",
+          "type": "string"
+        },
+        "fields": {
+          "items": {
+            "$ref": "#/$defs/ResolvedInputFieldContract"
+          },
+          "title": "Fields",
+          "type": "array"
+        },
+        "modality": {
+          "$ref": "#/$defs/CoreModality"
+        },
+        "stream_aligned_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Stream Aligned Schema Id",
+          "type": "string"
+        },
+        "table_aligned_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Table Aligned Schema Id",
+          "type": "string"
+        },
+        "table_role": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Table Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "modality",
+        "table_role",
+        "stream_aligned_schema_id",
+        "table_aligned_schema_id",
+        "coordinate_frame_id",
+        "fields"
+      ],
+      "title": "ResolvedInputTableContract",
+      "type": "object"
+    },
+    "ResolvedPreprocessingDependencyBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "dependency_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Dependency Id",
+          "type": "string"
+        },
+        "target_recipe_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Target Recipe Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dependency_id",
+        "target_recipe_id"
+      ],
+      "title": "ResolvedPreprocessingDependencyBinding",
+      "type": "object"
+    },
+    "ResolvedPreprocessingRecipe": {
+      "additionalProperties": false,
+      "properties": {
+        "api_version": {
+          "const": "0.1.0",
+          "title": "Api Version",
+          "type": "string"
+        },
+        "artifact_kind": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Artifact Kind",
+          "type": "string"
+        },
+        "definition_fingerprint": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Definition Fingerprint",
+          "type": "string"
+        },
+        "dependency_bindings": {
+          "items": {
+            "$ref": "#/$defs/ResolvedPreprocessingDependencyBinding"
+          },
+          "title": "Dependency Bindings",
+          "type": "array"
+        },
+        "dependency_specs": {
+          "items": {
+            "$ref": "#/$defs/PreprocessingDependencySpec"
+          },
+          "title": "Dependency Specs",
+          "type": "array"
+        },
+        "implementation_digest": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Implementation Digest",
+          "type": "string"
+        },
+        "output_payload_kind": {
+          "enum": [
+            "table",
+            "blob"
+          ],
+          "title": "Output Payload Kind",
+          "type": "string"
+        },
+        "output_schema_descriptor": {
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "$ref": "#/$defs/JsonValue"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "title": "Output Schema Descriptor",
+          "type": "object"
+        },
+        "output_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Output Schema Id",
+          "type": "string"
+        },
+        "output_schema_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Output Schema Sha256",
+          "type": "string"
+        },
+        "parameter_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Parameter Hash",
+          "type": "string"
+        },
+        "parameter_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Parameter Schema Id",
+          "type": "string"
+        },
+        "parameter_schema_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Parameter Schema Sha256",
+          "type": "string"
+        },
+        "parameters": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "$ref": "#/$defs/QualityGateFreeJsonValue"
+            }
+          },
+          "propertyNames": {
+            "allOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1
+              },
+              {
+                "not": {
+                  "enum": [
+                    "binary_quality_v1",
+                    "failed_quality",
+                    "invalid_quality",
+                    "min_valid_coverage",
+                    "quality",
+                    "quality_gate",
+                    "quality_gates",
+                    "quality_transform"
+                  ]
+                }
+              }
+            ]
+          },
+          "title": "Parameters",
+          "type": "object"
+        },
+        "provider_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "provider_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Provider Version",
+          "type": "string"
+        },
+        "recipe_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Recipe Id",
+          "type": "string"
+        },
+        "recipe_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Recipe Version",
+          "type": "string"
+        },
+        "required_context_paths": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Required Context Paths",
+          "type": "array"
+        },
+        "required_reference_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Required Reference Ids",
+          "type": "array"
+        },
+        "required_semantic_paths": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Required Semantic Paths",
+          "type": "array"
+        },
+        "required_streams": {
+          "items": {
+            "$ref": "#/$defs/CoreModality"
+          },
+          "title": "Required Streams",
+          "type": "array"
+        },
+        "scope_policy": {
+          "enum": [
+            "session",
+            "phase",
+            "event",
+            "window"
+          ],
+          "title": "Scope Policy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "recipe_id",
+        "recipe_version",
+        "provider_id",
+        "provider_version",
+        "api_version",
+        "definition_fingerprint",
+        "implementation_digest",
+        "parameter_schema_id",
+        "parameter_schema_sha256",
+        "parameters",
+        "parameter_hash",
+        "required_streams",
+        "required_context_paths",
+        "required_semantic_paths",
+        "required_reference_ids",
+        "dependency_specs",
+        "dependency_bindings",
+        "output_schema_id",
+        "output_schema_descriptor",
+        "output_schema_sha256",
+        "artifact_kind",
+        "output_payload_kind",
+        "scope_policy"
+      ],
+      "title": "ResolvedPreprocessingRecipe",
+      "type": "object"
+    },
+    "ScientificValidationStatus": {
+      "enum": [
+        "engineering_default",
+        "expert_reviewed",
+        "calibrated",
+        "internally_validated",
+        "externally_validated",
+        "not_supported"
+      ],
+      "title": "ScientificValidationStatus",
+      "type": "string"
+    },
+    "ScorerPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "parameters": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "$ref": "#/$defs/QualityGateFreeJsonValue"
+            }
+          },
+          "propertyNames": {
+            "allOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1
+              },
+              {
+                "not": {
+                  "enum": [
+                    "binary_quality_v1",
+                    "failed_quality",
+                    "invalid_quality",
+                    "min_valid_coverage",
+                    "quality",
+                    "quality_gate",
+                    "quality_gates",
+                    "quality_transform"
+                  ]
+                }
+              }
+            ]
+          },
+          "title": "Parameters",
+          "type": "object"
+        },
+        "policy_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Policy Hash",
+          "type": "string"
+        },
+        "policy_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Policy Schema Id",
+          "type": "string"
+        },
+        "scorer_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Scorer Id",
+          "type": "string"
+        },
+        "scorer_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Scorer Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scorer_id",
+        "scorer_version",
+        "policy_schema_id",
+        "parameters",
+        "policy_hash"
+      ],
+      "title": "ScorerPolicy",
+      "type": "object"
+    },
+    "SemanticApplicabilityStatus": {
+      "enum": [
+        "applicable",
+        "not_applicable"
+      ],
+      "title": "SemanticApplicabilityStatus",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:anchor-execution-plan:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "algorithm_profiles": {
+      "items": {
+        "$ref": "#/$defs/ResolvedAlgorithmProfile"
+      },
+      "title": "Algorithm Profiles",
+      "type": "array"
+    },
+    "catalog_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Catalog Fingerprint",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "anchor-execution-plan",
+      "default": "anchor-execution-plan",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/AnchorExecutionEntry"
+      },
+      "title": "Entries",
+      "type": "array"
+    },
+    "input_table_contracts": {
+      "items": {
+        "$ref": "#/$defs/ResolvedInputTableContract"
+      },
+      "title": "Input Table Contracts",
+      "type": "array"
+    },
+    "model_profile_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Model Profile Id",
+      "type": "string"
+    },
+    "parameter_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Parameter Fingerprint",
+      "type": "string"
+    },
+    "plan_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Plan Fingerprint",
+      "type": "string"
+    },
+    "plan_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Plan Id",
+      "type": "string"
+    },
+    "preprocessing_recipes": {
+      "items": {
+        "$ref": "#/$defs/ResolvedPreprocessingRecipe"
+      },
+      "title": "Preprocessing Recipes",
+      "type": "array"
+    },
+    "reference_set_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Reference Set Fingerprint",
+      "type": "string"
+    },
+    "registry_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Registry Fingerprint",
+      "type": "string"
+    },
+    "scientific_validation_status": {
+      "$ref": "#/$defs/ScientificValidationStatus"
+    },
+    "semantic_snapshot_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Semantic Snapshot Fingerprint",
+      "type": "string"
+    },
+    "source_snapshot_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Source Snapshot Fingerprint",
+      "type": "string"
+    },
+    "synchronization_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Synchronization Fingerprint",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_id",
+    "model_profile_id",
+    "scientific_validation_status",
+    "catalog_fingerprint",
+    "registry_fingerprint",
+    "source_snapshot_fingerprint",
+    "synchronization_fingerprint",
+    "semantic_snapshot_fingerprint",
+    "reference_set_fingerprint",
+    "entries",
+    "input_table_contracts",
+    "algorithm_profiles",
+    "preprocessing_recipes",
+    "parameter_fingerprint",
+    "plan_fingerprint"
+  ],
+  "title": "Pilot Assessment Anchor Execution Plan 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "active entries, input contracts and dependency DAGs resolve exactly",
+    "quality-gate parameter fields are forbidden recursively"
+  ]
+}

@@ -1,0 +1,968 @@
+{
+  "$defs": {
+    "AnchorApplicability": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Anchor Id",
+          "type": "string"
+        },
+        "aoi_ids": {
+          "default": [],
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Aoi Ids",
+          "type": "array"
+        },
+        "baseline_ids": {
+          "default": [],
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Baseline Ids",
+          "type": "array"
+        },
+        "control_mapping_ids": {
+          "default": [],
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Control Mapping Ids",
+          "type": "array"
+        },
+        "envelope_ids": {
+          "default": [],
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Envelope Ids",
+          "type": "array"
+        },
+        "event_ids": {
+          "default": [],
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Event Ids",
+          "type": "array"
+        },
+        "phase_ids": {
+          "default": [],
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Phase Ids",
+          "type": "array"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "status": {
+          "$ref": "#/$defs/SemanticApplicabilityStatus"
+        },
+        "target_ids": {
+          "default": [],
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Target Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "anchor_id",
+        "status"
+      ],
+      "title": "AnchorApplicability",
+      "type": "object"
+    },
+    "AoiDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "aoi_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Aoi Id",
+          "type": "string"
+        },
+        "dynamic_source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DynamicAoiSource"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "geometry_kind": {
+          "$ref": "#/$defs/AoiGeometryKind"
+        },
+        "off_task": {
+          "title": "Off Task",
+          "type": "boolean"
+        },
+        "priority": {
+          "minimum": 0,
+          "title": "Priority",
+          "type": "integer"
+        },
+        "role": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Role",
+          "type": "string"
+        },
+        "role_weight": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Role Weight",
+          "type": "number"
+        },
+        "taxonomy_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Taxonomy Id",
+          "type": "string"
+        },
+        "vertices": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/SemanticVector"
+          },
+          "title": "Vertices",
+          "type": "array"
+        }
+      },
+      "required": [
+        "aoi_id",
+        "taxonomy_id",
+        "role",
+        "geometry_kind",
+        "priority",
+        "role_weight",
+        "off_task"
+      ],
+      "title": "AoiDefinition",
+      "type": "object"
+    },
+    "AoiGeometryKind": {
+      "enum": [
+        "dynamic_2d",
+        "dynamic_3d",
+        "polygon_2d",
+        "box_3d",
+        "catch_all"
+      ],
+      "title": "AoiGeometryKind",
+      "type": "string"
+    },
+    "BaselineChannelBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "channel_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Channel Ids",
+          "type": "array"
+        },
+        "modality": {
+          "$ref": "#/$defs/BaselineModality"
+        }
+      },
+      "required": [
+        "modality",
+        "channel_ids"
+      ],
+      "title": "BaselineChannelBinding",
+      "type": "object"
+    },
+    "BaselineDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "annotation_exclusion_reason": {
+          "anyOf": [
+            {
+              "maxLength": 512,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Annotation Exclusion Reason"
+        },
+        "annotation_valid": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Annotation Valid"
+        },
+        "baseline_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Baseline Id",
+          "type": "string"
+        },
+        "channel_bindings": {
+          "items": {
+            "$ref": "#/$defs/BaselineChannelBinding"
+          },
+          "title": "Channel Bindings",
+          "type": "array"
+        },
+        "condition_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Condition Id"
+        },
+        "end_t_ns": {
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "End T Ns",
+          "type": "integer"
+        },
+        "start_t_ns": {
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "Start T Ns",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "baseline_id",
+        "start_t_ns",
+        "end_t_ns",
+        "channel_bindings"
+      ],
+      "title": "BaselineDefinition",
+      "type": "object"
+    },
+    "BaselineModality": {
+      "enum": [
+        "ECG",
+        "EEG"
+      ],
+      "title": "BaselineModality",
+      "type": "string"
+    },
+    "ControlEffectMapping": {
+      "additionalProperties": false,
+      "properties": {
+        "control_channel_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Control Channel Id",
+          "type": "string"
+        },
+        "control_mapping_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Control Mapping Id",
+          "type": "string"
+        },
+        "control_unit": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9%*/^._-]+$",
+          "title": "Control Unit",
+          "type": "string"
+        },
+        "correct_sign": {
+          "enum": [
+            -1,
+            1
+          ],
+          "title": "Correct Sign",
+          "type": "integer"
+        },
+        "lower": {
+          "title": "Lower",
+          "type": "number"
+        },
+        "state_axis_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "State Axis Id",
+          "type": "string"
+        },
+        "state_unit": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9%*/^._-]+$",
+          "title": "State Unit",
+          "type": "string"
+        },
+        "trim": {
+          "title": "Trim",
+          "type": "number"
+        },
+        "upper": {
+          "title": "Upper",
+          "type": "number"
+        }
+      },
+      "required": [
+        "control_mapping_id",
+        "state_axis_id",
+        "control_channel_id",
+        "correct_sign",
+        "state_unit",
+        "control_unit",
+        "lower",
+        "trim",
+        "upper"
+      ],
+      "title": "ControlEffectMapping",
+      "type": "object"
+    },
+    "DynamicAoiSource": {
+      "additionalProperties": false,
+      "properties": {
+        "aligned_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Aligned Schema Id",
+          "type": "string"
+        },
+        "aoi_id_field": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Aoi Id Field",
+          "type": "string"
+        },
+        "coordinate_frame_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Coordinate Frame Id",
+          "type": "string"
+        },
+        "frame_id_field": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Frame Id Field",
+          "type": "string"
+        },
+        "geometry_field_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Geometry Field Ids",
+          "type": "array"
+        },
+        "stream_role": {
+          "const": "I",
+          "default": "I",
+          "title": "Stream Role",
+          "type": "string"
+        },
+        "table_role": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Table Role",
+          "type": "string"
+        },
+        "unit": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9%*/^._-]+$",
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "table_role",
+        "aligned_schema_id",
+        "coordinate_frame_id",
+        "unit",
+        "frame_id_field",
+        "aoi_id_field",
+        "geometry_field_ids"
+      ],
+      "title": "DynamicAoiSource",
+      "type": "object"
+    },
+    "EnvelopeAxisLimit": {
+      "additionalProperties": false,
+      "properties": {
+        "adequate_abs_max": {
+          "minimum": 0.0,
+          "title": "Adequate Abs Max",
+          "type": "number"
+        },
+        "desired_abs_max": {
+          "minimum": 0.0,
+          "title": "Desired Abs Max",
+          "type": "number"
+        },
+        "metric_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Metric Id",
+          "type": "string"
+        },
+        "unit": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9%*/^._-]+$",
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "metric_id",
+        "desired_abs_max",
+        "adequate_abs_max",
+        "unit"
+      ],
+      "title": "EnvelopeAxisLimit",
+      "type": "object"
+    },
+    "EnvelopeDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "axis_limits": {
+          "items": {
+            "$ref": "#/$defs/EnvelopeAxisLimit"
+          },
+          "title": "Axis Limits",
+          "type": "array"
+        },
+        "envelope_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Envelope Id",
+          "type": "string"
+        },
+        "target_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Target Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "envelope_id",
+        "target_id",
+        "axis_limits"
+      ],
+      "title": "EnvelopeDefinition",
+      "type": "object"
+    },
+    "SemanticApplicabilityStatus": {
+      "enum": [
+        "applicable",
+        "not_applicable"
+      ],
+      "title": "SemanticApplicabilityStatus",
+      "type": "string"
+    },
+    "SemanticEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "control_mapping_ids": {
+          "default": [],
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Control Mapping Ids",
+          "type": "array"
+        },
+        "duration_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration Ns"
+        },
+        "envelope_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Envelope Id"
+        },
+        "event_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "opportunity_end_t_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Opportunity End T Ns"
+        },
+        "phase_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Phase Id"
+        },
+        "relevant_aoi_ids": {
+          "default": [],
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Relevant Aoi Ids",
+          "type": "array"
+        },
+        "t_ns": {
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "T Ns",
+          "type": "integer"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        }
+      },
+      "required": [
+        "event_id",
+        "event_type",
+        "t_ns"
+      ],
+      "title": "SemanticEvent",
+      "type": "object"
+    },
+    "SemanticPhase": {
+      "additionalProperties": false,
+      "properties": {
+        "end_t_ns": {
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "End T Ns",
+          "type": "integer"
+        },
+        "envelope_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Envelope Id"
+        },
+        "include_session_terminal_point": {
+          "default": false,
+          "title": "Include Session Terminal Point",
+          "type": "boolean"
+        },
+        "phase_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Phase Id",
+          "type": "string"
+        },
+        "phase_type": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Phase Type",
+          "type": "string"
+        },
+        "start_t_ns": {
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "Start T Ns",
+          "type": "integer"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        }
+      },
+      "required": [
+        "phase_id",
+        "phase_type",
+        "start_t_ns",
+        "end_t_ns"
+      ],
+      "title": "SemanticPhase",
+      "type": "object"
+    },
+    "SemanticVector": {
+      "additionalProperties": false,
+      "properties": {
+        "coordinate_frame_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Coordinate Frame Id",
+          "type": "string"
+        },
+        "unit": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9%*/^._-]+$",
+          "title": "Unit",
+          "type": "string"
+        },
+        "values": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "coordinate_frame_id",
+        "unit",
+        "values"
+      ],
+      "title": "SemanticVector",
+      "type": "object"
+    },
+    "TaskTargetDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "arrival_axis": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SemanticVector"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "position": {
+          "$ref": "#/$defs/SemanticVector"
+        },
+        "target_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Target Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_id",
+        "position"
+      ],
+      "title": "TaskTargetDefinition",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:session-semantic-snapshot:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "annotation_revision": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Annotation Revision",
+      "type": "string"
+    },
+    "aois": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/AoiDefinition"
+      },
+      "title": "Aois",
+      "type": "array"
+    },
+    "applicability": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/AnchorApplicability"
+      },
+      "title": "Applicability",
+      "type": "array"
+    },
+    "baselines": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/BaselineDefinition"
+      },
+      "title": "Baselines",
+      "type": "array"
+    },
+    "contract_id": {
+      "const": "session-semantic-snapshot",
+      "default": "session-semantic-snapshot",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "control_mappings": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ControlEffectMapping"
+      },
+      "title": "Control Mappings",
+      "type": "array"
+    },
+    "envelopes": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/EnvelopeDefinition"
+      },
+      "title": "Envelopes",
+      "type": "array"
+    },
+    "events": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/SemanticEvent"
+      },
+      "title": "Events",
+      "type": "array"
+    },
+    "phases": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/SemanticPhase"
+      },
+      "title": "Phases",
+      "type": "array"
+    },
+    "scenario_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "semantic_snapshot_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Semantic Snapshot Fingerprint",
+      "type": "string"
+    },
+    "session_end_t_ns": {
+      "exclusiveMinimum": 0,
+      "maximum": 4503599627370495,
+      "title": "Session End T Ns",
+      "type": "integer"
+    },
+    "session_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "session_start_t_ns": {
+      "const": 0,
+      "default": 0,
+      "title": "Session Start T Ns",
+      "type": "integer"
+    },
+    "source_snapshot_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Source Snapshot Fingerprint",
+      "type": "string"
+    },
+    "synchronization_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Synchronization Fingerprint",
+      "type": "string"
+    },
+    "synthetic_semantics_unvalidated": {
+      "title": "Synthetic Semantics Unvalidated",
+      "type": "boolean"
+    },
+    "targets": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/TaskTargetDefinition"
+      },
+      "title": "Targets",
+      "type": "array"
+    },
+    "task_profile_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Task Profile Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "session_id",
+    "task_profile_id",
+    "scenario_id",
+    "source_snapshot_fingerprint",
+    "synchronization_fingerprint",
+    "annotation_revision",
+    "synthetic_semantics_unvalidated",
+    "session_end_t_ns",
+    "semantic_snapshot_fingerprint"
+  ],
+  "title": "Pilot Assessment Session Semantic Snapshot 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "semantic inventories, references, scopes and applicability close exactly"
+  ]
+}

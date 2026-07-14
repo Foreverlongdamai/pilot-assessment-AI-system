@@ -1,0 +1,307 @@
+{
+  "$defs": {
+    "AnchorArtifactRecipe": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "kind": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "payload_kind": {
+          "enum": [
+            "table",
+            "blob"
+          ],
+          "title": "Payload Kind",
+          "type": "string"
+        },
+        "schema_descriptor": {
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "$ref": "#/$defs/JsonValue"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "title": "Schema Descriptor",
+          "type": "object"
+        },
+        "schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Schema Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "kind",
+        "schema_id",
+        "schema_descriptor",
+        "payload_kind"
+      ],
+      "title": "AnchorArtifactRecipe",
+      "type": "object"
+    },
+    "AnchorDependency": {
+      "additionalProperties": false,
+      "properties": {
+        "dependency_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Dependency Id",
+          "type": "string"
+        },
+        "expected_artifact_kind": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Artifact Kind"
+        },
+        "expected_schema_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Schema Id"
+        },
+        "kind": {
+          "$ref": "#/$defs/DependencyKind"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "target_anchor_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Anchor Id"
+        },
+        "target_resource_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Resource Id"
+        }
+      },
+      "required": [
+        "dependency_id",
+        "kind",
+        "required"
+      ],
+      "title": "AnchorDependency",
+      "type": "object"
+    },
+    "CoreModality": {
+      "description": "Modalities that every v0.x manifest must explicitly describe.",
+      "enum": [
+        "X",
+        "U",
+        "I",
+        "G",
+        "EEG",
+        "ECG",
+        "pilot_camera"
+      ],
+      "title": "CoreModality",
+      "type": "string"
+    },
+    "DependencyKind": {
+      "enum": [
+        "result_dependency",
+        "artifact_dependency",
+        "algorithm_profile_dependency",
+        "preprocessing_dependency"
+      ],
+      "title": "DependencyKind",
+      "type": "string"
+    },
+    "JsonValue": {}
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:anchor-plugin-definition:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "anchor_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Anchor Id",
+      "type": "string"
+    },
+    "api_version": {
+      "const": "0.1.0",
+      "title": "Api Version",
+      "type": "string"
+    },
+    "artifact_recipes": {
+      "items": {
+        "$ref": "#/$defs/AnchorArtifactRecipe"
+      },
+      "title": "Artifact Recipes",
+      "type": "array"
+    },
+    "contract_id": {
+      "const": "anchor-plugin-definition",
+      "default": "anchor-plugin-definition",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "definition_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Definition Version",
+      "type": "string"
+    },
+    "dependencies": {
+      "items": {
+        "$ref": "#/$defs/AnchorDependency"
+      },
+      "title": "Dependencies",
+      "type": "array"
+    },
+    "measurement_schema_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Measurement Schema Id",
+      "type": "string"
+    },
+    "parameter_schema_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Parameter Schema Id",
+      "type": "string"
+    },
+    "plugin_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Plugin Id",
+      "type": "string"
+    },
+    "plugin_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Plugin Version",
+      "type": "string"
+    },
+    "required_context_paths": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Required Context Paths",
+      "type": "array"
+    },
+    "required_reference_ids": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Required Reference Ids",
+      "type": "array"
+    },
+    "required_semantic_paths": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Required Semantic Paths",
+      "type": "array"
+    },
+    "required_streams": {
+      "items": {
+        "$ref": "#/$defs/CoreModality"
+      },
+      "title": "Required Streams",
+      "type": "array"
+    }
+  },
+  "required": [
+    "anchor_id",
+    "definition_version",
+    "plugin_id",
+    "plugin_version",
+    "api_version",
+    "required_streams",
+    "required_context_paths",
+    "required_semantic_paths",
+    "required_reference_ids",
+    "dependencies",
+    "parameter_schema_id",
+    "measurement_schema_id",
+    "artifact_recipes"
+  ],
+  "title": "Pilot Assessment Anchor Plugin Definition 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "projection paths, dependencies and artifact recipes are unique and typed"
+  ]
+}

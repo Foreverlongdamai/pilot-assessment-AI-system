@@ -9,6 +9,17 @@ from typing import Any, cast
 from pydantic import BaseModel
 
 from pilot_assessment.contracts.anchor import SUPPORTED_SOFT_TIE_POLICIES, AnchorResult
+from pilot_assessment.contracts.anchor_execution import (
+    AnchorCatalog,
+    AnchorEvaluationReport,
+    AnchorExecutionPlan,
+    AnchorPluginDefinition,
+    AnchorRuntimeRegistry,
+    PreprocessingProviderDefinition,
+    ResolvedReferenceSetSnapshot,
+    SessionSemanticSnapshot,
+)
+from pilot_assessment.contracts.anchor_v2 import AnchorMeasurement, AnchorResultV2
 from pilot_assessment.contracts.common import (
     BUNDLE_RELATIVE_PATH_JSON_SCHEMA_PATTERN,
     BUNDLE_RELATIVE_PATH_PATTERN,
@@ -41,8 +52,120 @@ SYNCHRONIZATION_REPORT_SCHEMA_ID = (
 )
 SYNCHRONIZATION_REPORT_SCHEMA_TITLE = "Pilot Assessment Synchronization Report 0.1.0"
 
+_M4_SCHEMA_MODELS: tuple[
+    tuple[str, type[BaseModel], str, str, str, list[str]],
+    ...,
+] = (
+    (
+        "anchor-result-0.2.0.schema.json",
+        AnchorResultV2,
+        "urn:cranfield:pilot-assessment:schema:anchor-result:0.2.0",
+        "Pilot Assessment Anchor Result 0.2.0",
+        "0.2.0",
+        [
+            "calculation status controls evidence, score, measurement and override fields",
+            "result_fingerprint is recomputed from the canonical logical result payload",
+        ],
+    ),
+    (
+        "anchor-measurement-0.1.0.schema.json",
+        AnchorMeasurement,
+        "urn:cranfield:pilot-assessment:schema:anchor-measurement:0.1.0",
+        "Pilot Assessment Anchor Measurement 0.1.0",
+        "0.1.0",
+        [
+            "calculation status controls primary measurement and override-candidate fields",
+            "derived artifact references exactly match the current anchor transaction",
+        ],
+    ),
+    (
+        "anchor-plugin-definition-0.1.0.schema.json",
+        AnchorPluginDefinition,
+        "urn:cranfield:pilot-assessment:schema:anchor-plugin-definition:0.1.0",
+        "Pilot Assessment Anchor Plugin Definition 0.1.0",
+        "0.1.0",
+        ["projection paths, dependencies and artifact recipes are unique and typed"],
+    ),
+    (
+        "preprocessing-provider-definition-0.1.0.schema.json",
+        PreprocessingProviderDefinition,
+        "urn:cranfield:pilot-assessment:schema:preprocessing-provider-definition:0.1.0",
+        "Pilot Assessment Preprocessing Provider Definition 0.1.0",
+        "0.1.0",
+        ["projection paths and preprocessing dependency slots are unique and typed"],
+    ),
+    (
+        "anchor-catalog-0.1.0.schema.json",
+        AnchorCatalog,
+        "urn:cranfield:pilot-assessment:schema:anchor-catalog:0.1.0",
+        "Pilot Assessment Anchor Catalog 0.1.0",
+        "0.1.0",
+        ["entries use unique keys and canonical catalog order"],
+    ),
+    (
+        "anchor-runtime-registry-0.1.0.schema.json",
+        AnchorRuntimeRegistry,
+        "urn:cranfield:pilot-assessment:schema:anchor-runtime-registry:0.1.0",
+        "Pilot Assessment Anchor Runtime Registry 0.1.0",
+        "0.1.0",
+        ["plugin and preprocessing entries use canonical unique registry keys"],
+    ),
+    (
+        "anchor-execution-plan-0.1.0.schema.json",
+        AnchorExecutionPlan,
+        "urn:cranfield:pilot-assessment:schema:anchor-execution-plan:0.1.0",
+        "Pilot Assessment Anchor Execution Plan 0.1.0",
+        "0.1.0",
+        [
+            "active entries, input contracts and dependency DAGs resolve exactly",
+            "quality-gate parameter fields are forbidden recursively",
+        ],
+    ),
+    (
+        "session-semantic-snapshot-0.1.0.schema.json",
+        SessionSemanticSnapshot,
+        "urn:cranfield:pilot-assessment:schema:session-semantic-snapshot:0.1.0",
+        "Pilot Assessment Session Semantic Snapshot 0.1.0",
+        "0.1.0",
+        ["semantic inventories, references, scopes and applicability close exactly"],
+    ),
+    (
+        "resolved-reference-set-0.1.0.schema.json",
+        ResolvedReferenceSetSnapshot,
+        "urn:cranfield:pilot-assessment:schema:resolved-reference-set:0.1.0",
+        "Pilot Assessment Resolved Reference Set 0.1.0",
+        "0.1.0",
+        ["reference descriptors are canonical and bind one exact session identity"],
+    ),
+    (
+        "anchor-evaluation-report-0.1.0.schema.json",
+        AnchorEvaluationReport,
+        "urn:cranfield:pilot-assessment:schema:anchor-evaluation-report:0.1.0",
+        "Pilot Assessment Anchor Evaluation Report 0.1.0",
+        "0.1.0",
+        [
+            "inventory and results close one-to-one in canonical relative order",
+            "availability and disposition are derived from terminal result statuses",
+        ],
+    ),
+)
+
+_QUALITY_GATE_FIELD_NAMES = frozenset(
+    {
+        "quality",
+        "quality_gate",
+        "quality_gates",
+        "quality_transform",
+        "min_valid_coverage",
+        "failed_quality",
+        "invalid_quality",
+        "binary_quality_v1",
+    }
+)
+
 _PROJECT_ROOT = Path(__file__).resolve().parents[3]
 _DEFAULT_OUTPUT_DIRECTORY = _PROJECT_ROOT / "schemas"
+_DEFAULT_PACKAGE_OUTPUT_DIRECTORY = Path(__file__).resolve().parents[1] / "schema_resources"
 
 
 def _replace_runtime_only_path_patterns(value: object) -> None:
@@ -63,13 +186,14 @@ def _base_schema(
     schema_id: str,
     title: str,
     runtime_invariants: list[str],
+    contract_version: str = CONTRACT_VERSION,
 ) -> dict[str, Any]:
     schema = model.model_json_schema(mode="validation")
     _replace_runtime_only_path_patterns(schema)
     schema["$schema"] = SCHEMA_DIALECT
     schema["$id"] = schema_id
     schema["title"] = title
-    schema["x-contract-version"] = CONTRACT_VERSION
+    schema["x-contract-version"] = contract_version
     schema["x-runtime-invariants"] = runtime_invariants
     return schema
 
@@ -1086,6 +1210,78 @@ def _synchronization_report_schema() -> dict[str, Any]:
     return schema
 
 
+def _quality_gate_free_json_schema() -> dict[str, Any]:
+    """Describe arbitrary JSON while excluding M4 quality-gate vocabulary recursively."""
+
+    recursive_reference = {"$ref": "#/$defs/QualityGateFreeJsonValue"}
+    return {
+        "anyOf": [
+            {"type": "null"},
+            {"type": "boolean"},
+            {"type": "integer"},
+            {"type": "number"},
+            {"type": "string"},
+            {"items": recursive_reference, "type": "array"},
+            {
+                "additionalProperties": recursive_reference,
+                "propertyNames": {
+                    "not": {"enum": sorted(_QUALITY_GATE_FIELD_NAMES)},
+                },
+                "type": "object",
+            },
+        ]
+    }
+
+
+def _exclude_quality_gate_parameters(schema: dict[str, Any]) -> None:
+    """Mirror the runtime's recursive quality-field rejection in JSON Schema."""
+
+    schema["$defs"]["QualityGateFreeJsonValue"] = _quality_gate_free_json_schema()
+    for definition_name, field_names in {
+        "AnchorExecutionEntry": ("parameters", "temporal_recipe"),
+        "ResolvedAlgorithmProfile": ("parameters",),
+        "ResolvedPreprocessingRecipe": ("parameters",),
+        "ScorerPolicy": ("parameters",),
+    }.items():
+        definition = schema["$defs"][definition_name]
+        for field_name in field_names:
+            mapping = definition["properties"][field_name]
+            property_name_rule = mapping.get("propertyNames", {})
+            mapping["propertyNames"] = {
+                "allOf": [
+                    property_name_rule,
+                    {"not": {"enum": sorted(_QUALITY_GATE_FIELD_NAMES)}},
+                ]
+            }
+            mapping["patternProperties"] = {
+                pattern: {"$ref": "#/$defs/QualityGateFreeJsonValue"}
+                for pattern in mapping.get("patternProperties", {})
+            }
+            mapping["additionalProperties"] = False
+
+
+def _m4_schema(
+    model: type[BaseModel],
+    *,
+    schema_id: str,
+    title: str,
+    contract_version: str,
+    runtime_invariants: list[str],
+) -> dict[str, Any]:
+    schema = _base_schema(
+        model,
+        schema_id=schema_id,
+        title=title,
+        runtime_invariants=runtime_invariants,
+        contract_version=contract_version,
+    )
+    if model is AnchorExecutionPlan:
+        _exclude_quality_gate_parameters(schema)
+    if model is AnchorEvaluationReport:
+        schema["properties"]["formal_run_authorized"]["const"] = False
+    return schema
+
+
 def _render_json(schema: dict[str, Any]) -> bytes:
     return (json.dumps(schema, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
 
@@ -1093,31 +1289,99 @@ def _render_json(schema: dict[str, Any]) -> bytes:
 def render_schemas() -> dict[str, bytes]:
     """Return canonical schema bytes keyed by their committed filenames."""
 
-    return {
+    schemas = {
         "anchor-result-0.1.0.schema.json": _render_json(_anchor_result_schema()),
         "ingestion-readiness-report-0.1.0.schema.json": _render_json(_ingestion_readiness_schema()),
         "session-manifest-0.1.0.schema.json": _render_json(_session_manifest_schema()),
         "synchronization-report-0.1.0.schema.json": _render_json(_synchronization_report_schema()),
     }
+    schemas.update(
+        {
+            name: _render_json(
+                _m4_schema(
+                    model,
+                    schema_id=schema_id,
+                    title=title,
+                    contract_version=contract_version,
+                    runtime_invariants=runtime_invariants,
+                )
+            )
+            for (
+                name,
+                model,
+                schema_id,
+                title,
+                contract_version,
+                runtime_invariants,
+            ) in _M4_SCHEMA_MODELS
+        }
+    )
+    return schemas
 
 
-def export_schemas(output_directory: str | Path = _DEFAULT_OUTPUT_DIRECTORY) -> tuple[Path, ...]:
-    """Write all schemas atomically enough for deterministic development export."""
+def export_schemas(
+    output_directory: str | Path = _DEFAULT_OUTPUT_DIRECTORY,
+    package_output_directory: str | Path | None = None,
+) -> tuple[Path, ...]:
+    """Write one target compatibly, or publish two byte-identical targets with rollback."""
 
-    output = Path(output_directory)
-    output.mkdir(parents=True, exist_ok=True)
-    written: list[Path] = []
-    for name, payload in render_schemas().items():
-        destination = output / name
-        temporary = output / f".{name}.tmp"
-        temporary.write_bytes(payload)
-        temporary.replace(destination)
-        written.append(destination)
-    return tuple(written)
+    outputs = (Path(output_directory),)
+    if package_output_directory is not None:
+        package_output = Path(package_output_directory)
+        if package_output.resolve() == outputs[0].resolve():
+            raise ValueError("schema export targets must be distinct")
+        outputs += (package_output,)
+    for output in outputs:
+        output.mkdir(parents=True, exist_ok=True)
+
+    rendered = render_schemas()
+    staged: list[tuple[Path, Path]] = []
+    rollback_temporaries: list[Path] = []
+    previous_bytes: dict[Path, bytes | None] = {}
+    try:
+        for output in outputs:
+            for name, payload in rendered.items():
+                destination = output / name
+                temporary = output / f".{name}.tmp"
+                staged.append((temporary, destination))
+                previous_bytes[destination] = (
+                    destination.read_bytes() if destination.exists() else None
+                )
+                temporary.write_bytes(payload)
+        for temporary, destination in staged:
+            temporary.replace(destination)
+    except BaseException as publish_error:
+        rollback_errors: list[BaseException] = []
+        for destination, previous in previous_bytes.items():
+            try:
+                if previous is None:
+                    destination.unlink(missing_ok=True)
+                    continue
+                rollback = destination.with_name(f".{destination.name}.rollback.tmp")
+                rollback_temporaries.append(rollback)
+                rollback.write_bytes(previous)
+                rollback.replace(destination)
+            except BaseException as rollback_error:  # pragma: no cover - catastrophic I/O path
+                rollback_errors.append(rollback_error)
+        if rollback_errors:
+            raise RuntimeError(
+                "schema export failed and rollback was incomplete"
+            ) from publish_error
+        raise
+    finally:
+        for temporary, _ in staged:
+            temporary.unlink(missing_ok=True)
+        for temporary in rollback_temporaries:
+            temporary.unlink(missing_ok=True)
+
+    return tuple(destination for _, destination in staged)
 
 
 def main() -> None:
-    for path in export_schemas():
+    for path in export_schemas(
+        _DEFAULT_OUTPUT_DIRECTORY,
+        _DEFAULT_PACKAGE_OUTPUT_DIRECTORY,
+    ):
         print(path)
 
 

@@ -1,0 +1,338 @@
+{
+  "$defs": {
+    "AnchorArtifactRecipe": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "kind": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "payload_kind": {
+          "enum": [
+            "table",
+            "blob"
+          ],
+          "title": "Payload Kind",
+          "type": "string"
+        },
+        "schema_descriptor": {
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "$ref": "#/$defs/JsonValue"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "title": "Schema Descriptor",
+          "type": "object"
+        },
+        "schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Schema Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "kind",
+        "schema_id",
+        "schema_descriptor",
+        "payload_kind"
+      ],
+      "title": "AnchorArtifactRecipe",
+      "type": "object"
+    },
+    "AnchorCatalogEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Anchor Id",
+          "type": "string"
+        },
+        "artifact_recipes": {
+          "items": {
+            "$ref": "#/$defs/AnchorArtifactRecipe"
+          },
+          "title": "Artifact Recipes",
+          "type": "array"
+        },
+        "canonical_order": {
+          "minimum": 0,
+          "title": "Canonical Order",
+          "type": "integer"
+        },
+        "definition_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Definition Version",
+          "type": "string"
+        },
+        "dependencies": {
+          "items": {
+            "$ref": "#/$defs/AnchorDependency"
+          },
+          "title": "Dependencies",
+          "type": "array"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/AnchorLifecycle"
+        },
+        "parameter_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Parameter Schema Id",
+          "type": "string"
+        },
+        "plugin_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Plugin Id",
+          "type": "string"
+        },
+        "plugin_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Plugin Version",
+          "type": "string"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "required_inputs": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Required Inputs",
+          "type": "array"
+        },
+        "scorer_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Scorer Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "anchor_id",
+        "definition_version",
+        "lifecycle",
+        "required",
+        "canonical_order",
+        "plugin_id",
+        "plugin_version",
+        "parameter_schema_id",
+        "scorer_id",
+        "required_inputs",
+        "dependencies",
+        "artifact_recipes"
+      ],
+      "title": "AnchorCatalogEntry",
+      "type": "object"
+    },
+    "AnchorDependency": {
+      "additionalProperties": false,
+      "properties": {
+        "dependency_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Dependency Id",
+          "type": "string"
+        },
+        "expected_artifact_kind": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Artifact Kind"
+        },
+        "expected_schema_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Schema Id"
+        },
+        "kind": {
+          "$ref": "#/$defs/DependencyKind"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "target_anchor_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Anchor Id"
+        },
+        "target_resource_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Resource Id"
+        }
+      },
+      "required": [
+        "dependency_id",
+        "kind",
+        "required"
+      ],
+      "title": "AnchorDependency",
+      "type": "object"
+    },
+    "AnchorLifecycle": {
+      "enum": [
+        "active",
+        "deprecated",
+        "retired"
+      ],
+      "title": "AnchorLifecycle",
+      "type": "string"
+    },
+    "DependencyKind": {
+      "enum": [
+        "result_dependency",
+        "artifact_dependency",
+        "algorithm_profile_dependency",
+        "preprocessing_dependency"
+      ],
+      "title": "DependencyKind",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "ScientificValidationStatus": {
+      "enum": [
+        "engineering_default",
+        "expert_reviewed",
+        "calibrated",
+        "internally_validated",
+        "externally_validated",
+        "not_supported"
+      ],
+      "title": "ScientificValidationStatus",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:anchor-catalog:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "catalog_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Catalog Fingerprint",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "anchor-catalog",
+      "default": "anchor-catalog",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/AnchorCatalogEntry"
+      },
+      "title": "Entries",
+      "type": "array"
+    },
+    "profile_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Profile Id",
+      "type": "string"
+    },
+    "profile_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Profile Version",
+      "type": "string"
+    },
+    "scientific_validation_status": {
+      "$ref": "#/$defs/ScientificValidationStatus"
+    }
+  },
+  "required": [
+    "profile_id",
+    "profile_version",
+    "scientific_validation_status",
+    "entries",
+    "catalog_fingerprint"
+  ],
+  "title": "Pilot Assessment Anchor Catalog 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "entries use unique keys and canonical catalog order"
+  ]
+}

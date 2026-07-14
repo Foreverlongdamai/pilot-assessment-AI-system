@@ -1,0 +1,441 @@
+{
+  "$defs": {
+    "ContentMemberIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "content_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Sha256",
+          "type": "string"
+        },
+        "package_relative_path": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+          "title": "Package Relative Path",
+          "type": "string",
+          "x-runtime-invariants": [
+            "segments are not empty, '.' or '..'",
+            "segments do not end in a dot or space",
+            "resolved files remain below the owning artifact root"
+          ]
+        }
+      },
+      "required": [
+        "package_relative_path",
+        "content_sha256"
+      ],
+      "title": "ContentMemberIdentity",
+      "type": "object"
+    },
+    "NumericRuntimeIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "normalized_name": {
+          "title": "Normalized Name",
+          "type": "string"
+        },
+        "record_content_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Record Content Sha256",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "normalized_name",
+        "version",
+        "record_content_sha256"
+      ],
+      "title": "NumericRuntimeIdentity",
+      "type": "object"
+    },
+    "PluginRegistryEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_package_namespace": {
+          "title": "Allowed Package Namespace",
+          "type": "string"
+        },
+        "anchor_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Anchor Id",
+          "type": "string"
+        },
+        "api_version": {
+          "const": "0.1.0",
+          "title": "Api Version",
+          "type": "string"
+        },
+        "artifact_schema_hashes": {
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9A-Fa-f]{64}$",
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "title": "Artifact Schema Hashes",
+          "type": "object"
+        },
+        "definition_fingerprint": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Definition Fingerprint",
+          "type": "string"
+        },
+        "definition_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Definition Version",
+          "type": "string"
+        },
+        "factory_module": {
+          "title": "Factory Module",
+          "type": "string"
+        },
+        "factory_symbol": {
+          "title": "Factory Symbol",
+          "type": "string"
+        },
+        "implementation_digest": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Implementation Digest",
+          "type": "string"
+        },
+        "implementation_members": {
+          "items": {
+            "$ref": "#/$defs/ContentMemberIdentity"
+          },
+          "title": "Implementation Members",
+          "type": "array"
+        },
+        "measurement_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Measurement Schema Id",
+          "type": "string"
+        },
+        "measurement_schema_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Measurement Schema Sha256",
+          "type": "string"
+        },
+        "numeric_runtimes": {
+          "items": {
+            "$ref": "#/$defs/NumericRuntimeIdentity"
+          },
+          "title": "Numeric Runtimes",
+          "type": "array"
+        },
+        "parameter_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Parameter Schema Id",
+          "type": "string"
+        },
+        "parameter_schema_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Parameter Schema Sha256",
+          "type": "string"
+        },
+        "plugin_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Plugin Id",
+          "type": "string"
+        },
+        "plugin_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Plugin Version",
+          "type": "string"
+        },
+        "python_runtime": {
+          "$ref": "#/$defs/PythonRuntimeIdentity"
+        },
+        "resource_members": {
+          "items": {
+            "$ref": "#/$defs/ContentMemberIdentity"
+          },
+          "title": "Resource Members",
+          "type": "array"
+        }
+      },
+      "required": [
+        "anchor_id",
+        "definition_version",
+        "plugin_id",
+        "plugin_version",
+        "api_version",
+        "factory_module",
+        "factory_symbol",
+        "allowed_package_namespace",
+        "definition_fingerprint",
+        "parameter_schema_id",
+        "parameter_schema_sha256",
+        "measurement_schema_id",
+        "measurement_schema_sha256",
+        "artifact_schema_hashes",
+        "implementation_members",
+        "resource_members",
+        "python_runtime",
+        "numeric_runtimes",
+        "implementation_digest"
+      ],
+      "title": "PluginRegistryEntry",
+      "type": "object"
+    },
+    "PreprocessingRegistryEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_package_namespace": {
+          "title": "Allowed Package Namespace",
+          "type": "string"
+        },
+        "api_version": {
+          "const": "0.1.0",
+          "title": "Api Version",
+          "type": "string"
+        },
+        "artifact_kind": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Artifact Kind",
+          "type": "string"
+        },
+        "definition_fingerprint": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Definition Fingerprint",
+          "type": "string"
+        },
+        "factory_module": {
+          "title": "Factory Module",
+          "type": "string"
+        },
+        "factory_symbol": {
+          "title": "Factory Symbol",
+          "type": "string"
+        },
+        "implementation_digest": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Implementation Digest",
+          "type": "string"
+        },
+        "implementation_members": {
+          "items": {
+            "$ref": "#/$defs/ContentMemberIdentity"
+          },
+          "title": "Implementation Members",
+          "type": "array"
+        },
+        "numeric_runtimes": {
+          "items": {
+            "$ref": "#/$defs/NumericRuntimeIdentity"
+          },
+          "title": "Numeric Runtimes",
+          "type": "array"
+        },
+        "output_payload_kind": {
+          "enum": [
+            "table",
+            "blob"
+          ],
+          "title": "Output Payload Kind",
+          "type": "string"
+        },
+        "output_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Output Schema Id",
+          "type": "string"
+        },
+        "output_schema_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Output Schema Sha256",
+          "type": "string"
+        },
+        "parameter_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Parameter Schema Id",
+          "type": "string"
+        },
+        "parameter_schema_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Parameter Schema Sha256",
+          "type": "string"
+        },
+        "provider_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "provider_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Provider Version",
+          "type": "string"
+        },
+        "python_runtime": {
+          "$ref": "#/$defs/PythonRuntimeIdentity"
+        },
+        "resource_members": {
+          "items": {
+            "$ref": "#/$defs/ContentMemberIdentity"
+          },
+          "title": "Resource Members",
+          "type": "array"
+        }
+      },
+      "required": [
+        "provider_id",
+        "provider_version",
+        "api_version",
+        "factory_module",
+        "factory_symbol",
+        "allowed_package_namespace",
+        "definition_fingerprint",
+        "parameter_schema_id",
+        "parameter_schema_sha256",
+        "output_schema_id",
+        "output_schema_sha256",
+        "artifact_kind",
+        "output_payload_kind",
+        "implementation_members",
+        "resource_members",
+        "python_runtime",
+        "numeric_runtimes",
+        "implementation_digest"
+      ],
+      "title": "PreprocessingRegistryEntry",
+      "type": "object"
+    },
+    "PythonRuntimeIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "cache_tag": {
+          "title": "Cache Tag",
+          "type": "string"
+        },
+        "implementation_name": {
+          "title": "Implementation Name",
+          "type": "string"
+        },
+        "soabi": {
+          "title": "Soabi",
+          "type": "string"
+        },
+        "version": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "minimum": 0,
+              "type": "integer"
+            }
+          ],
+          "title": "Version",
+          "type": "array"
+        }
+      },
+      "required": [
+        "implementation_name",
+        "version",
+        "cache_tag",
+        "soabi"
+      ],
+      "title": "PythonRuntimeIdentity",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:anchor-runtime-registry:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_id": {
+      "const": "anchor-runtime-registry",
+      "default": "anchor-runtime-registry",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/PluginRegistryEntry"
+      },
+      "title": "Entries",
+      "type": "array"
+    },
+    "preprocessors": {
+      "items": {
+        "$ref": "#/$defs/PreprocessingRegistryEntry"
+      },
+      "title": "Preprocessors",
+      "type": "array"
+    }
+  },
+  "required": [
+    "entries",
+    "preprocessors"
+  ],
+  "title": "Pilot Assessment Anchor Runtime Registry 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "plugin and preprocessing entries use canonical unique registry keys"
+  ]
+}

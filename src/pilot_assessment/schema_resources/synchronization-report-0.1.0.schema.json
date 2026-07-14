@@ -1,0 +1,3537 @@
+{
+  "$defs": {
+    "AnnotationSynchronizationResult": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "properties": {
+              "baseline_count": {
+                "type": "null"
+              },
+              "event_count": {
+                "type": "null"
+              },
+              "phase_count": {
+                "type": "null"
+              },
+              "synthetic_semantics_unvalidated": {
+                "type": "null"
+              },
+              "unannotated_intervals": {
+                "maxItems": 0
+              }
+            },
+            "type": "object"
+          },
+          "if": {
+            "properties": {
+              "synchronization_status": {
+                "const": "aligned"
+              }
+            },
+            "required": [
+              "synchronization_status"
+            ],
+            "type": "object"
+          },
+          "then": {
+            "properties": {
+              "baseline_count": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "baseline_schema_id": {
+                "type": "string"
+              },
+              "event_count": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_schema_id": {
+                "type": "string"
+              },
+              "phase_count": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "phase_schema_id": {
+                "type": "string"
+              },
+              "revision": {
+                "type": "string"
+              },
+              "synthetic_semantics_unvalidated": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "revision",
+              "phase_schema_id",
+              "event_schema_id",
+              "baseline_schema_id",
+              "phase_count",
+              "event_count",
+              "baseline_count",
+              "synthetic_semantics_unvalidated"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "properties": {
+        "baseline_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Baseline Count"
+        },
+        "baseline_schema_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Baseline Schema Id"
+        },
+        "event_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Event Count"
+        },
+        "event_schema_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Event Schema Id"
+        },
+        "issues": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/DomainErrorData"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "phase_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Phase Count"
+        },
+        "phase_schema_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Phase Schema Id"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision"
+        },
+        "synchronization_status": {
+          "enum": [
+            "aligned",
+            "not_attempted",
+            "invalid",
+            "unsupported"
+          ],
+          "type": "string"
+        },
+        "synthetic_semantics_unvalidated": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Synthetic Semantics Unvalidated"
+        },
+        "unannotated_intervals": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/SessionInterval"
+          },
+          "title": "Unannotated Intervals",
+          "type": "array"
+        }
+      },
+      "required": [
+        "synchronization_status"
+      ],
+      "title": "AnnotationSynchronizationResult",
+      "type": "object"
+    },
+    "ClockMappingSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "clock_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Clock Id",
+          "type": "string"
+        },
+        "declaration_consistent": {
+          "title": "Declaration Consistent",
+          "type": "boolean"
+        },
+        "drift_ppm": {
+          "title": "Drift Ppm",
+          "type": "number"
+        },
+        "method": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Method",
+          "type": "string"
+        },
+        "offset_ns": {
+          "maximum": 9223372036854775807,
+          "minimum": -9223372036854775808,
+          "title": "Offset Ns",
+          "type": "integer"
+        },
+        "residual_max_ms": {
+          "minimum": 0.0,
+          "title": "Residual Max Ms",
+          "type": "number"
+        },
+        "residual_rms_ms": {
+          "minimum": 0.0,
+          "title": "Residual Rms Ms",
+          "type": "number"
+        },
+        "scale": {
+          "exclusiveMinimum": 0.0,
+          "title": "Scale",
+          "type": "number"
+        }
+      },
+      "required": [
+        "clock_id",
+        "method",
+        "scale",
+        "offset_ns",
+        "drift_ppm",
+        "residual_rms_ms",
+        "residual_max_ms",
+        "declaration_consistent"
+      ],
+      "title": "ClockMappingSummary",
+      "type": "object"
+    },
+    "DomainErrorData": {
+      "additionalProperties": false,
+      "properties": {
+        "diagnostics": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Diagnostics",
+          "type": "object"
+        },
+        "error_code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Error Code",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "field_or_path": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Field Or Path"
+        },
+        "message": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "node_or_anchor_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Node Or Anchor Id"
+        },
+        "recoverable": {
+          "title": "Recoverable",
+          "type": "boolean"
+        },
+        "remediation": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Remediation",
+          "type": "string"
+        },
+        "request_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Request Id"
+        },
+        "severity": {
+          "$ref": "#/$defs/ErrorSeverity"
+        },
+        "trace_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trace Id"
+        },
+        "transaction_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Transaction Id"
+        }
+      },
+      "required": [
+        "error_code",
+        "severity",
+        "recoverable",
+        "message",
+        "remediation"
+      ],
+      "title": "DomainErrorData",
+      "type": "object"
+    },
+    "ErrorSeverity": {
+      "enum": [
+        "info",
+        "warning",
+        "error",
+        "fatal"
+      ],
+      "title": "ErrorSeverity",
+      "type": "string"
+    },
+    "IntervalTemporalArtifactMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "after_session_rows": {
+          "minimum": 0,
+          "title": "After Session Rows",
+          "type": "integer"
+        },
+        "aligned_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "-aligned-v0\\.1$",
+          "title": "Aligned Schema Id",
+          "type": "string"
+        },
+        "artifact_role": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Artifact Role",
+          "type": "string"
+        },
+        "before_session_rows": {
+          "minimum": 0,
+          "title": "Before Session Rows",
+          "type": "integer"
+        },
+        "binding_mode": {
+          "const": "interval",
+          "title": "Binding Mode",
+          "type": "string"
+        },
+        "first_start_t_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": -9223372036854775808,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "First Start T Ns"
+        },
+        "fully_in_session_rows": {
+          "minimum": 0,
+          "title": "Fully In Session Rows",
+          "type": "integer"
+        },
+        "interpolated_rows": {
+          "const": 0,
+          "default": 0,
+          "title": "Interpolated Rows",
+          "type": "integer"
+        },
+        "last_end_t_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": -9223372036854775808,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last End T Ns"
+        },
+        "overlapping_session_rows": {
+          "minimum": 0,
+          "title": "Overlapping Session Rows",
+          "type": "integer"
+        },
+        "source_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Source Schema Id",
+          "type": "string"
+        },
+        "total_rows": {
+          "minimum": 0,
+          "title": "Total Rows",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifact_role",
+        "binding_mode",
+        "source_schema_id",
+        "aligned_schema_id",
+        "total_rows",
+        "before_session_rows",
+        "after_session_rows",
+        "overlapping_session_rows",
+        "fully_in_session_rows"
+      ],
+      "title": "IntervalTemporalArtifactMetrics",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "PointTemporalArtifactMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "after_session_rows": {
+          "minimum": 0,
+          "title": "After Session Rows",
+          "type": "integer"
+        },
+        "aligned_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "-aligned-v0\\.1$",
+          "title": "Aligned Schema Id",
+          "type": "string"
+        },
+        "artifact_role": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Artifact Role",
+          "type": "string"
+        },
+        "before_session_rows": {
+          "minimum": 0,
+          "title": "Before Session Rows",
+          "type": "integer"
+        },
+        "binding_mode": {
+          "enum": [
+            "point",
+            "inherit"
+          ],
+          "title": "Binding Mode",
+          "type": "string"
+        },
+        "duplicate_timestamp_groups": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Duplicate Timestamp Groups",
+          "type": "integer"
+        },
+        "duplicate_timestamp_rows": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Duplicate Timestamp Rows",
+          "type": "integer"
+        },
+        "first_mapped_t_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": -9223372036854775808,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "First Mapped T Ns"
+        },
+        "gap_count": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Gap Count",
+          "type": "integer"
+        },
+        "gap_threshold_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gap Threshold Ns"
+        },
+        "in_session_end_t_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "In Session End T Ns"
+        },
+        "in_session_rows": {
+          "minimum": 0,
+          "title": "In Session Rows",
+          "type": "integer"
+        },
+        "in_session_span_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "In Session Span Ns"
+        },
+        "in_session_start_t_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "In Session Start T Ns"
+        },
+        "interpolated_rows": {
+          "const": 0,
+          "default": 0,
+          "title": "Interpolated Rows",
+          "type": "integer"
+        },
+        "last_mapped_t_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": -9223372036854775808,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Mapped T Ns"
+        },
+        "max_gap_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Gap Ns"
+        },
+        "median_period_ns": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Median Period Ns"
+        },
+        "session_span_ratio": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Span Ratio"
+        },
+        "source_schema_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Source Schema Id",
+          "type": "string"
+        },
+        "total_rows": {
+          "minimum": 0,
+          "title": "Total Rows",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifact_role",
+        "binding_mode",
+        "source_schema_id",
+        "aligned_schema_id",
+        "total_rows",
+        "in_session_rows",
+        "before_session_rows",
+        "after_session_rows"
+      ],
+      "title": "PointTemporalArtifactMetrics",
+      "type": "object"
+    },
+    "SceneGazeMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "bounded_invalid_gaze_sample_ids": {
+          "default": [],
+          "items": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "title": "Bounded Invalid Gaze Sample Ids",
+          "type": "array"
+        },
+        "evaluated_in_session_gaze_rows": {
+          "minimum": 0,
+          "title": "Evaluated In Session Gaze Rows",
+          "type": "integer"
+        },
+        "gaze_minus_frame_start_max_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gaze Minus Frame Start Max Ns"
+        },
+        "gaze_minus_frame_start_min_ns": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gaze Minus Frame Start Min Ns"
+        },
+        "invalid_association_count": {
+          "minimum": 0,
+          "title": "Invalid Association Count",
+          "type": "integer"
+        },
+        "valid_association_rows": {
+          "minimum": 0,
+          "title": "Valid Association Rows",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "evaluated_in_session_gaze_rows",
+        "valid_association_rows",
+        "invalid_association_count"
+      ],
+      "title": "SceneGazeMetrics",
+      "type": "object"
+    },
+    "SessionInterval": {
+      "additionalProperties": false,
+      "properties": {
+        "end_t_ns": {
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "End T Ns",
+          "type": "integer"
+        },
+        "start_t_ns": {
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "Start T Ns",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start_t_ns",
+        "end_t_ns"
+      ],
+      "title": "SessionInterval",
+      "type": "object"
+    },
+    "SessionWindow": {
+      "additionalProperties": false,
+      "properties": {
+        "end_t_ns": {
+          "maximum": 4503599627370495,
+          "minimum": 1,
+          "title": "End T Ns",
+          "type": "integer"
+        },
+        "source": {
+          "const": "master-clock-x-mapped-coverage-v1",
+          "title": "Source",
+          "type": "string"
+        },
+        "start_t_ns": {
+          "const": 0,
+          "default": 0,
+          "title": "Start T Ns",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "end_t_ns",
+        "source"
+      ],
+      "title": "SessionWindow",
+      "type": "object"
+    },
+    "StreamReadiness": {
+      "enum": [
+        "ready",
+        "unavailable",
+        "invalid",
+        "unsupported",
+        "not_applicable"
+      ],
+      "title": "StreamReadiness",
+      "type": "string"
+    },
+    "StreamStatus": {
+      "enum": [
+        "present",
+        "export_pending",
+        "missing",
+        "invalid",
+        "not_applicable"
+      ],
+      "title": "StreamStatus",
+      "type": "string"
+    },
+    "StreamSynchronizationResult": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "not": {
+            "properties": {
+              "synchronization_status": {
+                "const": "deferred_model_bundle_resolution"
+              }
+            },
+            "required": [
+              "synchronization_status"
+            ],
+            "type": "object"
+          }
+        },
+        {
+          "else": {
+            "allOf": [
+              {
+                "properties": {
+                  "aligned_schema_id": {
+                    "type": "null"
+                  },
+                  "artifacts": {
+                    "maxProperties": 0
+                  }
+                },
+                "type": "object"
+              },
+              {
+                "else": {
+                  "properties": {
+                    "scene_gaze_metrics": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "if": {
+                  "properties": {
+                    "modality": {
+                      "const": "G"
+                    },
+                    "synchronization_status": {
+                      "const": "invalid"
+                    }
+                  },
+                  "required": [
+                    "modality",
+                    "synchronization_status"
+                  ],
+                  "type": "object"
+                }
+              }
+            ]
+          },
+          "if": {
+            "properties": {
+              "synchronization_status": {
+                "const": "aligned"
+              }
+            },
+            "required": [
+              "synchronization_status"
+            ],
+            "type": "object"
+          },
+          "then": {
+            "allOf": [
+              {
+                "properties": {
+                  "aligned_schema_id": {
+                    "pattern": "-aligned-v0\\.1$",
+                    "type": "string"
+                  },
+                  "artifacts": {
+                    "minProperties": 1
+                  },
+                  "clock": {
+                    "allOf": [
+                      {
+                        "$ref": "#/$defs/ClockMappingSummary"
+                      },
+                      {
+                        "properties": {
+                          "declaration_consistent": {
+                            "const": true
+                          }
+                        },
+                        "required": [
+                          "declaration_consistent"
+                        ],
+                        "type": "object"
+                      }
+                    ]
+                  },
+                  "declared_status": {
+                    "const": "present"
+                  },
+                  "input_readiness": {
+                    "const": "ready"
+                  },
+                  "source_schema_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "declared_status",
+                  "input_readiness",
+                  "clock",
+                  "source_schema_id",
+                  "aligned_schema_id",
+                  "artifacts"
+                ],
+                "type": "object"
+              },
+              {
+                "else": {
+                  "properties": {
+                    "scene_gaze_metrics": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "if": {
+                  "properties": {
+                    "modality": {
+                      "const": "G"
+                    }
+                  },
+                  "required": [
+                    "modality"
+                  ],
+                  "type": "object"
+                },
+                "then": {
+                  "properties": {
+                    "scene_gaze_metrics": {
+                      "$ref": "#/$defs/SceneGazeMetrics"
+                    }
+                  },
+                  "required": [
+                    "scene_gaze_metrics"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "aligned_schema_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Aligned Schema Id"
+        },
+        "artifacts": {
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "discriminator": {
+                "mapping": {
+                  "inherit": "#/$defs/PointTemporalArtifactMetrics",
+                  "interval": "#/$defs/IntervalTemporalArtifactMetrics",
+                  "point": "#/$defs/PointTemporalArtifactMetrics"
+                },
+                "propertyName": "binding_mode"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/PointTemporalArtifactMetrics"
+                },
+                {
+                  "$ref": "#/$defs/IntervalTemporalArtifactMetrics"
+                }
+              ]
+            }
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "title": "Artifacts",
+          "type": "object"
+        },
+        "clock": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClockMappingSummary"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "declared_status": {
+          "$ref": "#/$defs/StreamStatus"
+        },
+        "input_readiness": {
+          "$ref": "#/$defs/StreamReadiness"
+        },
+        "issues": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/DomainErrorData"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "modality": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Modality",
+          "type": "string"
+        },
+        "required_for_import": {
+          "title": "Required For Import",
+          "type": "boolean"
+        },
+        "scene_gaze_metrics": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SceneGazeMetrics"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source_schema_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Schema Id"
+        },
+        "synchronization_status": {
+          "$ref": "#/$defs/SynchronizationItemStatus"
+        }
+      },
+      "required": [
+        "modality",
+        "declared_status",
+        "required_for_import",
+        "input_readiness",
+        "synchronization_status"
+      ],
+      "title": "StreamSynchronizationResult",
+      "type": "object"
+    },
+    "SynchronizationDisposition": {
+      "enum": [
+        "ready",
+        "ready_partial",
+        "blocked"
+      ],
+      "title": "SynchronizationDisposition",
+      "type": "string"
+    },
+    "SynchronizationItemStatus": {
+      "enum": [
+        "aligned",
+        "not_attempted",
+        "unavailable",
+        "invalid",
+        "unsupported",
+        "not_applicable",
+        "deferred_model_bundle_resolution"
+      ],
+      "title": "SynchronizationItemStatus",
+      "type": "string"
+    },
+    "SynchronizationPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "clock_consistency_tolerance_ppm": {
+          "const": 1e-06,
+          "default": 1e-06,
+          "title": "Clock Consistency Tolerance Ppm",
+          "type": "number"
+        },
+        "contract_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "gap_detection_multiplier": {
+          "const": 5.0,
+          "default": 5.0,
+          "title": "Gap Detection Multiplier",
+          "type": "number"
+        },
+        "policy_id": {
+          "const": "native-alignment-engineering-v0.1",
+          "default": "native-alignment-engineering-v0.1",
+          "title": "Policy Id",
+          "type": "string"
+        }
+      },
+      "title": "SynchronizationPolicy",
+      "type": "object"
+    },
+    "SyntheticSourceProvenance": {
+      "additionalProperties": false,
+      "description": "Visible D-012 provenance for software-only synthetic or hybrid bundles.",
+      "properties": {
+        "formal_assessment_supported": {
+          "const": false,
+          "title": "Formal Assessment Supported",
+          "type": "boolean"
+        },
+        "generator_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Generator Id",
+          "type": "string"
+        },
+        "lock_fingerprint": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Lock Fingerprint",
+          "type": "string"
+        },
+        "provenance_scope": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Provenance Scope",
+          "type": "string"
+        },
+        "scientific_validation_status": {
+          "const": "not_supported",
+          "title": "Scientific Validation Status",
+          "type": "string"
+        },
+        "seed": {
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "source_xu_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Source Xu Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "generator_id",
+        "seed",
+        "scientific_validation_status",
+        "source_xu_sha256",
+        "lock_fingerprint",
+        "provenance_scope",
+        "formal_assessment_supported"
+      ],
+      "title": "SyntheticSourceProvenance",
+      "type": "object"
+    },
+    "TaskReferenceSynchronizationResult": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "allOf": [
+              {
+                "not": {
+                  "properties": {
+                    "synchronization_status": {
+                      "const": "deferred_model_bundle_resolution"
+                    }
+                  },
+                  "required": [
+                    "synchronization_status"
+                  ],
+                  "type": "object"
+                }
+              },
+              {
+                "properties": {
+                  "declared_status": {
+                    "not": {
+                      "type": "null"
+                    }
+                  },
+                  "input_readiness": {
+                    "not": {
+                      "type": "null"
+                    }
+                  },
+                  "required_for_import": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "declared_status",
+                  "required_for_import",
+                  "input_readiness"
+                ],
+                "type": "object"
+              },
+              {
+                "else": {
+                  "properties": {
+                    "aligned_schema_id": {
+                      "type": "null"
+                    },
+                    "artifacts": {
+                      "maxProperties": 0
+                    }
+                  },
+                  "type": "object"
+                },
+                "if": {
+                  "properties": {
+                    "synchronization_status": {
+                      "const": "aligned"
+                    }
+                  },
+                  "required": [
+                    "synchronization_status"
+                  ],
+                  "type": "object"
+                },
+                "then": {
+                  "properties": {
+                    "aligned_schema_id": {
+                      "pattern": "-aligned-v0\\.1$",
+                      "type": "string"
+                    },
+                    "artifacts": {
+                      "minProperties": 1
+                    },
+                    "clock": {
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/ClockMappingSummary"
+                        },
+                        {
+                          "properties": {
+                            "declaration_consistent": {
+                              "const": true
+                            }
+                          },
+                          "required": [
+                            "declaration_consistent"
+                          ],
+                          "type": "object"
+                        }
+                      ]
+                    },
+                    "declared_status": {
+                      "const": "present"
+                    },
+                    "input_readiness": {
+                      "const": "ready"
+                    },
+                    "source_checksums": {
+                      "minProperties": 1
+                    },
+                    "source_schema_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "clock",
+                    "source_schema_id",
+                    "aligned_schema_id",
+                    "source_checksums",
+                    "artifacts"
+                  ],
+                  "type": "object"
+                }
+              }
+            ]
+          },
+          "if": {
+            "properties": {
+              "source": {
+                "const": "model_bundle"
+              }
+            },
+            "required": [
+              "source"
+            ],
+            "type": "object"
+          },
+          "then": {
+            "properties": {
+              "aligned_schema_id": {
+                "type": "null"
+              },
+              "artifacts": {
+                "maxProperties": 0
+              },
+              "clock": {
+                "type": "null"
+              },
+              "declared_status": {
+                "type": "null"
+              },
+              "input_readiness": {
+                "type": "null"
+              },
+              "required_for_import": {
+                "type": "null"
+              },
+              "source_checksums": {
+                "maxProperties": 0
+              },
+              "source_schema_id": {
+                "type": "null"
+              },
+              "synchronization_status": {
+                "const": "deferred_model_bundle_resolution"
+              }
+            },
+            "type": "object"
+          }
+        }
+      ],
+      "properties": {
+        "aligned_schema_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Aligned Schema Id"
+        },
+        "artifacts": {
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "discriminator": {
+                "mapping": {
+                  "inherit": "#/$defs/PointTemporalArtifactMetrics",
+                  "interval": "#/$defs/IntervalTemporalArtifactMetrics",
+                  "point": "#/$defs/PointTemporalArtifactMetrics"
+                },
+                "propertyName": "binding_mode"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/PointTemporalArtifactMetrics"
+                },
+                {
+                  "$ref": "#/$defs/IntervalTemporalArtifactMetrics"
+                }
+              ]
+            }
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "title": "Artifacts",
+          "type": "object"
+        },
+        "clock": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClockMappingSummary"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "declared_status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StreamStatus"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "input_readiness": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StreamReadiness"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "issues": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/DomainErrorData"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "reference_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Reference Id",
+          "type": "string"
+        },
+        "required_for_import": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Required For Import"
+        },
+        "source": {
+          "enum": [
+            "bundle",
+            "model_bundle"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "source_checksums": {
+          "patternProperties": {
+            "^[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$": {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9A-Fa-f]{64}$",
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Source Checksums",
+          "type": "object"
+        },
+        "source_schema_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Schema Id"
+        },
+        "synchronization_status": {
+          "$ref": "#/$defs/SynchronizationItemStatus"
+        }
+      },
+      "required": [
+        "reference_id",
+        "source",
+        "synchronization_status"
+      ],
+      "title": "TaskReferenceSynchronizationResult",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:synchronization-report:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "synthetic_provenance": {
+            "type": "null"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "source_classification": {
+            "const": "synthetic-test-data"
+          }
+        },
+        "required": [
+          "source_classification"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "synthetic_provenance": {
+            "$ref": "#/$defs/SyntheticSourceProvenance"
+          }
+        }
+      }
+    },
+    {
+      "oneOf": [
+        {
+          "allOf": [
+            {
+              "anyOf": [
+                {
+                  "properties": {
+                    "session_window": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "session_window"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "ECG": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": true
+                            },
+                            "synchronization_status": {
+                              "not": {
+                                "const": "aligned"
+                              }
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "ECG"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "EEG": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": true
+                            },
+                            "synchronization_status": {
+                              "not": {
+                                "const": "aligned"
+                              }
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "EEG"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "G": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": true
+                            },
+                            "synchronization_status": {
+                              "not": {
+                                "const": "aligned"
+                              }
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "G"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "I": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": true
+                            },
+                            "synchronization_status": {
+                              "not": {
+                                "const": "aligned"
+                              }
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "I"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "U": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": true
+                            },
+                            "synchronization_status": {
+                              "not": {
+                                "const": "aligned"
+                              }
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "U"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "X": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": true
+                            },
+                            "synchronization_status": {
+                              "not": {
+                                "const": "aligned"
+                              }
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "X"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "pilot_camera": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": true
+                            },
+                            "synchronization_status": {
+                              "not": {
+                                "const": "aligned"
+                              }
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "pilot_camera"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "annotation_result": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "properties": {
+                            "synchronization_status": {
+                              "not": {
+                                "const": "aligned"
+                              }
+                            }
+                          },
+                          "required": [
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "annotation_result"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "task_reference_result": {
+                      "properties": {
+                        "required_for_import": {
+                          "const": true
+                        },
+                        "source": {
+                          "const": "bundle"
+                        },
+                        "synchronization_status": {
+                          "not": {
+                            "const": "aligned"
+                          }
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "required_for_import",
+                        "synchronization_status"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "task_reference_result"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "global_issues": {
+                      "contains": {
+                        "properties": {
+                          "error_code": {
+                            "enum": [
+                              "SOURCE_CHANGED_DURING_SYNCHRONIZATION",
+                              "SYNCHRONIZATION_INPUT_BLOCKED",
+                              "SYNCHRONIZATION_INTERNAL_ERROR"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "error_code"
+                        ],
+                        "type": "object"
+                      }
+                    }
+                  },
+                  "required": [
+                    "global_issues"
+                  ],
+                  "type": "object"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "can_continue_to_anchor_availability": {
+              "const": false
+            },
+            "disposition": {
+              "const": "blocked"
+            }
+          },
+          "required": [
+            "disposition",
+            "can_continue_to_anchor_availability"
+          ],
+          "type": "object"
+        },
+        {
+          "allOf": [
+            {
+              "not": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "session_window": {
+                        "type": "null"
+                      }
+                    },
+                    "required": [
+                      "session_window"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "ECG": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "ECG"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "EEG": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "EEG"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "G": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "G"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "I": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "I"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "U": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "U"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "X": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "X"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "pilot_camera": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "pilot_camera"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "annotation_result": {
+                        "anyOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "properties": {
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "annotation_result"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "task_reference_result": {
+                        "properties": {
+                          "required_for_import": {
+                            "const": true
+                          },
+                          "source": {
+                            "const": "bundle"
+                          },
+                          "synchronization_status": {
+                            "not": {
+                              "const": "aligned"
+                            }
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "required_for_import",
+                          "synchronization_status"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "task_reference_result"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "global_issues": {
+                        "contains": {
+                          "properties": {
+                            "error_code": {
+                              "enum": [
+                                "SOURCE_CHANGED_DURING_SYNCHRONIZATION",
+                                "SYNCHRONIZATION_INPUT_BLOCKED",
+                                "SYNCHRONIZATION_INTERNAL_ERROR"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "error_code"
+                          ],
+                          "type": "object"
+                        }
+                      }
+                    },
+                    "required": [
+                      "global_issues"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            {
+              "anyOf": [
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "ECG": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": false
+                            },
+                            "synchronization_status": {
+                              "enum": [
+                                "not_attempted",
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "ECG"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "EEG": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": false
+                            },
+                            "synchronization_status": {
+                              "enum": [
+                                "not_attempted",
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "EEG"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "G": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": false
+                            },
+                            "synchronization_status": {
+                              "enum": [
+                                "not_attempted",
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "G"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "I": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": false
+                            },
+                            "synchronization_status": {
+                              "enum": [
+                                "not_attempted",
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "I"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "U": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": false
+                            },
+                            "synchronization_status": {
+                              "enum": [
+                                "not_attempted",
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "U"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "X": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": false
+                            },
+                            "synchronization_status": {
+                              "enum": [
+                                "not_attempted",
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "X"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "stream_results": {
+                      "properties": {
+                        "pilot_camera": {
+                          "properties": {
+                            "required_for_import": {
+                              "const": false
+                            },
+                            "synchronization_status": {
+                              "enum": [
+                                "not_attempted",
+                                "unavailable",
+                                "invalid",
+                                "unsupported"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "required_for_import",
+                            "synchronization_status"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "pilot_camera"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "stream_results"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "task_reference_result": {
+                      "properties": {
+                        "required_for_import": {
+                          "const": false
+                        },
+                        "source": {
+                          "const": "bundle"
+                        },
+                        "synchronization_status": {
+                          "enum": [
+                            "not_attempted",
+                            "unavailable",
+                            "invalid",
+                            "unsupported"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "required_for_import",
+                        "synchronization_status"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "task_reference_result"
+                  ],
+                  "type": "object"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "can_continue_to_anchor_availability": {
+              "const": true
+            },
+            "disposition": {
+              "const": "ready_partial"
+            },
+            "session_window": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "session_window",
+            "disposition",
+            "can_continue_to_anchor_availability"
+          ],
+          "type": "object"
+        },
+        {
+          "allOf": [
+            {
+              "not": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "session_window": {
+                        "type": "null"
+                      }
+                    },
+                    "required": [
+                      "session_window"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "ECG": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "ECG"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "EEG": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "EEG"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "G": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "G"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "I": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "I"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "U": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "U"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "X": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "X"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "pilot_camera": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": true
+                              },
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "pilot_camera"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "annotation_result": {
+                        "anyOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "properties": {
+                              "synchronization_status": {
+                                "not": {
+                                  "const": "aligned"
+                                }
+                              }
+                            },
+                            "required": [
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "annotation_result"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "task_reference_result": {
+                        "properties": {
+                          "required_for_import": {
+                            "const": true
+                          },
+                          "source": {
+                            "const": "bundle"
+                          },
+                          "synchronization_status": {
+                            "not": {
+                              "const": "aligned"
+                            }
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "required_for_import",
+                          "synchronization_status"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "task_reference_result"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "global_issues": {
+                        "contains": {
+                          "properties": {
+                            "error_code": {
+                              "enum": [
+                                "SOURCE_CHANGED_DURING_SYNCHRONIZATION",
+                                "SYNCHRONIZATION_INPUT_BLOCKED",
+                                "SYNCHRONIZATION_INTERNAL_ERROR"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "error_code"
+                          ],
+                          "type": "object"
+                        }
+                      }
+                    },
+                    "required": [
+                      "global_issues"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            {
+              "not": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "ECG": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": false
+                              },
+                              "synchronization_status": {
+                                "enum": [
+                                  "not_attempted",
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "ECG"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "EEG": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": false
+                              },
+                              "synchronization_status": {
+                                "enum": [
+                                  "not_attempted",
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "EEG"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "G": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": false
+                              },
+                              "synchronization_status": {
+                                "enum": [
+                                  "not_attempted",
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "G"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "I": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": false
+                              },
+                              "synchronization_status": {
+                                "enum": [
+                                  "not_attempted",
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "I"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "U": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": false
+                              },
+                              "synchronization_status": {
+                                "enum": [
+                                  "not_attempted",
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "U"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "X": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": false
+                              },
+                              "synchronization_status": {
+                                "enum": [
+                                  "not_attempted",
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "X"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "stream_results": {
+                        "properties": {
+                          "pilot_camera": {
+                            "properties": {
+                              "required_for_import": {
+                                "const": false
+                              },
+                              "synchronization_status": {
+                                "enum": [
+                                  "not_attempted",
+                                  "unavailable",
+                                  "invalid",
+                                  "unsupported"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "required_for_import",
+                              "synchronization_status"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "pilot_camera"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "stream_results"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "task_reference_result": {
+                        "properties": {
+                          "required_for_import": {
+                            "const": false
+                          },
+                          "source": {
+                            "const": "bundle"
+                          },
+                          "synchronization_status": {
+                            "enum": [
+                              "not_attempted",
+                              "unavailable",
+                              "invalid",
+                              "unsupported"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "required_for_import",
+                          "synchronization_status"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "task_reference_result"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "can_continue_to_anchor_availability": {
+              "const": true
+            },
+            "disposition": {
+              "const": "ready"
+            },
+            "session_window": {
+              "not": {
+                "type": "null"
+              }
+            }
+          },
+          "required": [
+            "session_window",
+            "disposition",
+            "can_continue_to_anchor_availability"
+          ],
+          "type": "object"
+        }
+      ]
+    }
+  ],
+  "properties": {
+    "annotation_result": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AnnotationSynchronizationResult"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "binding_catalog_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Binding Catalog Fingerprint",
+      "type": "string"
+    },
+    "can_continue_to_anchor_availability": {
+      "title": "Can Continue To Anchor Availability",
+      "type": "boolean"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "disposition": {
+      "$ref": "#/$defs/SynchronizationDisposition"
+    },
+    "formal_run_authorized": {
+      "const": false
+    },
+    "global_issues": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/DomainErrorData"
+      },
+      "title": "Global Issues",
+      "type": "array"
+    },
+    "policy": {
+      "$ref": "#/$defs/SynchronizationPolicy"
+    },
+    "policy_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Policy Fingerprint",
+      "type": "string"
+    },
+    "session_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "session_window": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SessionWindow"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source_classification": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Source Classification",
+      "type": "string"
+    },
+    "source_snapshot_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Source Snapshot Fingerprint",
+      "type": "string"
+    },
+    "stream_results": {
+      "additionalProperties": false,
+      "properties": {
+        "ECG": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/StreamSynchronizationResult"
+            },
+            {
+              "properties": {
+                "modality": {
+                  "const": "ECG"
+                }
+              },
+              "required": [
+                "modality"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "EEG": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/StreamSynchronizationResult"
+            },
+            {
+              "properties": {
+                "modality": {
+                  "const": "EEG"
+                }
+              },
+              "required": [
+                "modality"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "G": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/StreamSynchronizationResult"
+            },
+            {
+              "properties": {
+                "modality": {
+                  "const": "G"
+                }
+              },
+              "required": [
+                "modality"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "I": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/StreamSynchronizationResult"
+            },
+            {
+              "properties": {
+                "modality": {
+                  "const": "I"
+                }
+              },
+              "required": [
+                "modality"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "U": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/StreamSynchronizationResult"
+            },
+            {
+              "properties": {
+                "modality": {
+                  "const": "U"
+                }
+              },
+              "required": [
+                "modality"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "X": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/StreamSynchronizationResult"
+            },
+            {
+              "properties": {
+                "modality": {
+                  "const": "X"
+                }
+              },
+              "required": [
+                "modality"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "pilot_camera": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/StreamSynchronizationResult"
+            },
+            {
+              "properties": {
+                "modality": {
+                  "const": "pilot_camera"
+                }
+              },
+              "required": [
+                "modality"
+              ],
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "required": [
+        "ECG",
+        "EEG",
+        "G",
+        "I",
+        "U",
+        "X",
+        "pilot_camera"
+      ],
+      "title": "Stream Results",
+      "type": "object"
+    },
+    "synchronization_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Synchronization Fingerprint",
+      "type": "string"
+    },
+    "synthetic_provenance": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SyntheticSourceProvenance"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "task_reference_result": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TaskReferenceSynchronizationResult"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "validation_scope": {
+      "const": "native_rate_session_time_alignment_v1",
+      "title": "Validation Scope",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract_version",
+    "validation_scope",
+    "session_id",
+    "source_snapshot_fingerprint",
+    "source_classification",
+    "synthetic_provenance",
+    "policy",
+    "policy_fingerprint",
+    "binding_catalog_fingerprint",
+    "session_window",
+    "disposition",
+    "can_continue_to_anchor_availability",
+    "formal_run_authorized",
+    "stream_results",
+    "task_reference_result",
+    "annotation_result",
+    "synchronization_fingerprint"
+  ],
+  "title": "Pilot Assessment Synchronization Report 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "artifact map keys equal artifact_role values",
+    "point and interval row partitions equal total_rows",
+    "mapped bounds, spans, duplicates, and gap statistics are internally consistent",
+    "session window end is at most the v0.1 exact-metrics bound",
+    "source and synchronization fingerprints are recomputed from canonical inputs"
+  ]
+}
