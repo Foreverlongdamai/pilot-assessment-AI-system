@@ -87,3 +87,41 @@
 | Package evidence | The fresh wheel contains exactly fourteen schema resources; all wheel/root/package members have matching SHA-256 values. The four legacy root schemas retain their frozen hashes |
 | Residual P2 | Fixed temporary names and concurrent exporter locking remain a development-tool hardening item; current serialized CLI use and failure rollback satisfy the Task 6 gate. Wheel-member assertions are acceptance evidence rather than a self-building unit test |
 | Release conclusion | M4-A contract/schema slice is complete; catalog resources and canonical identity remain Tasks 7–8. Production plugin count remains 0/18 and every M4 report remains non-formal |
+
+### AR-006 — M4 Task 7 Catalog and Resource Identity Amendment
+
+| Field | Record |
+|---|---|
+| Artifact | `specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md` plus the corresponding Task 7/12/13/14/18/20/31 replacement-plan closures |
+| Baseline | `9f1236d` with a docs-only amendment working tree; no Task 7 production code was claimed during design review |
+| Approval | The user explicitly approved the revision candidate and separately authorized intermediate M4–M6 designs to proceed as default-approved while resting, provided review evidence was saved and major boundary changes remained visible |
+| First internal findings | Independent read-only reviewers found non-unique parameter-schema serialization/fragments, incomplete scorer-annotation-to-DTO hashing, undefined O1/O5/O7 profile payloads, O6 selecting too broad a channel set, a not-applicable O6 empty-array conflict, duplicate mapping-to-channel calibration ambiguity, and missing implementation-plan owners |
+| Second internal findings | Review then found the literal property matrices still lacked exact per-property constraints, Task 12/13 did not yet schedule scorer/instance/profile compilation or runtime `jsonschema`, and mutable nested `ScorerPolicy`/plan JSON allowed a validation-to-use identity change |
+| Resolutions | Froze exact-18 catalog/dependency/artifact descriptors, six provider descriptors, 24 canonical parameter schemas with complete literal property matrices and raw-byte hashes, exact scorer shape/hash, O6 applicability-scoped materialization, seven-key O13 profiles, deep JSON snapshots, Task 12/13 validation owners, and versioned shared pure O1/O5/O7/movement/scorer kernel callables/tests |
+| Final internal result | Two independent final read-only reviews reported P0=0, P1=0, PASS; one explicitly reported no blocking P2. UTF-8/fence/diff checks were clean |
+| External review attempt | The authorized WSL Claude CLI check was attempted, but `claude --help` returned `claude: command not found` in the current WSL environment. No Fable5 or ultracode verdict was produced or claimed for this amendment |
+| Release conclusion | The amendment is accepted under the user's authorization and may drive Task 7 TDD. This approves resource/identity engineering defaults only; it does not implement a plugin, change a formula/golden, or establish scientific validity |
+
+### AR-007 — M4 Task 8 Canonical Fingerprint and Runtime Identity Amendment
+
+| Field | Record |
+|---|---|
+| Artifact | `specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md` plus replacement Task 8 identity callables/tests |
+| Baseline | Same `9f1236d` docs-only candidate sequence as AR-006; Task 8 code remained pending |
+| Approval | Covered by the user's 2026-07-13 default-approval authorization after saved independent review; no irreversible external action was taken |
+| Review focus | RFC 8785 input domain and typed framing; exact logical-table/reference/result/report payloads; scorer/profile hash separation; self-field rejection owners; Windows `SOABI`/`EXT_SUFFIX`; wheel `RECORD`; and two-install-root equality |
+| Findings closed | Added the safe integer range, complete row-array validation/order semantics, scorer-policy projection, algorithm-profile reuse of `parameter-snapshot`, exact-three-cell RECORD parsing, duplicate-key rejection, strict ABI tag grammar, code-point path ordering, self-field ownership, and one-build/two-venv root-independent proof |
+| Final internal result | An initial dedicated Task 8 review and the two later combined Task 7/8 final reviews found P0=0 and P1=0. The amendment and replacement plan agree on callable surface and deferred mismatch owners |
+| External review attempt | Same current WSL result as AR-006: Claude CLI unavailable, so no external final PASS or verified ultracode activation is claimed |
+| Release conclusion | The amendment is accepted and may drive Task 8 TDD after Task 7. Approval freezes byte identity only; catalog/runtime/artifact code and all later-owner rejection tests remain pending until their scheduled RED→GREEN gates |
+
+### AR-008 — M4 Task 7/8 Authority Migration Final Audit
+
+| Field | Record |
+|---|---|
+| Artifacts | Product README/overview/reference-model/validation/self-review/status/decisions, M4 main and targeted amendments, replacement plan, and this review ledger |
+| Audit focus | Accepted-state consistency; D-029/D-030 authority; Task 7/8 approval-versus-implementation boundary; exact O2 parameter/scorer projection; navigation and relative-link closure |
+| Initial result | One reviewer reported P1=1 because `04_REFERENCE_MODEL_V0_1.md` retained an old O2 example with editable algorithm parameters and a flattened scorer; it also reported P2=1 because the product overview omitted Task 7/8 amendments and this ledger. A separate reviewer found no P0/P1/P2 in the remaining status and authority migration |
+| Resolutions | Replaced the O2 example with an explicitly non-loadable resolved projection using `parameters={}`, fixed algorithm invariants, and the exact four-key scorer/five-key parameter shape; added Task 7/8 and review-ledger links to the product overview |
+| Final internal result | Targeted re-review PASS with P0=0, P1=0, P2=0; all overview-relative links resolved. The independent status audit also PASSed with Task 7/8 still unimplemented, 18/18 specified, 0/18 production plugins, and M4 not engineering-verified |
+| Release conclusion | The docs-only Task 7/8 authority migration is consistent and may be committed. Task 7 remains the next implementation task; no formula, threshold, golden number, production-plugin count, formal-run authorization, or scientific-validity claim changed |

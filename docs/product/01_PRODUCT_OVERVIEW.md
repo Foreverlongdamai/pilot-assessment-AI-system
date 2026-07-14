@@ -1,6 +1,6 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0 设计基线（M4 完整书面规格、轻量工作流验证修订、Task 3 Reference Candidate Binding 修订与 replacement plan 均已获批准；D-026–D-028 已接受；原实施计划已被取代；Task 0–6 已分别由 `bc544bf`、`f56365c`、`928e9a4`、`e054620`、`1528d09`、`b63d38b`、`93c4ddb` 完成，M4-A contract/schema slice 与 14 个 package schema resources 已实现，下一步为 Task 7 exact-18 catalog/parameter resources；catalog/canonical identity Task 7–8 尚未完成；18/18 specified、0/18 production plugins 已实现；M4 尚未 engineering verified，`formal_run_authorized=false`，无科学有效性声明）
+**文档状态：** 产品 v0 设计基线（M4 完整书面规格、轻量工作流验证、Task 3/7/8 定向修订与 replacement plan 均已获明确或授权默认批准；D-026–D-030 已接受；原实施计划已被取代；Task 0–6 已分别由 `bc544bf`、`f56365c`、`928e9a4`、`e054620`、`1528d09`、`b63d38b`、`93c4ddb` 完成，M4-A contract/schema slice 与 14 个 package schema resources 已实现，下一步为 Task 7 exact-18 catalog/parameter resources；Task 7/8 amendments 已批准但对应代码尚未完成；18/18 specified、0/18 production plugins 已实现；M4 尚未 engineering verified，`formal_run_authorized=false`，无科学有效性声明）
 **日期：** 2026-07-13
 **适用目录：** `pilot_assessment_system/`
 
@@ -227,5 +227,8 @@ v0 完成必须同时满足：
 - [M4 Anchor Calculation and Evidence Availability 原实施计划](./plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（历史上已批准，现已被取代且不得执行）
 - [M4 Lightweight Workflow Validation Amendment](./specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)（已批准）
 - [M4 Task 3 Reference Candidate Binding Amendment](./specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)（已于 2026-07-13 批准；D-028）
+- [M4 Task 7 Catalog/Resource Identity Amendment](./specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)（已于 2026-07-13 按授权默认批准；D-029；代码尚未完成）
+- [M4 Task 8 Canonical Fingerprint/Runtime Identity Amendment](./specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md)（已于 2026-07-13 按授权默认批准；D-030；代码尚未完成）
 - [M4 Anchor Calculation and Evidence Availability Replacement Implementation Plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已于 2026-07-13 批准并修订；Task 0–6 已完成，下一步为 Task 7 exact-18 catalog/parameter resources）
+- [M4 Autonomous Review Ledger](./reviews/2026-07-13-autonomous-review-ledger.md)（保存默认批准期间的独立复核证据与工具边界）
 - 既有后端方向稿：`docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md`

@@ -4,8 +4,8 @@
 |---|---|
 | 设计基线 | v0.2 |
 | 日期 | 2026-07-13 |
-| 设计状态 | 完整书面规格、轻量工作流验证修订及 [Task 3 Reference Candidate Binding 修订](2026-07-13-m4-task3-reference-candidate-binding-amendment.md) 均已于 2026-07-13 获用户批准；修订在各自取代范围内优先 |
-| 实现状态 | 18/18 已设计，0/18 production plugins 已实现；原 M4 实施计划已被轻量修订取代；replacement Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，Task 3 方案 A/D-028 已批准，下一步为修订后的 Task 3；M4 尚未 engineering verified |
+| 设计状态 | 完整书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](2026-07-13-m4-task7-catalog-resource-identity-amendment.md) 与 [Task 8 Canonical Fingerprint/Runtime Identity](2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订均已于 2026-07-13 获明确或授权默认批准；修订在各自取代范围内优先 |
+| 实现状态 | 18/18 已设计，0/18 production plugins 已实现；原 M4 实施计划已被轻量修订取代；replacement Task 0–6 已分别由 `bc544bf`、`f56365c`、`928e9a4`、`e054620`、`1528d09`、`b63d38b`、`93c4ddb` 完成，下一步为 Task 7；M4 尚未 engineering verified |
 | 上游 | M1 Session integrity + M2 Ingestion readiness + M3 native-rate synchronization |
 | 下游 | M5 ModelBundle/BN/CPT/inference；M6 formal run/persistence |
 | 正式运行授权 | `formal_run_authorized=false` |
@@ -323,7 +323,7 @@ event_results:
 derived_artifacts: []
 diagnostics: []
 provenance:
-  plugin_id: reference-O11-plugin
+  plugin_id: o11-disturbance-latency
   plugin_version: 0.1.0
   implementation_digest: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
   parameter_hash: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
@@ -440,20 +440,20 @@ reference catalog：
 | O2 | X、task reference、phase | 无 | tracking-error trace |
 | O3 | X、target、D→H、envelope | 无 | capture trace |
 | O4 | X、hover envelope/limits | 无 | stable-hover mask |
-| O5 | U、active channels、W_min | movement profile | movement events |
+| O5 | U、active channels、W_min | `movement-events-v1` preprocessing | movement events |
 | O6 | U、trim/endpoints/weights | 无 | RMS contribution trace |
-| O7 | U、active channels | movement profile | reversal events |
+| O7 | U、active channels | `movement-events-v1` preprocessing | reversal events |
 | O8 | 无新 raw stream | O1/O5 results | component trace |
-| O9 | U | O1/O4 masks + movement profile | micro-movement events |
-| O10 | X、event/envelope | event primitive | recovery events |
-| O11 | U、disturbance mapping | event primitive | response events |
-| O12 | X/U、effect mapping | event primitive | correction events |
-| O13 | X/U/ECG、phase | O1/O5/O7 profiles + H4 trace | joined coupling windows |
-| H1 | I/G、AOI、phase | gaze-AOI intervals | phase dwell |
-| H2 | I/G、critical event/AOI | fixation-v1 | event fixation trace |
-| H3 | I/G、AOI、phase | gaze-AOI intervals | phase off-task dwell |
-| H4 | ECG、baseline、phase | R-peak preprocessing | control-physio trace |
-| H5 | EEG、baseline/channel map、phase | EEG preprocessing | engagement trace |
+| O9 | U | O1/O4 masks + `movement-events-v1` preprocessing | micro-movement events |
+| O10 | X、event/envelope | 无注册 dependency；event primitive 是 plugin implementation helper | recovery events |
+| O11 | U、disturbance mapping | 无注册 dependency；event primitive 是 plugin implementation helper | response events |
+| O12 | X/U、effect mapping | 无注册 dependency；event primitive 是 plugin implementation helper | correction events |
+| O13 | X/U/ECG、phase | O1/O5/O7 profiles + required H4 result + optional H4 trace | joined coupling windows |
+| H1 | I/G、AOI、phase | `gaze-aoi-intervals-v1` preprocessing | phase dwell |
+| H2 | I/G、critical event/AOI | `fixation-intervals-v1` preprocessing | event fixation trace |
+| H3 | I/G、AOI、phase | `gaze-aoi-intervals-v1` preprocessing | phase off-task dwell |
+| H4 | ECG、baseline、phase | `control-physio-windows-v2` + `ecg-hr-trace-v1` preprocessing | control-physio trace |
+| H5 | EEG、baseline/channel map、phase | `eeg-engagement-windows-v1` preprocessing | engagement trace |
 
 `pilot_camera` 保持独立一等模态，但不是当前 18-anchor 的必需输入。未来插件可以先从 pilot_camera 生成 canonical head pose/G(t) 或新的 anchor。
 
@@ -699,8 +699,8 @@ O1 O2 O3 O4 O5 O6 O7 O10 O11 O12 H1 H2 H3 H4 H5
 
 Level 1:
 O8  <- O1/O5 result
-O9  <- O1/O4 artifact
-O13 <- O1/O5/O7 algorithm profile + H4 artifact
+O9  <- O1/O4 artifact + movement-events-v1 preprocessing
+O13 <- O1/O5/O7 algorithm profile + required H4 result + optional H4 artifact
 ~~~
 
 同 level 可并行；报告按 canonical anchor order，而不是完成顺序。一个 plugin 失败不停止独立节点；其真正下游为 dependency_missing。
@@ -824,7 +824,7 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 
 | 阶段 | 范围 | 可声称状态 |
 |---|---|---|
-| M4-A | 本规格、轻量验证修订、Task 3 Reference Candidate Binding 修订、D-021–D-028、AnchorResult v0.2、catalog/plan/report schema | 18/18 specified，0/18 implemented |
+| M4-A | 本规格、轻量验证、Task 3/7/8 定向修订、D-021–D-030、AnchorResult v0.2、catalog/plan/report schema 与 exact resource/canonical identity 合同 | 18/18 specified，0/18 implemented |
 | M4-B | registry、DAG、temporal kernel、artifact sink、fingerprint、fake-plugin tests | framework engineering-verified，0/18 plugins |
 | M4-C | O1–O7 | 7/18 software-verified |
 | M4-D | O8–O12 | 12/18 software-verified |
@@ -836,7 +836,7 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 
 ## 16. Documentation migration
 
-本节首先保留原 M4 规格在批准前执行 candidate alignment 的历史记录；当时只涉及 D-021–D-025，且不构成实现。2026-07-13 后续获批的轻量工作流验证修订又触发了第二次迁移：D-026/D-027、§1.1、§14.2–§14.4、§15/§17 和当前状态文档以轻量口径为准，原实施计划被取代；replacement plan 随后于同日单独获批。Task 3 Reference Candidate Binding 修订构成第三次定向迁移：D-028、§6、§8.1、§8.3、README、状态文档与 replacement Tasks 3/4/8/13/32/34/35 以该修订为准。Task 0–2 已完成，下一步为修订后的 Task 3。
+本节首先保留原 M4 规格在批准前执行 candidate alignment 的历史记录；当时只涉及 D-021–D-025，且不构成实现。2026-07-13 后续获批的轻量工作流验证修订又触发了第二次迁移：D-026/D-027、§1.1、§14.2–§14.4、§15/§17 和当前状态文档以轻量口径为准，原实施计划被取代；replacement plan 随后于同日单独获批。Task 3 Reference Candidate Binding 修订构成第三次定向迁移：D-028 与 replacement Tasks 3/4/8/13/32/34/35 以该修订为准。用户休息期间按明确授权形成并经两路独立 P0/P1 复核通过的 Task 7/8 amendments 构成第四次机器身份收口：D-029/D-030、catalog/resource/scorer/profile bytes 与 canonical/runtime identity 以它们为准，不改公式、阈值、golden 或里程碑 ownership。Task 0–6 已完成，下一步为 Task 7。
 
 本轮 candidate alignment 覆盖：
 
@@ -857,7 +857,7 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 本规格进入实施计划前必须满足：
 
 1. 用户复核并明确批准本书面文件；
-2. D-021–D-028 已写入并在独立 Git 轨迹中更新为“已接受”；
+2. D-021–D-030 已写入并在独立 Git 轨迹中更新为“已接受”；
 3. 所有列出的跨文档冲突已消除或明确标注 supersession；
 4. 无 TBD/TODO/placeholder；
 5. 18 个 anchor、阈值、boundary、override、dependency 和 artifact 均无歧义；
@@ -867,4 +867,4 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 9. M4/M5/M6 ownership 与 coverage 公式不冲突；
 10. Git commit 只声称 design/documentation，不声称 M4 implemented。
 
-原书面规格、轻量工作流验证修订、[Task 3 Reference Candidate Binding 修订](2026-07-13-m4-task3-reference-candidate-binding-amendment.md) 与 [replacement plan](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已通过用户复核，D-026–D-028 已接受。原 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 虽曾获批准，但其四套 90 秒 fixture 路线已被本修订取代，不再提供执行授权。Replacement Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，下一步为修订后的 Task 3；M4 当前保持 18/18 specified、0/18 production plugins implemented，在相应完成门通过前不得声称 M4 已 engineering verified。
+原书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity](2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订与 [replacement plan](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准，D-026–D-030 已接受。原 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 虽曾获批准，但其四套 90 秒 fixture 路线已被本修订取代，不再提供执行授权。Replacement Task 0–6 已分别完成，下一步为 Task 7；M4 当前保持 18/18 specified、0/18 production plugins implemented，在相应完成门通过前不得声称 M4 已 engineering verified。

@@ -2,7 +2,7 @@
 
 本目录是 “Development of AI-Based System for Evaluating eVTOL Pilot Training Effectiveness” 项目的产品化工作区。系统目标是把多模态飞行训练 session 转换为可追溯的证据锚点，并通过可编辑的贝叶斯网络输出飞行员能力后验分布。
 
-当前状态：**产品设计基线 v0.1 已建立；后端 M1/M2/M3 已实现并通过工程完成门。M3 只完成 native-rate 时间对齐，不包含插值、重采样或 anchor window grid。M4 的 O1–O13、H1–H5 书面规格、轻量工作流验证修订、Task 3 Reference Candidate Binding 修订与 replacement 实施计划均已于 2026-07-13 获用户批准，D-026–D-028 已接受；原四套 90 秒 fixture 实施计划已被取代且不再授权执行。Replacement Task 0–6 已分别由提交 `bc544bf`、`f56365c`、`928e9a4`、`e054620`、`1528d09`、`b63d38b`、`93c4ddb` 完成；M4-A contract/schema slice 已完成并发布 14 个 package schema resources，下一步为 Task 7 exact-18 catalog 与参数资源。Catalog/canonical identity 仍由 Task 7–8 完成。真实状态仍为 18/18 specified、0/18 production plugins 已实现；M4 尚未 engineering verified，`formal_run_authorized=false`。完整产品仍为 `in_progress`，Gate B 尚未通过；18 个 AnchorPlugin、BN、runtime 和 WinUI 仍未实现。参考评估模型的科学状态仍为 `engineering_default`，synthetic fixture 为 `not_supported`；现有合同/schema 测试不构成科学有效性声明。**
+当前状态：**产品设计基线 v0.1 已建立；后端 M1/M2/M3 已实现并通过工程完成门。M3 只完成 native-rate 时间对齐，不包含插值、重采样或 anchor window grid。M4 的 O1–O13、H1–H5 主规格、轻量、Task 3/7/8 定向修订与 replacement 实施计划均已于 2026-07-13 获明确或授权默认批准，D-026–D-030 已接受；原四套 90 秒 fixture 实施计划已被取代且不再授权执行。Replacement Task 0–6 已分别由提交 `bc544bf`、`f56365c`、`928e9a4`、`e054620`、`1528d09`、`b63d38b`、`93c4ddb` 完成；M4-A contract/schema slice 已完成并发布 14 个 package schema resources，下一步为 Task 7 exact-18 catalog 与参数资源。Task 7/8 amendments 已批准，但 catalog/canonical identity 代码仍待实现。真实状态仍为 18/18 specified、0/18 production plugins 已实现；M4 尚未 engineering verified，`formal_run_authorized=false`。完整产品仍为 `in_progress`，Gate B 尚未通过；18 个 AnchorPlugin、BN、runtime 和 WinUI 仍未实现。参考评估模型的科学状态仍为 `engineering_default`，synthetic fixture 为 `not_supported`；现有合同/schema 测试不构成科学有效性声明。**
 
 ## 从这里开始
 
@@ -15,6 +15,8 @@
 - M4 原实施计划：[docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md](docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（历史上已批准，现已被取代且不得执行）
 - M4 轻量工作流验证修订：[docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md](docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)（已批准）
 - M4 Task 3 Reference Candidate Binding 修订：[docs/product/specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md](docs/product/specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)（已于 2026-07-13 批准；D-028）
+- M4 Task 7 Catalog and Resource Identity 修订：[docs/product/specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md](docs/product/specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)（已按授权默认批准；D-029）
+- M4 Task 8 Canonical Fingerprint and Runtime Identity 修订：[docs/product/specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md](docs/product/specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md)（已按授权默认批准；D-030）
 - M4 replacement 实施计划：[docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md](docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已于 2026-07-13 批准并按方案 A 修订；Task 0–6 已完成，下一步为 Task 7）
 - 当前设计决策：[docs/product/DECISIONS.md](docs/product/DECISIONS.md)
 - 术语表：[docs/product/GLOSSARY.md](docs/product/GLOSSARY.md)

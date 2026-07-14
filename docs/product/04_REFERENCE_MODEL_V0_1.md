@@ -2,14 +2,14 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 文档状态 | 工程参考模型；M4 完整书面规格与轻量工作流验证修订均已于 2026-07-13 获用户批准 |
+| 文档状态 | 工程参考模型；M4 主规格与轻量、Task 3、Task 7、Task 8 定向修订均已于 2026-07-13 获明确或授权默认批准 |
 | 模型 profile | `reference-model-v0.1`（尚未发布为不可变 ModelBundle） |
 | 日期 | 2026-07-13 |
 | BN inventory | 4 competencies + 11 sub-skills + O1–O13/H1–H5，合计 33 nodes |
-| Anchor 实现状态 | 18/18 已设计，0/18 production plugins 已实现；原 M4 实施计划已被取代，replacement plan 与 Task 3 方案 A/D-028 已于 2026-07-13 批准；Task 0–2 已完成，下一步为修订后的 Task 3 |
+| Anchor 实现状态 | 18/18 已设计，0/18 production plugins 已实现；原 M4 实施计划已被取代，replacement plan 与 Task 3/7/8 amendments、D-028–D-030 已批准；Task 0–6 已完成，下一步为 Task 7 |
 | 科学状态 | engineering defaults，未完成航空、人因或医学验证 |
 
-本文件定义 `reference-model-v0.1` 的可实现模型摘要。M4 的精确合同、公式、typed dependencies、artifact、fingerprint、fixtures 和阶段完成门以 [M4 Anchor Calculation and Evidence Availability Design](./specs/2026-07-13-m4-anchor-evidence-availability-design.md) 为唯一详细规格；本文件不得另造一套 M4 语义。
+本文件定义 `reference-model-v0.1` 的可实现模型摘要。M4 的公式与总体合同以 [M4 Anchor Calculation and Evidence Availability Design](./specs/2026-07-13-m4-anchor-evidence-availability-design.md) 为主规格；[Task 7 Catalog/Resource Identity](./specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md) 与 [Task 8 Canonical Fingerprint/Runtime Identity](./specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) amendments 分别对精确资源和 canonical bytes 具有优先权。本文件不得另造一套 M4 语义。
 
 ## 1. 模型边界
 
@@ -151,10 +151,10 @@ raw availability 为 `computed_count / applicable_count`。D/A/U 都贡献 1；`
 ### 5.1 关键算法冻结
 
 - O1 native-rate mask 用 support-aware left-hold 积分：样本 `i` 作用于 `[t_i,t_{i+1})` 与 phase 的交集；segment terminal 只有 explicit semantic end 才延伸，不跨 gap。
-- O5/O7 active channels 来自 task profile，不能因飞行员未操纵而动态删除；movement profile 的 100 Hz grid、Butterworth padding、derivative/sign-run/turning-point 与 observed-support denominator 以 M4 规格固定。缺 `W_min` 是 `not_computable`，高 workload 仍是 computed U。
+- O5/O7 active channels 来自 semantic control mappings，不能因飞行员未操纵而动态删除；注册的 `movement-events-v1` preprocessing 的 100 Hz grid、Butterworth padding、derivative/sign-run/turning-point 与 observed-support denominator 以 M4 规格固定。缺 plan parameter `W_min` 是 `not_computable`，高 workload 仍是 computed U。
 - O6 对 trim 两侧按各自 endpoint piecewise normalization、left-hold time integration，不 clip 超 endpoint 值；不从本次 pilot performance 自动估计 trim，缺 calibration 是 `not_computable`。
 - O8 读取 computed O1/O5；即使上游 U 仍继续计算。其 `likelihood_strength=0.50` 由 M5 做重复计数保护，不是质量衰减。
-- O9 使用 O1/O4 mask artifact 与 O5 movement profile；无 stable-hover 不是 missing。
+- O9 使用 O1/O4 mask artifact 与同一注册 `movement-events-v1` preprocessing；无 stable-hover 不是 missing。
 - O10/O11/O12/H2 多事件无 miss 时取 worst，任一 miss 否决 session；miss 保存 finite observed wait，不使用 Infinity。
 - O11 首个满足幅值/持续门的错误方向动作直接 U，即使后来正确；短 pre-event baseline 使用全部可用前置样本，再回退到显式 neutral/trim config。
 - O12 使用同一 baseline fallback；从未出现可信 envelope exit 才是 `not_applicable`。
@@ -185,8 +185,8 @@ O1 O2 O3 O4 O5 O6 O7 O10 O11 O12 H1 H2 H3 H4 H5
 
 Level 1:
 O8  <- O1/O5 result
-O9  <- O1/O4 artifact + movement profile
-O13 <- O1/O5/O7 algorithm profile + H4 trace
+O9  <- O1/O4 artifact + movement-events-v1 preprocessing
+O13 <- O1/O5/O7 algorithm profile + required H4 result + optional H4 trace
 ~~~
 
 同 level 可并行，但报告按 canonical catalog order。插件只能读取声明的 aligned views、semantic context 和 typed dependencies。一个节点失败不停止独立节点；真正下游为 `dependency_missing`。
@@ -197,37 +197,45 @@ fingerprint 覆盖 source/synchronization/semantic snapshot、catalog、registry
 
 ## 7. 可编辑配置合同
 
-Anchor 配置必须由 JSON Schema 验证，并足以让后端执行、前端解释和专家修改：
+Anchor 配置必须由 JSON Schema 验证，并足以让后端执行、前端解释和专家修改。以下只展示 O2 已解析配置的关键投影，不是可独立加载的完整资源；可执行资源的精确根键、canonical bytes 与 hash 均以 Task 7/8 amendments 为准：
 
 ~~~yaml
-anchor:
-  id: O2
-  definition_version: 0.2.0
-  lifecycle: active
-  plugin:
-    id: peak_tracking_excursion
-    version: 0.2.0
-  required_inputs: [X, task_reference, phase_markers]
-  typed_dependencies: []
+anchor_id: O2
+definition_version: 0.1.0
+lifecycle: active
+plugin_id: o2-peak-tracking-excursion
+plugin_version: 0.1.0
+required_inputs: [stream.X, reference.task_reference, semantic.phases]
+typed_dependencies: []
+parameter_schema_id: o2-parameters-0.1
+parameters: {}
+fixed_algorithm:
+  reference_mode: time-aligned-linear-v1
+  extrapolation: forbidden
+  axes: [x, y, z]
+  norm: l2
+  aggregation: session-maximum-with-earliest-stable-tie
+  internal_unit: m
+  display_unit: ft
+scorer_policy:
+  scorer_id: hard_threshold_v1
+  scorer_version: 0.1.0
+  policy_schema_id: ordered-dau-threshold-policy-v0.1
   parameters:
-    reference_mode: time_aligned
-    axes: [x, y, z]
-    norm: l2
-    internal_unit: m
-    display_unit: ft
-  aggregation:
-    across_samples: max
-    across_phases: max
-  scoring:
-    scorer_id: hard_threshold_v1
     state_order: [unacceptable, adequate, desired]
-    direction: lower_is_better
-    desired_max: {value: 2, unit: ft}
-    adequate_max: {value: 5, unit: ft}
-  missing_policy:
-    missing_stream: missing_input
-    missing_context: not_computable
+    evaluation_order: [desired, adequate]
+    rules:
+      - state: desired
+        conditions:
+          - {metric_id: primary_value, operator: "<=", value: 2, unit: ft}
+      - state: adequate
+        conditions:
+          - {metric_id: primary_value, operator: "<=", value: 5, unit: ft}
+    fallback_state: unacceptable
+    computed_u_overrides: []
 ~~~
+
+O2 的 `parameters` 必须保持空对象；time-aligned linear、禁止外推、三轴 L2、单位转换、aggregation 与 tie-break 都是 `o2-peak-tracking-excursion/0.1.0` 的 fixed algorithm invariants。修改这些算法语义必须发布新的 plugin version，不能伪装成同版本参数编辑。前端可编辑的 O2 D/A/U 阈值来自 scorer policy snapshot，而不是 plugin `parameters`。
 
 M4 schema 必须拒绝 `quality_gates`、`min_valid_coverage`、`failed_quality`、`binary_quality_v1` 和 v0.2 `invalid_quality`。还必须拒绝 duplicate ID、未知 dependency、DAG cycle、单位不兼容、阈值方向矛盾、不可用 plugin/scorer/schema、越界 artifact recipe 和未版本化算法常量。
 
@@ -285,4 +293,4 @@ Synthetic multimodal fixtures 只验证软件闭环，始终 `scientific_validat
 9. full tests、schema symmetry、lint/type、build，以及复用唯一 10 秒全模态 bundle 的 fresh-wheel isolated M1→M4 smoke 全部通过；
 10. 只有新鲜证据完成 M4-G 后才能把状态改为 M4 engineering-verified。
 
-M4 书面规格、轻量工作流验证修订、[Task 3 Reference Candidate Binding 修订](./specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md) 与 [replacement plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已批准，D-026–D-028 已接受；原实施计划已被取代且不再提供执行授权。Replacement Task 0–2 已分别由 `bc544bf`、`f56365c`、`928e9a4` 完成，下一步为修订后的 Task 3；在相应 production-plugin 完成门通过前仍保持 0/18 implemented。
+M4 书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](./specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](./specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity](./specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订与 [replacement plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准，D-026–D-030 已接受；原实施计划已被取代且不再提供执行授权。Replacement Task 0–6 已完成，下一步为 Task 7；在相应 production-plugin 完成门通过前仍保持 0/18 implemented。

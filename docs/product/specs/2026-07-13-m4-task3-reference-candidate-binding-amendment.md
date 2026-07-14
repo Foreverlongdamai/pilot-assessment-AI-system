@@ -6,7 +6,7 @@
 | 日期 | 2026-07-13 |
 | 方向状态 | 用户已批准方案 A：新增独立 `ReferenceViewCandidate`，不修改 M3 |
 | 书面状态 | 已于 2026-07-13 获用户明确批准；本文现为 Task 3 权威修订 |
-| 实现状态 | 尚未实施；不得把本文写作或审批方向视为 Task 3 代码完成 |
+| 实现状态 | 已由提交 `e054620` 完成；后续 Task 4–6 亦已完成，当前下一步为 Task 7；这不代表 Task 8 canonical identity 或 M4 整体完成 |
 | 取代范围 | 取代 replacement plan Task 3 原两参数 binder、未展开的 semantic/reference 字段口径和 `ResolvedReferenceSet` 缺失的 session identity；并为 Task 8、32、34、35 补充该端口的既有职责落点 |
 | 不变范围 | M1/M2/M3 合同、18 个 anchor 算法/阈值、AnchorResult v0.2、DAG、轻量测试策略及 M4 完成门均不变 |
 
@@ -257,7 +257,7 @@ SessionSemanticSnapshot
   semantic_snapshot_fingerprint: Sha256Digest
 ```
 
-Task 3 只验证 digest 格式并原样保存；RFC 8785 规范化与 fingerprint 计算属于 replacement Task 8。
+Task 3 只验证 digest 格式并原样保存；RFC 8785 规范化与 fingerprint 计算属于 replacement Task 8，精确 safe-integer domain、typed framing、logical-table/reference payload 与 self-field 规则以 [Task 8 Canonical Fingerprint and Runtime Identity Amendment](2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 为准。
 
 ### 5.6 semantic producer 与 Task 4 闭合校验
 

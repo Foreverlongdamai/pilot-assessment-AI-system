@@ -12,8 +12,8 @@
 
 ## Plan status and authority boundary
 
-- Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md`, the accepted `docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md`, and the accepted `docs/product/specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md`. The lightweight amendment takes precedence for verification scope; the Task 3 amendment takes precedence for semantic/reference contracts, binding, fingerprint ownership, and candidate producer boundaries.
-- Accepted decisions: D-021 through D-028 in `docs/product/DECISIONS.md`.
+- Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
+- Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
 - Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–2 were completed in commits `bc544bf`, `f56365c`, and `928e9a4`; the user then explicitly approved the Task 3 candidate-binding amendment, Tasks 3–6 are complete under the checked sections below, and Task 7 is next.
 - Current implementation truth: 18/18 reference anchors specified, 0/18 production plugins implemented; M4 is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
@@ -44,7 +44,7 @@ Required migration performed by this docs-only change:
 2. check only the amendment §8 item for replacement-plan approval; leave every implementation/engineering-verification item unchecked;
 3. at approval time, update current entry/status surfaces to record that the replacement plan was approved and implementation had not yet begun;
 4. preserve `18/18 specified, 0/18 implemented`, `formal_run_authorized=false`, `engineering_default`, and synthetic `not_supported`;
-5. do not edit D-021-D-027 semantics or claim any RED/GREEN/test evidence.
+5. do not edit D-021-D-030 semantics or claim any RED/GREEN/test evidence that did not exist at the recorded migration point.
 
 ~~~powershell
 $approvalFiles = @(
@@ -1376,7 +1376,10 @@ After this commit the only valid claim is: `M4-A contract/schema slice complete;
 
 ### Task 7: Package the exact-18 reference catalog and all editable parameter schemas
 
+**Authority:** Implement this task against the accepted [Task 7 Catalog and Resource Identity Amendment](../specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md). Its exact 18-entry matrix, six provider identities/descriptors, 24 parameter/scorer resource matrices, semantic-vs-parameter ownership, nullable artifact fields, and temporary Task 8 sentinel replace any less-specific wording in this task.
+
 **Files:**
+- Modify: `src/pilot_assessment/contracts/anchor_execution.py`
 - Create: `src/pilot_assessment/anchors/catalog.py`
 - Create: `src/pilot_assessment/anchors/profile_data/__init__.py`
 - Create: `src/pilot_assessment/anchors/profile_data/reference-model-v0.1-anchor-catalog.json`
@@ -1407,6 +1410,7 @@ After this commit the only valid claim is: `M4-A contract/schema slice complete;
 - Create: `src/pilot_assessment/anchors/profile_data/parameters/eeg-engagement-windows-v1-parameters-0.1.json`
 - Create: `src/pilot_assessment/anchors/registry-v1.json`
 - Create: `tests/anchors/test_catalog.py`
+- Modify: `tests/contracts/test_anchor_execution_contract.py`
 - Modify: `tests/test_package_metadata.py`
 
 - [ ] **Step 1: Write RED catalog/resource tests**
@@ -1417,7 +1421,7 @@ Assert exact reference order:
 O1 O2 O3 O4 O5 O6 O7 O8 O9 O10 O11 O12 O13 H1 H2 H3 H4 H5
 ~~~
 
-Assert 18 unique active anchor definitions, stable versions, declared input/typed-dependency/artifact/scorer schemas, lifecycle, canonical order, one parameter schema resource per anchor definition, and six separately named preprocessing parameter schemas for the six reference provider recipes. Reject duplicate IDs/order, an exact-reference catalog with 17 or 19 entries, a missing/extra provider parameter schema, and any parameter schema containing a prohibited quality field. Also prove a generic test catalog can have cardinality other than 18. Canonical catalog/parameter fingerprints are added in Task 8 after the JCS primitive exists.
+Assert 18 unique active anchor definitions, stable versions, declared input/typed-dependency/artifact/scorer schemas, lifecycle, canonical order, one parameter schema resource per anchor definition, and six separately named preprocessing parameter schemas for the six reference provider recipes. Implement the Task 7 amendment's exact descriptor/provider/profile identity matrices, canonical UTF-8 parameter-schema bytes, raw-byte SHA-256 values, literal per-property fragments, scorer annotations, O6 applicability-scoped weight materialization metadata, and zero-entry registry. Reject duplicate IDs/order, an exact-reference catalog with 17 or 19 entries, a missing/extra provider parameter schema, any non-canonical/duplicate-key schema resource, and any parameter schema containing a prohibited quality field. Add RED mutation probes showing nested dict/list values cannot be changed after constructing `ScorerPolicy`, `AnchorExecutionEntry.parameters/temporal_recipe`, or `ResolvedPreprocessingRecipe.parameters`, and that mutating the caller-owned input after construction cannot change the DTO snapshot. Also prove a generic test catalog can have cardinality other than 18. Typed catalog/parameter-instance/scorer fingerprints are added in Task 8 after the JCS primitive exists; Task 7 computes only raw parameter-resource SHA-256.
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/anchors/test_catalog.py tests/test_package_metadata.py -v
@@ -1432,9 +1436,11 @@ Expose:
 ~~~text
 load_packaged_catalog(profile_id: str = "reference-model-v0.1") -> AnchorCatalog
 load_parameter_schema(schema_id: str) -> Mapping[str, JsonValue]
+load_parameter_schema_bytes(schema_id: str) -> bytes
+parameter_schema_sha256(schema_id: str) -> Sha256Digest
 ~~~
 
-`load_parameter_schema` performs one deterministic package lookup at `pilot_assessment.anchors.profile_data/parameters/<schema_id>.json`; `schema_id` is a separator-free `StableId` equal to the filename stem. It never scans or guesses aliases. Freeze every design §12 engineering default, unit, boundary policy, temporal recipe, scorer ID, and typed dependency in the catalog/parameter resources. `registry-v1.json` must be valid but contain both `"entries": []` and `"preprocessors": []`; M4-B must not pretend any anchor algorithm or shared preprocessing provider is implemented.
+All three parameter-resource callables perform one deterministic package lookup at `pilot_assessment.anchors.profile_data/parameters/<schema_id>.json`; `schema_id` is a separator-free `StableId` equal to the filename stem. They never scan or guess aliases. `load_parameter_schema_bytes` returns the exact installed authoritative bytes, `load_parameter_schema` duplicate-key parses and verifies the Task 7 canonical reserialization/meta-contract before returning a recursively frozen mapping, and `parameter_schema_sha256` is raw lowercase SHA-256 over those same bytes. Freeze every design §12 engineering default, unit, boundary policy, temporal recipe, scorer ID, and typed dependency in the catalog/parameter resources. Harden the four plan-time JSON surfaces named in Step 1 by returning `freeze_json_mapping(value)` from their field validators; Pydantic's frozen outer model alone is not sufficient. `registry-v1.json` must be valid but contain both `"entries": []` and `"preprocessors": []`; M4-B must not pretend any anchor algorithm or shared preprocessing provider is implemented.
 
 - [ ] **Step 3: Run GREEN and package-resource regression**
 
@@ -1448,13 +1454,15 @@ Expected: PASS; the wheel contains the exact catalog plus all 24 explicit parame
 - [ ] **Step 4: Commit**
 
 ~~~powershell
-git add src/pilot_assessment/anchors/catalog.py src/pilot_assessment/anchors/profile_data src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_catalog.py tests/test_package_metadata.py
+git add src/pilot_assessment/contracts/anchor_execution.py src/pilot_assessment/anchors/catalog.py src/pilot_assessment/anchors/profile_data src/pilot_assessment/anchors/registry-v1.json tests/contracts/test_anchor_execution_contract.py tests/anchors/test_catalog.py tests/test_package_metadata.py
 git commit -m "feat: package M4 reference anchor catalog"
 ~~~
 
 ## M4-B: execution framework with injected fake plugins
 
 ### Task 8: Implement RFC 8785 typed fingerprints and numeric runtime identity
+
+**Authority:** Implement this task against the accepted [Task 8 Canonical Fingerprint and Runtime Identity Amendment](../specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md). Its safe-integer domain, exact table/reference/result/report/scorer/profile payloads, self-field rejection ownership, Windows ABI fallback, `RECORD` inclusion rules, and one-wheel/two-root test replace any less-specific wording below.
 
 **Files:**
 - Create: `src/pilot_assessment/anchors/fingerprint.py`
@@ -1465,7 +1473,7 @@ git commit -m "feat: package M4 reference anchor catalog"
 
 - [ ] **Step 1: Write RED canonical-byte vectors**
 
-Cover JCS map ordering, Unicode, ECMAScript numbers, rejection of NaN/Infinity, the exact NUL/uint64 framing, canonical inline schema-descriptor hashes, canonical tabular row order, logical-vs-storage hashes, absolute-path exclusion, Python implementation/version/ABI identity, runtime distribution identity, definition/implementation/registry/catalog/parameter/plan/result/evaluation fingerprints, and equal hashes across fresh subprocesses. Add the six Task 3 amendment reference/semantic fingerprints and prove that any resource checksum, frame/unit/table field, row value/order, session/window, clock/schema, mapping method/policy/scale/offset/drift/rounding/mask mutation changes the appropriate digest. Explicitly prove that changing any valid `ResolvedInputFieldContract`/`ResolvedInputTableContract` member—including modality/table role, either schema level, frame, unit, dtype, nullable, or physical field order—changes `plan_fingerprint`. Reordering the outer table-contract tuple is non-canonical and must be rejected before hashing; no alternate fingerprint is expected for that invalid object. Build/install the same locked wheel/runtime into two different temporary venv roots and require identical numeric-runtime identities, specifically guarding against path-bearing generated console launchers. Prove that changing a self-reported fingerprint/digest field or `storage_file_sha256` does not change the corresponding canonical payload/hash, while changing any inline schema descriptor, logical result field, logical artifact identity, upstream dependency fingerprint, catalog field, plan field, parameter, or registry/preprocessor entry does. Separately prove that a changed self-reported fingerprint/digest is rejected by validation rather than silently trusted.
+Cover JCS map ordering, Unicode, ECMAScript numbers, rejection of NaN/Infinity, the safe-integer boundaries, exact NUL/uint64 framing, canonical inline schema-descriptor hashes, canonical tabular row order, logical-vs-storage hashes, absolute-path exclusion, Python implementation/version/ABI identity, runtime distribution identity, definition/implementation/registry/catalog/parameter/scorer/plan/result/evaluation fingerprints, and equal hashes across fresh subprocesses. Prove the exact Task 7 annotation-to-`ScorerPolicy` payload/hash and that `ResolvedAlgorithmProfile.parameter_hash` reuses `parameter_snapshot_fingerprint(profile.parameters)`. Add the six Task 3 amendment reference/semantic fingerprints and prove that any resource checksum, frame/unit/table field, row value/order, session/window, clock/schema, mapping method/policy/scale/offset/drift/rounding/mask mutation changes the appropriate digest. Explicitly prove that changing any valid `ResolvedInputFieldContract`/`ResolvedInputTableContract` member—including modality/table role, either schema level, frame, unit, dtype, nullable, or physical field order—changes `plan_fingerprint`. Reordering the outer table-contract tuple is non-canonical and must be rejected before hashing; no alternate fingerprint is expected for that invalid object. Build the project wheel once, install the same locked wheel set into two temporary venv roots, run outside the repository with `PYTHONPATH` removed and reversed CLI argument order, and require byte-identical runtime identities. Prove that changing a self-reported fingerprint/digest field or `storage_file_sha256` does not change the corresponding canonical payload/hash, while changing any logical field does. Assert false-claim rejection only at Task 8-owned catalog/runtime/artifact boundaries; Tasks 9/11/13/35 retain their named rejection tests.
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/anchors/test_fingerprint.py -v
@@ -1529,6 +1537,7 @@ preprocessing_implementation_digest_payload(
 runtime_registry_fingerprint(registry: AnchorRuntimeRegistry) -> str
 packaged_catalog_fingerprint(profile_id: str = "reference-model-v0.1") -> str
 parameter_snapshot_fingerprint(parameters: Mapping[str, JsonValue]) -> str
+scorer_policy_fingerprint(policy: ScorerPolicy) -> Sha256Digest
 ~~~
 
 `typed_json_sha256` must compute exactly:
@@ -1553,12 +1562,12 @@ NumericRuntimeIdentity:
   record_content_sha256: Sha256Digest
 ~~~
 
-`PythonRuntimeIdentity` reads `sys.implementation.name`, exact major/minor/micro, `sys.implementation.cache_tag`, and `sysconfig.get_config_var("SOABI")`; a missing ABI tag is rejected for a production registry entry. Distribution identity covers normalized name, exact version, and a deterministic digest of stable wheel-content declarations:
+`PythonRuntimeIdentity` reads `sys.implementation.name`, exact major/minor/micro, `sys.implementation.cache_tag`, and the Task 8 amendment ABI precedence: non-empty `SOABI`, otherwise only on Windows the complete strict `.<abi>.pyd` middle tag from `EXT_SUFFIX`; all other missing/invalid ABI cases reject. Distribution identity covers normalized name, exact version, and the amendment's deterministic digest of stable wheel-content declarations:
 
-1. parse the installed distribution's CSV `RECORD`;
-2. normalize each member to POSIX form and retain only rows whose path stays inside the site-packages distribution root (no absolute path and no `..` component), has a declared `sha256` digest and size, and is not the `RECORD` file itself, `INSTALLER`, `REQUESTED`, or `direct_url.json`;
-3. recompute every retained installed file's SHA-256/size and reject a mismatch with the declared row;
-4. hash the JCS canonical lexicographically ordered arrays `[relative_path, "sha256", declared_urlsafe_digest, size]`.
+1. reject editable/malformed distribution metadata and parse the owning wheel-style CSV `RECORD`;
+2. apply the amendment's raw POSIX path, duplicate/case-alias, owning-dist-info metadata, cache, symlink and site-packages-root rules; only a `..` member resolving under the active interpreter's exact scripts directory is excluded as an installer launcher;
+3. require every retained stable member to have canonical unpadded 32-byte SHA-256 text and non-negative size, then recompute installed bytes and reject any mismatch;
+4. hash the JCS canonical lexicographically ordered arrays `[relative_path, "sha256", declared_urlsafe_digest, size]` with `numeric-runtime-record`/`0.1.0`.
 
 This intentionally excludes installer-generated `../../Scripts/*` launchers whose bytes embed a venv path, mutable install metadata, cache files, and the installation root, while still detecting changes to stable package code/native libraries/resources.
 
@@ -1570,8 +1579,8 @@ The canonical projections are fixed as follows:
 2. `anchor_result_fingerprint_payload` includes every `AnchorResultV2` field except `result_fingerprint`; each `derived_artifacts` member is replaced by `logical_artifact_identity_payload(ref)` in declared order.
 3. `evaluation_fingerprint_payload` is a pure projection: it includes every report field except `evaluation_fingerprint`; `results` is replaced by canonical-order `result_fingerprint` values, and a second canonical-order list contains the logical artifact identity payloads reachable from those results. It does not pretend that a ref alone contains payload bytes.
 4. `catalog_fingerprint_payload` and `execution_plan_fingerprint_payload` include every public field except their own `catalog_fingerprint` or `plan_fingerprint`, respectively. The plan therefore binds its case-specific source, synchronization, semantic, reference, catalog, registry, parameters, recipes, provider identities, and ordered execution entries.
-5. `schema_descriptor_sha256` hashes the canonical array `[schema_id, descriptor]` with type `typed-inline-schema-descriptor`/version `0.1.0`; the same schema ID cannot appear with two descriptors in one definition/plan. Each definition fingerprint hashes the complete strict model dump with its contract type/version. Each implementation-digest payload includes every corresponding registry-entry field except `implementation_digest`; it therefore binds the definition fingerprint, all recomputed inline/packaged schema hashes, exact factory/namespace binding, sorted implementation/resource members, Python identity, and sorted numeric runtime identities without a self-reference. `runtime_registry_fingerprint` hashes the complete validated `AnchorRuntimeRegistry`, including every declared implementation digest and both ordered maps; the registry has no self-fingerprint field.
-6. Immediately before result/evaluation hashing, the service recomputes each result self-fingerprint, resolves every `AnchorArtifactRef` through the live `EvaluationArtifactTransaction`, and calls `validate_logical_artifact_ref(ref, resolved)` to recompute logical content from the immutable payload. Only after all checks pass does it call the pure evaluation projection. A mismatched request/catalog/plan/result dependency fingerprint blocks before execution when it is an input contract mismatch. A plugin-emitted measurement/artifact/result self-mismatch maps only that anchor to `extractor_error`; it is never repaired by trusting the claimed hash.
+5. `schema_descriptor_sha256` hashes the canonical array `[schema_id, descriptor]` with type `typed-inline-schema-descriptor`/version `0.1.0`; the same schema ID cannot appear with two descriptors in one definition/plan. `scorer_policy_fingerprint` uses the Task 8 amendment's exact four-value array and excludes only `policy_hash`; algorithm profiles reuse `parameter_snapshot_fingerprint` over their exact `parameters` object. Each definition fingerprint hashes the complete strict model dump with its contract type/version. Each implementation-digest payload includes every corresponding registry-entry field except `implementation_digest`; it therefore binds the definition fingerprint, all recomputed inline/packaged schema hashes, exact factory/namespace binding, sorted implementation/resource members, Python identity, and sorted numeric runtime identities without a self-reference. `runtime_registry_fingerprint` hashes the complete validated `AnchorRuntimeRegistry`, including every declared implementation digest and both ordered maps; the registry has no self-fingerprint field.
+6. Task 8 supplies pure recomputation plus the packaged-catalog, runtime-RECORD and logical-artifact checks named in its amendment. Task 9 rejects definition/implementation/registry mismatch, Task 11 rejects plugin-emitted artifact/result mismatch per anchor, Task 13 rejects request/plan/semantic/reference mismatch and validates report closure, and Task 35 rechecks packaged producer inputs. No owner repairs a stale claim by trusting its self field.
 
 The six semantic/reference functions use the exact type IDs, versions and canonical payload exclusions in the approved Task 3 amendment §6.4. In particular, resource identity binds ordered checksums; aligned content binds its explicit `aligned_schema_id` argument, ordered fields, every logical row and canonical order keys; alignment identity binds complete `ReferenceSessionIdentity` plus complete mapping contract; set identity excludes only its own self-field. Task 8 computes these values but does not resolve a source or construct a candidate.
 
@@ -1842,7 +1851,7 @@ git commit -m "feat: add transactional M4 artifact sink"
 
 - [ ] **Step 1: Write RED scorer tests**
 
-Test higher-is-better `>=`, lower-is-better `<=`, open/closed asymmetric boundaries, conjunction, worst/veto, pooled numerators/denominators, one-hot state order, continuous scores 0/0.5/1, override allowlist, and the session non-computed priority `extractor_error > dependency_missing > missing_input > not_computable`. Prove diagnostics/coverage/gaps/sync flags cannot affect evidence.
+Test higher-is-better `>=`, lower-is-better `<=`, open/closed asymmetric boundaries, conjunction, worst/veto, pooled numerators/denominators, one-hot likelihood order exactly `[unacceptable, adequate, desired]`, rule evaluation order exactly `[desired, adequate]`, continuous scores 0/0.5/1, override allowlist, and the session non-computed priority `extractor_error > dependency_missing > missing_input > not_computable`. Use all 18 packaged scorer annotations to prove the Task 7 exact four-key annotation compiles to the strict five-field `ScorerPolicy`, with its exact five-key `parameters`, D-then-A rule order, sorted unique override IDs, and Task 8 hash. Reject any extra/missing/reordered rule, condition member/order, unknown operator/state/metric/unit, stale hash, or mutation attempt. Prove diagnostics/coverage/gaps/sync flags cannot affect evidence.
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/anchors/test_scoring.py -v
@@ -1858,9 +1867,15 @@ score_measurement(
     policy: ScorerPolicy,
     provenance: AnchorResultProvenance
 ) -> AnchorResultV2
+classify_computed_metrics(
+    primary_value: float | None,
+    raw_metrics: Mapping[str, float],
+    classification_override: str | None,
+    policy: ScorerPolicy
+) -> tuple[EvidenceState, float, tuple[float, float, float]]
 ~~~
 
-Register scorer behavior by versioned `scorer_id`, not by O/H ID. A computed-U override remains computed and participates in the declared aggregation. If any applicable breakdown is non-computed, the session result has no likelihood even when other breakdowns are good.
+Register scorer behavior by versioned `scorer_id`, not by O/H ID. Compile the Task 7 annotation mechanically without flattening `parameters`; validate exact state/rule/condition/override shape and recompute `scorer_policy_fingerprint` before accepting or using a policy. The recursively frozen policy prevents any validation-to-score mutation. `classify_computed_metrics` is the side-effect-free policy engine shared by `score_measurement` and O13's per-window O1/O5/O7 replay; neither wrapper copies threshold logic. A computed-U override remains computed and participates in the declared aggregation. If any applicable breakdown is non-computed, the session result has no likelihood even when other breakdowns are good.
 
 - [ ] **Step 3: Run GREEN and prohibited-field scan**
 
@@ -1883,6 +1898,8 @@ git commit -m "feat: add central M4 evidence scoring"
 ### Task 13: Implement typed DAG validation, deterministic scheduling, and the public API
 
 **Files:**
+- Modify: `pyproject.toml`
+- Modify: `uv.lock`
 - Create: `src/pilot_assessment/anchors/dag.py`
 - Create: `src/pilot_assessment/anchors/preprocessing.py`
 - Create: `src/pilot_assessment/anchors/service.py`
@@ -1891,10 +1908,13 @@ git commit -m "feat: add central M4 evidence scoring"
 - Create: `tests/anchors/test_dag.py`
 - Create: `tests/anchors/test_preprocessing.py`
 - Create: `tests/anchors/test_service.py`
+- Modify: `tests/anchors/test_catalog.py`
+- Modify: `tests/anchors/test_scoring.py`
+- Modify: `tests/test_package_metadata.py`
 
 - [ ] **Step 1: Write RED plan/service tests with injected fakes**
 
-Cover duplicate/missing dependency, schema/type mismatch, anchor cycle, preprocessing-provider cycle, unique recipe dependency resolution, cross-`scope_policy` provider-edge rejection, exact registry identity, canonical topological levels, canonical semantic/reference fingerprint recomputation before evaluator construction, valid-request checks before any plugin call, M4 plan/registry blocked reporting, independent-node continuation, true-downstream `dependency_missing`, computed-U dependency availability, plugin/provider exception and artifact failure isolation, global transaction failure, canonical report order independent of completion order, complete inventory, and raw availability.
+Cover duplicate/missing dependency, schema/type mismatch, anchor cycle, preprocessing-provider cycle, unique recipe dependency resolution, cross-`scope_policy` provider-edge rejection, exact registry identity, canonical topological levels, canonical semantic/reference fingerprint recomputation before evaluator construction, valid-request checks before any plugin call, M4 plan/registry blocked reporting, independent-node continuation, true-downstream `dependency_missing`, computed-U dependency availability, plugin/provider exception and artifact failure isolation, global transaction failure, canonical report order independent of completion order, complete inventory, and raw availability. Move the locked `jsonschema` version from development-only to runtime dependencies without changing its resolved version, and prove an isolated wheel can import it. Validate every materialized anchor/provider parameter object against its registry-bound canonical schema before factory access.
 
 The RED suite must include these executable security/lifecycle probes:
 
@@ -1908,6 +1928,8 @@ The RED suite must include these executable security/lifecycle probes:
 8. internal fault hooks can (a) map `(O1, X)` to a consumer-local direct-stream projection miss and canonical `missing_input` without calling O1, while all other X consumers retain X, (b) map `(O5, movement-events-v1)` to consumer-local `dependency_missing` while O7/O9/O13 retain the normal memoized product, and (c) map O4 to a consumer-local artifact-transaction commit failure after O4 compute/staging so only O4 becomes `extractor_error`, its ordered breakdown diagnostics are retained, its derived artifacts are absent, and independent anchors continue. Hook diagnostics enter the affected result fingerprint, but hook configuration is unavailable from public DTOs/API and never enters a plan.
 9. exercise the stable precedence matrix in both the public boundary and `AnchorEvaluator.for_testing(...).evaluate()`: session/window identity tamper returns `request_session_mismatch`; M3 annotation, input-table, dynamic-AOI or applicability relation tamper returns `request_semantic_identity_mismatch`; missing/extra required reference IDs returns `request_reference_inventory_mismatch`; M3 report/checksum/mapping provenance tamper returns `request_reference_provenance_mismatch`. Only when all earlier relations remain valid but a claimed canonical digest is stale—such as a semantic target-only value change, an in-contract aligned reference row-value change that preserves order/schema, a plan scorer field change, or changing only a self-reported digest—does it return `request_fingerprint_mismatch`. In every case no M4 report is produced and factory/provider/plugin/sink call counts stay zero. By contrast, an invalid plan presented with otherwise valid recomputed request identity enters validated evaluation and returns the inventory-complete M4 `blocked` report. Include an explicit absent-reference case proving it passes without a runtime content/alignment hash.
 10. independently inject report=`aligned` without the matching view and a non-aligned report with an injected view; both return `request_session_mismatch`. For each optional status `not_attempted/unavailable/invalid/unsupported/not_applicable`, omit I from `aligned_session.streams`, prove request construction succeeds, and prove only I-dependent anchors later become `missing_input` with the exact status reason. Separately change a dynamic AOI table role/table-level schema/frame/geometry unit/key or ordered geometry field; for any aligned required core stream change its live table inventory, stream-level schema, report artifact table-level schema, ordered columns/dtypes/nulls, one matching plan input-table contract field, or the applicability ID set. These relation mismatches return `request_semantic_identity_mismatch` before evaluator construction and all service spies remain zero. A matching compact I table with intentionally extreme but finite AOI geometry is not rejected as “low quality”; only its declared structural constraints apply.
+11. compile every packaged scorer annotation to the exact Task 12 policy and reject a stale/non-canonical policy before factory/scorer access; compile O6 weights from only O6 applicability, covering applicable default, explicit normalized weights, duplicate mapping-to-channel with equal calibration, conflicting calibration, missing/extra/duplicate channel, non-unit sum, and not-applicable exact `[]`;
+12. reconstruct each O1/O5/O7 seven-key algorithm-profile `parameters` object from the authoritative plan, semantic snapshot, registry, and packaged schema bytes; require exact object equality, `parameter_snapshot_fingerprint`, profile ID/version/output schema, source implementation digest, nested movement recipe identity, applicability/phase/input-contract projections, and applicable-O13 phase subset. Mutating, omitting, adding, or reordering any ordered closure member blocks before O13/factory access.
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/anchors/test_dag.py tests/anchors/test_preprocessing.py tests/anchors/test_service.py -v
@@ -1960,7 +1982,7 @@ topological_levels(entries: Sequence[AnchorExecutionEntry]) -> tuple[tuple[str, 
 validate_anchor_evaluation_request(request: AnchorEvaluationRequest) -> None
 ~~~
 
-Reference level 0 is O1-O7/O10-O12/H1-H5; level 1 is O8/O9/O13. Canonical report order comes from catalog, not scheduler completion. The idempotent request validator first rechecks exact two-way equality between report-aligned modalities and `aligned_session.streams`, then checks all aligned plan-required core streams against their complete input-table contracts, dynamic AOI against its plan contract and conditionally aligned I view, and exact applicability equality with `plan.entries` before any plan or factory access. Optional `not_attempted/unavailable/invalid/unsupported/not_applicable` streams bypass only the live table comparison and remain available to the normal per-anchor `missing_input` path with exact status reason. Stable validation precedence is session identity, then semantic/annotation/input-table/applicability relations, then reference inventory/provenance, then canonical fingerprints; a mutation that both breaks a semantic relation and leaves a stale plan fingerprint therefore returns `request_semantic_identity_mismatch`, while an otherwise relationally valid stale digest returns `request_fingerprint_mismatch`. Before factory access, plan validation reconstructs each plugin/provider definition from the execution-entry/recipe snapshot, recomputes its `definition_fingerprint`, and matches the registry entry. It then builds the provider-recipe DAG: each recipe's copied dependency spec is matched by exactly one binding with the same `dependency_id`; each binding's `target_recipe_id` resolves to exactly one plan recipe whose output schema/kind matches the spec; no extra binding is allowed; and every edge has exactly equal upstream/downstream `scope_policy` in v0.1. Missing/duplicate/extra/unresolved/schema-kind-mismatched/cyclic/cross-policy edges block before registry factory, provider, plugin, or sink access.
+Reference level 0 is O1-O7/O10-O12/H1-H5; level 1 is O8/O9/O13. Canonical report order comes from catalog, not scheduler completion. The idempotent request validator first rechecks exact two-way equality between report-aligned modalities and `aligned_session.streams`, then checks all aligned plan-required core streams against their complete input-table contracts, dynamic AOI against its plan contract and conditionally aligned I view, and exact applicability equality with `plan.entries` before any plan or factory access. Optional `not_attempted/unavailable/invalid/unsupported/not_applicable` streams bypass only the live table comparison and remain available to the normal per-anchor `missing_input` path with exact status reason. Stable validation precedence is session identity, then semantic/annotation/input-table/applicability relations, then reference inventory/provenance, then canonical fingerprints; a mutation that both breaks a semantic relation and leaves a stale plan fingerprint therefore returns `request_semantic_identity_mismatch`, while an otherwise relationally valid stale digest returns `request_fingerprint_mismatch`. Before factory access, plan validation reconstructs each plugin/provider definition from the execution-entry/recipe snapshot, recomputes its `definition_fingerprint`, and matches the registry entry. It validates every fully materialized parameter object with the installed Draft 2020-12 validator against the exact registry-bound authoritative schema/hash, recomputes parameter/scorer hashes, applies the Task 7 O6 matrix, and reconstructs the complete three-profile O13 closure; no schema default is applied during validation. It then builds the provider-recipe DAG: each recipe's copied dependency spec is matched by exactly one binding with the same `dependency_id`; each binding's `target_recipe_id` resolves to exactly one plan recipe whose output schema/kind matches the spec; no extra binding is allowed; and every edge has exactly equal upstream/downstream `scope_policy` in v0.1. Missing/duplicate/extra/unresolved/schema-kind-mismatched/cyclic/cross-policy edges block before registry factory, provider, plugin, or sink access.
 
 - [ ] **Step 3: Implement the dynamic preprocessing resolver/cache**
 
@@ -2033,7 +2055,7 @@ Expected: PASS. The exact-18 production plan remains blocked because both packag
 - [ ] **Step 6: Commit and record the M4-B gate**
 
 ~~~powershell
-git add src/pilot_assessment/anchors/dag.py src/pilot_assessment/anchors/preprocessing.py src/pilot_assessment/anchors/service.py src/pilot_assessment/anchors/api.py src/pilot_assessment/anchors/__init__.py tests/anchors/test_dag.py tests/anchors/test_preprocessing.py tests/anchors/test_service.py
+git add pyproject.toml uv.lock src/pilot_assessment/anchors/dag.py src/pilot_assessment/anchors/preprocessing.py src/pilot_assessment/anchors/service.py src/pilot_assessment/anchors/api.py src/pilot_assessment/anchors/__init__.py tests/anchors/test_dag.py tests/anchors/test_preprocessing.py tests/anchors/test_service.py tests/anchors/test_catalog.py tests/anchors/test_scoring.py tests/test_package_metadata.py
 git commit -m "feat: execute M4 plans through plugin protocol"
 ~~~
 
@@ -2047,6 +2069,7 @@ Each task below adds exactly one production registry entry and one executable fa
 
 **Files:**
 - Create: `src/pilot_assessment/anchors/primitives/__init__.py`
+- Create: `src/pilot_assessment/anchors/primitives/models.py`
 - Create: `src/pilot_assessment/anchors/primitives/envelopes.py`
 - Create: `src/pilot_assessment/anchors/plugins/__init__.py`
 - Create: `src/pilot_assessment/anchors/plugins/o1_phase_state_precision.py`
@@ -2078,6 +2101,23 @@ test_o1_parameter_change_changes_result_fingerprint
 Expected: RED because O1 capability is unavailable.
 
 - [ ] **Step 2: Implement the shared envelope primitive and plugin**
+
+`primitives/models.py` defines frozen JSON-safe kernel-result dataclasses. `envelopes.py` exposes this exact side-effect-free callable, used by both the O1 plugin and later O13:
+
+~~~text
+compute_o1_kernel(
+    x_table: pl.DataFrame,
+    phase: SemanticPhase,
+    envelope: EnvelopeDefinition,
+    scope_start_t_ns: int,
+    scope_end_t_ns: int,
+    input_contracts: tuple[ResolvedInputTableContract, ...],
+    parameters: Mapping[str, JsonValue],
+    temporal_recipe: Mapping[str, JsonValue]
+) -> O1KernelResult
+~~~
+
+The result contains calculation status/reason, finite raw metrics, per-axis plus joint trace rows, and support diagnostics but no staged artifact or `AnchorResultV2`. The O1 plugin is a thin adapter that calls it and alone stages O1's artifact. A spy test must prove the plugin calls this exact function; registry implementation members include `models.py` and `envelopes.py`.
 
 For every applicable phase compute:
 
@@ -2270,6 +2310,26 @@ Expected: RED because movement/O5 are absent.
 
 - [ ] **Step 2: Implement the detector and score**
 
+`movement.py` exposes two exact side-effect-free callables in addition to the provider factory:
+
+~~~text
+detect_movement_events(
+    u_table: pl.DataFrame,
+    control_mappings: tuple[ControlEffectMapping, ...],
+    scope_start_t_ns: int,
+    scope_end_t_ns: int,
+    input_contracts: tuple[ResolvedInputTableContract, ...],
+    provider_parameters: Mapping[str, JsonValue]
+) -> MovementKernelResult
+compute_o5_kernel(
+    movement: MovementKernelResult,
+    channel_ids: tuple[str, ...],
+    w_min_hz: float
+) -> O5KernelResult
+~~~
+
+The registered movement provider calls `detect_movement_events`; the O5 plugin consumes the resolved provider product and calls `compute_o5_kernel`. O13 later calls the same two pure functions with its profile-copied provider/source configuration and a clipped window. Spy tests prove provider/O5 reuse; their registry implementation closures include every shared kernel module.
+
 ~~~text
 W_channel = movement_count / observed_support_duration_s
 W = mean(W_channel across every configured active channel)
@@ -2279,7 +2339,7 @@ D ratio <=2; A ratio <=4; otherwise U
 
 A single point with zero support duration is not-computable. Any finite partial support with a valid denominator is computed. Six-Hz violent control is computed U. Do not infer `W_min` from the pilot/session.
 
-`movement.py` also exposes `create_provider()` for `movement-events-v1`/`1.0.0`. Its provider definition declares U, active-channel semantics, the exact movement profile, no provider dependency, and a typed movement-event table. O5 consumes that dynamic preprocessing recipe; it does not call an unregistered helper through a hidden path.
+`movement.py` also exposes `create_provider()` for `movement-events-v1`/`1.0.0`. Its provider definition declares U, active-channel semantics, the exact movement profile, no provider dependency, and a typed movement-event table. O5 consumes that dynamic preprocessing recipe in normal execution; the shared pure function is an implementation member, not an unregistered provider or hidden cache path.
 
 - [ ] **Step 3: Register with exact NumPy/SciPy runtime provenance and run GREEN**
 
@@ -2348,6 +2408,7 @@ git commit -m "feat: add control magnitude RMS anchor"
 ### Task 20: Implement O7 Control Reversal Rate and close M4-C
 
 **Files:**
+- Create: `src/pilot_assessment/anchors/primitives/reversal.py`
 - Create: `src/pilot_assessment/anchors/plugins/o7_control_reversal_rate.py`
 - Create: `tests/anchors/test_o7_control_reversal_rate.py`
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
@@ -2365,7 +2426,7 @@ Expected: RED because O7 is not registered and no consumer proves movement-profi
 
 - [ ] **Step 2: Implement O7 without copying the movement algorithm**
 
-Declare the existing `movement-events-v1` preprocessing recipe and consume its immutable product; do not call/copy the detector outside the provider registry. Extreme reversal frequency remains computed U. Missing configured mapping is not-computable; a configured channel with zero reversals remains valid.
+Declare the existing `movement-events-v1` preprocessing recipe and consume its immutable product. `primitives/reversal.py` exposes the exact pure callable `compute_o7_kernel(movement: MovementKernelResult, channel_ids: tuple[str, ...], minimum_reversal_amplitude_pct: float, minimum_reversal_separation_ns: int) -> O7KernelResult`; O7 and later O13 both call it. Normal O7 execution never bypasses the registered movement provider, while O13's profile replay may call `detect_movement_events` directly under the separately validated closure. Neither copies the detector or reversal logic. Extreme reversal frequency remains computed U. Missing configured mapping is not-computable; a configured channel with zero reversals remains valid. Spy tests prove the shared callable and registry members cover `movement.py`, `reversal.py`, and `models.py`.
 
 - [ ] **Step 3: Register and run the M4-C gate**
 
@@ -2380,7 +2441,7 @@ Expected: PASS; exactly 7/18 production capabilities are available and software-
 - [ ] **Step 4: Commit**
 
 ~~~powershell
-git add src/pilot_assessment/anchors/plugins/o7_control_reversal_rate.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o7_control_reversal_rate.py tests/anchors/test_registry.py
+git add src/pilot_assessment/anchors/primitives/reversal.py src/pilot_assessment/anchors/plugins/o7_control_reversal_rate.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o7_control_reversal_rate.py tests/anchors/test_registry.py
 git commit -m "feat: add control reversal anchor and close M4-C"
 ~~~
 
@@ -2872,7 +2933,7 @@ git commit -m "feat: add EEG fluctuation anchor"
 
 - [ ] **Step 1: Write RED per-window dependency/coupling tests**
 
-Repeat exact 10/30/31/35/36-second window/ID vectors. Prove O13 recomputes O1/O5/O7 through frozen algorithm profiles inside each window rather than reading their session states; uses signed H4 HR delta rather than absolute fluctuation; retains partial support; and does not impose a minimum window/coverage count. Test negative signed HR activation=0, exact 5/20% state boundaries, earliest max tie, and all window traces.
+Repeat exact 10/30/31/35/36-second window/ID vectors. Prove O13 recomputes O1/O5/O7 through frozen algorithm profiles inside each window rather than reading their session states; uses signed H4 HR delta rather than absolute fluctuation; retains partial support; and does not impose a minimum window/coverage count. Spy on `compute_o1_kernel`, `detect_movement_events`, `compute_o5_kernel`, `compute_o7_kernel`, and `classify_computed_metrics`: each window must call the same versioned pure functions introduced by Tasks 12/14/18/20, while O1/O5/O7/provider factories and source artifact emitters remain untouched. An AST/import guard forbids a second local implementation of their threshold, movement, or reversal algorithms in the O13 module. Mutating any shared primitive member changes both its owning registry closure and O13's refreshed implementation digest. Test negative signed HR activation=0, exact 5/20% state boundaries, earliest max tie, and all window traces.
 
 State split must be exact: a control component lacking mathematical support in any window makes session `dependency_missing`; H4 missing/config/error also causes dependency-missing; but H4 `computed U` without signed trace produces `computed + U + physio_trace_unavailable`.
 
@@ -2894,6 +2955,8 @@ D <5%; A 5<=x<20%; U >=20%
 ~~~
 
 The window ID is `cpw-` plus the first 24 lowercase hex of SHA-256 over the RFC 8785 canonical array `['control-physio-grid-v2', phase_id, start_t_ns, end_t_ns]`; store the full hash too. M5 later applies `likelihood_strength=0.50`.
+
+For each window, O13 reconstructs the exact kernel arguments from the already validated seven-key profiles: live X/U under copied input contracts, copied semantics clipped to the current half-open span, `source_entry.parameters/temporal_recipe`, and the nested movement-provider parameters. It calls only the shared pure functions above, converts their computed raw metrics through the copied `ScorerPolicy`, and emits only `joined-coupling-windows`. Any source kernel that is non-computed makes O13 `dependency_missing`; no source artifact or session-wide source result is created or consumed.
 
 - [ ] **Step 3: Register and run the M4-F gate**
 
@@ -3296,6 +3359,8 @@ git commit -m "feat: add lightweight M4 delivery verification"
 - Modify: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md`
 - Modify: `docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md`
 - Modify: `docs/product/specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md`
+- Modify: `docs/product/specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md`
+- Modify: `docs/product/specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md`
 - Modify: `docs/product/reviews/2026-07-13-autonomous-review-ledger.md`
 - Modify: `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md`
 - Modify: `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md`
@@ -3324,7 +3389,7 @@ Record:
 - `formal_run_authorized=false`; reference model `scientific_validation_status=engineering_default`; synthetic fixture report status `not_supported`;
 - remaining M5/M6/Windows frontend work.
 
-Change `docs/product/10_DESIGN_SELF_REVIEW.md` candidate-only language to historical approved language. Do not change D-021-D-028 semantics.
+Change `docs/product/10_DESIGN_SELF_REVIEW.md` candidate-only language to historical approved language. Do not change D-021-D-030 semantics.
 
 In the accepted lightweight amendment, update §6 to identify the approved/completed replacement plan and check only those §8 implementation items supported by this fresh gate. Preserve the original heavy-fixture measurements as historical rationale. Keep the superseded plan as a historical stub; it must not regain executable tasks or imply current authority.
 
@@ -3348,6 +3413,8 @@ $statusFiles = @(
   'docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md',
   'docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md',
   'docs/product/specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md',
+  'docs/product/specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md',
+  'docs/product/specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md',
   'docs/product/reviews/2026-07-13-autonomous-review-ledger.md',
   'docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md',
   'docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md'
@@ -3409,7 +3476,7 @@ Expected: clean tree. Only now may the project state say `M4 engineering-verifie
 | §14 fixtures and completion commands | 0, 32-36 |
 | §15 milestone completion gates | 6, 13, 20, 25, 28, 31, 36 |
 | §16 documentation migration | 36 |
-| §17 written-spec gate | Task 36 rechecks authority/status; the original design gate was satisfied by commit `bc08771`, the lightweight amendment and replacement plan were approved on 2026-07-13, and the Task 3 candidate-binding amendment was approved before the revised Task 3 |
+| §17 written-spec gate | Task 36 rechecks authority/status; the original design gate was satisfied by commit `bc08771`, the lightweight amendment/replacement plan/Task 3 were explicitly approved on 2026-07-13, and Task 7/8 identity amendments were accepted after two independent PASS reviews under the user's autonomous-continuation authorization |
 | Lightweight amendment §3.1 contract/framework layer | 2-13 |
 | Lightweight amendment §3.2 per-anchor micro layer | 14-31 |
 | Lightweight amendment §3.3 compact real-plugin scenarios | 32-33 |
@@ -3420,6 +3487,8 @@ Expected: clean tree. Only now may the project state say `M4 engineering-verifie
 | Task 3 binding amendment §§4–6 serializable semantic/reference contracts | 3-4, 6 |
 | Task 3 binding amendment §§6.4 canonical fingerprints | 8, 13, 35 |
 | Task 3 binding amendment §§7–8 runtime candidate/binder/producer boundaries | 3-4, 13, 32, 34-35 |
+| Task 7 catalog/resource identity amendment §§2–8 | 7-9, 11-13, 14-31, 35-36 |
+| Task 8 canonical fingerprint/runtime identity amendment §§2–11 | 8-9, 11-13, 32, 34-36 |
 
 ## Final self-review checklist recorded before implementation approval
 
