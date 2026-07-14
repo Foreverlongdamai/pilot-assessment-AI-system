@@ -2,7 +2,7 @@
 
 本目录是 “Development of AI-Based System for Evaluating eVTOL Pilot Training Effectiveness” 项目的产品化工作区。系统目标是把多模态飞行训练 session 转换为可追溯的证据锚点，并通过可编辑的贝叶斯网络输出飞行员能力后验分布。
 
-当前状态：**产品设计基线 v0.1 已建立；后端 M1/M2/M3 已实现并通过工程完成门。M3 只完成 native-rate 时间对齐，不包含插值、重采样或 anchor window grid。M4 的 O1–O13、H1–H5 书面规格、轻量工作流验证修订、Task 3 Reference Candidate Binding 修订与 replacement 实施计划均已于 2026-07-13 获用户批准，D-026–D-028 已接受；原四套 90 秒 fixture 实施计划已被取代且不再授权执行。Replacement Task 0–4 已分别由提交 `bc544bf`、`f56365c`、`928e9a4`、`e054620`、`1528d09` 完成；catalog、execution-plan、dependency 与不可变 request contracts 已实现，下一步为 Task 5 measurement/artifact/inventory/report contracts。真实状态仍为 18/18 已设计、0/18 production plugins 已实现；M4 尚未 engineering verified。完整产品仍为 `in_progress`，Gate B 尚未通过；18 个 AnchorPlugin、BN、runtime 和 WinUI 仍未实现。参考评估模型的科学状态仍为 `engineering_default`，synthetic fixture 为 `not_supported`。**
+当前状态：**产品设计基线 v0.1 已建立；后端 M1/M2/M3 已实现并通过工程完成门。M3 只完成 native-rate 时间对齐，不包含插值、重采样或 anchor window grid。M4 的 O1–O13、H1–H5 书面规格、轻量工作流验证修订、Task 3 Reference Candidate Binding 修订与 replacement 实施计划均已于 2026-07-13 获用户批准，D-026–D-028 已接受；原四套 90 秒 fixture 实施计划已被取代且不再授权执行。Replacement Task 0–5 已分别由提交 `bc544bf`、`f56365c`、`928e9a4`、`e054620`、`1528d09`、`b63d38b` 完成；measurement、artifact、inventory 与 report contracts 已实现，下一步为 Task 6 AnchorResult v0.2 JSON Schema/export。真实状态仍为 18/18 specified、0/18 production plugins 已实现；M4 尚未 engineering verified，`formal_run_authorized=false`。完整产品仍为 `in_progress`，Gate B 尚未通过；18 个 AnchorPlugin、BN、runtime 和 WinUI 仍未实现。参考评估模型的科学状态仍为 `engineering_default`，synthetic fixture 为 `not_supported`；现有合同测试不构成科学有效性声明。**
 
 ## 从这里开始
 
@@ -15,7 +15,7 @@
 - M4 原实施计划：[docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md](docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（历史上已批准，现已被取代且不得执行）
 - M4 轻量工作流验证修订：[docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md](docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)（已批准）
 - M4 Task 3 Reference Candidate Binding 修订：[docs/product/specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md](docs/product/specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)（已于 2026-07-13 批准；D-028）
-- M4 replacement 实施计划：[docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md](docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已于 2026-07-13 批准并按方案 A 修订；Task 0–4 已完成，下一步为 Task 5）
+- M4 replacement 实施计划：[docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md](docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已于 2026-07-13 批准并按方案 A 修订；Task 0–5 已完成，下一步为 Task 6）
 - 当前设计决策：[docs/product/DECISIONS.md](docs/product/DECISIONS.md)
 - 术语表：[docs/product/GLOSSARY.md](docs/product/GLOSSARY.md)
 - 历史后端草案：[docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md](docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md)（仅保留追溯，不再是实现依据）
@@ -49,7 +49,7 @@ uv build
 
 2026-07-12 的 M3 完成门实测为 `694 passed, 2 skipped`；两个 skip 仅对应未显式提供 repository-external CSV 的 M2/M3 opt-in 格式样例测试。配置该 CSV 后，两条格式样例 E2E 为 `2 passed`。Schema regeneration、Ruff format/lint、`ty check src`、build、tracked raw-data scan 和隔离 wheel smoke 也均通过。详细数字、golden counts 与 wheel 证据见 [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md)。
 
-这些结果只验证相应的软件合同和运行路径。格式样例是一次随意飞行记录，只用于格式、接口和时间路径；结果不证明轨迹、任务、表现、生理指标、anchor 或飞行员能力有效。M4 replacement Task 0–4 已完成，Task 4 的 focused、Task 3+4 regression 与全仓结果分别为 `39 passed`、`74 passed`、`828 passed, 2 skipped`，Ruff/ty 与内部终审均通过；这些证据只关闭 catalog/plan/request 合同，不代表任何 production AnchorPlugin 已实现，也不构成 M4 engineering verification 或科学有效性证明。
+这些结果只验证相应的软件合同和运行路径。格式样例是一次随意飞行记录，只用于格式、接口和时间路径；结果不证明轨迹、任务、表现、生理指标、anchor 或飞行员能力有效。M4 replacement Task 0–5 已完成；Task 5 的 focused、contracts/reference/request regression 与全仓结果分别为 `77 passed`、`380 passed`、`859 passed, 2 skipped`，Ruff/ty clean，两路终审 P0/P1 均为 0。上述证据只关闭 measurement/artifact/inventory/report 合同，不代表任何 production AnchorPlugin 已实现；真实计数仍为 18/18 specified、0/18 production plugins，M4 尚未 engineering verified，所有路径保持 `formal_run_authorized=false`，也不构成科学有效性证明。
 
 ## 当前产品方向
 
