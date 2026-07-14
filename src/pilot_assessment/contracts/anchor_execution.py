@@ -7,11 +7,20 @@ canonical fingerprints.  Runtime reference candidates and binding live under
 
 from __future__ import annotations
 
+import math
 from decimal import Decimal, InvalidOperation
 from enum import StrEnum
-from typing import Annotated, Literal, Self
+from typing import Annotated, Any, Literal, Self
 
-from pydantic import Field, StrictBool, StringConstraints, field_validator, model_validator
+from pydantic import (
+    Field,
+    JsonValue,
+    StrictBool,
+    StringConstraints,
+    TypeAdapter,
+    field_validator,
+    model_validator,
+)
 
 from pilot_assessment.contracts.common import (
     BundleRelativePath,
@@ -26,6 +35,7 @@ from pilot_assessment.contracts.common import (
     StrictContractModel,
     UnitInterval,
 )
+from pilot_assessment.contracts.session import CoreModality
 from pilot_assessment.contracts.synchronization import MAX_SESSION_END_NS_V0_1
 
 UNIT_NAME_PATTERN = r"^[A-Za-z0-9%*/^._-]+$"
@@ -53,6 +63,9 @@ UnitName = Annotated[
 ]
 AuditText = Annotated[str, StringConstraints(min_length=1, max_length=512)]
 ResourceRelativePath = BundleRelativePath
+
+_STABLE_ID_ADAPTER = TypeAdapter(StableId)
+_UNIT_NAME_ADAPTER = TypeAdapter(UnitName)
 
 
 class SemanticApplicabilityStatus(StrEnum):
@@ -745,18 +758,832 @@ class ResolvedReferenceSetSnapshot(StrictContractModel):
         return self
 
 
+class DependencyKind(StrEnum):
+    RESULT = "result_dependency"
+    ARTIFACT = "artifact_dependency"
+    ALGORITHM_PROFILE = "algorithm_profile_dependency"
+    PREPROCESSING = "preprocessing_dependency"
+
+
+class ScientificValidationStatus(StrEnum):
+    ENGINEERING_DEFAULT = "engineering_default"
+    EXPERT_REVIEWED = "expert_reviewed"
+    CALIBRATED = "calibrated"
+    INTERNALLY_VALIDATED = "internally_validated"
+    EXTERNALLY_VALIDATED = "externally_validated"
+    NOT_SUPPORTED = "not_supported"
+
+
+class AnchorLifecycle(StrEnum):
+    ACTIVE = "active"
+    DEPRECATED = "deprecated"
+    RETIRED = "retired"
+
+
+_INPUT_DTYPE_IDS = REFERENCE_DTYPE_IDS
+_QUALITY_GATE_FIELD_NAMES = frozenset(
+    {
+        "quality",
+        "quality_gate",
+        "quality_gates",
+        "quality_transform",
+        "min_valid_coverage",
+        "failed_quality",
+        "invalid_quality",
+        "binary_quality_v1",
+    }
+)
+
+
+def _require_unique_by(values: tuple[Any, ...], key: Any, label: str) -> None:
+    keys = tuple(key(value) for value in values)
+    if len(keys) != len(set(keys)):
+        raise ValueError(f"{label} must be unique")
+
+
+def _validate_projection_paths(
+    context_paths: tuple[str, ...], semantic_paths: tuple[str, ...]
+) -> None:
+    for values, prefix, label in (
+        (context_paths, "context.", "context paths"),
+        (semantic_paths, "semantic.", "semantic paths"),
+    ):
+        _require_unique(values, label)
+        _require_sorted(values, label)
+        if any(not value.startswith(prefix) or value == prefix for value in values):
+            raise ValueError(f"{label} must use the {prefix[:-1]} namespace")
+
+
+def _validate_json_tree(value: object, *, reject_quality_fields: bool = False) -> None:
+    if isinstance(value, float) and not math.isfinite(value):
+        raise ValueError("JSON numbers must be finite")
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if reject_quality_fields and str(key) in _QUALITY_GATE_FIELD_NAMES:
+                raise ValueError("quality-gate fields are not part of the M4 contract")
+            _validate_json_tree(child, reject_quality_fields=reject_quality_fields)
+    elif isinstance(value, (list, tuple)):
+        for child in value:
+            _validate_json_tree(child, reject_quality_fields=reject_quality_fields)
+
+
+def _validate_descriptor(descriptor: dict[str, JsonValue], payload_kind: str) -> None:
+    _validate_json_tree(descriptor)
+    if descriptor.get("type") != payload_kind:
+        raise ValueError("schema descriptor type must equal payload kind")
+    if payload_kind == "table":
+        fields = descriptor.get("fields")
+        order_keys = descriptor.get("canonical_order_keys")
+        if not isinstance(fields, list) or not fields:
+            raise ValueError("table descriptor requires non-empty ordered fields")
+        if not isinstance(order_keys, list) or not order_keys:
+            raise ValueError("table descriptor requires canonical order keys")
+        names: list[str] = []
+        for field in fields:
+            if not isinstance(field, dict) or not {
+                "name",
+                "dtype",
+                "unit",
+                "nullable",
+            } <= set(field):
+                raise ValueError("table descriptor fields require name, dtype, unit and nullable")
+            try:
+                name = _STABLE_ID_ADAPTER.validate_python(field["name"], strict=True)
+                _UNIT_NAME_ADAPTER.validate_python(field["unit"], strict=True)
+            except ValueError as error:
+                raise ValueError("table descriptor field name or unit is invalid") from error
+            dtype = field["dtype"]
+            if not isinstance(dtype, str) or dtype not in REFERENCE_DTYPE_IDS:
+                raise ValueError("table descriptor field dtype is not a supported primitive")
+            if type(field["nullable"]) is not bool:
+                raise ValueError("table descriptor field nullable must be a strict boolean")
+            names.append(name)
+        if len(names) != len(set(names)):
+            raise ValueError("table descriptor field names must be unique")
+        if (
+            any(not isinstance(key, str) for key in order_keys)
+            or len(order_keys) != len(set(order_keys))
+            or not set(order_keys) <= set(names)
+        ):
+            raise ValueError("table descriptor order keys must be unique field names")
+    else:
+        media_type = descriptor.get("media_type")
+        content_encoding = descriptor.get("content_encoding")
+        if (
+            not isinstance(media_type, str)
+            or not media_type
+            or media_type.strip() != media_type
+            or "/" not in media_type
+            or not isinstance(content_encoding, str)
+            or not content_encoding
+            or content_encoding.strip() != content_encoding
+        ):
+            raise ValueError("blob descriptor requires canonical media_type and content_encoding")
+        if "fields" in descriptor or "canonical_order_keys" in descriptor:
+            raise ValueError("blob descriptor forbids table fields and canonical order keys")
+
+
+def _validate_inline_schema_identities(
+    schemas: tuple[tuple[str, dict[str, JsonValue], str], ...],
+) -> None:
+    identities: dict[str, tuple[str, dict[str, JsonValue]]] = {}
+    for schema_id, descriptor, payload_kind in schemas:
+        identity = (payload_kind, descriptor)
+        existing = identities.setdefault(schema_id, identity)
+        if existing != identity:
+            raise ValueError("one inline schema ID cannot identify multiple descriptors")
+
+
+def _validate_definition_collections(
+    *,
+    required_streams: tuple[CoreModality, ...],
+    required_context_paths: tuple[str, ...],
+    required_semantic_paths: tuple[str, ...],
+    required_reference_ids: tuple[str, ...],
+    dependencies: tuple[Any, ...],
+    artifact_recipes: tuple[Any, ...] = (),
+) -> None:
+    _require_unique(tuple(item.value for item in required_streams), "required streams")
+    _validate_projection_paths(required_context_paths, required_semantic_paths)
+    _require_unique(required_reference_ids, "required reference IDs")
+    _require_sorted(required_reference_ids, "required reference IDs")
+    _require_unique_by(dependencies, lambda item: item.dependency_id, "dependency IDs")
+    _require_unique_by(artifact_recipes, lambda item: item.artifact_id, "artifact recipe IDs")
+    _validate_inline_schema_identities(
+        tuple(
+            (item.schema_id, item.schema_descriptor, item.payload_kind) for item in artifact_recipes
+        )
+    )
+
+
+class AnchorDependency(StrictContractModel):
+    dependency_id: StableId
+    kind: DependencyKind
+    target_anchor_id: StableId | None = None
+    target_resource_id: StableId | None = None
+    expected_schema_id: StableId | None = None
+    expected_artifact_kind: StableId | None = None
+    required: StrictBool
+
+    @model_validator(mode="after")
+    def validate_kind_matrix(self) -> Self:
+        anchor = self.target_anchor_id is not None
+        resource = self.target_resource_id is not None
+        schema = self.expected_schema_id is not None
+        artifact_kind = self.expected_artifact_kind is not None
+        valid = {
+            DependencyKind.RESULT: anchor and not resource and schema and not artifact_kind,
+            DependencyKind.ARTIFACT: anchor and resource and schema and artifact_kind,
+            DependencyKind.ALGORITHM_PROFILE: not anchor
+            and resource
+            and schema
+            and not artifact_kind,
+            DependencyKind.PREPROCESSING: not anchor and resource and schema and artifact_kind,
+        }[self.kind]
+        if not valid:
+            raise ValueError("dependency fields do not match dependency kind")
+        return self
+
+
+class AnchorArtifactRecipe(StrictContractModel):
+    artifact_id: StableId
+    kind: StableId
+    schema_id: StableId
+    schema_descriptor: dict[StableId, JsonValue]
+    payload_kind: Literal["table", "blob"]
+
+    @model_validator(mode="after")
+    def validate_inline_schema(self) -> Self:
+        _validate_descriptor(self.schema_descriptor, self.payload_kind)
+        return self
+
+
+class PreprocessingDependencySpec(StrictContractModel):
+    dependency_id: StableId
+    expected_schema_id: StableId
+    expected_artifact_kind: StableId
+
+
+class ResolvedPreprocessingDependencyBinding(StrictContractModel):
+    dependency_id: StableId
+    target_recipe_id: StableId
+
+
+class AnchorPluginDefinition(StrictContractModel):
+    contract_id: Literal["anchor-plugin-definition"] = "anchor-plugin-definition"
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    anchor_id: StableId
+    definition_version: StableId
+    plugin_id: StableId
+    plugin_version: StableId
+    api_version: Literal["0.1.0"]
+    required_streams: tuple[CoreModality, ...]
+    required_context_paths: tuple[StableId, ...]
+    required_semantic_paths: tuple[StableId, ...]
+    required_reference_ids: tuple[StableId, ...]
+    dependencies: tuple[AnchorDependency, ...]
+    parameter_schema_id: StableId
+    measurement_schema_id: StableId
+    artifact_recipes: tuple[AnchorArtifactRecipe, ...]
+
+    @model_validator(mode="after")
+    def validate_definition(self) -> Self:
+        _validate_definition_collections(
+            required_streams=self.required_streams,
+            required_context_paths=self.required_context_paths,
+            required_semantic_paths=self.required_semantic_paths,
+            required_reference_ids=self.required_reference_ids,
+            dependencies=self.dependencies,
+            artifact_recipes=self.artifact_recipes,
+        )
+        return self
+
+
+class PreprocessingProviderDefinition(StrictContractModel):
+    contract_id: Literal["preprocessing-provider-definition"] = "preprocessing-provider-definition"
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    provider_id: StableId
+    provider_version: StableId
+    api_version: Literal["0.1.0"]
+    required_streams: tuple[CoreModality, ...]
+    required_context_paths: tuple[StableId, ...]
+    required_semantic_paths: tuple[StableId, ...]
+    required_reference_ids: tuple[StableId, ...]
+    dependencies: tuple[PreprocessingDependencySpec, ...]
+    parameter_schema_id: StableId
+    output_schema_id: StableId
+    output_schema_descriptor: dict[StableId, JsonValue]
+    artifact_kind: StableId
+    output_payload_kind: Literal["table", "blob"]
+
+    @model_validator(mode="after")
+    def validate_definition(self) -> Self:
+        _validate_definition_collections(
+            required_streams=self.required_streams,
+            required_context_paths=self.required_context_paths,
+            required_semantic_paths=self.required_semantic_paths,
+            required_reference_ids=self.required_reference_ids,
+            dependencies=self.dependencies,
+        )
+        _validate_descriptor(self.output_schema_descriptor, self.output_payload_kind)
+        return self
+
+
+class ContentMemberIdentity(StrictContractModel):
+    package_relative_path: BundleRelativePath
+    content_sha256: Sha256Digest
+
+
+class PythonRuntimeIdentity(StrictContractModel):
+    implementation_name: str
+    version: tuple[NonNegativeInt, NonNegativeInt, NonNegativeInt]
+    cache_tag: str
+    soabi: str
+
+
+class NumericRuntimeIdentity(StrictContractModel):
+    normalized_name: str
+    version: str
+    record_content_sha256: Sha256Digest
+
+
+def _validate_registry_members(
+    implementation_members: tuple[ContentMemberIdentity, ...],
+    resource_members: tuple[ContentMemberIdentity, ...],
+    numeric_runtimes: tuple[NumericRuntimeIdentity, ...],
+) -> None:
+    members = (*implementation_members, *resource_members)
+    paths = tuple(item.package_relative_path for item in members)
+    if len(paths) != len(set(paths)) or len(paths) != len({path.casefold() for path in paths}):
+        raise ValueError("registry member paths must be unique without aliases")
+    for group, label in (
+        (implementation_members, "implementation members"),
+        (resource_members, "resource members"),
+    ):
+        group_paths = tuple(item.package_relative_path for item in group)
+        if group_paths != tuple(sorted(group_paths)):
+            raise ValueError(f"registry {label} must use canonical path order")
+    _require_unique_by(
+        numeric_runtimes, lambda item: item.normalized_name.casefold(), "numeric runtimes"
+    )
+    runtime_names = tuple(item.normalized_name.casefold() for item in numeric_runtimes)
+    if runtime_names != tuple(sorted(runtime_names)):
+        raise ValueError("numeric runtimes must use canonical normalized-name order")
+
+
+class PluginRegistryEntry(StrictContractModel):
+    anchor_id: StableId
+    definition_version: StableId
+    plugin_id: StableId
+    plugin_version: StableId
+    api_version: Literal["0.1.0"]
+    factory_module: str
+    factory_symbol: str
+    allowed_package_namespace: str
+    definition_fingerprint: Sha256Digest
+    parameter_schema_id: StableId
+    parameter_schema_sha256: Sha256Digest
+    measurement_schema_id: StableId
+    measurement_schema_sha256: Sha256Digest
+    artifact_schema_hashes: dict[StableId, Sha256Digest]
+    implementation_members: tuple[ContentMemberIdentity, ...]
+    resource_members: tuple[ContentMemberIdentity, ...]
+    python_runtime: PythonRuntimeIdentity
+    numeric_runtimes: tuple[NumericRuntimeIdentity, ...]
+    implementation_digest: Sha256Digest
+
+    @model_validator(mode="after")
+    def validate_registry_entry(self) -> Self:
+        if not (
+            self.factory_module == self.allowed_package_namespace
+            or self.factory_module.startswith(f"{self.allowed_package_namespace}.")
+        ):
+            raise ValueError("factory module lies outside the allowed package namespace")
+        if tuple(self.artifact_schema_hashes) != tuple(sorted(self.artifact_schema_hashes)):
+            raise ValueError("artifact schema hashes must use canonical schema order")
+        _validate_registry_members(
+            self.implementation_members, self.resource_members, self.numeric_runtimes
+        )
+        return self
+
+
+class PreprocessingRegistryEntry(StrictContractModel):
+    provider_id: StableId
+    provider_version: StableId
+    api_version: Literal["0.1.0"]
+    factory_module: str
+    factory_symbol: str
+    allowed_package_namespace: str
+    definition_fingerprint: Sha256Digest
+    parameter_schema_id: StableId
+    parameter_schema_sha256: Sha256Digest
+    output_schema_id: StableId
+    output_schema_sha256: Sha256Digest
+    artifact_kind: StableId
+    output_payload_kind: Literal["table", "blob"]
+    implementation_members: tuple[ContentMemberIdentity, ...]
+    resource_members: tuple[ContentMemberIdentity, ...]
+    python_runtime: PythonRuntimeIdentity
+    numeric_runtimes: tuple[NumericRuntimeIdentity, ...]
+    implementation_digest: Sha256Digest
+
+    @model_validator(mode="after")
+    def validate_registry_entry(self) -> Self:
+        if not (
+            self.factory_module == self.allowed_package_namespace
+            or self.factory_module.startswith(f"{self.allowed_package_namespace}.")
+        ):
+            raise ValueError("factory module lies outside the allowed package namespace")
+        _validate_registry_members(
+            self.implementation_members, self.resource_members, self.numeric_runtimes
+        )
+        return self
+
+
+class AnchorRuntimeRegistry(StrictContractModel):
+    contract_id: Literal["anchor-runtime-registry"] = "anchor-runtime-registry"
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    entries: tuple[PluginRegistryEntry, ...]
+    preprocessors: tuple[PreprocessingRegistryEntry, ...]
+
+    @model_validator(mode="after")
+    def validate_inventory(self) -> Self:
+        entry_keys = tuple((item.anchor_id, item.definition_version) for item in self.entries)
+        if entry_keys != tuple(sorted(entry_keys)):
+            raise ValueError("registry entries must use canonical anchor order")
+        preprocessor_keys = tuple(
+            (item.provider_id, item.provider_version) for item in self.preprocessors
+        )
+        if preprocessor_keys != tuple(sorted(preprocessor_keys)):
+            raise ValueError("registry preprocessors must use canonical provider order")
+        _require_unique_by(
+            self.entries,
+            lambda item: (item.anchor_id, item.definition_version),
+            "registry anchor keys",
+        )
+        _require_unique_by(
+            self.entries,
+            lambda item: (item.plugin_id, item.plugin_version),
+            "registry plugin keys",
+        )
+        _require_unique_by(
+            self.preprocessors,
+            lambda item: (item.provider_id, item.provider_version),
+            "registry provider keys",
+        )
+        return self
+
+
+class AnchorCatalogEntry(StrictContractModel):
+    anchor_id: StableId
+    definition_version: StableId
+    lifecycle: AnchorLifecycle
+    required: StrictBool
+    canonical_order: NonNegativeInt
+    plugin_id: StableId
+    plugin_version: StableId
+    parameter_schema_id: StableId
+    scorer_id: StableId
+    required_inputs: tuple[StableId, ...]
+    dependencies: tuple[AnchorDependency, ...]
+    artifact_recipes: tuple[AnchorArtifactRecipe, ...]
+
+    @model_validator(mode="after")
+    def validate_entry(self) -> Self:
+        _require_unique(self.required_inputs, "catalog required inputs")
+        _require_unique_by(self.dependencies, lambda item: item.dependency_id, "dependency IDs")
+        _require_unique_by(
+            self.artifact_recipes, lambda item: item.artifact_id, "artifact recipe IDs"
+        )
+        return self
+
+
+class AnchorCatalog(StrictContractModel):
+    contract_id: Literal["anchor-catalog"] = "anchor-catalog"
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    profile_id: StableId
+    profile_version: StableId
+    scientific_validation_status: ScientificValidationStatus
+    entries: tuple[AnchorCatalogEntry, ...]
+    catalog_fingerprint: Sha256Digest
+
+    @model_validator(mode="after")
+    def validate_inventory(self) -> Self:
+        _require_unique_by(
+            self.entries,
+            lambda item: (item.anchor_id, item.definition_version),
+            "catalog anchor keys",
+        )
+        ordered = tuple(
+            sorted(self.entries, key=lambda item: (item.canonical_order, item.anchor_id))
+        )
+        if self.entries != ordered:
+            raise ValueError("catalog entries must use canonical order")
+        _validate_inline_schema_identities(
+            tuple(
+                (recipe.schema_id, recipe.schema_descriptor, recipe.payload_kind)
+                for entry in self.entries
+                for recipe in entry.artifact_recipes
+            )
+        )
+        return self
+
+
+class ResolvedAlgorithmProfile(StrictContractModel):
+    profile_id: StableId
+    profile_version: StableId
+    parameters: dict[StableId, JsonValue]
+    parameter_hash: Sha256Digest
+    implementation_digest: Sha256Digest
+    output_schema_id: StableId
+
+    @field_validator("parameters")
+    @classmethod
+    def validate_parameters(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+        _validate_json_tree(value, reject_quality_fields=True)
+        return value
+
+
+class ResolvedInputFieldContract(StrictContractModel):
+    field_name: StableId
+    dtype_id: StableId
+    unit: UnitName
+    nullable: StrictBool
+
+    @field_validator("dtype_id")
+    @classmethod
+    def require_primitive_dtype(cls, value: str) -> str:
+        if value not in _INPUT_DTYPE_IDS:
+            raise ValueError("dtype_id is not an allowed primitive dtype")
+        return value
+
+
+class ResolvedInputTableContract(StrictContractModel):
+    modality: CoreModality
+    table_role: StableId
+    stream_aligned_schema_id: StableId
+    table_aligned_schema_id: StableId
+    coordinate_frame_id: StableId
+    fields: tuple[ResolvedInputFieldContract, ...]
+
+    @field_validator("fields")
+    @classmethod
+    def validate_fields(
+        cls, value: tuple[ResolvedInputFieldContract, ...]
+    ) -> tuple[ResolvedInputFieldContract, ...]:
+        if not value:
+            raise ValueError("input table fields must be non-empty")
+        _require_unique_by(value, lambda field: field.field_name, "input table field names")
+        return value
+
+
+class ResolvedPreprocessingRecipe(StrictContractModel):
+    recipe_id: StableId
+    recipe_version: StableId
+    provider_id: StableId
+    provider_version: StableId
+    api_version: Literal["0.1.0"]
+    definition_fingerprint: Sha256Digest
+    implementation_digest: Sha256Digest
+    parameter_schema_id: StableId
+    parameter_schema_sha256: Sha256Digest
+    parameters: dict[StableId, JsonValue]
+    parameter_hash: Sha256Digest
+    required_streams: tuple[CoreModality, ...]
+    required_context_paths: tuple[StableId, ...]
+    required_semantic_paths: tuple[StableId, ...]
+    required_reference_ids: tuple[StableId, ...]
+    dependency_specs: tuple[PreprocessingDependencySpec, ...]
+    dependency_bindings: tuple[ResolvedPreprocessingDependencyBinding, ...]
+    output_schema_id: StableId
+    output_schema_descriptor: dict[StableId, JsonValue]
+    output_schema_sha256: Sha256Digest
+    artifact_kind: StableId
+    output_payload_kind: Literal["table", "blob"]
+    scope_policy: Literal["session", "phase", "event", "window"]
+
+    @model_validator(mode="after")
+    def validate_recipe(self) -> Self:
+        _validate_definition_collections(
+            required_streams=self.required_streams,
+            required_context_paths=self.required_context_paths,
+            required_semantic_paths=self.required_semantic_paths,
+            required_reference_ids=self.required_reference_ids,
+            dependencies=self.dependency_specs,
+        )
+        _require_unique_by(
+            self.dependency_bindings, lambda item: item.dependency_id, "dependency bindings"
+        )
+        if {item.dependency_id for item in self.dependency_specs} != {
+            item.dependency_id for item in self.dependency_bindings
+        }:
+            raise ValueError("provider dependency specs and bindings must match exactly")
+        _validate_descriptor(self.output_schema_descriptor, self.output_payload_kind)
+        _validate_json_tree(self.parameters, reject_quality_fields=True)
+        return self
+
+
+class ScorerPolicy(StrictContractModel):
+    scorer_id: StableId
+    scorer_version: StableId
+    policy_schema_id: StableId
+    parameters: dict[StableId, JsonValue]
+    policy_hash: Sha256Digest
+
+    @field_validator("parameters")
+    @classmethod
+    def validate_parameters(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+        _validate_json_tree(value, reject_quality_fields=True)
+        return value
+
+
+class AnchorExecutionEntry(StrictContractModel):
+    anchor_id: StableId
+    definition_version: StableId
+    lifecycle: Literal["active"]
+    canonical_order: NonNegativeInt
+    plugin_id: StableId
+    plugin_version: StableId
+    api_version: Literal["0.1.0"]
+    definition_fingerprint: Sha256Digest
+    implementation_digest: Sha256Digest
+    parameter_schema_id: StableId
+    parameters: dict[StableId, JsonValue]
+    parameter_hash: Sha256Digest
+    required_streams: tuple[CoreModality, ...]
+    required_context_paths: tuple[StableId, ...]
+    required_semantic_paths: tuple[StableId, ...]
+    required_reference_ids: tuple[StableId, ...]
+    applicability: SemanticApplicabilityStatus
+    phase_scope: tuple[StableId, ...]
+    event_scope: tuple[StableId, ...]
+    dependencies: tuple[AnchorDependency, ...]
+    measurement_schema_id: StableId
+    result_schema_id: StableId
+    artifact_recipes: tuple[AnchorArtifactRecipe, ...]
+    temporal_recipe: dict[StableId, JsonValue]
+    scorer_policy: ScorerPolicy
+
+    @model_validator(mode="after")
+    def validate_entry(self) -> Self:
+        _validate_definition_collections(
+            required_streams=self.required_streams,
+            required_context_paths=self.required_context_paths,
+            required_semantic_paths=self.required_semantic_paths,
+            required_reference_ids=self.required_reference_ids,
+            dependencies=self.dependencies,
+            artifact_recipes=self.artifact_recipes,
+        )
+        for values, label in (
+            (self.phase_scope, "phase scope"),
+            (self.event_scope, "event scope"),
+        ):
+            _require_unique(values, label)
+            _require_sorted(values, label)
+        _validate_json_tree(self.parameters, reject_quality_fields=True)
+        _validate_json_tree(self.temporal_recipe, reject_quality_fields=True)
+        return self
+
+
+class AnchorExecutionPlan(StrictContractModel):
+    contract_id: Literal["anchor-execution-plan"] = "anchor-execution-plan"
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    plan_id: StableId
+    model_profile_id: StableId
+    scientific_validation_status: ScientificValidationStatus
+    catalog_fingerprint: Sha256Digest
+    registry_fingerprint: Sha256Digest
+    source_snapshot_fingerprint: Sha256Digest
+    synchronization_fingerprint: Sha256Digest
+    semantic_snapshot_fingerprint: Sha256Digest
+    reference_set_fingerprint: Sha256Digest
+    entries: tuple[AnchorExecutionEntry, ...]
+    input_table_contracts: tuple[ResolvedInputTableContract, ...]
+    algorithm_profiles: tuple[ResolvedAlgorithmProfile, ...]
+    preprocessing_recipes: tuple[ResolvedPreprocessingRecipe, ...]
+    parameter_fingerprint: Sha256Digest
+    plan_fingerprint: Sha256Digest
+
+    @model_validator(mode="after")
+    def validate_plan(self) -> Self:
+        _validate_inline_schema_identities(
+            (
+                *tuple(
+                    (recipe.schema_id, recipe.schema_descriptor, recipe.payload_kind)
+                    for entry in self.entries
+                    for recipe in entry.artifact_recipes
+                ),
+                *tuple(
+                    (
+                        recipe.output_schema_id,
+                        recipe.output_schema_descriptor,
+                        recipe.output_payload_kind,
+                    )
+                    for recipe in self.preprocessing_recipes
+                ),
+            )
+        )
+        self._validate_entry_inventory()
+        self._validate_input_contracts()
+        self._validate_anchor_dependencies()
+        self._validate_provider_dependencies()
+        return self
+
+    def _validate_entry_inventory(self) -> None:
+        _require_unique_by(self.entries, lambda item: item.anchor_id, "execution anchor IDs")
+        ordered = tuple(
+            sorted(self.entries, key=lambda item: (item.canonical_order, item.anchor_id))
+        )
+        if self.entries != ordered:
+            raise ValueError("execution entries must use canonical order")
+        _require_unique_by(
+            self.algorithm_profiles, lambda item: item.profile_id, "algorithm profile IDs"
+        )
+        _require_unique_by(
+            self.preprocessing_recipes, lambda item: item.recipe_id, "preprocessing recipe IDs"
+        )
+
+    def _validate_input_contracts(self) -> None:
+        keys = tuple((item.modality.value, item.table_role) for item in self.input_table_contracts)
+        if len(keys) != len(set(keys)):
+            raise ValueError("input table contract keys must be unique")
+        if keys != tuple(sorted(keys)):
+            raise ValueError("input table contracts must use canonical order")
+        stream_schema_by_modality: dict[CoreModality, str] = {}
+        for contract in self.input_table_contracts:
+            existing = stream_schema_by_modality.setdefault(
+                contract.modality, contract.stream_aligned_schema_id
+            )
+            if existing != contract.stream_aligned_schema_id:
+                raise ValueError("one modality cannot declare inconsistent stream schemas")
+        required_modalities = {
+            *(modality for entry in self.entries for modality in entry.required_streams),
+            *(
+                modality
+                for recipe in self.preprocessing_recipes
+                for modality in recipe.required_streams
+            ),
+        }
+        if set(stream_schema_by_modality) != required_modalities:
+            raise ValueError("input table contracts must exactly cover required modalities")
+
+    def _validate_anchor_dependencies(self) -> None:
+        entries = {item.anchor_id: item for item in self.entries}
+        profiles = {item.profile_id: item for item in self.algorithm_profiles}
+        recipes = {item.recipe_id: item for item in self.preprocessing_recipes}
+        graph: dict[str, set[str]] = {anchor_id: set() for anchor_id in entries}
+        for consumer in self.entries:
+            for dependency in consumer.dependencies:
+                if dependency.kind is DependencyKind.RESULT:
+                    producer = entries.get(dependency.target_anchor_id or "")
+                    if (
+                        producer is None
+                        or producer.result_schema_id != dependency.expected_schema_id
+                    ):
+                        raise ValueError("result dependency does not resolve exactly")
+                    graph[consumer.anchor_id].add(producer.anchor_id)
+                elif dependency.kind is DependencyKind.ARTIFACT:
+                    producer = entries.get(dependency.target_anchor_id or "")
+                    if producer is None:
+                        raise ValueError("artifact dependency does not resolve exactly")
+                    matches = [
+                        recipe
+                        for recipe in producer.artifact_recipes
+                        if recipe.artifact_id == dependency.target_resource_id
+                        and recipe.schema_id == dependency.expected_schema_id
+                        and recipe.kind == dependency.expected_artifact_kind
+                    ]
+                    if len(matches) != 1:
+                        raise ValueError("artifact dependency does not resolve exactly")
+                    graph[consumer.anchor_id].add(producer.anchor_id)
+                elif dependency.kind is DependencyKind.ALGORITHM_PROFILE:
+                    profile = profiles.get(dependency.target_resource_id or "")
+                    if profile is None or profile.output_schema_id != dependency.expected_schema_id:
+                        raise ValueError("algorithm profile dependency does not resolve exactly")
+                else:
+                    recipe = recipes.get(dependency.target_resource_id or "")
+                    if (
+                        recipe is None
+                        or recipe.output_schema_id != dependency.expected_schema_id
+                        or recipe.artifact_kind != dependency.expected_artifact_kind
+                    ):
+                        raise ValueError("preprocessing dependency does not resolve exactly")
+        self._require_acyclic(graph, "anchor dependency graph")
+
+    def _validate_provider_dependencies(self) -> None:
+        recipes = {item.recipe_id: item for item in self.preprocessing_recipes}
+        graph: dict[str, set[str]] = {recipe_id: set() for recipe_id in recipes}
+        provider_contracts: dict[tuple[str, str], tuple[str, str]] = {}
+        for recipe in self.preprocessing_recipes:
+            provider_key = (recipe.provider_id, recipe.provider_version)
+            contract = (recipe.parameter_schema_id, recipe.parameter_schema_sha256)
+            existing = provider_contracts.setdefault(provider_key, contract)
+            if existing != contract:
+                raise ValueError("one provider version cannot use different parameter schemas")
+            specs = {item.dependency_id: item for item in recipe.dependency_specs}
+            for binding in recipe.dependency_bindings:
+                target = recipes.get(binding.target_recipe_id)
+                spec = specs[binding.dependency_id]
+                if (
+                    target is None
+                    or target.output_schema_id != spec.expected_schema_id
+                    or target.artifact_kind != spec.expected_artifact_kind
+                ):
+                    raise ValueError("provider dependency does not resolve exactly")
+                if target.scope_policy != recipe.scope_policy:
+                    raise ValueError("provider dependency scope policies must match")
+                graph[recipe.recipe_id].add(target.recipe_id)
+        self._require_acyclic(graph, "preprocessing dependency graph")
+
+    @staticmethod
+    def _require_acyclic(graph: dict[str, set[str]], label: str) -> None:
+        visiting: set[str] = set()
+        visited: set[str] = set()
+
+        def visit(node: str) -> None:
+            if node in visiting:
+                raise ValueError(f"{label} must be acyclic")
+            if node in visited:
+                return
+            visiting.add(node)
+            for dependency in graph[node]:
+                visit(dependency)
+            visiting.remove(node)
+            visited.add(node)
+
+        for node in graph:
+            visit(node)
+
+
 __all__ = [
     "AoiDefinition",
     "AoiGeometryKind",
     "AnchorApplicability",
+    "AnchorArtifactRecipe",
+    "AnchorCatalog",
+    "AnchorCatalogEntry",
+    "AnchorDependency",
+    "AnchorExecutionEntry",
+    "AnchorExecutionPlan",
+    "AnchorLifecycle",
+    "AnchorPluginDefinition",
+    "AnchorRuntimeRegistry",
     "AuditText",
     "BaselineChannelBinding",
     "BaselineDefinition",
     "BaselineModality",
+    "ContentMemberIdentity",
     "ControlEffectMapping",
+    "DependencyKind",
     "DynamicAoiSource",
     "EnvelopeAxisLimit",
     "EnvelopeDefinition",
+    "NumericRuntimeIdentity",
+    "PluginRegistryEntry",
+    "PreprocessingDependencySpec",
+    "PreprocessingProviderDefinition",
+    "PreprocessingRegistryEntry",
+    "PythonRuntimeIdentity",
     "REFERENCE_DTYPE_IDS",
     "ReferenceAlignmentContract",
     "ReferenceFieldContract",
@@ -765,9 +1592,16 @@ __all__ = [
     "ReferenceSessionIdentity",
     "ReferenceSourceKind",
     "ReferenceTableContract",
+    "ResolvedAlgorithmProfile",
+    "ResolvedInputFieldContract",
+    "ResolvedInputTableContract",
+    "ResolvedPreprocessingDependencyBinding",
+    "ResolvedPreprocessingRecipe",
     "ResolvedReferenceDescriptor",
     "ResolvedReferenceSetSnapshot",
     "ResourceRelativePath",
+    "ScientificValidationStatus",
+    "ScorerPolicy",
     "SemanticApplicabilityStatus",
     "SemanticEvent",
     "SemanticPhase",
