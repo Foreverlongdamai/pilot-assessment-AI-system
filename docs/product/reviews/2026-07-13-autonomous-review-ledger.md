@@ -125,3 +125,18 @@
 | Resolutions | Replaced the O2 example with an explicitly non-loadable resolved projection using `parameters={}`, fixed algorithm invariants, and the exact four-key scorer/five-key parameter shape; added Task 7/8 and review-ledger links to the product overview |
 | Final internal result | Targeted re-review PASS with P0=0, P1=0, P2=0; all overview-relative links resolved. The independent status audit also PASSed with Task 7/8 still unimplemented, 18/18 specified, 0/18 production plugins, and M4 not engineering-verified |
 | Release conclusion | The docs-only Task 7/8 authority migration is consistent and may be committed. Task 7 remains the next implementation task; no formula, threshold, golden number, production-plugin count, formal-run authorization, or scientific-validity claim changed |
+
+### AR-009 — M4 Task 7 Exact Catalog and Resource Implementation
+
+| Field | Record |
+|---|---|
+| Artifacts | `anchors/catalog.py`, the exact-18 packaged catalog, 24 canonical parameter-schema resources, honest zero registry, deep-frozen plan/descriptor contracts, package tests, and the checked replacement Task 7 section |
+| Approval | Covered by the accepted Task 7 amendment and the user's temporary default-approval authorization; no formula, threshold, golden value, production-plugin claim, or formal-run boundary changed |
+| TDD evidence | Initial RED collected 60 tests: 29 passed and 31 failed because the loader/resources were absent and four required nested JSON surfaces were mutable. After implementation and adversarial hardening, focused Task 7 is `77 passed`; post-hardening full regression is `921 passed, 2 skipped`, with only two repository-external captured-format samples skipped |
+| First independent findings | Three read-only reviews found incomplete dependency/descriptor semantic locking, parameter/scorer mutations accepted after canonical reserialization, false mutation coverage caused by noncanonical test bytes, missing provider/profile oracles, a mutable artifact descriptor, and incomplete exact package assertions |
+| Late blocking finding | Final code review found both preprocessing output descriptors remained mutable after validation. New RED tests proved caller-owned and post-construction mutations; both `PreprocessingProviderDefinition` and `ResolvedPreprocessingRecipe` now recursively copy and freeze their descriptor snapshots |
+| Resolutions | Locked all 18 dependency/artifact records, all 24 raw resource identities, scorer annotations, six provider descriptors, three algorithm profiles, canonical semantic mutation paths, descriptor and plan-time JSON immutability, traversal/alias rejection, exact catalog/registry/parameter package inventory, and the public `Sha256Digest` return annotation |
+| Final internal result | Three independent final reviews PASS with P0=0, P1=0, P2=0. Ruff, format, ty, `git diff --check`, fresh wheel inventory/source-byte equality, isolated installed-resource loading, independent hardcoded hashes, and generic-catalog non-pollution probes all passed |
+| Commit | `583a1e7` (`feat: package M4 reference anchor catalog`) |
+| External review | The authorized WSL Claude CLI remained unavailable in the current environment (`claude: command not found`); no Fable5/ultracode verdict is claimed |
+| Release conclusion | Task 7 is complete and Task 8 is next. The catalog still carries the approved temporary zero fingerprint sentinel until Task 8 atomically replaces and validates it; production plugins remain 0/18, M4 remains not engineering-verified, and `formal_run_authorized=false` |

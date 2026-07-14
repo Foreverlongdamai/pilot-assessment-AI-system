@@ -14,7 +14,7 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
 - Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–2 were completed in commits `bc544bf`, `f56365c`, and `928e9a4`; the user then explicitly approved the Task 3 candidate-binding amendment, Tasks 3–6 are complete under the checked sections below, and Task 7 is next.
+- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–7 are complete in commits `bc544bf`, `f56365c`, `928e9a4`, `e054620`, `1528d09`, `b63d38b`, `93c4ddb`, and `583a1e7`; the user explicitly approved the Task 3 candidate-binding amendment and later authorized intermediate Task 7/8 closures by default while resting. Task 8 is next.
 - Current implementation truth: 18/18 reference anchors specified, 0/18 production plugins implemented; M4 is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
@@ -1410,10 +1410,10 @@ After this commit the only valid claim is: `M4-A contract/schema slice complete;
 - Create: `src/pilot_assessment/anchors/profile_data/parameters/eeg-engagement-windows-v1-parameters-0.1.json`
 - Create: `src/pilot_assessment/anchors/registry-v1.json`
 - Create: `tests/anchors/test_catalog.py`
-- Modify: `tests/contracts/test_anchor_execution_contract.py`
+- Modify: `tests/contracts/test_anchor_catalog_plan.py`
 - Modify: `tests/test_package_metadata.py`
 
-- [ ] **Step 1: Write RED catalog/resource tests**
+- [x] **Step 1: Write RED catalog/resource tests**
 
 Assert exact reference order:
 
@@ -1424,12 +1424,12 @@ O1 O2 O3 O4 O5 O6 O7 O8 O9 O10 O11 O12 O13 H1 H2 H3 H4 H5
 Assert 18 unique active anchor definitions, stable versions, declared input/typed-dependency/artifact/scorer schemas, lifecycle, canonical order, one parameter schema resource per anchor definition, and six separately named preprocessing parameter schemas for the six reference provider recipes. Implement the Task 7 amendment's exact descriptor/provider/profile identity matrices, canonical UTF-8 parameter-schema bytes, raw-byte SHA-256 values, literal per-property fragments, scorer annotations, O6 applicability-scoped weight materialization metadata, and zero-entry registry. Reject duplicate IDs/order, an exact-reference catalog with 17 or 19 entries, a missing/extra provider parameter schema, any non-canonical/duplicate-key schema resource, and any parameter schema containing a prohibited quality field. Add RED mutation probes showing nested dict/list values cannot be changed after constructing `ScorerPolicy`, `AnchorExecutionEntry.parameters/temporal_recipe`, or `ResolvedPreprocessingRecipe.parameters`, and that mutating the caller-owned input after construction cannot change the DTO snapshot. Also prove a generic test catalog can have cardinality other than 18. Typed catalog/parameter-instance/scorer fingerprints are added in Task 8 after the JCS primitive exists; Task 7 computes only raw parameter-resource SHA-256.
 
 ~~~powershell
-& .\.tools\uv\uv.exe run pytest tests/anchors/test_catalog.py tests/test_package_metadata.py -v
+& .\.tools\uv\uv.exe run pytest tests/anchors/test_catalog.py tests/contracts/test_anchor_catalog_plan.py tests/test_package_metadata.py -v
 ~~~
 
 Expected: RED because packaged resources/loaders do not exist.
 
-- [ ] **Step 2: Implement catalog loading without executable plugins**
+- [x] **Step 2: Implement catalog loading without executable plugins**
 
 Expose:
 
@@ -1442,21 +1442,23 @@ parameter_schema_sha256(schema_id: str) -> Sha256Digest
 
 All three parameter-resource callables perform one deterministic package lookup at `pilot_assessment.anchors.profile_data/parameters/<schema_id>.json`; `schema_id` is a separator-free `StableId` equal to the filename stem. They never scan or guess aliases. `load_parameter_schema_bytes` returns the exact installed authoritative bytes, `load_parameter_schema` duplicate-key parses and verifies the Task 7 canonical reserialization/meta-contract before returning a recursively frozen mapping, and `parameter_schema_sha256` is raw lowercase SHA-256 over those same bytes. Freeze every design §12 engineering default, unit, boundary policy, temporal recipe, scorer ID, and typed dependency in the catalog/parameter resources. Harden the four plan-time JSON surfaces named in Step 1 by returning `freeze_json_mapping(value)` from their field validators; Pydantic's frozen outer model alone is not sufficient. `registry-v1.json` must be valid but contain both `"entries": []` and `"preprocessors": []`; M4-B must not pretend any anchor algorithm or shared preprocessing provider is implemented.
 
-- [ ] **Step 3: Run GREEN and package-resource regression**
+- [x] **Step 3: Run GREEN and package-resource regression**
 
 ~~~powershell
-& .\.tools\uv\uv.exe run pytest tests/anchors/test_catalog.py tests/test_package_metadata.py -v
+& .\.tools\uv\uv.exe run pytest tests/anchors/test_catalog.py tests/contracts/test_anchor_catalog_plan.py tests/test_package_metadata.py -v
 & .\.tools\uv\uv.exe build
 ~~~
 
 Expected: PASS; the wheel contains the exact catalog plus all 24 explicit parameter resources (18 anchor + 6 preprocessing), while executable anchor/provider capability remains honestly empty.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
-git add src/pilot_assessment/contracts/anchor_execution.py src/pilot_assessment/anchors/catalog.py src/pilot_assessment/anchors/profile_data src/pilot_assessment/anchors/registry-v1.json tests/contracts/test_anchor_execution_contract.py tests/anchors/test_catalog.py tests/test_package_metadata.py
+git add src/pilot_assessment/contracts/anchor_execution.py src/pilot_assessment/anchors/catalog.py src/pilot_assessment/anchors/profile_data src/pilot_assessment/anchors/registry-v1.json tests/contracts/test_anchor_catalog_plan.py tests/anchors/test_catalog.py tests/test_package_metadata.py
 git commit -m "feat: package M4 reference anchor catalog"
 ~~~
+
+**Completion evidence (2026-07-13):** Commit `583a1e7` packages the exact ordered 18-entry catalog, all 24 canonical parameter resources, six preprocessing identities/descriptors, three algorithm-profile identities, and an honest zero-entry runtime registry. Focused Task 7 regression is `77 passed`; the post-hardening full suite is `921 passed, 2 skipped`, with only the two repository-external captured-format samples skipped. Ruff, ty, canonical-byte checks, fresh wheel source-byte equality, isolated installed-resource loading, and three independent final reviews all passed with P0/P1/P2 equal to zero. This closes Task 7 resources only: production plugins remain 0/18, the temporary zero catalog fingerprint remains until Task 8, and `formal_run_authorized=false`.
 
 ## M4-B: execution framework with injected fake plugins
 
