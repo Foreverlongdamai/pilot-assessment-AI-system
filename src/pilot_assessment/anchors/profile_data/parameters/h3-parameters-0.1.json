@@ -1,0 +1,60 @@
+{
+  "$id": "urn:cranfield:pilot-assessment:parameters:h3-parameters-0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {},
+  "required": [],
+  "type": "object",
+  "x-fixed-algorithm": {
+    "implementation_id": "h3-off-task-dwell",
+    "implementation_version": "0.1.0",
+    "source_section": "12.16",
+    "source_spec": "m4-anchor-evidence-availability-design-2026-07-13"
+  },
+  "x-schema-id": "h3-parameters-0.1",
+  "x-scientific-status": "engineering_default",
+  "x-scorer-policy-default": {
+    "parameters": {
+      "computed_u_overrides": [
+        "no_gaze_dwell"
+      ],
+      "evaluation_order": [
+        "desired",
+        "adequate"
+      ],
+      "fallback_state": "unacceptable",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<",
+              "unit": "percent",
+              "value": 5
+            }
+          ],
+          "state": "desired"
+        },
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<",
+              "unit": "percent",
+              "value": 15
+            }
+          ],
+          "state": "adequate"
+        }
+      ],
+      "state_order": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ]
+    },
+    "policy_schema_id": "ordered-dau-threshold-policy-v0.1",
+    "scorer_id": "hard_threshold_v1",
+    "scorer_version": "0.1.0"
+  }
+}

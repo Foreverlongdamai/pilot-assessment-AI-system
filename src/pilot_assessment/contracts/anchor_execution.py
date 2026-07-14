@@ -1094,6 +1094,12 @@ class AnchorArtifactRecipe(StrictContractModel):
     schema_descriptor: dict[StableId, JsonValue]
     payload_kind: Literal["table", "blob"]
 
+    @field_validator("schema_descriptor")
+    @classmethod
+    def freeze_schema_descriptor(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+        _validate_json_tree(value, reject_quality_fields=False)
+        return freeze_json_mapping(value)
+
     @model_validator(mode="after")
     def validate_inline_schema(self) -> Self:
         _validate_descriptor(self.schema_descriptor, self.payload_kind)
@@ -1157,6 +1163,14 @@ class PreprocessingProviderDefinition(StrictContractModel):
     output_schema_descriptor: dict[StableId, JsonValue]
     artifact_kind: StableId
     output_payload_kind: Literal["table", "blob"]
+
+    @field_validator("output_schema_descriptor")
+    @classmethod
+    def freeze_output_schema_descriptor(
+        cls, value: dict[str, JsonValue]
+    ) -> dict[str, JsonValue]:
+        _validate_json_tree(value, reject_quality_fields=False)
+        return freeze_json_mapping(value)
 
     @model_validator(mode="after")
     def validate_definition(self) -> Self:
@@ -1444,6 +1458,20 @@ class ResolvedPreprocessingRecipe(StrictContractModel):
     output_payload_kind: Literal["table", "blob"]
     scope_policy: Literal["session", "phase", "event", "window"]
 
+    @field_validator("parameters")
+    @classmethod
+    def freeze_parameters(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+        _validate_json_tree(value, reject_quality_fields=True)
+        return freeze_json_mapping(value)
+
+    @field_validator("output_schema_descriptor")
+    @classmethod
+    def freeze_output_schema_descriptor(
+        cls, value: dict[str, JsonValue]
+    ) -> dict[str, JsonValue]:
+        _validate_json_tree(value, reject_quality_fields=False)
+        return freeze_json_mapping(value)
+
     @model_validator(mode="after")
     def validate_recipe(self) -> Self:
         _validate_definition_collections(
@@ -1461,7 +1489,6 @@ class ResolvedPreprocessingRecipe(StrictContractModel):
         }:
             raise ValueError("provider dependency specs and bindings must match exactly")
         _validate_descriptor(self.output_schema_descriptor, self.output_payload_kind)
-        _validate_json_tree(self.parameters, reject_quality_fields=True)
         return self
 
 
@@ -1476,7 +1503,7 @@ class ScorerPolicy(StrictContractModel):
     @classmethod
     def validate_parameters(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
         _validate_json_tree(value, reject_quality_fields=True)
-        return value
+        return freeze_json_mapping(value)
 
 
 class AnchorExecutionEntry(StrictContractModel):
@@ -1506,6 +1533,12 @@ class AnchorExecutionEntry(StrictContractModel):
     temporal_recipe: dict[StableId, JsonValue]
     scorer_policy: ScorerPolicy
 
+    @field_validator("parameters", "temporal_recipe")
+    @classmethod
+    def freeze_plan_json(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+        _validate_json_tree(value, reject_quality_fields=True)
+        return freeze_json_mapping(value)
+
     @model_validator(mode="after")
     def validate_entry(self) -> Self:
         _validate_definition_collections(
@@ -1522,8 +1555,6 @@ class AnchorExecutionEntry(StrictContractModel):
         ):
             _require_unique(values, label)
             _require_sorted(values, label)
-        _validate_json_tree(self.parameters, reject_quality_fields=True)
-        _validate_json_tree(self.temporal_recipe, reject_quality_fields=True)
         return self
 
 

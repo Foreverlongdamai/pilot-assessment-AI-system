@@ -1,0 +1,89 @@
+{
+  "$id": "urn:cranfield:pilot-assessment:parameters:o10-parameters-0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "adequate_exit_confirmation_ns": {
+      "default": 100000000,
+      "minimum": 0,
+      "type": "integer",
+      "x-comparison": "gte",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ns"
+    },
+    "desired_hold_ns": {
+      "default": 2000000000,
+      "minimum": 0,
+      "type": "integer",
+      "x-comparison": "gte",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ns"
+    },
+    "recovery_horizon_ns": {
+      "default": 15000000000,
+      "exclusiveMinimum": 0,
+      "type": "integer",
+      "x-comparison": "gt",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ns"
+    }
+  },
+  "required": [
+    "adequate_exit_confirmation_ns",
+    "desired_hold_ns",
+    "recovery_horizon_ns"
+  ],
+  "type": "object",
+  "x-fixed-algorithm": {
+    "implementation_id": "o10-recovery-time",
+    "implementation_version": "0.1.0",
+    "source_section": "12.10",
+    "source_spec": "m4-anchor-evidence-availability-design-2026-07-13"
+  },
+  "x-schema-id": "o10-parameters-0.1",
+  "x-scientific-status": "engineering_default",
+  "x-scorer-policy-default": {
+    "parameters": {
+      "computed_u_overrides": [
+        "recovery_missed"
+      ],
+      "evaluation_order": [
+        "desired",
+        "adequate"
+      ],
+      "fallback_state": "unacceptable",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<=",
+              "unit": "s",
+              "value": 5
+            }
+          ],
+          "state": "desired"
+        },
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<=",
+              "unit": "s",
+              "value": 10
+            }
+          ],
+          "state": "adequate"
+        }
+      ],
+      "state_order": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ]
+    },
+    "policy_schema_id": "ordered-dau-threshold-policy-v0.1",
+    "scorer_id": "hard_threshold_v1",
+    "scorer_version": "0.1.0"
+  }
+}

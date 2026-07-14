@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from copy import deepcopy
 from enum import StrEnum
+from typing import Any, Literal, cast
 
 import pytest
-from pydantic import ValidationError
+from pydantic import JsonValue, ValidationError
 
 from pilot_assessment.contracts.anchor_execution import (
     AnchorArtifactRecipe,
@@ -42,7 +45,7 @@ SHA_E = "e" * 64
 SHA_F = "f" * 64
 
 
-def _table_descriptor() -> dict[str, object]:
+def _table_descriptor() -> dict[str, JsonValue]:
     return {
         "type": "table",
         "fields": [
@@ -307,7 +310,7 @@ def _recipe(
     *,
     dependencies: tuple[PreprocessingDependencySpec, ...] = (),
     bindings: tuple[ResolvedPreprocessingDependencyBinding, ...] = (),
-    scope_policy: str = "session",
+    scope_policy: Literal["session", "phase", "event", "window"] = "session",
 ) -> ResolvedPreprocessingRecipe:
     return ResolvedPreprocessingRecipe(
         recipe_id=recipe_id,
@@ -357,7 +360,7 @@ def test_public_enums_and_strict_round_trips_are_exact() -> None:
     with pytest.raises(ValidationError):
         AnchorExecutionPlan.model_validate({**plan.model_dump(), "test_only_partial_plan": True})
     with pytest.raises(ValidationError):
-        plan.plan_id = "changed"  # type: ignore[misc]
+        plan.plan_id = "changed"  # ty: ignore[invalid-assignment]
 
 
 @pytest.mark.parametrize(
@@ -611,6 +614,103 @@ def test_parameters_reject_nonfinite_and_quality_gate_fields_recursively() -> No
     payload["parameters"] = {"nested": {"min_valid_coverage": 0.5}}
     with pytest.raises(ValidationError):
         AnchorExecutionEntry.model_validate(payload)
+
+
+def _scorer_with_parameters(parameters: dict[str, JsonValue]) -> ScorerPolicy:
+    return ScorerPolicy(
+        scorer_id="hard-threshold-v1",
+        scorer_version="0.1.0",
+        policy_schema_id="ordered-dau-threshold-policy-v0.1",
+        parameters=parameters,
+        policy_hash=SHA_A,
+    )
+
+
+def _entry_with_json_surface(field_name: str, value: dict[str, JsonValue]) -> AnchorExecutionEntry:
+    payload = _execution_entry().model_dump(mode="python")
+    payload[field_name] = value
+    return AnchorExecutionEntry.model_validate(payload)
+
+
+def _recipe_with_parameters(parameters: dict[str, JsonValue]) -> ResolvedPreprocessingRecipe:
+    payload = _recipe("movement-events-v1").model_dump(mode="python")
+    payload["parameters"] = parameters
+    return ResolvedPreprocessingRecipe.model_validate(payload)
+
+
+@pytest.mark.parametrize(
+    ("factory", "field_name"),
+    [
+        (_scorer_with_parameters, "parameters"),
+        (lambda value: _entry_with_json_surface("parameters", value), "parameters"),
+        (
+            lambda value: _entry_with_json_surface("temporal_recipe", value),
+            "temporal_recipe",
+        ),
+        (_recipe_with_parameters, "parameters"),
+    ],
+    ids=(
+        "scorer-policy-parameters",
+        "execution-entry-parameters",
+        "execution-entry-temporal-recipe",
+        "preprocessing-recipe-parameters",
+    ),
+)
+def test_plan_time_json_surfaces_are_deep_immutable_snapshots(
+    factory: Callable[[dict[str, JsonValue]], Any], field_name: str
+) -> None:
+    caller_owned: dict[str, JsonValue] = {
+        "nested": {"rules": [{"metric_id": "primary_value", "operator": "<=", "value": 2.0}]}
+    }
+    expected = deepcopy(caller_owned)
+
+    model = factory(caller_owned)
+    snapshot = getattr(model, field_name)
+    nested = cast(dict[str, JsonValue], caller_owned["nested"])
+    rules = cast(list[JsonValue], nested["rules"])
+    condition = cast(dict[str, JsonValue], rules[0])
+    condition["value"] = 999.0
+
+    assert snapshot == expected
+    with pytest.raises(TypeError, match="immutable"):
+        snapshot["nested"]["rules"][0]["value"] = 3.0
+    with pytest.raises(TypeError, match="immutable"):
+        snapshot["nested"]["rules"].append({"value": 4.0})
+
+
+@pytest.mark.parametrize(
+    "factory",
+    [
+        lambda descriptor: PreprocessingProviderDefinition.model_validate(
+            {
+                **_provider_definition().model_dump(mode="python"),
+                "output_schema_descriptor": descriptor,
+            }
+        ),
+        lambda descriptor: ResolvedPreprocessingRecipe.model_validate(
+            {
+                **_recipe("movement-events-v1").model_dump(mode="python"),
+                "output_schema_descriptor": descriptor,
+            }
+        ),
+    ],
+    ids=("provider-definition", "resolved-provider-recipe"),
+)
+def test_preprocessing_output_descriptors_are_deep_immutable_snapshots(
+    factory: Callable[[dict[str, JsonValue]], Any],
+) -> None:
+    caller_owned = _table_descriptor()
+    expected = deepcopy(caller_owned)
+
+    model = factory(caller_owned)
+    snapshot = model.output_schema_descriptor
+    caller_fields = cast(list[JsonValue], caller_owned["fields"])
+    caller_field = cast(dict[str, JsonValue], caller_fields[0])
+    caller_field["unit"] = "caller-mutated"
+
+    assert snapshot == expected
+    with pytest.raises(TypeError, match="immutable"):
+        snapshot["fields"][0]["unit"] = "post-construction-mutated"
 
 
 def test_provider_recipe_bindings_are_exact_acyclic_and_scope_compatible() -> None:

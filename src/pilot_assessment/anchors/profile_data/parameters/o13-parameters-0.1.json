@@ -1,0 +1,105 @@
+{
+  "$id": "urn:cranfield:pilot-assessment:parameters:o13-parameters-0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "control_weight_o1": {
+      "default": 0.5,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ratio"
+    },
+    "control_weight_o5": {
+      "default": 0.25,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ratio"
+    },
+    "control_weight_o7": {
+      "default": 0.25,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ratio"
+    },
+    "signed_hr_activation_full_pct": {
+      "default": 20.0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "anchor_plugin",
+      "x-unit": "percent"
+    },
+    "signed_hr_activation_start_pct": {
+      "default": 10.0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "anchor_plugin",
+      "x-unit": "percent"
+    }
+  },
+  "required": [
+    "control_weight_o1",
+    "control_weight_o5",
+    "control_weight_o7",
+    "signed_hr_activation_full_pct",
+    "signed_hr_activation_start_pct"
+  ],
+  "type": "object",
+  "x-fixed-algorithm": {
+    "implementation_id": "o13-physio-control-coupling",
+    "implementation_version": "0.1.0",
+    "source_section": "12.13",
+    "source_spec": "m4-anchor-evidence-availability-design-2026-07-13"
+  },
+  "x-schema-id": "o13-parameters-0.1",
+  "x-scientific-status": "engineering_default",
+  "x-scorer-policy-default": {
+    "parameters": {
+      "computed_u_overrides": [
+        "physio_trace_unavailable"
+      ],
+      "evaluation_order": [
+        "desired",
+        "adequate"
+      ],
+      "fallback_state": "unacceptable",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<",
+              "unit": "percent",
+              "value": 5
+            }
+          ],
+          "state": "desired"
+        },
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<",
+              "unit": "percent",
+              "value": 20
+            }
+          ],
+          "state": "adequate"
+        }
+      ],
+      "state_order": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ]
+    },
+    "policy_schema_id": "ordered-dau-threshold-policy-v0.1",
+    "scorer_id": "hard_threshold_v1",
+    "scorer_version": "0.1.0"
+  }
+}

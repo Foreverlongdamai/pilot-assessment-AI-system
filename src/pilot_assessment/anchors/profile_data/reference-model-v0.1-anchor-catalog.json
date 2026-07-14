@@ -1,0 +1,1424 @@
+{
+  "catalog_fingerprint": "0000000000000000000000000000000000000000000000000000000000000000",
+  "contract_id": "anchor-catalog",
+  "contract_version": "0.1.0",
+  "entries": [
+    {
+      "anchor_id": "O1",
+      "artifact_recipes": [
+        {
+          "artifact_id": "desired-envelope-mask",
+          "kind": "sample_mask",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "phase_id",
+              "t_ns",
+              "source_row_id",
+              "axis_order",
+              "axis_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "phase_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "source_row_id",
+                "nullable": false,
+                "unit": "index"
+              },
+              {
+                "dtype": "i64",
+                "name": "axis_order",
+                "nullable": false,
+                "unit": "index"
+              },
+              {
+                "dtype": "utf8",
+                "name": "axis_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "bool",
+                "name": "inside",
+                "nullable": false,
+                "unit": "bool"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "desired-envelope-mask-v0.1"
+        }
+      ],
+      "canonical_order": 0,
+      "definition_version": "0.1.0",
+      "dependencies": [],
+      "lifecycle": "active",
+      "parameter_schema_id": "o1-parameters-0.1",
+      "plugin_id": "o1-phase-state-precision",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.X",
+        "semantic.phases",
+        "semantic.envelopes"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "O2",
+      "artifact_recipes": [
+        {
+          "artifact_id": "tracking-error-trace",
+          "kind": "sample_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "phase_id",
+              "t_ns",
+              "source_row_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "phase_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "source_row_id",
+                "nullable": false,
+                "unit": "index"
+              },
+              {
+                "dtype": "f64",
+                "name": "error_x",
+                "nullable": false,
+                "unit": "ft"
+              },
+              {
+                "dtype": "f64",
+                "name": "error_y",
+                "nullable": false,
+                "unit": "ft"
+              },
+              {
+                "dtype": "f64",
+                "name": "error_z",
+                "nullable": false,
+                "unit": "ft"
+              },
+              {
+                "dtype": "f64",
+                "name": "error_norm",
+                "nullable": false,
+                "unit": "ft"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "tracking-error-trace-v0.1"
+        }
+      ],
+      "canonical_order": 1,
+      "definition_version": "0.1.0",
+      "dependencies": [],
+      "lifecycle": "active",
+      "parameter_schema_id": "o2-parameters-0.1",
+      "plugin_id": "o2-peak-tracking-excursion",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.X",
+        "reference.task_reference",
+        "semantic.phases"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "O3",
+      "artifact_recipes": [
+        {
+          "artifact_id": "capture-trace",
+          "kind": "event_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "event_id",
+              "t_ns",
+              "source_row_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "event_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "source_row_id",
+                "nullable": false,
+                "unit": "index"
+              },
+              {
+                "dtype": "f64",
+                "name": "overshoot",
+                "nullable": false,
+                "unit": "ft"
+              },
+              {
+                "dtype": "bool",
+                "name": "inside_hover",
+                "nullable": false,
+                "unit": "bool"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "capture-trace-v0.1"
+        }
+      ],
+      "canonical_order": 2,
+      "definition_version": "0.1.0",
+      "dependencies": [],
+      "lifecycle": "active",
+      "parameter_schema_id": "o3-parameters-0.1",
+      "plugin_id": "o3-terminal-capture-quality",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.X",
+        "semantic.targets",
+        "semantic.events",
+        "semantic.envelopes"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "O4",
+      "artifact_recipes": [
+        {
+          "artifact_id": "stable-hover-mask",
+          "kind": "sample_mask",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "phase_id",
+              "t_ns",
+              "source_row_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "phase_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "source_row_id",
+                "nullable": false,
+                "unit": "index"
+              },
+              {
+                "dtype": "bool",
+                "name": "stable",
+                "nullable": false,
+                "unit": "bool"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "stable-hover-mask-v0.1"
+        }
+      ],
+      "canonical_order": 3,
+      "definition_version": "0.1.0",
+      "dependencies": [],
+      "lifecycle": "active",
+      "parameter_schema_id": "o4-parameters-0.1",
+      "plugin_id": "o4-sustained-hover-time",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.X",
+        "semantic.envelopes"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "O5",
+      "artifact_recipes": [
+        {
+          "artifact_id": "movement-events",
+          "kind": "event_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "phase_id",
+              "channel_id",
+              "event_t_ns",
+              "event_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "phase_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "channel_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "event_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "utf8",
+                "name": "event_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "event_kind",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "f64",
+                "name": "amplitude",
+                "nullable": false,
+                "unit": "percent_full_travel"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "movement-events-v0.1"
+        }
+      ],
+      "canonical_order": 4,
+      "definition_version": "0.1.0",
+      "dependencies": [
+        {
+          "dependency_id": "movement-events",
+          "expected_artifact_kind": "movement-events-table",
+          "expected_schema_id": "movement-events-v1-output-v0.1",
+          "kind": "preprocessing_dependency",
+          "required": true,
+          "target_resource_id": "movement-events-v1"
+        }
+      ],
+      "lifecycle": "active",
+      "parameter_schema_id": "o5-parameters-0.1",
+      "plugin_id": "o5-workload-rate",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.U",
+        "semantic.control_mappings"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "O6",
+      "artifact_recipes": [
+        {
+          "artifact_id": "rms-contribution-trace",
+          "kind": "component_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "phase_id",
+              "channel_id",
+              "start_t_ns",
+              "end_t_ns"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "phase_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "channel_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "start_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "end_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "f64",
+                "name": "rms",
+                "nullable": false,
+                "unit": "percent_full_travel"
+              },
+              {
+                "dtype": "f64",
+                "name": "weight",
+                "nullable": false,
+                "unit": "ratio"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "rms-contribution-trace-v0.1"
+        }
+      ],
+      "canonical_order": 5,
+      "definition_version": "0.1.0",
+      "dependencies": [],
+      "lifecycle": "active",
+      "parameter_schema_id": "o6-parameters-0.1",
+      "plugin_id": "o6-control-magnitude-rms",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.U",
+        "semantic.control_mappings"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "O7",
+      "artifact_recipes": [
+        {
+          "artifact_id": "reversal-events",
+          "kind": "event_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "phase_id",
+              "channel_id",
+              "event_t_ns",
+              "event_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "phase_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "channel_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "event_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "utf8",
+                "name": "event_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "f64",
+                "name": "amplitude",
+                "nullable": false,
+                "unit": "percent_full_travel"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "reversal-events-v0.1"
+        }
+      ],
+      "canonical_order": 6,
+      "definition_version": "0.1.0",
+      "dependencies": [
+        {
+          "dependency_id": "movement-events",
+          "expected_artifact_kind": "movement-events-table",
+          "expected_schema_id": "movement-events-v1-output-v0.1",
+          "kind": "preprocessing_dependency",
+          "required": true,
+          "target_resource_id": "movement-events-v1"
+        }
+      ],
+      "lifecycle": "active",
+      "parameter_schema_id": "o7-parameters-0.1",
+      "plugin_id": "o7-control-reversal-rate",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.U",
+        "semantic.control_mappings"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "O8",
+      "artifact_recipes": [
+        {
+          "artifact_id": "tpx-component-trace",
+          "kind": "component_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "component_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "component_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "source_anchor_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "source_result_fingerprint",
+                "nullable": false,
+                "unit": "hex"
+              },
+              {
+                "dtype": "utf8",
+                "name": "state",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "f64",
+                "name": "score",
+                "nullable": false,
+                "unit": "ratio"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "tpx-component-trace-v0.1"
+        }
+      ],
+      "canonical_order": 7,
+      "definition_version": "0.1.0",
+      "dependencies": [
+        {
+          "dependency_id": "o1-result",
+          "expected_schema_id": "anchor-result-0.2.0",
+          "kind": "result_dependency",
+          "required": true,
+          "target_anchor_id": "O1"
+        },
+        {
+          "dependency_id": "o5-result",
+          "expected_schema_id": "anchor-result-0.2.0",
+          "kind": "result_dependency",
+          "required": true,
+          "target_anchor_id": "O5"
+        }
+      ],
+      "lifecycle": "active",
+      "parameter_schema_id": "o8-parameters-0.1",
+      "plugin_id": "o8-tpx-composite",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "O9",
+      "artifact_recipes": [
+        {
+          "artifact_id": "micro-movement-events",
+          "kind": "event_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "phase_id",
+              "channel_id",
+              "event_t_ns",
+              "event_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "phase_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "channel_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "event_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "utf8",
+                "name": "event_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "f64",
+                "name": "amplitude",
+                "nullable": false,
+                "unit": "percent_full_travel"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "micro-movement-events-v0.1"
+        }
+      ],
+      "canonical_order": 8,
+      "definition_version": "0.1.0",
+      "dependencies": [
+        {
+          "dependency_id": "o1-mask",
+          "expected_artifact_kind": "sample_mask",
+          "expected_schema_id": "desired-envelope-mask-v0.1",
+          "kind": "artifact_dependency",
+          "required": true,
+          "target_anchor_id": "O1",
+          "target_resource_id": "desired-envelope-mask"
+        },
+        {
+          "dependency_id": "o4-mask",
+          "expected_artifact_kind": "sample_mask",
+          "expected_schema_id": "stable-hover-mask-v0.1",
+          "kind": "artifact_dependency",
+          "required": true,
+          "target_anchor_id": "O4",
+          "target_resource_id": "stable-hover-mask"
+        },
+        {
+          "dependency_id": "movement-events",
+          "expected_artifact_kind": "movement-events-table",
+          "expected_schema_id": "movement-events-v1-output-v0.1",
+          "kind": "preprocessing_dependency",
+          "required": true,
+          "target_resource_id": "movement-events-v1"
+        }
+      ],
+      "lifecycle": "active",
+      "parameter_schema_id": "o9-parameters-0.1",
+      "plugin_id": "o9-dead-band-activity",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.U"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "O10",
+      "artifact_recipes": [
+        {
+          "artifact_id": "recovery-events",
+          "kind": "event_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "event_id",
+              "onset_t_ns"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "event_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "onset_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "recovered_t_ns",
+                "nullable": true,
+                "unit": "ns"
+              },
+              {
+                "dtype": "f64",
+                "name": "latency_ms",
+                "nullable": false,
+                "unit": "ms"
+              },
+              {
+                "dtype": "bool",
+                "name": "missed",
+                "nullable": false,
+                "unit": "bool"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "recovery-events-v0.1"
+        }
+      ],
+      "canonical_order": 9,
+      "definition_version": "0.1.0",
+      "dependencies": [],
+      "lifecycle": "active",
+      "parameter_schema_id": "o10-parameters-0.1",
+      "plugin_id": "o10-recovery-time",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.X",
+        "semantic.events",
+        "semantic.envelopes"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "O11",
+      "artifact_recipes": [
+        {
+          "artifact_id": "response-events",
+          "kind": "event_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "event_id",
+              "channel_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "event_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "channel_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "onset_t_ns",
+                "nullable": true,
+                "unit": "ns"
+              },
+              {
+                "dtype": "f64",
+                "name": "latency_ms",
+                "nullable": false,
+                "unit": "ms"
+              },
+              {
+                "dtype": "bool",
+                "name": "correct_sign",
+                "nullable": false,
+                "unit": "bool"
+              },
+              {
+                "dtype": "bool",
+                "name": "missed",
+                "nullable": false,
+                "unit": "bool"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "response-events-v0.1"
+        }
+      ],
+      "canonical_order": 10,
+      "definition_version": "0.1.0",
+      "dependencies": [],
+      "lifecycle": "active",
+      "parameter_schema_id": "o11-parameters-0.1",
+      "plugin_id": "o11-disturbance-latency",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.U",
+        "semantic.events",
+        "semantic.control_mappings"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "O12",
+      "artifact_recipes": [
+        {
+          "artifact_id": "correction-events",
+          "kind": "event_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "event_id",
+              "exit_t_ns",
+              "channel_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "event_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "channel_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "exit_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "onset_t_ns",
+                "nullable": true,
+                "unit": "ns"
+              },
+              {
+                "dtype": "f64",
+                "name": "latency_ms",
+                "nullable": false,
+                "unit": "ms"
+              },
+              {
+                "dtype": "bool",
+                "name": "correct_sign",
+                "nullable": false,
+                "unit": "bool"
+              },
+              {
+                "dtype": "bool",
+                "name": "missed",
+                "nullable": false,
+                "unit": "bool"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "correction-events-v0.1"
+        }
+      ],
+      "canonical_order": 11,
+      "definition_version": "0.1.0",
+      "dependencies": [],
+      "lifecycle": "active",
+      "parameter_schema_id": "o12-parameters-0.1",
+      "plugin_id": "o12-envelope-drift-latency",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.X",
+        "stream.U",
+        "semantic.envelopes",
+        "semantic.control_mappings"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "O13",
+      "artifact_recipes": [
+        {
+          "artifact_id": "joined-coupling-windows",
+          "kind": "window_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "start_t_ns",
+              "end_t_ns",
+              "window_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "window_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "start_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "end_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "utf8",
+                "name": "phase_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "f64",
+                "name": "signed_delta_hr",
+                "nullable": false,
+                "unit": "percent"
+              },
+              {
+                "dtype": "f64",
+                "name": "control_score",
+                "nullable": false,
+                "unit": "ratio"
+              },
+              {
+                "dtype": "f64",
+                "name": "coupling_loss",
+                "nullable": false,
+                "unit": "percent"
+              },
+              {
+                "dtype": "utf8",
+                "name": "window_hash",
+                "nullable": false,
+                "unit": "hex"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "joined-coupling-windows-v0.1"
+        }
+      ],
+      "canonical_order": 12,
+      "definition_version": "0.1.0",
+      "dependencies": [
+        {
+          "dependency_id": "o1-profile",
+          "expected_schema_id": "o1-algorithm-profile-output-v0.1",
+          "kind": "algorithm_profile_dependency",
+          "required": true,
+          "target_resource_id": "o1-algorithm-profile"
+        },
+        {
+          "dependency_id": "o5-profile",
+          "expected_schema_id": "o5-algorithm-profile-output-v0.1",
+          "kind": "algorithm_profile_dependency",
+          "required": true,
+          "target_resource_id": "o5-algorithm-profile"
+        },
+        {
+          "dependency_id": "o7-profile",
+          "expected_schema_id": "o7-algorithm-profile-output-v0.1",
+          "kind": "algorithm_profile_dependency",
+          "required": true,
+          "target_resource_id": "o7-algorithm-profile"
+        },
+        {
+          "dependency_id": "h4-result",
+          "expected_schema_id": "anchor-result-0.2.0",
+          "kind": "result_dependency",
+          "required": true,
+          "target_anchor_id": "H4"
+        },
+        {
+          "dependency_id": "h4-trace",
+          "expected_artifact_kind": "window_trace",
+          "expected_schema_id": "control-physio-trace-v0.1",
+          "kind": "artifact_dependency",
+          "required": false,
+          "target_anchor_id": "H4",
+          "target_resource_id": "control-physio-trace"
+        }
+      ],
+      "lifecycle": "active",
+      "parameter_schema_id": "o13-parameters-0.1",
+      "plugin_id": "o13-physio-control-coupling",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.X",
+        "stream.U",
+        "stream.ECG",
+        "semantic.phases"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "H1",
+      "artifact_recipes": [
+        {
+          "artifact_id": "phase-dwell",
+          "kind": "phase_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "phase_id",
+              "role_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "phase_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "role_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "dwell_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "f64",
+                "name": "weighted_dwell_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "total_dwell_ns",
+                "nullable": false,
+                "unit": "ns"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "phase-dwell-v0.1"
+        }
+      ],
+      "canonical_order": 13,
+      "definition_version": "0.1.0",
+      "dependencies": [
+        {
+          "dependency_id": "gaze-aoi-intervals",
+          "expected_artifact_kind": "gaze-aoi-intervals-table",
+          "expected_schema_id": "gaze-aoi-intervals-v1-output-v0.1",
+          "kind": "preprocessing_dependency",
+          "required": true,
+          "target_resource_id": "gaze-aoi-intervals-v1"
+        }
+      ],
+      "lifecycle": "active",
+      "parameter_schema_id": "h1-parameters-0.1",
+      "plugin_id": "h1-aoi-dwell",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.I",
+        "stream.G",
+        "semantic.aois",
+        "semantic.phases"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "H2",
+      "artifact_recipes": [
+        {
+          "artifact_id": "event-fixation-trace",
+          "kind": "event_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "event_id",
+              "start_t_ns",
+              "fixation_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "event_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "fixation_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "start_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "end_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "utf8",
+                "name": "aoi_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "f64",
+                "name": "latency_ms",
+                "nullable": false,
+                "unit": "ms"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "event-fixation-trace-v0.1"
+        }
+      ],
+      "canonical_order": 14,
+      "definition_version": "0.1.0",
+      "dependencies": [
+        {
+          "dependency_id": "fixation-intervals",
+          "expected_artifact_kind": "fixation-intervals-table",
+          "expected_schema_id": "fixation-intervals-v1-output-v0.1",
+          "kind": "preprocessing_dependency",
+          "required": true,
+          "target_resource_id": "fixation-intervals-v1"
+        }
+      ],
+      "lifecycle": "active",
+      "parameter_schema_id": "h2-parameters-0.1",
+      "plugin_id": "h2-first-fixation-latency",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.I",
+        "stream.G",
+        "semantic.events",
+        "semantic.aois"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "H3",
+      "artifact_recipes": [
+        {
+          "artifact_id": "phase-off-task-dwell",
+          "kind": "phase_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "phase_id",
+              "role_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "phase_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "role_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "bool",
+                "name": "off_task",
+                "nullable": false,
+                "unit": "bool"
+              },
+              {
+                "dtype": "i64",
+                "name": "dwell_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "total_dwell_ns",
+                "nullable": false,
+                "unit": "ns"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "phase-off-task-dwell-v0.1"
+        }
+      ],
+      "canonical_order": 15,
+      "definition_version": "0.1.0",
+      "dependencies": [
+        {
+          "dependency_id": "gaze-aoi-intervals",
+          "expected_artifact_kind": "gaze-aoi-intervals-table",
+          "expected_schema_id": "gaze-aoi-intervals-v1-output-v0.1",
+          "kind": "preprocessing_dependency",
+          "required": true,
+          "target_resource_id": "gaze-aoi-intervals-v1"
+        }
+      ],
+      "lifecycle": "active",
+      "parameter_schema_id": "h3-parameters-0.1",
+      "plugin_id": "h3-off-task-dwell",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.I",
+        "stream.G",
+        "semantic.aois",
+        "semantic.phases"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "H4",
+      "artifact_recipes": [
+        {
+          "artifact_id": "control-physio-trace",
+          "kind": "window_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "start_t_ns",
+              "end_t_ns",
+              "window_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "window_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "start_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "end_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "utf8",
+                "name": "phase_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "f64",
+                "name": "median_hr_bpm",
+                "nullable": false,
+                "unit": "bpm"
+              },
+              {
+                "dtype": "f64",
+                "name": "signed_delta_hr",
+                "nullable": false,
+                "unit": "percent"
+              },
+              {
+                "dtype": "utf8",
+                "name": "window_hash",
+                "nullable": false,
+                "unit": "hex"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "control-physio-trace-v0.1"
+        }
+      ],
+      "canonical_order": 16,
+      "definition_version": "0.1.0",
+      "dependencies": [
+        {
+          "dependency_id": "control-physio-windows",
+          "expected_artifact_kind": "control-physio-windows-table",
+          "expected_schema_id": "control-physio-windows-v2-output-v0.1",
+          "kind": "preprocessing_dependency",
+          "required": true,
+          "target_resource_id": "control-physio-windows-v2"
+        },
+        {
+          "dependency_id": "ecg-hr-trace",
+          "expected_artifact_kind": "ecg-hr-trace-table",
+          "expected_schema_id": "ecg-hr-trace-v1-output-v0.1",
+          "kind": "preprocessing_dependency",
+          "required": true,
+          "target_resource_id": "ecg-hr-trace-v1"
+        }
+      ],
+      "lifecycle": "active",
+      "parameter_schema_id": "h4-parameters-0.1",
+      "plugin_id": "h4-ecg-fluctuation",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.ECG",
+        "semantic.baselines",
+        "semantic.phases"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    },
+    {
+      "anchor_id": "H5",
+      "artifact_recipes": [
+        {
+          "artifact_id": "engagement-trace",
+          "kind": "window_trace",
+          "payload_kind": "table",
+          "schema_descriptor": {
+            "canonical_order_keys": [
+              "start_t_ns",
+              "end_t_ns",
+              "window_id",
+              "channel_id"
+            ],
+            "fields": [
+              {
+                "dtype": "utf8",
+                "name": "window_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "i64",
+                "name": "start_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "i64",
+                "name": "end_t_ns",
+                "nullable": false,
+                "unit": "ns"
+              },
+              {
+                "dtype": "utf8",
+                "name": "phase_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "utf8",
+                "name": "channel_id",
+                "nullable": false,
+                "unit": "id"
+              },
+              {
+                "dtype": "f64",
+                "name": "engagement_ratio",
+                "nullable": false,
+                "unit": "ratio"
+              },
+              {
+                "dtype": "f64",
+                "name": "delta_engagement",
+                "nullable": false,
+                "unit": "percent"
+              },
+              {
+                "dtype": "utf8",
+                "name": "window_hash",
+                "nullable": false,
+                "unit": "hex"
+              }
+            ],
+            "type": "table"
+          },
+          "schema_id": "engagement-trace-v0.1"
+        }
+      ],
+      "canonical_order": 17,
+      "definition_version": "0.1.0",
+      "dependencies": [
+        {
+          "dependency_id": "eeg-engagement-windows",
+          "expected_artifact_kind": "eeg-engagement-windows-table",
+          "expected_schema_id": "eeg-engagement-windows-v1-output-v0.1",
+          "kind": "preprocessing_dependency",
+          "required": true,
+          "target_resource_id": "eeg-engagement-windows-v1"
+        }
+      ],
+      "lifecycle": "active",
+      "parameter_schema_id": "h5-parameters-0.1",
+      "plugin_id": "h5-eeg-fluctuation",
+      "plugin_version": "0.1.0",
+      "required": true,
+      "required_inputs": [
+        "stream.EEG",
+        "semantic.baselines",
+        "semantic.phases"
+      ],
+      "scorer_id": "hard_threshold_v1"
+    }
+  ],
+  "profile_id": "reference-model-v0.1",
+  "profile_version": "0.1.0",
+  "scientific_validation_status": "engineering_default"
+}

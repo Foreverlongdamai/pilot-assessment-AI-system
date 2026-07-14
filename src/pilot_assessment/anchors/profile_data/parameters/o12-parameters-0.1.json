@@ -1,0 +1,116 @@
+{
+  "$id": "urn:cranfield:pilot-assessment:parameters:o12-parameters-0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "baseline_lookback_ns": {
+      "default": 1000000000,
+      "exclusiveMinimum": 0,
+      "type": "integer",
+      "x-comparison": "gt",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ns"
+    },
+    "causal_median_window_ns": {
+      "default": 20000000,
+      "exclusiveMinimum": 0,
+      "type": "integer",
+      "x-comparison": "gt",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ns"
+    },
+    "control_excursion_threshold_pct": {
+      "default": 5.0,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "gt",
+      "x-owner": "anchor_plugin",
+      "x-unit": "percent_full_travel"
+    },
+    "correction_horizon_ns": {
+      "default": 2000000000,
+      "exclusiveMinimum": 0,
+      "type": "integer",
+      "x-comparison": "gt",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ns"
+    },
+    "exit_confirmation_ns": {
+      "default": 100000000,
+      "minimum": 0,
+      "type": "integer",
+      "x-comparison": "gte",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ns"
+    },
+    "minimum_excursion_duration_ns": {
+      "default": 100000000,
+      "minimum": 0,
+      "type": "integer",
+      "x-comparison": "gte",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ns"
+    }
+  },
+  "required": [
+    "baseline_lookback_ns",
+    "causal_median_window_ns",
+    "control_excursion_threshold_pct",
+    "correction_horizon_ns",
+    "exit_confirmation_ns",
+    "minimum_excursion_duration_ns"
+  ],
+  "type": "object",
+  "x-fixed-algorithm": {
+    "implementation_id": "o12-envelope-drift-latency",
+    "implementation_version": "0.1.0",
+    "source_section": "12.12",
+    "source_spec": "m4-anchor-evidence-availability-design-2026-07-13"
+  },
+  "x-schema-id": "o12-parameters-0.1",
+  "x-scientific-status": "engineering_default",
+  "x-scorer-policy-default": {
+    "parameters": {
+      "computed_u_overrides": [
+        "correction_missed"
+      ],
+      "evaluation_order": [
+        "desired",
+        "adequate"
+      ],
+      "fallback_state": "unacceptable",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<=",
+              "unit": "ms",
+              "value": 300
+            }
+          ],
+          "state": "desired"
+        },
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<=",
+              "unit": "ms",
+              "value": 800
+            }
+          ],
+          "state": "adequate"
+        }
+      ],
+      "state_order": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ]
+    },
+    "policy_schema_id": "ordered-dau-threshold-policy-v0.1",
+    "scorer_id": "hard_threshold_v1",
+    "scorer_version": "0.1.0"
+  }
+}

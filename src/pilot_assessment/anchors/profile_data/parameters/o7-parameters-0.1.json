@@ -1,0 +1,78 @@
+{
+  "$id": "urn:cranfield:pilot-assessment:parameters:o7-parameters-0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "minimum_reversal_amplitude_pct": {
+      "default": 2.0,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "gte",
+      "x-owner": "anchor_plugin",
+      "x-unit": "percent_full_travel"
+    },
+    "minimum_reversal_separation_ns": {
+      "default": 150000000,
+      "minimum": 0,
+      "type": "integer",
+      "x-comparison": "gte",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ns"
+    }
+  },
+  "required": [
+    "minimum_reversal_amplitude_pct",
+    "minimum_reversal_separation_ns"
+  ],
+  "type": "object",
+  "x-fixed-algorithm": {
+    "implementation_id": "o7-control-reversal-rate",
+    "implementation_version": "0.1.0",
+    "source_section": "12.7",
+    "source_spec": "m4-anchor-evidence-availability-design-2026-07-13"
+  },
+  "x-schema-id": "o7-parameters-0.1",
+  "x-scientific-status": "engineering_default",
+  "x-scorer-policy-default": {
+    "parameters": {
+      "computed_u_overrides": [],
+      "evaluation_order": [
+        "desired",
+        "adequate"
+      ],
+      "fallback_state": "unacceptable",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<",
+              "unit": "Hz",
+              "value": 2
+            }
+          ],
+          "state": "desired"
+        },
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<",
+              "unit": "Hz",
+              "value": 4
+            }
+          ],
+          "state": "adequate"
+        }
+      ],
+      "state_order": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ]
+    },
+    "policy_schema_id": "ordered-dau-threshold-policy-v0.1",
+    "scorer_id": "hard_threshold_v1",
+    "scorer_version": "0.1.0"
+  }
+}

@@ -1,0 +1,278 @@
+{
+  "$id": "urn:cranfield:pilot-assessment:parameters:eeg-engagement-windows-v1-parameters-0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "alpha_high_hz": {
+      "default": 13.0,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "Hz"
+    },
+    "alpha_low_hz": {
+      "default": 8.0,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "Hz"
+    },
+    "bandpass_high_hz": {
+      "default": 35.0,
+      "exclusiveMinimum": 0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "Hz"
+    },
+    "bandpass_low_hz": {
+      "default": 3.0,
+      "exclusiveMinimum": 0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "Hz"
+    },
+    "bandpass_order": {
+      "default": 4,
+      "exclusiveMinimum": 0,
+      "type": "integer",
+      "x-comparison": "gt",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "count"
+    },
+    "bandpass_padlen_cap_samples": {
+      "default": 27,
+      "minimum": 0,
+      "type": "integer",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "count"
+    },
+    "bandpass_padtype": {
+      "default": "odd",
+      "enum": [
+        "constant",
+        "even",
+        "odd"
+      ],
+      "type": "string",
+      "x-comparison": "enum",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "id"
+    },
+    "beta_high_hz": {
+      "default": 30.0,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "Hz"
+    },
+    "beta_low_hz": {
+      "default": 13.0,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "Hz"
+    },
+    "channel_conversions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "channel_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string",
+            "x-comparison": "exact",
+            "x-owner": "preprocessing_provider",
+            "x-unit": "id"
+          },
+          "input_unit": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string",
+            "x-comparison": "exact",
+            "x-owner": "preprocessing_provider",
+            "x-unit": "unit"
+          },
+          "scale_to_volts": {
+            "exclusiveMinimum": 0,
+            "type": "number",
+            "x-comparison": "gt",
+            "x-owner": "preprocessing_provider",
+            "x-unit": "V_per_input_unit"
+          }
+        },
+        "required": [
+          "channel_id",
+          "input_unit",
+          "scale_to_volts"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array",
+      "x-comparison": "cross_field",
+      "x-default-source": "selected_baseline_channels_uV_to_V_v1",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "unit_conversion"
+    },
+    "epsilon": {
+      "default": 1e-12,
+      "exclusiveMinimum": 0,
+      "type": "number",
+      "x-comparison": "gt",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "V^2"
+    },
+    "mains_frequency_hz": {
+      "default": 50.0,
+      "enum": [
+        50.0,
+        60.0
+      ],
+      "type": "number",
+      "x-comparison": "enum",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "Hz"
+    },
+    "minimum_filter_sample_count": {
+      "default": 4,
+      "minimum": 1,
+      "type": "integer",
+      "x-comparison": "gte",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "count"
+    },
+    "minimum_finite_bins_per_band": {
+      "default": 2,
+      "minimum": 2,
+      "type": "integer",
+      "x-comparison": "gte",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "count"
+    },
+    "minimum_psd_sample_count": {
+      "default": 2,
+      "minimum": 2,
+      "type": "integer",
+      "x-comparison": "gte",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "count"
+    },
+    "notch_padlen_cap_samples": {
+      "default": 6,
+      "minimum": 0,
+      "type": "integer",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "count"
+    },
+    "notch_padtype": {
+      "default": "odd",
+      "enum": [
+        "constant",
+        "even",
+        "odd"
+      ],
+      "type": "string",
+      "x-comparison": "enum",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "id"
+    },
+    "notch_q": {
+      "default": 30.0,
+      "exclusiveMinimum": 0,
+      "type": "number",
+      "x-comparison": "gt",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "ratio"
+    },
+    "theta_high_hz": {
+      "default": 8.0,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "Hz"
+    },
+    "theta_low_hz": {
+      "default": 4.0,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "Hz"
+    },
+    "welch_overlap_fraction": {
+      "default": 0.5,
+      "exclusiveMaximum": 1,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "left_closed_right_open",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "ratio"
+    },
+    "welch_segment_length_ns": {
+      "default": 2000000000,
+      "exclusiveMinimum": 0,
+      "type": "integer",
+      "x-comparison": "gt",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "ns"
+    },
+    "window_length_ns": {
+      "default": 4000000000,
+      "exclusiveMinimum": 0,
+      "type": "integer",
+      "x-comparison": "gt",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "ns"
+    },
+    "window_step_ns": {
+      "default": 2000000000,
+      "exclusiveMinimum": 0,
+      "type": "integer",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "ns"
+    }
+  },
+  "required": [
+    "alpha_high_hz",
+    "alpha_low_hz",
+    "bandpass_high_hz",
+    "bandpass_low_hz",
+    "bandpass_order",
+    "bandpass_padlen_cap_samples",
+    "bandpass_padtype",
+    "beta_high_hz",
+    "beta_low_hz",
+    "channel_conversions",
+    "epsilon",
+    "mains_frequency_hz",
+    "minimum_filter_sample_count",
+    "minimum_finite_bins_per_band",
+    "minimum_psd_sample_count",
+    "notch_padlen_cap_samples",
+    "notch_padtype",
+    "notch_q",
+    "theta_high_hz",
+    "theta_low_hz",
+    "welch_overlap_fraction",
+    "welch_segment_length_ns",
+    "window_length_ns",
+    "window_step_ns"
+  ],
+  "type": "object",
+  "x-fixed-algorithm": {
+    "implementation_id": "eeg-engagement-windows-v1",
+    "implementation_version": "1.0.0",
+    "source_section": "12.18",
+    "source_spec": "m4-anchor-evidence-availability-design-2026-07-13"
+  },
+  "x-schema-id": "eeg-engagement-windows-v1-parameters-0.1",
+  "x-scientific-status": "engineering_default"
+}

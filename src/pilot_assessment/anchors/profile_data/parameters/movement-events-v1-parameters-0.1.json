@@ -1,0 +1,103 @@
+{
+  "$id": "urn:cranfield:pilot-assessment:parameters:movement-events-v1-parameters-0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "derivative_deadband_pct_per_s": {
+      "default": 0.5,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "gt",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "percent_full_travel_per_s"
+    },
+    "filtfilt_padlen_cap_samples": {
+      "default": 15,
+      "minimum": 0,
+      "type": "integer",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "count"
+    },
+    "filtfilt_padtype": {
+      "default": "odd",
+      "enum": [
+        "constant",
+        "even",
+        "odd"
+      ],
+      "type": "string",
+      "x-comparison": "enum",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "id"
+    },
+    "grid_period_ns": {
+      "default": 10000000,
+      "exclusiveMinimum": 0,
+      "type": "integer",
+      "x-comparison": "gt",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "ns"
+    },
+    "lowpass_cutoff_hz": {
+      "default": 5.0,
+      "exclusiveMinimum": 0,
+      "type": "number",
+      "x-comparison": "cross_field",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "Hz"
+    },
+    "lowpass_order": {
+      "default": 4,
+      "exclusiveMinimum": 0,
+      "type": "integer",
+      "x-comparison": "gt",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "count"
+    },
+    "minimum_filter_sample_count": {
+      "default": 3,
+      "minimum": 1,
+      "type": "integer",
+      "x-comparison": "gte",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "count"
+    },
+    "minimum_movement_amplitude_pct": {
+      "default": 0.5,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "gte",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "percent_full_travel"
+    },
+    "minimum_sign_run_ns": {
+      "default": 50000000,
+      "minimum": 0,
+      "type": "integer",
+      "x-comparison": "gte",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "ns"
+    }
+  },
+  "required": [
+    "derivative_deadband_pct_per_s",
+    "filtfilt_padlen_cap_samples",
+    "filtfilt_padtype",
+    "grid_period_ns",
+    "lowpass_cutoff_hz",
+    "lowpass_order",
+    "minimum_filter_sample_count",
+    "minimum_movement_amplitude_pct",
+    "minimum_sign_run_ns"
+  ],
+  "type": "object",
+  "x-fixed-algorithm": {
+    "implementation_id": "movement-events-v1",
+    "implementation_version": "1.0.0",
+    "source_section": "12.5",
+    "source_spec": "m4-anchor-evidence-availability-design-2026-07-13"
+  },
+  "x-schema-id": "movement-events-v1-parameters-0.1",
+  "x-scientific-status": "engineering_default"
+}

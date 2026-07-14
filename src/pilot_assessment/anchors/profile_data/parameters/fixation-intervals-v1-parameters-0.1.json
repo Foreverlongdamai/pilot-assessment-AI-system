@@ -1,0 +1,36 @@
+{
+  "$id": "urn:cranfield:pilot-assessment:parameters:fixation-intervals-v1-parameters-0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "angular_velocity_threshold_deg_s": {
+      "default": 100.0,
+      "minimum": 0,
+      "type": "number",
+      "x-comparison": "lte",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "deg_per_s"
+    },
+    "minimum_fixation_duration_ns": {
+      "default": 100000000,
+      "minimum": 0,
+      "type": "integer",
+      "x-comparison": "gte",
+      "x-owner": "preprocessing_provider",
+      "x-unit": "ns"
+    }
+  },
+  "required": [
+    "angular_velocity_threshold_deg_s",
+    "minimum_fixation_duration_ns"
+  ],
+  "type": "object",
+  "x-fixed-algorithm": {
+    "implementation_id": "fixation-intervals-v1",
+    "implementation_version": "1.0.0",
+    "source_section": "12.15",
+    "source_spec": "m4-anchor-evidence-availability-design-2026-07-13"
+  },
+  "x-schema-id": "fixation-intervals-v1-parameters-0.1",
+  "x-scientific-status": "engineering_default"
+}

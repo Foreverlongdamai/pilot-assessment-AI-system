@@ -17,6 +17,17 @@ M4_SCHEMA_RESOURCE_NAMES = {
     "session-semantic-snapshot-0.1.0.schema.json",
 }
 
+M4_PARAMETER_RESOURCE_NAMES = {
+    *(f"o{index}-parameters-0.1.json" for index in range(1, 14)),
+    *(f"h{index}-parameters-0.1.json" for index in range(1, 6)),
+    "movement-events-v1-parameters-0.1.json",
+    "gaze-aoi-intervals-v1-parameters-0.1.json",
+    "fixation-intervals-v1-parameters-0.1.json",
+    "control-physio-windows-v2-parameters-0.1.json",
+    "ecg-hr-trace-v1-parameters-0.1.json",
+    "eeg-engagement-windows-v1-parameters-0.1.json",
+}
+
 
 def test_package_version_is_single_sourced() -> None:
     assert pilot_assessment.__version__ == "0.1.0"
@@ -59,3 +70,33 @@ def test_m4_contract_schemas_are_packaged_resources() -> None:
         with as_file(resource) as path:
             assert Path(path).is_file()
             assert Path(path).read_bytes()
+
+
+def test_m4_reference_catalog_parameter_schemas_and_empty_registry_are_packaged() -> None:
+    profile_package = files("pilot_assessment.anchors.profile_data")
+    parameter_package = files("pilot_assessment.anchors.profile_data.parameters")
+    anchors_package = files("pilot_assessment.anchors")
+
+    assert profile_package.joinpath("__init__.py").is_file()
+    assert parameter_package.joinpath("__init__.py").is_file()
+    catalog = profile_package.joinpath("reference-model-v0.1-anchor-catalog.json")
+    registry = anchors_package.joinpath("registry-v1.json")
+    assert catalog.is_file() and catalog.read_bytes()
+    assert registry.is_file() and registry.read_bytes()
+
+    catalog_names = {
+        item.name for item in profile_package.iterdir() if item.name.endswith(".json")
+    }
+    registry_names = {
+        item.name for item in anchors_package.iterdir() if item.name.endswith(".json")
+    }
+    assert catalog_names == {"reference-model-v0.1-anchor-catalog.json"}
+    assert registry_names == {"registry-v1.json"}
+
+    parameter_names = {
+        item.name for item in parameter_package.iterdir() if item.name.endswith(".json")
+    }
+    assert parameter_names == M4_PARAMETER_RESOURCE_NAMES
+    assert len(parameter_names) == 24
+    for name in parameter_names:
+        assert parameter_package.joinpath(name).read_bytes()

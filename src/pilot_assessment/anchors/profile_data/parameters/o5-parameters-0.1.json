@@ -1,0 +1,69 @@
+{
+  "$id": "urn:cranfield:pilot-assessment:parameters:o5-parameters-0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "w_min_hz": {
+      "default": 1.0,
+      "exclusiveMinimum": 0,
+      "type": "number",
+      "x-comparison": "gt",
+      "x-owner": "anchor_plugin",
+      "x-unit": "Hz"
+    }
+  },
+  "required": [
+    "w_min_hz"
+  ],
+  "type": "object",
+  "x-fixed-algorithm": {
+    "implementation_id": "o5-workload-rate",
+    "implementation_version": "0.1.0",
+    "source_section": "12.5",
+    "source_spec": "m4-anchor-evidence-availability-design-2026-07-13"
+  },
+  "x-schema-id": "o5-parameters-0.1",
+  "x-scientific-status": "engineering_default",
+  "x-scorer-policy-default": {
+    "parameters": {
+      "computed_u_overrides": [],
+      "evaluation_order": [
+        "desired",
+        "adequate"
+      ],
+      "fallback_state": "unacceptable",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<=",
+              "unit": "ratio",
+              "value": 2
+            }
+          ],
+          "state": "desired"
+        },
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<=",
+              "unit": "ratio",
+              "value": 4
+            }
+          ],
+          "state": "adequate"
+        }
+      ],
+      "state_order": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ]
+    },
+    "policy_schema_id": "ordered-dau-threshold-policy-v0.1",
+    "scorer_id": "hard_threshold_v1",
+    "scorer_version": "0.1.0"
+  }
+}

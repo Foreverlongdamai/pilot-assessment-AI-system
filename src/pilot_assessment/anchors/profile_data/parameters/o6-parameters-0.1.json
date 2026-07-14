@@ -1,0 +1,93 @@
+{
+  "$id": "urn:cranfield:pilot-assessment:parameters:o6-parameters-0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "channel_weights": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "channel_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string",
+            "x-comparison": "exact",
+            "x-owner": "anchor_plugin",
+            "x-unit": "id"
+          },
+          "weight": {
+            "minimum": 0,
+            "type": "number",
+            "x-comparison": "gte",
+            "x-owner": "anchor_plugin",
+            "x-unit": "ratio"
+          }
+        },
+        "required": [
+          "channel_id",
+          "weight"
+        ],
+        "type": "object"
+      },
+      "minItems": 0,
+      "type": "array",
+      "x-comparison": "cross_field",
+      "x-default-source": "equal_weights_over_o6_applicability_control_mappings_v1",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ratio"
+    }
+  },
+  "required": [
+    "channel_weights"
+  ],
+  "type": "object",
+  "x-fixed-algorithm": {
+    "implementation_id": "o6-control-magnitude-rms",
+    "implementation_version": "0.1.0",
+    "source_section": "12.6",
+    "source_spec": "m4-anchor-evidence-availability-design-2026-07-13"
+  },
+  "x-schema-id": "o6-parameters-0.1",
+  "x-scientific-status": "engineering_default",
+  "x-scorer-policy-default": {
+    "parameters": {
+      "computed_u_overrides": [],
+      "evaluation_order": [
+        "desired",
+        "adequate"
+      ],
+      "fallback_state": "unacceptable",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<=",
+              "unit": "percent_full_travel",
+              "value": 30
+            }
+          ],
+          "state": "desired"
+        },
+        {
+          "conditions": [
+            {
+              "metric_id": "primary_value",
+              "operator": "<=",
+              "unit": "percent_full_travel",
+              "value": 50
+            }
+          ],
+          "state": "adequate"
+        }
+      ],
+      "state_order": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ]
+    },
+    "policy_schema_id": "ordered-dau-threshold-policy-v0.1",
+    "scorer_id": "hard_threshold_v1",
+    "scorer_version": "0.1.0"
+  }
+}

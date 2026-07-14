@@ -1,0 +1,83 @@
+{
+  "$id": "urn:cranfield:pilot-assessment:parameters:o3-parameters-0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "capture_hold_ns": {
+      "default": 2000000000,
+      "minimum": 0,
+      "type": "integer",
+      "x-comparison": "gte",
+      "x-owner": "anchor_plugin",
+      "x-unit": "ns"
+    }
+  },
+  "required": [
+    "capture_hold_ns"
+  ],
+  "type": "object",
+  "x-fixed-algorithm": {
+    "implementation_id": "o3-terminal-capture-quality",
+    "implementation_version": "0.1.0",
+    "source_section": "12.3",
+    "source_spec": "m4-anchor-evidence-availability-design-2026-07-13"
+  },
+  "x-schema-id": "o3-parameters-0.1",
+  "x-scientific-status": "engineering_default",
+  "x-scorer-policy-default": {
+    "parameters": {
+      "computed_u_overrides": [
+        "capture_missed"
+      ],
+      "evaluation_order": [
+        "desired",
+        "adequate"
+      ],
+      "fallback_state": "unacceptable",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "metric_id": "overshoot",
+              "operator": "<=",
+              "unit": "ft",
+              "value": 2
+            },
+            {
+              "metric_id": "settling_time",
+              "operator": "<=",
+              "unit": "s",
+              "value": 3
+            }
+          ],
+          "state": "desired"
+        },
+        {
+          "conditions": [
+            {
+              "metric_id": "overshoot",
+              "operator": "<=",
+              "unit": "ft",
+              "value": 5
+            },
+            {
+              "metric_id": "settling_time",
+              "operator": "<=",
+              "unit": "s",
+              "value": 5
+            }
+          ],
+          "state": "adequate"
+        }
+      ],
+      "state_order": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ]
+    },
+    "policy_schema_id": "dau-conjunction-policy-v0.1",
+    "scorer_id": "hard_threshold_v1",
+    "scorer_version": "0.1.0"
+  }
+}

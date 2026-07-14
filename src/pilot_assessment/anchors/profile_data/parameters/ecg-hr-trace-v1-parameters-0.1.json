@@ -1,0 +1,16 @@
+{
+  "$id": "urn:cranfield:pilot-assessment:parameters:ecg-hr-trace-v1-parameters-0.1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {},
+  "required": [],
+  "type": "object",
+  "x-fixed-algorithm": {
+    "implementation_id": "ecg-hr-trace-v1",
+    "implementation_version": "1.0.0",
+    "source_section": "12.17",
+    "source_spec": "m4-anchor-evidence-availability-design-2026-07-13"
+  },
+  "x-schema-id": "ecg-hr-trace-v1-parameters-0.1",
+  "x-scientific-status": "engineering_default"
+}
