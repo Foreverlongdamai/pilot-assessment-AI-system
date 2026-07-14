@@ -140,3 +140,16 @@
 | Commit | `583a1e7` (`feat: package M4 reference anchor catalog`) |
 | External review | The authorized WSL Claude CLI remained unavailable in the current environment (`claude: command not found`); no Fable5/ultracode verdict is claimed |
 | Release conclusion | Task 7 is complete and Task 8 is next. The catalog still carries the approved temporary zero fingerprint sentinel until Task 8 atomically replaces and validates it; production plugins remain 0/18, M4 remains not engineering-verified, and `formal_run_authorized=false` |
+
+### AR-010 — M4 Task 8 Canonical Fingerprints and Runtime Identity (INLINE finalization)
+
+| Field | Record |
+|---|---|
+| Artifacts | `anchors/fingerprint.py` (RFC 8785 JCS + typed SHA-256 surface; logical table/reference/result/report/plugin/registry/catalog/scorer fingerprints; Python + numeric runtime identity), the real computed catalog fingerprint replacing the Task 7 zero sentinel in `catalog.py` and `reference-model-v0.1-anchor-catalog.json`, four fingerprint test modules, and the checked replacement Task 8 section |
+| Approval | Covered by the accepted Task 8 amendment; no formula, threshold, golden value, production-plugin claim, or formal-run boundary changed |
+| Finalization mode | **Finalized INLINE by Claude** to conserve codex/subagent quota. The Task 8 code and tests were authored by the prior subagent run and left uncommitted when quota stopped; Claude verified and committed them without re-running the plan's subagent protocol |
+| TDD evidence | Verified before commit: focused `tests/anchors/test_fingerprint*.py` + `test_catalog.py` = `149 passed, 1 skipped` (host-symlink test skipped); full suite `1025 passed, 3 skipped`; `ruff check` clean; `ruff format` clean on Task 8 files; `ty check src/` = All checks passed |
+| Independent review | **NONE.** The plan's two independent review subagents (specification review + code-quality review) were NOT dispatched. No three-way / two-way final review is claimed |
+| External review | **NONE claimed.** |
+| Commit | `3e1a006` (`feat: add canonical M4 fingerprints`); docs `7328c05` (plan checkboxes + completion note) plus this ledger/status alignment |
+| Release conclusion | Task 8 complete; Task 9 (trusted packaged registry + implementation-closure verifier) is next. Production plugins remain 0/18, M4 remains not engineering-verified, `formal_run_authorized=false`. Because independent review was skipped, codex or a future reviewer may re-audit `fingerprint.py` if a stronger gate is later desired |
