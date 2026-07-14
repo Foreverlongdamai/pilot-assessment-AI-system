@@ -1,13 +1,13 @@
-# Implementation Status — M1/M2/M3 Engineering Verified; M4 Tasks 0–8 Complete
+# Implementation Status — M1/M2/M3 Engineering Verified; M4 Tasks 0–9 Complete
 
 | 字段 | 当前值 |
 |---|---|
-| 状态日期 | 2026-07-13 |
+| 状态日期 | 2026-07-14 |
 | 产品设计基线 | v0.1 |
 | 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization |
-| M4 当前状态 | Replacement Task 0–8 已分别由 `bc544bf`、`f56365c`、`928e9a4`、`e054620`、`1528d09`、`b63d38b`、`93c4ddb`、`583a1e7`、`3e1a006` 完成；Task 8 RFC 8785 typed fingerprints 与 runtime identity 已落地（由 Claude **inline 收尾**：测试全绿、ruff/ty(src) clean，**未走独立审查子代理**；catalog sentinel 已替换为真实指纹），下一步为 Task 9 受信 packaged registry；O1–O13、H1–H5 共 18/18 specified、0/18 production plugins 已实现；M4 尚未 engineering verified，`formal_run_authorized=false` |
-| 下一里程碑 | 执行 replacement Task 9，实现受信 packaged registry 与 implementation-closure verifier |
-| 软件状态 | `in_progress`（M1/M2/M3 engineering verified；M4 Tasks 0–8 complete、Task 9 next；完整 Assessment Core alpha 与 Gate B 尚未完成） |
+| M4 当前状态 | Replacement Task 0–9 已分别由 `bc544bf`、`f56365c`、`928e9a4`、`e054620`、`1528d09`、`b63d38b`、`93c4ddb`、`583a1e7`、`3e1a006`、`cac645f` 完成；Task 9 受信 packaged registry 与 implementation-closure verifier 已落地（`anchors/registry.py`：只 import 显式 `plugins.*`/`primitives.*` factory，无扫描/entry-point/eval；定义/parameter/measurement/artifact schema hash、静态 import 闭包、runtime lock 与 `implementation_digest` 全部校验；`verify`/`refresh`/`refresh-preprocessor` CLI）。由 Claude **inline 收尾**：完整套件 `1062 passed, 3 skipped`、ruff/ty(src) clean，**未走独立审查子代理**。registry-v1.json 仍为空，18 个 reference capability 全部 `not_implemented`，provider entry 不计入 18-anchor 基数；O1–O13、H1–H5 共 18/18 specified、0/18 production plugins；M4 尚未 engineering verified，`formal_run_authorized=false` |
+| 下一里程碑 | 执行 replacement Task 10，实现 segment-aware temporal support、grids 与 windows |
+| 软件状态 | `in_progress`（M1/M2/M3 engineering verified；M4 Tasks 0–9 complete、Task 10 next；完整 Assessment Core alpha 与 Gate B 尚未完成） |
 | 科学状态 | synthetic 数据为 `not_supported`；评估模型仍待领域专家校准与验证 |
 | Python package | `pilot-assessment-system 0.1.0` |
 | 本地运行边界 | Windows、离线、目录形式 Session Bundle |

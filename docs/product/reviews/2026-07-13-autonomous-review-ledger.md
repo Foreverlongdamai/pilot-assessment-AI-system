@@ -153,3 +153,17 @@
 | External review | **NONE claimed.** |
 | Commit | `3e1a006` (`feat: add canonical M4 fingerprints`); docs `7328c05` (plan checkboxes + completion note) plus this ledger/status alignment |
 | Release conclusion | Task 8 complete; Task 9 (trusted packaged registry + implementation-closure verifier) is next. Production plugins remain 0/18, M4 remains not engineering-verified, `formal_run_authorized=false`. Because independent review was skipped, codex or a future reviewer may re-audit `fingerprint.py` if a stronger gate is later desired |
+
+### AR-011 — M4 Task 9 Trusted Packaged Registry and Closure Verifier (INLINE finalization)
+
+| Field | Record |
+|---|---|
+| Artifacts | `anchors/registry.py` (trusted loader + `verify_implementation_closure`/`verify_preprocessing_closure` + `PluginRegistry` capability/resolve/from_factories_for_testing + `verify`/`refresh`/`refresh-preprocessor` CLI), `tests/anchors/fakes.py`, `tests/anchors/test_registry.py`, the extended `tests/test_package_metadata.py`, and the checked replacement Task 9 section |
+| Approval | Covered by the accepted M4 main design §13.6 and the user's standing inline authorization; no formula, threshold, golden value, production-plugin claim, or formal-run boundary changed |
+| Finalization mode | **Finalized INLINE by Claude** to conserve codex/subagent quota. Code and tests were authored together in one inline pass, verified green before commit; the plan's RED-first subagent ritual was not run as a separate phase |
+| TDD evidence | Verified before commit: focused `tests/anchors/test_registry.py` + `tests/test_package_metadata.py` = `43 passed`; full suite `1062 passed, 3 skipped` (host-symlink + two repository-external captured-format samples skipped); `ruff check` clean; `ty check src/` = All checks passed. Tamper tests assert `RegistryError` on wrong parameter/measurement/definition/artifact hash, member under/over-declaration, digest, python-runtime, and plugin-version mismatch; closure tests reject dynamic imports and namespace crossing; runtime-lock tests reject python mismatch, numeric under/over-declaration, and install drift; CLI tests cover verify/refresh/refresh-preprocessor and error paths |
+| Independent review | **NONE.** The plan's two independent review subagents (specification review + code-quality review) were NOT dispatched. No three-way / two-way final review is claimed |
+| External review | **NONE claimed.** |
+| Claude implementation decisions | Registry-local capability mapping (`plugin_unavailable` = plugin id known at another version, `not_implemented` = id absent, `incompatible` = entry present but closure fails); closure member namespace = `plugins.*`/`primitives.*` with an explicit framework allowlist and all other `pilot_assessment.*` imports treated as violations; runtime lock verifies live `python_runtime_identity()` equality plus closure-imported permitted numeric distributions (numpy/scipy/polars/pyarrow) against installed wheel identities. These are consistent with §13.6 but not spelled out there; a later reviewer may re-audit |
+| Commit | `cac645f` (`feat: add trusted anchor plugin registry`); docs (plan checkboxes + completion note, status top-table, this ledger entry) committed separately |
+| Release conclusion | Task 9 complete; Task 10 (segment-aware temporal support, grids, windows) is next. `registry-v1.json` stays empty so all 18 reference capabilities are `not_implemented`; production plugins remain 0/18, M4 remains not engineering-verified, and `formal_run_authorized=false` |

@@ -1614,7 +1614,7 @@ After this commit the only valid claim is: `M4-A complete; M4-B fingerprint prim
 - Create: `tests/anchors/test_registry.py`
 - Modify: `tests/test_package_metadata.py`
 
-- [ ] **Step 1: Write RED registry security/identity tests**
+- [x] **Step 1: Write RED registry security/identity tests**
 
 Test exact-version anchor and preprocessing-provider lookup, duplicate key/digest/binding rejection in each namespace, namespace allowlists, no directory scanning, no entry points, no `eval`, definition/parameter/measurement/output/artifact schema hash verification, local import closure under/over-declaration, dynamic local import rejection, numeric-runtime allowlist equality, duplicate/invalid provider-definition dependency-slot rejection, and implementation digest changes for source/resource/runtime/schema changes. CLI tests start from `entries=[]` and `preprocessors=[]`; monkeypatched allowlisted modules prove the exact anchor/provider bootstrap forms without creating a fake production implementation. Explicitly reject omitted factory bindings for absent entries, external namespaces, missing symbols, non-callables, unbound provider parameter schemas, and definition/catalog/recipe identity mismatches before factory compute access. Target-recipe resolution, recipe-level cycles, schema/kind compatibility, and scope-policy compatibility belong to Task 13 plan validation because targets and `scope_policy` are frozen in `ResolvedPreprocessingRecipe`, not the registry entry.
 
@@ -1624,7 +1624,7 @@ Test exact-version anchor and preprocessing-provider lookup, duplicate key/diges
 
 Expected: RED because the registry loader/verifier does not exist.
 
-- [ ] **Step 2: Implement trusted resolution and test-only injection**
+- [x] **Step 2: Implement trusted resolution and test-only injection**
 
 ~~~text
 PluginKey = tuple[str, str]
@@ -1689,7 +1689,7 @@ python -m pilot_assessment.anchors.registry refresh-preprocessor --provider <ID>
 
 The public loader imports only explicitly listed `pilot_assessment.anchors.plugins.*` anchor factories and `pilot_assessment.anchors.primitives.*` preprocessing factories. Fake factories live under tests and are reachable only through `from_factories_for_testing`.
 
-- [ ] **Step 3: Prove the empty production registry reports 0/18 honestly**
+- [x] **Step 3: Prove the empty production registry reports 0/18 honestly**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/anchors/test_registry.py tests/anchors/test_catalog.py -v
@@ -1697,12 +1697,14 @@ The public loader imports only explicitly listed `pilot_assessment.anchors.plugi
 
 Expected: PASS. Because all 18 packaged definitions exist and the registry is empty, all 18 reference capabilities are exactly `not_implemented`; no result exists.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/registry.py tests/anchors/fakes.py tests/anchors/test_registry.py tests/test_package_metadata.py
 git commit -m "feat: add trusted anchor plugin registry"
 ~~~
+
+**Completion evidence (2026-07-14):** Commit `cac645f` adds `anchors/registry.py`, a trusted packaged-registry loader and implementation-closure verifier that consumes the unchanged `AnchorRuntimeRegistry`/`PluginRegistryEntry`/`PreprocessingRegistryEntry` contracts (no shadow DTO). It imports only explicitly declared `pilot_assessment.anchors.plugins.*`/`primitives.*` factories — no directory scan, no entry points, no `eval` — and binds each factory to its immutable identity: parameter schema bytes (`profile_data/parameters/<id>.json`), measurement schema bytes (`schema_resources/<id>.schema.json`), inline artifact/output descriptor hashes, the static AST local-import closure of the factory source (rejecting under/over-declaration, dynamic imports, and out-of-closure namespace crossing), declared resource-member bytes, the locked Python + numeric-runtime identities, and the recomputed `implementation_digest`. Public surface: `PluginCapability`/`PreprocessingCapability`, `PluginRegistry.capability/resolve/preprocessing_capability/resolve_preprocessor/from_factories_for_testing`, `load_packaged_registry`, `packaged_registry_fingerprint`, `verify_implementation_closure`, `verify_preprocessing_closure`, and the `verify`/`refresh`/`refresh-preprocessor` module CLI. Focused Task 9 regression `tests/anchors/test_registry.py` + `tests/test_package_metadata.py` = `43 passed`; full suite `1062 passed, 3 skipped` (host-symlink and two repository-external captured-format samples skipped); `ruff check` clean and `ty check src/` = All checks passed. Because `registry-v1.json` stays empty, all 18 reference capabilities are exactly `not_implemented`, no result exists, and provider entries never count toward the 18-anchor cardinality; production plugins remain 0/18 and `formal_run_authorized=false`. Finalized INLINE by Claude to conserve agent quota: the plan's two independent review subagents were NOT run and no autonomous-review-ledger independent verdict is claimed for this task. Registry-local capability mapping (`plugin_unavailable` when the plugin id exists at another version, `not_implemented` when absent), the closure framework/member namespace boundary, and live Python/numeric runtime-lock equality are Claude implementation decisions consistent with §13.6; a later reviewer may re-audit them.
 
 ### Task 10: Implement segment-aware temporal support, grids, and windows
 
@@ -1783,7 +1785,7 @@ None accepts a coverage threshold.
 
 Expected: PASS; all temporal outputs are stable under input view cloning and no operation crosses a reconstructed gap.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/temporal.py tests/anchors/test_temporal.py
@@ -1840,7 +1842,7 @@ AnchorArtifactTransaction.abort() -> None
 
 Expected: PASS; downstream reads resolve immutable logical payloads only after anchor commit, and evaluation abort leaves no published artifact.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/artifacts.py src/pilot_assessment/anchors/protocols.py tests/anchors/test_artifacts.py
@@ -1892,7 +1894,7 @@ if ($LASTEXITCODE -ne 1) { throw "rg quality-field scan failed" }
 
 Expected: tests PASS; scan returns no production M4 match.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/scoring.py tests/anchors/test_scoring.py
@@ -2143,7 +2145,7 @@ Use native X left-hold support, full phase wall-clock denominator, no minimum du
 
 Expected: PASS; production capability count is 1/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives src/pilot_assessment/anchors/plugins src/pilot_assessment/anchors/registry-v1.json tests/m4_support/micro_inputs.py tests/m4_support/micro_oracles.py tests/anchors/test_o1_phase_state_precision.py tests/anchors/test_registry.py
@@ -2190,7 +2192,7 @@ Save per-axis error and tracking-error trace. Never fall back to nearest-path or
 
 Expected: PASS; capability count is 2/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/reference_join.py src/pilot_assessment/anchors/plugins/o2_peak_tracking_excursion.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o2_peak_tracking_excursion.py tests/anchors/test_registry.py
@@ -2238,7 +2240,7 @@ Missing target/frame/axis is not-computable. Never use Infinity for a miss.
 
 Expected: PASS; count is 3/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/envelopes.py src/pilot_assessment/anchors/plugins/o3_terminal_capture_quality.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o3_terminal_capture_quality.py tests/anchors/test_registry.py
@@ -2285,7 +2287,7 @@ Do not repair collection gaps. Any behavioral tolerance must be the explicit ver
 
 Expected: PASS; count is 4/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/envelopes.py src/pilot_assessment/anchors/plugins/o4_sustained_hover_time.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o4_sustained_hover_time.py tests/anchors/test_registry.py
@@ -2356,7 +2358,7 @@ A single point with zero support duration is not-computable. Any finite partial 
 
 Expected: PASS; O5/provider closures declare NumPy/SciPy, anchor count is 5/18, provider count is 1, and the provider product hash is a declared O5 dependency fingerprint.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/movement.py src/pilot_assessment/anchors/plugins/o5_workload_rate.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_movement.py tests/anchors/test_o5_workload_rate.py tests/anchors/test_registry.py
@@ -2402,7 +2404,7 @@ No runtime trim estimation and no endpoint clipping.
 
 Expected: PASS; count is 6/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/plugins/o6_control_magnitude_rms.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o6_control_magnitude_rms.py tests/anchors/test_registry.py
@@ -2442,7 +2444,7 @@ Declare the existing `movement-events-v1` preprocessing recipe and consume its i
 
 Expected: PASS; exactly 7/18 production capabilities are available and software-verified.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/reversal.py src/pilot_assessment/anchors/plugins/o7_control_reversal_rate.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o7_control_reversal_rate.py tests/anchors/test_registry.py
@@ -2488,7 +2490,7 @@ The clamp is formula-defined, not outlier filtering. M5, not M4, applies `likeli
 
 Expected: PASS; count is 8/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/plugins/o8_tpx_composite.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o8_tpx_composite.py tests/anchors/test_registry.py
@@ -2532,7 +2534,7 @@ Do not create 0 Hz when no stable opportunity exists; primary is null for `no_st
 
 Expected: PASS; count is 9/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/plugins/o9_dead_band_activity.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o9_dead_band_activity.py tests/anchors/test_registry.py
@@ -2572,7 +2574,7 @@ Never convert a short observable horizon into missing data. If the observation e
 
 Expected: PASS; count is 10/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/events.py src/pilot_assessment/anchors/plugins/o10_recovery_time.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_events.py tests/anchors/test_o10_recovery_time.py tests/anchors/test_registry.py
@@ -2612,7 +2614,7 @@ The wrong-direction override is `computed + U`, primary null, one-hot U. Missing
 
 Expected: PASS; count is 11/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/events.py src/pilot_assessment/anchors/plugins/o11_disturbance_latency.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o11_disturbance_latency.py tests/anchors/test_registry.py
@@ -2654,7 +2656,7 @@ Do not reuse confirmation timestamp as `t_exit`. A missing effect mapping is not
 
 Expected: PASS; exactly 12/18 production plugins are software-verified.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/events.py src/pilot_assessment/anchors/plugins/o12_envelope_drift_latency.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o12_envelope_drift_latency.py tests/anchors/test_registry.py
@@ -2705,7 +2707,7 @@ Use gaze-interval duration, not fixation duration. If G stream is truly absent/z
 
 Expected: PASS; anchor count is 13/18 and provider count is 2.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/gaze_aoi.py src/pilot_assessment/anchors/plugins/h1_aoi_dwell.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_gaze_aoi.py tests/anchors/test_h1_aoi_dwell.py tests/anchors/test_registry.py
@@ -2748,7 +2750,7 @@ The pilot not turning cannot delay the cue start. No relevant-AOI fixation by ob
 
 Expected: PASS; anchor count is 14/18 and provider count is 3.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/fixation.py src/pilot_assessment/anchors/plugins/h2_first_fixation_latency.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_fixation.py tests/anchors/test_h2_first_fixation_latency.py tests/anchors/test_registry.py
@@ -2791,7 +2793,7 @@ No nonzero dwell produces `computed + U + no_gaze_dwell`. M5 later declares H1/H
 
 Expected: PASS; exactly 15/18 production plugins and 3 preprocessing providers are software-verified.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/plugins/h3_off_task_dwell.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_h3_off_task_dwell.py tests/anchors/test_registry.py
@@ -2857,7 +2859,7 @@ Use only packaged `provided_r_peaks_v1`; never auto-fallback to raw peak detecti
 
 Expected: PASS; anchor count is 16/18, provider count is 5, and signed-HR window trace is available for O13.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/physio_windows.py src/pilot_assessment/anchors/primitives/ecg.py src/pilot_assessment/anchors/plugins/h4_ecg_fluctuation.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_physio_windows.py tests/anchors/test_ecg.py tests/anchors/test_h4_ecg_fluctuation.py tests/anchors/test_registry.py
@@ -2919,7 +2921,7 @@ Convert every configured channel with the frozen `input_unit` plus finite positi
 
 Expected: PASS; anchor count is 17/18 and provider count is 6. DSP float goldens pass `abs<=1e-6 OR rel<=1e-6`; boundary constructions lie outside tolerance.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/eeg.py src/pilot_assessment/anchors/plugins/h5_eeg_fluctuation.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_eeg.py tests/anchors/test_h5_eeg_fluctuation.py tests/anchors/test_registry.py
@@ -2974,7 +2976,7 @@ For each window, O13 reconstructs the exact kernel arguments from the already va
 
 Expected: PASS; registry/catalog closure is exact, 18/18 individual production plugins and all 6 preprocessing providers are software-verified, and both H4 and O13 pass after the shared window-provider refresh.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/physio_windows.py src/pilot_assessment/anchors/plugins/o13_physio_control_coupling.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o13_physio_control_coupling.py tests/anchors/test_registry.py
