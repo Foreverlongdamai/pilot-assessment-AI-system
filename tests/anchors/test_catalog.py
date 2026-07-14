@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import struct
 from copy import deepcopy
 from hashlib import sha256
 from importlib import import_module
@@ -9,9 +10,11 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
+import rfc8785
 from jsonschema.validators import Draft202012Validator
+from pydantic import JsonValue
 
-from pilot_assessment.contracts.anchor_execution import AnchorRuntimeRegistry
+from pilot_assessment.contracts.anchor_execution import AnchorCatalog, AnchorRuntimeRegistry
 
 ANCHOR_IDS = (
     "O1",
@@ -851,8 +854,21 @@ def _condition_dicts(
     ]
 
 
+def _catalog_typed_fingerprint(document: dict[str, Any]) -> str:
+    payload = AnchorCatalog.model_validate(document).model_dump(mode="json")
+    payload.pop("catalog_fingerprint", None)
+    canonical = rfc8785.dumps(cast(JsonValue, payload))
+    framed = b"anchor-catalog\0" + b"0.1.0\0" + struct.pack(">Q", len(canonical)) + canonical
+    return sha256(framed).hexdigest()
+
+
+def _refresh_catalog_claim(document: dict[str, Any]) -> None:
+    document["catalog_fingerprint"] = _catalog_typed_fingerprint(document)
+
+
 def _mutate_17(document: dict[str, Any]) -> None:
     document["entries"].pop()
+    _refresh_catalog_claim(document)
 
 
 def _mutate_19(document: dict[str, Any]) -> None:
@@ -866,6 +882,7 @@ def _mutate_19(document: dict[str, Any]) -> None:
         }
     )
     document["entries"].append(extra)
+    _refresh_catalog_claim(document)
 
 
 def _mutate_duplicate(document: dict[str, Any]) -> None:
@@ -883,14 +900,22 @@ def _mutate_reordered(document: dict[str, Any]) -> None:
 
 def _mutate_gapped_order(document: dict[str, Any]) -> None:
     document["entries"][-1]["canonical_order"] = 19
+    _refresh_catalog_claim(document)
 
 
-def _mutate_sentinel(document: dict[str, Any]) -> None:
-    document["catalog_fingerprint"] = "1" * 64
+def _mutate_task8_sentinel(document: dict[str, Any]) -> None:
+    document["catalog_fingerprint"] = "0" * 64
+
+
+def _mutate_stale_catalog_claim(document: dict[str, Any]) -> None:
+    current = str(document["catalog_fingerprint"])
+    replacement = "0" if current[0] != "0" else "1"
+    document["catalog_fingerprint"] = replacement + current[1:]
 
 
 def _mutate_non_active(document: dict[str, Any]) -> None:
     document["entries"][0]["lifecycle"] = "deprecated"
+    _refresh_catalog_claim(document)
 
 
 def _mutate_missing_sentinel(document: dict[str, Any]) -> None:
@@ -899,12 +924,19 @@ def _mutate_missing_sentinel(document: dict[str, Any]) -> None:
 
 def _mutate_dependency_schema(document: dict[str, Any]) -> None:
     document["entries"][4]["dependencies"][0]["expected_schema_id"] = "altered-output-v0.1"
+    _refresh_catalog_claim(document)
 
 
 def _mutate_descriptor_unit(document: dict[str, Any]) -> None:
     document["entries"][0]["artifact_recipes"][0]["schema_descriptor"]["fields"][0]["unit"] = (
         "changed_unit"
     )
+    _refresh_catalog_claim(document)
+
+
+def _mutate_self_consistent_plugin_identity(document: dict[str, Any]) -> None:
+    document["entries"][0]["plugin_version"] = "0.2.0"
+    _refresh_catalog_claim(document)
 
 
 def test_packaged_reference_catalog_is_the_exact_task7_matrix() -> None:
@@ -914,7 +946,10 @@ def test_packaged_reference_catalog_is_the_exact_task7_matrix() -> None:
     assert catalog.profile_id == "reference-model-v0.1"
     assert catalog.profile_version == "0.1.0"
     assert catalog.scientific_validation_status.value == "engineering_default"
-    assert catalog.catalog_fingerprint == "0" * 64
+    document = catalog.model_dump(mode="json")
+    expected_fingerprint = _catalog_typed_fingerprint(document)
+    assert catalog.catalog_fingerprint == expected_fingerprint
+    assert expected_fingerprint != "0" * 64
     assert tuple(entry.anchor_id for entry in catalog.entries) == ANCHOR_IDS
 
     for order, entry in enumerate(catalog.entries):
@@ -1159,11 +1194,13 @@ def test_catalog_loader_rejects_paths_and_unknown_profiles(profile_id: str) -> N
         _mutate_duplicate,
         _mutate_reordered,
         _mutate_gapped_order,
-        _mutate_sentinel,
+        _mutate_task8_sentinel,
+        _mutate_stale_catalog_claim,
         _mutate_non_active,
         _mutate_missing_sentinel,
         _mutate_dependency_schema,
         _mutate_descriptor_unit,
+        _mutate_self_consistent_plugin_identity,
     ),
     ids=(
         "17-entries",
@@ -1171,11 +1208,13 @@ def test_catalog_loader_rejects_paths_and_unknown_profiles(profile_id: str) -> N
         "duplicate",
         "reordered",
         "gapped-order",
-        "non-sentinel",
+        "task8-sentinel",
+        "stale-catalog-claim",
         "non-active",
         "missing-sentinel",
         "dependency-schema",
         "descriptor-unit",
+        "self-consistent-plugin-identity",
     ),
 )
 def test_reference_profile_loader_rejects_mutated_catalog_resources(

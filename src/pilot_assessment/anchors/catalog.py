@@ -934,10 +934,11 @@ def _validate_reference_catalog(catalog: AnchorCatalog) -> None:
         or catalog.profile_id != REFERENCE_PROFILE_ID
         or catalog.profile_version != "0.1.0"
         or catalog.scientific_validation_status.value != "engineering_default"
-        or catalog.catalog_fingerprint != _TASK8_UNCOMPUTED_SENTINEL
         or len(catalog.entries) != len(_REFERENCE_ENTRY_SHAPES)
     ):
         raise ValueError("reference catalog global identity is inconsistent")
+    if catalog.catalog_fingerprint == _TASK8_UNCOMPUTED_SENTINEL:
+        raise ValueError("reference catalog still carries the Task 8 sentinel")
     for order, (entry, expected) in enumerate(
         zip(catalog.entries, _REFERENCE_ENTRY_SHAPES, strict=True)
     ):
@@ -979,6 +980,19 @@ def _validate_reference_catalog(catalog: AnchorCatalog) -> None:
                 raise ValueError(
                     f"reference catalog dependency {dependency.dependency_id} is inconsistent"
                 )
+
+    from pilot_assessment.anchors.fingerprint import (
+        catalog_fingerprint_payload,
+        typed_json_sha256,
+    )
+
+    expected_fingerprint = typed_json_sha256(
+        catalog.contract_id,
+        catalog.contract_version,
+        catalog_fingerprint_payload(catalog),
+    )
+    if catalog.catalog_fingerprint != expected_fingerprint:
+        raise ValueError("reference catalog fingerprint is stale or inconsistent")
 
 
 def load_packaged_catalog(profile_id: str = REFERENCE_PROFILE_ID) -> AnchorCatalog:
