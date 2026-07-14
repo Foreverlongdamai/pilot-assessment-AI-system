@@ -3,6 +3,8 @@ from importlib.resources import as_file, files
 from pathlib import Path
 
 import pilot_assessment
+from pilot_assessment.anchors.registry import load_packaged_registry, packaged_registry_fingerprint
+from pilot_assessment.contracts.anchor_execution import AnchorRuntimeRegistry
 
 M4_SCHEMA_RESOURCE_NAMES = {
     "anchor-catalog-0.1.0.schema.json",
@@ -100,3 +102,17 @@ def test_m4_reference_catalog_parameter_schemas_and_empty_registry_are_packaged(
     assert len(parameter_names) == 24
     for name in parameter_names:
         assert parameter_package.joinpath(name).read_bytes()
+
+
+def test_m4_packaged_registry_is_a_loadable_empty_trusted_registry() -> None:
+    raw = files("pilot_assessment.anchors").joinpath("registry-v1.json").read_bytes()
+    model = AnchorRuntimeRegistry.model_validate_json(raw)
+
+    assert model.contract_id == "anchor-runtime-registry"
+    assert model.contract_version == "0.1.0"
+    assert model.entries == ()
+    assert model.preprocessors == ()
+
+    # The trusted loader accepts the packaged resource and produces a stable fingerprint.
+    load_packaged_registry()
+    assert packaged_registry_fingerprint() == packaged_registry_fingerprint()
