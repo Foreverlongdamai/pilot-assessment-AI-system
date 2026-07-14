@@ -22,6 +22,7 @@ from pydantic import (
     model_validator,
 )
 
+from pilot_assessment.contracts.anchor_v2 import AnchorCalculationStatusV2, AnchorResultV2
 from pilot_assessment.contracts.common import (
     BundleRelativePath,
     FiniteFloat,
@@ -34,7 +35,9 @@ from pilot_assessment.contracts.common import (
     StableId,
     StrictContractModel,
     UnitInterval,
+    freeze_json_mapping,
 )
+from pilot_assessment.contracts.errors import DomainErrorData
 from pilot_assessment.contracts.session import CoreModality
 from pilot_assessment.contracts.synchronization import MAX_SESSION_END_NS_V0_1
 
@@ -774,6 +777,145 @@ class ScientificValidationStatus(StrEnum):
     NOT_SUPPORTED = "not_supported"
 
 
+class AnchorCapabilityStatus(StrEnum):
+    AVAILABLE = "available"
+    PLUGIN_UNAVAILABLE = "plugin_unavailable"
+    NOT_IMPLEMENTED = "not_implemented"
+    INCOMPATIBLE = "incompatible"
+
+
+class AnchorPlanStatus(StrEnum):
+    COMPILED = "compiled"
+    BLOCKED = "blocked"
+
+
+class AnchorInventoryStatus(StrEnum):
+    EXECUTED = "executed"
+    NOT_ATTEMPTED = "not_attempted"
+
+
+class AnchorEvaluationDisposition(StrEnum):
+    READY = "ready"
+    READY_PARTIAL = "ready_partial"
+    BLOCKED = "blocked"
+
+
+class AnchorInventoryItem(StrictContractModel):
+    anchor_id: StableId
+    capability_status: AnchorCapabilityStatus
+    evaluation_status: AnchorInventoryStatus
+    result_fingerprint: Sha256Digest | None
+    global_block_reason: StableId | None
+    diagnostics: tuple[DomainErrorData, ...]
+
+    @model_validator(mode="after")
+    def validate_status_matrix(self) -> Self:
+        if self.evaluation_status is AnchorInventoryStatus.EXECUTED:
+            if self.capability_status is not AnchorCapabilityStatus.AVAILABLE:
+                raise ValueError("executed inventory requires an available capability")
+            if self.result_fingerprint is None:
+                raise ValueError("executed inventory requires a result fingerprint")
+            if self.global_block_reason is not None:
+                raise ValueError("executed inventory cannot carry a global block reason")
+            return self
+
+        if self.result_fingerprint is not None:
+            raise ValueError("not-attempted inventory cannot reference a result")
+        if self.global_block_reason is None:
+            raise ValueError("not-attempted inventory requires a global block reason")
+        return self
+
+
+class AnchorEvaluationReport(StrictContractModel):
+    contract_id: Literal["anchor-evaluation-report"] = "anchor-evaluation-report"
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    session_id: StableId
+    disposition: AnchorEvaluationDisposition
+    inventory: tuple[AnchorInventoryItem, ...]
+    results: tuple[AnchorResultV2, ...]
+    expected_count: NonNegativeInt
+    executed_count: NonNegativeInt
+    applicable_count: NonNegativeInt
+    computed_count: NonNegativeInt
+    raw_availability: UnitInterval | None
+    catalog_fingerprint: Sha256Digest
+    registry_fingerprint: Sha256Digest
+    execution_plan_fingerprint: Sha256Digest
+    evaluation_fingerprint: Sha256Digest
+    formal_run_authorized: Literal[False] = False
+    scientific_validation_status: ScientificValidationStatus
+    diagnostics: tuple[DomainErrorData, ...]
+
+    @model_validator(mode="after")
+    def validate_report_closure(self) -> Self:
+        inventory_ids = tuple(item.anchor_id for item in self.inventory)
+        result_ids = tuple(item.anchor_id for item in self.results)
+        result_fingerprints = tuple(item.result_fingerprint for item in self.results)
+        _require_unique(inventory_ids, "inventory anchor IDs")
+        _require_unique(result_ids, "result anchor IDs")
+        _require_unique(result_fingerprints, "result fingerprints")
+        if self.expected_count != len(self.inventory):
+            raise ValueError("expected_count must equal inventory cardinality")
+
+        executed_inventory = tuple(
+            item
+            for item in self.inventory
+            if item.evaluation_status is AnchorInventoryStatus.EXECUTED
+        )
+        if self.executed_count != len(executed_inventory):
+            raise ValueError("executed_count must equal executed inventory cardinality")
+
+        if self.disposition is AnchorEvaluationDisposition.BLOCKED:
+            self._validate_blocked_report()
+            return self
+
+        if len(executed_inventory) != len(self.inventory):
+            raise ValueError("non-blocked reports require a result for every inventory item")
+        if self.executed_count != len(self.results):
+            raise ValueError("executed_count must equal result cardinality")
+        if inventory_ids != result_ids:
+            raise ValueError("inventory and results must use the same canonical anchor order")
+        if tuple(item.result_fingerprint for item in executed_inventory) != result_fingerprints:
+            raise ValueError("each executed inventory item must reference its canonical result")
+
+        applicable = sum(
+            result.calculation_status is not AnchorCalculationStatusV2.NOT_APPLICABLE
+            for result in self.results
+        )
+        computed = sum(
+            result.calculation_status is AnchorCalculationStatusV2.COMPUTED
+            for result in self.results
+        )
+        if self.applicable_count != applicable:
+            raise ValueError("applicable_count must be derived from result statuses")
+        if self.computed_count != computed:
+            raise ValueError("computed_count must be derived from result statuses")
+        expected_availability = None if applicable == 0 else computed / applicable
+        if self.raw_availability != expected_availability:
+            raise ValueError("raw_availability must equal computed_count/applicable_count")
+        expected_disposition = (
+            AnchorEvaluationDisposition.READY
+            if computed == applicable
+            else AnchorEvaluationDisposition.READY_PARTIAL
+        )
+        if self.disposition is not expected_disposition:
+            raise ValueError("report disposition does not match result completeness")
+        return self
+
+    def _validate_blocked_report(self) -> None:
+        if self.results:
+            raise ValueError("blocked reports cannot fabricate results")
+        if self.executed_count != 0 or any(
+            item.evaluation_status is not AnchorInventoryStatus.NOT_ATTEMPTED
+            for item in self.inventory
+        ):
+            raise ValueError("blocked reports require wholly not-attempted inventory")
+        if self.applicable_count != 0 or self.computed_count != 0:
+            raise ValueError("blocked reports cannot claim applicable or computed results")
+        if self.raw_availability is not None:
+            raise ValueError("blocked reports require null raw availability")
+
+
 class AnchorLifecycle(StrEnum):
     ACTIVE = "active"
     DEPRECATED = "deprecated"
@@ -1241,7 +1383,7 @@ class ResolvedAlgorithmProfile(StrictContractModel):
     @classmethod
     def validate_parameters(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
         _validate_json_tree(value, reject_quality_fields=True)
-        return value
+        return freeze_json_mapping(value)
 
 
 class ResolvedInputFieldContract(StrictContractModel):
@@ -1560,12 +1702,18 @@ __all__ = [
     "AoiGeometryKind",
     "AnchorApplicability",
     "AnchorArtifactRecipe",
+    "AnchorCapabilityStatus",
     "AnchorCatalog",
     "AnchorCatalogEntry",
     "AnchorDependency",
+    "AnchorEvaluationDisposition",
+    "AnchorEvaluationReport",
     "AnchorExecutionEntry",
     "AnchorExecutionPlan",
+    "AnchorInventoryItem",
+    "AnchorInventoryStatus",
     "AnchorLifecycle",
+    "AnchorPlanStatus",
     "AnchorPluginDefinition",
     "AnchorRuntimeRegistry",
     "AuditText",

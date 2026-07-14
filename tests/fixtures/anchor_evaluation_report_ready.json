@@ -1,0 +1,1246 @@
+{
+  "contract_id": "anchor-evaluation-report",
+  "contract_version": "0.1.0",
+  "session_id": "session-1",
+  "disposition": "ready",
+  "inventory": [
+    {
+      "anchor_id": "O1",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000001",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "O2",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000002",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "O3",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000003",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "O4",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000004",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "O5",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000005",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "O6",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000006",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "O7",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000007",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "O8",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000008",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "O9",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000009",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "O10",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "000000000000000000000000000000000000000000000000000000000000000a",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "O11",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "000000000000000000000000000000000000000000000000000000000000000b",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "O12",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "000000000000000000000000000000000000000000000000000000000000000c",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "O13",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "000000000000000000000000000000000000000000000000000000000000000d",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "H1",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "000000000000000000000000000000000000000000000000000000000000000e",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "H2",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "000000000000000000000000000000000000000000000000000000000000000f",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "H3",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000010",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "H4",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000011",
+      "global_block_reason": null,
+      "diagnostics": []
+    },
+    {
+      "anchor_id": "H5",
+      "capability_status": "available",
+      "evaluation_status": "executed",
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000012",
+      "global_block_reason": null,
+      "diagnostics": []
+    }
+  ],
+  "results": [
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O1",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o1-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O2",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o2-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000002"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O3",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o3-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000003"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O4",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o4-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000004"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O5",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o5-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000005"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O6",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o6-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000006"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O7",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o7-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000007"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O8",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o8-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000008"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O9",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o9-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000009"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O10",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o10-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "000000000000000000000000000000000000000000000000000000000000000a"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O11",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o11-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "000000000000000000000000000000000000000000000000000000000000000b"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O12",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o12-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "000000000000000000000000000000000000000000000000000000000000000c"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "O13",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "o13-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "000000000000000000000000000000000000000000000000000000000000000d"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "H1",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "h1-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "000000000000000000000000000000000000000000000000000000000000000e"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "H2",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "h2-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "000000000000000000000000000000000000000000000000000000000000000f"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "H3",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "h3-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000010"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "H4",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "h4-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000011"
+    },
+    {
+      "contract_id": "anchor-result",
+      "contract_version": "0.2.0",
+      "anchor_id": "H5",
+      "calculation_status": "computed",
+      "evidence_state": "unacceptable",
+      "evidence_likelihood": {
+        "state_order": [
+          "unacceptable",
+          "adequate",
+          "desired"
+        ],
+        "values": [
+          1.0,
+          0.0,
+          0.0
+        ]
+      },
+      "continuous_score": 0.0,
+      "primary_value": {
+        "scalar_kind": "float",
+        "value": 1.0,
+        "unit": "m"
+      },
+      "primary_value_reason": null,
+      "classification_override": null,
+      "raw_metrics": {
+        "error": {
+          "scalar_kind": "float",
+          "value": 1.0,
+          "unit": "m"
+        }
+      },
+      "phase_results": [],
+      "event_results": [],
+      "derived_artifacts": [],
+      "diagnostics": [],
+      "provenance": {
+        "plugin_id": "h5-plugin",
+        "plugin_version": "0.1.0",
+        "implementation_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "parameter_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dependency_fingerprints": [],
+        "computation_trace": {
+          "sample_count": 1,
+          "source_start_t_ns": 0,
+          "source_end_t_ns": 1,
+          "analysis_start_t_ns": 0,
+          "analysis_end_t_ns": 1,
+          "grid_id": "grid-1",
+          "window_ids": [
+            "window-1"
+          ],
+          "interpolation_method": "none",
+          "matching_method": "direct",
+          "diagnostics": []
+        }
+      },
+      "result_fingerprint": "0000000000000000000000000000000000000000000000000000000000000012"
+    }
+  ],
+  "expected_count": 18,
+  "executed_count": 18,
+  "applicable_count": 18,
+  "computed_count": 18,
+  "raw_availability": 1.0,
+  "catalog_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "registry_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "execution_plan_fingerprint": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "evaluation_fingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "formal_run_authorized": false,
+  "scientific_validation_status": "not_supported",
+  "diagnostics": []
+}

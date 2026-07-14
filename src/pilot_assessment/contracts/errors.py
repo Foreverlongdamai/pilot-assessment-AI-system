@@ -5,9 +5,13 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Annotated
 
-from pydantic import Field, JsonValue, StrictBool
+from pydantic import Field, JsonValue, StrictBool, field_validator
 
-from pilot_assessment.contracts.common import StableId, StrictContractModel
+from pilot_assessment.contracts.common import (
+    StableId,
+    StrictContractModel,
+    freeze_json_mapping,
+)
 
 NonEmptyMessage = Annotated[str, Field(min_length=1, max_length=4096)]
 
@@ -32,6 +36,11 @@ class DomainErrorData(StrictContractModel):
     transaction_id: StableId | None = None
     diagnostics: dict[str, JsonValue] = Field(default_factory=dict)
     extensions: dict[str, JsonValue] = Field(default_factory=dict)
+
+    @field_validator("diagnostics", "extensions")
+    @classmethod
+    def freeze_json_maps(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+        return freeze_json_mapping(value)
 
 
 __all__ = ["DomainErrorData", "ErrorSeverity"]

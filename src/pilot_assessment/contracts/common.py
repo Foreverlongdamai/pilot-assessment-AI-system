@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import re
 from pathlib import PurePosixPath
-from typing import Annotated
+from typing import Annotated, Any, NoReturn, Self, SupportsIndex, cast
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, JsonValue, StringConstraints
 
 STABLE_ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
 BUNDLE_RELATIVE_PATH_PATTERN = r"^[^/\\:\x00]+(?:/[^/\\:\x00]+)*$"
@@ -33,6 +33,105 @@ class StrictContractModel(BaseModel):
         frozen=True,
         str_strip_whitespace=False,
     )
+
+
+class _FrozenJsonDict(dict[str, Any]):
+    """Dict-compatible immutable snapshot used inside frozen contract DTOs."""
+
+    def __setitem__(self, _key: str, _value: Any) -> None:
+        raise TypeError("validated JSON mappings are immutable")
+
+    def __delitem__(self, _key: str) -> None:
+        raise TypeError("validated JSON mappings are immutable")
+
+    def __ior__(self, _value: Any, /) -> Self:
+        raise TypeError("validated JSON mappings are immutable")
+
+    def clear(self) -> None:
+        raise TypeError("validated JSON mappings are immutable")
+
+    def pop(self, _key: object, _default: Any = None, /) -> Any:
+        raise TypeError("validated JSON mappings are immutable")
+
+    def popitem(self) -> tuple[str, Any]:
+        raise TypeError("validated JSON mappings are immutable")
+
+    def setdefault(self, _key: str, _default: Any = None, /) -> Any:
+        raise TypeError("validated JSON mappings are immutable")
+
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        raise TypeError("validated JSON mappings are immutable")
+
+    def __deepcopy__(self, _memo: dict[int, object]) -> Self:
+        return self
+
+
+class _FrozenJsonList(list[Any]):
+    """List-compatible immutable snapshot preserving JSON/list equality."""
+
+    @staticmethod
+    def _reject() -> NoReturn:
+        raise TypeError("validated JSON arrays are immutable")
+
+    def __setitem__(self, _index: Any, _value: Any) -> None:
+        self._reject()
+
+    def __delitem__(self, _index: Any) -> None:
+        self._reject()
+
+    def __iadd__(self, _value: Any) -> Self:
+        self._reject()
+
+    def __imul__(self, _value: SupportsIndex) -> Self:
+        self._reject()
+
+    def append(self, _value: Any) -> None:
+        self._reject()
+
+    def clear(self) -> None:
+        self._reject()
+
+    def extend(self, _values: Any) -> None:
+        self._reject()
+
+    def insert(self, _index: SupportsIndex, _value: Any) -> None:
+        self._reject()
+
+    def pop(self, _index: SupportsIndex = -1) -> Any:
+        self._reject()
+
+    def remove(self, _value: Any) -> None:
+        self._reject()
+
+    def reverse(self) -> None:
+        self._reject()
+
+    def sort(self, *args: Any, **kwargs: Any) -> None:
+        self._reject()
+
+    def __deepcopy__(self, _memo: dict[int, object]) -> Self:
+        return self
+
+
+def freeze_json_value(value: JsonValue) -> JsonValue:
+    """Recursively snapshot a validated JSON tree without changing its JSON shape."""
+
+    if isinstance(value, dict):
+        frozen: dict[str, JsonValue] = {}
+        for key, nested in value.items():
+            if type(key) is not str:
+                raise TypeError("JSON object keys must be strings")
+            frozen[key] = freeze_json_value(nested)
+        return cast(JsonValue, _FrozenJsonDict(frozen))
+    if isinstance(value, (list, tuple)):
+        return cast(JsonValue, _FrozenJsonList(freeze_json_value(item) for item in value))
+    return value
+
+
+def freeze_json_mapping(value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+    """Return a dict-compatible recursively immutable JSON object snapshot."""
+
+    return cast(dict[str, JsonValue], freeze_json_value(value))
 
 
 def _validate_stable_id(value: str) -> str:
@@ -122,6 +221,8 @@ __all__ = [
     "BUNDLE_RELATIVE_PATH_JSON_SCHEMA_PATTERN",
     "BundleRelativePath",
     "FiniteFloat",
+    "freeze_json_mapping",
+    "freeze_json_value",
     "INT64_MAX",
     "INT64_MIN",
     "Int64",

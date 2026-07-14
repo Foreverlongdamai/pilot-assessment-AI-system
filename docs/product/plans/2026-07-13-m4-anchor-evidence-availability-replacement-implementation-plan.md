@@ -14,7 +14,7 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md`, the accepted `docs/product/specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md`, and the accepted `docs/product/specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md`. The lightweight amendment takes precedence for verification scope; the Task 3 amendment takes precedence for semantic/reference contracts, binding, fingerprint ownership, and candidate producer boundaries.
 - Accepted decisions: D-021 through D-028 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–2 were completed in commits `bc544bf`, `f56365c`, and `928e9a4`; the user then explicitly approved the Task 3 candidate-binding amendment, Tasks 3–4 are complete under the checked sections below, and Task 5 is next.
+- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–2 were completed in commits `bc544bf`, `f56365c`, and `928e9a4`; the user then explicitly approved the Task 3 candidate-binding amendment, Tasks 3–5 are complete under the checked sections below, and Task 6 is next.
 - Current implementation truth: 18/18 reference anchors specified, 0/18 production plugins implemented; M4 is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
@@ -1082,13 +1082,15 @@ git commit -m "feat: define M4 catalog and plan contracts"
 ### Task 5: Define measurement, artifact, inventory, and report contracts
 
 **Files:**
+- Modify: `src/pilot_assessment/contracts/common.py`
+- Modify: `src/pilot_assessment/contracts/errors.py`
 - Modify: `src/pilot_assessment/contracts/anchor_v2.py`
 - Modify: `src/pilot_assessment/contracts/anchor_execution.py`
 - Create: `src/pilot_assessment/anchors/protocols.py`
 - Create: `tests/contracts/test_anchor_measurement_report.py`
 - Create: `tests/fixtures/anchor_evaluation_report_ready.json`
 
-- [ ] **Step 1: Write RED status/disposition tests**
+- [x] **Step 1: Write RED status/disposition tests**
 
 Cover capability `available/plugin_unavailable/not_implemented/incompatible`, plan `compiled/blocked`, inventory `executed/not_attempted`, result status, and report `ready/ready_partial/blocked` as distinct enums. Assert that every executed inventory item references exactly one canonical `results` entry, non-blocked reference runs can expose all 18 `AnchorResultV2` objects for M5, blocked reports have expected/not-attempted inventory but no fabricated result, and raw availability is `computed_count/applicable_count` with computed U included and zero denominator represented by null. Freeze both callable signatures, including the plugin's current-entry `temporal_recipe`, its narrow `AnchorArtifactEmitter`, and the provider's resolved `PreprocessingScope` plus dependency projection; introspection tests reject a complete request/plan/transaction/cache parameter or any commit/abort/resolve member on the emitter.
 
@@ -1098,7 +1100,7 @@ Cover capability `available/plugin_unavailable/not_implemented/incompatible`, pl
 
 Expected: RED because measurement/report models do not exist.
 
-- [ ] **Step 2: Implement the exact models and invariants**
+- [x] **Step 2: Implement the exact models and invariants**
 
 Expose exactly these contract and runtime field sets; adding/removing a public contract field requires a new contract version:
 
@@ -1275,7 +1277,7 @@ class AnchorEvaluationReport(StrictContractModel):
 
 `AnchorArtifactRef` must distinguish logical content hash from optional storage-file hash and distinguish `sample_mask` from window/event traces.
 
-`results` is canonical catalog order and is the direct M5 consumption surface. An inventory item's result fingerprint must resolve to exactly one member of `results`; `not_attempted` items cannot reference a result. `scientific_validation_status` must equal the frozen execution-plan field: normal `reference-model-v0.1` plans start as `engineering_default`, while every synthetic fixture plan is explicitly `not_supported`.
+`results` is the direct M5 consumption surface. The report DTO preserves exact one-to-one order between its inventory and results and rejects duplicate IDs/fingerprints, but it cannot independently prove which external catalog or execution plan supplied them. Task 13 therefore owns the service-level closure that constructs both sequences in canonical catalog order and copies `scientific_validation_status` from the frozen execution plan. Normal `reference-model-v0.1` plans start as `engineering_default`, while every synthetic fixture plan is explicitly `not_supported`.
 
 After `AnchorMeasurement` exists, define the exact production plugin boundary:
 
@@ -1298,20 +1300,20 @@ PreprocessingProvider.compute(
 ) -> TabularArtifactPayload | BlobArtifactPayload
 ~~~
 
-The service constructs `AnchorPluginContext` by two explicit positive projections: `context` only from declared `required_context_paths`, and `semantic_scope` only from declared `required_semantic_paths`; it never passes the complete `AnchorEvaluationRequest`, complete `AlignedSession.streams`, or undeclared references/context/semantics to plugin/provider code. A plugin receives only its current execution entry's immutable `temporal_recipe`, never the complete plan or another anchor's recipe. Its `AnchorArtifactEmitter` exposes staging only: no commit, abort, resolve, other producer, or storage path. Each `stage_*` call names one declared `artifact_id`; the emitter rejects an unknown/duplicate recipe ID or payload kind/schema mismatch, so two artifacts with the same kind/schema remain unambiguous. Emitted IDs must be a declaration-order subsequence of `artifact_recipes`, which makes public artifact order deterministic while allowing a declared recipe not to emit for a particular calculation state. A provider receives the one resolved scope instance selected under its recipe's `scope_policy`; its dependency map contains only the already resolved provider-definition dependency slots, keyed by `dependency_id` after plan bindings resolve each unique `target_recipe_id`, so it cannot see sibling products or the cache. The provider parameter object is validated against the registry-bound parameter schema before provider factory/compute access. Both `PreprocessingProducer` and `PreprocessingArtifactIdentity` copy the complete scope (kind, ID, bounds, and phase/event/window identity), and that complete identity enters every downstream dependency fingerprint even when two scopes happen to produce identical payload bytes. The read-only payload wrappers expose cloned/frozen table views or immutable bytes and carry the logical hash used by dependency fingerprints.
+The service constructs `AnchorPluginContext` by two explicit positive projections: `context` only from declared `required_context_paths`, and `semantic_scope` only from declared `required_semantic_paths`; it never passes the complete `AnchorEvaluationRequest`, complete `AlignedSession.streams`, or undeclared references/context/semantics to plugin/provider code. A plugin receives only its current execution entry's immutable `temporal_recipe`, never the complete plan or another anchor's recipe. Its `AnchorArtifactEmitter` exposes staging only: no commit, abort, resolve, other producer, or storage path. Each `stage_*` call names one declared `artifact_id`; the emitter rejects an unknown/duplicate recipe ID or payload kind/schema mismatch, so two artifacts with the same kind/schema remain unambiguous. Emitted IDs must be a declaration-order subsequence of `artifact_recipes`, which makes public artifact order deterministic while allowing a declared recipe not to emit for a particular calculation state. A provider receives the one resolved scope instance selected under its recipe's `scope_policy`; its dependency map contains only the already resolved provider-definition dependency slots, keyed by `dependency_id` after plan bindings resolve each unique `target_recipe_id`, so it cannot see sibling products or the cache. The provider parameter object is validated against the registry-bound parameter schema before provider factory/compute access. Both `PreprocessingProducer` and `PreprocessingArtifactIdentity` copy the complete scope (kind, ID, bounds, and phase/event/window identity), and that complete identity enters every downstream dependency fingerprint even when two scopes happen to produce identical payload bytes. The read-only payload wrappers expose cloned/frozen table views or immutable bytes and carry the logical hash used by dependency fingerprints. The runtime boundary also enforces key/object identity (`stream key == core modality`, `reference key == descriptor reference ID`), recursively freezes shared algorithm-profile and diagnostic JSON snapshots, and rejects a table artifact ref whose row count, time bounds, or grid identity disagrees with its payload. Task 11 still owns descriptor/column/order/hash recomputation and transactional publication.
 
-- [ ] **Step 3: Run GREEN**
+- [x] **Step 3: Run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/contracts/test_anchor_measurement_report.py -v
 ~~~
 
-Expected: PASS; result/inventory cardinalities are canonical, report scientific status is copied from the plan, and runtime protocol objects expose only the exact positive projections above.
+Expected: PASS; result/inventory cardinalities and relative order are closed locally, runtime protocol objects expose only the exact positive projections above, and the authoritative catalog-order/scientific-status copy checks remain explicit Task 13 service obligations.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
-git add src/pilot_assessment/contracts/anchor_v2.py src/pilot_assessment/contracts/anchor_execution.py src/pilot_assessment/anchors/protocols.py tests/contracts/test_anchor_measurement_report.py tests/fixtures/anchor_evaluation_report_ready.json
+git add src/pilot_assessment/contracts/common.py src/pilot_assessment/contracts/errors.py src/pilot_assessment/contracts/anchor_v2.py src/pilot_assessment/contracts/anchor_execution.py src/pilot_assessment/anchors/protocols.py tests/contracts/test_anchor_measurement_report.py tests/fixtures/anchor_evaluation_report_ready.json docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md
 git commit -m "feat: define M4 measurement and report contracts"
 ~~~
 

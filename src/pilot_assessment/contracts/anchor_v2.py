@@ -9,9 +9,9 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping, Sequence
 from enum import StrEnum
-from typing import Literal, Self
+from typing import Any, Literal, Self, cast
 
-from pydantic import Field, JsonValue, StrictBool, model_validator
+from pydantic import Field, JsonValue, StrictBool, field_validator, model_validator
 
 from pilot_assessment.contracts.anchor import EvidenceLikelihood, EvidenceState
 from pilot_assessment.contracts.common import (
@@ -23,6 +23,7 @@ from pilot_assessment.contracts.common import (
     StableId,
     StrictContractModel,
     UnitInterval,
+    freeze_json_mapping,
 )
 from pilot_assessment.contracts.errors import DomainErrorData
 
@@ -54,11 +55,53 @@ class MetricValue(StrictContractModel):
         return self
 
 
+class _FrozenDict(dict[str, Any]):
+    """A JSON-serializable dict whose validated snapshot cannot be mutated."""
+
+    def __setitem__(self, _key: str, _value: Any) -> None:
+        raise TypeError("validated contract mappings are immutable")
+
+    def __delitem__(self, _key: str) -> None:
+        raise TypeError("validated contract mappings are immutable")
+
+    def __ior__(self, _value: Any, /) -> Self:
+        raise TypeError("validated contract mappings are immutable")
+
+    def clear(self) -> None:
+        raise TypeError("validated contract mappings are immutable")
+
+    def pop(self, _key: object, _default: Any = None, /) -> Any:
+        raise TypeError("validated contract mappings are immutable")
+
+    def popitem(self) -> tuple[str, Any]:
+        raise TypeError("validated contract mappings are immutable")
+
+    def setdefault(self, _key: str, _default: Any = None, /) -> Any:
+        raise TypeError("validated contract mappings are immutable")
+
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        raise TypeError("validated contract mappings are immutable")
+
+    def __deepcopy__(self, _memo: dict[int, object]) -> _FrozenDict:
+        return self
+
+
+def _freeze_metric_snapshot(
+    value: dict[str, MetricValue],
+) -> dict[str, MetricValue]:
+    return cast(dict[str, MetricValue], _FrozenDict(value))
+
+
 class ClassificationOverride(StrictContractModel):
     """A versioned failure mode that can only support Unacceptable evidence."""
 
     code: StableId
     details: dict[str, JsonValue] = Field(default_factory=dict)
+
+    @field_validator("details")
+    @classmethod
+    def freeze_details(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
+        return freeze_json_mapping(value)
 
 
 class SourceWindowV2(StrictContractModel):
@@ -131,6 +174,72 @@ class ComputationTrace(StrictContractModel):
         return self
 
 
+class AnchorBreakdownMeasurement(StrictContractModel):
+    """Unscored per-phase or per-event measurement emitted by a plugin."""
+
+    breakdown_id: StableId
+    calculation_status: AnchorCalculationStatusV2
+    primary_value: MetricValue | None
+    primary_value_reason: StableId | None
+    raw_metrics: dict[StableId, MetricValue]
+    classification_override_candidate: ClassificationOverride | None
+    trace: ComputationTrace
+    diagnostics: tuple[DomainErrorData, ...]
+
+    @field_validator("raw_metrics")
+    @classmethod
+    def freeze_raw_metrics(cls, value: dict[str, MetricValue]) -> dict[str, MetricValue]:
+        return _freeze_metric_snapshot(value)
+
+    @model_validator(mode="after")
+    def validate_status_dependent_fields(self) -> Self:
+        _validate_measurement_fields(
+            status=self.calculation_status,
+            primary_value=self.primary_value,
+            primary_value_reason=self.primary_value_reason,
+            raw_metrics=self.raw_metrics,
+            classification_override_candidate=self.classification_override_candidate,
+        )
+        _validate_finite_json(self.model_dump(mode="python"))
+        return self
+
+
+class AnchorMeasurement(StrictContractModel):
+    """Unscored, typed output from one M4 anchor plugin invocation."""
+
+    contract_id: Literal["anchor-measurement"] = "anchor-measurement"
+    contract_version: Literal["0.1.0"] = "0.1.0"
+    anchor_id: StableId
+    calculation_status: AnchorCalculationStatusV2
+    primary_value: MetricValue | None
+    primary_value_reason: StableId | None
+    raw_metrics: dict[StableId, MetricValue]
+    phase_results: tuple[AnchorBreakdownMeasurement, ...]
+    event_results: tuple[AnchorBreakdownMeasurement, ...]
+    classification_override_candidate: ClassificationOverride | None
+    source_windows: tuple[SourceWindowV2, ...]
+    derived_artifacts: tuple[AnchorArtifactRef, ...]
+    trace: ComputationTrace
+    diagnostics: tuple[DomainErrorData, ...]
+
+    @field_validator("raw_metrics")
+    @classmethod
+    def freeze_raw_metrics(cls, value: dict[str, MetricValue]) -> dict[str, MetricValue]:
+        return _freeze_metric_snapshot(value)
+
+    @model_validator(mode="after")
+    def validate_measurement(self) -> Self:
+        _validate_measurement_fields(
+            status=self.calculation_status,
+            primary_value=self.primary_value,
+            primary_value_reason=self.primary_value_reason,
+            raw_metrics=self.raw_metrics,
+            classification_override_candidate=self.classification_override_candidate,
+        )
+        _validate_finite_json(self.model_dump(mode="python"))
+        return self
+
+
 class AnchorBreakdownResult(StrictContractModel):
     """Per-phase or per-event result with an independent observation."""
 
@@ -145,6 +254,11 @@ class AnchorBreakdownResult(StrictContractModel):
     classification_override: ClassificationOverride | None
     trace: ComputationTrace
     diagnostics: tuple[DomainErrorData, ...]
+
+    @field_validator("raw_metrics")
+    @classmethod
+    def freeze_raw_metrics(cls, value: dict[str, MetricValue]) -> dict[str, MetricValue]:
+        return _freeze_metric_snapshot(value)
 
     @model_validator(mode="after")
     def validate_status_dependent_fields(self) -> Self:
@@ -193,6 +307,11 @@ class AnchorResultV2(StrictContractModel):
     diagnostics: tuple[DomainErrorData, ...]
     provenance: AnchorResultProvenance
     result_fingerprint: Sha256Digest
+
+    @field_validator("raw_metrics")
+    @classmethod
+    def freeze_raw_metrics(cls, value: dict[str, MetricValue]) -> dict[str, MetricValue]:
+        return _freeze_metric_snapshot(value)
 
     @model_validator(mode="after")
     def validate_status_dependent_fields(self) -> Self:
@@ -256,6 +375,30 @@ def _validate_result_fields(
         raise ValueError("classification_override requires a computed Unacceptable result")
 
 
+def _validate_measurement_fields(
+    *,
+    status: AnchorCalculationStatusV2,
+    primary_value: MetricValue | None,
+    primary_value_reason: str | None,
+    raw_metrics: Mapping[str, MetricValue],
+    classification_override_candidate: ClassificationOverride | None,
+) -> None:
+    if status is AnchorCalculationStatusV2.COMPUTED:
+        if primary_value is None:
+            if primary_value_reason is None:
+                raise ValueError("a null computed primary_value requires primary_value_reason")
+            if not raw_metrics:
+                raise ValueError("a null computed primary_value requires typed raw_metrics")
+        elif primary_value_reason is not None:
+            raise ValueError("primary_value_reason is only valid when primary_value is null")
+        return
+
+    if primary_value is not None or primary_value_reason is not None:
+        raise ValueError("non-computed measurements must omit primary measurement fields")
+    if classification_override_candidate is not None:
+        raise ValueError("classification_override_candidate requires a computed measurement")
+
+
 def _validate_hard_observation(
     *,
     evidence_state: EvidenceState | None,
@@ -294,8 +437,10 @@ def _validate_finite_json(value: object) -> None:
 
 __all__ = [
     "AnchorArtifactRef",
+    "AnchorBreakdownMeasurement",
     "AnchorBreakdownResult",
     "AnchorCalculationStatusV2",
+    "AnchorMeasurement",
     "AnchorResultProvenance",
     "AnchorResultV2",
     "ClassificationOverride",
