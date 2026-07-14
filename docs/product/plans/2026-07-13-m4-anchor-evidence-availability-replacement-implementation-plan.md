@@ -1473,7 +1473,7 @@ git commit -m "feat: package M4 reference anchor catalog"
 - Create: `tests/anchors/test_fingerprint.py`
 - Modify: `tests/anchors/test_catalog.py`
 
-- [ ] **Step 1: Write RED canonical-byte vectors**
+- [x] **Step 1: Write RED canonical-byte vectors**
 
 Cover JCS map ordering, Unicode, ECMAScript numbers, rejection of NaN/Infinity, the safe-integer boundaries, exact NUL/uint64 framing, canonical inline schema-descriptor hashes, canonical tabular row order, logical-vs-storage hashes, absolute-path exclusion, Python implementation/version/ABI identity, runtime distribution identity, definition/implementation/registry/catalog/parameter/scorer/plan/result/evaluation fingerprints, and equal hashes across fresh subprocesses. Prove the exact Task 7 annotation-to-`ScorerPolicy` payload/hash and that `ResolvedAlgorithmProfile.parameter_hash` reuses `parameter_snapshot_fingerprint(profile.parameters)`. Add the six Task 3 amendment reference/semantic fingerprints and prove that any resource checksum, frame/unit/table field, row value/order, session/window, clock/schema, mapping method/policy/scale/offset/drift/rounding/mask mutation changes the appropriate digest. Explicitly prove that changing any valid `ResolvedInputFieldContract`/`ResolvedInputTableContract` member—including modality/table role, either schema level, frame, unit, dtype, nullable, or physical field order—changes `plan_fingerprint`. Reordering the outer table-contract tuple is non-canonical and must be rejected before hashing; no alternate fingerprint is expected for that invalid object. Build the project wheel once, install the same locked wheel set into two temporary venv roots, run outside the repository with `PYTHONPATH` removed and reversed CLI argument order, and require byte-identical runtime identities. Prove that changing a self-reported fingerprint/digest field or `storage_file_sha256` does not change the corresponding canonical payload/hash, while changing any logical field does. Assert false-claim rejection only at Task 8-owned catalog/runtime/artifact boundaries; Tasks 9/11/13/35 retain their named rejection tests.
 
@@ -1483,7 +1483,7 @@ Cover JCS map ordering, Unicode, ECMAScript numbers, rejection of NaN/Infinity, 
 
 Expected: RED because M4 fingerprint functions do not exist.
 
-- [ ] **Step 2: Implement the fixed callable surface**
+- [x] **Step 2: Implement the fixed callable surface**
 
 ~~~text
 jcs_bytes(value: object) -> bytes
@@ -1586,7 +1586,7 @@ The canonical projections are fixed as follows:
 
 The six semantic/reference functions use the exact type IDs, versions and canonical payload exclusions in the approved Task 3 amendment §6.4. In particular, resource identity binds ordered checksums; aligned content binds its explicit `aligned_schema_id` argument, ordered fields, every logical row and canonical order keys; alignment identity binds complete `ReferenceSessionIdentity` plus complete mapping contract; set identity excludes only its own self-field. Task 8 computes these values but does not resolve a source or construct a candidate.
 
-- [ ] **Step 3: Run GREEN twice in separate processes**
+- [x] **Step 3: Run GREEN twice in separate processes**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/anchors/test_fingerprint.py tests/anchors/test_catalog.py -v
@@ -1595,7 +1595,7 @@ The six semantic/reference functions use the exact type IDs, versions and canoni
 
 Expected: both runs PASS with byte-identical typed hashes; storage-only changes preserve logical hashes, and every logical tamper vector is either rejected or changes the downstream hash exactly as specified.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/fingerprint.py src/pilot_assessment/anchors/catalog.py src/pilot_assessment/anchors/profile_data/reference-model-v0.1-anchor-catalog.json tests/anchors/test_fingerprint.py tests/anchors/test_catalog.py
@@ -1603,6 +1603,8 @@ git commit -m "feat: add canonical M4 fingerprints"
 ~~~
 
 After this commit the only valid claim is: `M4-A complete; M4-B fingerprint primitive established; 18/18 specified; 0/18 plugins implemented; formal_run_authorized=false`.
+
+**Completion evidence (2026-07-13):** Commit `3e1a006` adds the RFC 8785 typed fingerprint surface and numeric runtime identity, and replaces the Task 7 catalog sentinel with the real computed catalog fingerprint. Focused Task 8 regression is `149 passed, 1 skipped` (host-symlink test skipped); full suite `1025 passed, 3 skipped`; `ruff check`, `ruff format` on Task 8 files, and `ty check src/` pass. The Task 8 tests were authored as four files (`test_fingerprint.py` plus `test_fingerprint_runtime.py`, `test_fingerprint_reference.py`, `test_fingerprint_install_roots.py`), all committed. Finalized inline by Claude to conserve agent quota: the plan's two independent review subagents were NOT run and no autonomous-review-ledger entry is claimed for this task. Production plugins remain 0/18 and `formal_run_authorized=false`.
 
 ### Task 9: Implement the trusted packaged registry and implementation-closure verifier
 
