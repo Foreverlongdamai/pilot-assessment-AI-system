@@ -1712,7 +1712,7 @@ git commit -m "feat: add trusted anchor plugin registry"
 - Create: `src/pilot_assessment/anchors/temporal.py`
 - Create: `tests/anchors/test_temporal.py`
 
-- [ ] **Step 1: Write RED support/gap/grid golden tests**
+- [x] **Step 1: Write RED support/gap/grid golden tests**
 
 Test stable `(t_ns, source_row_id)` ordering, strict `delta > gap_threshold_ns` splitting, equality not splitting, duplicate timestamps adding no duration, no extension across gaps, terminal extension only to explicit semantic end, half-open phase clipping, Decimal round-half-even grids, nearest ties to earlier timestamp/stable row, no extrapolation, and M3 `gap_count/max_gap_ns` mismatch raising `AnchorRequestValidationError(code="request_semantic_identity_mismatch")` with no M4 report.
 
@@ -1722,7 +1722,7 @@ Test stable `(t_ns, source_row_id)` ordering, strict `delta > gap_threshold_ns` 
 
 Expected: RED because M4 temporal primitives are absent.
 
-- [ ] **Step 2: Implement immutable temporal primitives**
+- [x] **Step 2: Implement immutable temporal primitives**
 
 ~~~python
 @dataclass(frozen=True, slots=True)
@@ -1777,7 +1777,7 @@ build_semantic_windows_v1(
 
 None accepts a coverage threshold.
 
-- [ ] **Step 3: Run GREEN and source-view immutability checks**
+- [x] **Step 3: Run GREEN and source-view immutability checks**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/anchors/test_temporal.py tests/synchronization/test_models.py -v
@@ -1791,6 +1791,21 @@ Expected: PASS; all temporal outputs are stable under input view cloning and no 
 git add src/pilot_assessment/anchors/temporal.py tests/anchors/test_temporal.py
 git commit -m "feat: add segment-aware M4 temporal support"
 ~~~
+
+**Completion evidence (2026-07-15):** Commit `6db08c9` adds the immutable
+`SupportInterval`/`TemporalSupport` model and the exact Task 10 callable surface in
+`anchors/temporal.py`. The focused RED was the expected missing-module collection error. The
+GREEN gate covers stable `(t_ns, source_row_id)` ordering, strict `delta > threshold` splitting,
+equality and duplicate-timestamp behavior, no cross-gap extension, explicit terminal extension,
+M3 count/max mismatch rejection, absolute Decimal round-half-even grids, deterministic nearest
+ties without extrapolation, source-indexed left-hold integration, half-open clipping, short fixed
+windows and one deduplicated end-aligned tail. Focused regression
+`tests/anchors/test_temporal.py tests/synchronization/test_models.py` = `25 passed`; Ruff check,
+Ruff format check and `ty check src/pilot_assessment/anchors/temporal.py` pass. This Task was
+implemented and self-reviewed **INLINE** under the user's quota-conservation instruction; no
+independent subagent review and no Task-local full-suite rerun are claimed. The last recorded full
+suite remains Task 9's `1062 passed, 3 skipped`. Task 10 adds framework primitives only: production
+plugins remain 0/18, M4 is not engineering-verified, and `formal_run_authorized=false`.
 
 ### Task 11: Implement transactional content-addressed artifact publication
 
