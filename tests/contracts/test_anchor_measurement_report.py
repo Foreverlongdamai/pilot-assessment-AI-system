@@ -942,6 +942,7 @@ def test_runtime_dataclass_field_sets_are_exact() -> None:
             "context",
             "references",
             "semantic_scope",
+            "input_table_contracts",
         ),
         ArtifactProducer: (
             "anchor_id",

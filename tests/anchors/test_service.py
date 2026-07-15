@@ -1103,7 +1103,8 @@ def test_preprocessing_fault_hook_is_consumer_local_and_preserves_memoized_produ
         TestFaultHooks(preprocessing_resolution_failures={("O1", recipe.recipe_id): hook}),
     )
 
-    report = evaluator.evaluate(_request(entries, recipes=(recipe,)), _SpySink())
+    request = _request(entries, recipes=(recipe,))
+    report = evaluator.evaluate(request, _SpySink())
 
     assert tuple(result.calculation_status.value for result in report.results) == (
         "dependency_missing",
@@ -1113,6 +1114,10 @@ def test_preprocessing_fault_hook_is_consumer_local_and_preserves_memoized_produ
     assert plugin_calls["O1"] == []
     assert len(plugin_calls["O2"]) == 1
     assert len(provider_calls) == 1
+    provider_context, _provider_recipe_value, _provider_scope, _provider_dependencies = (
+        provider_calls[0]
+    )
+    assert provider_context.input_table_contracts == request.execution_plan.input_table_contracts
 
 
 def test_idempotent_request_validation_rejects_stale_semantics_before_any_side_effect() -> None:

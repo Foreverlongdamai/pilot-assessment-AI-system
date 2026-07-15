@@ -17,6 +17,7 @@ from pilot_assessment.contracts.anchor_execution import (
     AnchorPluginDefinition,
     PreprocessingProviderDefinition,
     ResolvedAlgorithmProfile,
+    ResolvedInputTableContract,
     ResolvedPreprocessingRecipe,
 )
 from pilot_assessment.contracts.anchor_v2 import (
@@ -279,6 +280,7 @@ class AnchorPluginContext:
     context: Mapping[str, JsonValue]
     references: Mapping[str, ResolvedReference]
     semantic_scope: ProjectedSemanticScope
+    input_table_contracts: tuple[ResolvedInputTableContract, ...] = ()
 
     def __post_init__(self) -> None:
         object.__setattr__(
@@ -293,6 +295,13 @@ class AnchorPluginContext:
         object.__setattr__(self, "streams", _clone_stream_mapping(self.streams))
         object.__setattr__(self, "context", _frozen_json_mapping(self.context))
         object.__setattr__(self, "references", _clone_reference_mapping(self.references))
+        if type(self.input_table_contracts) is not tuple or any(
+            not isinstance(item, ResolvedInputTableContract) for item in self.input_table_contracts
+        ):
+            raise TypeError("input_table_contracts must be a typed tuple")
+        keys = tuple((item.modality.value, item.table_role) for item in self.input_table_contracts)
+        if keys != tuple(sorted(keys)) or len(keys) != len(set(keys)):
+            raise ValueError("input_table_contracts must be unique and canonically ordered")
 
 
 @dataclass(frozen=True, slots=True)

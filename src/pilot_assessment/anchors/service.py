@@ -165,6 +165,12 @@ def _context_projection(
         for reference_id in required_reference_ids
         if reference_id in request.resolved_references.entries
     }
+    required_modalities = {str(modality) for modality in required_streams}
+    input_table_contracts = tuple(
+        contract
+        for contract in request.execution_plan.input_table_contracts
+        if contract.modality.value in required_modalities
+    )
     return AnchorPluginContext(
         session_id=request.aligned_session.session_id,
         session_window=request.aligned_session.window,
@@ -172,6 +178,7 @@ def _context_projection(
         context=context_values,
         references=references,
         semantic_scope=ProjectedSemanticScope(values=semantic_values),
+        input_table_contracts=input_table_contracts,
     )
 
 
@@ -183,6 +190,11 @@ def _stream_projection_fingerprint(context: AnchorPluginContext, modality: str) 
         "aligned_schema_id": view.aligned_schema_id,
         "clock_id": view.clock_id,
         "source_checksums": dict(sorted(view.source_checksums.items())),
+        "input_table_contracts": [
+            contract.model_dump(mode="json")
+            for contract in context.input_table_contracts
+            if contract.modality.value == modality
+        ],
         "tables": [[role, view.tables[role].to_dicts()] for role in sorted(view.tables)],
         "json_artifacts": [
             [role, view.json_artifacts[role]] for role in sorted(view.json_artifacts)

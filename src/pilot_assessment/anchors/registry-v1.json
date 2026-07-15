@@ -213,7 +213,115 @@
         }
       ],
       "implementation_digest": "18ea08a73bdb972a67c279d2b2ebc985909bf3a3a64113e8ca7a1aea1ca0c95f"
+    },
+    {
+      "anchor_id": "O5",
+      "definition_version": "0.1.0",
+      "plugin_id": "o5-workload-rate",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.o5_workload_rate",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "c67baeb797b729df6266178f20cfb2c8dadedadc2c0a23288b89a90ea5f5569a",
+      "parameter_schema_id": "o5-parameters-0.1",
+      "parameter_schema_sha256": "de03ec6e38bc581462a301d1f3a1717b05649fdd11642e2e79d4885313447df2",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "movement-events-v0.1": "7b97b31b3d6c907a8293e5054adda8dbf02b1bb043cbff400d8e4eac98fda82e"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/o5_workload_rate.py",
+          "content_sha256": "cec75fe9e907ca424c97a28faffd25bb5d56cd3179cfa3fc2f535ea7aa549f86"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/movement.py",
+          "content_sha256": "5688b1ddf618759b179374b28c950bc76558784e8099579bcb8f8f447430faf0"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "numpy",
+          "version": "2.3.5",
+          "record_content_sha256": "2b47aa4ffce19e4e2a4c59e7eba0d2e767079ce6412e9466e4038ee04ff27d69"
+        },
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        },
+        {
+          "normalized_name": "scipy",
+          "version": "1.17.1",
+          "record_content_sha256": "fab4b505cf70d0ac437cfcd74f3c476c960266f0e1519ff5453103e3fac4d8af"
+        }
+      ],
+      "implementation_digest": "13a1a0b1f2bd33341205792e059d60de41df48fbfccbe44044314d8e3b9cc0aa"
     }
   ],
-  "preprocessors": []
+  "preprocessors": [
+    {
+      "provider_id": "movement-events-v1",
+      "provider_version": "1.0.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.primitives.movement",
+      "factory_symbol": "create_provider",
+      "allowed_package_namespace": "pilot_assessment.anchors.primitives",
+      "definition_fingerprint": "4549f168b304ca85931a75bb3acc36ffaac208a8b892baf57d35aefba701c061",
+      "parameter_schema_id": "movement-events-v1-parameters-0.1",
+      "parameter_schema_sha256": "25c64e03d742a5c46c2b85db954faf26636fad387a513eced0823057935196a0",
+      "output_schema_id": "movement-events-v1-output-v0.1",
+      "output_schema_sha256": "139e46b71b6d9c35e3a4557b19c2f8083904fa2a5fc7e09c9cd3eff8624bcc25",
+      "artifact_kind": "movement-events-table",
+      "output_payload_kind": "table",
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/movement.py",
+          "content_sha256": "5688b1ddf618759b179374b28c950bc76558784e8099579bcb8f8f447430faf0"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "numpy",
+          "version": "2.3.5",
+          "record_content_sha256": "2b47aa4ffce19e4e2a4c59e7eba0d2e767079ce6412e9466e4038ee04ff27d69"
+        },
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        },
+        {
+          "normalized_name": "scipy",
+          "version": "1.17.1",
+          "record_content_sha256": "fab4b505cf70d0ac437cfcd74f3c476c960266f0e1519ff5453103e3fac4d8af"
+        }
+      ],
+      "implementation_digest": "2ca02450424cda13c0efde6f36400fac6e2af7998c2bfd3f9e9b2eecd89a7bcc"
+    }
+  ]
 }

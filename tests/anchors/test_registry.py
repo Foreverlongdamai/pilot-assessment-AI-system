@@ -56,13 +56,13 @@ def provider_entry(
 # --------------------------------------------------------------------------- #
 
 
-def test_packaged_registry_has_o1_o2_o3_o4_and_reports_remaining_not_implemented() -> None:
+def test_packaged_registry_has_o1_through_o5_and_reports_remaining_not_implemented() -> None:
     catalog = load_packaged_catalog()
     packaged = registry.load_packaged_registry()
 
     for entry in catalog.entries:
         capability = packaged.capability(entry.plugin_id, entry.plugin_version)
-        if entry.anchor_id in {"O1", "O2", "O3", "O4"}:
+        if entry.anchor_id in {"O1", "O2", "O3", "O4", "O5"}:
             assert capability.status is AnchorCapabilityStatus.AVAILABLE
             assert capability.entry is not None
             assert capability.entry.anchor_id == entry.anchor_id
@@ -76,17 +76,48 @@ def test_packaged_registry_has_o1_o2_o3_o4_and_reports_remaining_not_implemented
         capability = packaged.preprocessing_capability(
             str(identity["provider_id"]), str(identity["provider_version"])
         )
-        assert capability.status == "not_implemented"
-        assert capability.entry is None
+        if identity["provider_id"] == "movement-events-v1":
+            assert capability.status == "available"
+            assert capability.entry is not None
+            assert capability.entry.provider_id == "movement-events-v1"
+        else:
+            assert capability.status == "not_implemented"
+            assert capability.entry is None
 
 
 def test_packaged_registry_fingerprint_binds_the_canonical_model() -> None:
     fingerprint = registry.packaged_registry_fingerprint()
     model = registry._load_registry_model()
-    assert [entry.anchor_id for entry in model.entries] == ["O1", "O2", "O3", "O4"]
-    assert model.preprocessors == ()
+    assert [entry.anchor_id for entry in model.entries] == ["O1", "O2", "O3", "O4", "O5"]
+    assert [entry.provider_id for entry in model.preprocessors] == ["movement-events-v1"]
     assert fingerprint == runtime_registry_fingerprint(model)
     assert fingerprint == registry.packaged_registry_fingerprint()
+
+
+def test_o5_and_movement_provider_registry_closures_bind_shared_code_and_numeric_runtimes() -> None:
+    model = registry._load_registry_model()
+    o5 = next(entry for entry in model.entries if entry.anchor_id == "O5")
+    movement = next(
+        entry for entry in model.preprocessors if entry.provider_id == "movement-events-v1"
+    )
+
+    assert tuple(item.normalized_name for item in o5.numeric_runtimes) == (
+        "numpy",
+        "polars",
+        "scipy",
+    )
+    assert tuple(item.package_relative_path for item in o5.implementation_members) == (
+        "pilot_assessment/anchors/plugins/o5_workload_rate.py",
+        "pilot_assessment/anchors/primitives/movement.py",
+    )
+    assert tuple(item.normalized_name for item in movement.numeric_runtimes) == (
+        "numpy",
+        "polars",
+        "scipy",
+    )
+    assert tuple(item.package_relative_path for item in movement.implementation_members) == (
+        "pilot_assessment/anchors/primitives/movement.py",
+    )
 
 
 # --------------------------------------------------------------------------- #

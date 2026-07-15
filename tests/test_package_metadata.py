@@ -86,7 +86,7 @@ def test_m4_contract_schemas_are_packaged_resources() -> None:
             assert Path(path).read_bytes()
 
 
-def test_m4_reference_catalog_parameter_schemas_and_empty_registry_are_packaged() -> None:
+def test_m4_reference_catalog_parameter_schemas_and_trusted_registry_are_packaged() -> None:
     profile_package = files("pilot_assessment.anchors.profile_data")
     parameter_package = files("pilot_assessment.anchors.profile_data.parameters")
     anchors_package = files("pilot_assessment.anchors")
@@ -114,14 +114,14 @@ def test_m4_reference_catalog_parameter_schemas_and_empty_registry_are_packaged(
         assert parameter_package.joinpath(name).read_bytes()
 
 
-def test_m4_packaged_registry_is_loadable_with_o1_o2_o3_o4_implemented() -> None:
+def test_m4_packaged_registry_is_loadable_with_o1_through_o5_and_movement_provider() -> None:
     raw = files("pilot_assessment.anchors").joinpath("registry-v1.json").read_bytes()
     model = AnchorRuntimeRegistry.model_validate_json(raw)
 
     assert model.contract_id == "anchor-runtime-registry"
     assert model.contract_version == "0.1.0"
-    assert tuple(entry.anchor_id for entry in model.entries) == ("O1", "O2", "O3", "O4")
-    assert model.preprocessors == ()
+    assert tuple(entry.anchor_id for entry in model.entries) == ("O1", "O2", "O3", "O4", "O5")
+    assert tuple(entry.provider_id for entry in model.preprocessors) == ("movement-events-v1",)
 
     # The trusted loader accepts the packaged resource and produces a stable fingerprint.
     load_packaged_registry()
