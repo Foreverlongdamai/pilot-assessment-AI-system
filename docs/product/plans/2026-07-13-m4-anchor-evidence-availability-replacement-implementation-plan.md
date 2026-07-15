@@ -14,8 +14,8 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
 - Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–23 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, O7 in `eb9cca6`, O8 in `15da2ea`, O9 in `db2b5da` plus ownership fix `a76abde`, and O10 plus the shared `events` primitive in `87aed10`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C stage gate is closed, M4-D is in progress, and Task 24 O11 is next.
-- Current implementation truth: 18/18 reference anchors specified, 10/18 production plugins implemented and one preprocessing provider available; M4-C is software-verified and M4-D is in progress, while M4 overall is not engineering verified.
+- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–24 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, O7 in `eb9cca6`, O8 in `15da2ea`, O9 in `db2b5da` plus ownership fix `a76abde`, O10 plus the shared causal boolean primitive in `87aed10`, and O11 plus the shared trailing causal median in `8672c74`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C stage gate is closed, M4-D is in progress, and Task 25 O12 is next.
+- Current implementation truth: 18/18 reference anchors specified, 11/18 production plugins implemented and one preprocessing provider available; M4-C is software-verified and M4-D is in progress, while M4 overall is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
 - Scope truth: M4 consumes a compiled plan. Building/editing/publishing a ModelBundle, graph, CPT, or plan compiler belongs to M5.
@@ -2769,9 +2769,12 @@ git commit -m "feat: add recovery-time anchor"
 - Create: `tests/anchors/test_o11_disturbance_latency.py`
 - Modify: `src/pilot_assessment/anchors/primitives/events.py`
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
+- Modify: `tests/anchors/test_events.py`
 - Modify: `tests/anchors/test_registry.py`
+- Modify: `tests/anchors/test_catalog.py`
+- Modify: `tests/test_package_metadata.py`
 
-- [ ] **Step 1: Write RED causal-response tests**
+- [x] **Step 1: Write RED causal-response tests**
 
 Test 20 ms trailing causal median, event-preceding 1-second median, shorter nonempty phase pre-window, neutral/trim fallback only when no sample exists, mapped correct sign, `>5%` for `>=100 ms`, `earliest_any_mapped_correct`, exact 500/1000 ms boundaries, wrong-direction first then correct still `response_missed`, threshold noise not wrong response, finite 2-second miss, and complete multi-event traces.
 
@@ -2781,11 +2784,11 @@ Test 20 ms trailing causal median, event-preceding 1-second median, shorter none
 
 Expected: RED because O11 and the shared causal-response behavior do not exist.
 
-- [ ] **Step 2: Implement O11 with no retrospective/noncausal filter**
+- [x] **Step 2: Implement O11 with no retrospective/noncausal filter**
 
 The wrong-direction override is `computed + U`, primary null, one-hot U. Missing event-channel mapping is not-computable; truly missing U is missing-input.
 
-- [ ] **Step 3: Register and run GREEN**
+- [x] **Step 3: Register and run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh --anchor O10
@@ -2795,12 +2798,20 @@ The wrong-direction override is `computed + U`, primary null, one-hot U. Missing
 
 Expected: PASS; count is 11/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
-git add src/pilot_assessment/anchors/primitives/events.py src/pilot_assessment/anchors/plugins/o11_disturbance_latency.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o11_disturbance_latency.py tests/anchors/test_registry.py
+git add src/pilot_assessment/anchors/primitives/events.py src/pilot_assessment/anchors/plugins/o11_disturbance_latency.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_events.py tests/anchors/test_o11_disturbance_latency.py tests/anchors/test_registry.py tests/anchors/test_catalog.py tests/test_package_metadata.py
 git commit -m "feat: add disturbance-latency anchor"
 ~~~
+
+**Completion evidence (2026-07-15):**
+
+- RED first observed the expected collection failure because the O11 plugin did not exist. After registration, four package/catalog/registry honesty failures explicitly proved the stale O1–O10 inventory boundary before it was updated to O1–O11.
+- `8672c74` added O11 Disturbance Latency, a gap-aware timestamp-based trailing causal median in the shared `events` primitive, exact `response-events-v0.1` publication, and packaged registry closure. Tests lock the 20 ms causal delay, short nonempty phase baseline, trim fallback only when no pre-event sample exists, mapped sign, strict `>5%`, inclusive `>=100 ms`, exact 500/1000 ms scorer boundaries, wrong-direction veto, subthreshold noise, finite 2-second miss, worst/miss multi-event aggregation, and missing mapping/U states.
+- Focused O11 gate: `18 passed`. Controlled events/O10/O11/registry/catalog/DAG/service/scoring/artifact/temporal/package gate: `229 passed`. Registry verify, full-project Ruff check/format (`155 files`), `ty check src` and `git diff --check` passed.
+- The packaged registry fingerprint is `51af85c150678406cc8d1f83d2e357717b75fc69300363e7015dc478779a7477`; O11 digest is `8618bb2d9e41e1d346f80abd4ce8d0de2fff57260029005fb7acd776c8a394c6`. Because O10 and O11 intentionally share `events.py`, the refreshed O10 digest is `b86a83189cb8ae5e7da965cbab0293ad928a0cefb9155f4c95594e3226854d6f`.
+- Per the approved lightweight policy, the full repository/build/isolated-wheel gates were not repeated for this single anchor; Task 20 remains the latest stage-gate evidence (`1275 passed, 3 skipped`). No subagent or external review was used. The honest state is 11/18 production plugins and one available preprocessing provider; M4-D and M4 overall remain incomplete, `formal_run_authorized=false`, and Task 25 O12 is next.
 
 ### Task 25: Implement O12 Envelope-drift Latency and close M4-D
 

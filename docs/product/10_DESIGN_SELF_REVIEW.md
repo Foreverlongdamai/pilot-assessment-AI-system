@@ -5,14 +5,14 @@
 | 设计基线 | 产品 v0.1；M4 已批准设计 v0.2 与已接受轻量验证修订 |
 | 审查日期 | 原始审查 2026-07-10；M4 amendment 2026-07-13 |
 | 审查范围 | pilot_assessment_system 产品文档、项目入口说明、历史草案状态与 M4 跨文档一致性 |
-| 结论 | M1–M3 可作为已验证交接基线；M4 书面设计与轻量验证修订已获批准，replacement Task 0–23、M4-A/M4-B framework、M4-C stage gate 与 O1–O10 已完成，M4-D 正在执行，但 M4 整体仍未工程验证 |
-| 软件状态 | 2026-07-10 审查时尚无实现；截至 2026-07-15，M1/M2/M3 已工程验证，M4 Task 0–23 已完成，M4-C 已关闭、M4-D 正在执行，O1–O10 capability 与 `movement-events-v1` provider 均为 `available`，共享 `events` primitive 已实现，18/18 specified、10/18 production plugins 已实现，`formal_run_authorized=false`，完整 Core alpha 与 Gate B 仍未完成，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
+| 结论 | M1–M3 可作为已验证交接基线；M4 书面设计与轻量验证修订已获批准，replacement Task 0–24、M4-A/M4-B framework、M4-C stage gate 与 O1–O11 已完成，M4-D 正在执行，但 M4 整体仍未工程验证 |
+| 软件状态 | 2026-07-10 审查时尚无实现；截至 2026-07-15，M1/M2/M3 已工程验证，M4 Task 0–24 已完成，M4-C 已关闭、M4-D 正在执行，O1–O11 capability 与 `movement-events-v1` provider 均为 `available`，共享 `events` primitive 已实现，18/18 specified、11/18 production plugins 已实现，`formal_run_authorized=false`，完整 Core alpha 与 Gate B 仍未完成，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
 | 科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
-| M4 修订 | 2026-07-13 完成 anchor-computation、lightweight-workflow、Task 3、Task 7 与 Task 8 amendments 并获明确或授权默认批准；D-026–D-030 与 replacement plan 已接受；截至 2026-07-15 replacement Task 0–23 已完成，M4-C 已关闭、M4-D 正在执行，下一步为 Task 24 O11；18/18 specified、10/18 production plugins 已实现，M4 整体尚未 engineering verified，无科学有效性声明 |
+| M4 修订 | 2026-07-13 完成 anchor-computation、lightweight-workflow、Task 3、Task 7 与 Task 8 amendments 并获明确或授权默认批准；D-026–D-030 与 replacement plan 已接受；截至 2026-07-15 replacement Task 0–24 已完成，M4-C 已关闭、M4-D 正在执行，下一步为 Task 25 O12；18/18 specified、11/18 production plugins 已实现，M4 整体尚未 engineering verified，无科学有效性声明 |
 
 ## 1. 结论边界
 
-本文固定记录 2026-07-10 的**产品与计算设计闭环**审查，表格中的审查日期不随实现推进而改写；当前实现状态仅作后续注记。本文不是软件实现验收，也不是航空评估科学有效性证明。后续实现证据以 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) 为准。2026-07-13 M4 amendment 见第 7 节；它重新打开并关闭了旧 reference-v0.1 quality-gate 语义冲突，对 M4 的状态、计算和验收规则具有优先级，但规格获批本身不表示生产代码已经实现。Replacement Task 0–23 的逐任务实现证据以 [replacement plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)、review ledger 与对应 Git commits 为准。
+本文固定记录 2026-07-10 的**产品与计算设计闭环**审查，表格中的审查日期不随实现推进而改写；当前实现状态仅作后续注记。本文不是软件实现验收，也不是航空评估科学有效性证明。后续实现证据以 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) 为准。2026-07-13 M4 amendment 见第 7 节；它重新打开并关闭了旧 reference-v0.1 quality-gate 语义冲突，对 M4 的状态、计算和验收规则具有优先级，但规格获批本身不表示生产代码已经实现。Replacement Task 0–24 的逐任务实现证据以 [replacement plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)、review ledger 与对应 Git commits 为准。
 
 通过本轮自审后，文档已经能够让接手者明确：
 
@@ -23,7 +23,7 @@
 - 后端如何以 draft transaction、graph_version、layout_version 和 immutable revision 保持一一对应；
 - 正式 run、non-formal preview、结果 provenance 和验证状态如何区分。
 
-原始 2026-07-10 的结论只适用于当时产品设计闭环。2026-07-13 的 M4 anchor-computation amendment 已按独立复审修订其 P1 歧义并获得用户批准；其后获批的 lightweight-workflow amendment 又取代了原实施计划中的重 fixture 路线。Replacement plan 与 Task 3 candidate-binding amendment 也已于 2026-07-13 单独获批，D-028 收口了 M3/reference provenance 与三参数 binder。用户休息期间按其明确授权形成的 Task 7/8 amendments 经两路独立终审 P0/P1=0 后默认批准，D-029/D-030 收口 exact resources、深度不可变、canonical bytes 与 runtime identity。截至 2026-07-15，Task 0–23 已完成，M4-C stage gate 已关闭、M4-D 正在执行，O1–O10 capability 与 `movement-events-v1` provider 均为 `available`，共享 `events` primitive 已实现，下一步为 Task 24 O11。默认阈值、拓扑和 CPT 仍等待专家与数据校准。
+原始 2026-07-10 的结论只适用于当时产品设计闭环。2026-07-13 的 M4 anchor-computation amendment 已按独立复审修订其 P1 歧义并获得用户批准；其后获批的 lightweight-workflow amendment 又取代了原实施计划中的重 fixture 路线。Replacement plan 与 Task 3 candidate-binding amendment 也已于 2026-07-13 单独获批，D-028 收口了 M3/reference provenance 与三参数 binder。用户休息期间按其明确授权形成的 Task 7/8 amendments 经两路独立终审 P0/P1=0 后默认批准，D-029/D-030 收口 exact resources、深度不可变、canonical bytes 与 runtime identity。截至 2026-07-15，Task 0–24 已完成，M4-C stage gate 已关闭、M4-D 正在执行，O1–O11 capability 与 `movement-events-v1` provider 均为 `available`，共享 `events` primitive 已实现，下一步为 Task 25 O12。默认阈值、拓扑和 CPT 仍等待专家与数据校准。
 
 ## 2. 审查方法
 
@@ -103,13 +103,13 @@
 ### 5.3 实现风险
 
 - M1/M2/M3 已有正式代码、四份 public schema、版本化 profile/binding catalog、自动化测试和 Git history；
-- M3 的 public report、clock/annotation/reference、deterministic fingerprint 与 golden E2E 已通过工程完成门；M4 通用 runtime 与 O1–O10 已实现，M4-C 已关闭、M4-D 正在执行，但其余 8 个 AnchorPlugin、完整 evidence workflow 与 M4-G 尚未实现；
+- M3 的 public report、clock/annotation/reference、deterministic fingerprint 与 golden E2E 已通过工程完成门；M4 通用 runtime 与 O1–O11 已实现，M4-C 已关闭、M4-D 正在执行，但其余 7 个 AnchorPlugin、完整 evidence workflow 与 M4-G 尚未实现；
 - WinUI graph control、无障碍和大 CPT 编辑体验需要原型；
 - Python/.NET 打包、插件签名、升级和 crash recovery 需要实际验证。
 
 ## 6. 下一阶段入口
 
-截至 2026-07-15，backend M1 contracts/integrity、M2 multimodal ingestion foundation 与 M3 native-rate synchronization 已完成工程验证；[M3 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) 和 [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) 保留完整设计与实测证据。[M4 书面规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md)、[轻量工作流验证](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)、[Task 3](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) amendments、D-026–D-030 与 [replacement plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准；[M4 原 TDD 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 已被取代。Replacement Task 0–23 已完成；M4-C stage gate 已关闭、M4-D 正在执行。Task 23 focused/受控相关 gate 分别为 `17 passed`、`258 passed`，registry/Ruff/format/ty/diff gates 均通过；最新 full-repository/build/isolated-wheel 完成门仍为 Task 20 证据。下一步为 Task 24 O11。18/18 specified、10/18 production plugins 已实现，M4 整体尚未 engineering verified，`formal_run_authorized=false`。M4 不设置基于表现好坏或异常数值的 quality gate；这些测试也不构成科学有效性或能力结论。之后再进入 M5 BN adapter、M6 runtime 与 WinUI。前端可以用 fake backend 并行开发，但不能另建一套模型状态。
+截至 2026-07-15，backend M1 contracts/integrity、M2 multimodal ingestion foundation 与 M3 native-rate synchronization 已完成工程验证；[M3 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) 和 [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) 保留完整设计与实测证据。[M4 书面规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md)、[轻量工作流验证](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)、[Task 3](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) amendments、D-026–D-030 与 [replacement plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准；[M4 原 TDD 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 已被取代。Replacement Task 0–24 已完成；M4-C stage gate 已关闭、M4-D 正在执行。Task 24 focused/受控相关 gate 分别为 `18 passed`、`229 passed`，registry/Ruff/format/ty/diff gates 均通过；最新 full-repository/build/isolated-wheel 完成门仍为 Task 20 证据。下一步为 Task 25 O12。18/18 specified、11/18 production plugins 已实现，M4 整体尚未 engineering verified，`formal_run_authorized=false`。M4 不设置基于表现好坏或异常数值的 quality gate；这些测试也不构成科学有效性或能力结论。之后再进入 M5 BN adapter、M6 runtime 与 WinUI。前端可以用 fake backend 并行开发，但不能另建一套模型状态。
 
 任何专家修改都通过新 draft/revision 完成；不需要重新修改本设计中的 Python 业务结构。
 
@@ -119,9 +119,9 @@
 
 本 amendment 只关闭 M4 设计冲突，不构成实现或工程验证。当前状态严格为：
 
-- reference M4 anchors：**18/18 已设计，10/18 production plugins 已实现，M4-C software-verified，M4-D in progress**；
-- M4 original implementation plan：**历史上已获用户批准，现已被轻量修订取代且不再授权执行；replacement plan 与 Task 3 candidate-binding amendment 已于 2026-07-13 批准，Task 0–23 已完成，M4-C 已关闭、M4-D 正在执行，下一步为 Task 24 O11**；
-- Task 0–13 的 fixture/contracts/catalog/canonical identity/runtime framework、Task 14 O1、Task 15 O2、Task 16 O3、Task 17 O4、Task 18 O5/`movement-events-v1` provider、Task 19 O6、Task 20 O7、Task 21 O8、Task 22 O9 与 Task 23 O10/共享 `events` primitive 已实现；Task 23 focused/受控相关 gate 分别为 `17 passed`、`258 passed`，registry/Ruff/format/ty/diff gates 通过；最新 full-repository/build/isolated-wheel 完成门仍为 Task 20 证据；其余 8 个 production plugins、完整 M1→M4 workflow 和 final M4 wheel smoke 尚未完成，M4 整体尚未 engineering verified、`formal_run_authorized=false`；
+- reference M4 anchors：**18/18 已设计，11/18 production plugins 已实现，M4-C software-verified，M4-D in progress**；
+- M4 original implementation plan：**历史上已获用户批准，现已被轻量修订取代且不再授权执行；replacement plan 与 Task 3 candidate-binding amendment 已于 2026-07-13 批准，Task 0–24 已完成，M4-C 已关闭、M4-D 正在执行，下一步为 Task 25 O12**；
+- Task 0–13 的 fixture/contracts/catalog/canonical identity/runtime framework、Task 14 O1、Task 15 O2、Task 16 O3、Task 17 O4、Task 18 O5/`movement-events-v1` provider、Task 19 O6、Task 20 O7、Task 21 O8、Task 22 O9、Task 23 O10 与 Task 24 O11/共享 `events` primitive 已实现；Task 24 focused/受控相关 gate 分别为 `18 passed`、`229 passed`，registry/Ruff/format/ty/diff gates 通过；最新 full-repository/build/isolated-wheel 完成门仍为 Task 20 证据；其余 7 个 production plugins、完整 M1→M4 workflow 和 final M4 wheel smoke 尚未完成，M4 整体尚未 engineering verified、`formal_run_authorized=false`；
 - M1/M2/M3 的既有工程验证结论不受影响；Gate B 仍未通过；
 - 本节不得被解释为真实数据科学验证、飞行员能力结论或医学诊断能力。
 
@@ -141,7 +141,7 @@
 | M4-SR-08 | 零 support、长 gap 与 terminal sample 可被不同实现解释为 hold、omit 或 invalid | 定义 support_interval_v1、segment-aware left-hold、零 support/最小数学基数状态、不得跨 gap，以及每类 metric 的固定 denominator；不重新引入 coverage fraction gate |
 | M4-SR-09 | O2/O3、control detector、event horizon、gaze/ECG/EEG DSP 参数不足以唯一实现 | 冻结 reference join、arrival axis/horizon/composite primary、O5 filter/padding/turning-point/duration、O6 normalization/integration、O10–O12 horizons/channel policy、gaze interval/tie/pooled aggregation、R-peak assignment 与完整 Welch/band/epsilon 参数 |
 | M4-SR-10 | artifact/fingerprint、registry 和 fixture verification 可由实现者各自定义 | 保留 RFC 8785 JCS + typed framing、logical-vs-storage hash、registry resource/factory/digest policy；验证改为 per-anchor micro oracle、紧凑 all-D/all-U/mixed real-plugin scenarios、fault-hook state matrix 和唯一 10 秒 physical bundle/isolated-wheel entrypoint。90 秒 full-rate bundle 只属未来性能测试 |
-| M4-SR-11 | 分段确认曾被误写成完整书面批准 | 候选阶段明确区分两者；用户于 2026-07-13 依次批准完整 M4 规格、轻量验证、replacement plan 与 Task 3 amendment，并明确授权休息期间中间方案默认批准；Task 7/8 amendments 在两路 P0/P1 终审 PASS 后按该授权接受，D-021～D-030 均有受控迁移记录；截至 2026-07-15 Task 0–23 已完成，M4-C 已关闭、M4-D 正在执行，下一步为 Task 24 O11 |
+| M4-SR-11 | 分段确认曾被误写成完整书面批准 | 候选阶段明确区分两者；用户于 2026-07-13 依次批准完整 M4 规格、轻量验证、replacement plan 与 Task 3 amendment，并明确授权休息期间中间方案默认批准；Task 7/8 amendments 在两路 P0/P1 终审 PASS 后按该授权接受，D-021～D-030 均有受控迁移记录；截至 2026-07-15 Task 0–24 已完成，M4-C 已关闭、M4-D 正在执行，下一步为 Task 25 O12 |
 | M4-SR-12 | phase/event 中 computed 与 non-computed 混合时，session result 可能静默忽略缺项 | 冻结 canonical applicable inventory、全项执行和 `extractor_error > dependency_missing > missing_input > not_computable` 的 session 状态优先级；任何 applicable 非 computed 都不生成 session D/A/U |
 | M4-SR-13 | M4 曾假定 M3 提供 gap intervals，O5 零平台与 H5 极短段也可能由不同实现自由解释 | M4 从 aligned rows + M3 `gap_threshold_ns` 精确重建/核对 segments；O5 run 使用 left-hold support duration 且零平台不计时；H5 固定短段 filter bypass、padlen、empty-band 与 baseline-degenerate computed-U 语义 |
 | M4-SR-14 | provisional full oracle 存在 recipe/expected 回灌、数值闭合和重 fixture 范围问题，plugin digest 也必须覆盖 helper/DSP runtime | 由 D-026/D-027 取代 full oracle：每个 anchor 用独立 micro oracle，真实插件场景只接收 raw/aligned inputs，定向扰动证明 data-to-anchor；implementation digest 继续覆盖本地 import closure、resources、schemas 和 exact numeric-runtime build identity |
