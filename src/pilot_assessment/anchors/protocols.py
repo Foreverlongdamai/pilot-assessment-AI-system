@@ -13,6 +13,7 @@ from pydantic import JsonValue, TypeAdapter
 
 from pilot_assessment.anchors.models import ResolvedReference
 from pilot_assessment.contracts.anchor_execution import (
+    AnchorArtifactRecipe,
     AnchorPluginDefinition,
     PreprocessingProviderDefinition,
     ResolvedAlgorithmProfile,
@@ -729,6 +730,40 @@ class AnchorArtifactEmitter(Protocol):
     def stage_blob(self, artifact_id: str, payload: BlobArtifactPayload) -> AnchorArtifactRef: ...
 
 
+class AnchorArtifactTransaction(Protocol):
+    def emitter(self) -> AnchorArtifactEmitter: ...
+
+    def staged_refs(self) -> tuple[AnchorArtifactRef, ...]: ...
+
+    def commit(self) -> tuple[AnchorArtifactRef, ...]: ...
+
+    def abort(self) -> None: ...
+
+
+class EvaluationArtifactTransaction(Protocol):
+    def begin_anchor(
+        self,
+        producer: ArtifactProducer,
+        artifact_recipes: tuple[AnchorArtifactRecipe, ...],
+    ) -> AnchorArtifactTransaction: ...
+
+    def resolve(self, ref: AnchorArtifactRef) -> ResolvedArtifactDependency: ...
+
+    def stage_preprocessing(
+        self,
+        producer: PreprocessingProducer,
+        payload: TabularArtifactPayload | BlobArtifactPayload,
+    ) -> ResolvedPreprocessingDependency: ...
+
+    def commit(self) -> None: ...
+
+    def abort(self) -> None: ...
+
+
+class DerivedArtifactSink(Protocol):
+    def begin_evaluation(self, evaluation_key: str) -> EvaluationArtifactTransaction: ...
+
+
 class AnchorPlugin(Protocol):
     def definition(self) -> AnchorPluginDefinition: ...
 
@@ -756,10 +791,13 @@ class PreprocessingProvider(Protocol):
 
 __all__ = [
     "AnchorArtifactEmitter",
+    "AnchorArtifactTransaction",
     "AnchorPlugin",
     "AnchorPluginContext",
     "ArtifactProducer",
     "BlobArtifactPayload",
+    "DerivedArtifactSink",
+    "EvaluationArtifactTransaction",
     "PreprocessingArtifactIdentity",
     "PreprocessingProducer",
     "PreprocessingProvider",
