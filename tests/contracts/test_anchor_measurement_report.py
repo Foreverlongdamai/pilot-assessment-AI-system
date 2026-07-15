@@ -722,6 +722,7 @@ def test_artifact_and_preprocessing_runtime_identity_fields_are_frozen() -> None
         phase_id=scope.phase_id,
         event_id=scope.event_id,
         window_id=scope.window_id,
+        input_fingerprints=(("stream", "U", SHA_A),),
         dependency_fingerprints=(),
     )
     assert producer.anchor_id == "O1"
@@ -787,6 +788,7 @@ def test_resolved_payload_dependency_wrappers_preserve_complete_scope_identity()
         artifact_kind="derived-table",
         payload_kind="table",
         logical_content_sha256=SHA_A,
+        input_fingerprints=(("stream", "U", SHA_A),),
         dependency_fingerprints=(),
     )
     preprocessing = ResolvedPreprocessingDependency(identity=identity, payload=table)
@@ -978,6 +980,7 @@ def test_runtime_dataclass_field_sets_are_exact() -> None:
             "phase_id",
             "event_id",
             "window_id",
+            "input_fingerprints",
             "dependency_fingerprints",
         ),
         ResolvedArtifactDependency: ("ref", "payload"),
@@ -1002,6 +1005,7 @@ def test_runtime_dataclass_field_sets_are_exact() -> None:
             "artifact_kind",
             "payload_kind",
             "logical_content_sha256",
+            "input_fingerprints",
             "dependency_fingerprints",
         ),
         ResolvedPreprocessingDependency: ("identity", "payload"),

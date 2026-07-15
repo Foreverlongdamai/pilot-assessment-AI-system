@@ -516,8 +516,7 @@ def catalog_fingerprint_payload(catalog: AnchorCatalog) -> dict[str, JsonValue]:
 
 def execution_plan_fingerprint_payload(plan: AnchorExecutionPlan) -> dict[str, JsonValue]:
     input_contract_keys = tuple(
-        (contract.modality.value, contract.table_role)
-        for contract in plan.input_table_contracts
+        (contract.modality.value, contract.table_role) for contract in plan.input_table_contracts
     )
     if len(input_contract_keys) != len(set(input_contract_keys)) or input_contract_keys != tuple(
         sorted(input_contract_keys)

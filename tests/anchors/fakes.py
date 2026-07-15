@@ -123,7 +123,7 @@ def create_fake_provider() -> FakePreprocessingProvider:
 # Source-backed trusted-namespace fakes
 # --------------------------------------------------------------------------- #
 
-ANCHOR_MODULE_SOURCE = '''\
+ANCHOR_MODULE_SOURCE = """\
 from pilot_assessment.contracts.anchor_execution import (
     AnchorArtifactRecipe,
     AnchorPluginDefinition,
@@ -169,9 +169,9 @@ class _Plugin:
 
 def create_plugin():
     return _Plugin()
-'''
+"""
 
-PROVIDER_MODULE_SOURCE = '''\
+PROVIDER_MODULE_SOURCE = """\
 from pilot_assessment.contracts.anchor_execution import PreprocessingProviderDefinition
 
 
@@ -206,7 +206,7 @@ class _Provider:
 
 def create_provider():
     return _Provider()
-'''
+"""
 
 # A plugin whose source imports a sibling closure helper module.
 ANCHOR_WITH_HELPER_SOURCE = (

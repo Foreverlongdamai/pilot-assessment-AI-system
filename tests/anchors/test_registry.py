@@ -94,8 +94,7 @@ def test_from_factories_for_testing_exposes_injected_plugins() -> None:
     )
 
     assert (
-        reg.capability("fake-reference-anchor", "0.1.0").status
-        is AnchorCapabilityStatus.AVAILABLE
+        reg.capability("fake-reference-anchor", "0.1.0").status is AnchorCapabilityStatus.AVAILABLE
     )
     assert reg.preprocessing_capability("fake-reference-provider", "1.0.0").status == "available"
 
@@ -246,9 +245,7 @@ def test_verify_rejects_tampered_plugin_entry(
         registry.verify_implementation_closure(tampered)
 
 
-def test_build_rejects_anchor_id_mismatch(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_build_rejects_anchor_id_mismatch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     harness = fakes.TrustedModuleHarness(tmp_path)
     harness.add_module(fakes.FAKE_ANCHOR_MODULE, fakes.ANCHOR_MODULE_SOURCE)
     harness.install(monkeypatch)
@@ -266,9 +263,7 @@ def test_build_rejects_external_namespace(monkeypatch: pytest.MonkeyPatch) -> No
         registry._build_plugin_entry("O1", "os", "create_plugin")
 
 
-def test_build_rejects_missing_symbol(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_build_rejects_missing_symbol(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     harness = fakes.TrustedModuleHarness(tmp_path)
     harness.add_module(fakes.FAKE_ANCHOR_MODULE, fakes.ANCHOR_MODULE_SOURCE)
     harness.install(monkeypatch)
@@ -276,9 +271,7 @@ def test_build_rejects_missing_symbol(
         registry._build_plugin_entry("O1", fakes.FAKE_ANCHOR_MODULE, "missing_symbol")
 
 
-def test_build_rejects_non_callable_symbol(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_build_rejects_non_callable_symbol(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     harness = fakes.TrustedModuleHarness(tmp_path)
     harness.add_module(
         fakes.FAKE_ANCHOR_MODULE, fakes.ANCHOR_MODULE_SOURCE + "\ncreate_plugin = 5\n"

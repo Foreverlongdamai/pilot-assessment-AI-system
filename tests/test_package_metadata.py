@@ -1,5 +1,6 @@
 from importlib.metadata import requires, version
 from importlib.resources import as_file, files
+from inspect import signature
 from pathlib import Path
 
 import pilot_assessment
@@ -48,10 +49,21 @@ def test_m4_runtime_constraints_are_published_in_package_metadata() -> None:
     declared = set(requires("pilot-assessment-system") or ())
 
     assert {
+        "jsonschema>=4.23,<5",
         "numpy>=2.3.4,<2.4",
         "rfc8785>=0.1.4,<0.2",
         "scipy>=1.17,<1.18",
     } <= declared
+
+    import jsonschema
+
+    assert jsonschema.validators.validator_for
+
+
+def test_m4_public_evaluate_boundary_has_no_registry_policy_or_fault_injection() -> None:
+    from pilot_assessment.anchors import evaluate
+
+    assert tuple(signature(evaluate).parameters) == ("request", "sink")
 
 
 def test_m3_temporal_binding_catalog_is_a_packaged_resource() -> None:
@@ -86,9 +98,7 @@ def test_m4_reference_catalog_parameter_schemas_and_empty_registry_are_packaged(
     assert catalog.is_file() and catalog.read_bytes()
     assert registry.is_file() and registry.read_bytes()
 
-    catalog_names = {
-        item.name for item in profile_package.iterdir() if item.name.endswith(".json")
-    }
+    catalog_names = {item.name for item in profile_package.iterdir() if item.name.endswith(".json")}
     registry_names = {
         item.name for item in anchors_package.iterdir() if item.name.endswith(".json")
     }

@@ -72,6 +72,24 @@ def _normalized_fingerprints(
     )
 
 
+def _normalized_input_fingerprints(
+    values: tuple[tuple[str, str, Sha256Digest], ...] | list[tuple[str, str, Sha256Digest]],
+) -> tuple[tuple[str, str, Sha256Digest], ...]:
+    if not isinstance(values, (tuple, list)):
+        raise TypeError("input_fingerprints must be an ordered tuple or list")
+    normalized = tuple(
+        (
+            _strict_stable_id(kind, label=f"input_fingerprints[{index}].kind"),
+            _strict_stable_id(identity, label=f"input_fingerprints[{index}].identity"),
+            _strict_sha256(digest, label=f"input_fingerprints[{index}].digest"),
+        )
+        for index, (kind, identity, digest) in enumerate(values)
+    )
+    if normalized != tuple(sorted(normalized)) or len(normalized) != len(set(normalized)):
+        raise ValueError("input_fingerprints must be unique and canonically ordered")
+    return normalized
+
+
 def _normalized_ids(values: tuple[str, ...] | list[str], *, label: str) -> tuple[str, ...]:
     if not isinstance(values, (tuple, list)):
         raise TypeError(f"{label} must be an ordered tuple or list")
@@ -352,6 +370,7 @@ class PreprocessingProducer:
     phase_id: str | None
     event_id: str | None
     window_id: str | None
+    input_fingerprints: tuple[tuple[str, str, Sha256Digest], ...]
     dependency_fingerprints: tuple[Sha256Digest, ...]
 
     def __post_init__(self) -> None:
@@ -390,6 +409,11 @@ class PreprocessingProducer:
             phase_id=self.phase_id,
             event_id=self.event_id,
             window_id=self.window_id,
+        )
+        object.__setattr__(
+            self,
+            "input_fingerprints",
+            _normalized_input_fingerprints(self.input_fingerprints),
         )
         object.__setattr__(
             self,
@@ -606,6 +630,7 @@ class PreprocessingArtifactIdentity:
     artifact_kind: str
     payload_kind: _PayloadKind
     logical_content_sha256: Sha256Digest
+    input_fingerprints: tuple[tuple[str, str, Sha256Digest], ...]
     dependency_fingerprints: tuple[Sha256Digest, ...]
 
     def __post_init__(self) -> None:
@@ -645,6 +670,11 @@ class PreprocessingArtifactIdentity:
             phase_id=self.phase_id,
             event_id=self.event_id,
             window_id=self.window_id,
+        )
+        object.__setattr__(
+            self,
+            "input_fingerprints",
+            _normalized_input_fingerprints(self.input_fingerprints),
         )
         object.__setattr__(
             self,

@@ -146,6 +146,7 @@ def _preprocessing_producer(*, scope_id: str = "phase-1") -> PreprocessingProduc
         phase_id=scope_id,
         event_id=None,
         window_id=None,
+        input_fingerprints=(("stream", "U", SHA_A),),
         dependency_fingerprints=(SHA_D,),
     )
 

@@ -470,6 +470,7 @@ class _EvaluationTransaction:
             artifact_kind=producer.artifact_kind,
             payload_kind=producer.output_payload_kind,
             logical_content_sha256=read_only.logical_content_sha256,
+            input_fingerprints=producer.input_fingerprints,
             dependency_fingerprints=producer.dependency_fingerprints,
         )
         resolved = ResolvedPreprocessingDependency(identity=identity, payload=read_only)

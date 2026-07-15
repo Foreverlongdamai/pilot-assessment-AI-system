@@ -1166,9 +1166,7 @@ class PreprocessingProviderDefinition(StrictContractModel):
 
     @field_validator("output_schema_descriptor")
     @classmethod
-    def freeze_output_schema_descriptor(
-        cls, value: dict[str, JsonValue]
-    ) -> dict[str, JsonValue]:
+    def freeze_output_schema_descriptor(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
         _validate_json_tree(value, reject_quality_fields=False)
         return freeze_json_mapping(value)
 
@@ -1466,9 +1464,7 @@ class ResolvedPreprocessingRecipe(StrictContractModel):
 
     @field_validator("output_schema_descriptor")
     @classmethod
-    def freeze_output_schema_descriptor(
-        cls, value: dict[str, JsonValue]
-    ) -> dict[str, JsonValue]:
+    def freeze_output_schema_descriptor(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
         _validate_json_tree(value, reject_quality_fields=False)
         return freeze_json_mapping(value)
 

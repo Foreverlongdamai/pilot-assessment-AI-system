@@ -150,9 +150,7 @@ def _diagnostic(error_code: str, message: str) -> DomainErrorData:
 
 def _require_trusted_namespace(module_name: str, allowed_namespace: str) -> None:
     if module_name != allowed_namespace and not module_name.startswith(f"{allowed_namespace}."):
-        raise RegistryError(
-            f"factory module {module_name!r} lies outside {allowed_namespace!r}"
-        )
+        raise RegistryError(f"factory module {module_name!r} lies outside {allowed_namespace!r}")
 
 
 def _import_trusted_module(module_name: str, allowed_namespace: str) -> ModuleType:
@@ -163,9 +161,7 @@ def _import_trusted_module(module_name: str, allowed_namespace: str) -> ModuleTy
         raise RegistryError(f"cannot import trusted factory module {module_name!r}") from error
 
 
-def _resolve_factory(
-    module: ModuleType, symbol: str
-) -> Callable[[], object]:
+def _resolve_factory(module: ModuleType, symbol: str) -> Callable[[], object]:
     if type(symbol) is not str or not symbol:
         raise RegistryError("factory symbol must be a non-empty string")
     factory = getattr(module, symbol, None)
@@ -203,9 +199,7 @@ def _module_source(module_name: str) -> tuple[str, bytes, bool]:
     return relative_path, origin.read_bytes(), is_package
 
 
-def _absolute_import_targets(
-    tree: ast.AST, *, module_name: str, is_package: bool
-) -> set[str]:
+def _absolute_import_targets(tree: ast.AST, *, module_name: str, is_package: bool) -> set[str]:
     """Return the absolute module names statically imported by ``module_name``."""
 
     package = module_name if is_package else module_name.rpartition(".")[0]
@@ -247,9 +241,7 @@ def _reject_dynamic_imports(tree: ast.AST, module_name: str) -> None:
             and node.module
             and node.module.split(".")[0] in _DYNAMIC_IMPORT_MODULES
         ):
-            raise RegistryError(
-                f"closure member {module_name!r} imports a dynamic import module"
-            )
+            raise RegistryError(f"closure member {module_name!r} imports a dynamic import module")
 
 
 def _is_local(name: str) -> bool:
@@ -315,9 +307,7 @@ def _static_import_closure(factory_module: str) -> _ClosureResult:
                 f"closure member {current!r} imports out-of-closure module {target!r}"
             )
 
-    ordered_members = tuple(
-        sorted(members.values(), key=lambda item: item.package_relative_path)
-    )
+    ordered_members = tuple(sorted(members.values(), key=lambda item: item.package_relative_path))
     return _ClosureResult(ordered_members, tuple(sorted(numeric_names)))
 
 
@@ -356,9 +346,7 @@ def _content_member_bytes(member: ContentMemberIdentity) -> bytes:
         ) from error
 
 
-def _verify_declared_members(
-    declared: tuple[ContentMemberIdentity, ...], *, label: str
-) -> None:
+def _verify_declared_members(declared: tuple[ContentMemberIdentity, ...], *, label: str) -> None:
     for member in declared:
         actual = hashlib.sha256(_content_member_bytes(member)).hexdigest()
         if actual != member.content_sha256:
@@ -572,9 +560,7 @@ class PluginRegistry:
     ) -> None:
         self._entries = dict(entries)
         self._preprocessors = dict(preprocessors)
-        self._plugin_factories = (
-            None if plugin_factories is None else dict(plugin_factories)
-        )
+        self._plugin_factories = None if plugin_factories is None else dict(plugin_factories)
         self._preprocessing_factories = (
             None if preprocessing_factories is None else dict(preprocessing_factories)
         )
@@ -582,6 +568,42 @@ class PluginRegistry:
     @property
     def _trusted(self) -> bool:
         return self._plugin_factories is None
+
+    @property
+    def is_trusted(self) -> bool:
+        """Return whether this registry is backed by the packaged trusted model."""
+
+        return self._trusted
+
+    def declared_plugin_entry(
+        self, plugin_id: str, plugin_version: str
+    ) -> PluginRegistryEntry | None:
+        """Inspect immutable registry metadata without importing a factory."""
+
+        return self._entries.get((plugin_id, plugin_version))
+
+    def declared_preprocessing_entry(
+        self, provider_id: str, provider_version: str
+    ) -> PreprocessingRegistryEntry | None:
+        """Inspect immutable provider metadata without importing a factory."""
+
+        return self._preprocessors.get((provider_id, provider_version))
+
+    def has_injected_plugin_factory(self, plugin_id: str, plugin_version: str) -> bool:
+        """Check a test-factory key without constructing the plugin."""
+
+        return (
+            self._plugin_factories is not None
+            and (plugin_id, plugin_version) in self._plugin_factories
+        )
+
+    def has_injected_preprocessing_factory(self, provider_id: str, provider_version: str) -> bool:
+        """Check a test-provider key without constructing the provider."""
+
+        return (
+            self._preprocessing_factories is not None
+            and (provider_id, provider_version) in self._preprocessing_factories
+        )
 
     # -- plugins ----------------------------------------------------------- #
 
@@ -621,9 +643,7 @@ class PluginRegistry:
             assert self._plugin_factories is not None
             factory = self._plugin_factories.get(key)
             if factory is None:
-                raise RegistryResolutionError(
-                    f"test plugin {key!r} is not registered for testing"
-                )
+                raise RegistryResolutionError(f"test plugin {key!r} is not registered for testing")
             return factory()
         entry = self._entries.get(key)
         if entry is None:
@@ -935,8 +955,7 @@ def _refresh_plugin_command(arguments: list[str]) -> str:
     _write_registry_model(path, updated)
     old_digest = existing.implementation_digest if existing else "absent"
     return (
-        f"anchor={anchor_id} old_digest={old_digest} "
-        f"new_digest={new_entry.implementation_digest}"
+        f"anchor={anchor_id} old_digest={old_digest} new_digest={new_entry.implementation_digest}"
     )
 
 
@@ -949,9 +968,7 @@ def _refresh_preprocessor_command(arguments: list[str]) -> str:
         _cli_error("refresh-preprocessor requires --provider")
     path = _registry_resource_path()
     model = _read_registry_model(path)
-    existing = next(
-        (item for item in model.preprocessors if item.provider_id == provider_id), None
-    )
+    existing = next((item for item in model.preprocessors if item.provider_id == provider_id), None)
     module, symbol = _resolved_binding(
         options,
         existing.factory_module if existing else None,
