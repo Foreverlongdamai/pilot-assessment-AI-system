@@ -14,8 +14,8 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
 - Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–25 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, O7 in `eb9cca6`, O8 in `15da2ea`, O9 in `db2b5da` plus ownership fix `a76abde`, O10 plus the shared causal boolean primitive in `87aed10`, O11 plus the shared trailing causal median in `8672c74`, and O12 in `e41d0e6`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C/M4-D stage gates are closed, and Task 26 H1 is next.
-- Current implementation truth: 18/18 reference anchors specified, 12/18 production plugins implemented and one preprocessing provider available; M4-C/M4-D are software-verified, while M4 overall is not engineering verified.
+- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–28 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, O7 in `eb9cca6`, O8 in `15da2ea`, O9 in `db2b5da` plus ownership fix `a76abde`, O10 plus the shared causal boolean primitive in `87aed10`, O11 plus the shared trailing causal median in `8672c74`, O12 in `e41d0e6`, H1 plus `gaze-aoi-intervals-v1` in `2d223a7`, H2 plus `fixation-intervals-v1` in `ed9cf24`, and H3 in `f2697da`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C/M4-D/M4-E stage gates are closed, and Task 29 H4 is next.
+- Current implementation truth: 18/18 reference anchors specified, 15/18 production plugins implemented and three preprocessing providers available; M4-C/M4-D/M4-E are software-verified, while M4 overall is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
 - Scope truth: M4 consumes a compiled plan. Building/editing/publishing a ModelBundle, graph, CPT, or plan compiler belongs to M5.
@@ -2980,8 +2980,10 @@ git commit -m "feat: add first-fixation latency anchor"
 - Create: `tests/anchors/test_h3_off_task_dwell.py`
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
 - Modify: `tests/anchors/test_registry.py`
+- Modify: `tests/anchors/test_catalog.py`
+- Modify: `tests/test_package_metadata.py`
 
-- [ ] **Step 1: Write RED shared-allocation tests**
+- [x] **Step 1: Write RED shared-allocation tests**
 
 Prove H3 consumes the exact same memoized `gaze-aoi-intervals-v1` logical product/hash as H1 with provider `compute` called once, includes `other_scene` in the off-task numerator/denominator, pools all phase numerators/denominators, uses D `<5%`, A `5<=x<15%`, U `>=15%`, and never converts a zero denominator to `0% Desired`. Test complete finite off-task gaze as computed U.
 
@@ -2991,7 +2993,7 @@ Prove H3 consumes the exact same memoized `gaze-aoi-intervals-v1` logical produc
 
 Expected: RED because H3 is unavailable even though the shared gaze provider already exists.
 
-- [ ] **Step 2: Implement H3 without duplicating gaze allocation**
+- [x] **Step 2: Implement H3 without duplicating gaze allocation**
 
 ~~~text
 OffTaskDwell=100*off_task_gaze_dwell/total_gaze_dwell
@@ -2999,7 +3001,7 @@ OffTaskDwell=100*off_task_gaze_dwell/total_gaze_dwell
 
 No nonzero dwell produces `computed + U + no_gaze_dwell`. M5 later declares H1/H3 in the same `gaze_allocation` dependence group; M4 does not apply that likelihood strength.
 
-- [ ] **Step 3: Register and run the M4-E gate**
+- [x] **Step 3: Register and run the M4-E gate**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh --anchor H3 --factory-module pilot_assessment.anchors.plugins.h3_off_task_dwell --factory-symbol create_plugin
@@ -3009,12 +3011,20 @@ No nonzero dwell produces `computed + U + no_gaze_dwell`. M5 later declares H1/H
 
 Expected: PASS; exactly 15/18 production plugins and 3 preprocessing providers are software-verified.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
-git add src/pilot_assessment/anchors/plugins/h3_off_task_dwell.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_h3_off_task_dwell.py tests/anchors/test_registry.py
+git add src/pilot_assessment/anchors/plugins/h3_off_task_dwell.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_h3_off_task_dwell.py tests/anchors/test_registry.py tests/anchors/test_catalog.py tests/test_package_metadata.py
 git commit -m "feat: add off-task dwell anchor and close M4-E"
 ~~~
+
+**Task 28 completion evidence (2026-07-15):**
+
+- RED first produced the expected collection failure because H3 did not exist. After implementation, the registry-honesty RED produced three explicit failures because H3 was not yet registered; the controlled M4-E gate then exposed and closed the remaining stale 14-plugin catalog/package inventory assertions.
+- `f2697da` adds H3 Off-task Dwell without recomputing scene/gaze allocation. H3 and H1 bind the same `gaze-aoi-intervals-v1` dependency; an evaluation-local resolver test proves the exact logical product/hash is memoized and provider `compute` runs once. H3 counts every semantic `off_task=true` AOI, including invalid-association `other_scene`, clips the shared intervals to phase windows, pools phase numerators and denominators, publishes exact `phase-off-task-dwell-v0.1`, and preserves complete off-task or extreme gaze as computed evidence rather than filtering it.
+- Focused H3 behavior is `12 passed`; the controlled gaze/H1/fixation/H2/H3/preprocessing/registry/catalog/DAG/service/scoring/artifact/temporal/package M4-E gate is `244 passed`. Exact `<5%`, `5<=x<15%`, `>=15%` boundaries, complete off-task U, absent-stream status, scene-opportunity status, and zero-denominator `computed + U + no_gaze_dwell` are covered. Registry verify, Ruff check/format, `ty check src` and `git diff --check` pass.
+- The packaged registry contains exactly 15/18 production plugins and three preprocessing providers. Registry fingerprint is `281aa941b0566e589595310a1d0c37303a778c86ff7f676f321eb3ededcd8848`; H3 implementation digest is `c3eb3c1747f31692c65be08c1f2dd906a2887cc9b8826b180ea03ce9dd51bc68`.
+- Per the approved lightweight policy, the full repository/build/isolated-wheel gates were not repeated for this single anchor; Task 20 remains the latest full stage-gate evidence (`1275 passed, 3 skipped`). No subagent or external review was used. M4-E is closed, but M4 overall remains incomplete and `formal_run_authorized=false`; Task 29 H4 ECG Fluctuation is next.
 
 ## M4-F: H4/H5/O13 physiology and coupling anchors
 
