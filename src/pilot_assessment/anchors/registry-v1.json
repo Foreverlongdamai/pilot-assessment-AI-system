@@ -152,6 +152,53 @@
       "implementation_digest": "8618bb2d9e41e1d346f80abd4ce8d0de2fff57260029005fb7acd776c8a394c6"
     },
     {
+      "anchor_id": "O12",
+      "definition_version": "0.1.0",
+      "plugin_id": "o12-envelope-drift-latency",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.o12_envelope_drift_latency",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "7c113aa3790f5879ff6042c77618d4666c2a5ddc61b4fe7d1ab35d4af7fad7bf",
+      "parameter_schema_id": "o12-parameters-0.1",
+      "parameter_schema_sha256": "68c5fbc7a6e3f7c437e23f62ca36c5a7bb3125a1f6207f869871c30dec9b2df0",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "correction-events-v0.1": "d63b003caec2375f2c6d470f2f36d049c59cbaa17298a571a6e9b0e2f31289e3"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/o12_envelope_drift_latency.py",
+          "content_sha256": "ab3a18ef032a5ebe7d7e96c6fc5f9be6ecded1ac8c2d36b8f433051a4dca7142"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/events.py",
+          "content_sha256": "9e9822c91f2061418ae1b2e5bf769095781130af4030209f715da2812476a723"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "f4136c632dd2f303d9636a0ad67f0c597217cd96bf44d621a51f96f134aaf5b7"
+    },
+    {
       "anchor_id": "O2",
       "definition_version": "0.1.0",
       "plugin_id": "o2-peak-tracking-excursion",

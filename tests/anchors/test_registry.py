@@ -56,7 +56,7 @@ def provider_entry(
 # --------------------------------------------------------------------------- #
 
 
-def test_packaged_registry_has_o1_through_o11_and_reports_remaining_not_implemented() -> None:
+def test_packaged_registry_has_o1_through_o12_and_reports_remaining_not_implemented() -> None:
     catalog = load_packaged_catalog()
     packaged = registry.load_packaged_registry()
 
@@ -74,6 +74,7 @@ def test_packaged_registry_has_o1_through_o11_and_reports_remaining_not_implemen
             "O9",
             "O10",
             "O11",
+            "O12",
         }:
             assert capability.status is AnchorCapabilityStatus.AVAILABLE
             assert capability.entry is not None
@@ -104,6 +105,7 @@ def test_packaged_registry_fingerprint_binds_the_canonical_model() -> None:
         "O1",
         "O10",
         "O11",
+        "O12",
         "O2",
         "O3",
         "O4",
@@ -214,6 +216,17 @@ def test_o11_registry_closure_binds_plugin_event_primitive_and_polars() -> None:
     assert tuple(item.normalized_name for item in o11.numeric_runtimes) == ("polars",)
     assert tuple(item.package_relative_path for item in o11.implementation_members) == (
         "pilot_assessment/anchors/plugins/o11_disturbance_latency.py",
+        "pilot_assessment/anchors/primitives/events.py",
+    )
+
+
+def test_o12_registry_closure_binds_plugin_event_primitive_and_polars() -> None:
+    model = registry._load_registry_model()
+    o12 = next(entry for entry in model.entries if entry.anchor_id == "O12")
+
+    assert tuple(item.normalized_name for item in o12.numeric_runtimes) == ("polars",)
+    assert tuple(item.package_relative_path for item in o12.implementation_members) == (
+        "pilot_assessment/anchors/plugins/o12_envelope_drift_latency.py",
         "pilot_assessment/anchors/primitives/events.py",
     )
 
