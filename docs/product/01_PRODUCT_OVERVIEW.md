@@ -1,19 +1,21 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0 设计基线（M4 完整书面规格、轻量工作流验证、Task 3/7/8 定向修订与 replacement plan 均已获明确或授权默认批准；D-026–D-030 已接受；原实施计划已被取代；replacement Task 0–28 已完成，M4-A/M4-B framework 与 M4-C/M4-D/M4-E stage gates、O1–O12/H1–H3 production plugins、共享 primitives 与三个 reference providers 已实现，相关 capability/provider 均为 `available`；下一步为 Task 29 H4；18/18 specified、15/18 production plugins 已实现；M4 整体尚未 engineering verified，`formal_run_authorized=false`，无科学有效性声明）
-**日期：** 2026-07-13
+**文档状态：** 产品 v0.2 expert-designer 基线。M1–M3 已工程验证；旧 M4 Task 0–28 已完成并作为迁移历史保留；D-031–D-035 已重设 M4R–M8 路线，旧 Task 29–36 不再执行。M4R 架构已确认，合并规格待用户最终复核，实现尚未开始，`formal_run_authorized=false`。
+**日期：** 2026-07-15
 **适用目录：** `pilot_assessment_system/`
+
+> **当前权威：** [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)。本总览中出现的 18 Anchor、11 sub-skills、4 competencies 与默认公式/CPT 均指 starter template，不限制专家模型的节点数量或计算方法。
 
 ## 1. 产品目的
 
-本产品用于对 eVTOL／飞行模拟器训练 session 进行离线、可解释、可复现的飞行员能力评估。系统接收飞行状态、操纵输入、第一视角 VR 画面、眼动、EEG 和 ECG 等多模态数据，通过确定性 anchor 计算、证据离散化和贝叶斯网络推理，输出四项能力的后验分布：
+本产品首先是一套面向领域专家的 Windows 本地评估模型设计与运行系统。它接收飞行状态、操纵输入、第一视角 VR 画面、眼动、EEG 和 ECG 等多模态 session，让专家用 Evidence Computation Graph 设计 evidence 计算方法，再用可编辑 BN 设计能力推理关系。Starter template 默认输出四项能力后验：
 
 - Task Control Proficiency（TCP，任务控制熟练度）
 - Procedural Compliance（PC，程序符合度）
 - Situational Monitoring（SM，态势监控）
 - Operational Composure（OC，运行沉着度）
 
-每个输出都必须能够追溯到使用了哪些 session 数据、anchor 算法、阈值、模型版本和 CPT。产品不是一个只给出单一分数的黑盒模型，而是一套能够被研究人员、教员和领域专家检查、解释和修订的评估工具。
+每个输出都必须能够追溯到使用了哪些 session 数据、EvidenceRecipe、operator、参数、模型版本和 CPT。产品不是一个只给出单一分数的黑盒模型，也不把当前初始算法当作标准答案；它为研究人员、教员和领域专家提供透明、直接、可执行且易于修改的设计工作台。
 
 ## 2. 产品原则
 
@@ -86,7 +88,7 @@ M1–M3 负责文件完整性、schema、类型和时间合同检查，并可以
 | 系统开发者 | 维护插件、协议、数据适配器和软件测试 | 代码变更不自动成为科学模型批准 |
 | 受训飞行员 | 查看经评估员批准的结果和解释 | 默认不修改模型或原始数据 |
 
-产品 v0 可以先采用本机单用户模式，但所有 model edit 和 assessment run 仍必须记录逻辑角色、时间和理由，为后续权限体系保留审计基础。
+产品 v0 可以先采用本机单用户模式。系统自动记录 model edit/run 的逻辑角色与时间；修改说明可选，不得因为用户未填写理由而阻止 autosave 或 apply。
 
 ## 5. 完整工作流
 
@@ -97,10 +99,10 @@ M1–M3 负责文件完整性、schema、类型和时间合同检查，并可以
 5. M2 输出 `IngestionReadinessReport`；它只决定 source artifact 能否进入同步，始终 `formal_run_authorized=false`。
 6. M3 用同一文件 snapshot 构造 `SynchronizationInput`，按 native rate 映射原始行并追加 aligned time/flags，不插值或重采样；输出内部 `AlignedSession` 与公共 `SynchronizationReport`。
 7. 用户在 Session Explorer 中同步查看 X/U 曲线、随头动的第一视角 VR scene、gaze/AOI、驾驶员图像、EEG 和 ECG。
-8. 用户选择一个已发布的 model revision；如需修改，则从该 revision 创建 draft。
-9. 领域专家在 BN Graph 和 Node Inspector 中编辑 draft 的图拓扑、CPT 或 anchor 参数。每次操作更新 draft 的 graph_version；验证并 publish 后才产生新的不可变 model revision。
-10. 用户为正式运行选择一个 published revision。后端锁定 revision，解析 model-bundle reference，并由 Run Preflight 检查 frozen inputs、任务前提、execution plan、插件和版本兼容性；只有 `RunPreflightReport` 可以决定是否创建 AssessmentRun。preflight 不按飞行表现或原始信号数值过滤 evidence。
-11. 用户启动评估。sidecar 按该 published revision 建立 run snapshot；M4 生成 `AnchorResult v0.2`，M5 再执行 BN observation、coverage 与 inference。已经建立的同步结果按 fingerprint 绑定到该 snapshot。
+8. 用户打开一个 applied model revision 或 starter template；系统创建或恢复 autosaved draft。
+9. 领域专家在 Evidence Computation Graph 与 BN Graph 中编辑 inputs、operators、参数、公式、scorer、节点、边、state 和 CPT。每次用户意图自动保存；用户可随时对当前 session preview。
+10. 用户点击“应用到后续评估”。后端只执行最小技术可运行校验，随后创建 immutable applied revision；不要求人工审批、Python 发布或 per-edit 测试。
+11. 用户选择 applied revision 启动评估。Run Preflight 检查 frozen inputs、任务前提、compiled recipe/BN plan、operator/engine compatibility；它不按飞行表现或原始信号数值过滤 evidence。sidecar 按该 revision 建立 run snapshot，EvidenceRecipe executor 生成 `AnchorResult v0.2`，BN 再执行 observation、coverage 与 inference。
 12. Windows 前端显示运行进度，并允许取消。
 13. 结果页显示四项 competency posterior、可评估状态、evidence availability coverage、anchor trace、缺失证据和限制说明。
 14. 只有达到该 competency 的最低 evidence availability 要求时，系统才生成 weak-skill diagnosis；`computed` 的 D、A、U 都计为已提供 evidence，其中 U 是负面观测而不是低质量或缺失数据。
@@ -133,7 +135,7 @@ WinUI 负责交互、可视化和 sidecar 生命周期，不复制 Assessment Co
 
 ### 6.2 Python Assessment Core
 
-Assessment Core 是可独立测试的 Python package。其纯 Python API 可用于测试和研究 notebook，runtime adapter 将相同能力暴露给 Windows 应用。同步层的 v0.1 边界是 native-rate alignment：保留 source rows 并生成 `*-aligned-v0.1` 视图；anchor-specific interpolation、resampling 和 analysis/window grid 属于后续 AnchorPlugin/model revision。
+Assessment Core 是可独立测试的 Python package。其纯 Python API 可用于测试和研究 notebook，runtime adapter 将相同能力暴露给 Windows 应用。同步层的 v0.1 边界是 native-rate alignment：保留 source rows 并生成 `*-aligned-v0.1` 视图；Anchor-specific interpolation、resampling 和 analysis/window grid 只在 EvidenceRecipe 显式选择相应 operators 时建立。
 
 ### 6.3 JSON-RPC stdio sidecar
 
@@ -182,8 +184,8 @@ Assessment Core 保留 transport-neutral command service，未来可以增加 lo
 
 模型不用一个 status 混装编辑、生命周期和科学证据：
 
-- `draft_validation_state`：draft_incomplete、draft_invalid、draft_runnable 或 draft_publishable；
-- `revision_lifecycle`：published、archived 或 superseded；只适用于不可变 revision；
+- `draft_validation_state`：draft_incomplete、draft_invalid 或 draft_executable；
+- `revision_lifecycle`：applied、archived 或 superseded；只适用于不可变 revision；
 - `scientific_validation_status`：engineering_default、expert_reviewed、calibrated、internally_validated、externally_validated 或 not_supported；
 - `permitted_use`：由项目治理单独声明，例如 research_only；它不是科学有效性等级。
 
@@ -211,8 +213,8 @@ v0 完成必须同时满足：
 1. WinUI 可启动 sidecar 并完成版本握手。
 2. 可导入符合规范的 session bundle，并正确显示所有正式模态及其状态。
 3. 可验证时间同步、phase/event 和 baseline。
-4. 可通过插件计算当前 model bundle 声明的 anchor。
-5. 可查看和编辑 BN 拓扑、CPT 与 anchor 参数，并生成可回滚 revision。
+4. 可通过 canonical EvidenceRecipe 和 operators 计算当前 model workspace 声明的 Anchor。
+5. 可查看和编辑 Evidence/BN 两张图、输入、参数、公式、scorer 与 CPT，并生成可回滚 applied revision。
 6. 可运行固定 revision 的离线推理并输出可追溯结果。
 7. 证据不足时不会产生虚假确定性评分或诊断。
 8. 软件验证状态与科学验证状态在 UI 和导出文件中明确分开。
@@ -223,12 +225,13 @@ v0 完成必须同时满足：
 - [Session Bundle 规范](./03_SESSION_BUNDLE_SPEC.md)
 - [M3 Native-Rate Time Synchronization 规格](./specs/2026-07-12-m3-native-time-synchronization-design.md)
 - [M3 实施计划](./plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md)
-- [M4 Anchor Calculation and Evidence Availability 规格](./specs/2026-07-13-m4-anchor-evidence-availability-design.md)（已批准；18/18 已设计、15/18 production plugins 已实现，M4-C/M4-D/M4-E stage gates 已关闭）
+- [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)（当前权威；M4R–M8 重基线）
+- [M4 Anchor Calculation and Evidence Availability 规格](./specs/2026-07-13-m4-anchor-evidence-availability-design.md)（Task 0–28 历史/迁移规格）
 - [M4 Anchor Calculation and Evidence Availability 原实施计划](./plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（历史上已批准，现已被取代且不得执行）
 - [M4 Lightweight Workflow Validation Amendment](./specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)（已批准）
 - [M4 Task 3 Reference Candidate Binding Amendment](./specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)（已于 2026-07-13 批准；D-028）
 - [M4 Task 7 Catalog/Resource Identity Amendment](./specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)（已于 2026-07-13 按授权默认批准；D-029；由提交 `583a1e7` 完成）
 - [M4 Task 8 Canonical Fingerprint/Runtime Identity Amendment](./specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md)（已于 2026-07-13 按授权默认批准；D-030；canonical identity/runtime code 已完成）
-- [M4 Anchor Calculation and Evidence Availability Replacement Implementation Plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已于 2026-07-13 批准并修订；Task 0–28 已完成，M4-C/M4-D/M4-E 已关闭，下一步为 Task 29 H4）
+- [M4 Anchor Calculation and Evidence Availability Replacement Implementation Plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（Task 0–28 历史；Task 29–36 已暂停）
 - [M4 Autonomous Review Ledger](./reviews/2026-07-13-autonomous-review-ledger.md)（保存默认批准期间的独立复核证据与工具边界）
 - 既有后端方向稿：`docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md`

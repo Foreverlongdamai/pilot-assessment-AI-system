@@ -2,19 +2,19 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 文档状态 | 工程参考模型；M4 主规格与轻量、Task 3、Task 7、Task 8 定向修订均已于 2026-07-13 获明确或授权默认批准 |
+| 文档状态 | 可编辑 starter template 与历史迁移说明；不是通用 engine 的固定 inventory |
 | 模型 profile | `reference-model-v0.1`（尚未发布为不可变 ModelBundle） |
-| 日期 | 2026-07-13 |
+| 日期 | 2026-07-15 |
 | BN inventory | 4 competencies + 11 sub-skills + O1–O13/H1–H5，合计 33 nodes |
-| Anchor 实现状态 | 18/18 已设计，15/18 production plugins 已实现；原 M4 实施计划已被取代，replacement plan 与 Task 3/7/8 amendments、D-028–D-030 已批准；Task 0–28 已完成，M4-C/M4-D/M4-E stage gates 已关闭，O1–O12/H1–H3 capability 均为 `available`，共享 primitives 与三个 reference providers 已实现，下一步为 Task 29 H4 |
+| Anchor 实现状态 | 18 个 starter definitions；旧 Task 0–28 已实现 15 个 legacy/reference whole-Anchor plugins。Task 29–36 已停止；H4/H5/O13 与后续新 Anchor 走 EvidenceRecipe/operator 路线 |
 | 科学状态 | engineering defaults，未完成航空、人因或医学验证 |
 
-本文件定义 `reference-model-v0.1` 的可实现模型摘要。M4 的公式与总体合同以 [M4 Anchor Calculation and Evidence Availability Design](./specs/2026-07-13-m4-anchor-evidence-availability-design.md) 为主规格；[Task 7 Catalog/Resource Identity](./specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md) 与 [Task 8 Canonical Fingerprint/Runtime Identity](./specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) amendments 分别对精确资源和 canonical bytes 具有优先权。本文件不得另造一套 M4 语义。
+本文件定义 `reference-model-v0.1` starter template 的历史公式摘要，便于迁移、比较和示例展示。当前 M4 及后续总体合同以 [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md) 为最高权威；旧 M4/Task 7/Task 8 文档继续约束已实现历史资源和 replay identity，但不再把 exact-18 或 whole-Anchor plugin 设为新完成门。
 
 ## 1. 模型边界
 
 1. 当前阈值、窗口、滤波、AOI、控制映射、anchor binding 和 CPT 是可编辑工程默认，不是认证限制、医学诊断阈值或最终训练合格标准。
-2. 专家可以在前端修改参数、anchor、图和 CPT，但所有语义修改由后端验证，并保存为新的 draft/revision；已发布 revision 不可原地覆盖。
+2. 专家可以在前端修改参数、Anchor、EvidenceRecipe、图和 CPT；修改自动保存为 draft，点击“应用到后续评估”时只做最小技术可运行校验并创建 immutable revision，无科学审批或逐次工程测试。
 3. D/A/U 只表示一次 session 的可观测表现，不代表飞行员永久能力真值。
 4. M4 假定输入已经通过 M1–M3 的文件、schema、字段、有限数值和时间合同。采集质量由仿真采集系统保证，不是 M4 的研究对象。
 5. 轨迹再差、控制再剧烈、生理指标再异常、未响应、未恢复、未注视或未稳定悬停，都是有效负面表现，必须形成 `computed + Unacceptable`，不得被过滤为低质量数据。
@@ -52,7 +52,7 @@
 
 commanded/reference path 必须来自 bundle-local `task_reference` 或锁定 ModelBundle；实际 X 不能冒充 reference。现有 2,902-row simulator CSV 只说明采集格式，不是标准轨迹、ground truth 或能力标签。
 
-所有流先经 M3 映射为 native-rate aligned views。M4 没有全局 analysis grid；每个 plugin revision 声明自己的 grid/window/interpolation。M3 diagnostics 不构成 M4 scorer 的 admission gate。
+所有流先经 M3 映射为 native-rate aligned views。M4R 没有隐式全局 analysis grid；每个 EvidenceRecipe 通过显式 temporal/signal operators 声明自己的 grid/window/interpolation。M3 diagnostics 不构成 scorer 的 admission gate。
 
 ## 3. BN 层级与 anchor mapping
 
@@ -72,7 +72,7 @@ commanded/reference path 必须来自 bundle-local `task_reference` 或锁定 Mo
 | OC | OC.2 Stress resilience | O7, O13 |
 | OC | OC.3 Physio regulation | H4, H5 |
 
-`reference-model-v0.1` 精确使用 O1–O13、H1–H5。Generic M4 engine 的 catalog cardinality 可变：新增/retire anchor 发布新 catalog/model revision，参数修改发布新 parameter snapshot，公式修改发布新 plugin version。旧 published revision 必须可原样 replay。
+`reference-model-v0.1` starter snapshot 精确使用 O1–O13、H1–H5；generic engine cardinality 可变。新增、retire、参数或公式修改都只改变 autosaved EvidenceRecipe/model draft，apply 时自动创建新 revision。只有新增算子库无法表达的全新能力才发布 trusted operator plugin。旧 applied/legacy revision 必须可原样 replay。
 
 ## 4. AnchorResult v0.2 与 availability
 
@@ -104,7 +104,7 @@ result_fingerprint: sha256:...
 
 ### 4.1 表现状态
 
-state order 固定为 `[unacceptable, adequate, desired]`。Reference scorer `hard_threshold_v1` 输出 one-hot likelihood；U/A/D 的 continuous score 分别为 0/0.5/1。未来 soft scorer 必须有新版本、schema、transition parameters 和 golden tests。
+Starter state order 为 `[unacceptable, adequate, desired]`。Reference scorer `hard_threshold_v1` 输出 one-hot likelihood；U/A/D 的 continuous score 分别为 0/0.5/1。其他 scorer 通过版本化 operator/schema/parameters 声明，普通专家配置不要求独立 golden test。
 
 ### 4.2 计算状态
 
@@ -121,7 +121,7 @@ M4 v0.2 不产生 `invalid_quality`。override allowlist 只能确定为 Unaccep
 
 raw availability 为 `computed_count / applicable_count`。D/A/U 都贡献 1；`not_applicable` 不进分母；applicable count 为 0 时为 null。M5 的 model-weighted coverage 与 assessability 另行计算，不能把表现强弱称为 coverage。
 
-`plugin_unavailable`、`not_implemented`、`not_attempted` 只属于 capability/plan/report inventory。Reference plan 缺 required plugin 时 compilation blocked；blocked report 可列 expected inventory，但不得伪造 AnchorResult。
+Legacy `plugin_unavailable`、`not_implemented`、`not_attempted` 只属于旧 capability/plan/report inventory。M4R recipe 缺 required operator 时使用 `operator_unavailable` 并阻止 preview/apply；不得伪造 AnchorResult。
 
 ## 5. 18-anchor 计算基线
 
@@ -160,7 +160,7 @@ raw availability 为 `computed_count / applicable_count`。D/A/U 都贡献 1；`
 - O12 使用同一 baseline fallback；从未出现可信 envelope exit 才是 `not_applicable`。
 - H1/H3 对逐 gaze-AOI interval 做时间积分，不以 fixation-only dwell 作分母；AOI taxonomy 必须有覆盖全 viewport 的 `other_scene`，blink/tracking loss 也不从 denominator 删除。H1/H3 在 M5 属于 `gaze_allocation` dependence group，reference strength 各为 0.50。
 - H2 的事件起点固定为 task script 的 `cue_available_t`，不能因 pilot 未转头而延后；fixation-v1 默认 I-VT 100 deg/s、100 ms。
-- H4 的 packaged default 固定为 `provided_r_peaks_v1`；recompute 必须是显式新 plugin/profile，不运行时自动切换。RR 归属第二个 peak，用 signed delta 供 O13、absolute delta 供 H4。
+- H4 starter proposal 选择 `provided_r_peaks_v1`；专家可在 recipe 中显式选择 R-peak detection operator 或 provided peaks，不由 runtime 自动猜测。RR 归属第二个 peak，用 signed delta 供 O13、absolute delta 供 H4。
 - H5 默认 3–35 Hz、theta `[4,8)`/alpha `[8,13)`/beta `[13,30]`、4 s/2 s、Welch 2 s/50% overlap、epsilon `1e-12` 和 baseline-window median；不默认 ICA 或删窗。没有配置 role channels/baseline 是 `not_computable`，配置存在但谱退化是 computed U。
 
 ### 5.2 O13 `control-physio-grid-v2`
@@ -191,9 +191,9 @@ O13 <- O1/O5/O7 algorithm profile + required H4 result + optional H4 trace
 
 同 level 可并行，但报告按 canonical catalog order。插件只能读取声明的 aligned views、semantic context 和 typed dependencies。一个节点失败不停止独立节点；真正下游为 `dependency_missing`。
 
-`AnchorArtifactRef` 使用 content hash、schema、grid hash、producer plugin/version、parameter hash 和 dependency fingerprints。插件在独立 staging 写入，合同通过后原子发布；derived artifacts 不回写 Session Bundle。M4 只定义临时/in-memory `DerivedArtifactSink` port，M6 才拥有正式 artifact root 和持久化生命周期。
+`AnchorArtifactRef` 使用 content hash、schema、grid hash、producer recipe/operator identity、parameter hash 和 dependency fingerprints。Executor 在独立 staging 写入，合同通过后原子提交；derived artifacts 不回写 Session Bundle。M4R 只定义临时/in-memory `DerivedArtifactSink` port，M6 才拥有正式 artifact root 和持久化生命周期。
 
-fingerprint 覆盖 source/synchronization/semantic snapshot、catalog、registry/plugin、parameter/plan、dependency、artifact content 和 canonical result inventory；排除绝对路径、host、wall-clock、线程完成顺序和临时目录。
+fingerprint 覆盖 source/synchronization/semantic snapshot、recipe/operator catalog、parameter/plan、dependency、artifact content 和 canonical result inventory；legacy replay 另含 plugin identity。它排除绝对路径、host、wall-clock、线程完成顺序和临时目录。
 
 ## 7. 可编辑配置合同
 
@@ -235,35 +235,34 @@ scorer_policy:
     computed_u_overrides: []
 ~~~
 
-O2 的 `parameters` 必须保持空对象；time-aligned linear、禁止外推、三轴 L2、单位转换、aggregation 与 tie-break 都是 `o2-peak-tracking-excursion/0.1.0` 的 fixed algorithm invariants。修改这些算法语义必须发布新的 plugin version，不能伪装成同版本参数编辑。前端可编辑的 O2 D/A/U 阈值来自 scorer policy snapshot，而不是 plugin `parameters`。
+在 legacy `o2-peak-tracking-excursion/0.1.0` 中，`parameters` 为空，time-aligned linear、禁止外推、三轴 L2、单位转换、aggregation 与 tie-break 属于当时的 fixed implementation。迁移为 starter EvidenceRecipe 后，这些步骤、参数和 scorer 都必须在图中透明展示并可编辑；修改只创建新 recipe/model revision，不要求新的 whole-Anchor plugin version。
 
-M4 schema 必须拒绝 `quality_gates`、`min_valid_coverage`、`failed_quality`、`binary_quality_v1` 和 v0.2 `invalid_quality`。还必须拒绝 duplicate ID、未知 dependency、DAG cycle、单位不兼容、阈值方向矛盾、不可用 plugin/scorer/schema、越界 artifact recipe 和未版本化算法常量。
+M4R schema 必须拒绝 `quality_gates`、`min_valid_coverage`、`failed_quality`、`binary_quality_v1` 和 v0.2 `invalid_quality`。还必须拒绝 duplicate ID、未知 dependency、DAG cycle、单位不兼容、不可用 operator/scorer/schema、越界 artifact recipe 和无法编译的公式。专家选择的阈值方向属于 recipe 内容，不由平台判断科学合理性。
 
-前端新增/删除/修改 anchor 时操作的是 ModelBundle draft：
+前端新增/删除/修改 Anchor 时操作的是 autosaved Model Workspace draft：
 
-- 新增节点要提供稳定 ID、definition、plugin、parameter schema、binding 和 graph/CPT changes；plugin 未提供时 UI 显示 `plugin_unavailable`，不能伪装成 session 数据问题；
-- 删除使用 retire/disable 并发布新 revision，历史定义、插件和结果不物理删除；
-- 修改参数创建新 parameter snapshot；
-- 修改公式发布新 plugin version；
-- 后端原子验证 graph、DAG、schema、CPT 和 version compatibility，再返回 canonical draft。
+- 新增 Anchor 要提供稳定 ID、EvidenceRecipe、output binding 和可选 BN changes；引用 operator 不存在时 UI 显示 `operator_unavailable`，不能伪装成 session 数据问题；
+- 删除使用 disabled/retired，历史 definition、revision 和结果不物理删除；
+- 参数、输入、窗口、公式、聚合和 scorer 都直接修改 recipe；
+- 后端每次原子保存 canonical draft；apply 时只验证 graph/DAG/schema/type/unit/formula/scorer/CPT executable。
 
 ## 8. 前端展示要求
 
 Anchor 详情页至少显示：
 
-- 名称、说明、lifecycle、plugin/scorer/schema version；
+- 名称、说明、lifecycle、recipe/operator/scorer/schema identity；
 - 声明输入、task/phase applicability 和 typed dependencies；
 - 公式、参数、window/grid 和 D/A/U 阈值；
 - calculation status、evidence state/likelihood、classification override；
 - raw metrics、phase/event breakdown、source windows、computation trace 和 artifact refs；
-- model/catalog/parameter/result fingerprints 与 evidence grade；
-- 当前连接的 sub-skills，以及编辑/校验/另存 revision/恢复默认操作。
+- model/recipe/result fingerprints 与 evidence grade；
+- 当前连接的 sub-skills，以及打开 Evidence Graph、编辑、preview、apply/恢复历史操作。
 
 UI 必须把 computed U 显示为有效负面 evidence，不能标成 invalid/missing。Technical diagnostics 可以展开查看，但不得命名为评分质量门。
 
 ## 9. 专家校准与科学边界
 
-建议校准顺序：任务/phase/AOI/control 语义 -> anchor 公式与参数 -> D/A/U 阈值 -> graph binding/dependence -> CPT -> assessability threshold。每次修改保存 author、reason、parent revision、structured diff、validation report 和 content hash。
+若专家开展科学校准，可按任务/phase/AOI/control 语义 -> Anchor 公式与参数 -> D/A/U 阈值 -> graph binding/dependence -> CPT -> assessability threshold 的顺序进行。系统自动保存 author、time、parent revision、structured diff、technical validation 和 content identity；科学理由可选，不作为修改/apply 的门槛。
 
 Synthetic multimodal fixtures 只验证软件闭环，始终 `scientific_validation_status=not_supported`。后续真实研究应单独评价 inter-rater agreement、test-retest、criterion validity、posterior calibration、阈值敏感性和跨 pilot/session generalization；这些研究不倒推 M4 过滤极差表现。
 
@@ -280,17 +279,16 @@ Synthetic multimodal fixtures 只验证软件闭环，始终 `scientific_validat
 
 ## 11. 实现与验收边界
 
-当前只可声称 **18/18 anchors specified，15/18 production plugins implemented，M4-C/M4-D/M4-E software-verified**。Reference M4 完成至少需要：
+当前只可声称：旧 M4 Task 0–28 已完成，15 个 whole-Anchor plugins 与三个 providers 已实现并保留为 legacy/reference code；M4R EvidenceRecipe/operator architecture 已确认，合并规格待最终复核，尚未实现。不得再声称“补齐 18 个固定插件”是当前完成路径。
 
-1. `AnchorResult` v0.2、catalog/plan/report schemas 和 typed DAG 通过合同测试；
-2. 每个 anchor 的手算 D/A/U、精确边界、aggregation、override 和状态 golden；
-3. 18/18 computed Desired 紧凑 aligned-input real-plugin workflow；
-4. 18/18 computed Unacceptable 紧凑 aligned-input real-plugin workflow，raw availability=100%，M4 无 `invalid_quality`；
-5. missing/config/dependency/not-applicable 与 U 不等价；
-6. O13 10/30/31/35/36 s 窗口、H1/H3 catch-all、H4/H5 degenerate override 回归；
-7. 新增/retire/参数/plugin-version/旧 revision replay 不修改 orchestrator；
-8. source/aligned views 不变，artifact/result/evaluation fingerprint 跨进程确定；
-9. full tests、schema symmetry、lint/type、build，以及复用唯一 10 秒全模态 bundle 的 fresh-wheel isolated M1→M4 smoke 全部通过；
-10. 只有新鲜证据完成 M4-G 后才能把状态改为 M4 engineering-verified。
+M4R 的平台验收关注：
 
-M4 书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](./specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](./specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity](./specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订与 [replacement plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准，D-026–D-030 已接受；原实施计划已被取代且不再提供执行授权。Replacement Task 0–28 已完成，M4-C/M4-D/M4-E stage gates 已关闭，O1–O12/H1–H3 capability、共享 primitives 与三个 reference providers 均为 `available`，下一步为 Task 29 H4；在全部 production-plugin 与 M4-G 完成门通过前仍保持 M4 未整体 engineering verified。
+1. `EvidenceRecipe`、`OperatorDefinition`、typed DAG、compiler/executor 与 result contracts；
+2. operator type/unit/parameter/time semantics 与错误定位；
+3. Anchor create/clone/disable/retire、autosave、preview、apply 和 replay 不修改 orchestrator；
+4. 一个轻量可编辑 evidence vertical slice，以及少量 legacy-to-recipe comparison smoke；
+5. source/aligned views 不变，artifact/result/revision identity 可重放；
+6. 专家普通修改不运行 per-edit pytest/golden，不要求科学审批；
+7. H4/H5/O13 直接作为 starter recipes/operator compositions 设计，不执行旧 Task 29–31。
+
+历史 M4 文档继续说明 Task 0–28 的实现事实。当前完成门与后续里程碑以 [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md) 为准。

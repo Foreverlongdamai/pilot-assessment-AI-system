@@ -2,11 +2,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 设计版本 | v0.1 |
+| 设计版本 | v0.2 expert-designer protocol baseline |
 | Transport | JSON-RPC 2.0 / JSONL over stdin/stdout |
 | 客户端 | Windows WinUI 3 前端 |
 | 服务端 | Python Assessment Core sidecar |
 | 适用范围 | 本地、单用户、离线评估 |
+
+> **当前权威补充：** 协议必须承载 canonical EvidenceRecipe/operator catalog、两张图的 autosave operations、preview、technical validation 与 apply/replay。普通 expert edit 不触发 Python/plugin 发布或测试流程。方法命名与 DTO 的最终冻结将在 M4R/M5/M6 各自规格中完成；本文件旧 `publish` 语义统一解释为 one-click `apply`。详见 [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)。
 
 ## 1. 目标与边界
 
@@ -74,7 +76,7 @@ stopped → starting → ready ↔ busy → stopping → stopped
 - project_id；
 - actor：本地用户或工具标识；
 - 与操作对应的 expected_revision_id、expected_graph_version 或 expected_layout_version；
-- reason：发布、参数变更和破坏性操作时必填；
+- note：可选的人类说明；系统不因未填写理由阻止 autosave 或 apply；
 - operations 或 command payload。
 
 所有响应应包含 trace_id。改变持久化状态的成功响应还应返回新版本、content hash 与 audit event ID。
@@ -88,8 +90,8 @@ stopped → starting → ready ↔ busy → stopping → stopped
 | runtime.hello | 协议握手与能力协商 |
 | runtime.status | 健康、状态、活动 job 与资源摘要 |
 | runtime.shutdown | 优雅关闭 |
-| capabilities.list | 支持的输入、插件、模型和导出能力 |
-| schema.get | 获取 manifest、anchor 参数、CPT 或 operation schema |
+| capabilities.list | 支持的输入、operators/extensions、模型和导出能力 |
+| schema.get | 获取 manifest、EvidenceRecipe、operator 参数、CPT 或 operation schema |
 
 ### 6.2 Project 与 session
 
@@ -109,24 +111,26 @@ Runtime DTO 必须保持阶段顺序和命名：`IngestionReadinessReport`（sou
 
 | 方法 | 用途 |
 |---|---|
-| model.revision.list / model.revision.get | 查询不可变发布版本 |
-| model.revision.diff | 比较两个发布版本或 draft 与 base revision |
-| model.draft.create / get / discard / publish | 管理可编辑草稿 |
-| model.draft.smoke_test | 对 exact draft graph_version 执行发布前固定诊断 |
-| graph.snapshot.get | 获取 canonical graph、layout、graph_version 和 layout_version |
-| graph.operations.preview | 预览破坏性 batch、影响范围与迁移结果 |
+| model.revision.list / model.revision.get | 查询不可变 applied revisions |
+| model.revision.diff | 比较两个 applied revisions 或 draft 与 base revision |
+| model.draft.create / get / discard | 管理 autosaved model draft |
+| model.draft.apply | 最小技术校验后创建 immutable applied revision，并用于后续 run |
+| evidence.recipe.get / create / clone / update / disable / retire | 查询或编辑 canonical EvidenceRecipe；写操作进入 autosaved draft |
+| evidence.recipe.preview | 在选定 session 上执行 exact draft recipe 并返回 node trace/result |
+| operator.catalog.list / operator.definition.get | 获取 operator palette、typed ports、parameter schema、UI metadata 与 implementation identity |
+| graph.snapshot.get | 获取 canonical Evidence/BN graphs、layout、graph_version 和 layout_version |
+| graph.operations.preview | 可选查看结构 batch 的影响范围与迁移结果；不是每次编辑的强制步骤 |
 | graph.operations.apply | 原子应用一个或一组 domain operations |
-| graph.validate | 图、binding、state space、CPT 与编译检查 |
+| graph.validate | recipe/BN graph、binding、type/unit、state space、CPT 与编译检查 |
 | graph.undo / graph.redo | 基于后端命令日志撤销或重做 |
 | layout.update | 批量提交节点位置；只更新 layout_version |
 | node.get / add / update / remove | 查询节点或使用单操作便利入口；修改在内部转换为 graph operation |
 | edge.add / remove | 单操作便利入口 |
 | binding.get | 查询 evidence node 的 AnchorBinding |
-| anchor.parameters.get / validate / update | 读取和修改 anchor 配置 |
-| plugin.list / plugin.install | 查询插件；安装仅限受信管理员流程 |
+| extension.operator.list / install | 查询或安装 trusted operator extensions；普通 Anchor 编辑不调用 |
 | cpt.get / validate / update | 读取、校验和更新 CPT |
 | cpt.migration.preview | 预览增删 parent 或改 state space 后的 CPT 迁移 |
-| cpt.generate | 使用已批准 generator 生成候选 CPT |
+| cpt.generate | 使用可选 generator 生成候选 CPT；专家仍可直接编辑 |
 
 binding.create/update/remove 不设绕过事务的独立写入口；它们作为 graph.operations.apply 内的 semantic operations，DTO 见 [06_VISUAL_GRAPH_EDITOR_DESIGN.md](06_VISUAL_GRAPH_EDITOR_DESIGN.md) 的 AnchorBinding 小节。
 
@@ -136,15 +140,15 @@ node/edge/anchor.parameters/cpt 的便利写方法同样必须携带 draft_id、
 
 | 方法 | 用途 |
 |---|---|
-| run.preflight | M6 检查 frozen session/model、任务前提、compiled execution plan、plugin/schema/engine compatibility 和正式运行授权；不预先按表现或 M4 实际 coverage 过滤 evidence |
-| run.start | 启动锁定 published revision_id 的正式评估 |
-| run.preview | 对 runnable draft 的 exact graph_version 执行 non-formal 临时预览 |
+| run.preflight | M6 检查 frozen session/model、任务前提、compiled recipe/BN plan、operator/schema/engine compatibility 和运行授权；不预先按表现或实际 coverage 过滤 evidence |
+| run.start | 启动锁定 applied revision_id 的评估 |
+| run.preview | 对 executable draft 的 exact graph_version 执行不改变历史的临时预览 |
 | run.status | 查询阶段、进度和诊断 |
 | run.cancel | 请求协作式取消 |
 | result.get | 获取 posterior、coverage、evidence trace 和 provenance |
 | result.export | 生成 JSON、CSV 或报告 artifact |
 | diagnostics.bundle.export | 导出脱敏支持包 |
-| audit.events.list | 查询模型修改、发布、导入与运行审计事件 |
+| audit.events.list | 查询模型 autosave、apply、导入与运行的自动审计事件 |
 
 `run.preflight` 是 M6 operation，返回 `RunPreflightReport`；它与 M2 的 `IngestionReadinessReport`、M3 的 `SynchronizationReport` 和 M4 的 `AnchorEvaluationReport` 都不是同一 DTO。M2/M3/M4 报告的 `formal_run_authorized` 固定为 false；只有 M6 基于 frozen `AlignedSession`、已解析 reference、锁定 model revision 和已编译 execution plan 决定是否可以创建 AssessmentRun。实际 AnchorResult/raw availability 要等 M4 执行后产生，model-weighted coverage 由 M5 计算，不属于 preflight 的伪预测值。
 
@@ -168,7 +172,7 @@ session.inspect 可以接收用户选择的绝对 bundle 路径。正式 import 
 所有语义图编辑以 graph.operations.apply 为主入口。
 
 ~~~json
-{"jsonrpc":"2.0","id":"req-1042","method":"graph.operations.apply","params":{"project_id":"prj-01","draft_id":"draft-07","expected_graph_version":12,"transaction_id":"550e8400-e29b-41d4-a716-446655440010","actor":"user@example","reason":"Add expert-proposed evidence relationship","operations":[{"op_id":"550e8400-e29b-41d4-a716-446655440011","type":"edge.add","edge":{"edge_id":"550e8400-e29b-41d4-a716-446655440012","source_node_id":"PC.1","target_node_id":"H3"},"cpt_migration":{"strategy":"neutral_replication"}}]}}
+{"jsonrpc":"2.0","id":"req-1042","method":"graph.operations.apply","params":{"project_id":"prj-01","draft_id":"draft-07","expected_graph_version":12,"transaction_id":"550e8400-e29b-41d4-a716-446655440010","actor":"user@example","note":"Add expert-proposed evidence relationship","operations":[{"op_id":"550e8400-e29b-41d4-a716-446655440011","type":"edge.add","edge":{"edge_id":"550e8400-e29b-41d4-a716-446655440012","source_node_id":"PC.1","target_node_id":"H3"},"cpt_migration":{"strategy":"neutral_replication"}}]}}
 ~~~
 
 成功时，整个 batch 一次提交：
@@ -199,7 +203,7 @@ layout.update 不改变 graph_version 或 semantic hash。LAYOUT_VERSION_CONFLIC
 
 ## 9. 长任务、进度和取消
 
-run.start 硬性要求 published revision_id，并生成正式可追溯 AssessmentResult。run.preview 要求 draft_id + graph_version，结果标记 non_formal、不得进入正式 result export。两者成功后均立即返回 run_id，不等待计算结束；进度通过 notification：
+run.start 硬性要求 applied revision_id，并生成可追溯 AssessmentResult。run.preview 要求 draft_id + graph_version，结果标记 draft/non-applied、不得覆盖 applied result history。两者成功后均立即返回 run_id，不等待计算结束；进度通过 notification：
 
 ~~~json
 {"jsonrpc":"2.0","method":"run.progress","params":{"run_id":"run-88","stage":"anchors","completed":7,"total":18,"percent":38.9,"message":"Computed O7 Control Reversal Rate","model_profile_id":"reference-model-v0.1"}}
@@ -223,11 +227,11 @@ run.start 硬性要求 published revision_id，并生成正式可追溯 Assessme
 - INVALID_MANIFEST、SCHEMA_INCOMPATIBLE、CHECKSUM_MISMATCH；
 - STREAM_MISSING、STREAM_INVALID、TIME_ORDER_INVALID、SYNC_QUALITY_INSUFFICIENT；
 - PHASE_REQUIRED、EVENT_REQUIRED、ANCHOR_UNAVAILABLE；
-- ANCHOR_BINDING_INVALID、PLUGIN_NOT_TRUSTED；
+- ANCHOR_BINDING_INVALID、OPERATOR_NOT_FOUND、OPERATOR_EXTENSION_NOT_TRUSTED；
 - GRAPH_VERSION_CONFLICT、GRAPH_CYCLE_DETECTED、DUPLICATE_ID、INVALID_EDGE_TYPE；
 - CPT_DIMENSION_INVALID、CPT_ROW_SUM_INVALID、CPT_MIGRATION_REQUIRED、CPT_SIZE_LIMIT_EXCEEDED；
 - LAYOUT_VERSION_CONFLICT；
-- MODEL_REVISION_NOT_FOUND、MODEL_NOT_PUBLISHED；
+- MODEL_REVISION_NOT_FOUND、MODEL_NOT_APPLIED；
 - EVIDENCE_COVERAGE_INSUFFICIENT、INFERENCE_FAILED；
 - RUN_NOT_FOUND、RUN_ALREADY_TERMINAL、CANCEL_FAILED；
 - INTERNAL_ERROR、SIDECAR_DEGRADED。
@@ -236,10 +240,10 @@ run.start 硬性要求 published revision_id，并生成正式可追溯 Assessme
 
 ## 11. 并发、版本和幂等
 
-- published revision 不允许写。
+- applied revision 不允许写。
 - 所有 semantic draft mutation 必须携带 expected_graph_version；layout mutation 携带 expected_layout_version。
 - 同一 draft 的写入在后端串行化；读请求可并发。
-- 所有 mutation、import、publish 和 run.start 都必须携带 transaction_id；同一 transaction_id 重试返回第一次结果，不得重复执行。
+- 所有 mutation、import、apply 和 run.start 都必须携带 transaction_id；同一 transaction_id 重试返回第一次结果，不得重复执行。
 - run.start 锁定 model revision ID、bundle hash、session revision 和参数 hash。
 - v0.1 默认每个 runtime 只运行一个重计算 job；具体上限由 capabilities 报告。
 - 前端断开不会改变已发布模型；活动 run 是否继续由启动参数 detach_policy 决定并记录。
@@ -262,7 +266,7 @@ v0.1 是本地单用户系统，但仍要防止误用：
 - participant 使用匿名 ID，身份映射不进入普通项目导出；
 - 所有导入、模型发布和结果导出写 audit event；
 - safe composite formula 使用白名单表达式，不执行任意代码；
-- AnchorPlugin 必须由受信安装流程注册；
+- trusted operator extension 必须由受信安装流程注册；普通 EvidenceRecipe 不需要安装流程；
 - 日志实行字段级脱敏和保留期配置。
 
 ## 14. 协议验收

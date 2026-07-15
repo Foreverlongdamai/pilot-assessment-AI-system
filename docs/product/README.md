@@ -2,9 +2,9 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 设计基线 | 产品 v0.1；M4 AnchorResult/计算规格 v0.2 与轻量、Task 3、Task 7、Task 8 定向修订均已于 2026-07-13 获明确或授权默认批准 |
-| 基线日期 | 2026-07-13 |
-| 产品阶段 | M1/M2/M3 后端里程碑已工程验证；M4 replacement Task 0–28 已完成，M4-B framework 与 M4-C/M4-D/M4-E stage gates 已关闭，O1–O12/H1–H3 plugins、共享 primitives 与三个 reference providers 已落地且均为 `available`；下一步为 Task 29 H4；18/18 specified、15/18 production plugins 已实现；M4 整体尚未工程验证，`formal_run_authorized=false`，无科学有效性声明 |
+| 设计基线 | 产品 v0.2 expert-designer rebaseline；D-031–D-035 与 EvidenceRecipe/operator architecture 已获用户确认 |
+| 基线日期 | 2026-07-15 |
+| 产品阶段 | M1/M2/M3 已工程验证；旧 M4 Task 0–28 与 15 个 whole-Anchor plugins 已完成并保留为迁移来源。旧 Task 29–36 已暂停；M4R 架构已获确认，合并后的正式规格待用户最终复核，实现尚未开始；`formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -15,11 +15,11 @@
 
 1. 产品解决什么问题、明确不解决什么问题；
 2. 原始 session 如何进入系统并保持多模态时间一致；
-3. 18 个 evidence anchors 如何形成，贝叶斯网络如何推理；
+3. 专家如何用可编辑 EvidenceRecipe/通用算子设计任意数量 evidence，以及 BN 如何使用这些 evidence；
 4. Windows 前端如何展示并修改节点、边、参数和 CPT；
 5. 如何验证软件、校准评估模型并把产品交给下一位维护者。
 
-文档中的 v0.1 是一套**可实现参考设计**。算法、阈值、拓扑和 CPT 的默认值用于启动开发，不代表已经获得航空监管认可，也不应被表述为最终飞行员评估标准。书面设计、实施计划、代码实现和工程验证是四种不同状态，不能相互替代。
+文档中的 O1–O13、H1–H5 和 33-node BN 是一套**可编辑 starter template**。算法、阈值、拓扑和 CPT 只用于启动系统与给专家提供示例；产品不以证明它们科学正确为目标。专家可以新增、复制、修改、停用或替换这些内容。书面设计、实施计划、代码实现、工程可运行与科学有效性是不同状态，不能相互替代。
 
 ## 2. 推荐阅读顺序
 
@@ -44,14 +44,15 @@
 | 17 | [M2 实施计划](plans/2026-07-11-m2-multimodal-synthetic-foundation-implementation-plan.md) | 开发、审查者 | shared X/U、adapter、generator、readiness 与本地 E2E 的 TDD 步骤 |
 | 18 | [M3 Native-Rate Time Synchronization 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) | 开发、数据、审查者 | 已批准：native-rate clock mapping、session window、aligned views 与同步报告 |
 | 19 | [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) | 开发、审查者 | 已完成：Task 0–14 的实现、实测完成门与 handoff/关闭记录 |
-| 20 | [M4 Anchor Calculation and Evidence Availability 规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md) | 开发、算法、审查者 | 已批准：AnchorResult v0.2、18 个 anchor、no-quality-gate、DAG、artifact/fingerprint 与 fixtures；18/18 已设计、O1–O12/H1–H3 已实现，production plugins 为 15/18，M4-C/M4-D/M4-E 已关闭 |
-| 21 | [M4 原实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) | 开发、算法、审查者 | 历史上已批准，现已被轻量验证修订取代且不得执行；其 provisional heavy Task 0 未提交且未进入历史 |
-| 22 | [M4 轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md) | 开发、算法、审查者 | 已批准：以单个 10 秒全模态 bundle、per-anchor 微型测试和紧凑场景取代四套 90 秒重 fixture |
-| 23 | [M4 replacement 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) | 开发、算法、审查者 | 已于 2026-07-13 获用户批准并按方案 A 修订；Task 0–28 已完成，M4-B/M4-C/M4-D/M4-E gates 已关闭，O1–O12/H1–H3 与三个 preprocessing providers available，下一步为 Task 29 H4 |
-| 24 | [M4 Task 3 Reference Candidate Binding 修订](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md) | 开发、数据、审查者 | 已批准：三参数 exact binder、session-bound candidate、M3 reference provenance 与 bundle/ModelBundle 边界；取代 Task 3 原两参数 binder |
-| 25 | [M4 Task 7 Catalog and Resource Identity 修订](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md) | 开发、算法、审查者 | 已按授权默认批准并由 `583a1e7` 实现：exact-18 catalog、artifact/provider descriptors、24 个 canonical parameter schemas、scorer/O6/O13 profile closure |
-| 26 | [M4 Task 8 Canonical Fingerprint and Runtime Identity 修订](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) | 开发、审查者 | 已按授权默认批准：JCS typed bytes、logical table、self-field ownership、Python ABI 与 wheel RECORD identity |
-| 27 | [Autonomous Review Ledger](reviews/2026-07-13-autonomous-review-ledger.md) | 维护者、审查者 | 保存用户休息期间的默认批准边界、独立复核发现与关闭证据 |
+| 20 | [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md) | 专家、产品、前后端 | 当前权威：typed EvidenceRecipe/operator graph、自动参数表单、autosave draft + apply、最小技术校验、M4R–M8 重基线 |
+| 21 | [M4 Anchor Calculation and Evidence Availability 规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md) | 开发、算法、审查者 | 历史/迁移规格：Task 0–28 与 15 个插件已实现；固定插件和 completion gate 已由 2026-07-15 新规格取代 |
+| 22 | [M4 原实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) | 开发、算法、审查者 | 历史计划，已被取代且不得执行 |
+| 23 | [M4 轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md) | 开发、算法、审查者 | 历史 fixed-plugin 验证修订；不再定义 M4R completion gate |
+| 24 | [M4 replacement 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) | 开发、算法、审查者 | Task 0–28 已完成；Task 29–36 已暂停且不得执行，等待新 M4R plan |
+| 25 | [M4 Task 3 Reference Candidate Binding 修订](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md) | 开发、数据、审查者 | 已实现的 session/reference binding 合同，继续保留 |
+| 26 | [M4 Task 7 Catalog and Resource Identity 修订](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md) | 开发、算法、审查者 | 已实现的 legacy catalog/resource identity，供迁移与 replay |
+| 27 | [M4 Task 8 Canonical Fingerprint and Runtime Identity 修订](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) | 开发、审查者 | 已实现的 legacy canonical/runtime identity，供迁移与 replay |
+| 28 | [Autonomous Review Ledger](reviews/2026-07-13-autonomous-review-ledger.md) | 维护者、审查者 | 保存历史复核与关闭证据 |
 
 ### 2.1 文档目录的职责
 
@@ -74,7 +75,7 @@
 ## 4. 当前锁定口径
 
 - 原始数据族：X(t) 飞行状态、U(t) 控制输入、I(t) 飞行员在 VR 中实际看到的第一视角场景、G(t) 在该动态场景上的 gaze/AOI、P(t) 生理信号（至少 EEG 与 ECG）。
-- 参考模型：O1–O13 与 H1–H5，共 18 个逻辑 evidence nodes；O1 的 T/D/H 分段值保留在节点内部。
+- Starter template：O1–O13 与 H1–H5 共 18 个示例 evidence；通用 engine 和 expert model 不限制数量，专家可新增、复制、disabled、retired 或替换。
 - 顶层输出：TCP、PC、SM、OC 四项 aggregate competencies；中间层为 11 个 latent sub-skills。
 - 证据等级：Desired、Adequate、Unacceptable。`computed + Unacceptable` 是有效负面 evidence，raw availability 与 computed D/A 一样为 1；coverage/availability 表示证据是否形成，不表示表现好坏。
 - `export_pending/missing/invalid/not_applicable` 是 M1–M3 的 stream 生命周期或结构状态；M4 AnchorResult v0.2 的非 computed 状态固定为 `missing_input/not_applicable/not_computable/dependency_missing/extractor_error`，M4 不生成 `invalid_quality`。
@@ -89,12 +90,12 @@
 
 截至 2026-07-13，Python Core 已完成 M1、M2 与 M3：严格 SessionManifest/StreamDescriptor/legacy AnchorResult 0.1 合同、inspect-only directory-bundle integrity gate、shared X/U、版本化 profiles/adapters、deterministic multimodal generator、`IngestionReadinessReport`，以及 native-rate `AlignedSession`/`SynchronizationReport`。M3 使用 master-clock X mapped coverage、Decimal round-half-even 与版本化 temporal bindings，保留所有 source rows，并输出确定性的 synchronization fingerprint；它不插值、不重采样，也不建立全局或 anchor window grid。完成门实测仍为 `694 passed, 2 skipped`，配置 repository-external CSV 后 M2/M3 格式样例 E2E 为 `2 passed`，隔离 wheel 的 M3 micro E2E 为 `1 passed`。这些结果不验证样例飞行的任务、表现或科学有效性；M2/M3 report 始终保持 `formal_run_authorized=false`，synthetic fixture 为 `not_supported`。
 
-M4 正式书面规格、[轻量工作流验证](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)、[Task 3 Reference Candidate Binding](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订与 [replacement plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准，D-026–D-030 已接受。Replacement Task 0–28 已完成：M4-A/M4-B framework、O1–O12/H1–H3 plugins、共享 primitives、三个 reference providers 与可信 registry closure 已进入代码，M4-C/M4-D/M4-E stage gates 已关闭。Task 28 focused/M4-E 受控 gates 分别为 `12 passed`、`244 passed`；registry verify、Ruff/format/ty/diff 均通过，未声称独立审查；最新 full-repository/build/isolated-wheel 完成门仍为 Task 20 证据。O1–O12/H1–H3 capability 与三个 providers 均为 `available`，因此真实状态是 18/18 specified、15/18 production plugins 已实现、M4-C/M4-D/M4-E software-verified；M4 整体尚未 engineering verified，`formal_run_authorized=false`。其余 H4/H5/O13 三个 reference plugins、受管理存储 importer、BN、runner、sidecar 和 WinUI 仍待后续任务；下一步为 replacement Task 29 H4。上述测试不构成 quality gate、科学有效性或飞行员能力证明。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+旧 M4 replacement Task 0–28 已完成：框架、O1–O12/H1–H3、共享 primitives、三个 providers 与 registry 已进入代码。2026-07-15 用户确认产品应首先服务专家自由设计 Evidence 和 BN，接受 D-031–D-035 与 EvidenceRecipe/operator architecture。旧 Task 29–36 已暂停；H4/H5/O13 不继续 whole-Anchor plugin 路线。当前真实状态是 15 个 legacy/reference plugins implemented、M4R architecture approved、formal spec awaiting final review、M4R implementation not started、`formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
 ## 6. 维护规则
 
 - 修改跨文档口径时，先更新 [DECISIONS.md](DECISIONS.md)，再更新受影响文档。
-- 每个算法、阈值、拓扑或 CPT 变化都必须进入新的 model revision，并记录理由、作者、时间、差异和验证结果。
-- 不在前端执行任意 Python。新算法通过受控 AnchorPlugin 安装；参数和安全公式通过 schema 编辑。
+- 参数、公式、计算图、拓扑或 CPT 修改自动保存到 draft；点击 apply 后自动创建新 revision。无需人工审批或 per-edit 工程测试。
+- 不在前端执行任意 Python。普通新 Anchor 使用 existing operators/EvidenceRecipe；只有新增 operator library 不具备的能力才安装受控 operator plugin。
 - 示例中的数值必须标注为“默认工程值”“文献直接支持”或“专家校准值”之一。
 - 每次设计基线发布前重新执行 [09_VALIDATION_AND_HANDOFF.md](09_VALIDATION_AND_HANDOFF.md) 中的文档自检。

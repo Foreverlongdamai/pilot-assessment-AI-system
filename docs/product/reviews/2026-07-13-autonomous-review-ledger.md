@@ -411,3 +411,14 @@
 | Identity | Packaged registry fingerprint `281aa941b0566e589595310a1d0c37303a778c86ff7f676f321eb3ededcd8848`; H3 digest `c3eb3c1747f31692c65be08c1f2dd906a2887cc9b8826b180ea03ce9dd51bc68`; all three existing provider digests remain unchanged; no new wheel identity was claimed for this single-anchor checkpoint |
 | Commit | `f2697da` (`feat: add off-task dwell anchor and close M4-E`); docs/status closure committed separately |
 | Release conclusion | Task 28 and M4-E are complete. O1–O12/H1–H3 are the only available packaged production capabilities and all three current reference preprocessing providers are available. The honest state is 18/18 specified, 15/18 production plugins; M4 overall remains incomplete, `formal_run_authorized=false`, and Task 29 H4 ECG Fluctuation is next |
+
+### AR-031 — Expert-Editable Architecture Rebaseline (INLINE, Documentation Only)
+
+| Field | Record |
+|---|---|
+| Trigger | The user clarified that current Anchor formulas and BN logic are only provisional starter material. The product must let experts freely inspect, add, remove, disable and modify Evidence computation methods and the BN from the frontend; ordinary changes must not require Python releases, approval gates or per-edit test suites. |
+| Accepted direction | Canonical typed `EvidenceRecipe` + reusable `OperatorDefinition` graph; linked Evidence Computation and BN graphs; schema-driven frontend forms; autosaved draft + one-click apply; only technical executable validation; trusted Python extension only for a genuinely missing operator capability. |
+| Authority change | D-031–D-035 accepted. Replacement Tasks 29–36 are suspended and MUST NOT be executed. Task 0–28 and existing code/tests remain valid history and migration inputs; O1–O12/H1–H3 plugins become legacy/reference implementations. |
+| Artifacts | `specs/2026-07-15-expert-editable-evidence-and-model-design.md`, updated numbered product documents, root/product README, GLOSSARY, DECISIONS, implementation status, historical-spec authority notes and superseded-plan banners. |
+| Self-review | Checked current entry surfaces for stale Task 29 authority, fixed-plugin completion claims, mandatory reviewer/golden/publish wording and frontend/backend logic duplication. `git diff --check` and local Markdown link validation passed. No production code or scientific algorithm was changed, and no software test result is claimed. |
+| Current status | M1–M3 engineering verified; legacy M4 Task 0–28 complete; 15 legacy/reference plugins and three providers preserved; M4R architecture approved; consolidated written specification awaiting final user review; M4R implementation not started; `formal_run_authorized=false`. |

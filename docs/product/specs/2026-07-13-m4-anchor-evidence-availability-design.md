@@ -4,11 +4,25 @@
 |---|---|
 | 设计基线 | v0.2 |
 | 日期 | 2026-07-13 |
-| 设计状态 | 完整书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](2026-07-13-m4-task7-catalog-resource-identity-amendment.md) 与 [Task 8 Canonical Fingerprint/Runtime Identity](2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订均已于 2026-07-13 获明确或授权默认批准；修订在各自取代范围内优先 |
-| 实现状态 | 18/18 已设计，15/18 production plugins 已实现；原 M4 实施计划已被轻量修订取代；replacement Task 0–28 已完成，M4-B framework 与 M4-C/M4-D/M4-E stage gates 已关闭，O1–O12/H1–H3 plugins、共享 primitives 与三个 reference providers 已落地且相关 capability/provider 均为 `available`；下一步为 Task 29 H4；M4 整体尚未 engineering verified |
+| 设计状态 | 本文件保留 2026-07-13 固定 reference-plugin 设计与 Task 0–28 的历史/已实现合同；自 2026-07-15 起，普通算法编辑、完成门和后续路线以 [Expert-Editable Evidence and Assessment Model Design](2026-07-15-expert-editable-evidence-and-model-design.md) 与 D-031–D-035 为准 |
+| 实现状态 | 旧路线 Task 0–28 已完成，O1–O12/H1–H3 共 15 个 whole-Anchor plugins 与三个 providers 已实现；Task 29–36 已暂停且不再授权执行。当前进入 M4R EvidenceRecipe/operator 重基线，尚未开始实现 |
 | 上游 | M1 Session integrity + M2 Ingestion readiness + M3 native-rate synchronization |
 | 下游 | M5 ModelBundle/BN/CPT/inference；M6 formal run/persistence |
 | 正式运行授权 | `formal_run_authorized=false` |
+
+## 0. 当前权威边界（2026-07-15）
+
+本文件中的 18 个公式、阈值、plugin identities 和 §14–§15 completion gates 继续说明旧 starter template 如何被设计和实现，但不再定义产品今后的可编辑算法架构。当前权威规则是：
+
+- O1–O13、H1–H5 是可修改、可复制、可停用和可替换的 starter templates；
+- EvidenceRecipe/typed operator graph 是前端显示与后端执行的唯一普通算法来源；
+- ordinary expert edit 不发布 whole-Anchor Python plugin，也不运行 per-edit pytest/build/golden；
+- current primitives 迁移为 reusable operators，现有 15 个 plugins 保留为 legacy/replay implementation；
+- H4/H5/O13 直接走新 recipe/operator 路线；
+- replacement plan Task 29–36 不再提供执行授权；
+- M1–M3、AnchorResult v0.2、no-quality-gate、calculation statuses、trace/artifact 和 poor-performance-is-evidence 边界继续有效。
+
+本文件后文若与 2026-07-15 规格冲突，以新规格为准；不冲突部分继续作为现有代码和 starter-template 迁移资料。
 
 ## 1. 目标
 
@@ -840,7 +854,7 @@ Replacement implementation plan 必须给出并实测：
 
 Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verification.m4_smoke --fixture <bundle>`，内部只调用公开 `pilot_assessment.anchors.api.evaluate(request, sink)`。Wheel 必须包含 v0.2 contracts/schemas、registry、18 plugin factories、parameter schemas 和 smoke runner；它复用同一个 10 秒 bundle，不生成第二套 full fixture。90 秒 full-rate bundle 不属于默认命令或 engineering-verification 门。
 
-## 15. M4-A 至 M4-G 完成门
+## 15. M4-A 至 M4-G 历史完成门（已由 M4R 重基线取代）
 
 | 阶段 | 范围 | 可声称状态 |
 |---|---|---|
@@ -852,11 +866,11 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 | M4-F | H4、H5、O13 | 18/18 individual plugins software-verified |
 | M4-G | lightweight exact-18 workflows、唯一 10 秒 bundle E2E、extension、determinism、wheel、docs/handoff | M4 engineering-verified |
 
-任何阶段都不能用 session calculation status 掩盖尚未实现的 capability。只有 M4-G 的新鲜实测证据完成后才能修改产品状态为 M4 engineering-verified。
+该表记录旧 fixed-plugin 路线，不再是当前 M4R Definition of Done。Task 0–28 的完成事实保留；M4-F/M4-G 不继续执行。当前完成条件见 2026-07-15 专家可编辑系统规格及后续新 M4R plan。
 
 ## 16. Documentation migration
 
-本节首先保留原 M4 规格在批准前执行 candidate alignment 的历史记录；当时只涉及 D-021–D-025，且不构成实现。2026-07-13 后续获批的轻量工作流验证修订又触发了第二次迁移：D-026/D-027、§1.1、§14.2–§14.4、§15/§17 和当前状态文档以轻量口径为准，原实施计划被取代；replacement plan 随后于同日单独获批。Task 3 Reference Candidate Binding 修订构成第三次定向迁移：D-028 与 replacement Tasks 3/4/8/13/32/34/35 以该修订为准。用户休息期间按明确授权形成并经两路独立 P0/P1 复核通过的 Task 7/8 amendments 构成第四次机器身份收口：D-029/D-030、catalog/resource/scorer/profile bytes 与 canonical/runtime identity 以它们为准，不改公式、阈值、golden 或里程碑 ownership。Task 0–28 已完成，M4-B framework 与 M4-C/M4-D/M4-E stage gates 已关闭，O1–O12/H1–H3 capability、共享 primitives 与三个 providers 均为 `available`，下一步为 Task 29 H4。
+本节首先保留原 M4 规格在批准前执行 candidate alignment 的历史记录；当时只涉及 D-021–D-025，且不构成实现。2026-07-13 后续获批的轻量工作流验证修订又触发了第二次迁移：D-026/D-027、§1.1、§14.2–§14.4、§15/§17 和当时状态文档以轻量口径为准，原实施计划被取代；replacement plan 随后于同日单独获批。Task 3 Reference Candidate Binding 修订构成第三次定向迁移。Task 7/8 amendments 构成第四次机器身份收口。Task 0–28 已完成，O1–O12/H1–H3、共享 primitives 与三个 providers 已落地。2026-07-15 的第五次迁移由 D-031–D-035 与专家可编辑系统规格完成：Task 29–36 停止，固定 18-plugin completion gate 改为 EvidenceRecipe/operator 平台完成门。
 
 本轮 candidate alignment 覆盖：
 
@@ -887,4 +901,4 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 9. M4/M5/M6 ownership 与 coverage 公式不冲突；
 10. Git commit 只声称 design/documentation，不声称 M4 implemented。
 
-原书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity](2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订与 [replacement plan](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准，D-026–D-030 已接受。原 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 虽曾获批准，但其四套 90 秒 fixture 路线已被本修订取代，不再提供执行授权。Replacement Task 0–28 已完成，M4-B framework 与 M4-C/M4-D/M4-E stage gates 已关闭，O1–O12/H1–H3 capability、共享 primitives 与三个 providers 均为 `available`，下一步为 Task 29 H4；M4 当前保持 18/18 specified、15/18 production plugins implemented，在 M4-G 完成门通过前不得声称 M4 整体已 engineering verified。
+原书面规格与 amendments 继续解释 Task 0–28。Replacement Task 0–28 已完成，O1–O12/H1–H3 与三个 providers 均存在；但自 2026-07-15 起不再以补齐 exact-18 whole-Anchor plugins 或 M4-G heavy completion gate 为下一步。当前真实状态是：旧 M4 15/18 plugins implemented；M4R EvidenceRecipe/operator architecture approved、consolidated spec awaiting final review、implementation not started；M4 overall not complete；`formal_run_authorized=false`。

@@ -5,6 +5,8 @@
 **Applies to:** M4 replacement plan Task 8 and the canonical-identity consumers in Tasks 9, 11, 13, 32, 34, and 35  
 **Precedence:** This document closes representation and runtime-identity details left open by the approved M4 design, Task 3 amendment, and replacement plan. It changes no anchor formula, threshold, golden value, topology, scientific status, or M4/M5/M6 boundary.
 
+> **2026-07-15 authority note:** Canonical-byte and replay identities remain valid for legacy Task 8 resources. The current M4R completion/extension architecture is [Expert-Editable Evidence and Assessment Model Design](2026-07-15-expert-editable-evidence-and-model-design.md); new recipe/operator identities will be specified thereunder.
+
 ## 1. Problems being closed
 
 Task 8 already owns RFC 8785 typed hashes and installed numeric-runtime identity. Seven details must be exact before implementation:

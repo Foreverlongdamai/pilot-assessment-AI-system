@@ -211,3 +211,38 @@
 - 决策：M4 typed identity 使用 RFC 8785 JCS、固定 NUL/uint64 framing 和 `[-(2^53-1), 2^53-1]` safe-integer domain；logical table 以完整 descriptor、声明字段顺序、已严格排序的 row arrays 和逻辑值计算，与 storage path/bytes 分离。Scorer policy 使用 `scorer-policy/0.1.0`，algorithm-profile parameters 复用 `parameter-snapshot/0.1.0`。自 fingerprint 字段只从自身 projection 排除，并由命名 trust boundary 重算拒绝 stale claim。Python identity 优先 `SOABI`，仅 Windows 缺失时严格解析 `EXT_SUFFIX`；numeric distribution identity 验证 wheel `RECORD` 中稳定成员的声明与实际 SHA-256/size，并排除安装根相关 launcher/mutable metadata。
 - 理由：同一逻辑 session/plan/result 必须跨 TEMP、venv 根和进程产生同一 identity，同时必须让任一真正的 schema、参数、算法、输入、依赖或结果变化改变下游 identity。路径、压缩或自报 hash 不应制造伪差异或自证循环。
 - 影响：[Task 8 amendment](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 是 Task 8/9/11/13/32/34/35 的字节与验证 ownership 权威；Task 8 只在 catalog/runtime/artifact 三个自有边界声明 mismatch rejection，后续 owner 的拒绝测试不得被提前冒充完成。修改 type ID、payload、整数域、ABI precedence、logical ordering 或 RECORD inclusion rule 必须发布新 identity version 或正式 amendment。
+
+## D-031：产品首先是专家可自由设计评估模型的工具
+
+- 状态：已接受
+- 决策：O1–O13、H1–H5、11 个 sub-skill、4 个 competency、默认阈值、CPT 和连接均为 starter templates，不是产品不可修改的科学标准。系统的核心交付是让领域专家可视化增删改 Evidence、计算方法、BN 节点/边/state/CPT，并将修改直接用于后续评估。
+- 理由：当前方法由非领域专家为打通软件框架而提出，科学合理性、证据设计和能力映射必须由后续专家研究与修改。把 provisional model 当作固定产品会偏离项目目标。
+- 影响：通用 engine 不得要求 exact-18；expert model cardinality 可变。Starter template 保留用于演示和起步，但其软件测试不构成科学有效性声明。D-015 继续描述历史 `reference-model-v0.1` 模板，不再限制新 expert model 的结构。
+
+## D-032：EvidenceRecipe 是前端显示和后端执行的唯一计算方法来源
+
+- 状态：已接受
+- 决策：每个 Anchor 使用 typed Evidence Computation Graph/EvidenceRecipe 声明 inputs、operator nodes/edges、parameters、outputs、aggregation、scorer、documentation 和 UI metadata。前端根据该对象生成计算图与表单，后端通用执行器直接执行同一对象。不得在前端和 Anchor-specific Python 中维护两份计算逻辑。
+- 理由：只有一份 canonical recipe 才能保证专家看到、修改和真正运行的是同一算法，并使普通修改无需开发人员介入。
+- 影响：当前 primitives 迁移为通用 operators；whole-Anchor plugin 仅保留 legacy/replay 路线。H4/H5/O13 不再按旧固定插件任务实现。D-023 中“公式变化必须发布新 whole-Anchor plugin version”的影响说明被本决策取代；只有增加 operator library 尚不具备的新能力时才需要新 trusted operator plugin。
+
+## D-033：专家修改自动保存草稿，一键应用到后续评估
+
+- 状态：已接受
+- 决策：模型修改自动保存到可撤销 draft；incomplete draft 可以继续编辑。用户点击“应用到后续评估”后，后端只做最小技术可运行检查，通过即创建 immutable applied revision 并供后续新 run 使用。正在运行和历史 run 不改变。Apply 不要求人工审批、pytest、build、wheel 或科学验证。
+- 理由：版本与历史的作用是撤销、比较和重放，不应变成专家修改参数、公式或网络的阻力。
+- 影响：technical validation 只覆盖 schema、dangling reference、DAG、operator/type/unit/parameter、safe formula、output 和 CPT 可执行性。未校准、无文献支持或偏离 starter template 只显示 metadata/warning，不阻止保存或 apply。
+
+## D-034：严格测试属于平台与新算子，不属于每次专家模型修改
+
+- 状态：已接受
+- 决策：built-in operators、recipe compiler/executor、draft/revision/replay、BN inference、protocol 和 frontend/backend contract 需要工程测试；新 operator plugin 需要 focused implementation test。专家使用已有 operators 修改参数、公式、连接、Anchor inventory 或 CPT 时不生成或运行新的工程测试。
+- 理由：工程测试可以证明平台按 recipe 执行，不能证明 provisional evidence 或 BN 科学正确。要求每次专家修改重新走固定算法 golden 会抵消 free-to-modify 目标。
+- 影响：D-025/D-026/D-027 对旧固定 18-plugin M4 completion gate 的要求保留为历史设计与已完成任务证据，但不再定义 M4R 完成条件。Starter templates 只需轻量 executable/trace smoke；用户编辑通过 continuous technical validation 和可选 preview 获得即时反馈。
+
+## D-035：M4 及后续里程碑按专家设计系统重基线
+
+- 状态：已接受
+- 决策：旧 replacement plan Task 29–36 暂停且不再授权执行。M4R 交付 EvidenceRecipe/operator foundation 与 starter migration；M5 交付 linked Evidence/BN model workspace、revision 和 inference；M6 交付 local runtime/persistence/protocol；M7 交付 WinUI expert designer；M8 交付 integration、packaging 和 handoff。
+- 理由：继续补完三个固定 AnchorPlugin 会扩大错误路线。Evidence engine、model workspace、runtime 和 Windows UI 又是不同子系统，应分别形成可执行规格和计划。
+- 影响：Task 0–28、15 个现有插件和测试保留为历史实现事实与迁移来源，不回滚或删除。新 M4R 计划必须在 [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md) 复核后编写，M5–M8 分别建立正式 spec/plan。

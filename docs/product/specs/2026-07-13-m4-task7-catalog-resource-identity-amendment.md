@@ -5,6 +5,8 @@
 **Applies to:** M4 replacement plan Task 7 and the catalog/resource inputs consumed by Tasks 8, 9, 11, 13, and 14–31  
 **Precedence:** This document narrows machine identities left open by the approved M4 design and replacement plan. It does not change an anchor formula, threshold, golden value, topology level, M4/M5/M6 ownership, or scientific status.
 
+> **2026-07-15 authority note:** This remains authoritative only for the legacy Task 7 catalog/resources and historical replay identity. The exact-18/whole-Anchor extension route is superseded by [Expert-Editable Evidence and Assessment Model Design](2026-07-15-expert-editable-evidence-and-model-design.md); M4R uses recipe and operator catalogs.
+
 ## 1. Problem being closed
 
 The approved M4 design freezes the 18 algorithms and describes their principal artifacts in domain language. The strict Task 4 contracts require more exact information before Task 7 can create a valid `AnchorCatalog`:

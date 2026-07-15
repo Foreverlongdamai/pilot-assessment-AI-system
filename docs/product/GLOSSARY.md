@@ -4,7 +4,12 @@
 |---|---|
 | Assessment Core | 执行 session 载入、同步、anchor 计算、evidence 转换、BN 推理和结果构建的 Python 核心。 |
 | Anchor / Evidence anchor | 从原始或派生数据计算的可解释指标，例如 O2 Peak Tracking Excursion。 |
-| AnchorPlugin | 实现某个 anchor 算法、参数 schema、输入／依赖声明、measurement 与 artifact 合同的受控后端插件；不包含原始数据质量 admission gate。 |
+| Starter template | 随产品提供、用于演示和起步的 Anchor/EvidenceRecipe/BN；可复制、修改、停用、删除或替换，不表示科学正确，也不限制通用引擎的节点数量。 |
+| EvidenceRecipe | 前端显示、后端保存和运行时执行某个 Anchor 计算方法的唯一 canonical object；包含 bindings、typed operator graph、outputs、scoring、documentation 与 UI metadata。 |
+| Evidence Computation Graph | EvidenceRecipe 内把 session stream/semantic/reference 通过可复用算子转换成 AnchorMeasurement/AnchorResult 的有向无环图。 |
+| Operator / OperatorDefinition | 可复用计算积木及其机器合同；声明 typed input/output ports、unit/cardinality/time semantics、parameter schema、UI metadata 和 implementation identity，不等于一个完整 Anchor。 |
+| Trusted operator plugin | 当现有 operator library 无法表达一种全新计算能力时，由开发者安装的受控扩展；它提供可复用 operators，不要求每个新 Anchor 都发布 Python plugin。 |
+| AnchorPlugin | Task 0–28 已实现的 legacy whole-Anchor 插件合同；用于旧 revision replay、迁移比较和参考实现。新 Anchor 的默认扩展方式已改为 EvidenceRecipe + operators。 |
 | AnchorCatalog | 某 model profile 的版本化 anchor inventory、definition、lifecycle 与 canonical order；generic M4 engine 不固定其数量。 |
 | AnchorLifecycle | Anchor catalog definition 的 `active/deprecated/retired` 状态；M4 可执行 plan 只允许 `active` entry。 |
 | AnchorExecutionPlan | M5 根据 exact model/session snapshot 编译、M4 消费的冻结计划；锁定 plugin、参数、core-stream input-table contracts、typed dependencies、grid/window、scorer 和 artifact recipe。 |
@@ -66,15 +71,18 @@
 | CPT | Conditional Probability Table，节点在给定 parent state 下的条件概率表。 |
 | Virtual evidence | M5 用显式、版本化 soft scorer 或 dependence-strength mixing 表达的 likelihood observation；不得因所谓原始数据质量向均匀分布收缩。 |
 | Model bundle | anchor catalog、任务 profile、图、CPT、schema、版本和 provenance 的可发布模型包。 |
-| Draft | 可编辑、尚未用于正式运行的模型工作副本。 |
-| Published revision | 验证并发布后不可变的模型版本。 |
+| Autosaved draft | 专家正在编辑的模型工作副本；每个用户意图自动保存，允许 incomplete/invalid，并支持 undo/redo 和 preview。 |
+| Draft | `Autosaved draft` 的简称；尚未成为后续新 run 的默认模型。 |
+| Applied revision | 用户点击“应用到后续评估”并通过最小技术可运行校验后形成的不可变模型版本；不表示科学审批或软件发布。 |
+| Published revision | 旧文档/UI 术语；在当前产品中统一解释为 `Applied revision`，不得附加人工审批、golden 或 per-edit test 语义。 |
+| Technical validation | 只检查 schema、引用、DAG、operator/type/unit/parameter、formula/scorer 与 BN CPT 是否可执行；不判断算法、Anchor mapping 或 CPT 是否科学合理。 |
 | graph_version | 草稿内整个 semantic model（node、edge、state、CPT、binding、anchor parameters、profile）每次原子修改后递增的乐观并发版本。 |
 | layout_version | 仅版本化节点位置等显示布局；变化不影响 graph_version 或 scientific model hash。 |
-| draft_validation_state | draft_incomplete、draft_invalid、draft_runnable 或 draft_publishable，表示草稿完整性与可运行性。 |
-| revision_lifecycle | published、archived 或 superseded，表示不可变 model revision 的生命周期。 |
+| draft_validation_state | `draft_incomplete`、`draft_invalid` 或 `draft_executable`，表示草稿技术完整性与可运行性；任何状态都可 autosave。 |
+| revision_lifecycle | `applied`、`archived` 或 `superseded`，表示不可变 model revision 的生命周期。 |
 | observation_mode | M5 的 hard、virtual 或 omitted 绑定方式，表示某条 AnchorResult 如何进入 BN；M4 不按技术诊断把 computed evidence 改为 omitted。 |
 | ready / ready_partial / blocked (M4) | `ready` 表示所有适用 anchor 均 computed；`ready_partial` 表示 inventory 完整但有 missing/config/dependency/error；`blocked` 只表示有效 request 之后的 plan/registry/DAG/global inventory/atomic commit 失败。pre-request rejection 不生成 M4 disposition/report。 |
-| plugin_unavailable / not_implemented / not_attempted | M4 capability/plan/report inventory 状态，不是 AnchorResult calculation status。缺 required plugin 会阻断 reference plan；blocked report 只列 inventory，不伪造结果。 |
+| plugin_unavailable / not_implemented / not_attempted | 旧 M4 whole-Anchor plugin capability/plan/report inventory 状态，不是 AnchorResult calculation status。M4R 对新 recipe 使用 `operator_unavailable`；两者都不得伪造 session result。 |
 | DerivedArtifactSink | M4 通过依赖注入写入 typed、content-addressed 临时派生产物的 port；M6 才拥有正式 managed artifact root 和持久化生命周期。 |
 | revision_id | 标识不可变发布模型或其父版本的稳定 ID。 |
 | Sidecar | 由 Windows 前端启动和管理的本地 Python 后端进程。 |

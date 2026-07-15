@@ -6,10 +6,12 @@
 | 日期 | 2026-07-13 |
 | 方向状态 | 用户已确认并批准采用轻量测试方向 |
 | 书面状态 | 已于 2026-07-13 获用户批准并生效 |
-| 实现状态 | Replacement Task 0–28 已完成；M4-C/M4-D/M4-E stage gates 已关闭；O1–O12/H1–H3 capability、共享 primitives 与三个 reference providers 均为 `available`，下一步为 Task 29 H4；18/18 specified、15/18 production plugins implemented；M4 整体尚未 engineering verified |
+| 实现状态 | 历史 Task 0–28 已完成。自 2026-07-15 起，本修订不再定义 M4R completion gate；Task 29–36 已停止，当前 M4R architecture approved、consolidated spec awaiting final review、implementation not started |
 | 取代范围 | 立即取代 M4 主规格 §1.1 的完整 fixture 表述、§14.2–§14.4 的“四套 90 秒 full bundle + frozen full-workflow oracle”要求、§15 的 M4-G full-fixture 口径及 §17 的原计划执行授权；replacement plan 已于 2026-07-13 单独批准 |
 | 不变范围 | 18 个 anchor、AnchorResult v0.2、DAG、算法、阈值、状态语义、no-quality-gate、M1/M2/M3 已发布合同 |
 | 科学状态 | 所有 synthetic 数据继续为 `not_supported`，只验证软件工作流 |
+
+> **当前权威：** 本文只保留旧 fixed-plugin 路线为何采用轻量 fixture 的历史。普通 expert recipe 不再要求 per-anchor golden 或 exact-18 workflow；新完成门见 [Expert-Editable Evidence and Assessment Model Design](2026-07-15-expert-editable-evidence-and-model-design.md)。
 
 ## 1. 修订原因
 
