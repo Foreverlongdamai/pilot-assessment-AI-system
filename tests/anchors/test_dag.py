@@ -341,6 +341,38 @@ def test_catalog_required_inputs_are_adapted_to_definition_canonical_order() -> 
     assert set(_canonical_catalog_required_inputs(o1.required_inputs)) == set(o1.required_inputs)
 
 
+def test_temporal_recipe_input_contract_projection_must_match_the_plan() -> None:
+    from pilot_assessment.anchors.dag import validate_execution_plan
+
+    base = _entry("O1", 0)
+    plan = _plan((base,))
+    contract = plan.input_table_contracts[0]
+    bound = base.model_copy(
+        update={
+            "temporal_recipe": {
+                "scope": "phase",
+                "input_table_contracts": [contract.model_dump(mode="json")],
+            }
+        }
+    )
+    matching = plan.model_copy(update={"entries": (bound,)})
+    assert validate_execution_plan(matching, _registry((bound,))).disposition == "valid"
+
+    changed = contract.model_copy(update={"coordinate_frame_id": "different-frame"})
+    divergent = bound.model_copy(
+        update={
+            "temporal_recipe": {
+                "scope": "phase",
+                "input_table_contracts": [changed.model_dump(mode="json")],
+            }
+        }
+    )
+    outcome = validate_execution_plan(
+        plan.model_copy(update={"entries": (divergent,)}), _registry((divergent,))
+    )
+    assert "anchor.plan.input_contract_projection_mismatch" in _codes(outcome)
+
+
 def test_plan_validation_blocks_duplicate_missing_cycle_and_schema_tamper() -> None:
     from pilot_assessment.anchors.dag import validate_execution_plan
 

@@ -86,6 +86,7 @@ _FRAMEWORK_MODULE_PREFIXES = (
     "pilot_assessment.anchors.catalog",
     "pilot_assessment.anchors.registry",
     "pilot_assessment.anchors.reference_resolution",
+    "pilot_assessment.anchors.temporal",
     "pilot_assessment.synchronization",
 )
 _CLOSURE_MEMBER_PREFIXES = (_PLUGIN_NAMESPACE, _PREPROCESSING_NAMESPACE)

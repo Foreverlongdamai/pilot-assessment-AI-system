@@ -45,6 +45,7 @@ from pilot_assessment.contracts.anchor_execution import (
     AnchorPluginDefinition,
     DependencyKind,
     PreprocessingProviderDefinition,
+    ResolvedInputTableContract,
     ResolvedPreprocessingRecipe,
     ResolvedReferenceSetSnapshot,
     SemanticApplicabilityStatus,
@@ -405,6 +406,42 @@ def _validate_provider_graph(plan: AnchorExecutionPlan) -> None:
     )
 
 
+def _validate_entry_input_contract_projections(plan: AnchorExecutionPlan) -> None:
+    """Bind any plugin-visible contract copy to the authoritative plan projection."""
+
+    for entry in plan.entries:
+        raw_contracts = entry.temporal_recipe.get("input_table_contracts")
+        if raw_contracts is None:
+            continue
+        if isinstance(raw_contracts, (str, bytes)) or not isinstance(raw_contracts, (tuple, list)):
+            _block(
+                "anchor.plan.input_contract_projection_mismatch",
+                f"plugin contract projection is malformed for {entry.anchor_id}",
+                anchor_id=entry.anchor_id,
+            )
+        try:
+            projected = tuple(
+                ResolvedInputTableContract.model_validate(item) for item in raw_contracts
+            )
+        except (TypeError, ValueError) as error:
+            _block(
+                "anchor.plan.input_contract_projection_mismatch",
+                f"plugin contract projection is invalid for {entry.anchor_id}: {error}",
+                anchor_id=entry.anchor_id,
+            )
+        expected = tuple(
+            contract
+            for contract in plan.input_table_contracts
+            if contract.modality in entry.required_streams
+        )
+        if projected != expected:
+            _block(
+                "anchor.plan.input_contract_projection_mismatch",
+                f"plugin contract projection differs from the plan for {entry.anchor_id}",
+                anchor_id=entry.anchor_id,
+            )
+
+
 def _canonical_catalog_required_inputs(values: tuple[str, ...]) -> tuple[str, ...]:
     """Adapt catalog grouping to the canonical plugin-definition projection order.
 
@@ -596,6 +633,7 @@ def validate_execution_plan(
         levels = topological_levels(plan.entries)
         _validate_dependency_contracts(plan)
         _validate_provider_graph(plan)
+        _validate_entry_input_contract_projections(plan)
         for entry in entries.values():
             _validate_parameter_object(
                 entry.parameter_schema_id,

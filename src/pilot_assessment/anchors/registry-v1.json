@@ -1,6 +1,62 @@
 {
   "contract_id": "anchor-runtime-registry",
   "contract_version": "0.1.0",
-  "entries": [],
+  "entries": [
+    {
+      "anchor_id": "O1",
+      "definition_version": "0.1.0",
+      "plugin_id": "o1-phase-state-precision",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.o1_phase_state_precision",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "a008684b2603b15aa3159264906395823338b1837c0aac5ec61a3fc1b3c04705",
+      "parameter_schema_id": "o1-parameters-0.1",
+      "parameter_schema_sha256": "f633b20ef02553b62ad4ecf3e7c4f086a15bf7e2372471044bb9debafe3facb2",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "desired-envelope-mask-v0.1": "e1d56a73cab3878a168c748fd5512195d3d3e67d7ede430f9e63e9ce97f77387"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/o1_phase_state_precision.py",
+          "content_sha256": "2ba4ec7959726fb74c2f6d227b57919563804ddb5ac6ba76d01b8839d5d1c8d6"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/__init__.py",
+          "content_sha256": "147e200d2cd9ce9ca3e0dee70a1ed5e769d0e18526eb5a54b69c28fffd720cb6"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/envelopes.py",
+          "content_sha256": "154055a73328d2aa2bb015851b482940e93371a7e3016957eb8c500d937e5289"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/models.py",
+          "content_sha256": "6428251079a39d1b63269825804a865b0f8a817639e603ae1b7f772420fcf22d"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "36be1bf1d8409ab74d805a3eadb26c58b75ca898c2a8e780df5ced02a2a8ef23"
+    }
+  ],
   "preprocessors": []
 }

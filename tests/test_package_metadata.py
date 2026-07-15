@@ -114,13 +114,13 @@ def test_m4_reference_catalog_parameter_schemas_and_empty_registry_are_packaged(
         assert parameter_package.joinpath(name).read_bytes()
 
 
-def test_m4_packaged_registry_is_a_loadable_empty_trusted_registry() -> None:
+def test_m4_packaged_registry_is_loadable_with_only_o1_implemented() -> None:
     raw = files("pilot_assessment.anchors").joinpath("registry-v1.json").read_bytes()
     model = AnchorRuntimeRegistry.model_validate_json(raw)
 
     assert model.contract_id == "anchor-runtime-registry"
     assert model.contract_version == "0.1.0"
-    assert model.entries == ()
+    assert tuple(entry.anchor_id for entry in model.entries) == ("O1",)
     assert model.preprocessors == ()
 
     # The trusted loader accepts the packaged resource and produces a stable fingerprint.

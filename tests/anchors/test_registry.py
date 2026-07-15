@@ -52,18 +52,23 @@ def provider_entry(
 
 
 # --------------------------------------------------------------------------- #
-# Empty packaged registry honesty (plan Step 3)
+# Packaged registry capability honesty
 # --------------------------------------------------------------------------- #
 
 
-def test_empty_packaged_registry_reports_every_reference_capability_not_implemented() -> None:
+def test_packaged_registry_has_o1_and_reports_remaining_not_implemented() -> None:
     catalog = load_packaged_catalog()
     packaged = registry.load_packaged_registry()
 
     for entry in catalog.entries:
         capability = packaged.capability(entry.plugin_id, entry.plugin_version)
-        assert capability.status is AnchorCapabilityStatus.NOT_IMPLEMENTED
-        assert capability.entry is None
+        if entry.anchor_id == "O1":
+            assert capability.status is AnchorCapabilityStatus.AVAILABLE
+            assert capability.entry is not None
+            assert capability.entry.anchor_id == "O1"
+        else:
+            assert capability.status is AnchorCapabilityStatus.NOT_IMPLEMENTED
+            assert capability.entry is None
         assert capability.diagnostics == ()
 
     assert len(catalog.entries) == 18
@@ -77,7 +82,10 @@ def test_empty_packaged_registry_reports_every_reference_capability_not_implemen
 
 def test_packaged_registry_fingerprint_binds_the_canonical_model() -> None:
     fingerprint = registry.packaged_registry_fingerprint()
-    model = AnchorRuntimeRegistry(entries=(), preprocessors=())
+    model = registry._load_registry_model()
+    assert len(model.entries) == 1
+    assert model.entries[0].anchor_id == "O1"
+    assert model.preprocessors == ()
     assert fingerprint == runtime_registry_fingerprint(model)
     assert fingerprint == registry.packaged_registry_fingerprint()
 
@@ -302,6 +310,20 @@ def test_static_closure_collects_helper_member(
     }
 
 
+def test_o1_static_closure_includes_only_its_shared_scientific_primitives() -> None:
+    closure = registry._static_import_closure(
+        "pilot_assessment.anchors.plugins.o1_phase_state_precision"
+    )
+
+    assert tuple(member.package_relative_path for member in closure.members) == (
+        "pilot_assessment/anchors/plugins/o1_phase_state_precision.py",
+        "pilot_assessment/anchors/primitives/__init__.py",
+        "pilot_assessment/anchors/primitives/envelopes.py",
+        "pilot_assessment/anchors/primitives/models.py",
+    )
+    assert closure.numeric_distribution_names == ("polars",)
+
+
 def test_static_closure_rejects_dynamic_import(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -462,7 +484,7 @@ def _empty_registry_file(tmp_path: Path) -> Path:
     return path
 
 
-def test_cli_verify_reports_fingerprint_for_empty_registry(
+def test_cli_verify_reports_fingerprint_for_packaged_registry(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     return_code = registry.main(["verify"])

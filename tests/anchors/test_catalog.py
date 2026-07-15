@@ -1330,16 +1330,16 @@ def test_parameter_loader_rejects_structural_byte_corruption(
         api.load_parameter_schema_bytes(schema_id)
 
 
-def test_registry_resource_is_honestly_empty() -> None:
+def test_registry_resource_honestly_declares_only_o1() -> None:
     raw = files("pilot_assessment.anchors").joinpath("registry-v1.json").read_bytes()
-    assert json.loads(raw) == {
-        "contract_id": "anchor-runtime-registry",
-        "contract_version": "0.1.0",
-        "entries": [],
-        "preprocessors": [],
-    }
+    document = json.loads(raw)
+    assert document["contract_id"] == "anchor-runtime-registry"
+    assert document["contract_version"] == "0.1.0"
+    assert [entry["anchor_id"] for entry in document["entries"]] == ["O1"]
+    assert document["preprocessors"] == []
     registry = AnchorRuntimeRegistry.model_validate_json(raw)
-    assert registry.entries == () and registry.preprocessors == ()
+    assert tuple(entry.anchor_id for entry in registry.entries) == ("O1",)
+    assert registry.preprocessors == ()
 
 
 def test_loaded_parameter_schema_is_recursively_immutable() -> None:
