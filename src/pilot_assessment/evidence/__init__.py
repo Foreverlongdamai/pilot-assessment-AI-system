@@ -1,5 +1,12 @@
 """Expert-editable evidence computation foundation."""
 
+from pilot_assessment.evidence.catalog import (
+    EvidenceRecipeCatalog,
+    RecipeCatalogError,
+    RecipeCatalogLookupError,
+    StarterRecipeSource,
+    load_packaged_starter_catalog,
+)
 from pilot_assessment.evidence.compiler import (
     CompiledRecipe,
     RecipeCompilationError,
@@ -41,6 +48,7 @@ __all__ = [
     "AppliedRecipeRevision",
     "CompiledRecipe",
     "DraftRevisionConflictError",
+    "EvidenceRecipeCatalog",
     "EvidenceRecipeService",
     "InMemoryRecipeRepository",
     "NodeExecutionTrace",
@@ -50,6 +58,8 @@ __all__ = [
     "OperatorRegistryError",
     "RecipeCompilationError",
     "RecipeApplyError",
+    "RecipeCatalogError",
+    "RecipeCatalogLookupError",
     "RecipeDiagnostic",
     "RecipeDiagnosticSeverity",
     "RecipeExecutionError",
@@ -60,7 +70,9 @@ __all__ = [
     "RecipeServiceDiagnostic",
     "RecipeValidationDisposition",
     "RecipeValidationOutcome",
+    "StarterRecipeSource",
     "compile_recipe",
     "execute_recipe",
+    "load_packaged_starter_catalog",
     "validate_recipe",
 ]

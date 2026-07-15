@@ -1,0 +1,229 @@
+{
+  "anchor": {
+    "anchor_id": "H1",
+    "description": "Editable initial computation template. Experts may change, replace, disable or clone every node and parameter.",
+    "lifecycle": "active",
+    "name": "AOI dwell",
+    "scientific_status": "starter_template"
+  },
+  "contract_id": "evidence-recipe",
+  "contract_version": "0.1.0",
+  "documentation": {
+    "assumptions": [
+      "Finite poor-performance values remain evidence and are not quality-filtered.",
+      "Bindings use normalized ideal interfaces and may be adapted to final exports."
+    ],
+    "parameter_notes": {},
+    "references": [
+      "legacy-reference-plugin:h1-aoi-dwell@0.1.0",
+      "legacy-parameter-resource:h1-parameters-0.1"
+    ],
+    "summary": "Engineering starter only; this recipe and every default parameter remain open to expert replacement."
+  },
+  "graph": {
+    "edges": [
+      {
+        "edge_id": "e-000-gaze-frames-input-gaze-aoi",
+        "source": {
+          "node_id": "gaze-frames-input",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "gaze-aoi",
+          "port_id": "frames"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-001-gaze-aoi-expected-aoi",
+        "source": {
+          "node_id": "gaze-aoi",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "expected-aoi",
+          "port_id": "intervals"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-002-expected-aoi-aoi-duration",
+        "source": {
+          "node_id": "expected-aoi",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "aoi-duration",
+          "port_id": "intervals"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-003-aoi-duration-dwell-ratio",
+        "source": {
+          "node_id": "aoi-duration",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "dwell-ratio",
+          "port_id": "numerator"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-004-session-duration-s-input-dwell-ratio",
+        "source": {
+          "node_id": "session-duration-s-input",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "dwell-ratio",
+          "port_id": "denominator"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-005-dwell-ratio-dwell-percent",
+        "source": {
+          "node_id": "dwell-ratio",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "dwell-percent",
+          "port_id": "variables"
+        },
+        "target_slot_id": "ratio"
+      }
+    ],
+    "nodes": [
+      {
+        "input_binding_id": "gaze-frames",
+        "node_id": "gaze-frames-input",
+        "operator_id": "input.binding",
+        "operator_version": "0.1.0",
+        "parameters": {}
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "gaze-aoi",
+        "operator_id": "gaze.aoi-intervals",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "merge_adjacent": true,
+          "mode": "assigned_label"
+        }
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "expected-aoi",
+        "operator_id": "gaze.aoi-filter",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "aoi_ids": [
+            "instrument"
+          ]
+        }
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "aoi-duration",
+        "operator_id": "statistics.duration",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "union_overlaps": true,
+          "unit": "seconds"
+        }
+      },
+      {
+        "input_binding_id": "session-duration-s",
+        "node_id": "session-duration-s-input",
+        "operator_id": "input.binding",
+        "operator_version": "0.1.0",
+        "parameters": {}
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "dwell-ratio",
+        "operator_id": "statistics.ratio",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "zero_denominator": "zero"
+        }
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "dwell-percent",
+        "operator_id": "composition.safe-formula",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "constants": {},
+          "formula": "ratio * 100"
+        }
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "binding_id": "gaze-frames",
+      "declared_type": {
+        "cardinality": "one",
+        "temporal_semantics": "interval",
+        "unit": null,
+        "value_type": "gaze_frame_collection"
+      },
+      "kind": "stream",
+      "name": "Gaze Frames",
+      "selector": {},
+      "source_id": "G.frames"
+    },
+    {
+      "binding_id": "session-duration-s",
+      "declared_type": {
+        "cardinality": "one",
+        "temporal_semantics": "timeless",
+        "unit": null,
+        "value_type": "number"
+      },
+      "kind": "semantic",
+      "name": "Session Duration S",
+      "selector": {},
+      "source_id": "session.duration-s"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "H1 primary value",
+      "output_id": "primary",
+      "role": "primary_value",
+      "source": {
+        "node_id": "dwell-percent",
+        "port_id": "value"
+      },
+      "unit": "percent"
+    }
+  ],
+  "recipe_id": "starter.h1",
+  "recipe_version": 1,
+  "scoring": {
+    "custom_operator_id": null,
+    "custom_operator_version": null,
+    "input": {
+      "node_id": "dwell-percent",
+      "port_id": "value"
+    },
+    "mode": "ordered_dau",
+    "parameters": {
+      "adequate_boundary": 70,
+      "desired_boundary": 85,
+      "direction": "higher_is_better",
+      "likelihood_strength": 0.9
+    }
+  },
+  "ui": {
+    "groups": [],
+    "preferred_layout": {
+      "generated": true,
+      "layout": "left-to-right"
+    }
+  }
+}

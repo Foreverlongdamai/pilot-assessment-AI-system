@@ -376,6 +376,38 @@ def named_select_definition() -> OperatorDefinition:
     )
 
 
+def correlation_definition() -> OperatorDefinition:
+    return _definition(
+        "statistics.correlation",
+        family=OperatorFamily.STATISTICS,
+        inputs=(
+            _number_port(
+                "left",
+                cardinality=PortCardinality.ONE,
+                value_type="signal_series",
+            ),
+            _number_port(
+                "right",
+                cardinality=PortCardinality.ONE,
+                value_type="signal_series",
+            ),
+        ),
+        parameter_schema={
+            "type": "object",
+            "properties": {
+                "absolute": {"type": "boolean"},
+                "degenerate": {"type": "string", "enum": ["zero", "error"]},
+            },
+            "required": ["absolute", "degenerate"],
+            "additionalProperties": False,
+        },
+        parameter_ui=(
+            _ui("/absolute", "Absolute correlation", ParameterControlKind.CHECKBOX),
+            _ui("/degenerate", "Degenerate series", ParameterControlKind.SELECT),
+        ),
+    )
+
+
 def _number(value: object, label: str) -> float:
     if isinstance(value, bool) or not isinstance(value, Real):
         raise StatisticsOperatorError(f"{label} must be numeric")
@@ -697,6 +729,57 @@ class NamedSelectOperator:
         return {"value": _number(typed_values[key], key)}
 
 
+class CorrelationOperator:
+    operator_id = "statistics.correlation"
+    implementation_version = _VERSION
+    implementation_ref = "builtin.statistics.correlation"
+
+    def execute(
+        self,
+        inputs: Mapping[str, object],
+        parameters: Mapping[str, JsonValue],
+        context: OperatorExecutionContext,
+    ) -> Mapping[str, object]:
+        del context
+        left = inputs.get("left")
+        right = inputs.get("right")
+        if not isinstance(left, SignalSeries) or not isinstance(right, SignalSeries):
+            raise StatisticsOperatorError("correlation inputs must be SignalSeries values")
+        right_by_time = {sample.t_ns: sample.value for sample in right.samples}
+        pairs = tuple(
+            (sample.value, right_by_time[sample.t_ns])
+            for sample in left.samples
+            if sample.t_ns in right_by_time
+        )
+        if len(pairs) < 2:
+            if parameters.get("degenerate") == "zero":
+                return {"value": 0.0}
+            raise StatisticsOperatorError("correlation requires two aligned samples")
+        left_values = [pair[0] for pair in pairs]
+        right_values = [pair[1] for pair in pairs]
+        left_mean = statistics.fmean(left_values)
+        right_mean = statistics.fmean(right_values)
+        numerator = math.fsum(
+            (left_value - left_mean) * (right_value - right_mean)
+            for left_value, right_value in pairs
+        )
+        left_scale = math.sqrt(
+            math.fsum((value - left_mean) ** 2 for value in left_values)
+        )
+        right_scale = math.sqrt(
+            math.fsum((value - right_mean) ** 2 for value in right_values)
+        )
+        if left_scale == 0.0 or right_scale == 0.0:
+            if parameters.get("degenerate") == "zero":
+                return {"value": 0.0}
+            raise StatisticsOperatorError("correlation variance is zero")
+        value = numerator / (left_scale * right_scale)
+        absolute = parameters.get("absolute")
+        if type(absolute) is not bool:
+            raise StatisticsOperatorError("absolute correlation must be boolean")
+        return {"value": abs(value) if absolute else value}
+
+
 def register_statistics_operators(registry: OperatorRegistry) -> None:
     registry.register(mean_definition(), MeanOperator())
     registry.register(sum_duration_definition(), SumDurationOperator())
@@ -710,11 +793,13 @@ def register_statistics_operators(registry: OperatorRegistry) -> None:
     registry.register(rate_definition(), RateOperator())
     registry.register(pooled_ratio_definition(), PooledRatioOperator())
     registry.register(named_select_definition(), NamedSelectOperator())
+    registry.register(correlation_definition(), CorrelationOperator())
 
 
 __all__ = [
     "EventAggregationOperator",
     "CountOperator",
+    "CorrelationOperator",
     "DurationOperator",
     "MeanOperator",
     "MedianOperator",

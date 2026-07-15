@@ -382,6 +382,38 @@ def recovery_definition() -> OperatorDefinition:
     )
 
 
+def latency_definition() -> OperatorDefinition:
+    return _definition(
+        "event.latency",
+        inputs=(
+            _port("triggers", "event_collection", TemporalSemantics.POINT),
+            _port("responses", "event_collection", TemporalSemantics.POINT),
+        ),
+        output_type="named_numbers",
+        output_temporal=TemporalSemantics.MIXED,
+        parameter_schema={
+            "type": "object",
+            "properties": {
+                "horizon_ns": {"type": "integer", "minimum": 1},
+                "no_match_policy": {"type": "string", "enum": ["horizon", "fixed"]},
+                "fixed_latency_s": {"type": "number", "minimum": 0.0},
+            },
+            "required": ["horizon_ns", "no_match_policy", "fixed_latency_s"],
+            "additionalProperties": False,
+        },
+        parameter_ui=(
+            _ui("/horizon_ns", "Response horizon", ParameterControlKind.NUMBER, unit="ns"),
+            _ui("/no_match_policy", "No-match value", ParameterControlKind.SELECT),
+            _ui(
+                "/fixed_latency_s",
+                "Fixed no-match latency",
+                ParameterControlKind.NUMBER,
+                unit="s",
+            ),
+        ),
+    )
+
+
 def _crossed(previous: float, current: float, threshold: float, direction: object) -> bool:
     rising = previous < threshold <= current
     falling = previous > threshold >= current
@@ -826,6 +858,42 @@ class RecoveryOperator:
         return {"value": MappingProxyType(values)}
 
 
+class LatencyOperator:
+    operator_id = "event.latency"
+    implementation_version = _VERSION
+    implementation_ref = "builtin.event.latency"
+
+    def execute(
+        self,
+        inputs: Mapping[str, object],
+        parameters: Mapping[str, JsonValue],
+        context: OperatorExecutionContext,
+    ) -> Mapping[str, object]:
+        del context
+        triggers = event_records(inputs.get("triggers"))
+        responses = event_records(inputs.get("responses"))
+        horizon = _strict_int(parameters.get("horizon_ns"), "horizon_ns", minimum=1)
+        policy = parameters.get("no_match_policy")
+        fixed = _finite(parameters.get("fixed_latency_s"), "fixed_latency_s", minimum=0.0)
+        values: dict[str, float] = {}
+        for trigger in triggers:
+            matching = tuple(
+                response
+                for response in responses
+                if trigger.t_ns <= response.t_ns <= trigger.t_ns + horizon
+            )
+            if matching:
+                latency = (matching[0].t_ns - trigger.t_ns) / _NS_PER_SECOND
+            elif policy == "horizon":
+                latency = horizon / _NS_PER_SECOND
+            elif policy == "fixed":
+                latency = fixed
+            else:
+                raise EventOperatorError("latency no-match policy is not supported")
+            values[trigger.event_id] = latency
+        return {"value": MappingProxyType(values)}
+
+
 def register_event_operators(registry: OperatorRegistry) -> None:
     registry.register(threshold_crossing_definition(), ThresholdCrossingOperator())
     registry.register(hold_run_definition(), HoldRunOperator())
@@ -835,11 +903,13 @@ def register_event_operators(registry: OperatorRegistry) -> None:
     registry.register(movement_definition(), MovementOperator())
     registry.register(reversal_definition(), ReversalOperator())
     registry.register(recovery_definition(), RecoveryOperator())
+    registry.register(latency_definition(), LatencyOperator())
 
 
 __all__ = [
     "EventOperatorError",
     "HoldRunOperator",
+    "LatencyOperator",
     "MovementOperator",
     "MaskRunOperator",
     "PeakOperator",

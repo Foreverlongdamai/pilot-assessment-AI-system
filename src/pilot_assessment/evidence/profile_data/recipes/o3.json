@@ -1,0 +1,132 @@
+{
+  "anchor": {
+    "anchor_id": "O3",
+    "description": "Editable initial computation template. Experts may change, replace, disable or clone every node and parameter.",
+    "lifecycle": "active",
+    "name": "Terminal capture quality",
+    "scientific_status": "starter_template"
+  },
+  "contract_id": "evidence-recipe",
+  "contract_version": "0.1.0",
+  "documentation": {
+    "assumptions": [
+      "Finite poor-performance values remain evidence and are not quality-filtered.",
+      "Bindings use normalized ideal interfaces and may be adapted to final exports."
+    ],
+    "parameter_notes": {},
+    "references": [
+      "legacy-reference-plugin:o3-terminal-capture-quality@0.1.0",
+      "legacy-parameter-resource:o3-parameters-0.1"
+    ],
+    "summary": "Engineering starter only; this recipe and every default parameter remain open to expert replacement."
+  },
+  "graph": {
+    "edges": [
+      {
+        "edge_id": "e-000-terminal-error-input-capture",
+        "source": {
+          "node_id": "terminal-error-input",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "capture",
+          "port_id": "error"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-001-capture-capture-latency",
+        "source": {
+          "node_id": "capture",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "capture-latency",
+          "port_id": "values"
+        },
+        "target_slot_id": null
+      }
+    ],
+    "nodes": [
+      {
+        "input_binding_id": "terminal-error",
+        "node_id": "terminal-error-input",
+        "operator_id": "input.binding",
+        "operator_version": "0.1.0",
+        "parameters": {}
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "capture",
+        "operator_id": "flight.capture",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "hold_duration_ns": 2000000000,
+          "observation_end_ns": 15000000000,
+          "observation_start_ns": 0,
+          "tolerance": 2.0
+        }
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "capture-latency",
+        "operator_id": "statistics.named-select",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "key": "capture_latency_s"
+        }
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "binding_id": "terminal-error",
+      "declared_type": {
+        "cardinality": "one",
+        "temporal_semantics": "sampled",
+        "unit": null,
+        "value_type": "signal_series"
+      },
+      "kind": "stream",
+      "name": "Terminal Error",
+      "selector": {},
+      "source_id": "derived.terminal-error"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "O3 primary value",
+      "output_id": "primary",
+      "role": "primary_value",
+      "source": {
+        "node_id": "capture-latency",
+        "port_id": "value"
+      },
+      "unit": "s"
+    }
+  ],
+  "recipe_id": "starter.o3",
+  "recipe_version": 1,
+  "scoring": {
+    "custom_operator_id": null,
+    "custom_operator_version": null,
+    "input": {
+      "node_id": "capture-latency",
+      "port_id": "value"
+    },
+    "mode": "ordered_dau",
+    "parameters": {
+      "adequate_boundary": 5,
+      "desired_boundary": 3,
+      "direction": "lower_is_better",
+      "likelihood_strength": 0.9
+    }
+  },
+  "ui": {
+    "groups": [],
+    "preferred_layout": {
+      "generated": true,
+      "layout": "left-to-right"
+    }
+  }
+}

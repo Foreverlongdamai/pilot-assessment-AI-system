@@ -1,0 +1,226 @@
+{
+  "anchor": {
+    "anchor_id": "O9",
+    "description": "Editable initial computation template. Experts may change, replace, disable or clone every node and parameter.",
+    "lifecycle": "active",
+    "name": "Dead-band activity",
+    "scientific_status": "starter_template"
+  },
+  "contract_id": "evidence-recipe",
+  "contract_version": "0.1.0",
+  "documentation": {
+    "assumptions": [
+      "Finite poor-performance values remain evidence and are not quality-filtered.",
+      "Bindings use normalized ideal interfaces and may be adapted to final exports."
+    ],
+    "parameter_notes": {},
+    "references": [
+      "legacy-reference-plugin:o9-dead-band-activity@0.1.0",
+      "legacy-parameter-resource:o9-parameters-0.1"
+    ],
+    "summary": "Engineering starter only; this recipe and every default parameter remain open to expert replacement."
+  },
+  "graph": {
+    "edges": [
+      {
+        "edge_id": "e-000-control-bundle-input-control-select",
+        "source": {
+          "node_id": "control-bundle-input",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "control-select",
+          "port_id": "channels"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-001-control-select-turning-points",
+        "source": {
+          "node_id": "control-select",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "turning-points",
+          "port_id": "signal"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-002-turning-points-movements",
+        "source": {
+          "node_id": "turning-points",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "movements",
+          "port_id": "turning_points"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-003-movements-movement-count",
+        "source": {
+          "node_id": "movements",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "movement-count",
+          "port_id": "values"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-004-movement-count-movement-rate",
+        "source": {
+          "node_id": "movement-count",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "movement-rate",
+          "port_id": "count"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-005-session-duration-s-input-movement-rate",
+        "source": {
+          "node_id": "session-duration-s-input",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "movement-rate",
+          "port_id": "duration"
+        },
+        "target_slot_id": null
+      }
+    ],
+    "nodes": [
+      {
+        "input_binding_id": "control-bundle",
+        "node_id": "control-bundle-input",
+        "operator_id": "input.binding",
+        "operator_version": "0.1.0",
+        "parameters": {}
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "control-select",
+        "operator_id": "signal.channel-select",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "channel_id": "primary"
+        }
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "turning-points",
+        "operator_id": "event.turning-point",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "event_type": "turning-point",
+          "minimum_delta": 0.0
+        }
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "movements",
+        "operator_id": "event.movement",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "event_type": "movement",
+          "minimum_amplitude": 0.0,
+          "minimum_separation_ns": 0
+        }
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "movement-count",
+        "operator_id": "statistics.count",
+        "operator_version": "0.1.0",
+        "parameters": {}
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "movement-rate",
+        "operator_id": "statistics.rate",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "duration_unit": "seconds",
+          "zero_duration": "zero"
+        }
+      },
+      {
+        "input_binding_id": "session-duration-s",
+        "node_id": "session-duration-s-input",
+        "operator_id": "input.binding",
+        "operator_version": "0.1.0",
+        "parameters": {}
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "binding_id": "control-bundle",
+      "declared_type": {
+        "cardinality": "one",
+        "temporal_semantics": "sampled",
+        "unit": null,
+        "value_type": "signal_bundle"
+      },
+      "kind": "stream",
+      "name": "Control Bundle",
+      "selector": {},
+      "source_id": "U.channels"
+    },
+    {
+      "binding_id": "session-duration-s",
+      "declared_type": {
+        "cardinality": "one",
+        "temporal_semantics": "timeless",
+        "unit": null,
+        "value_type": "number"
+      },
+      "kind": "semantic",
+      "name": "Session Duration S",
+      "selector": {},
+      "source_id": "session.duration-s"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "O9 primary value",
+      "output_id": "primary",
+      "role": "primary_value",
+      "source": {
+        "node_id": "movement-rate",
+        "port_id": "value"
+      },
+      "unit": "Hz"
+    }
+  ],
+  "recipe_id": "starter.o9",
+  "recipe_version": 1,
+  "scoring": {
+    "custom_operator_id": null,
+    "custom_operator_version": null,
+    "input": {
+      "node_id": "movement-rate",
+      "port_id": "value"
+    },
+    "mode": "ordered_dau",
+    "parameters": {
+      "adequate_boundary": 2,
+      "desired_boundary": 1,
+      "direction": "lower_is_better",
+      "likelihood_strength": 0.9
+    }
+  },
+  "ui": {
+    "groups": [],
+    "preferred_layout": {
+      "generated": true,
+      "layout": "left-to-right"
+    }
+  }
+}

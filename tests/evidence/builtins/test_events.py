@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pilot_assessment.evidence.builtins.events import (
     HoldRunOperator,
+    LatencyOperator,
     MovementOperator,
     PeakOperator,
     RecoveryOperator,
@@ -154,9 +155,22 @@ def test_hold_duration_rate_and_recovery_keep_poor_performance_as_values() -> No
         },
         context,
     )["value"]
+    response_latency = LatencyOperator().execute(
+        {
+            "triggers": (EventRecord("disturbance-1", "disturbance", 0),),
+            "responses": (EventRecord("response-1", "response", 1_000_000_000),),
+        },
+        {
+            "horizon_ns": 5_000_000_000,
+            "no_match_policy": "horizon",
+            "fixed_latency_s": 0.0,
+        },
+        context,
+    )["value"]
 
     assert duration == 3.0
     assert count == 1.0
     assert rate == 1.0 / 3.0
     assert dict(recovery) == {"disturbance-1": 2.0}
     assert dict(never_recovered) == {"disturbance-1": 5.0}
+    assert dict(response_latency) == {"disturbance-1": 1.0}

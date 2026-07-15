@@ -1,0 +1,141 @@
+{
+  "anchor": {
+    "anchor_id": "O8",
+    "description": "Editable initial computation template. Experts may change, replace, disable or clone every node and parameter.",
+    "lifecycle": "active",
+    "name": "TPX composite",
+    "scientific_status": "starter_template"
+  },
+  "contract_id": "evidence-recipe",
+  "contract_version": "0.1.0",
+  "documentation": {
+    "assumptions": [
+      "Finite poor-performance values remain evidence and are not quality-filtered.",
+      "Bindings use normalized ideal interfaces and may be adapted to final exports."
+    ],
+    "parameter_notes": {},
+    "references": [
+      "legacy-reference-plugin:o8-tpx-composite@0.1.0",
+      "legacy-parameter-resource:o8-parameters-0.1"
+    ],
+    "summary": "Engineering starter only; this recipe and every default parameter remain open to expert replacement."
+  },
+  "graph": {
+    "edges": [
+      {
+        "edge_id": "e-000-o1-score-input-tpx",
+        "source": {
+          "node_id": "o1-score-input",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "tpx",
+          "port_id": "variables"
+        },
+        "target_slot_id": "o1"
+      },
+      {
+        "edge_id": "e-001-o5-score-input-tpx",
+        "source": {
+          "node_id": "o5-score-input",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "tpx",
+          "port_id": "variables"
+        },
+        "target_slot_id": "o5"
+      }
+    ],
+    "nodes": [
+      {
+        "input_binding_id": "o1-score",
+        "node_id": "o1-score-input",
+        "operator_id": "input.binding",
+        "operator_version": "0.1.0",
+        "parameters": {}
+      },
+      {
+        "input_binding_id": "o5-score",
+        "node_id": "o5-score-input",
+        "operator_id": "input.binding",
+        "operator_version": "0.1.0",
+        "parameters": {}
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "tpx",
+        "operator_id": "composition.safe-formula",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "constants": {},
+          "formula": "(o1 + o5) / 2"
+        }
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "binding_id": "o1-score",
+      "declared_type": {
+        "cardinality": "one",
+        "temporal_semantics": "timeless",
+        "unit": null,
+        "value_type": "number"
+      },
+      "kind": "semantic",
+      "name": "O1 Score",
+      "selector": {},
+      "source_id": "anchor.O1-score"
+    },
+    {
+      "binding_id": "o5-score",
+      "declared_type": {
+        "cardinality": "one",
+        "temporal_semantics": "timeless",
+        "unit": null,
+        "value_type": "number"
+      },
+      "kind": "semantic",
+      "name": "O5 Score",
+      "selector": {},
+      "source_id": "anchor.O5-score"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "O8 primary value",
+      "output_id": "primary",
+      "role": "primary_value",
+      "source": {
+        "node_id": "tpx",
+        "port_id": "value"
+      },
+      "unit": "ratio"
+    }
+  ],
+  "recipe_id": "starter.o8",
+  "recipe_version": 1,
+  "scoring": {
+    "custom_operator_id": null,
+    "custom_operator_version": null,
+    "input": {
+      "node_id": "tpx",
+      "port_id": "value"
+    },
+    "mode": "ordered_dau",
+    "parameters": {
+      "adequate_boundary": 0.4,
+      "desired_boundary": 0.6,
+      "direction": "higher_is_better",
+      "likelihood_strength": 0.9
+    }
+  },
+  "ui": {
+    "groups": [],
+    "preferred_layout": {
+      "generated": true,
+      "layout": "left-to-right"
+    }
+  }
+}

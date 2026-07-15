@@ -1,0 +1,205 @@
+{
+  "anchor": {
+    "anchor_id": "O13",
+    "description": "Editable initial computation template. Experts may change, replace, disable or clone every node and parameter.",
+    "lifecycle": "active",
+    "name": "Physio-control coupling",
+    "scientific_status": "starter_template"
+  },
+  "contract_id": "evidence-recipe",
+  "contract_version": "0.1.0",
+  "documentation": {
+    "assumptions": [
+      "Finite poor-performance values remain evidence and are not quality-filtered.",
+      "Bindings use normalized ideal interfaces and may be adapted to final exports."
+    ],
+    "parameter_notes": {},
+    "references": [
+      "legacy-reference-definition:o13-physio-control-coupling@0.1.0",
+      "legacy-parameter-resource:o13-parameters-0.1"
+    ],
+    "summary": "Engineering starter only; this recipe and every default parameter remain open to expert replacement."
+  },
+  "graph": {
+    "edges": [
+      {
+        "edge_id": "e-000-control-bundle-input-control-select",
+        "source": {
+          "node_id": "control-bundle-input",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "control-select",
+          "port_id": "channels"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-001-ecg-bundle-input-ecg-select",
+        "source": {
+          "node_id": "ecg-bundle-input",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "ecg-select",
+          "port_id": "channels"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-002-control-select-control-ecg-correlation",
+        "source": {
+          "node_id": "control-select",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "control-ecg-correlation",
+          "port_id": "left"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-003-ecg-select-control-ecg-correlation",
+        "source": {
+          "node_id": "ecg-select",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "control-ecg-correlation",
+          "port_id": "right"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-004-control-ecg-correlation-coupling-percent",
+        "source": {
+          "node_id": "control-ecg-correlation",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "coupling-percent",
+          "port_id": "variables"
+        },
+        "target_slot_id": "correlation"
+      }
+    ],
+    "nodes": [
+      {
+        "input_binding_id": "control-bundle",
+        "node_id": "control-bundle-input",
+        "operator_id": "input.binding",
+        "operator_version": "0.1.0",
+        "parameters": {}
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "control-select",
+        "operator_id": "signal.channel-select",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "channel_id": "primary"
+        }
+      },
+      {
+        "input_binding_id": "ecg-bundle",
+        "node_id": "ecg-bundle-input",
+        "operator_id": "input.binding",
+        "operator_version": "0.1.0",
+        "parameters": {}
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "ecg-select",
+        "operator_id": "signal.channel-select",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "channel_id": "heart-rate"
+        }
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "control-ecg-correlation",
+        "operator_id": "statistics.correlation",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "absolute": true,
+          "degenerate": "zero"
+        }
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "coupling-percent",
+        "operator_id": "composition.safe-formula",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "constants": {},
+          "formula": "correlation * 100"
+        }
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "binding_id": "control-bundle",
+      "declared_type": {
+        "cardinality": "one",
+        "temporal_semantics": "sampled",
+        "unit": null,
+        "value_type": "signal_bundle"
+      },
+      "kind": "stream",
+      "name": "Control Bundle",
+      "selector": {},
+      "source_id": "U.channels"
+    },
+    {
+      "binding_id": "ecg-bundle",
+      "declared_type": {
+        "cardinality": "one",
+        "temporal_semantics": "sampled",
+        "unit": null,
+        "value_type": "signal_bundle"
+      },
+      "kind": "stream",
+      "name": "Ecg Bundle",
+      "selector": {},
+      "source_id": "ECG.channels"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "O13 primary value",
+      "output_id": "primary",
+      "role": "primary_value",
+      "source": {
+        "node_id": "coupling-percent",
+        "port_id": "value"
+      },
+      "unit": "percent"
+    }
+  ],
+  "recipe_id": "starter.o13",
+  "recipe_version": 1,
+  "scoring": {
+    "custom_operator_id": null,
+    "custom_operator_version": null,
+    "input": {
+      "node_id": "coupling-percent",
+      "port_id": "value"
+    },
+    "mode": "ordered_dau",
+    "parameters": {
+      "adequate_boundary": 20,
+      "desired_boundary": 5,
+      "direction": "lower_is_better",
+      "likelihood_strength": 0.9
+    }
+  },
+  "ui": {
+    "groups": [],
+    "preferred_layout": {
+      "generated": true,
+      "layout": "left-to-right"
+    }
+  }
+}

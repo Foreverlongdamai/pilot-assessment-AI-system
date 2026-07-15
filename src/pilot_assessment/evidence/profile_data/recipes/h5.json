@@ -1,0 +1,148 @@
+{
+  "anchor": {
+    "anchor_id": "H5",
+    "description": "Editable initial computation template. Experts may change, replace, disable or clone every node and parameter.",
+    "lifecycle": "active",
+    "name": "EEG fluctuation",
+    "scientific_status": "starter_template"
+  },
+  "contract_id": "evidence-recipe",
+  "contract_version": "0.1.0",
+  "documentation": {
+    "assumptions": [
+      "Finite poor-performance values remain evidence and are not quality-filtered.",
+      "Bindings use normalized ideal interfaces and may be adapted to final exports."
+    ],
+    "parameter_notes": {},
+    "references": [
+      "legacy-reference-definition:h5-eeg-fluctuation@0.1.0",
+      "legacy-parameter-resource:h5-parameters-0.1"
+    ],
+    "summary": "Engineering starter only; this recipe and every default parameter remain open to expert replacement."
+  },
+  "graph": {
+    "edges": [
+      {
+        "edge_id": "e-000-h5-bundle-input-h5-select",
+        "source": {
+          "node_id": "h5-bundle-input",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "h5-select",
+          "port_id": "channels"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-001-h5-select-detrended",
+        "source": {
+          "node_id": "h5-select",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "detrended",
+          "port_id": "signal"
+        },
+        "target_slot_id": null
+      },
+      {
+        "edge_id": "e-002-detrended-fluctuation-rms",
+        "source": {
+          "node_id": "detrended",
+          "port_id": "value"
+        },
+        "target": {
+          "node_id": "fluctuation-rms",
+          "port_id": "values"
+        },
+        "target_slot_id": null
+      }
+    ],
+    "nodes": [
+      {
+        "input_binding_id": "h5-bundle",
+        "node_id": "h5-bundle-input",
+        "operator_id": "input.binding",
+        "operator_version": "0.1.0",
+        "parameters": {}
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "h5-select",
+        "operator_id": "signal.channel-select",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "channel_id": "engagement"
+        }
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "detrended",
+        "operator_id": "signal.detrend",
+        "operator_version": "0.1.0",
+        "parameters": {
+          "method": "mean"
+        }
+      },
+      {
+        "input_binding_id": null,
+        "node_id": "fluctuation-rms",
+        "operator_id": "statistics.rms",
+        "operator_version": "0.1.0",
+        "parameters": {}
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "binding_id": "h5-bundle",
+      "declared_type": {
+        "cardinality": "one",
+        "temporal_semantics": "sampled",
+        "unit": null,
+        "value_type": "signal_bundle"
+      },
+      "kind": "stream",
+      "name": "H5 Bundle",
+      "selector": {},
+      "source_id": "EEG.channels"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "H5 primary value",
+      "output_id": "primary",
+      "role": "primary_value",
+      "source": {
+        "node_id": "fluctuation-rms",
+        "port_id": "value"
+      },
+      "unit": "percent"
+    }
+  ],
+  "recipe_id": "starter.h5",
+  "recipe_version": 1,
+  "scoring": {
+    "custom_operator_id": null,
+    "custom_operator_version": null,
+    "input": {
+      "node_id": "fluctuation-rms",
+      "port_id": "value"
+    },
+    "mode": "ordered_dau",
+    "parameters": {
+      "adequate_boundary": 50,
+      "desired_boundary": 20,
+      "direction": "lower_is_better",
+      "likelihood_strength": 0.9
+    }
+  },
+  "ui": {
+    "groups": [],
+    "preferred_layout": {
+      "generated": true,
+      "layout": "left-to-right"
+    }
+  }
+}

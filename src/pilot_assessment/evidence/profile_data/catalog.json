@@ -1,0 +1,187 @@
+{
+  "contract_id": "starter-evidence-recipe-catalog",
+  "contract_version": "0.1.0",
+  "entries": [
+    {
+      "anchor_id": "O1",
+      "legacy_parameter_resource": "o1-parameters-0.1.json",
+      "legacy_plugin_id": "o1-phase-state-precision",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/o1.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "O2",
+      "legacy_parameter_resource": "o2-parameters-0.1.json",
+      "legacy_plugin_id": "o2-peak-tracking-excursion",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/o2.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "O3",
+      "legacy_parameter_resource": "o3-parameters-0.1.json",
+      "legacy_plugin_id": "o3-terminal-capture-quality",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/o3.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "O4",
+      "legacy_parameter_resource": "o4-parameters-0.1.json",
+      "legacy_plugin_id": "o4-sustained-hover-time",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/o4.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "O5",
+      "legacy_parameter_resource": "o5-parameters-0.1.json",
+      "legacy_plugin_id": "o5-workload-rate",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/o5.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "O6",
+      "legacy_parameter_resource": "o6-parameters-0.1.json",
+      "legacy_plugin_id": "o6-control-magnitude-rms",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/o6.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "O7",
+      "legacy_parameter_resource": "o7-parameters-0.1.json",
+      "legacy_plugin_id": "o7-control-reversal-rate",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/o7.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "O8",
+      "legacy_parameter_resource": "o8-parameters-0.1.json",
+      "legacy_plugin_id": "o8-tpx-composite",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/o8.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "O9",
+      "legacy_parameter_resource": "o9-parameters-0.1.json",
+      "legacy_plugin_id": "o9-dead-band-activity",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/o9.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "O10",
+      "legacy_parameter_resource": "o10-parameters-0.1.json",
+      "legacy_plugin_id": "o10-recovery-time",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/o10.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "O11",
+      "legacy_parameter_resource": "o11-parameters-0.1.json",
+      "legacy_plugin_id": "o11-disturbance-latency",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/o11.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "O12",
+      "legacy_parameter_resource": "o12-parameters-0.1.json",
+      "legacy_plugin_id": "o12-envelope-drift-latency",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/o12.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "O13",
+      "legacy_parameter_resource": "o13-parameters-0.1.json",
+      "legacy_plugin_id": null,
+      "legacy_plugin_version": null,
+      "legacy_status": "parameter_resource_only_no_legacy_plugin",
+      "migration_kind": "operator_composition",
+      "recipe_resource": "recipes/o13.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "H1",
+      "legacy_parameter_resource": "h1-parameters-0.1.json",
+      "legacy_plugin_id": "h1-aoi-dwell",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/h1.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "H2",
+      "legacy_parameter_resource": "h2-parameters-0.1.json",
+      "legacy_plugin_id": "h2-first-fixation-latency",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/h2.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "H3",
+      "legacy_parameter_resource": "h3-parameters-0.1.json",
+      "legacy_plugin_id": "h3-off-task-dwell",
+      "legacy_plugin_version": "0.1.0",
+      "legacy_status": "retained_reference_replay_source",
+      "migration_kind": "legacy_operator_migration",
+      "recipe_resource": "recipes/h3.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "H4",
+      "legacy_parameter_resource": "h4-parameters-0.1.json",
+      "legacy_plugin_id": null,
+      "legacy_plugin_version": null,
+      "legacy_status": "parameter_resource_only_no_legacy_plugin",
+      "migration_kind": "operator_composition",
+      "recipe_resource": "recipes/h4.json",
+      "scientific_status": "starter_template"
+    },
+    {
+      "anchor_id": "H5",
+      "legacy_parameter_resource": "h5-parameters-0.1.json",
+      "legacy_plugin_id": null,
+      "legacy_plugin_version": null,
+      "legacy_status": "parameter_resource_only_no_legacy_plugin",
+      "migration_kind": "operator_composition",
+      "recipe_resource": "recipes/h5.json",
+      "scientific_status": "starter_template"
+    }
+  ],
+  "inventory_note": "Packaged defaults only. Expert models may add, disable or retire any number of recipes without changing the catalog implementation."
+}

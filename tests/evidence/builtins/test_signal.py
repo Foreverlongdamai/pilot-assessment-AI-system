@@ -14,6 +14,7 @@ from pilot_assessment.evidence.builtins.signal import (
     UnitConvertOperator,
 )
 from pilot_assessment.evidence.builtins.statistics import (
+    CorrelationOperator,
     CountOperator,
     MedianOperator,
     PercentileOperator,
@@ -112,3 +113,8 @@ def test_statistics_include_large_finite_physiology_values_without_quality_filte
         {"zero_denominator": "error"},
         context,
     ) == {"value": 0.5}
+    assert CorrelationOperator().execute(
+        {"left": selected, "right": selected},
+        {"absolute": True, "degenerate": "error"},
+        context,
+    ) == {"value": pytest.approx(1.0)}

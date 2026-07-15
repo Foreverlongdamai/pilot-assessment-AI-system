@@ -10,6 +10,7 @@ from pilot_assessment.evidence.builtins.core import (
 from pilot_assessment.evidence.builtins.events import (
     EventOperatorError,
     HoldRunOperator,
+    LatencyOperator,
     MaskRunOperator,
     MovementOperator,
     PeakOperator,
@@ -60,6 +61,7 @@ from pilot_assessment.evidence.builtins.signal import (
     register_signal_operators,
 )
 from pilot_assessment.evidence.builtins.statistics import (
+    CorrelationOperator,
     CountOperator,
     DurationOperator,
     EventAggregationOperator,
@@ -105,6 +107,7 @@ __all__ = [
     "CaptureOperator",
     "ChannelSelectOperator",
     "ConstantNumberOperator",
+    "CorrelationOperator",
     "CountOperator",
     "DetrendOperator",
     "DifferenceOperator",
@@ -127,6 +130,7 @@ __all__ = [
     "InputBindingOperator",
     "IntervalIntersectOperator",
     "IntervalRecord",
+    "LatencyOperator",
     "MaskSample",
     "MaskSeries",
     "MaskRunOperator",

@@ -507,19 +507,19 @@ API：
 
 步骤：
 
-- [ ] 为 O1–O12、H1–H5、O13 建立 18 个 starter recipe resources；全部标记 scientific_status=starter_template。
-- [ ] O1–O12/H1–H3 从现有插件、parameter resources 和 primitives 迁移；现有 Python plugin 保留且标记 legacy/reference，不再是新 Anchor 默认扩展方式。
-- [ ] H4/H5/O13 直接使用 operator composition，不新增 whole-Anchor plugin。
-- [ ] catalog 不固定 expert model cardinality；18 只是 packaged starter inventory。
-- [ ] 资源完成后只选 trajectory/control、gaze、physiology 三个代表 recipe 做 legacy comparison smoke，以发现明显 wiring 错误；不要求所有 expert 后续修改保持旧数值等价。
-- [ ] 测试任意第 19 个 recipe 可注册、执行和应用，orchestrator 无 Anchor-ID 分支。
-- [ ] 运行：
+- [x] 为 O1–O12、H1–H5、O13 建立 18 个 starter recipe resources；全部标记 scientific_status=starter_template。
+- [x] O1–O12/H1–H3 从现有插件、parameter resources 和 primitives 迁移；现有 15 个 Python plugin 保留且标记 legacy/reference，不再是新 Anchor 默认扩展方式。
+- [x] H4/H5/O13 直接使用 operator composition，不新增 whole-Anchor plugin；清单准确标记为仅有旧参数资源、无旧 Python plugin。
+- [x] catalog 不固定 expert model cardinality；18 只是 packaged starter inventory。
+- [x] 资源完成后只选 O2 trajectory、H1 gaze、H4 physiology 三个代表 recipe 做 legacy comparison smoke，以发现明显 wiring 错误；不要求所有 expert 后续修改保持旧数值等价。
+- [x] 测试任意第 19 个 recipe 可注册、执行和应用，orchestrator 无 Anchor-ID 分支。
+- [x] 运行：
 
       uv run pytest tests/evidence/test_starter_recipe_catalog.py tests/evidence/test_legacy_recipe_comparison_smoke.py -q
 
-  预期：exit 0。
+  结果：6 passed；相关 evidence/contracts/schema 回归 69 passed；ruff、ty、git diff --check 均 exit 0。
 
-- [ ] 提交：
+- [x] 提交：
 
       git add src/pilot_assessment/evidence/profile_data src/pilot_assessment/evidence/catalog.py tests/evidence
       git commit -m "feat: migrate starter anchors to editable recipes"
