@@ -450,11 +450,12 @@ operator identity：
 
 步骤：
 
-- [ ] 优先实现对现有 movement、reversal、envelopes、reference_join 和 preprocessing pure functions 的薄包装。
-- [ ] 实现后以代表输入 smoke reusable operator 的平台行为和错误边界；不为每个 Anchor 建一套重复 golden。
-- [ ] EEG/ECG 通过 field/channel/signal/statistics/scoring 组合进入 recipe；异常数值仍参与计算，不做 performance quality gate。
-- [ ] 运行 builtins focused suite、ruff、ty，预期 exit 0。
-- [ ] 提交：
+- [x] 复用 confirmed_true_runs 与 compute_o7_kernel 等现有 pure logic；movement/reversal、reference alignment、envelope/capture 以通用 typed operator 包装，未复制 whole-Anchor plugin 分支。
+- [x] 已实现 field/channel select、显式 unit conversion、difference、smooth、detrend、threshold/hold/mask run、peak、turning point、movement、reversal、recovery、target error、vector compose、distance、angle、envelope membership、capture，以及 count/duration/RMS/median/percentile/rate/pooled ratio/named select。
+- [x] 仅以小型代表输入 smoke 平台行为与错误边界；未为每个 Anchor 建重复 golden。
+- [x] EEG/ECG 可通过 field/channel -> signal transforms -> statistics -> scoring 组合；大幅但有限的数值照常参与计算，不存在 performance quality gate，smooth/detrend 也只在 recipe 显式放置时执行。
+- [x] 相关 evidence/contracts/schema 回归 86 passed；ruff、ty、git diff --check 均 exit 0。
+- [x] 提交：
 
       git add src/pilot_assessment/evidence/builtins tests/evidence/builtins
       git commit -m "feat: expand reusable evidence operator library"

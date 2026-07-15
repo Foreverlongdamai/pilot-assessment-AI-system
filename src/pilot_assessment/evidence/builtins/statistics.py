@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import math
 import statistics
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from numbers import Real
+from typing import cast
 
 from pydantic import JsonValue
 
@@ -21,6 +22,8 @@ from pilot_assessment.contracts.evidence_recipe import (
     TemporalSemantics,
     TraceCapability,
 )
+from pilot_assessment.evidence.builtins.signal import SignalSeries
+from pilot_assessment.evidence.builtins.temporal import interval_records
 from pilot_assessment.evidence.operators import OperatorExecutionContext
 from pilot_assessment.evidence.registry import OperatorRegistry
 
@@ -29,6 +32,23 @@ _VERSION = "0.1.0"
 
 class StatisticsOperatorError(ValueError):
     """Technical error in a reusable statistics operator."""
+
+
+def _ui(
+    path: str,
+    label: str,
+    control: ParameterControlKind,
+    *,
+    unit: str | None = None,
+) -> ParameterUiDefinition:
+    return ParameterUiDefinition(
+        parameter_path=path,
+        label=label,
+        group_id="parameters",
+        control=control,
+        help_text="Editable recipe parameter; the initial value is not an expert standard.",
+        unit=unit,
+    )
 
 
 def _number_port(
@@ -182,6 +202,180 @@ def event_aggregation_definition() -> OperatorDefinition:
     )
 
 
+def count_definition() -> OperatorDefinition:
+    return _definition(
+        "statistics.count",
+        family=OperatorFamily.STATISTICS,
+        inputs=(
+            _number_port(
+                "values",
+                cardinality=PortCardinality.ONE,
+                value_type="any",
+            ),
+        ),
+        parameter_schema={
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    )
+
+
+def duration_definition() -> OperatorDefinition:
+    return _definition(
+        "statistics.duration",
+        family=OperatorFamily.STATISTICS,
+        inputs=(
+            _number_port(
+                "intervals",
+                cardinality=PortCardinality.ONE,
+                value_type="interval_collection",
+            ),
+        ),
+        parameter_schema={
+            "type": "object",
+            "properties": {
+                "unit": {"type": "string", "enum": ["seconds", "nanoseconds"]},
+                "union_overlaps": {"type": "boolean"},
+            },
+            "required": ["unit", "union_overlaps"],
+            "additionalProperties": False,
+        },
+        parameter_ui=(
+            _ui("/unit", "Duration unit", ParameterControlKind.SELECT),
+            _ui("/union_overlaps", "Union overlaps", ParameterControlKind.CHECKBOX),
+        ),
+    )
+
+
+def rms_definition() -> OperatorDefinition:
+    return _definition(
+        "statistics.rms",
+        family=OperatorFamily.STATISTICS,
+        inputs=(
+            _number_port(
+                "values",
+                cardinality=PortCardinality.ONE,
+                value_type="any",
+            ),
+        ),
+        parameter_schema={"type": "object", "properties": {}, "additionalProperties": False},
+    )
+
+
+def median_definition() -> OperatorDefinition:
+    return _definition(
+        "statistics.median",
+        family=OperatorFamily.STATISTICS,
+        inputs=(
+            _number_port(
+                "values",
+                cardinality=PortCardinality.ONE,
+                value_type="any",
+            ),
+        ),
+        parameter_schema={"type": "object", "properties": {}, "additionalProperties": False},
+    )
+
+
+def percentile_definition() -> OperatorDefinition:
+    return _definition(
+        "statistics.percentile",
+        family=OperatorFamily.STATISTICS,
+        inputs=(
+            _number_port(
+                "values",
+                cardinality=PortCardinality.ONE,
+                value_type="any",
+            ),
+        ),
+        parameter_schema={
+            "type": "object",
+            "properties": {"percentile": {"type": "number", "minimum": 0.0, "maximum": 100.0}},
+            "required": ["percentile"],
+            "additionalProperties": False,
+        },
+        parameter_ui=(
+            _ui("/percentile", "Percentile", ParameterControlKind.SLIDER, unit="%"),
+        ),
+    )
+
+
+def rate_definition() -> OperatorDefinition:
+    return _definition(
+        "statistics.rate",
+        family=OperatorFamily.STATISTICS,
+        inputs=(
+            _number_port("count", cardinality=PortCardinality.ONE),
+            _number_port("duration", cardinality=PortCardinality.ONE),
+        ),
+        parameter_schema={
+            "type": "object",
+            "properties": {
+                "duration_unit": {"type": "string", "enum": ["seconds", "nanoseconds"]},
+                "zero_duration": {"type": "string", "enum": ["zero", "error"]},
+            },
+            "required": ["duration_unit", "zero_duration"],
+            "additionalProperties": False,
+        },
+        parameter_ui=(
+            _ui("/duration_unit", "Duration unit", ParameterControlKind.SELECT),
+            _ui("/zero_duration", "Zero duration", ParameterControlKind.SELECT),
+        ),
+    )
+
+
+def pooled_ratio_definition() -> OperatorDefinition:
+    return _definition(
+        "statistics.pooled-ratio",
+        family=OperatorFamily.STATISTICS,
+        inputs=(
+            _number_port(
+                "numerators",
+                cardinality=PortCardinality.ONE,
+                value_type="any",
+            ),
+            _number_port(
+                "denominators",
+                cardinality=PortCardinality.ONE,
+                value_type="any",
+            ),
+        ),
+        parameter_schema={
+            "type": "object",
+            "properties": {
+                "zero_denominator": {"type": "string", "enum": ["zero", "error"]},
+            },
+            "required": ["zero_denominator"],
+            "additionalProperties": False,
+        },
+        parameter_ui=(
+            _ui("/zero_denominator", "Zero denominator", ParameterControlKind.SELECT),
+        ),
+    )
+
+
+def named_select_definition() -> OperatorDefinition:
+    return _definition(
+        "statistics.named-select",
+        family=OperatorFamily.STATISTICS,
+        inputs=(
+            _number_port(
+                "values",
+                cardinality=PortCardinality.ONE,
+                value_type="named_numbers",
+            ),
+        ),
+        parameter_schema={
+            "type": "object",
+            "properties": {"key": {"type": "string", "minLength": 1}},
+            "required": ["key"],
+            "additionalProperties": False,
+        },
+        parameter_ui=(_ui("/key", "Value key", ParameterControlKind.TEXT),),
+    )
+
+
 def _number(value: object, label: str) -> float:
     if isinstance(value, bool) or not isinstance(value, Real):
         raise StatisticsOperatorError(f"{label} must be numeric")
@@ -202,6 +396,49 @@ def _named_numbers(inputs: Mapping[str, object], port_id: str) -> list[float]:
     if not values:
         raise StatisticsOperatorError(f"{port_id} cannot be empty")
     return values
+
+
+def _numeric_values(value: object, label: str) -> list[float]:
+    if isinstance(value, SignalSeries):
+        values = [sample.value for sample in value.samples]
+    elif isinstance(value, Mapping):
+        values = [_number(item, label) for item in value.values()]
+    elif isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+        values = [_number(item, label) for item in value]
+    else:
+        raise StatisticsOperatorError(f"{label} must be a numeric collection or signal")
+    if not values:
+        raise StatisticsOperatorError(f"{label} cannot be empty")
+    return values
+
+
+def _collection_count(value: object) -> int:
+    if isinstance(value, SignalSeries):
+        return len(value.samples)
+    if isinstance(value, (Mapping, Sequence)) and not isinstance(value, (str, bytes)):
+        return len(value)
+    raise StatisticsOperatorError("count input must be a collection")
+
+
+def _union_duration_ns(value: object, *, union_overlaps: bool) -> int:
+    intervals = interval_records(value)
+    if not union_overlaps:
+        return sum(item.end_t_ns - item.start_t_ns for item in intervals)
+    total = 0
+    current_start: int | None = None
+    current_end: int | None = None
+    for item in intervals:
+        if current_start is None:
+            current_start, current_end = item.start_t_ns, item.end_t_ns
+        elif current_end is not None and item.start_t_ns <= current_end:
+            current_end = max(current_end, item.end_t_ns)
+        else:
+            assert current_end is not None
+            total += current_end - current_start
+            current_start, current_end = item.start_t_ns, item.end_t_ns
+    if current_start is not None and current_end is not None:
+        total += current_end - current_start
+    return total
 
 
 class MeanOperator:
@@ -293,17 +530,200 @@ class EventAggregationOperator:
         return {"value": value}
 
 
+class CountOperator:
+    operator_id = "statistics.count"
+    implementation_version = _VERSION
+    implementation_ref = "builtin.statistics.count"
+
+    def execute(
+        self,
+        inputs: Mapping[str, object],
+        parameters: Mapping[str, JsonValue],
+        context: OperatorExecutionContext,
+    ) -> Mapping[str, object]:
+        del parameters, context
+        return {"value": float(_collection_count(inputs.get("values")))}
+
+
+class DurationOperator:
+    operator_id = "statistics.duration"
+    implementation_version = _VERSION
+    implementation_ref = "builtin.statistics.duration"
+
+    def execute(
+        self,
+        inputs: Mapping[str, object],
+        parameters: Mapping[str, JsonValue],
+        context: OperatorExecutionContext,
+    ) -> Mapping[str, object]:
+        del context
+        union = parameters.get("union_overlaps")
+        if type(union) is not bool:
+            raise StatisticsOperatorError("union_overlaps must be boolean")
+        duration_ns = _union_duration_ns(inputs.get("intervals"), union_overlaps=union)
+        unit = parameters.get("unit")
+        if unit == "seconds":
+            return {"value": duration_ns / 1_000_000_000.0}
+        if unit == "nanoseconds":
+            return {"value": float(duration_ns)}
+        raise StatisticsOperatorError("duration unit is not supported")
+
+
+class RmsOperator:
+    operator_id = "statistics.rms"
+    implementation_version = _VERSION
+    implementation_ref = "builtin.statistics.rms"
+
+    def execute(
+        self,
+        inputs: Mapping[str, object],
+        parameters: Mapping[str, JsonValue],
+        context: OperatorExecutionContext,
+    ) -> Mapping[str, object]:
+        del parameters, context
+        values = _numeric_values(inputs.get("values"), "RMS values")
+        return {"value": math.sqrt(math.fsum(value * value for value in values) / len(values))}
+
+
+class MedianOperator:
+    operator_id = "statistics.median"
+    implementation_version = _VERSION
+    implementation_ref = "builtin.statistics.median"
+
+    def execute(
+        self,
+        inputs: Mapping[str, object],
+        parameters: Mapping[str, JsonValue],
+        context: OperatorExecutionContext,
+    ) -> Mapping[str, object]:
+        del parameters, context
+        return {"value": statistics.median(_numeric_values(inputs.get("values"), "median values"))}
+
+
+class PercentileOperator:
+    operator_id = "statistics.percentile"
+    implementation_version = _VERSION
+    implementation_ref = "builtin.statistics.percentile"
+
+    def execute(
+        self,
+        inputs: Mapping[str, object],
+        parameters: Mapping[str, JsonValue],
+        context: OperatorExecutionContext,
+    ) -> Mapping[str, object]:
+        del context
+        values = sorted(_numeric_values(inputs.get("values"), "percentile values"))
+        percentile = _number(parameters.get("percentile"), "percentile")
+        if not 0.0 <= percentile <= 100.0:
+            raise StatisticsOperatorError("percentile must lie in [0, 100]")
+        position = (len(values) - 1) * percentile / 100.0
+        lower = math.floor(position)
+        upper = math.ceil(position)
+        if lower == upper:
+            value = values[lower]
+        else:
+            fraction = position - lower
+            value = values[lower] + fraction * (values[upper] - values[lower])
+        return {"value": value}
+
+
+class RateOperator:
+    operator_id = "statistics.rate"
+    implementation_version = _VERSION
+    implementation_ref = "builtin.statistics.rate"
+
+    def execute(
+        self,
+        inputs: Mapping[str, object],
+        parameters: Mapping[str, JsonValue],
+        context: OperatorExecutionContext,
+    ) -> Mapping[str, object]:
+        del context
+        count = _number(inputs.get("count"), "count")
+        duration = _number(inputs.get("duration"), "duration")
+        if parameters.get("duration_unit") == "nanoseconds":
+            duration /= 1_000_000_000.0
+        elif parameters.get("duration_unit") != "seconds":
+            raise StatisticsOperatorError("rate duration unit is not supported")
+        if duration == 0.0:
+            if parameters.get("zero_duration") == "zero":
+                return {"value": 0.0}
+            raise StatisticsOperatorError("rate duration cannot be zero")
+        return {"value": count / duration}
+
+
+class PooledRatioOperator:
+    operator_id = "statistics.pooled-ratio"
+    implementation_version = _VERSION
+    implementation_ref = "builtin.statistics.pooled-ratio"
+
+    def execute(
+        self,
+        inputs: Mapping[str, object],
+        parameters: Mapping[str, JsonValue],
+        context: OperatorExecutionContext,
+    ) -> Mapping[str, object]:
+        del context
+        numerator = math.fsum(_numeric_values(inputs.get("numerators"), "numerators"))
+        denominator = math.fsum(_numeric_values(inputs.get("denominators"), "denominators"))
+        if denominator == 0.0:
+            if parameters.get("zero_denominator") == "zero":
+                return {"value": 0.0}
+            raise StatisticsOperatorError("pooled denominator cannot be zero")
+        return {"value": numerator / denominator}
+
+
+class NamedSelectOperator:
+    operator_id = "statistics.named-select"
+    implementation_version = _VERSION
+    implementation_ref = "builtin.statistics.named-select"
+
+    def execute(
+        self,
+        inputs: Mapping[str, object],
+        parameters: Mapping[str, JsonValue],
+        context: OperatorExecutionContext,
+    ) -> Mapping[str, object]:
+        del context
+        values = inputs.get("values")
+        if not isinstance(values, Mapping):
+            raise StatisticsOperatorError("named values must be a mapping")
+        typed_values = cast(Mapping[str, object], values)
+        key = parameters.get("key")
+        if type(key) is not str or not key:
+            raise StatisticsOperatorError("named value key must be a non-empty string")
+        if key not in typed_values:
+            raise StatisticsOperatorError(f"named value {key!r} is not present")
+        return {"value": _number(typed_values[key], key)}
+
+
 def register_statistics_operators(registry: OperatorRegistry) -> None:
     registry.register(mean_definition(), MeanOperator())
     registry.register(sum_duration_definition(), SumDurationOperator())
     registry.register(ratio_definition(), RatioOperator())
     registry.register(event_aggregation_definition(), EventAggregationOperator())
+    registry.register(count_definition(), CountOperator())
+    registry.register(duration_definition(), DurationOperator())
+    registry.register(rms_definition(), RmsOperator())
+    registry.register(median_definition(), MedianOperator())
+    registry.register(percentile_definition(), PercentileOperator())
+    registry.register(rate_definition(), RateOperator())
+    registry.register(pooled_ratio_definition(), PooledRatioOperator())
+    registry.register(named_select_definition(), NamedSelectOperator())
 
 
 __all__ = [
     "EventAggregationOperator",
+    "CountOperator",
+    "DurationOperator",
     "MeanOperator",
+    "MedianOperator",
+    "NamedSelectOperator",
+    "PercentileOperator",
+    "PooledRatioOperator",
+    "RateOperator",
     "RatioOperator",
+    "RmsOperator",
     "StatisticsOperatorError",
     "SumDurationOperator",
     "event_aggregation_definition",

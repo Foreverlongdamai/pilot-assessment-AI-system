@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import cast
 
@@ -55,6 +55,7 @@ class EventRecord:
     event_type: str
     t_ns: int
     duration_ns: int = 0
+    attributes: Mapping[str, object] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not self.event_id or not self.event_type:
@@ -63,6 +64,11 @@ class EventRecord:
             raise TemporalOperatorError("event t_ns must be a non-negative integer")
         if type(self.duration_ns) is not int or self.duration_ns < 0:
             raise TemporalOperatorError("event duration_ns must be non-negative")
+        object.__setattr__(
+            self,
+            "attributes",
+            MappingProxyType(dict(self.attributes)),
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -223,7 +229,7 @@ def interval_intersect_definition() -> OperatorDefinition:
     )
 
 
-def _event_records(value: object) -> tuple[EventRecord, ...]:
+def event_records(value: object) -> tuple[EventRecord, ...]:
     if isinstance(value, (str, bytes)) or not isinstance(value, Sequence):
         raise TemporalOperatorError("events must be an ordered sequence")
     records: list[EventRecord] = []
@@ -244,6 +250,7 @@ def _event_records(value: object) -> tuple[EventRecord, ...]:
                         mapping.get("duration_ns", 0),
                         "event duration_ns",
                     ),
+                    attributes=_attributes(mapping.get("attributes", {})),
                 )
             )
         else:
@@ -309,7 +316,7 @@ class EventSelectOperator:
         return {
             "value": tuple(
                 event
-                for event in _event_records(inputs.get("events"))
+                for event in event_records(inputs.get("events"))
                 if event.event_type in selected
             )
         }
@@ -336,7 +343,7 @@ class EventWindowOperator:
         if type(include_duration) is not bool or type(clamp_to_zero) is not bool:
             raise TemporalOperatorError("window boolean parameters must be strict")
         windows: list[IntervalRecord] = []
-        for event in _event_records(inputs.get("events")):
+        for event in event_records(inputs.get("events")):
             start = event.t_ns + start_offset
             end_anchor = event.t_ns + (event.duration_ns if include_duration else 0)
             end = end_anchor + end_offset
@@ -353,6 +360,7 @@ class EventWindowOperator:
                     start_t_ns=start,
                     end_t_ns=end,
                     attributes={
+                        **event.attributes,
                         "event_id": event.event_id,
                         "event_type": event.event_type,
                     },
@@ -414,6 +422,7 @@ __all__ = [
     "IntervalRecord",
     "TemporalOperatorError",
     "event_select_definition",
+    "event_records",
     "event_window_definition",
     "interval_intersect_definition",
     "interval_records",
