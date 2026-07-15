@@ -30,7 +30,7 @@
         },
         {
           "package_relative_path": "pilot_assessment/anchors/primitives/envelopes.py",
-          "content_sha256": "f44d7612eafc8c4357e8c18443b504a82a54ddabe19978ecdf39506abc5932c3"
+          "content_sha256": "70b12b6c5c50d0a387c1b7e2ecd29364096b5ba4961b6919c08c2582cbccfb61"
         },
         {
           "package_relative_path": "pilot_assessment/anchors/primitives/models.py",
@@ -55,7 +55,7 @@
           "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
         }
       ],
-      "implementation_digest": "ce09512d0efab462a5058a051c0f903d91d9bd6db83cebb54d535bbe0e99d142"
+      "implementation_digest": "1086389e8ff8cc4318f2e50e8b07893aac0c76756fff5f4e72efba739e5a8480"
     },
     {
       "anchor_id": "O2",
@@ -132,7 +132,7 @@
         },
         {
           "package_relative_path": "pilot_assessment/anchors/primitives/envelopes.py",
-          "content_sha256": "f44d7612eafc8c4357e8c18443b504a82a54ddabe19978ecdf39506abc5932c3"
+          "content_sha256": "70b12b6c5c50d0a387c1b7e2ecd29364096b5ba4961b6919c08c2582cbccfb61"
         },
         {
           "package_relative_path": "pilot_assessment/anchors/primitives/models.py",
@@ -157,7 +157,62 @@
           "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
         }
       ],
-      "implementation_digest": "532f02d8c0a41c36d0c4208f2e25c5be839d801a257d93cb984aa89f45f7838a"
+      "implementation_digest": "fbd7b5e969adec626ceb419ca00b5dbdb9a06c974da35ac21cc3db52ad602ee0"
+    },
+    {
+      "anchor_id": "O4",
+      "definition_version": "0.1.0",
+      "plugin_id": "o4-sustained-hover-time",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.o4_sustained_hover_time",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "26dce34c28c4653cce0437348acc09fbd79e05d3cff35d11b39ccaf4b5d21b87",
+      "parameter_schema_id": "o4-parameters-0.1",
+      "parameter_schema_sha256": "1cca21d3c6689ca09e8cef8a3c2f65440d67cf5a9311e06f855463bf8b8dbf32",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "stable-hover-mask-v0.1": "843dea1bbb7196d3b6d06009eeddd8731bd6e5ec53ef7234ba860f0a0496d7fe"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/o4_sustained_hover_time.py",
+          "content_sha256": "ad931841a131dfed4b33ebea618b15a7d784fc319e6499bcb0399a5dc3fd60a9"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/__init__.py",
+          "content_sha256": "147e200d2cd9ce9ca3e0dee70a1ed5e769d0e18526eb5a54b69c28fffd720cb6"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/envelopes.py",
+          "content_sha256": "70b12b6c5c50d0a387c1b7e2ecd29364096b5ba4961b6919c08c2582cbccfb61"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/models.py",
+          "content_sha256": "6428251079a39d1b63269825804a865b0f8a817639e603ae1b7f772420fcf22d"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "18ea08a73bdb972a67c279d2b2ebc985909bf3a3a64113e8ca7a1aea1ca0c95f"
     }
   ],
   "preprocessors": []

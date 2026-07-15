@@ -17,6 +17,7 @@ from pilot_assessment.anchors.primitives.models import (
     O1MaskRow,
 )
 from pilot_assessment.anchors.temporal import (
+    TemporalSupport,
     left_hold_integral_v1,
     reconstruct_point_support,
 )
@@ -42,6 +43,7 @@ _LENGTH_TO_METERS = {
 _NUMERIC_DTYPES = {"i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f32", "f64"}
 
 O3KernelStatus = Literal["computed", "missing_input", "not_computable"]
+O4KernelStatus = Literal["computed", "missing_input", "not_computable"]
 
 
 def _strict_int(value: object, label: str, *, minimum: int = 0) -> int:
@@ -816,10 +818,375 @@ def compute_o3_kernel(
     )
 
 
+@dataclass(frozen=True, slots=True)
+class O4StableMaskRow:
+    phase_id: str
+    t_ns: int
+    source_row_id: int
+    stable: bool
+
+    def __post_init__(self) -> None:
+        if type(self.phase_id) is not str or not self.phase_id:
+            raise ValueError("phase_id must be a non-empty string")
+        for value, label in ((self.t_ns, "t_ns"), (self.source_row_id, "source_row_id")):
+            if type(value) is not int or value < 0:
+                raise ValueError(f"{label} must be a non-negative strict integer")
+        if type(self.stable) is not bool:
+            raise TypeError("stable must be a strict boolean")
+
+
+@dataclass(frozen=True, slots=True)
+class O4KernelResult:
+    status: O4KernelStatus
+    reason: str | None
+    longest_stable_duration_ns: int | None
+    total_stable_duration_ns: int
+    bridged_excursion_duration_ns: int
+    bridged_excursion_count: int
+    phase_duration_ns: int
+    observed_support_duration_ns: int
+    sample_count: int
+    source_start_t_ns: int | None
+    source_end_t_ns: int | None
+    gap_count: int
+    max_gap_ns: int | None
+    mask_rows: tuple[O4StableMaskRow, ...]
+
+    def __post_init__(self) -> None:
+        if self.status not in {"computed", "missing_input", "not_computable"}:
+            raise ValueError("unsupported O4 kernel status")
+        if self.status == "computed":
+            if self.reason is not None or self.longest_stable_duration_ns is None:
+                raise ValueError("computed O4 results require a duration and no reason")
+        elif self.reason is None or self.longest_stable_duration_ns is not None or self.mask_rows:
+            raise ValueError("non-computed O4 results have an invalid metric shape")
+        for value, label in (
+            (self.total_stable_duration_ns, "total_stable_duration_ns"),
+            (self.bridged_excursion_duration_ns, "bridged_excursion_duration_ns"),
+            (self.bridged_excursion_count, "bridged_excursion_count"),
+            (self.phase_duration_ns, "phase_duration_ns"),
+            (self.observed_support_duration_ns, "observed_support_duration_ns"),
+            (self.sample_count, "sample_count"),
+            (self.gap_count, "gap_count"),
+        ):
+            if type(value) is not int or value < 0:
+                raise ValueError(f"{label} must be a non-negative strict integer")
+        if self.phase_duration_ns <= 0:
+            raise ValueError("phase_duration_ns must be positive")
+        if self.observed_support_duration_ns > self.phase_duration_ns:
+            raise ValueError("observed support cannot exceed the phase duration")
+        if self.total_stable_duration_ns > self.observed_support_duration_ns:
+            raise ValueError("stable duration cannot exceed observed support")
+        if self.longest_stable_duration_ns is not None and (
+            type(self.longest_stable_duration_ns) is not int
+            or self.longest_stable_duration_ns < 0
+            or self.longest_stable_duration_ns > self.total_stable_duration_ns
+        ):
+            raise ValueError("longest stable duration is invalid")
+        if (self.source_start_t_ns is None) != (self.source_end_t_ns is None):
+            raise ValueError("source bounds must be both present or both absent")
+        if (
+            self.source_start_t_ns is not None
+            and self.source_end_t_ns is not None
+            and (
+                type(self.source_start_t_ns) is not int
+                or type(self.source_end_t_ns) is not int
+                or self.source_start_t_ns < 0
+                or self.source_end_t_ns < self.source_start_t_ns
+            )
+        ):
+            raise ValueError("source bounds must be ordered non-negative integers")
+        if self.max_gap_ns is not None and (
+            type(self.max_gap_ns) is not int or self.max_gap_ns <= 0
+        ):
+            raise ValueError("max_gap_ns must be a positive strict integer when present")
+        if len(self.mask_rows) > self.sample_count:
+            raise ValueError("mask rows cannot exceed the candidate sample count")
+
+
+def _o4_noncomputed(
+    *,
+    status: O4KernelStatus,
+    reason: str,
+    phase_duration_ns: int,
+    observed_support_duration_ns: int = 0,
+    sample_count: int = 0,
+    source_bounds: tuple[int, int] | None = None,
+    gap_count: int = 0,
+    max_gap_ns: int | None = None,
+) -> O4KernelResult:
+    return O4KernelResult(
+        status=status,
+        reason=reason,
+        longest_stable_duration_ns=None,
+        total_stable_duration_ns=0,
+        bridged_excursion_duration_ns=0,
+        bridged_excursion_count=0,
+        phase_duration_ns=phase_duration_ns,
+        observed_support_duration_ns=observed_support_duration_ns,
+        sample_count=sample_count,
+        source_start_t_ns=None if source_bounds is None else source_bounds[0],
+        source_end_t_ns=None if source_bounds is None else source_bounds[1],
+        gap_count=gap_count,
+        max_gap_ns=max_gap_ns,
+        mask_rows=(),
+    )
+
+
+def _bridge_behavioral_excursions(
+    raw_mask: tuple[bool, ...],
+    support: TemporalSupport,
+    tolerance_ns: int,
+) -> tuple[tuple[bool, ...], int, int]:
+    """Bridge only bounded false runs inside one continuous support segment."""
+
+    effective = list(raw_mask)
+    positive = tuple(
+        interval for interval in support.intervals if interval.end_t_ns > interval.start_t_ns
+    )
+    bridged_count = 0
+    bridged_duration = 0
+    index = 0
+    while index < len(positive):
+        interval = positive[index]
+        if raw_mask[interval.source_row_index]:
+            index += 1
+            continue
+        run_start = index
+        run_end = index
+        while run_end + 1 < len(positive):
+            current = positive[run_end]
+            following = positive[run_end + 1]
+            if current.end_t_ns != following.start_t_ns or raw_mask[following.source_row_index]:
+                break
+            run_end += 1
+        before = positive[run_start - 1] if run_start > 0 else None
+        after = positive[run_end + 1] if run_end + 1 < len(positive) else None
+        bounded = (
+            before is not None
+            and after is not None
+            and before.end_t_ns == positive[run_start].start_t_ns
+            and positive[run_end].end_t_ns == after.start_t_ns
+            and raw_mask[before.source_row_index]
+            and raw_mask[after.source_row_index]
+        )
+        duration = sum(
+            item.end_t_ns - item.start_t_ns for item in positive[run_start : run_end + 1]
+        )
+        if bounded and duration <= tolerance_ns:
+            bridged_count += 1
+            bridged_duration += duration
+            for item in positive[run_start : run_end + 1]:
+                effective[item.source_row_index] = True
+        index = run_end + 1
+    return tuple(effective), bridged_count, bridged_duration
+
+
+def _stable_durations(mask: tuple[bool, ...], support: TemporalSupport) -> tuple[int, int]:
+    longest = 0
+    total = 0
+    run_start: int | None = None
+    run_end: int | None = None
+    for interval in support.intervals:
+        if interval.end_t_ns <= interval.start_t_ns:
+            continue
+        if not mask[interval.source_row_index]:
+            run_start = None
+            run_end = None
+            continue
+        duration = interval.end_t_ns - interval.start_t_ns
+        total += duration
+        if run_start is None or run_end != interval.start_t_ns:
+            run_start = interval.start_t_ns
+        run_end = interval.end_t_ns
+        longest = max(longest, run_end - run_start)
+    return longest, total
+
+
+def compute_o4_kernel(
+    x_table: pl.DataFrame,
+    phase_id: str,
+    envelope: EnvelopeDefinition,
+    scope_start_t_ns: int,
+    scope_end_t_ns: int,
+    include_session_terminal_point: bool,
+    input_contracts: tuple[ResolvedInputTableContract, ...],
+    parameters: Mapping[str, JsonValue],
+    temporal_recipe: Mapping[str, JsonValue],
+) -> O4KernelResult:
+    """Measure the longest stable hover run without treating poor performance as missing."""
+
+    if not isinstance(x_table, pl.DataFrame):
+        raise TypeError("x_table must be a Polars DataFrame")
+    if type(phase_id) is not str or not phase_id:
+        raise ValueError("phase_id must be a non-empty string")
+    if not isinstance(envelope, EnvelopeDefinition):
+        raise TypeError("envelope must use the typed semantic contract")
+    if type(include_session_terminal_point) is not bool:
+        raise TypeError("include_session_terminal_point must be a strict boolean")
+    if not isinstance(input_contracts, tuple) or any(
+        not isinstance(item, ResolvedInputTableContract) for item in input_contracts
+    ):
+        raise TypeError("input_contracts must be a typed tuple")
+    if not isinstance(parameters, Mapping) or set(parameters) != {"max_behavioral_excursion_ns"}:
+        raise ValueError("O4 v0.1 parameters require exactly max_behavioral_excursion_ns")
+    tolerance = parameters["max_behavioral_excursion_ns"]
+    if type(tolerance) is not int or tolerance < 0:
+        raise ValueError("max_behavioral_excursion_ns must be a non-negative strict integer")
+    if not isinstance(temporal_recipe, Mapping):
+        raise TypeError("temporal_recipe must be a mapping")
+    if type(scope_start_t_ns) is not int or type(scope_end_t_ns) is not int:
+        raise TypeError("O4 scope bounds must be strict integers")
+    if scope_start_t_ns < 0 or scope_end_t_ns <= scope_start_t_ns:
+        raise ValueError("O4 scope must be a positive phase span")
+    phase_duration = scope_end_t_ns - scope_start_t_ns
+
+    table_role = _recipe_string(temporal_recipe, "table_role")
+    timestamp_column = _recipe_string(temporal_recipe, "timestamp_column")
+    in_session_column = _recipe_string(temporal_recipe, "in_session_column")
+    stable_keys = _recipe_strings(temporal_recipe, "stable_keys")
+    if len(stable_keys) != 1:
+        raise ValueError("O4 v0.1 requires exactly one stable row key")
+    gap_threshold = _strict_int(
+        temporal_recipe.get("gap_threshold_ns"), "temporal_recipe.gap_threshold_ns"
+    )
+    contract = _x_contract(input_contracts, table_role)
+    if contract is None:
+        return _o4_noncomputed(
+            status="not_computable",
+            reason="input-contract-missing",
+            phase_duration_ns=phase_duration,
+        )
+    fields = {field.field_name: field for field in contract.fields}
+    required_columns = (
+        timestamp_column,
+        in_session_column,
+        *stable_keys,
+        *(limit.metric_id for limit in envelope.axis_limits),
+    )
+    if any(column not in fields or column not in x_table.columns for column in required_columns):
+        return _o4_noncomputed(
+            status="not_computable",
+            reason="envelope-contract-mismatch",
+            phase_duration_ns=phase_duration,
+        )
+    if any(fields[limit.metric_id].unit != limit.unit for limit in envelope.axis_limits):
+        return _o4_noncomputed(
+            status="not_computable",
+            reason="envelope-contract-mismatch",
+            phase_duration_ns=phase_duration,
+        )
+
+    terminal = include_session_terminal_point
+    time_expression = (pl.col(timestamp_column) >= scope_start_t_ns) & (
+        (pl.col(timestamp_column) <= scope_end_t_ns)
+        if terminal
+        else (pl.col(timestamp_column) < scope_end_t_ns)
+    )
+    active = x_table.filter(time_expression & pl.col(in_session_column)).sort(
+        [timestamp_column, *stable_keys], maintain_order=True
+    )
+    if active.is_empty():
+        return _o4_noncomputed(
+            status="missing_input",
+            reason="no-temporal-support",
+            phase_duration_ns=phase_duration,
+        )
+
+    times = tuple(_strict_row_id(value, "X t_ns") for value in active[timestamp_column])
+    source_ids = tuple(_strict_row_id(value, "X stable row ID") for value in active[stable_keys[0]])
+    source_bounds = (times[0], times[-1])
+    support = reconstruct_point_support(
+        active,
+        timestamp_column=timestamp_column,
+        stable_keys=stable_keys,
+        in_session_column=in_session_column,
+        gap_threshold_ns=gap_threshold,
+        semantic_end_t_ns=scope_end_t_ns,
+    )
+    if support.observed_duration_ns == 0:
+        return _o4_noncomputed(
+            status="missing_input",
+            reason="no-temporal-support",
+            phase_duration_ns=phase_duration,
+            sample_count=active.height,
+            source_bounds=source_bounds,
+            gap_count=support.gap_count,
+            max_gap_ns=support.max_gap_ns,
+        )
+
+    raw_mask_values: list[bool] = []
+    for row in active.iter_rows(named=True):
+        inside = True
+        for limit in envelope.axis_limits:
+            value = row[limit.metric_id]
+            if value is None:
+                return _o4_noncomputed(
+                    status="missing_input",
+                    reason="metric-value-missing",
+                    phase_duration_ns=phase_duration,
+                    observed_support_duration_ns=support.observed_duration_ns,
+                    sample_count=active.height,
+                    source_bounds=source_bounds,
+                    gap_count=support.gap_count,
+                    max_gap_ns=support.max_gap_ns,
+                )
+            try:
+                numeric = _finite_number(value, limit.metric_id)
+            except (TypeError, ValueError):
+                return _o4_noncomputed(
+                    status="not_computable",
+                    reason="metric-value-invalid",
+                    phase_duration_ns=phase_duration,
+                    observed_support_duration_ns=support.observed_duration_ns,
+                    sample_count=active.height,
+                    source_bounds=source_bounds,
+                    gap_count=support.gap_count,
+                    max_gap_ns=support.max_gap_ns,
+                )
+            inside = inside and abs(numeric) <= limit.desired_abs_max
+        raw_mask_values.append(inside)
+
+    raw_mask = tuple(raw_mask_values)
+    effective_mask, bridged_count, bridged_duration = _bridge_behavioral_excursions(
+        raw_mask, support, tolerance
+    )
+    longest, total = _stable_durations(effective_mask, support)
+    mask_rows = tuple(
+        O4StableMaskRow(
+            phase_id=phase_id,
+            t_ns=timestamp,
+            source_row_id=source_id,
+            stable=effective_mask[index],
+        )
+        for index, (timestamp, source_id) in enumerate(zip(times, source_ids, strict=True))
+    )
+    return O4KernelResult(
+        status="computed",
+        reason=None,
+        longest_stable_duration_ns=longest,
+        total_stable_duration_ns=total,
+        bridged_excursion_duration_ns=bridged_duration,
+        bridged_excursion_count=bridged_count,
+        phase_duration_ns=phase_duration,
+        observed_support_duration_ns=support.observed_duration_ns,
+        sample_count=active.height,
+        source_start_t_ns=source_bounds[0],
+        source_end_t_ns=source_bounds[1],
+        gap_count=support.gap_count,
+        max_gap_ns=support.max_gap_ns,
+        mask_rows=mask_rows,
+    )
+
+
 __all__ = [
     "O3CaptureTraceRow",
     "O3KernelResult",
     "O3KernelStatus",
+    "O4KernelResult",
+    "O4KernelStatus",
+    "O4StableMaskRow",
     "compute_o1_kernel",
     "compute_o3_kernel",
+    "compute_o4_kernel",
 ]
