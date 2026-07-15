@@ -262,12 +262,12 @@ GREEN：
 
 步骤：
 
-- [ ] RED：测试重复 identity、definition/implementation 不匹配、未知 operator、确定性 catalog order 和 built-in/trusted-extension source。
-- [ ] 运行 focused test，预期缺模块失败。
-- [ ] GREEN：实现显式注册，无 dynamic import、无 eval、无 whole-Anchor fallback。
-- [ ] Registry 按 operator_id/version 唯一索引；catalog 返回 canonical sorted definitions。
-- [ ] 运行 focused test、ruff、ty，预期 exit 0。
-- [ ] 提交：
+- [x] RED：测试重复 identity、definition/implementation 不匹配、未知 operator、确定性 catalog order 和 trusted identity。
+- [x] 运行 focused test：因 evidence package 不存在而 collection 失败，确认 RED 有效。
+- [x] GREEN：实现显式注册，无 dynamic import、无 eval、无 whole-Anchor fallback。
+- [x] Registry 按 operator_id/version 唯一索引；catalog 返回 canonical sorted definitions。
+- [x] 运行 focused test：7 passed；ruff、ty 均 exit 0。
+- [x] 提交：
 
       git add src/pilot_assessment/evidence tests/evidence/test_operator_registry.py
       git commit -m "feat: add trusted operator registry"
