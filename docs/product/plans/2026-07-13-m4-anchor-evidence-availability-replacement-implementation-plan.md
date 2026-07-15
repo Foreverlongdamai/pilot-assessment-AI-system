@@ -14,8 +14,8 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
 - Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–22 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, O7 in `eb9cca6`, O8 in `15da2ea`, and O9 in `db2b5da` plus ownership fix `a76abde`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C stage gate is closed, M4-D is in progress, and Task 23 O10 is next.
-- Current implementation truth: 18/18 reference anchors specified, 9/18 production plugins implemented and one preprocessing provider available; M4-C is software-verified and M4-D is in progress, while M4 overall is not engineering verified.
+- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–23 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, O7 in `eb9cca6`, O8 in `15da2ea`, O9 in `db2b5da` plus ownership fix `a76abde`, and O10 plus the shared `events` primitive in `87aed10`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C stage gate is closed, M4-D is in progress, and Task 24 O11 is next.
+- Current implementation truth: 18/18 reference anchors specified, 10/18 production plugins implemented and one preprocessing provider available; M4-C is software-verified and M4-D is in progress, while M4 overall is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
 - Scope truth: M4 consumes a compiled plan. Building/editing/publishing a ModelBundle, graph, CPT, or plan compiler belongs to M5.
@@ -2721,8 +2721,10 @@ git commit -m "feat: add dead-band activity anchor"
 - Create: `tests/anchors/test_o10_recovery_time.py`
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
 - Modify: `tests/anchors/test_registry.py`
+- Modify: `tests/anchors/test_catalog.py`
+- Modify: `tests/test_package_metadata.py`
 
-- [ ] **Step 1: Write RED event/horizon/recovery tests**
+- [x] **Step 1: Write RED event/horizon/recovery tests**
 
 Test marker start or first sample of a later-confirmed 100 ms adequate-envelope exit; start must not shift to confirmation time. Test earliest of event+15 s/phase end/session end, 2-second desired-envelope hold confirmed fully but latency recorded at onset, <=5/<=10 s boundaries, finite missed wait, multi-event worst/veto, all-event traces after early miss, and no opportunity as not-applicable.
 
@@ -2732,11 +2734,11 @@ Test marker start or first sample of a later-confirmed 100 ms adequate-envelope 
 
 Expected: RED because the shared event primitive and O10 do not exist.
 
-- [ ] **Step 2: Implement reusable causal event/run primitives and O10**
+- [x] **Step 2: Implement reusable causal event/run primitives and O10**
 
 Never convert a short observable horizon into missing data. If the observation end is reached without recovery, emit `computed + U + recovery_missed` with finite wait.
 
-- [ ] **Step 3: Register and run GREEN**
+- [x] **Step 3: Register and run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh --anchor O10 --factory-module pilot_assessment.anchors.plugins.o10_recovery_time --factory-symbol create_plugin
@@ -2745,12 +2747,20 @@ Never convert a short observable horizon into missing data. If the observation e
 
 Expected: PASS; count is 10/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
-git add src/pilot_assessment/anchors/primitives/events.py src/pilot_assessment/anchors/plugins/o10_recovery_time.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_events.py tests/anchors/test_o10_recovery_time.py tests/anchors/test_registry.py
+git add src/pilot_assessment/anchors/primitives/events.py src/pilot_assessment/anchors/plugins/o10_recovery_time.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_events.py tests/anchors/test_o10_recovery_time.py tests/anchors/test_registry.py tests/anchors/test_catalog.py tests/test_package_metadata.py
 git commit -m "feat: add recovery-time anchor"
 ~~~
+
+**Completion evidence (2026-07-15):**
+
+- RED first observed the expected collection failure because `anchors.primitives.events` and the O10 plugin did not exist. Focused causal interval/run, marker/fallback onset, horizon, hold-onset latency, finite miss, multi-event veto and status tests were then implemented without expanding to dense session fixtures.
+- `87aed10` added the reusable causal boolean interval/run primitive, O10 Recovery Time, exact `recovery-events-v0.1` publication and packaged registry closure. Marker events take priority; inferred exits are used only when marker IDs are absent, preserve first-outside onset, use native left-hold support, never bridge explicit gaps, and keep complete event traces after an early miss.
+- Focused Task 23 gate: `17 passed`. Controlled O10/events/O1–O10 registry/catalog/service/scoring/artifact/temporal gate: `258 passed`. Registry verify, full-project Ruff check/format (`153 files`), `ty check src` and `git diff --check` passed.
+- The packaged registry fingerprint is `1d8bcd84f4ea490abc1b83eba1f316249a3952ede4539960b965b34dfc13ec34`; O10 digest is `20dd10667c160e61c2246bf69d290013fbab267cfecd948b2f423cd337b162bf`.
+- Per the approved lightweight policy, the full repository/build/isolated-wheel gates were not repeated for this single anchor; Task 20 remains the latest stage-gate evidence (`1275 passed, 3 skipped`). No subagent or external review was used. The honest state is 10/18 production plugins and one available preprocessing provider; M4-D and M4 overall remain incomplete, `formal_run_authorized=false`, and Task 24 O11 is next.
 
 ### Task 24: Implement O11 Disturbance Latency
 
