@@ -2877,7 +2877,7 @@ git commit -m "feat: add envelope-drift latency and close M4-D"
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
 - Modify: `tests/anchors/test_registry.py`
 
-- [ ] **Step 1: Write RED scene/AOI/denominator tests**
+- [x] **Step 1: Write RED scene/AOI/denominator tests**
 
 Cover stable gaze order, first-person I frame at gaze time, 3D nearest positive depth then priority/stable ID, 2D priority/stable ID, full-view `other_scene`, phase clipping, gap behavior, and pooled phase numerator/denominator. Deliberately supply conflicting precomputed `assigned_aoi_id`; the primitive must use scene/gaze/AOI semantics. Deliberately set finite rows to low confidence, `binocular_valid=false`, blink, or tracking loss: finite observed intervals are not discarded; blink/tracking-loss/unprojectable intervals map to `other_scene`.
 
@@ -2887,7 +2887,7 @@ Cover stable gaze order, first-person I frame at gaze time, 3D nearest positive 
 
 Expected: RED because gaze-AOI/H1 are absent.
 
-- [ ] **Step 2: Implement gaze intervals and H1**
+- [x] **Step 2: Implement gaze intervals and H1**
 
 ~~~text
 R_AOI=100*sum(role_weight*gaze_dwell_role)/total_gaze_dwell
@@ -2899,7 +2899,7 @@ Use gaze-interval duration, not fixation duration. If G stream is truly absent/z
 
 `gaze_aoi.py` exposes `create_provider()` for `gaze-aoi-intervals-v1`/`1.0.0`, declaring only I, G, AOI/phase semantics, and the typed gaze-interval output. H1 consumes the registered dynamic recipe.
 
-- [ ] **Step 3: Register and run GREEN**
+- [x] **Step 3: Register and run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh-preprocessor --provider gaze-aoi-intervals-v1 --factory-module pilot_assessment.anchors.primitives.gaze_aoi --factory-symbol create_provider
@@ -2909,12 +2909,19 @@ Use gaze-interval duration, not fixation duration. If G stream is truly absent/z
 
 Expected: PASS; anchor count is 13/18 and provider count is 2.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/gaze_aoi.py src/pilot_assessment/anchors/plugins/h1_aoi_dwell.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_gaze_aoi.py tests/anchors/test_h1_aoi_dwell.py tests/anchors/test_registry.py
 git commit -m "feat: add AOI dwell anchor"
 ~~~
+
+**Task 26 completion evidence (2026-07-15):**
+
+- RED was first observed as the expected two collection failures while the gaze-AOI provider and H1 plugin were absent. GREEN focused H1/gaze behavior is `14 passed`; the controlled H1/preprocessing/registry/catalog/DAG/service/scoring/artifact/temporal/package regression is `212 passed`.
+- `2d223a7` implements raw gaze plus actual first-person scene-frame association, static/dynamic 2D and 3D AOIs, nearest-positive-depth/priority/stable-ID tie breaking, `other_scene`, exact phase/gap support, pooled dwell, computed-U `no_gaze_dwell`, `phase-dwell-v0.1`, trusted H1 closure and `gaze-aoi-intervals-v1`. Conflicting precomputed `assigned_aoi_id` is ignored. Blink, invalid binocular tracking and unprojectable observations remain in observed support as `other_scene`; there is no raw quality or performance filter.
+- Inline performance review replaced per-gaze dynamic-table scans with one pre-index keyed by table contract/frame/AOI and precomputed frame-timeline starts. Registry verify, Ruff check/format, `ty check src` and `git diff --check` pass. Registry fingerprint is `51b3bc525b5647513852680d1b0fd5c5f49bc63cf31cb48e531880279024b434`; H1 digest is `4de79001cff14d43dd6f64350a4734762a9abd92b79c93d7b74f30f7bfa20350`; gaze provider digest is `079f9216918449c179e81f13442328b8aaf7766c6f9d33b995c589a8a1d2b8b0`.
+- Per the approved lightweight policy, the full repository/build/isolated-wheel gates were not repeated for this single anchor; Task 20 remains the latest full stage-gate evidence (`1275 passed, 3 skipped`). No subagent or external review was used. The honest state is 13/18 production plugins and two available preprocessing providers; M4-E is in progress, M4 overall remains incomplete, `formal_run_authorized=false`, and Task 27 H2 is next.
 
 ### Task 27: Implement H2 First Fixation Latency
 
