@@ -3,6 +3,49 @@
   "contract_version": "0.1.0",
   "entries": [
     {
+      "anchor_id": "H1",
+      "definition_version": "0.1.0",
+      "plugin_id": "h1-aoi-dwell",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.h1_aoi_dwell",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "030bdacce1a23758264b9529137b0b0b0abfa83b4e0eda9249f082177a723ae6",
+      "parameter_schema_id": "h1-parameters-0.1",
+      "parameter_schema_sha256": "6163cfb66a4a7b950362c063ac6edb5ce97fb2929747281b9a4caebe8965584a",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "phase-dwell-v0.1": "c12f582f455f6d6107a3bc97e25832af9aad4d38aaf3122331148a602a307910"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/h1_aoi_dwell.py",
+          "content_sha256": "71cb6f6a6824b6d1ba8a9b2ca144497d163be13b4acdfbd6182e778ce4635a63"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "4de79001cff14d43dd6f64350a4734762a9abd92b79c93d7b74f30f7bfa20350"
+    },
+    {
       "anchor_id": "O1",
       "definition_version": "0.1.0",
       "plugin_id": "o1-phase-state-precision",
@@ -622,6 +665,46 @@
     }
   ],
   "preprocessors": [
+    {
+      "provider_id": "gaze-aoi-intervals-v1",
+      "provider_version": "1.0.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.primitives.gaze_aoi",
+      "factory_symbol": "create_provider",
+      "allowed_package_namespace": "pilot_assessment.anchors.primitives",
+      "definition_fingerprint": "02593ca34093d6717a4f8fe182efa27ed62c149a5dc776481b898cef2f447a81",
+      "parameter_schema_id": "gaze-aoi-intervals-v1-parameters-0.1",
+      "parameter_schema_sha256": "48374620dc6344bbf721e490cde4941ac141e19e8f1bef755d5959a0d23c9148",
+      "output_schema_id": "gaze-aoi-intervals-v1-output-v0.1",
+      "output_schema_sha256": "414fa4a9d6b283977fbf38fa42d44357080e24b7e2296c052b66f2c20686f450",
+      "artifact_kind": "gaze-aoi-intervals-table",
+      "output_payload_kind": "table",
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/gaze_aoi.py",
+          "content_sha256": "da6916a6f0c5b39f121f97c6ddb3ae1c4337ec82f57097658d5ede3ab5d28224"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "079f9216918449c179e81f13442328b8aaf7766c6f9d33b995c589a8a1d2b8b0"
+    },
     {
       "provider_id": "movement-events-v1",
       "provider_version": "1.0.0",

@@ -114,13 +114,14 @@ def test_m4_reference_catalog_parameter_schemas_and_trusted_registry_are_package
         assert parameter_package.joinpath(name).read_bytes()
 
 
-def test_m4_packaged_registry_is_loadable_with_o1_through_o12_and_movement_provider() -> None:
+def test_m4_packaged_registry_is_loadable_with_o1_through_o12_h1_and_two_providers() -> None:
     raw = files("pilot_assessment.anchors").joinpath("registry-v1.json").read_bytes()
     model = AnchorRuntimeRegistry.model_validate_json(raw)
 
     assert model.contract_id == "anchor-runtime-registry"
     assert model.contract_version == "0.1.0"
     assert tuple(entry.anchor_id for entry in model.entries) == (
+        "H1",
         "O1",
         "O10",
         "O11",
@@ -134,7 +135,10 @@ def test_m4_packaged_registry_is_loadable_with_o1_through_o12_and_movement_provi
         "O8",
         "O9",
     )
-    assert tuple(entry.provider_id for entry in model.preprocessors) == ("movement-events-v1",)
+    assert tuple(entry.provider_id for entry in model.preprocessors) == (
+        "gaze-aoi-intervals-v1",
+        "movement-events-v1",
+    )
 
     # The trusted loader accepts the packaged resource and produces a stable fingerprint.
     load_packaged_registry()
