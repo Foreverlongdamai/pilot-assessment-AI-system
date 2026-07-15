@@ -18,6 +18,7 @@ class OperatorExecutionContext:
     recipe_version: int
     node_id: str
     binding_values: Mapping[str, object]
+    input_binding_id: str | None = None
     trace_requested: bool = False
 
     def __post_init__(self) -> None:

@@ -336,19 +336,19 @@ GREEN：
 
 步骤：
 
-- [ ] RED：compiler 拒绝 non-executable recipe；同层 node 以 node_id 稳定排序；compile 不调用 implementation。
-- [ ] GREEN：compiler 只消费 validator=executable 的 recipe，并冻结 exact recipe snapshot。
-- [ ] RED：executor 按 edge 传值、支持 external input binding、收集 selected trace，并把异常定位到 node_id/operator identity。
-- [ ] GREEN：executor 不根据 Anchor ID 分支，不读取 hidden parameter，不隐式转换单位或时间网格。
-- [ ] 运行：
+- [x] RED：compiler 拒绝 non-executable recipe；同层 node 以 node_id 稳定排序；compile 不调用 implementation。
+- [x] GREEN：compiler 只消费 validator=executable 的 recipe，并冻结 exact recipe snapshot。
+- [x] RED：executor 按 edge 传值、支持 external input binding、收集 selected trace，并把异常定位到 node_id/operator identity。
+- [x] GREEN：executor 不根据 Anchor ID 分支，不读取 hidden parameter，不隐式转换单位或时间网格。
+- [x] 运行：
 
-      uv run pytest tests/evidence/test_recipe_compiler.py tests/evidence/test_recipe_executor.py -q
-      uv run ruff check src/pilot_assessment/evidence tests/evidence
-      uv run ty check src/pilot_assessment/evidence
+      .venv\Scripts\python.exe -m pytest tests/evidence/test_recipe_compiler.py tests/evidence/test_recipe_executor.py -q
+      .venv\Scripts\python.exe -m ruff check src/pilot_assessment/evidence tests/evidence
+      .venv\Scripts\ty.exe check src/pilot_assessment/evidence
 
-  预期：exit 0。
+  结果：compiler/executor focused 5 passed；相关总回归 61 passed；ruff、ty exit 0。
 
-- [ ] 提交：
+- [x] 提交：
 
       git add src/pilot_assessment/evidence tests/evidence
       git commit -m "feat: compile and execute evidence recipes"
