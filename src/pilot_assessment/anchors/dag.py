@@ -405,6 +405,28 @@ def _validate_provider_graph(plan: AnchorExecutionPlan) -> None:
     )
 
 
+def _canonical_catalog_required_inputs(values: tuple[str, ...]) -> tuple[str, ...]:
+    """Adapt catalog grouping to the canonical plugin-definition projection order.
+
+    Catalog resources retain their human-facing semantic order, while the typed
+    plugin definition requires lexical order inside context/reference/semantic
+    namespaces.  The adapter preserves the exact input inventory and stream
+    order; it only canonicalizes the three path namespaces before comparison.
+    """
+
+    streams = tuple(value for value in values if value.startswith("stream."))
+    context = tuple(sorted(value for value in values if value.startswith("context.")))
+    references = tuple(sorted(value for value in values if value.startswith("reference.")))
+    semantics = tuple(sorted(value for value in values if value.startswith("semantic.")))
+    normalized = (*streams, *context, *references, *semantics)
+    if len(normalized) != len(values) or len(set(normalized)) != len(normalized):
+        _block(
+            "anchor.plan.catalog_inventory_mismatch",
+            "catalog required inputs contain an unknown namespace or duplicate",
+        )
+    return normalized
+
+
 def _validate_registry_bindings(plan: AnchorExecutionPlan, registry: PluginRegistry) -> str:
     trusted = registry.is_trusted
     if trusted:
@@ -469,7 +491,7 @@ def _validate_registry_bindings(plan: AnchorExecutionPlan, registry: PluginRegis
                 or entry.plugin_version != expected.plugin_version
                 or entry.parameter_schema_id != expected.parameter_schema_id
                 or entry.scorer_policy.scorer_id != expected.scorer_id
-                or required_inputs != expected.required_inputs
+                or required_inputs != _canonical_catalog_required_inputs(expected.required_inputs)
                 or entry.dependencies != expected.dependencies
                 or entry.artifact_recipes != expected.artifact_recipes
             ):

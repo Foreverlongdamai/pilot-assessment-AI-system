@@ -321,6 +321,26 @@ def test_trusted_registry_rejects_partial_or_catalog_divergent_production_plan()
     assert "anchor.plan.catalog_inventory_mismatch" in _codes(outcome)
 
 
+def test_catalog_required_inputs_are_adapted_to_definition_canonical_order() -> None:
+    from pilot_assessment.anchors.catalog import load_packaged_catalog
+    from pilot_assessment.anchors.dag import _canonical_catalog_required_inputs
+
+    catalog = load_packaged_catalog()
+    o1 = next(entry for entry in catalog.entries if entry.anchor_id == "O1")
+
+    assert o1.required_inputs == (
+        "stream.X",
+        "semantic.phases",
+        "semantic.envelopes",
+    )
+    assert _canonical_catalog_required_inputs(o1.required_inputs) == (
+        "stream.X",
+        "semantic.envelopes",
+        "semantic.phases",
+    )
+    assert set(_canonical_catalog_required_inputs(o1.required_inputs)) == set(o1.required_inputs)
+
+
 def test_plan_validation_blocks_duplicate_missing_cycle_and_schema_tamper() -> None:
     from pilot_assessment.anchors.dag import validate_execution_plan
 
