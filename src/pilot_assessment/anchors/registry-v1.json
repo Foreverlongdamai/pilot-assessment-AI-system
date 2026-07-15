@@ -378,6 +378,49 @@
         }
       ],
       "implementation_digest": "9980be18a95de3d4a367b5297689b6dcce998d722af9968fad78e49e3b6420bd"
+    },
+    {
+      "anchor_id": "O8",
+      "definition_version": "0.1.0",
+      "plugin_id": "o8-tpx-composite",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.o8_tpx_composite",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "66e03f5c04fcb9553152aaf7e4eb339ac2febeb443838c1d41a76463b3e0eabb",
+      "parameter_schema_id": "o8-parameters-0.1",
+      "parameter_schema_sha256": "ed844324cb560cdc61ad5d47ca68b0fa3a87c4d0f88acf62445feb96f246e26e",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "tpx-component-trace-v0.1": "9835c3ba35d2dfd59f19cd2e4a1bff1a06c77694ffb45c4bdf137e04c758944b"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/o8_tpx_composite.py",
+          "content_sha256": "97cfd9ce17d154e5222faef8e0d3904c38814c3f841b15bc49df9211fb7fa4ee"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "5575610b31ca3dd0654a7b2cb54265c0420634d722a1d27a7fb117c278936b0d"
     }
   ],
   "preprocessors": [
