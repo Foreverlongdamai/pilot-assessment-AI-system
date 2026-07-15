@@ -14,8 +14,8 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
 - Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–18 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, and O5 plus `movement-events-v1` in `1a119af`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. Task 19 O6 is next.
-- Current implementation truth: 18/18 reference anchors specified, 5/18 production plugins implemented and one preprocessing provider available; M4-C and M4 overall are not engineering verified.
+- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–19 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, and O6 in `2ca3540`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. Task 20 O7 is next.
+- Current implementation truth: 18/18 reference anchors specified, 6/18 production plugins implemented and one preprocessing provider available; M4-C and M4 overall are not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
 - Scope truth: M4 consumes a compiled plan. Building/editing/publishing a ModelBundle, graph, CPT, or plan compiler belongs to M5.
@@ -2505,7 +2505,7 @@ git commit -m "feat: add deterministic workload-rate anchor"
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
 - Modify: `tests/anchors/test_registry.py`
 
-- [ ] **Step 1: Write RED normalization/integration tests**
+- [x] **Step 1: Write RED normalization/integration tests**
 
 Test `lower < trim < upper`, nonnegative weights summing to one, both piecewise branches, left-hold integration per segment, exact 30/50% thresholds, partial support, and finite values outside endpoints producing valid values above 100% without clipping.
 
@@ -2515,7 +2515,7 @@ Test `lower < trim < upper`, nonnegative weights summing to one, both piecewise 
 
 Expected: RED because O6 normalization/integration behavior does not exist.
 
-- [ ] **Step 2: Implement the exact formula**
+- [x] **Step 2: Implement the exact formula**
 
 ~~~text
 u_norm=(u-trim)/(upper-trim) when u>=trim
@@ -2527,7 +2527,7 @@ D <=30%; A <=50%; otherwise U
 
 No runtime trim estimation and no endpoint clipping.
 
-- [ ] **Step 3: Register and run GREEN**
+- [x] **Step 3: Register and run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh --anchor O6 --factory-module pilot_assessment.anchors.plugins.o6_control_magnitude_rms --factory-symbol create_plugin
@@ -2536,12 +2536,22 @@ No runtime trim estimation and no endpoint clipping.
 
 Expected: PASS; count is 6/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/plugins/o6_control_magnitude_rms.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o6_control_magnitude_rms.py tests/anchors/test_registry.py
 git commit -m "feat: add control magnitude RMS anchor"
 ~~~
+
+**Completion evidence (2026-07-15):**
+
+- RED was observed first as the expected collection failure while the O6 production module was absent, then as three registry-honesty failures before registration. The controlled regression subsequently exposed two stale O1–O5 package/catalog count assertions; both were updated to the truthful O1–O6 inventory before GREEN.
+- `2ca3540` implements the native-time O6 plugin and its side-effect-free kernel. It binds the exact validated `U/samples` contract, selected control mappings, immutable lower/trim/upper calibration and canonical non-negative unit-sum weights; it uses gap-aware native left-hold integration and pools channel/phase energy by observed support duration rather than averaging percentages.
+- Both piecewise normalization branches, exact 30/50 boundaries, multi-channel weighting, no cross-gap integration, partial support without a coverage gate, non-overlapping phase pooling, missing-phase refusal to publish a partial session score, and finite values above endpoints producing valid values above 100% are covered. No endpoint clipping, runtime trim estimation, performance-value rejection or data-quality gate was added.
+- Focused O6 tests are `11 passed`; the exact O6/registry gate is `50 passed`; the O6 plus registry/catalog/package-honesty gate is `52 passed`; the controlled O1–O6 runtime/DAG/request/contracts/catalog/package regression is `361 passed, 1 skipped` (the skip is the host symlink capability). In accordance with the user's lightweight-test instruction, the full repository suite was not repeated for this single anchor; Task 16's `1210 passed, 3 skipped` remains the latest full-suite evidence until the M4-C stage gate.
+- Packaged registry fingerprint is `136e2b3d94bed59c61fdc6b8fb68c53974e8ecd9cf061ea3f4b8a0d2ccdca9dd`; O6 implementation digest is `af352fa2ff55d58c53fe89e5b8ff23b188ca6c38e03df9522001898ec6fc8d09`.
+- Registry verification, double schema export with zero drift, schema-export tests, Ruff check/format, `ty check src`, `git diff --check`, fresh sdist/wheel build and repository-external isolated-wheel O1–O6/provider loading passed. The final documentation-bearing wheel is 353,755 bytes with SHA-256 `5888c15671ac6ff13ee1015abd159cc6c835baeb94e5d4f284d63ec12d1921ba`.
+- No subagent or external review was used. The honest state is 6/18 production plugins and one available preprocessing provider; M4-C and M4 overall remain incomplete, `formal_run_authorized=false`, and Task 20 O7 is next.
 
 ### Task 20: Implement O7 Control Reversal Rate and close M4-C
 
