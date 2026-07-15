@@ -1886,7 +1886,7 @@ and `formal_run_authorized=false`.
 - Create: `src/pilot_assessment/anchors/scoring.py`
 - Create: `tests/anchors/test_scoring.py`
 
-- [ ] **Step 1: Write RED scorer tests**
+- [x] **Step 1: Write RED scorer tests**
 
 Test higher-is-better `>=`, lower-is-better `<=`, open/closed asymmetric boundaries, conjunction, worst/veto, pooled numerators/denominators, one-hot likelihood order exactly `[unacceptable, adequate, desired]`, rule evaluation order exactly `[desired, adequate]`, continuous scores 0/0.5/1, override allowlist, and the session non-computed priority `extractor_error > dependency_missing > missing_input > not_computable`. Use all 18 packaged scorer annotations to prove the Task 7 exact four-key annotation compiles to the strict five-field `ScorerPolicy`, with its exact five-key `parameters`, D-then-A rule order, sorted unique override IDs, and Task 8 hash. Reject any extra/missing/reordered rule, condition member/order, unknown operator/state/metric/unit, stale hash, or mutation attempt. Prove diagnostics/coverage/gaps/sync flags cannot affect evidence.
 
@@ -1896,7 +1896,7 @@ Test higher-is-better `>=`, lower-is-better `<=`, open/closed asymmetric boundar
 
 Expected: RED because no central scorer exists.
 
-- [ ] **Step 2: Implement policy-based scoring without anchor-ID switches**
+- [x] **Step 2: Implement policy-based scoring without anchor-ID switches**
 
 ~~~text
 score_measurement(
@@ -1914,16 +1914,18 @@ classify_computed_metrics(
 
 Register scorer behavior by versioned `scorer_id`, not by O/H ID. Compile the Task 7 annotation mechanically without flattening `parameters`; validate exact state/rule/condition/override shape and recompute `scorer_policy_fingerprint` before accepting or using a policy. The recursively frozen policy prevents any validation-to-score mutation. `classify_computed_metrics` is the side-effect-free policy engine shared by `score_measurement` and O13's per-window O1/O5/O7 replay; neither wrapper copies threshold logic. A computed-U override remains computed and participates in the declared aggregation. If any applicable breakdown is non-computed, the session result has no likelihood even when other breakdowns are good.
 
-- [ ] **Step 3: Run GREEN and prohibited-field scan**
+- [x] **Step 3: Run GREEN and prohibited-field scan**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/anchors/test_scoring.py -v
-$matches = & rg -n "invalid_quality|quality_gates|min_valid_coverage|failed_quality|binary_quality_v1" src/pilot_assessment/anchors src/pilot_assessment/contracts/anchor_v2.py 2>$null
-if ($LASTEXITCODE -eq 0) { $matches; throw "prohibited M4 quality field found" }
+$matches = & rg -n "invalid_quality|quality_gates|min_valid_coverage|failed_quality|binary_quality_v1" src/pilot_assessment/anchors src/pilot_assessment/contracts/anchor_v2.py -g "!catalog.py" 2>$null
+if ($LASTEXITCODE -eq 0) { $matches; throw "prohibited M4 runtime quality field found" }
 if ($LASTEXITCODE -ne 1) { throw "rg quality-field scan failed" }
 ~~~
 
-Expected: tests PASS; scan returns no production M4 match.
+Expected: tests PASS; scan returns no M4 runtime/scoring match. `catalog.py` is intentionally excluded
+because its Task 7 `_PROHIBITED_KEYS` denylist contains these literal strings solely to reject them
+from packaged schemas; its rejection tests remain active.
 
 - [x] **Step 4: Commit**
 
@@ -1931,6 +1933,22 @@ Expected: tests PASS; scan returns no production M4 match.
 git add src/pilot_assessment/anchors/scoring.py tests/anchors/test_scoring.py
 git commit -m "feat: add central M4 evidence scoring"
 ~~~
+
+**Completion evidence (2026-07-15):** Commit `d6d8288` adds exact Task 7 annotation compilation,
+pre-use policy/fingerprint validation, the anchor-ID-agnostic `hard_threshold_v1` engine,
+breakdown scoring/status aggregation and canonical AnchorResult v0.2 fingerprints. The RED gate was
+the expected `ModuleNotFoundError` for the absent `pilot_assessment.anchors.scoring` module. The
+Task-local GREEN suite is `35 passed`; the focused scorer/fingerprint/result/measurement contract
+regression is `163 passed`. It proves all 18 packaged policies, D-then-A conjunction and open/closed
+boundaries, exact one-hot U/A/D and 0/0.5/1 scores, override allowlists/veto, pooled-vs-worst session
+measurement semantics, non-computed status priority, immutable policies, unit/metric closure,
+audit-only diagnostics isolation and result fingerprints. Ruff check, Ruff format check and
+`ty check` pass. The original literal scan was confirmed to false-positive only on Task 7's defensive
+`catalog.py` denylist; the corrected runtime scan above is clean and the denylist remains intact.
+This Task was implemented and self-reviewed **INLINE** under the user's quota-conservation
+instruction; no subagent or independent/external review and no Task-local full-suite rerun are
+claimed. The last recorded full suite remains Task 9's `1062 passed, 3 skipped`. Production plugins
+remain 0/18, M4 is not engineering-verified, and `formal_run_authorized=false`.
 
 ### Task 13: Implement typed DAG validation, deterministic scheduling, and the public API
 
