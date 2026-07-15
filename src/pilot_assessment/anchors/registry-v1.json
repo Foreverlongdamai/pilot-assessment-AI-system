@@ -56,6 +56,53 @@
         }
       ],
       "implementation_digest": "36be1bf1d8409ab74d805a3eadb26c58b75ca898c2a8e780df5ced02a2a8ef23"
+    },
+    {
+      "anchor_id": "O2",
+      "definition_version": "0.1.0",
+      "plugin_id": "o2-peak-tracking-excursion",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.o2_peak_tracking_excursion",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "f7798c3b7c094b128a2ae1b5af95064c2d200a68a11ec7e2c8c9d7d2f37e903b",
+      "parameter_schema_id": "o2-parameters-0.1",
+      "parameter_schema_sha256": "45d70f70fb3fb947ac4f8eb680fe99c7ccc95fa0ed7f52c5e80858186cb24199",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "tracking-error-trace-v0.1": "f5902d185853c6601cd945debbe3a195580b8f09f5e2dbaf64712146909721a3"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/o2_peak_tracking_excursion.py",
+          "content_sha256": "3ad1ff58bcef1a76eb87fea968f31252920e5025bf7db8e0584d40b62c9f1757"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/reference_join.py",
+          "content_sha256": "bdb082129642248a6d56b244bb5b281213639497ac1c9b086daea6c893c4382b"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "60638db920b8f3865365625e812104956b9160ca962a116121d8365460ae9966"
     }
   ],
   "preprocessors": []

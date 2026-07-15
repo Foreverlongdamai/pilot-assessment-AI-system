@@ -56,16 +56,16 @@ def provider_entry(
 # --------------------------------------------------------------------------- #
 
 
-def test_packaged_registry_has_o1_and_reports_remaining_not_implemented() -> None:
+def test_packaged_registry_has_o1_o2_and_reports_remaining_not_implemented() -> None:
     catalog = load_packaged_catalog()
     packaged = registry.load_packaged_registry()
 
     for entry in catalog.entries:
         capability = packaged.capability(entry.plugin_id, entry.plugin_version)
-        if entry.anchor_id == "O1":
+        if entry.anchor_id in {"O1", "O2"}:
             assert capability.status is AnchorCapabilityStatus.AVAILABLE
             assert capability.entry is not None
-            assert capability.entry.anchor_id == "O1"
+            assert capability.entry.anchor_id == entry.anchor_id
         else:
             assert capability.status is AnchorCapabilityStatus.NOT_IMPLEMENTED
             assert capability.entry is None
@@ -83,8 +83,7 @@ def test_packaged_registry_has_o1_and_reports_remaining_not_implemented() -> Non
 def test_packaged_registry_fingerprint_binds_the_canonical_model() -> None:
     fingerprint = registry.packaged_registry_fingerprint()
     model = registry._load_registry_model()
-    assert len(model.entries) == 1
-    assert model.entries[0].anchor_id == "O1"
+    assert [entry.anchor_id for entry in model.entries] == ["O1", "O2"]
     assert model.preprocessors == ()
     assert fingerprint == runtime_registry_fingerprint(model)
     assert fingerprint == registry.packaged_registry_fingerprint()
