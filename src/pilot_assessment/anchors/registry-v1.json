@@ -89,6 +89,53 @@
       "implementation_digest": "49a179b7ad08e46bce611f7f418c837b1fc8722608546bd67dc3f4b18547ae1f"
     },
     {
+      "anchor_id": "H3",
+      "definition_version": "0.1.0",
+      "plugin_id": "h3-off-task-dwell",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.h3_off_task_dwell",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "f30b4d60e456232b2105e0f5aa0d6d205fb5c701b3c5ccddaaca17c8b517062d",
+      "parameter_schema_id": "h3-parameters-0.1",
+      "parameter_schema_sha256": "41ff613d08a3045cb3bf8d4add5afd2493d10a113a7d6864cd233231b5cc2998",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "phase-off-task-dwell-v0.1": "c2a406713c78d6b5da10d409cb0843ae1cfd61321081fe0e7d19e514daeac365"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/h1_aoi_dwell.py",
+          "content_sha256": "71cb6f6a6824b6d1ba8a9b2ca144497d163be13b4acdfbd6182e778ce4635a63"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/h3_off_task_dwell.py",
+          "content_sha256": "1aa799f4e3d5cc190e3b020bb4ab7546d04b12d3829ff95cf041c83a3f74a1de"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "c3eb3c1747f31692c65be08c1f2dd906a2887cc9b8826b180ea03ce9dd51bc68"
+    },
+    {
       "anchor_id": "O1",
       "definition_version": "0.1.0",
       "plugin_id": "o1-phase-state-precision",

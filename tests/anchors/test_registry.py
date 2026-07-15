@@ -56,7 +56,7 @@ def provider_entry(
 # --------------------------------------------------------------------------- #
 
 
-def test_packaged_registry_has_fourteen_plugins_and_reports_remaining_not_implemented() -> None:
+def test_packaged_registry_has_fifteen_plugins_and_reports_remaining_not_implemented() -> None:
     catalog = load_packaged_catalog()
     packaged = registry.load_packaged_registry()
 
@@ -77,6 +77,7 @@ def test_packaged_registry_has_fourteen_plugins_and_reports_remaining_not_implem
             "O12",
             "H1",
             "H2",
+            "H3",
         }:
             assert capability.status is AnchorCapabilityStatus.AVAILABLE
             assert capability.entry is not None
@@ -110,6 +111,7 @@ def test_packaged_registry_fingerprint_binds_the_canonical_model() -> None:
     assert [entry.anchor_id for entry in model.entries] == [
         "H1",
         "H2",
+        "H3",
         "O1",
         "O10",
         "O11",
@@ -274,6 +276,17 @@ def test_h2_and_fixation_provider_registry_closures_bind_exact_code_and_polars()
     assert tuple(item.normalized_name for item in fixation.numeric_runtimes) == ("polars",)
     assert tuple(item.package_relative_path for item in fixation.implementation_members) == (
         "pilot_assessment/anchors/primitives/fixation.py",
+    )
+
+
+def test_h3_registry_closure_binds_shared_h1_aggregation_contract_and_polars() -> None:
+    model = registry._load_registry_model()
+    h3 = next(entry for entry in model.entries if entry.anchor_id == "H3")
+
+    assert tuple(item.normalized_name for item in h3.numeric_runtimes) == ("polars",)
+    assert tuple(item.package_relative_path for item in h3.implementation_members) == (
+        "pilot_assessment/anchors/plugins/h1_aoi_dwell.py",
+        "pilot_assessment/anchors/plugins/h3_off_task_dwell.py",
     )
 
 
