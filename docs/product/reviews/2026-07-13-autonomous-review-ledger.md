@@ -216,3 +216,16 @@
 | Inline self-review decisions saved for later audit | A production plan must exactly match the trusted packaged catalog inventory, not merely carry its fingerprint; optional dependency absence is not a required-dependency failure; preprocessing input fingerprints enter producer, artifact and downstream dependency identity; public package export is lazy to keep module execution clean; public API cannot inject registry/policy/fault hooks; request validation remains first and idempotent at both boundaries |
 | Commit | `498f611` (`feat: execute M4 plans through plugin protocol`); docs/status closure committed separately |
 | Release conclusion | Task 13 complete and the M4-B framework gate is engineering-verified. Both packaged registry maps remain empty, so the honest state is 18/18 specified, 0/18 production plugins, M4 overall not engineering-verified, and `formal_run_authorized=false`. Task 14 O1 Phase-state Precision is next |
+
+### AR-016 — M4 Task 14 O1 Phase-state Precision (INLINE)
+
+| Field | Record |
+|---|---|
+| Artifacts | `anchors/primitives/models.py`, `anchors/primitives/envelopes.py`, `anchors/plugins/o1_phase_state_precision.py`, O1 micro constructors/oracles, O1 focused tests, packaged registry entry and registry/plan compatibility tests |
+| Approval | Covered by the approved replacement Task 14 and the user's explicit inline continuation instruction; no formula, CPT, formal-run boundary or scientific-validity claim changed |
+| Finalization mode | **Implemented and self-reviewed INLINE** to conserve quota. No subagent was created and no independent/external verdict is claimed |
+| TDD evidence | RED: 12 focused failures while the O1 capability and primitives were absent. GREEN: O1 + registry focused `51 passed`; wider anchors/contracts/package `400 passed, 1 skipped`; fresh full repository `1175 passed, 3 skipped`. Registry verify, zero-drift schema export, Ruff check/format, `ty check src`, `git diff --check`, fresh sdist/wheel build and repository-external isolated-wheel capability loading passed |
+| Inline self-review decisions saved for later audit | O1 uses native X left-hold support, strict gap splitting and full applicable-phase wall-clock denominators without a coverage/quality gate; finite poor values remain computed U; missing phase support is `missing_input`, missing phase envelope is `not_computable`; all applicable phases are evaluated after an early U; the plugin stages the exact per-axis + joint trace but delegates calculation to the shared pure kernel; entry-level input-contract projections must exactly match the authoritative plan; the already frozen M4 temporal module is a trusted registry framework dependency rather than plugin-owned closure |
+| Identity | Packaged registry fingerprint `dfa7b3a3fec7251b2d4c5535e38adfaaa147d09c38dcf60a24538646c3ff41cd`; O1 implementation digest `36be1bf1d8409ab74d805a3eadb26c58b75ca898c2a8e780df5ced02a2a8ef23` |
+| Commits | `ee67364` (`fix: canonicalize catalog input projections`) and `b1d1fc9` (`feat: add phase-state precision anchor`) |
+| Release conclusion | Task 14 is complete and O1 is the sole available packaged production capability. The honest state is 18/18 specified, 1/18 production plugins; M4-C and M4 overall remain incomplete, `formal_run_authorized=false`, and Task 15 O2 Peak Tracking Excursion is next |

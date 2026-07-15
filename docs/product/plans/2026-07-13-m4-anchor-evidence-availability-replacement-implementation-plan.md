@@ -2145,7 +2145,7 @@ Each task below adds exactly one production registry entry and one executable fa
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
 - Modify: `tests/anchors/test_registry.py`
 
-- [ ] **Step 1: Write RED behavior and boundary tests through `AnchorEvaluator`**
+- [x] **Step 1: Write RED behavior and boundary tests through `AnchorEvaluator`**
 
 Create only generic constructors for tiny aligned X/reference/U/I/G/EEG/ECG/R-peak tables and independent scalar/threshold helpers. They may not import production plugins or store expected result objects. O1's concrete rows and expected states remain in `test_o1_phase_state_precision.py`; later plugin tests reuse the constructors with their own local rows.
 
@@ -2166,7 +2166,7 @@ test_o1_parameter_change_changes_result_fingerprint
 
 Expected: RED because O1 capability is unavailable.
 
-- [ ] **Step 2: Implement the shared envelope primitive and plugin**
+- [x] **Step 2: Implement the shared envelope primitive and plugin**
 
 `primitives/models.py` defines frozen JSON-safe kernel-result dataclasses. `envelopes.py` exposes this exact side-effect-free callable, used by both the O1 plugin and later O13:
 
@@ -2195,7 +2195,7 @@ D if P >= 90; A if P >= 70; otherwise U
 
 Use native X left-hold support, full phase wall-clock denominator, no minimum duration/coverage gate, and a typed `desired-envelope mask` artifact. Missing phase X support is `missing_input`; missing envelope definition is `not_computable`; finite large errors are computed U.
 
-- [ ] **Step 3: Register/verify the exact implementation closure and run GREEN**
+- [x] **Step 3: Register/verify the exact implementation closure and run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh --anchor O1 --factory-module pilot_assessment.anchors.plugins.o1_phase_state_precision --factory-symbol create_plugin
@@ -2211,6 +2211,16 @@ Expected: PASS; production capability count is 1/18.
 git add src/pilot_assessment/anchors/primitives src/pilot_assessment/anchors/plugins src/pilot_assessment/anchors/registry-v1.json tests/m4_support/micro_inputs.py tests/m4_support/micro_oracles.py tests/anchors/test_o1_phase_state_precision.py tests/anchors/test_registry.py
 git commit -m "feat: add phase-state precision anchor"
 ~~~
+
+**Completion evidence (2026-07-15):**
+
+- RED was observed as 12 focused failures while the O1 plugin/primitives were absent.
+- `ee67364` first closed the catalog-to-DTO canonical input-contract projection order; `b1d1fc9` then implemented and registered O1.
+- The O1 plugin is a thin adapter over the shared `compute_o1_kernel`; native-X left-hold support, full-phase denominator, strict gap splitting, all-applicable-phase evaluation and no-quality-gate behavior are covered directly.
+- Focused O1 + registry gate: `51 passed`; wider anchors/contracts/package gate: `400 passed, 1 skipped`; fresh full repository gate: `1175 passed, 3 skipped`.
+- Packaged registry fingerprint is `dfa7b3a3fec7251b2d4c5535e38adfaaa147d09c38dcf60a24538646c3ff41cd`; O1 implementation digest is `36be1bf1d8409ab74d805a3eadb26c58b75ca898c2a8e780df5ced02a2a8ef23`.
+- Registry verification, zero-drift schema export, Ruff check/format, `ty check src`, `git diff --check`, fresh sdist/wheel build and repository-external isolated-wheel O1 capability loading all passed.
+- No subagent or external review was used. The honest state is 1/18 production plugins; M4-C and M4 overall remain incomplete, `formal_run_authorized=false`, and Task 15 O2 is next.
 
 ### Task 15: Implement O2 Peak Tracking Excursion
 
