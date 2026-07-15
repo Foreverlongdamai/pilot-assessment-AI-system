@@ -5,7 +5,7 @@
 | 设计基线 | v0.2 |
 | 日期 | 2026-07-13 |
 | 设计状态 | 完整书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](2026-07-13-m4-task7-catalog-resource-identity-amendment.md) 与 [Task 8 Canonical Fingerprint/Runtime Identity](2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订均已于 2026-07-13 获明确或授权默认批准；修订在各自取代范围内优先 |
-| 实现状态 | 18/18 已设计，6/18 production plugins 已实现；原 M4 实施计划已被轻量修订取代；replacement Task 0–19 已完成，M4-B framework gate 已关闭，O1/O2/O3/O4/O5/O6 shared kernels/plugins 与 `movement-events-v1` provider 已落地且 capability 均为 `available`；下一步为 Task 20 O7；M4-C 与 M4 整体尚未 engineering verified |
+| 实现状态 | 18/18 已设计，7/18 production plugins 已实现；原 M4 实施计划已被轻量修订取代；replacement Task 0–20 已完成，M4-B framework 与 M4-C stage gate 已关闭，O1/O2/O3/O4/O5/O6/O7 shared kernels/plugins 与 `movement-events-v1` provider 已落地且 capability 均为 `available`；下一步为 Task 21 O8；M4 整体尚未 engineering verified |
 | 上游 | M1 Session integrity + M2 Ingestion readiness + M3 native-rate synchronization |
 | 下游 | M5 ModelBundle/BN/CPT/inference；M6 formal run/persistence |
 | 正式运行授权 | `formal_run_authorized=false` |
@@ -597,6 +597,8 @@ Task 19 的实现契约收口不改变上述公式、阈值或公开 schema：O6
 
 复用 O5 完全相同的 grid/filter/sign-run/turning-point profile；有效反转要求相邻峰谷幅值 `>=2% full travel`、间隔 `>=0.15 s`。每通道 rate 的 denominator 与 O5 是同一 total observed support duration；session primary 取 configured channels 最大值。D `<2 Hz`，A `2 <= CRR < 4 Hz`，U `>=4 Hz`。
 
+Task 20 的实现契约不改变上述公式、阈值或公开 schema：O7 只消费注册并缓存的 `movement-events-v1` immutable product，不复制 movement detector。反转核只配对同一 support segment 内的相邻 turning points；两个 phase 首尾相接时，共享边界 timestamp 确定归属后一个 segment，禁止跨 phase 形成虚假反转。各通道先将全部 applicable phase 的 qualifying count 与 observed support duration 分别求和，再计算 rate，session 取通道最大值；任何 applicable phase 非 computed 时不发布局部 session score。零反转是有效的 `computed + 0 Hz`，有限高频反转是有效负面 evidence，不按数值大小过滤。
+
 ### 12.8 O8 TPX Composite
 
 ~~~text
@@ -846,7 +848,7 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 
 ## 16. Documentation migration
 
-本节首先保留原 M4 规格在批准前执行 candidate alignment 的历史记录；当时只涉及 D-021–D-025，且不构成实现。2026-07-13 后续获批的轻量工作流验证修订又触发了第二次迁移：D-026/D-027、§1.1、§14.2–§14.4、§15/§17 和当前状态文档以轻量口径为准，原实施计划被取代；replacement plan 随后于同日单独获批。Task 3 Reference Candidate Binding 修订构成第三次定向迁移：D-028 与 replacement Tasks 3/4/8/13/32/34/35 以该修订为准。用户休息期间按明确授权形成并经两路独立 P0/P1 复核通过的 Task 7/8 amendments 构成第四次机器身份收口：D-029/D-030、catalog/resource/scorer/profile bytes 与 canonical/runtime identity 以它们为准，不改公式、阈值、golden 或里程碑 ownership。Task 0–19 已完成，M4-B framework gate 已关闭，O1/O2/O3/O4/O5/O6 capability 与 `movement-events-v1` provider 均为 `available`，下一步为 Task 20 O7。
+本节首先保留原 M4 规格在批准前执行 candidate alignment 的历史记录；当时只涉及 D-021–D-025，且不构成实现。2026-07-13 后续获批的轻量工作流验证修订又触发了第二次迁移：D-026/D-027、§1.1、§14.2–§14.4、§15/§17 和当前状态文档以轻量口径为准，原实施计划被取代；replacement plan 随后于同日单独获批。Task 3 Reference Candidate Binding 修订构成第三次定向迁移：D-028 与 replacement Tasks 3/4/8/13/32/34/35 以该修订为准。用户休息期间按明确授权形成并经两路独立 P0/P1 复核通过的 Task 7/8 amendments 构成第四次机器身份收口：D-029/D-030、catalog/resource/scorer/profile bytes 与 canonical/runtime identity 以它们为准，不改公式、阈值、golden 或里程碑 ownership。Task 0–20 已完成，M4-B framework 与 M4-C stage gate 已关闭，O1/O2/O3/O4/O5/O6/O7 capability 与 `movement-events-v1` provider 均为 `available`，下一步为 Task 21 O8。
 
 本轮 candidate alignment 覆盖：
 
@@ -877,4 +879,4 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 9. M4/M5/M6 ownership 与 coverage 公式不冲突；
 10. Git commit 只声称 design/documentation，不声称 M4 implemented。
 
-原书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity](2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订与 [replacement plan](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准，D-026–D-030 已接受。原 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 虽曾获批准，但其四套 90 秒 fixture 路线已被本修订取代，不再提供执行授权。Replacement Task 0–19 已完成，M4-B framework gate 已关闭，O1/O2/O3/O4/O5/O6 capability 与 `movement-events-v1` provider 均为 `available`，下一步为 Task 20 O7；M4 当前保持 18/18 specified、6/18 production plugins implemented，M4-C 尚未完成，在 M4-G 完成门通过前不得声称 M4 整体已 engineering verified。
+原书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity](2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订与 [replacement plan](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准，D-026–D-030 已接受。原 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 虽曾获批准，但其四套 90 秒 fixture 路线已被本修订取代，不再提供执行授权。Replacement Task 0–20 已完成，M4-B framework 与 M4-C stage gate 已关闭，O1/O2/O3/O4/O5/O6/O7 capability 与 `movement-events-v1` provider 均为 `available`，下一步为 Task 21 O8；M4 当前保持 18/18 specified、7/18 production plugins implemented，在 M4-G 完成门通过前不得声称 M4 整体已 engineering verified。

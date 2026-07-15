@@ -14,8 +14,8 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
 - Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–19 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, and O6 in `2ca3540`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. Task 20 O7 is next.
-- Current implementation truth: 18/18 reference anchors specified, 6/18 production plugins implemented and one preprocessing provider available; M4-C and M4 overall are not engineering verified.
+- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–20 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, and O7 in `eb9cca6`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C stage gate is closed and Task 21 O8 is next.
+- Current implementation truth: 18/18 reference anchors specified, 7/18 production plugins implemented and one preprocessing provider available; M4-C is software-verified, while M4 overall is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
 - Scope truth: M4 consumes a compiled plan. Building/editing/publishing a ModelBundle, graph, CPT, or plan compiler belongs to M5.
@@ -2562,7 +2562,7 @@ git commit -m "feat: add control magnitude RMS anchor"
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
 - Modify: `tests/anchors/test_registry.py`
 
-- [ ] **Step 1: Write RED shared-profile/reversal tests**
+- [x] **Step 1: Write RED shared-profile/reversal tests**
 
 Prove O7 reuses the exact O5 grid/filter/sign-run/turning-point profile; qualifying peak/valley amplitude is >=2% travel and separation >=0.15 s; denominator equals O5 support duration; session takes channel max; and boundaries are D `<2 Hz`, A `2<=x<4 Hz`, U `>=4 Hz`.
 
@@ -2572,11 +2572,11 @@ Prove O7 reuses the exact O5 grid/filter/sign-run/turning-point profile; qualify
 
 Expected: RED because O7 is not registered and no consumer proves movement-profile reuse.
 
-- [ ] **Step 2: Implement O7 without copying the movement algorithm**
+- [x] **Step 2: Implement O7 without copying the movement algorithm**
 
 Declare the existing `movement-events-v1` preprocessing recipe and consume its immutable product. `primitives/reversal.py` exposes the exact pure callable `compute_o7_kernel(movement: MovementKernelResult, channel_ids: tuple[str, ...], minimum_reversal_amplitude_pct: float, minimum_reversal_separation_ns: int) -> O7KernelResult`; O7 and later O13 both call it. Normal O7 execution never bypasses the registered movement provider, while O13's profile replay may call `detect_movement_events` directly under the separately validated closure. Neither copies the detector or reversal logic. Extreme reversal frequency remains computed U. Missing configured mapping is not-computable; a configured channel with zero reversals remains valid. Spy tests prove the shared callable and registry members cover `movement.py`, `reversal.py`, and `models.py`.
 
-- [ ] **Step 3: Register and run the M4-C gate**
+- [x] **Step 3: Register and run the M4-C gate**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh --anchor O7 --factory-module pilot_assessment.anchors.plugins.o7_control_reversal_rate --factory-symbol create_plugin
@@ -2586,12 +2586,21 @@ Declare the existing `movement-events-v1` preprocessing recipe and consume its i
 
 Expected: PASS; exactly 7/18 production capabilities are available and software-verified.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/reversal.py src/pilot_assessment/anchors/plugins/o7_control_reversal_rate.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o7_control_reversal_rate.py tests/anchors/test_registry.py
 git commit -m "feat: add control reversal anchor and close M4-C"
 ~~~
+
+**Completion evidence (2026-07-15):**
+
+- RED was first observed as the expected collection error while O7 was absent. The initial implementation then exposed one real boundary defect: two contiguous phase support intervals produced `1.5 Hz` instead of `1.0 Hz` because a shared timestamp was treated as both the previous segment end and next segment start. The pure kernel now assigns a shared boundary deterministically to the later segment, and both pure-kernel and plugin regressions forbid cross-phase reversal pairing.
+- `eb9cca6` implements the side-effect-free O7 kernel, production plugin, exact reversal artifact and trusted registry closure. Normal execution consumes the memoized `movement-events-v1` product, uses the O5 observed-support denominator, applies inclusive 2%/0.15 s thresholds, pools per-channel counts/support across all applicable phases, and takes the configured-channel maximum. Zero reversals remain `computed + 0 Hz`; finite extreme rates remain computed Unacceptable; any non-computed applicable phase prevents a partial session score.
+- Focused O7 is `14 passed`; the exact O1–O7/movement/preprocessing/registry M4-C gate is `153 passed`; the fresh full repository stage gate is `1275 passed, 3 skipped` in 285.79 s. The skips are the host symlink capability and two opt-in repository-external captured-format samples, not O7 behavior. This stage-gate run uses the existing lightweight suite and no 90-second or multi-bundle soak fixture.
+- Packaged registry fingerprint is `008de732d473f48e884adbc7bf91e4a068f23daafcd5cddf262a3888e8451c2c`; O7 implementation digest is `9980be18a95de3d4a367b5297689b6dcce998d722af9968fad78e49e3b6420bd`. O1/O3/O4 were refreshed only because their trusted closures share the extended `models.py`; O2/O5/O6 were correctly left untouched.
+- Registry verification, double schema export with zero drift, schema tests (`31 passed`), full-project Ruff check/format, `ty check src`, `git diff --check`, fresh sdist/wheel build and repository-external isolated-wheel O1–O7/provider loading passed. The final documentation-bearing wheel is 360,781 bytes with SHA-256 `cfd07e0902af129ffa1babb29b5cdfbe9748a8ba5ff3459edf636e3974936229`. Two earlier isolated-smoke launcher attempts failed before product assertions because of Windows `python -c` quote loss and a test-only enum/string status assumption; the corrected Base64 launcher passed and both temporary roots were safely cleaned.
+- No subagent or external review was used. The honest state is 7/18 production plugins and one available preprocessing provider; M4-C is software-verified, M4 overall remains incomplete, `formal_run_authorized=false`, and Task 21 O8 is next.
 
 ## M4-D: O8-O12 derived/event anchors
 
