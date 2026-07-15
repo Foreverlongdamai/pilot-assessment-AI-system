@@ -37,7 +37,6 @@ from pilot_assessment.contracts.anchor_v2 import (
 from pilot_assessment.contracts.errors import DomainErrorData, ErrorSeverity
 
 _NANOSECONDS_PER_SECOND = 1_000_000_000
-_MINIMUM_MICRO_MOVEMENT_AMPLITUDE_PCT = 0.5
 _O1_MASK_SCHEMA = {
     "phase_id": pl.String,
     "t_ns": pl.Int64,
@@ -457,10 +456,7 @@ def _phase_measurement(
         for row in selected_events.iter_rows(named=True):
             timestamp = int(row["event_t_ns"])
             amplitude = float(row["amplitude"])
-            if (
-                _MINIMUM_MICRO_MOVEMENT_AMPLITUDE_PCT <= amplitude <= maximum_amplitude_pct
-                and _contains(channel_spans, timestamp)
-            ):
+            if amplitude <= maximum_amplitude_pct and _contains(channel_spans, timestamp):
                 events.append(
                     _MicroEvent(
                         phase_id=phase.phase_id,

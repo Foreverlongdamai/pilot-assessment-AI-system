@@ -442,7 +442,7 @@
       "implementation_members": [
         {
           "package_relative_path": "pilot_assessment/anchors/plugins/o9_dead_band_activity.py",
-          "content_sha256": "a01cda595a79b772f85c5f30ea74baa0024f1dda9abb42ca64d66529f6bb4e8c"
+          "content_sha256": "dd4620e4187b59ff690135fd6b8cb4d4c8676b3ff7c9f8df7cb577860616717b"
         },
         {
           "package_relative_path": "pilot_assessment/anchors/primitives/movement.py",
@@ -477,7 +477,7 @@
           "record_content_sha256": "fab4b505cf70d0ac437cfcd74f3c476c960266f0e1519ff5453103e3fac4d8af"
         }
       ],
-      "implementation_digest": "456210971c5cd528cc8060515e3d427bb0b40239941ac50d61673ae7925ba3dd"
+      "implementation_digest": "9ec9f39fba59f593838f5356e6742e7cd56e0b8760366913972aa27783f43104"
     }
   ],
   "preprocessors": [

@@ -480,8 +480,8 @@ def test_o9_partial_matches_use_support_duration_bounds_and_channel_maximum() ->
     assert len(emitter.payloads) == 1
     artifact_id, payload = emitter.payloads[0]
     assert artifact_id == "micro-movement-events"
-    assert payload.frame.height == 5
-    assert payload.frame["amplitude"].to_list() == pytest.approx([0.5, 5.0, 0.5, 1.0, 5.0])
+    assert payload.frame.height == 6
+    assert payload.frame["amplitude"].to_list() == pytest.approx([0.5, 0.499, 5.0, 0.5, 1.0, 5.0])
 
 
 @pytest.mark.parametrize(
@@ -509,6 +509,21 @@ def test_o9_exact_one_and_two_hz_boundaries(
     assert measurement.primary_value is not None
     assert measurement.primary_value.value == pytest.approx(float(event_count))
     assert _state(measurement.primary_value.value) is expected_state
+
+
+def test_o9_trusts_the_provider_owned_lower_amplitude_bound() -> None:
+    measurement, _emitter = _compute(
+        mask_times=(0, NS),
+        desired=(True, True),
+        stable=(True, True),
+        u_times=(0, NS),
+        events={"cyclic": ((200_000_000, 0.25),)},
+        end_t_ns=NS,
+    )
+
+    assert measurement.calculation_status.value == "computed"
+    assert measurement.primary_value is not None
+    assert measurement.primary_value.value == pytest.approx(1.0)
 
 
 def test_o9_does_not_invoke_an_undeclared_movement_detector(
