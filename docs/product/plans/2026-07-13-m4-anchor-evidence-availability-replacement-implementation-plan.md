@@ -14,8 +14,8 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
 - Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–24 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, O7 in `eb9cca6`, O8 in `15da2ea`, O9 in `db2b5da` plus ownership fix `a76abde`, O10 plus the shared causal boolean primitive in `87aed10`, and O11 plus the shared trailing causal median in `8672c74`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C stage gate is closed, M4-D is in progress, and Task 25 O12 is next.
-- Current implementation truth: 18/18 reference anchors specified, 11/18 production plugins implemented and one preprocessing provider available; M4-C is software-verified and M4-D is in progress, while M4 overall is not engineering verified.
+- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–25 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, O7 in `eb9cca6`, O8 in `15da2ea`, O9 in `db2b5da` plus ownership fix `a76abde`, O10 plus the shared causal boolean primitive in `87aed10`, O11 plus the shared trailing causal median in `8672c74`, and O12 in `e41d0e6`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C/M4-D stage gates are closed, and Task 26 H1 is next.
+- Current implementation truth: 18/18 reference anchors specified, 12/18 production plugins implemented and one preprocessing provider available; M4-C/M4-D are software-verified, while M4 overall is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
 - Scope truth: M4 consumes a compiled plan. Building/editing/publishing a ModelBundle, graph, CPT, or plan compiler belongs to M5.
@@ -2818,11 +2818,13 @@ git commit -m "feat: add disturbance-latency anchor"
 **Files:**
 - Create: `src/pilot_assessment/anchors/plugins/o12_envelope_drift_latency.py`
 - Create: `tests/anchors/test_o12_envelope_drift_latency.py`
-- Modify: `src/pilot_assessment/anchors/primitives/events.py`
+- Reuse unchanged: `src/pilot_assessment/anchors/primitives/events.py`
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
 - Modify: `tests/anchors/test_registry.py`
+- Modify: `tests/anchors/test_catalog.py`
+- Modify: `tests/test_package_metadata.py`
 
-- [ ] **Step 1: Write RED exit/correction tests**
+- [x] **Step 1: Write RED exit/correction tests**
 
 Test 100 ms exit confirmation with latency starting at the first out-of-envelope sample, signed state-error/effect mapping, the same baseline fallback as O11, correct `>5%`/`>=100 ms` input, exact 300/800 ms boundaries, 2-second finite miss, wrong direction, multi-event worst/veto, all traces after a miss, and never leaving the envelope as not-applicable rather than Desired.
 
@@ -2832,11 +2834,11 @@ Test 100 ms exit confirmation with latency starting at the first out-of-envelope
 
 Expected: RED because O12 correction behavior is unavailable.
 
-- [ ] **Step 2: Implement O12 through shared event primitives**
+- [x] **Step 2: Implement O12 through shared event primitives**
 
 Do not reuse confirmation timestamp as `t_exit`. A missing effect mapping is not-computable. A qualifying wrong-direction action or no action is `computed + U + correction_missed`.
 
-- [ ] **Step 3: Register and run the M4-D gate**
+- [x] **Step 3: Register and run the M4-D gate**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh --anchor O10
@@ -2848,12 +2850,20 @@ Do not reuse confirmation timestamp as `t_exit`. A missing effect mapping is not
 
 Expected: PASS; exactly 12/18 production plugins are software-verified.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
-git add src/pilot_assessment/anchors/primitives/events.py src/pilot_assessment/anchors/plugins/o12_envelope_drift_latency.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o12_envelope_drift_latency.py tests/anchors/test_registry.py
+git add src/pilot_assessment/anchors/plugins/o12_envelope_drift_latency.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o12_envelope_drift_latency.py tests/anchors/test_registry.py tests/anchors/test_catalog.py tests/test_package_metadata.py
 git commit -m "feat: add envelope-drift latency and close M4-D"
 ~~~
+
+**Completion evidence (2026-07-15):**
+
+- RED first observed the expected collection failure because the O12 plugin did not exist. After registration, four package/catalog/registry honesty failures explicitly proved the stale O1–O11 inventory boundary before it was updated to O1–O12.
+- `e41d0e6` added O12 Envelope-drift Latency and exact `correction-events-v0.1` publication. The plugin binds separate native X/U contracts and gap thresholds, confirms a desired-envelope exit at inclusive 100 ms while retaining the first outside sample as `t_exit`, maps signed state error through `ControlEffectMapping`, reuses the gap-aware trailing causal median, applies the short nonempty/trim baseline rule, and preserves all multi-exit traces without any quality/coverage filter.
+- Focused O12 gate: `21 passed`. Controlled O8–O12/events/registry/catalog/DAG/service/scoring/artifact/temporal/package gate: `269 passed`. Registry verify, full-project Ruff check/format (`157 files`), `ty check src` and `git diff --check` passed.
+- The packaged registry fingerprint is `02ed9e1882e04d71b384b55366ee09080ec785d04883039e2ded7b7d2d7c68c6`; O12 implementation digest is `f4136c632dd2f303d9636a0ad67f0c597217cd96bf44d621a51f96f134aaf5b7`. Explicit refresh confirmed the unchanged shared-source O10/O11 digests `b86a83189cb8ae5e7da965cbab0293ad928a0cefb9155f4c95594e3226854d6f` and `8618bb2d9e41e1d346f80abd4ce8d0de2fff57260029005fb7acd776c8a394c6`.
+- Per the approved lightweight policy, the full repository/build/isolated-wheel gates were not repeated for this single anchor; Task 20 remains the latest full stage-gate evidence (`1275 passed, 3 skipped`). No subagent or external review was used. The honest state is 12/18 production plugins and one available preprocessing provider; M4-D is closed but M4 overall remains incomplete, `formal_run_authorized=false`, and Task 26 H1 is next.
 
 ## M4-E: H1-H3 visual attention anchors
 
