@@ -242,3 +242,16 @@
 | Identity | Packaged registry fingerprint `752f680401c5482df3897db9dcaa06e4787aa4a54290045285c1bb086760982c`; O2 implementation digest `60638db920b8f3865365625e812104956b9160ca962a116121d8365460ae9966` |
 | Commit | `b1a8743` (`feat: add peak tracking excursion anchor`); docs/status closure committed separately |
 | Release conclusion | Task 15 is complete and O1/O2 are the only available packaged production capabilities. The honest state is 18/18 specified, 2/18 production plugins; M4-C and M4 overall remain incomplete, `formal_run_authorized=false`, and Task 16 O3 Terminal Capture Quality is next |
+
+### AR-018 — M4 Task 16 O3 Terminal Capture Quality (INLINE)
+
+| Field | Record |
+|---|---|
+| Artifacts | `anchors/primitives/envelopes.py`, `anchors/plugins/o3_terminal_capture_quality.py`, O3 micro constructors/tests, event-identity contract regression, packaged registry entry and catalog/registry/package honesty tests |
+| Approval | Covered by the approved replacement Task 16 and the user's explicit INLINE continuation instruction; no accepted formula, threshold, CPT, formal-run boundary or scientific-validity claim changed |
+| Finalization mode | **Implemented and self-reviewed INLINE** to conserve quota. No subagent was created and no independent/external verdict is claimed |
+| TDD evidence | RED: 13 focused failures while O3/capture behavior were absent. GREEN: O3/catalog/registry/contracts/package `137 passed`; fresh full repository `1210 passed, 3 skipped`. Registry verify, zero-drift schema export, Ruff check/format, `ty check src`, `git diff --check`, fresh sdist/wheel build and repository-external isolated-wheel O1/O2/O3 capability loading passed |
+| Inline self-review decisions saved for later audit | O3 binds ordered X position fields to three target components, requires exact frame identity and deterministic length conversion, normalizes a finite nonzero arrival axis, uses native X left-hold support without crossing gaps, confirms the full hold but records latency at its start, clips only by event `opportunity_end_t_ns`, emits finite observed wait on misses, computes every applicable event, applies miss veto and otherwise aggregates both raw metrics component-wise by maximum; distinct events in one phase are keyed by `event_id` before `phase_id` |
+| Identity | Packaged registry fingerprint `b30fa47e0d8dacf3896dd35a808c1b271b21b41953e8525b76b10a76259575d3`; O3 implementation digest `532f02d8c0a41c36d0c4208f2e25c5be839d801a257d93cb984aa89f45f7838a`; final documentation-bearing isolated wheel SHA-256 `dea3c6ac78e3c2c136947d14b5a2e849faf2619dbfe638c05b949f882b9372b7` |
+| Commit | `f7d5261` (`feat: add terminal capture quality anchor`); docs/status closure committed separately |
+| Release conclusion | Task 16 is complete and O1/O2/O3 are the only available packaged production capabilities. The honest state is 18/18 specified, 3/18 production plugins; M4-C and M4 overall remain incomplete, `formal_run_authorized=false`, and Task 17 O4 Sustained Hover Time is next |

@@ -5,7 +5,7 @@
 | 设计基线 | v0.2 |
 | 日期 | 2026-07-13 |
 | 设计状态 | 完整书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](2026-07-13-m4-task7-catalog-resource-identity-amendment.md) 与 [Task 8 Canonical Fingerprint/Runtime Identity](2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订均已于 2026-07-13 获明确或授权默认批准；修订在各自取代范围内优先 |
-| 实现状态 | 18/18 已设计，2/18 production plugins 已实现；原 M4 实施计划已被轻量修订取代；replacement Task 0–15 已完成，M4-B framework gate 已关闭，O1/O2 shared kernels/plugins 已落地且 capability 均为 `available`；下一步为 Task 16 O3；M4-C 与 M4 整体尚未 engineering verified |
+| 实现状态 | 18/18 已设计，3/18 production plugins 已实现；原 M4 实施计划已被轻量修订取代；replacement Task 0–16 已完成，M4-B framework gate 已关闭，O1/O2/O3 shared kernels/plugins 已落地且 capability 均为 `available`；下一步为 Task 17 O4；M4-C 与 M4 整体尚未 engineering verified |
 | 上游 | M1 Session integrity + M2 Ingestion readiness + M3 native-rate synchronization |
 | 下游 | M5 ModelBundle/BN/CPT/inference；M6 formal run/persistence |
 | 正式运行授权 | `formal_run_authorized=false` |
@@ -547,7 +547,9 @@ overshoot = max(0, max(arrival_axis dot (position - hover_target)))
 settling_time = D-to-H boundary 到进入 hover envelope 并连续保持 2 s
 ~~~
 
-`arrival_axis` 由 task semantic snapshot 以目标坐标 frame 中的有限非零向量声明，插件先归一化；缺 target/frame/axis 为 not_computable。默认 observation span 为 `[D_to_H_boundary, applicable_hover_phase_end)`；若 task profile 显式给出更短 `capture_horizon_s`，取两者较早 end。overshoot 在 boundary 到首次满足 2 s hold 的完成时刻之间取最大；始终未捕获则取到 observation end。settling time 计到该 qualifying hold 的**起点**，但必须观察完整 2 s 才确认。D：overshoot `<=2 ft` 且 settling `<=3 s`；A：`<=5 ft` 且 `<=5 s`；其他 U。观察期结束仍未捕获为 `computed + U + capture_missed`，保存 finite observed span，不使用 Infinity。正常 computed O3 也以 `primary_value=null + primary_value_reason=composite_conjunction` 表达，两个带单位 raw metrics 才是评分输入。
+`arrival_axis` 由 task semantic snapshot 以目标坐标 frame 中的有限非零向量声明，插件先归一化；缺 target/frame/axis 为 not_computable。编译后的 O3 temporal binding 必须使用 `semantic.events` 与 `event_span=auto`：event `duration_ns` 物化默认的 D→H boundary 至 applicable hover end 观察区间，只有同一 event 上显式且更早的 `opportunity_end_t_ns` 可以裁短区间；不再使用另一个浮点秒数 horizon 参数。精确且有序的 `position_bindings[{axis_id,x_field,target_component_index}]` 必须绑定全部三个 target 分量；X 与 target 的 coordinate-frame ID 必须一致，长度单位只做确定性换算，禁止猜测 frame transform。
+
+overshoot 在 boundary 到首次满足 2 s hold 的完成时刻之间取最大；始终未捕获则取到 observation end。settling time 计到该 qualifying hold 的**起点**，但必须观察完整 2 s 才确认。D：overshoot `<=2 ft` 且 settling `<=3 s`；A：`<=5 ft` 且 `<=5 s`；其他 U。观察期结束仍未捕获为 `computed + U + capture_missed`，保存 finite observed span，不使用 Infinity。正常 computed O3 也以 `primary_value=null + primary_value_reason=composite_conjunction` 表达，两个带单位 raw metrics 才是评分输入。多个 applicable event 必须全部计算；任一 miss 否决 session classification，正常事件按 overshoot 与 settling time 分量分别取最大值后再作 session conjunction。
 
 ### 12.4 O4 Sustained Hover Time
 
@@ -838,7 +840,7 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 
 ## 16. Documentation migration
 
-本节首先保留原 M4 规格在批准前执行 candidate alignment 的历史记录；当时只涉及 D-021–D-025，且不构成实现。2026-07-13 后续获批的轻量工作流验证修订又触发了第二次迁移：D-026/D-027、§1.1、§14.2–§14.4、§15/§17 和当前状态文档以轻量口径为准，原实施计划被取代；replacement plan 随后于同日单独获批。Task 3 Reference Candidate Binding 修订构成第三次定向迁移：D-028 与 replacement Tasks 3/4/8/13/32/34/35 以该修订为准。用户休息期间按明确授权形成并经两路独立 P0/P1 复核通过的 Task 7/8 amendments 构成第四次机器身份收口：D-029/D-030、catalog/resource/scorer/profile bytes 与 canonical/runtime identity 以它们为准，不改公式、阈值、golden 或里程碑 ownership。Task 0–15 已完成，M4-B framework gate 已关闭，O1/O2 capability 均为 `available`，下一步为 Task 16 O3。
+本节首先保留原 M4 规格在批准前执行 candidate alignment 的历史记录；当时只涉及 D-021–D-025，且不构成实现。2026-07-13 后续获批的轻量工作流验证修订又触发了第二次迁移：D-026/D-027、§1.1、§14.2–§14.4、§15/§17 和当前状态文档以轻量口径为准，原实施计划被取代；replacement plan 随后于同日单独获批。Task 3 Reference Candidate Binding 修订构成第三次定向迁移：D-028 与 replacement Tasks 3/4/8/13/32/34/35 以该修订为准。用户休息期间按明确授权形成并经两路独立 P0/P1 复核通过的 Task 7/8 amendments 构成第四次机器身份收口：D-029/D-030、catalog/resource/scorer/profile bytes 与 canonical/runtime identity 以它们为准，不改公式、阈值、golden 或里程碑 ownership。Task 0–16 已完成，M4-B framework gate 已关闭，O1/O2/O3 capability 均为 `available`，下一步为 Task 17 O4。
 
 本轮 candidate alignment 覆盖：
 
@@ -869,4 +871,4 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 9. M4/M5/M6 ownership 与 coverage 公式不冲突；
 10. Git commit 只声称 design/documentation，不声称 M4 implemented。
 
-原书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity](2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订与 [replacement plan](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准，D-026–D-030 已接受。原 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 虽曾获批准，但其四套 90 秒 fixture 路线已被本修订取代，不再提供执行授权。Replacement Task 0–15 已完成，M4-B framework gate 已关闭，O1/O2 capability 均为 `available`，下一步为 Task 16 O3；M4 当前保持 18/18 specified、2/18 production plugins implemented，M4-C 尚未完成，在 M4-G 完成门通过前不得声称 M4 整体已 engineering verified。
+原书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity](2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订与 [replacement plan](../plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准，D-026–D-030 已接受。原 `docs/product/plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md` 虽曾获批准，但其四套 90 秒 fixture 路线已被本修订取代，不再提供执行授权。Replacement Task 0–16 已完成，M4-B framework gate 已关闭，O1/O2/O3 capability 均为 `available`，下一步为 Task 17 O4；M4 当前保持 18/18 specified、3/18 production plugins implemented，M4-C 尚未完成，在 M4-G 完成门通过前不得声称 M4 整体已 engineering verified。

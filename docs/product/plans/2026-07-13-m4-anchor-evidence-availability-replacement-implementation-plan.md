@@ -14,8 +14,8 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
 - Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–15 are complete, with O1 in `b1d1fc9` and O2 in `b1a8743`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. Task 16 O3 is next.
-- Current implementation truth: 18/18 reference anchors specified, 2/18 production plugins implemented; M4-C and M4 overall are not engineering verified.
+- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–16 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, and O3 in `f7d5261`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. Task 17 O4 is next.
+- Current implementation truth: 18/18 reference anchors specified, 3/18 production plugins implemented; M4-C and M4 overall are not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
 - Scope truth: M4 consumes a compiled plan. Building/editing/publishing a ModelBundle, graph, CPT, or plan compiler belongs to M5.
@@ -2341,6 +2341,16 @@ git add src/pilot_assessment/anchors/primitives/envelopes.py src/pilot_assessmen
 git commit -m "feat: add terminal capture quality anchor"
 ~~~
 
+**Completion evidence (2026-07-15):**
+
+- RED was observed as 13 focused failures while O3/capture behavior were absent. GREEN was extended with zero-hold, multi-event and event-identity regressions; the final O3/catalog/registry/contracts/package gate is `137 passed` and the fresh full repository gate is `1210 passed, 3 skipped`.
+- `f7d5261` implements the gap-aware capture-envelope primitive, thin O3 production plugin, exact capture trace artifact and trusted registry entry. It also fixes `SessionSemanticSnapshot` root identity so distinct events in one phase remain distinct by `event_id` rather than being collapsed by `phase_id`.
+- O3 uses normalized finite arrival axis, exact ordered `position_bindings`, target/X frame equality, deterministic length conversion, native X timestamps and gap-aware left-hold support. The observation span is event-bound: `duration_ns` supplies the default D→H→hover-end interval and an earlier `opportunity_end_t_ns` clips it. Missing target/frame/axis is not-computable; capture miss is finite `computed U + capture_missed`, never Infinity.
+- All applicable events are computed. Any miss vetoes the session; otherwise overshoot and settling time aggregate component-wise by maximum before the D/A/U conjunction. Normal primary is null with `composite_conjunction`; raw overshoot/settling remain the score inputs.
+- Packaged registry fingerprint is `b30fa47e0d8dacf3896dd35a808c1b271b21b41953e8525b76b10a76259575d3`; O1 implementation digest is `ce09512d0efab462a5058a051c0f903d91d9bd6db83cebb54d535bbe0e99d142` after the shared-envelope extension, O2 remains `60638db920b8f3865365625e812104956b9160ca962a116121d8365460ae9966`, and O3 is `532f02d8c0a41c36d0c4208f2e25c5be839d801a257d93cb984aa89f45f7838a`.
+- Registry verification, zero-drift schema export, Ruff check/format, `ty check src`, `git diff --check`, fresh sdist/wheel build and repository-external isolated-wheel O1/O2/O3 capability loading all passed. The final documentation-bearing wheel is 324,625 bytes with SHA-256 `dea3c6ac78e3c2c136947d14b5a2e849faf2619dbfe638c05b949f882b9372b7`.
+- No subagent or external review was used. The honest state is 3/18 production plugins; M4-C and M4 overall remain incomplete, `formal_run_authorized=false`, and Task 17 O4 is next.
+
 ### Task 17: Implement O4 Sustained Hover Time
 
 **Files:**
@@ -2368,7 +2378,7 @@ primary = longest_continuous_stable_duration
 D >= 10 s; A >= 5 s; otherwise U
 ~~~
 
-Do not repair collection gaps. Any behavioral tolerance must be the explicit versioned `max_behavioral_excursion_s` parameter.
+Do not repair collection gaps. Any behavioral tolerance must be the explicit versioned `max_behavioral_excursion_ns` parameter; zero means no tolerated behavioral excursion.
 
 - [ ] **Step 3: Register and run GREEN**
 
