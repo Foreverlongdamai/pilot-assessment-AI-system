@@ -100,6 +100,16 @@ M4_SCHEMA_METADATA = {
         "Pilot Assessment Anchor Evaluation Report 0.1.0",
         "0.1.0",
     ),
+    "evidence-recipe-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:evidence-recipe:0.1.0",
+        "Pilot Assessment Evidence Recipe 0.1.0",
+        "0.1.0",
+    ),
+    "operator-definition-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:operator-definition:0.1.0",
+        "Pilot Assessment Operator Definition 0.1.0",
+        "0.1.0",
+    ),
 }
 
 ALL_SCHEMA_NAMES = frozenset(LEGACY_SCHEMA_SHA256) | frozenset(M4_SCHEMA_METADATA)

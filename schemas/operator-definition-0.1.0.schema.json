@@ -1,0 +1,321 @@
+{
+  "$defs": {
+    "JsonValue": {},
+    "OperatorFamily": {
+      "enum": [
+        "input",
+        "temporal",
+        "signal",
+        "event",
+        "gaze_vision",
+        "flight_geometry",
+        "statistics",
+        "composition",
+        "aggregation",
+        "scoring"
+      ],
+      "title": "OperatorFamily",
+      "type": "string"
+    },
+    "OperatorImplementationSource": {
+      "enum": [
+        "built_in",
+        "trusted_extension"
+      ],
+      "title": "OperatorImplementationSource",
+      "type": "string"
+    },
+    "OperatorPortDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 8000,
+          "title": "Description",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "port_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Port Id",
+          "type": "string"
+        },
+        "port_type": {
+          "$ref": "#/$defs/PortType"
+        }
+      },
+      "required": [
+        "port_id",
+        "name",
+        "description",
+        "port_type"
+      ],
+      "title": "OperatorPortDefinition",
+      "type": "object"
+    },
+    "ParameterControlKind": {
+      "enum": [
+        "number",
+        "slider",
+        "text",
+        "select",
+        "multi_select",
+        "checkbox",
+        "formula"
+      ],
+      "title": "ParameterControlKind",
+      "type": "string"
+    },
+    "ParameterUiDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "control": {
+          "$ref": "#/$defs/ParameterControlKind"
+        },
+        "group_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Group Id",
+          "type": "string"
+        },
+        "help_text": {
+          "maxLength": 8000,
+          "title": "Help Text",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "parameter_path": {
+          "maxLength": 1024,
+          "minLength": 2,
+          "title": "Parameter Path",
+          "type": "string"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unit"
+        }
+      },
+      "required": [
+        "parameter_path",
+        "label",
+        "group_id",
+        "control",
+        "help_text",
+        "unit"
+      ],
+      "title": "ParameterUiDefinition",
+      "type": "object"
+    },
+    "PortCardinality": {
+      "enum": [
+        "one",
+        "optional",
+        "many"
+      ],
+      "title": "PortCardinality",
+      "type": "string"
+    },
+    "PortType": {
+      "additionalProperties": false,
+      "description": "Type information shared by operator ports and external recipe bindings.",
+      "properties": {
+        "cardinality": {
+          "$ref": "#/$defs/PortCardinality"
+        },
+        "temporal_semantics": {
+          "$ref": "#/$defs/TemporalSemantics"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unit"
+        },
+        "value_type": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Value Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value_type",
+        "cardinality",
+        "temporal_semantics",
+        "unit"
+      ],
+      "title": "PortType",
+      "type": "object"
+    },
+    "TemporalSemantics": {
+      "enum": [
+        "timeless",
+        "sampled",
+        "point",
+        "interval",
+        "mixed"
+      ],
+      "title": "TemporalSemantics",
+      "type": "string"
+    },
+    "TraceCapability": {
+      "enum": [
+        "none",
+        "summary",
+        "full"
+      ],
+      "title": "TraceCapability",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:operator-definition:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Portable operator metadata paired with one trusted implementation.",
+  "properties": {
+    "contract_id": {
+      "const": "operator-definition",
+      "default": "operator-definition",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "description": {
+      "maxLength": 8000,
+      "title": "Description",
+      "type": "string"
+    },
+    "family": {
+      "$ref": "#/$defs/OperatorFamily"
+    },
+    "implementation_ref": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Implementation Ref",
+      "type": "string"
+    },
+    "implementation_source": {
+      "$ref": "#/$defs/OperatorImplementationSource"
+    },
+    "implementation_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Implementation Version",
+      "type": "string"
+    },
+    "input_ports": {
+      "items": {
+        "$ref": "#/$defs/OperatorPortDefinition"
+      },
+      "title": "Input Ports",
+      "type": "array"
+    },
+    "name": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "operator_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "output_ports": {
+      "items": {
+        "$ref": "#/$defs/OperatorPortDefinition"
+      },
+      "title": "Output Ports",
+      "type": "array"
+    },
+    "parameter_schema": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Parameter Schema",
+      "type": "object"
+    },
+    "parameter_ui": {
+      "items": {
+        "$ref": "#/$defs/ParameterUiDefinition"
+      },
+      "title": "Parameter Ui",
+      "type": "array"
+    },
+    "pseudocode": {
+      "anyOf": [
+        {
+          "maxLength": 8000,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Pseudocode"
+    },
+    "trace_capability": {
+      "$ref": "#/$defs/TraceCapability"
+    }
+  },
+  "required": [
+    "operator_id",
+    "implementation_version",
+    "family",
+    "name",
+    "description",
+    "pseudocode",
+    "input_ports",
+    "output_ports",
+    "parameter_schema",
+    "parameter_ui",
+    "trace_capability",
+    "implementation_source",
+    "implementation_ref"
+  ],
+  "title": "Pilot Assessment Operator Definition 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "operator identity binds portable metadata to one trusted implementation",
+    "parameter schema and UI paths are part of the portable definition"
+  ]
+}

@@ -210,27 +210,27 @@ GREEN：
 
 RED：
 
-- [ ] 添加 schema 名称、URN、title、contract version、byte-identical 双目标和 Draft 2020-12 validation 测试。
-- [ ] 添加 incomplete recipe 可被 schema 接受、非法端口 ID/NaN 被拒绝的 parity 测试。
-- [ ] 运行：
+- [x] 添加 schema 名称、URN、title、contract version、byte-identical 双目标和 Draft 2020-12 validation 测试。
+- [x] 添加 incomplete recipe 可被 schema 接受、非法结构 ID 被拒绝的 parity 测试；非有限数字由 canonical JSON 编码与 Pydantic 合同拒绝。
+- [x] 运行：
 
-      uv run pytest tests/schemas/test_schema_export.py -q
+      .venv\Scripts\python.exe -m pytest tests/schemas/test_evidence_recipe_schema.py -q
 
-  预期：缺少两个 schema key。
+  结果：3 项均因缺少两个 schema key 失败，确认 RED 有效。
 
 GREEN：
 
-- [ ] 将 EvidenceRecipe 和 OperatorDefinition 加入确定性 exporter。
-- [ ] 导出两份 schema 到 repository root 与 package resources。
-- [ ] 运行 focused schema test，预期通过。
-- [ ] 运行：
+- [x] 将 EvidenceRecipe 和 OperatorDefinition 加入确定性 exporter。
+- [x] 导出两份 schema 到 repository root 与 package resources。
+- [x] 运行完整 schema suite：34 passed。
+- [x] 运行：
 
-      uv run python -m pilot_assessment.schemas.export
-      git diff --exit-code -- schemas src/pilot_assessment/schema_resources
+      .venv\Scripts\python.exe -m pilot_assessment.schemas.export
+      .venv\Scripts\python.exe -m pytest tests/schemas -q
 
-  第二条命令在第二次导出后预期 exit 0。
+  结果：双目标 byte-identical 测试、ruff、ty 和 git diff --check 均 exit 0。
 
-- [ ] 提交：
+- [x] 提交：
 
       git add src/pilot_assessment/schemas schemas src/pilot_assessment/schema_resources tests/schemas
       git commit -m "feat: export evidence recipe schemas"

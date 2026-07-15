@@ -1,0 +1,605 @@
+{
+  "$defs": {
+    "InputBindingKind": {
+      "enum": [
+        "stream",
+        "semantic",
+        "reference"
+      ],
+      "title": "InputBindingKind",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "NodePortReference": {
+      "additionalProperties": false,
+      "properties": {
+        "node_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "port_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Port Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "port_id"
+      ],
+      "title": "NodePortReference",
+      "type": "object"
+    },
+    "OutputRole": {
+      "enum": [
+        "primary_value",
+        "raw_metric",
+        "breakdown",
+        "trace"
+      ],
+      "title": "OutputRole",
+      "type": "string"
+    },
+    "PortCardinality": {
+      "enum": [
+        "one",
+        "optional",
+        "many"
+      ],
+      "title": "PortCardinality",
+      "type": "string"
+    },
+    "PortType": {
+      "additionalProperties": false,
+      "description": "Type information shared by operator ports and external recipe bindings.",
+      "properties": {
+        "cardinality": {
+          "$ref": "#/$defs/PortCardinality"
+        },
+        "temporal_semantics": {
+          "$ref": "#/$defs/TemporalSemantics"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unit"
+        },
+        "value_type": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Value Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value_type",
+        "cardinality",
+        "temporal_semantics",
+        "unit"
+      ],
+      "title": "PortType",
+      "type": "object"
+    },
+    "RecipeAnchor": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Anchor Id",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 8000,
+          "title": "Description",
+          "type": "string"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/RecipeLifecycle"
+        },
+        "name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "scientific_status": {
+          "$ref": "#/$defs/RecipeScientificStatus"
+        }
+      },
+      "required": [
+        "anchor_id",
+        "name",
+        "description",
+        "lifecycle",
+        "scientific_status"
+      ],
+      "title": "RecipeAnchor",
+      "type": "object"
+    },
+    "RecipeDocumentation": {
+      "additionalProperties": false,
+      "properties": {
+        "assumptions": {
+          "items": {
+            "maxLength": 8000,
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "parameter_notes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Parameter Notes",
+          "type": "object"
+        },
+        "references": {
+          "items": {
+            "maxLength": 8000,
+            "type": "string"
+          },
+          "title": "References",
+          "type": "array"
+        },
+        "summary": {
+          "maxLength": 8000,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "summary",
+        "assumptions",
+        "parameter_notes",
+        "references"
+      ],
+      "title": "RecipeDocumentation",
+      "type": "object"
+    },
+    "RecipeEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "edge_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Edge Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/NodePortReference"
+        },
+        "target": {
+          "$ref": "#/$defs/NodePortReference"
+        }
+      },
+      "required": [
+        "edge_id",
+        "source",
+        "target"
+      ],
+      "title": "RecipeEdge",
+      "type": "object"
+    },
+    "RecipeGraph": {
+      "additionalProperties": false,
+      "properties": {
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/RecipeEdge"
+          },
+          "title": "Edges",
+          "type": "array"
+        },
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/RecipeNode"
+          },
+          "title": "Nodes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "nodes",
+        "edges"
+      ],
+      "title": "RecipeGraph",
+      "type": "object"
+    },
+    "RecipeInputBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "binding_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Binding Id",
+          "type": "string"
+        },
+        "declared_type": {
+          "$ref": "#/$defs/PortType"
+        },
+        "kind": {
+          "$ref": "#/$defs/InputBindingKind"
+        },
+        "name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "selector": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Selector",
+          "type": "object"
+        },
+        "source_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "binding_id",
+        "kind",
+        "source_id",
+        "name",
+        "declared_type",
+        "selector"
+      ],
+      "title": "RecipeInputBinding",
+      "type": "object"
+    },
+    "RecipeLifecycle": {
+      "enum": [
+        "active",
+        "disabled",
+        "retired"
+      ],
+      "title": "RecipeLifecycle",
+      "type": "string"
+    },
+    "RecipeNode": {
+      "additionalProperties": false,
+      "properties": {
+        "node_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "operator_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Operator Id",
+          "type": "string"
+        },
+        "operator_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Operator Version",
+          "type": "string"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Parameters",
+          "type": "object"
+        }
+      },
+      "required": [
+        "node_id",
+        "operator_id",
+        "operator_version",
+        "parameters"
+      ],
+      "title": "RecipeNode",
+      "type": "object"
+    },
+    "RecipeOutputBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "output_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Output Id",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/OutputRole"
+        },
+        "source": {
+          "$ref": "#/$defs/NodePortReference"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unit"
+        }
+      },
+      "required": [
+        "output_id",
+        "role",
+        "name",
+        "source",
+        "unit"
+      ],
+      "title": "RecipeOutputBinding",
+      "type": "object"
+    },
+    "RecipeScientificStatus": {
+      "enum": [
+        "starter_template",
+        "expert_defined",
+        "calibrated"
+      ],
+      "title": "RecipeScientificStatus",
+      "type": "string"
+    },
+    "RecipeScoring": {
+      "additionalProperties": false,
+      "properties": {
+        "custom_operator_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Custom Operator Id"
+        },
+        "custom_operator_version": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Custom Operator Version"
+        },
+        "input": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NodePortReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mode": {
+          "$ref": "#/$defs/ScoringMode"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Parameters",
+          "type": "object"
+        }
+      },
+      "required": [
+        "mode",
+        "input",
+        "parameters",
+        "custom_operator_id",
+        "custom_operator_version"
+      ],
+      "title": "RecipeScoring",
+      "type": "object"
+    },
+    "RecipeUiGroup": {
+      "additionalProperties": false,
+      "properties": {
+        "group_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Group Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "parameter_paths": {
+          "items": {
+            "maxLength": 1024,
+            "minLength": 2,
+            "type": "string"
+          },
+          "title": "Parameter Paths",
+          "type": "array"
+        }
+      },
+      "required": [
+        "group_id",
+        "label",
+        "parameter_paths"
+      ],
+      "title": "RecipeUiGroup",
+      "type": "object"
+    },
+    "RecipeUiMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "groups": {
+          "items": {
+            "$ref": "#/$defs/RecipeUiGroup"
+          },
+          "title": "Groups",
+          "type": "array"
+        },
+        "preferred_layout": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Preferred Layout",
+          "type": "object"
+        }
+      },
+      "required": [
+        "groups",
+        "preferred_layout"
+      ],
+      "title": "RecipeUiMetadata",
+      "type": "object"
+    },
+    "ScoringMode": {
+      "enum": [
+        "ordered_dau",
+        "soft_likelihood",
+        "custom_operator"
+      ],
+      "title": "ScoringMode",
+      "type": "string"
+    },
+    "TemporalSemantics": {
+      "enum": [
+        "timeless",
+        "sampled",
+        "point",
+        "interval",
+        "mixed"
+      ],
+      "title": "TemporalSemantics",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:evidence-recipe:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "The sole editable source used for display, persistence and execution.",
+  "properties": {
+    "anchor": {
+      "$ref": "#/$defs/RecipeAnchor"
+    },
+    "contract_id": {
+      "const": "evidence-recipe",
+      "default": "evidence-recipe",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "documentation": {
+      "$ref": "#/$defs/RecipeDocumentation"
+    },
+    "graph": {
+      "$ref": "#/$defs/RecipeGraph"
+    },
+    "inputs": {
+      "items": {
+        "$ref": "#/$defs/RecipeInputBinding"
+      },
+      "title": "Inputs",
+      "type": "array"
+    },
+    "outputs": {
+      "items": {
+        "$ref": "#/$defs/RecipeOutputBinding"
+      },
+      "title": "Outputs",
+      "type": "array"
+    },
+    "recipe_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Recipe Id",
+      "type": "string"
+    },
+    "recipe_version": {
+      "minimum": 1,
+      "title": "Recipe Version",
+      "type": "integer"
+    },
+    "scoring": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RecipeScoring"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ui": {
+      "$ref": "#/$defs/RecipeUiMetadata"
+    }
+  },
+  "required": [
+    "recipe_id",
+    "recipe_version",
+    "anchor",
+    "inputs",
+    "graph",
+    "outputs",
+    "scoring",
+    "documentation",
+    "ui"
+  ],
+  "title": "Pilot Assessment Evidence Recipe 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "draft recipes may contain dangling graph references until technical validation",
+    "the same canonical recipe object is used for display, persistence and execution"
+  ]
+}

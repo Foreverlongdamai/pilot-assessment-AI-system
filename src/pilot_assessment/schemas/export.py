@@ -24,6 +24,7 @@ from pilot_assessment.contracts.common import (
     BUNDLE_RELATIVE_PATH_JSON_SCHEMA_PATTERN,
     BUNDLE_RELATIVE_PATH_PATTERN,
 )
+from pilot_assessment.contracts.evidence_recipe import EvidenceRecipe, OperatorDefinition
 from pilot_assessment.contracts.ingestion import IngestionReadinessReport
 from pilot_assessment.contracts.session import (
     BIOMETRIC_MODALITIES,
@@ -146,6 +147,28 @@ _M4_SCHEMA_MODELS: tuple[
         [
             "inventory and results close one-to-one in canonical relative order",
             "availability and disposition are derived from terminal result statuses",
+        ],
+    ),
+    (
+        "evidence-recipe-0.1.0.schema.json",
+        EvidenceRecipe,
+        "urn:cranfield:pilot-assessment:schema:evidence-recipe:0.1.0",
+        "Pilot Assessment Evidence Recipe 0.1.0",
+        "0.1.0",
+        [
+            "draft recipes may contain dangling graph references until technical validation",
+            "the same canonical recipe object is used for display, persistence and execution",
+        ],
+    ),
+    (
+        "operator-definition-0.1.0.schema.json",
+        OperatorDefinition,
+        "urn:cranfield:pilot-assessment:schema:operator-definition:0.1.0",
+        "Pilot Assessment Operator Definition 0.1.0",
+        "0.1.0",
+        [
+            "operator identity binds portable metadata to one trusted implementation",
+            "parameter schema and UI paths are part of the portable definition",
         ],
     ),
 )

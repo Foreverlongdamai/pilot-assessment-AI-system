@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 import re
 from enum import StrEnum
-from typing import Annotated, Self, cast
+from typing import Annotated, Literal, Self, cast
 
 from pydantic import (
     AfterValidator,
@@ -173,8 +173,8 @@ class ParameterUiDefinition(StrictContractModel):
 class OperatorDefinition(StrictContractModel):
     """Portable operator metadata paired with one trusted implementation."""
 
-    contract_id: str = Field(default="operator-definition", frozen=True)
-    contract_version: str = Field(default="0.1.0", frozen=True)
+    contract_id: Literal["operator-definition"] = "operator-definition"
+    contract_version: Literal["0.1.0"] = "0.1.0"
     operator_id: StableId
     implementation_version: StableId
     family: OperatorFamily
@@ -188,20 +188,6 @@ class OperatorDefinition(StrictContractModel):
     trace_capability: TraceCapability
     implementation_source: OperatorImplementationSource
     implementation_ref: StableId
-
-    @field_validator("contract_id")
-    @classmethod
-    def validate_contract_id(cls, value: str) -> str:
-        if value != "operator-definition":
-            raise ValueError("contract_id must be operator-definition")
-        return value
-
-    @field_validator("contract_version")
-    @classmethod
-    def validate_contract_version(cls, value: str) -> str:
-        if value != "0.1.0":
-            raise ValueError("contract_version must be 0.1.0")
-        return value
 
     @field_validator("parameter_schema")
     @classmethod
@@ -336,8 +322,8 @@ class RecipeUiMetadata(StrictContractModel):
 class EvidenceRecipe(StrictContractModel):
     """The sole editable source used for display, persistence and execution."""
 
-    contract_id: str = Field(default="evidence-recipe", frozen=True)
-    contract_version: str = Field(default="0.1.0", frozen=True)
+    contract_id: Literal["evidence-recipe"] = "evidence-recipe"
+    contract_version: Literal["0.1.0"] = "0.1.0"
     recipe_id: StableId
     recipe_version: PositiveRecipeVersion
     anchor: RecipeAnchor
@@ -347,20 +333,6 @@ class EvidenceRecipe(StrictContractModel):
     scoring: RecipeScoring | None
     documentation: RecipeDocumentation
     ui: RecipeUiMetadata
-
-    @field_validator("contract_id")
-    @classmethod
-    def validate_contract_id(cls, value: str) -> str:
-        if value != "evidence-recipe":
-            raise ValueError("contract_id must be evidence-recipe")
-        return value
-
-    @field_validator("contract_version")
-    @classmethod
-    def validate_contract_version(cls, value: str) -> str:
-        if value != "0.1.0":
-            raise ValueError("contract_version must be 0.1.0")
-        return value
 
 
 __all__ = [
