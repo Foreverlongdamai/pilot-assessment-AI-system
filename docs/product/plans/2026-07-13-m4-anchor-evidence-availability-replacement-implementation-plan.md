@@ -14,8 +14,8 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
 - Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–21 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, O7 in `eb9cca6`, and O8 in `15da2ea`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C stage gate is closed, M4-D is in progress, and Task 22 O9 is next.
-- Current implementation truth: 18/18 reference anchors specified, 8/18 production plugins implemented and one preprocessing provider available; M4-C is software-verified and M4-D is in progress, while M4 overall is not engineering verified.
+- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–22 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, O7 in `eb9cca6`, O8 in `15da2ea`, and O9 in `db2b5da` plus ownership fix `a76abde`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C stage gate is closed, M4-D is in progress, and Task 23 O10 is next.
+- Current implementation truth: 18/18 reference anchors specified, 9/18 production plugins implemented and one preprocessing provider available; M4-C is software-verified and M4-D is in progress, while M4 overall is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
 - Scope truth: M4 consumes a compiled plan. Building/editing/publishing a ModelBundle, graph, CPT, or plan compiler belongs to M5.
@@ -2665,8 +2665,9 @@ git commit -m "feat: add TPX composite anchor"
 - Create: `tests/anchors/test_o9_dead_band_activity.py`
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
 - Modify: `tests/anchors/test_registry.py`
+- Modify: `tests/anchors/test_catalog.py`
 
-- [ ] **Step 1: Write RED mask/matching precedence tests**
+- [x] **Step 1: Write RED mask/matching precedence tests**
 
 The first assertion must lock the unique precedence: if O1 desired-mask ∩ O4 stable-mask is all false, return `computed + U + no_stable_hover` even if there is no matchable U support. Only when stable spans exist and all have zero nearest-within-20-ms U matches may O9 return `missing_input + no_temporal_support_U`. Also test partial matches without a coverage gate, [0.5%,5%] movements, support-duration denominator, max-channel aggregation, and 1/2 Hz boundaries.
 
@@ -2676,7 +2677,7 @@ The first assertion must lock the unique precedence: if O1 desired-mask ∩ O4 s
 
 Expected: RED because O9 mask/artifact dependency behavior does not exist.
 
-- [ ] **Step 2: Implement mask-first logic and reuse the movement primitive**
+- [x] **Step 2: Implement mask-first logic and reuse the movement primitive**
 
 ~~~text
 DBA_channel=micro_movement_count/matched_stable_duration_s
@@ -2686,7 +2687,7 @@ D <1 Hz; A 1<=x<2 Hz; U >=2 Hz
 
 Do not create 0 Hz when no stable opportunity exists; primary is null for `no_stable_hover`. O9 declares the same `movement-events-v1` provider plus O1/O4 artifact dependencies and receives the provider product through `ResolvedDependencies`; it does not invoke an undeclared detector.
 
-- [ ] **Step 3: Register and run GREEN**
+- [x] **Step 3: Register and run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh --anchor O9 --factory-module pilot_assessment.anchors.plugins.o9_dead_band_activity --factory-symbol create_plugin
@@ -2695,12 +2696,21 @@ Do not create 0 Hz when no stable opportunity exists; primary is null for `no_st
 
 Expected: PASS; count is 9/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
-git add src/pilot_assessment/anchors/plugins/o9_dead_band_activity.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o9_dead_band_activity.py tests/anchors/test_registry.py
+git add src/pilot_assessment/anchors/plugins/o9_dead_band_activity.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o9_dead_band_activity.py tests/anchors/test_registry.py tests/anchors/test_catalog.py
 git commit -m "feat: add dead-band activity anchor"
 ~~~
+
+**Completion evidence (2026-07-15):**
+
+- RED was first observed as the expected collection error because the O9 module did not exist. After the focused implementation became green, four registry/catalog honesty assertions failed while O9 was still absent. A final contract test then correctly failed until `mask_gap_threshold_ns` became an explicit compiled-recipe binding.
+- `db2b5da` implements mask-first O1∩O4 processing, deterministic nearest-within matching to raw U, half-open matched-span accounting, provider-product event filtering, per-channel support-duration rates, session channel maximum, `no_stable_hover` precedence, and `micro-movement-events-v0.1` publication. It consumes the registered `movement-events-v1` product and never invokes an undeclared detector. Follow-up `a76abde` removes the duplicated `0.5%` lower-bound check: the provider owns and applies that inclusive lower threshold, while O9 applies only its own inclusive maximum; with the default reference provider the effective interval remains `[0.5%,5%]`.
+- Missing mask inventory is rejected as a plan/dependency contract error rather than being mislabeled as poor pilot performance. A non-empty all-false mask is observed `computed + U + no_stable_hover`; stable opportunity with zero matches is `missing_input + no_temporal_support_U`; any matched support computes without a coverage threshold.
+- Focused O9 is `10 passed`; the controlled O9/registry/catalog/DAG/service/scoring/artifact/temporal/O1/O4/movement gate is `237 passed`; the package-metadata/registry/catalog honesty gate is `97 passed` after `e86a53d` synchronized its stale O1–O7 inventory assertion to O1–O9. Packaged registry verification reports fingerprint `125f46e10c68b01fae169e6aab9b14efbac12e593b94af1fd6b53d9af27440f4`; O9 implementation digest is `9ec9f39fba59f593838f5356e6742e7cd56e0b8760366913972aa27783f43104`.
+- Full-project Ruff check/format (`149 files`), `ty check src` and `git diff --check` passed. In accordance with the lightweight-test instruction, the full repository, build and isolated-wheel gates were not repeated for this single anchor; Task 20's `1275 passed, 3 skipped` and final wheel remain the latest stage-gate evidence.
+- No subagent or external review was used. The honest state is 9/18 production plugins and one available preprocessing provider; M4-C remains software-verified, M4-D is in progress, M4 overall remains incomplete, `formal_run_authorized=false`, and Task 23 O10 is next.
 
 ### Task 23: Implement O10 Recovery Time and the event primitive
 
