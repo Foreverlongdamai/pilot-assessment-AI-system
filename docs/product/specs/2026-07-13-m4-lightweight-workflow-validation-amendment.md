@@ -6,7 +6,7 @@
 | 日期 | 2026-07-13 |
 | 方向状态 | 用户已确认并批准采用轻量测试方向 |
 | 书面状态 | 已于 2026-07-13 获用户批准并生效 |
-| 实现状态 | Replacement Task 0–16 已完成；O1/O2/O3 capability 均为 `available`，下一步为 Task 17 O4；18/18 specified、3/18 production plugins implemented；M4-C 与 M4 整体尚未 engineering verified |
+| 实现状态 | Replacement Task 0–17 已完成；O1/O2/O3/O4 capability 均为 `available`，下一步为 Task 18 O5；18/18 specified、4/18 production plugins implemented；M4-C 与 M4 整体尚未 engineering verified |
 | 取代范围 | 立即取代 M4 主规格 §1.1 的完整 fixture 表述、§14.2–§14.4 的“四套 90 秒 full bundle + frozen full-workflow oracle”要求、§15 的 M4-G full-fixture 口径及 §17 的原计划执行授权；replacement plan 已于 2026-07-13 单独批准 |
 | 不变范围 | 18 个 anchor、AnchorResult v0.2、DAG、算法、阈值、状态语义、no-quality-gate、M1/M2/M3 已发布合同 |
 | 科学状态 | 所有 synthetic 数据继续为 `not_supported`，只验证软件工作流 |
@@ -210,7 +210,7 @@ Expected vectors 与 input fixtures 存放在不同文件/模块。轻量 per-an
 7. M4-G、determinism 和 isolated-wheel smoke 复用同一个 10 秒 bundle；
 8. 计划的 specification-to-task matrix、Definition of Done、测试命令和 task count 必须同步更新。
 
-Replacement Task 0 已完成批准的安全检查：provisional heavy fixture files 已逐项移除且未进入提交历史，随后首先观察到缺少轻量能力的正确 RED，再实现新的 input-only fixture。提交 `bc544bf` 冻结了 10 秒 recipe、独立 exact-18 expected vector 与 source hashes；Task 1 `f56365c` 完成 numeric/JCS runtime 审计；Task 2 `928e9a4` 完成 breaking `AnchorResultV2`；Task 3 `e054620` 完成 session-bound candidate/三参数 binder；Task 4 `1528d09`、Task 5 `b63d38b` 与 Task 6 `93c4ddb` 完成 catalog/plan/request、measurement/report/runtime contracts 和 deterministic schema publication；Task 7 `583a1e7` 发布 exact-18 catalog、24 个 canonical parameter resources 与 zero registry。此后 Task 8–13 完成 canonical/runtime framework，Task 14 `b1d1fc9`、Task 15 `b1a8743` 与 Task 16 `f7d5261` 分别完成 O1/O2/O3。最新 Task 16 related gate 为 `137 passed`、全仓为 `1210 passed, 3 skipped`；不得把旧 provisional `8 passed` 记入 M4 完成证据。下一步为 Task 17 O4，当前为 3/18 production plugins。
+Replacement Task 0 已完成批准的安全检查：provisional heavy fixture files 已逐项移除且未进入提交历史，随后首先观察到缺少轻量能力的正确 RED，再实现新的 input-only fixture。提交 `bc544bf` 冻结了 10 秒 recipe、独立 exact-18 expected vector 与 source hashes；Task 1 `f56365c` 完成 numeric/JCS runtime 审计；Task 2 `928e9a4` 完成 breaking `AnchorResultV2`；Task 3 `e054620` 完成 session-bound candidate/三参数 binder；Task 4 `1528d09`、Task 5 `b63d38b` 与 Task 6 `93c4ddb` 完成 catalog/plan/request、measurement/report/runtime contracts 和 deterministic schema publication；Task 7 `583a1e7` 发布 exact-18 catalog、24 个 canonical parameter resources 与 zero registry。此后 Task 8–13 完成 canonical/runtime framework，Task 14 `b1d1fc9`、Task 15 `b1a8743`、Task 16 `f7d5261` 与 Task 17 `056d9d5` 分别完成 O1/O2/O3/O4。最新 Task 17 focused/related/M4 gate 分别为 `19 passed`、`141 passed`、`755 passed, 1 skipped`；Task 16 的 `1210 passed, 3 skipped` 仍是最新全仓证据，不得把旧 provisional `8 passed` 记入 M4 完成证据。下一步为 Task 18 O5，当前为 4/18 production plugins。
 
 ## 7. 决策与文档迁移
 
