@@ -1330,13 +1330,14 @@ def test_parameter_loader_rejects_structural_byte_corruption(
         api.load_parameter_schema_bytes(schema_id)
 
 
-def test_registry_resource_honestly_declares_o1_through_o9_and_movement_provider() -> None:
+def test_registry_resource_honestly_declares_o1_through_o10_and_movement_provider() -> None:
     raw = files("pilot_assessment.anchors").joinpath("registry-v1.json").read_bytes()
     document = json.loads(raw)
     assert document["contract_id"] == "anchor-runtime-registry"
     assert document["contract_version"] == "0.1.0"
     assert [entry["anchor_id"] for entry in document["entries"]] == [
         "O1",
+        "O10",
         "O2",
         "O3",
         "O4",
@@ -1350,6 +1351,7 @@ def test_registry_resource_honestly_declares_o1_through_o9_and_movement_provider
     registry = AnchorRuntimeRegistry.model_validate_json(raw)
     assert tuple(entry.anchor_id for entry in registry.entries) == (
         "O1",
+        "O10",
         "O2",
         "O3",
         "O4",

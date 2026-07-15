@@ -56,13 +56,24 @@ def provider_entry(
 # --------------------------------------------------------------------------- #
 
 
-def test_packaged_registry_has_o1_through_o9_and_reports_remaining_not_implemented() -> None:
+def test_packaged_registry_has_o1_through_o10_and_reports_remaining_not_implemented() -> None:
     catalog = load_packaged_catalog()
     packaged = registry.load_packaged_registry()
 
     for entry in catalog.entries:
         capability = packaged.capability(entry.plugin_id, entry.plugin_version)
-        if entry.anchor_id in {"O1", "O2", "O3", "O4", "O5", "O6", "O7", "O8", "O9"}:
+        if entry.anchor_id in {
+            "O1",
+            "O2",
+            "O3",
+            "O4",
+            "O5",
+            "O6",
+            "O7",
+            "O8",
+            "O9",
+            "O10",
+        }:
             assert capability.status is AnchorCapabilityStatus.AVAILABLE
             assert capability.entry is not None
             assert capability.entry.anchor_id == entry.anchor_id
@@ -90,6 +101,7 @@ def test_packaged_registry_fingerprint_binds_the_canonical_model() -> None:
     model = registry._load_registry_model()
     assert [entry.anchor_id for entry in model.entries] == [
         "O1",
+        "O10",
         "O2",
         "O3",
         "O4",
@@ -179,6 +191,17 @@ def test_o9_registry_closure_binds_plugin_movement_and_numeric_runtimes() -> Non
     assert tuple(item.package_relative_path for item in o9.implementation_members) == (
         "pilot_assessment/anchors/plugins/o9_dead_band_activity.py",
         "pilot_assessment/anchors/primitives/movement.py",
+    )
+
+
+def test_o10_registry_closure_binds_plugin_event_primitive_and_polars() -> None:
+    model = registry._load_registry_model()
+    o10 = next(entry for entry in model.entries if entry.anchor_id == "O10")
+
+    assert tuple(item.normalized_name for item in o10.numeric_runtimes) == ("polars",)
+    assert tuple(item.package_relative_path for item in o10.implementation_members) == (
+        "pilot_assessment/anchors/plugins/o10_recovery_time.py",
+        "pilot_assessment/anchors/primitives/events.py",
     )
 
 

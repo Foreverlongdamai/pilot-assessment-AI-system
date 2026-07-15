@@ -58,6 +58,53 @@
       "implementation_digest": "85b46ae967e5404c6e31fbe94a7e1dbcacbdd709e2c253b11d78f288e5c9a70d"
     },
     {
+      "anchor_id": "O10",
+      "definition_version": "0.1.0",
+      "plugin_id": "o10-recovery-time",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.o10_recovery_time",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "b4e5c32f40e461a4b6e04af01822adcc8662f5921785fe0c0ed3ebf016029252",
+      "parameter_schema_id": "o10-parameters-0.1",
+      "parameter_schema_sha256": "191a434f48425f6fe1e5d650861f920b22def8e622d57c4b018f547941a23dca",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "recovery-events-v0.1": "ed3526b19500408f4687c9475f5cc0379e3983b14af1146d519093ffb3ac8533"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/o10_recovery_time.py",
+          "content_sha256": "622f451904d89b296613f18166c7efa6d03124fa5557b7715c4481198132f2d3"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/events.py",
+          "content_sha256": "2644d73b38d115c788cc5459f04d76c06ec4251fb7d6a816d08ca97f571d335b"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "20dd10667c160e61c2246bf69d290013fbab267cfecd948b2f423cd337b162bf"
+    },
+    {
       "anchor_id": "O2",
       "definition_version": "0.1.0",
       "plugin_id": "o2-peak-tracking-excursion",
