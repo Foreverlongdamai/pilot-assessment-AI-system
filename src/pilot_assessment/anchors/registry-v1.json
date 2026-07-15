@@ -46,6 +46,49 @@
       "implementation_digest": "4de79001cff14d43dd6f64350a4734762a9abd92b79c93d7b74f30f7bfa20350"
     },
     {
+      "anchor_id": "H2",
+      "definition_version": "0.1.0",
+      "plugin_id": "h2-first-fixation-latency",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.h2_first_fixation_latency",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "aab20f24429309dc2a0c128ca2b2fa5636f2863fde4741eb9dc38d58fb9fad83",
+      "parameter_schema_id": "h2-parameters-0.1",
+      "parameter_schema_sha256": "57b47ded04807752234e26e1c1f94fbb416f4d0dbd053a438a47fd7c4b7bb167",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "event-fixation-trace-v0.1": "a26a008d6628648b4f86319589ed5806a3cc3ab6984c699bd6c73db205bb6607"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/h2_first_fixation_latency.py",
+          "content_sha256": "adc8ba195566f5c4aca4956fda786b83823dc61e9c288a03ed6f1691e239c002"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "49a179b7ad08e46bce611f7f418c837b1fc8722608546bd67dc3f4b18547ae1f"
+    },
+    {
       "anchor_id": "O1",
       "definition_version": "0.1.0",
       "plugin_id": "o1-phase-state-precision",
@@ -665,6 +708,46 @@
     }
   ],
   "preprocessors": [
+    {
+      "provider_id": "fixation-intervals-v1",
+      "provider_version": "1.0.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.primitives.fixation",
+      "factory_symbol": "create_provider",
+      "allowed_package_namespace": "pilot_assessment.anchors.primitives",
+      "definition_fingerprint": "4a7a05615070e13d0acfada490f810aa49acf55e227d94a405497e40ee82ad79",
+      "parameter_schema_id": "fixation-intervals-v1-parameters-0.1",
+      "parameter_schema_sha256": "858b9f33219e1d9005100adde0e5e74c7dc10c7394932078b12cf9c64efc0b48",
+      "output_schema_id": "fixation-intervals-v1-output-v0.1",
+      "output_schema_sha256": "df22c644eb66d2797738cdf239af37eac74eaae57bcb934ff5e8e516f4b17714",
+      "artifact_kind": "fixation-intervals-table",
+      "output_payload_kind": "table",
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/fixation.py",
+          "content_sha256": "5413f539489801ba0b342e985e14bef1d37abb243b6ca59be731b151abac8dfc"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "e3751b783b37ff0e1c6cc68dfdd752b6c38ca92a434c3b38373a0cae5a8fe72a"
+    },
     {
       "provider_id": "gaze-aoi-intervals-v1",
       "provider_version": "1.0.0",

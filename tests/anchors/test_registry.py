@@ -56,7 +56,7 @@ def provider_entry(
 # --------------------------------------------------------------------------- #
 
 
-def test_packaged_registry_has_thirteen_plugins_and_reports_remaining_not_implemented() -> None:
+def test_packaged_registry_has_fourteen_plugins_and_reports_remaining_not_implemented() -> None:
     catalog = load_packaged_catalog()
     packaged = registry.load_packaged_registry()
 
@@ -76,6 +76,7 @@ def test_packaged_registry_has_thirteen_plugins_and_reports_remaining_not_implem
             "O11",
             "O12",
             "H1",
+            "H2",
         }:
             assert capability.status is AnchorCapabilityStatus.AVAILABLE
             assert capability.entry is not None
@@ -93,6 +94,7 @@ def test_packaged_registry_has_thirteen_plugins_and_reports_remaining_not_implem
         if identity["provider_id"] in {
             "movement-events-v1",
             "gaze-aoi-intervals-v1",
+            "fixation-intervals-v1",
         }:
             assert capability.status == "available"
             assert capability.entry is not None
@@ -107,6 +109,7 @@ def test_packaged_registry_fingerprint_binds_the_canonical_model() -> None:
     model = registry._load_registry_model()
     assert [entry.anchor_id for entry in model.entries] == [
         "H1",
+        "H2",
         "O1",
         "O10",
         "O11",
@@ -121,6 +124,7 @@ def test_packaged_registry_fingerprint_binds_the_canonical_model() -> None:
         "O9",
     ]
     assert [entry.provider_id for entry in model.preprocessors] == [
+        "fixation-intervals-v1",
         "gaze-aoi-intervals-v1",
         "movement-events-v1",
     ]
@@ -253,6 +257,23 @@ def test_h1_and_gaze_aoi_provider_registry_closures_bind_exact_code_and_polars()
     assert tuple(item.normalized_name for item in gaze.numeric_runtimes) == ("polars",)
     assert tuple(item.package_relative_path for item in gaze.implementation_members) == (
         "pilot_assessment/anchors/primitives/gaze_aoi.py",
+    )
+
+
+def test_h2_and_fixation_provider_registry_closures_bind_exact_code_and_polars() -> None:
+    model = registry._load_registry_model()
+    h2 = next(entry for entry in model.entries if entry.anchor_id == "H2")
+    fixation = next(
+        entry for entry in model.preprocessors if entry.provider_id == "fixation-intervals-v1"
+    )
+
+    assert tuple(item.normalized_name for item in h2.numeric_runtimes) == ("polars",)
+    assert tuple(item.package_relative_path for item in h2.implementation_members) == (
+        "pilot_assessment/anchors/plugins/h2_first_fixation_latency.py",
+    )
+    assert tuple(item.normalized_name for item in fixation.numeric_runtimes) == ("polars",)
+    assert tuple(item.package_relative_path for item in fixation.implementation_members) == (
+        "pilot_assessment/anchors/primitives/fixation.py",
     )
 
 

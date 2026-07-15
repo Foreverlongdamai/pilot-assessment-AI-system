@@ -1330,13 +1330,14 @@ def test_parameter_loader_rejects_structural_byte_corruption(
         api.load_parameter_schema_bytes(schema_id)
 
 
-def test_registry_resource_honestly_declares_o1_through_o12_h1_and_two_providers() -> None:
+def test_registry_resource_honestly_declares_o1_through_o12_h1_h2_and_three_providers() -> None:
     raw = files("pilot_assessment.anchors").joinpath("registry-v1.json").read_bytes()
     document = json.loads(raw)
     assert document["contract_id"] == "anchor-runtime-registry"
     assert document["contract_version"] == "0.1.0"
     assert [entry["anchor_id"] for entry in document["entries"]] == [
         "H1",
+        "H2",
         "O1",
         "O10",
         "O11",
@@ -1351,12 +1352,14 @@ def test_registry_resource_honestly_declares_o1_through_o12_h1_and_two_providers
         "O9",
     ]
     assert [entry["provider_id"] for entry in document["preprocessors"]] == [
+        "fixation-intervals-v1",
         "gaze-aoi-intervals-v1",
         "movement-events-v1",
     ]
     registry = AnchorRuntimeRegistry.model_validate_json(raw)
     assert tuple(entry.anchor_id for entry in registry.entries) == (
         "H1",
+        "H2",
         "O1",
         "O10",
         "O11",
@@ -1371,6 +1374,7 @@ def test_registry_resource_honestly_declares_o1_through_o12_h1_and_two_providers
         "O9",
     )
     assert tuple(entry.provider_id for entry in registry.preprocessors) == (
+        "fixation-intervals-v1",
         "gaze-aoi-intervals-v1",
         "movement-events-v1",
     )
