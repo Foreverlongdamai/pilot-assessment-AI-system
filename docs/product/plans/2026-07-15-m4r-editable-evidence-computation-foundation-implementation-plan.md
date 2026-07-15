@@ -293,20 +293,20 @@ GREEN：
 
 步骤：
 
-- [ ] RED：覆盖 duplicate node/edge/binding/output ID、dangling node/port/binding/output、unknown operator/version、cycle、missing/extra input、port type/cardinality/unit/temporal mismatch、missing/invalid parameter、missing primary output 和 invalid scorer。
-- [ ] 明确测试：文献不足、未校准、极差 preview 值只允许 warning/metadata，不得成为 error。
-- [ ] GREEN：用 jsonschema Draft202012Validator 校验每个 node parameters；把 error path 定位到 /graph/nodes/{node_id}/parameters/...。
-- [ ] 使用 Kahn topological sort 检测 cycle；不执行 operator。
-- [ ] incomplete draft 返回 diagnostics，不抛出科学合理性异常。
-- [ ] 运行：
+- [x] RED：用 8 个代表测试覆盖 duplicate IDs、dangling graph/binding/output、unknown operator、cycle、required/cardinality input、port type/unit/temporal、parameters、primary output 和 scorer。
+- [x] 明确测试：starter_template recipe 可直接成为 executable；validator 不接收科学认可状态或 preview 表现值，因此不会据此阻断。
+- [x] GREEN：用 jsonschema Draft202012Validator 校验每个 node/custom scorer parameters；error path 定位到具体 node/parameter。
+- [x] 使用 Kahn topological sort 检测 cycle；不执行 operator。
+- [x] incomplete draft 返回 diagnostics，不抛出科学合理性异常。
+- [x] 运行：
 
-      uv run pytest tests/evidence/test_recipe_validation.py -q
-      uv run ruff check src/pilot_assessment/evidence/validation.py tests/evidence/test_recipe_validation.py
-      uv run ty check src/pilot_assessment/evidence/validation.py
+      .venv\Scripts\python.exe -m pytest tests/evidence/test_recipe_validation.py -q
+      .venv\Scripts\python.exe -m ruff check src/pilot_assessment/evidence tests/evidence
+      .venv\Scripts\ty.exe check src/pilot_assessment/evidence
 
-  预期：exit 0。
+  结果：validator focused 8 passed；相关 contracts/schemas/evidence 56 passed；ruff、ty exit 0。
 
-- [ ] 提交：
+- [x] 提交：
 
       git add src/pilot_assessment/evidence/validation.py tests/evidence/test_recipe_validation.py
       git commit -m "feat: validate editable evidence recipes"

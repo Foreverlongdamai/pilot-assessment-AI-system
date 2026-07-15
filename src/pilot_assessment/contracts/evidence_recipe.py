@@ -246,6 +246,7 @@ class RecipeNode(StrictContractModel):
     node_id: StableId
     operator_id: StableId
     operator_version: StableId
+    input_binding_id: StableId | None = None
     parameters: dict[str, JsonValue]
 
     @field_validator("parameters")
