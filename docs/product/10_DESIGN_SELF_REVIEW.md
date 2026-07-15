@@ -6,7 +6,7 @@
 | 审查日期 | 原始审查 2026-07-10；M4 amendment 2026-07-13；方向重基线 2026-07-15 |
 | 审查范围 | pilot_assessment_system 产品文档、项目入口说明、历史草案状态与 M4 跨文档一致性 |
 | 结论 | M1–M3 可作为已验证交接基线；旧 M4 Task 0–28 代码可复用，但 fixed whole-Anchor plugin/exact-18 路线不适合专家自由设计目标，已由 EvidenceRecipe/operator 架构取代 |
-| 软件状态 | M1/M2/M3 已工程验证；旧 M4 Task 0–28、15 个 legacy/reference plugins、共享 primitives 与三个 providers 已实现；M4R architecture approved、consolidated spec awaiting final review、implementation not started，`formal_run_authorized=false`，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
+| 软件状态 | M1/M2/M3 已工程验证；旧 M4 Task 0–28、15 个 legacy/reference plugins、共享 primitives 与三个 providers 已实现；M4R 正式规格已批准并开始实施，`formal_run_authorized=false`，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
 | 科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | M4 修订 | 2026-07-15 接受 D-031–D-035：旧 Task 29–36 停止；普通专家编辑不再要求 Python/plugin 发布、审批或 per-edit tests；M4R–M8 按 EvidenceRecipe/operator、linked Evidence/BN graphs、autosave + apply 重基线 |
 

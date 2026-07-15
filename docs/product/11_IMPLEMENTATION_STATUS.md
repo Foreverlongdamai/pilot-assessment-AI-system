@@ -1,13 +1,13 @@
-# Implementation Status — M1/M2/M3 Verified; Legacy M4 Tasks 0–28 Preserved; M4R Not Started
+# Implementation Status — M1/M2/M3 Verified; Legacy M4 Tasks 0–28 Preserved; M4R Started
 
 | 字段 | 当前值 |
 |---|---|
 | 状态日期 | 2026-07-15 |
 | 产品设计基线 | v0.2 expert-designer rebaseline（D-031–D-035） |
 | 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization |
-| M4 当前状态 | 旧 replacement Task 0–28 已完成，O1–O12/H1–H3、共享 primitives 与三个 preprocessing providers 均已进入代码；历史测试与 fingerprint 保留。2026-07-15 用户批准 expert-editable 架构方向：现有 15 个 whole-Anchor plugins 改作 legacy/reference implementations 和迁移来源；旧 Task 29–36 已暂停且不得继续执行；M4R 将改为 canonical EvidenceRecipe + typed operator graph。**Architecture approved；consolidated spec awaiting final user review；implementation not started；`formal_run_authorized=false`。** |
-| 下一里程碑 | 用户复核书面规格后编写并执行 M4R implementation plan；先交付 EvidenceRecipe、OperatorDefinition、compiler/executor、operator registry 与 backend-only create/edit/preview/apply/replay |
-| 软件状态 | `in_progress`（M1/M2/M3 engineering verified；legacy M4 Task 0–28 complete；15 个 legacy/reference plugins 与三个 providers preserved；M4R not started；完整 expert designer、BN、runtime 和 WinUI 尚未完成） |
+| M4 当前状态 | 旧 replacement Task 0–28 已完成，O1–O12/H1–H3、共享 primitives 与三个 preprocessing providers 均已进入代码；历史测试与 fingerprint 保留。2026-07-15 用户批准 expert-editable 正式规格并授权实施：现有 15 个 whole-Anchor plugins 改作 legacy/reference implementations 和迁移来源；旧 Task 29–36 已暂停且不得继续执行；M4R 按 canonical EvidenceRecipe + typed operator graph 路线推进。**Spec approved；implementation started；`formal_run_authorized=false`。** |
+| 下一里程碑 | 执行 M4R implementation plan；先交付 EvidenceRecipe、OperatorDefinition、技术校验、compiler/executor 与 operator registry，再完成 backend-only recipe 生命周期和 starter migration |
+| 软件状态 | `in_progress`（M1/M2/M3 engineering verified；legacy M4 Task 0–28 complete；15 个 legacy/reference plugins 与三个 providers preserved；M4R implementation started；完整 expert designer、BN、runtime 和 WinUI 尚未完成） |
 | 科学状态 | synthetic 数据为 `not_supported`；评估模型仍待领域专家校准与验证 |
 | Python package | `pilot-assessment-system 0.1.0` |
 | 本地运行边界 | Windows、离线、目录形式 Session Bundle |
@@ -31,7 +31,7 @@ M1/M2/M3 已实现，并通过 micro fixture 与 simulator 采集格式样例 CS
 
 2026-07-13 已新增并批准 [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)，把 AnchorResult v0.2、18 个 anchor、typed dependency DAG、artifact/fingerprint 和状态边界冻结为当时的书面设计；其后 [M4 Lightweight Workflow Validation Amendment](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)、D-026/D-027 与 [replacement M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 也获批准。Task 0–28 随后完成：M4-A contracts/catalog/resources、M4-B framework、O1–O12、H1 AOI Dwell、H2 First Fixation Latency、H3 Off-task Dwell、共享 primitives 与三个 reference preprocessing providers 已进入代码；相关测试与 fingerprint 继续作为历史工程证据。
 
-2026-07-15 用户确认此前路线对 provisional Anchor 算法的固定、审核和测试投入过重，并批准 EvidenceRecipe/operator 总体架构与 D-031–D-035。当前产品权威目标是让专家在前端自由设计 Evidence Computation Graph 与 BN；18 个 Anchor/33-node BN 只是 starter templates。普通修改使用 canonical `EvidenceRecipe` 和既有 operators，不要求 Python 发布、人工审批或 per-edit pytest/golden；只有算子库无法表达新能力时才新增 trusted operator plugin。旧 Task 29–36 因而停止，不能再把 H4/H5/O13 固定插件或 exact-18 closure 写成下一步。此次重基线只改文档和授权边界，尚未改生产代码，因此准确状态是 **legacy M4 Task 0–28 complete；15 个 legacy/reference plugins preserved；M4R architecture approved；consolidated spec awaiting final review；M4R implementation not started**。
+2026-07-15 用户确认此前路线对 provisional Anchor 算法的固定、审核和测试投入过重，并批准 EvidenceRecipe/operator 总体架构与 D-031–D-035。当前产品权威目标是让专家在前端自由设计 Evidence Computation Graph 与 BN；18 个 Anchor/33-node BN 只是 starter templates。普通修改使用 canonical `EvidenceRecipe` 和既有 operators，不要求 Python 发布、人工审批或 per-edit pytest/golden；只有算子库无法表达新能力时才新增 trusted operator plugin。旧 Task 29–36 因而停止，不能再把 H4/H5/O13 固定插件或 exact-18 closure 写成下一步。用户随后批准合并规格并授权实施，因此准确状态是 **legacy M4 Task 0–28 complete；15 个 legacy/reference plugins preserved；M4R spec approved；M4R implementation started**。各项代码完成度逐项记录，不把“开始实施”误报为“已经完成”。
 
 旧计划的 provisional Task 0 曾证明原 fixture 范围不合适：四套 90 秒 bundle 每次会临时生成约 43,000 个文件，focused gate 约需 160 秒；测试还主要验证 builder/oracle 自洽，未独立证明 dense raw data 可以产生预期 anchors。该 provisional 工作未提交、不得计作 M4 证据。已接受修订把验证收缩为一个 10 秒全模态 workflow bundle、18 个 per-anchor 微型测试、紧凑 all-Desired/all-Unacceptable/mixed 场景和 fault-hook state matrix；replacement Task 0 已安全移除旧 provisional files、观察正确 RED，并提交新的轻量 fixture 基线。
 
@@ -297,7 +297,7 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 
 ## 6. 下一里程碑
 
-下一步不是 Task 29，而是先由用户复核当前 [expert-editable architecture spec](specs/2026-07-15-expert-editable-evidence-and-model-design.md)，随后编写独立的 M4R implementation plan。M4R 的实现顺序将围绕最小可运行 vertical slice：
+下一步不是 Task 29。用户已经批准 [expert-editable architecture spec](specs/2026-07-15-expert-editable-evidence-and-model-design.md)，当前按 [M4R implementation plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md) 围绕最小可运行 vertical slice 实施：
 
 1. 定义 `EvidenceRecipe`、`OperatorDefinition`、typed ports、units、parameters 与 graph contracts；
 2. 建立 operator registry、recipe technical validator、compiler/executor 和 trace；
@@ -316,10 +316,11 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 - [M4 Task 8 Canonical Fingerprint and Runtime Identity Amendment](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md)
 - [Autonomous Review Ledger](reviews/2026-07-13-autonomous-review-ledger.md)
 
-两份旧实施计划均只供历史追溯。Replacement Task 0–28 的完成事实保留，但 Task 29–36 已暂停且不得执行；新 M4R plan 尚未编写：
+两份旧实施计划均只供历史追溯。Replacement Task 0–28 的完成事实保留，但 Task 29–36 已暂停且不得执行；当前执行入口为新的 M4R plan：
 
 - [M4 Anchor Calculation and Evidence Availability Implementation Plan](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)
 - [M4 Anchor Calculation and Evidence Availability Replacement Implementation Plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（Task 0–28 历史；Task 29–36 superseded）
+- [M4R Editable Evidence Computation Foundation Implementation Plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md)（当前执行入口）
 
 M2 的批准规格与逐任务实施证据分别见：
 

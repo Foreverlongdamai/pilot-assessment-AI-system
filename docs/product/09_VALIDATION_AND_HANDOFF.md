@@ -3,7 +3,7 @@
 | 字段 | 值 |
 |---|---|
 | 设计版本 | v0.2 expert-designer validation baseline |
-| 当前软件状态 | in_progress（M1/M2/M3 engineering verified；旧 M4 Task 0–28 与 15 个 legacy/reference plugins 已完成并保留；旧 Task 29–36 已停止；M4R architecture approved、consolidated spec awaiting final review、implementation not started；完整 Evidence designer、BN、runtime 与 WinUI 尚未完成，`formal_run_authorized=false`） |
+| 当前软件状态 | in_progress（M1/M2/M3 engineering verified；旧 M4 Task 0–28 与 15 个 legacy/reference plugins 已完成并保留；旧 Task 29–36 已停止；M4R 正式规格已批准并开始实施；完整 Evidence designer、BN、runtime 与 WinUI 尚未完成，`formal_run_authorized=false`） |
 | 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
@@ -129,7 +129,7 @@ Public `SynchronizationReport.validation_scope` 为 `native_rate_session_time_al
 
 ### 2.7 M4 设计与阶段性实现状态（2026-07-13）
 
-[M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md) 与相关 amendments 记录了旧 M4 Task 0–28 的合同和工程历史：O1–O12/H1–H3、共享 primitives 与三个 preprocessing providers 已进入代码，历史测试继续有效。2026-07-15 用户批准 EvidenceRecipe/operator 总体架构与 D-031–D-035；旧 Task 29–36 已停止，15 个 whole-Anchor plugins 改作 legacy/reference implementations。当前准确状态是 **M4R architecture approved、consolidated spec awaiting final review、implementation not started**；所有路径保持 `formal_run_authorized=false`。历史 fixed-plugin tests 不构成新完成门、质量筛选、科学有效性或飞行员能力结论。
+[M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md) 与相关 amendments 记录了旧 M4 Task 0–28 的合同和工程历史：O1–O12/H1–H3、共享 primitives 与三个 preprocessing providers 已进入代码，历史测试继续有效。2026-07-15 用户批准 EvidenceRecipe/operator 总体架构、D-031–D-035 与正式合并规格，并授权开始实施；旧 Task 29–36 已停止，15 个 whole-Anchor plugins 改作 legacy/reference implementations。当前准确状态是 **M4R spec approved、implementation started**；所有路径保持 `formal_run_authorized=false`。历史 fixed-plugin tests 不构成新完成门、质量筛选、科学有效性或飞行员能力结论。
 
 M4 的职责边界是按已配置规则提取 evidence，而不是研究原始采集质量。进入 M4 的 aligned input 假定已经满足 M1–M3 的结构合同；coverage、gap、sample count 和 sync metrics 只作 diagnostics/provenance。数值再差仍应形成 D/A/U，特别是 `computed + Unacceptable` 必须作为有效负面 evidence，且 raw availability 与 computed D/A 一样为 1。
 
@@ -342,4 +342,4 @@ PilotAssessment/
 - reference trajectory、phase/event annotation 的生产方式需与实验团队确认；
 - shared-evidence 多 parent CPT 会指数增长；v0.1 已设 parent/row/cell/size 硬上限，但数值仍需性能基准和专家审查后才能提高；
 - WinUI 图编辑控件选型和无障碍支持需原型验证；
-- 后端 M1/M2/M3 已有合同、directory-bundle loader、JSON Schema、版本化 adapters/bindings、deterministic multimodal software fixtures、`IngestionReadinessReport`、native-rate `AlignedSession`/`SynchronizationReport` 和自动化测试。旧 M4 Task 0–28 已留下 `AnchorResultV2`、binding/catalog/runtime、O1–O12/H1–H3 plugins、共享 primitives 与三个 providers；它们作为 M4R 迁移资产保留。EvidenceRecipe/OperatorDefinition、generic executor、autosaved workspace、linked BN、sidecar 与 WinUI 尚未实现。因此当前状态为 M1/M2/M3 verified、legacy M4 Task 0–28 complete、M4R not started，`formal_run_authorized=false`；现有证据不构成科学有效性声明。
+- 后端 M1/M2/M3 已有合同、directory-bundle loader、JSON Schema、版本化 adapters/bindings、deterministic multimodal software fixtures、`IngestionReadinessReport`、native-rate `AlignedSession`/`SynchronizationReport` 和自动化测试。旧 M4 Task 0–28 已留下 `AnchorResultV2`、binding/catalog/runtime、O1–O12/H1–H3 plugins、共享 primitives 与三个 providers；它们作为 M4R 迁移资产保留。M4R 已进入实施，但 EvidenceRecipe/OperatorDefinition、generic executor、autosaved workspace、linked BN、sidecar 与 WinUI 的完成度仍须按计划逐项验证。因此当前状态为 M1/M2/M3 verified、legacy M4 Task 0–28 complete、M4R implementation started，`formal_run_authorized=false`；现有证据不构成科学有效性声明。

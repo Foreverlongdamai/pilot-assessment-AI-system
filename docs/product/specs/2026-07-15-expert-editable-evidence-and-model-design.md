@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | Expert-designer architecture v0.1；产品设计基线 v0.2 |
 | 日期 | 2026-07-15 |
-| 状态 | Review candidate：用户已确认总体架构、EvidenceRecipe/通用算子路线与“自动保存草稿 + 一键应用”交互原则；本合并规格等待用户最终复核后再编写 M4R 实施计划 |
+| 状态 | Approved：用户于 2026-07-15 明确批准本规格并授权开始实施；M4R 按独立实施计划推进 |
 | 取代范围 | 取代旧 M4 规格中“普通公式修改必须发布 AnchorPlugin”“固定 18 个算法 golden 是 M4 完成门”及 replacement plan Task 29–36 的继续执行授权；不改写 Task 0–28 的历史事实 |
 | 保留范围 | M1–M3、AnchorResult v0.2、AnchorMeasurement、calculation status、no-quality-gate、typed dependency、trace/artifact、差表现为有效 evidence 等已实现合同继续保留 |
 | 产品目标 | 为领域专家提供可视化、自由增删改 Evidence、计算方法、BN 节点/边、状态与 CPT 的 Windows 本地设计系统 |
@@ -336,9 +336,9 @@ GazeAoiIntervals(source=assigned AOI or gaze-ray/scene association)
 2. 其中“普通算法变化必须发布 whole-Anchor plugin version”的要求被本规格取代；
 3. D-025/D-026/D-027 对固定 18-plugin completion gate 的要求不再定义新 M4R 完成条件；
 4. replacement implementation plan Task 29–36 暂停且不再授权执行；
-5. 新 M4R plan 在本规格复核后另行编写；
+5. 新 M4R plan 已在本规格获批后另行编写并成为当前实施入口；
 6. M5–M8 各自另写正式 spec/plan；
-7. 当前代码状态仍诚实报告为 M1–M3 complete、旧 M4 Task 0–28 complete、15 个 legacy/reference production plugins implemented、M4R not started。
+7. 本规格获批时的代码基线为 M1–M3 complete、旧 M4 Task 0–28 complete、15 个 legacy/reference production plugins implemented；此后 M4R 状态以实施计划和 11_IMPLEMENTATION_STATUS.md 为准。
 
 ## 13. 验收标准
 
