@@ -16,6 +16,19 @@ from pilot_assessment.evidence.operators import (
     OperatorImplementation,
 )
 from pilot_assessment.evidence.registry import OperatorRegistry, OperatorRegistryError
+from pilot_assessment.evidence.repository import (
+    AppliedRecipeRevision,
+    DraftRevisionConflictError,
+    InMemoryRecipeRepository,
+    RecipeDraftRecord,
+    RecipeRepository,
+)
+from pilot_assessment.evidence.service import (
+    EvidenceRecipeService,
+    RecipeApplyError,
+    RecipePreviewOutcome,
+    RecipeServiceDiagnostic,
+)
 from pilot_assessment.evidence.validation import (
     RecipeDiagnostic,
     RecipeDiagnosticSeverity,
@@ -25,17 +38,26 @@ from pilot_assessment.evidence.validation import (
 )
 
 __all__ = [
+    "AppliedRecipeRevision",
     "CompiledRecipe",
+    "DraftRevisionConflictError",
+    "EvidenceRecipeService",
+    "InMemoryRecipeRepository",
     "NodeExecutionTrace",
     "OperatorExecutionContext",
     "OperatorImplementation",
     "OperatorRegistry",
     "OperatorRegistryError",
     "RecipeCompilationError",
+    "RecipeApplyError",
     "RecipeDiagnostic",
     "RecipeDiagnosticSeverity",
     "RecipeExecutionError",
     "RecipeExecutionResult",
+    "RecipeDraftRecord",
+    "RecipePreviewOutcome",
+    "RecipeRepository",
+    "RecipeServiceDiagnostic",
     "RecipeValidationDisposition",
     "RecipeValidationOutcome",
     "compile_recipe",

@@ -484,13 +484,13 @@ API：
 
 步骤：
 
-- [ ] RED：autosave 接受 incomplete draft；optimistic revision 防止覆盖较新编辑；clone 生成独立 recipe identity；disabled/retired 不删除历史。
-- [ ] RED：apply 只在 technical executable 时成功；不要求人工审批、pytest、scientific status 或文献。
-- [ ] RED：applied revision immutable；后续 draft 修改不改变旧 revision；replay 使用 exact applied snapshot。
-- [ ] GREEN：实现 canonical content identity、author/time/diff metadata；note 可空。
-- [ ] preview 不创建 applied revision，错误返回 node-localized diagnostics。
-- [ ] 运行 focused tests、ruff、ty，预期 exit 0。
-- [ ] 提交：
+- [x] RED：repository/service 尚不存在时两个测试模块按预期 collection failed；随后覆盖 incomplete autosave、optimistic revision、clone identity 和 lifecycle/history。
+- [x] apply 只在 technical executable 时成功；不读取人工审批、pytest、scientific status 或文献状态。
+- [x] applied revision 保存独立 canonical EvidenceRecipe snapshot；后续 draft 修改不改变旧 revision，replay 使用 exact applied snapshot。
+- [x] 实现 canonical SHA-256 content identity、author/time、JSON-pointer structured diff、source draft revision 与可空 note metadata。
+- [x] preview 不创建 applied revision；validation 和 runtime operator 错误都转换为可供前端定位的 diagnostics，运行错误包含 node/operator identity。
+- [x] focused repository/service 5 passed；相关 evidence/contracts/schema 回归 91 passed；ruff、ty、git diff --check 均 exit 0。
+- [x] 提交：
 
       git add src/pilot_assessment/evidence/repository.py src/pilot_assessment/evidence/service.py tests/evidence
       git commit -m "feat: manage editable evidence recipe revisions"

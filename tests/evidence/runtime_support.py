@@ -240,3 +240,61 @@ def arithmetic_recipe() -> EvidenceRecipe:
         ),
         ui=RecipeUiMetadata(groups=(), preferred_layout={}),
     )
+
+
+def constant_recipe(
+    value: float,
+    *,
+    recipe_id: str = "runtime.constant",
+    recipe_version: int = 1,
+) -> EvidenceRecipe:
+    """Return one executable built-in-only recipe for service/repository smoke tests."""
+
+    node = RecipeNode(
+        node_id="value",
+        operator_id="constant.number",
+        operator_version="0.1.0",
+        parameters={"value": value},
+    )
+    value_ref = NodePortReference(node_id=node.node_id, port_id="value")
+    return EvidenceRecipe(
+        recipe_id=recipe_id,
+        recipe_version=recipe_version,
+        anchor=RecipeAnchor(
+            anchor_id="RUNTIME-CONSTANT",
+            name="Runtime constant",
+            description="Platform-only service fixture.",
+            lifecycle=RecipeLifecycle.ACTIVE,
+            scientific_status=RecipeScientificStatus.STARTER_TEMPLATE,
+        ),
+        inputs=(),
+        graph=RecipeGraph(nodes=(node,), edges=()),
+        outputs=(
+            RecipeOutputBinding(
+                output_id="primary",
+                role=OutputRole.PRIMARY_VALUE,
+                name="Primary",
+                source=value_ref,
+                unit=None,
+            ),
+        ),
+        scoring=RecipeScoring(
+            mode=ScoringMode.ORDERED_DAU,
+            input=value_ref,
+            parameters={
+                "direction": "higher_is_better",
+                "desired_boundary": 8.0,
+                "adequate_boundary": 4.0,
+                "likelihood_strength": 0.9,
+            },
+            custom_operator_id=None,
+            custom_operator_version=None,
+        ),
+        documentation=RecipeDocumentation(
+            summary="",
+            assumptions=(),
+            parameter_notes={},
+            references=(),
+        ),
+        ui=RecipeUiMetadata(groups=(), preferred_layout={}),
+    )
