@@ -417,13 +417,13 @@ operator identity：
 
 步骤：
 
-- [ ] 先包装现有 anchors/primitives/events.py、gaze_aoi.py 和 fixation.py 中可复用 pure logic；不复制一份 Anchor-specific 算法。
-- [ ] 支持 assigned AOI label mode；geometry-association mode 只在 recipe 显式选择时启用。
-- [ ] 使用小型内存 frame/interval fixture，不生成四套 90 秒或万行级数据。
-- [ ] 端到端 recipe：EventSelect(disturbance) -> EventWindow -> GazeAoiIntervals -> IntervalIntersect -> AoiFilter -> FirstMatchLatency/DwellRatio -> EventAggregate -> OrderedDau。
-- [ ] 修改 expected AOI 或 window end_offset 后 preview 应机械改变；不评价哪组参数更科学。
-- [ ] 实现完成后补充并运行 focused smoke，预期 exit 0。
-- [ ] 提交：
+- [x] 审阅现有 anchors/primitives/events.py、gaze_aoi.py 和 fixation.py；新算子使用通用 event/interval/gaze 记录包装可组合行为，不复制 Anchor-specific 算法，旧 Polars provider 保留为后续 recipe adapter/migration 来源。
+- [x] 支持 assigned AOI label mode；geometry-association mode 只在 recipe 显式选择时启用。
+- [x] 使用 1 个 disturbance 与 3 段 gaze 的内存 fixture；未生成四套 90 秒或万行级数据。
+- [x] 端到端 recipe 已贯通：EventSelect(disturbance) -> EventWindow -> GazeAoiIntervals -> IntervalIntersect -> AoiFilter -> FirstMatchLatency/DwellRatio -> EventAggregate -> OrderedDau。
+- [x] 修改 expected AOI 后 latency/state 改变；修改 window end_offset 后 dwell ratio 改变；测试不评价哪组参数更科学。
+- [x] focused smoke 8 passed；相关 evidence/contracts/schema 回归 80 passed；ruff、ty、git diff --check 均 exit 0。
+- [x] 提交：
 
       git add src/pilot_assessment/evidence/builtins tests/evidence
       git commit -m "feat: compose disturbance AOI evidence recipe"

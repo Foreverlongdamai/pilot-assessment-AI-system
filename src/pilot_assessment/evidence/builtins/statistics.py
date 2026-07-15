@@ -35,13 +35,14 @@ def _number_port(
     port_id: str,
     *,
     cardinality: PortCardinality,
+    value_type: str = "number",
 ) -> OperatorPortDefinition:
     return OperatorPortDefinition(
         port_id=port_id,
         name=port_id.replace("_", " ").title(),
         description=f"Numeric {port_id} port.",
         port_type=PortType(
-            value_type="number",
+            value_type=value_type,
             cardinality=cardinality,
             temporal_semantics=TemporalSemantics.MIXED,
             unit=None,
@@ -138,7 +139,13 @@ def event_aggregation_definition() -> OperatorDefinition:
     return _definition(
         "aggregation.event",
         family=OperatorFamily.AGGREGATION,
-        inputs=(_number_port("values", cardinality=PortCardinality.MANY),),
+        inputs=(
+            _number_port(
+                "values",
+                cardinality=PortCardinality.ONE,
+                value_type="named_numbers",
+            ),
+        ),
         parameter_schema={
             "type": "object",
             "properties": {
