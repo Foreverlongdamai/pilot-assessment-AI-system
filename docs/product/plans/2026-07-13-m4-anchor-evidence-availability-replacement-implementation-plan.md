@@ -1300,7 +1300,7 @@ PreprocessingProvider.compute(
 ) -> TabularArtifactPayload | BlobArtifactPayload
 ~~~
 
-The service constructs `AnchorPluginContext` by two explicit positive projections: `context` only from declared `required_context_paths`, and `semantic_scope` only from declared `required_semantic_paths`; it never passes the complete `AnchorEvaluationRequest`, complete `AlignedSession.streams`, or undeclared references/context/semantics to plugin/provider code. A plugin receives only its current execution entry's immutable `temporal_recipe`, never the complete plan or another anchor's recipe. Its `AnchorArtifactEmitter` exposes staging only: no commit, abort, resolve, other producer, or storage path. Each `stage_*` call names one declared `artifact_id`; the emitter rejects an unknown/duplicate recipe ID or payload kind/schema mismatch, so two artifacts with the same kind/schema remain unambiguous. Emitted IDs must be a declaration-order subsequence of `artifact_recipes`, which makes public artifact order deterministic while allowing a declared recipe not to emit for a particular calculation state. A provider receives the one resolved scope instance selected under its recipe's `scope_policy`; its dependency map contains only the already resolved provider-definition dependency slots, keyed by `dependency_id` after plan bindings resolve each unique `target_recipe_id`, so it cannot see sibling products or the cache. The provider parameter object is validated against the registry-bound parameter schema before provider factory/compute access. Both `PreprocessingProducer` and `PreprocessingArtifactIdentity` copy the complete scope (kind, ID, bounds, and phase/event/window identity), and that complete identity enters every downstream dependency fingerprint even when two scopes happen to produce identical payload bytes. The read-only payload wrappers expose cloned/frozen table views or immutable bytes and carry the logical hash used by dependency fingerprints. The runtime boundary also enforces key/object identity (`stream key == core modality`, `reference key == descriptor reference ID`), recursively freezes shared algorithm-profile and diagnostic JSON snapshots, and rejects a table artifact ref whose row count, time bounds, or grid identity disagrees with its payload. Task 11 still owns descriptor/column/order/hash recomputation and transactional publication.
+The service constructs `AnchorPluginContext` by two explicit positive projections: `context` only from declared `required_context_paths`, and `semantic_scope` only from declared `required_semantic_paths`; it never passes the complete `AnchorEvaluationRequest`, complete `AlignedSession.streams`, or undeclared references/context/semantics to plugin/provider code. A plugin receives only its current execution entry's immutable `temporal_recipe`, never the complete plan or another anchor's recipe. Its `AnchorArtifactEmitter` exposes staging only: no commit, abort, resolve, other producer, or storage path. Each `stage_*` call names one declared `artifact_id`; the emitter rejects an unknown/duplicate recipe ID or payload kind/schema mismatch, so two artifacts with the same kind/schema remain unambiguous. Emitted IDs must be a declaration-order subsequence of `artifact_recipes`, which makes public artifact order deterministic while allowing a declared recipe not to emit for a particular calculation state. A provider receives the one resolved scope instance selected under its recipe's `scope_policy`; its dependency map contains only the already resolved provider-definition dependency slots, keyed by `dependency_id` after plan bindings resolve each unique `target_recipe_id`, so it cannot see sibling products or the cache. The provider parameter object is validated against the registry-bound parameter schema before provider factory/compute access. Both `PreprocessingProducer` and `PreprocessingArtifactIdentity` copy the complete scope (kind, ID, bounds, and phase/event/window identity), and that complete identity enters every downstream dependency fingerprint even when two scopes happen to produce identical payload bytes. The read-only payload wrappers expose cloned/frozen table views or immutable bytes and carry the logical hash used by dependency fingerprints. The runtime boundary also enforces key/object identity (`stream key == core modality`, `reference key == descriptor reference ID`), recursively freezes shared algorithm-profile and diagnostic JSON snapshots, and rejects a table artifact ref whose row count, time bounds, or grid identity disagrees with its payload. Task 11 implements descriptor/column/order/hash recomputation and transactional publication.
 
 - [x] **Step 3: Run GREEN**
 
@@ -1814,7 +1814,7 @@ plugins remain 0/18, M4 is not engineering-verified, and `formal_run_authorized=
 - Modify: `src/pilot_assessment/anchors/protocols.py`
 - Create: `tests/anchors/test_artifacts.py`
 
-- [ ] **Step 1: Write RED transaction tests**
+- [x] **Step 1: Write RED transaction tests**
 
 Cover independent per-anchor staging, contract validation before publish, read-after-anchor-commit within the same evaluation, immutable payload resolution for downstream levels, abort on plugin/schema failure, global abort on final report commit failure, logical table hash independent of path/compression/writer metadata, opaque blob logical/storage equality, descriptor-declared canonical row order, sample-mask/window-trace kind separation, and zero writes inside Session Bundle. Freeze the least-capability emitter surface: it can only stage table/blob payloads against the immutable recipe table supplied at `begin_anchor` and cannot commit, abort, resolve, enumerate another producer, or discover a storage path. Add explicit rejection probes for an unknown or duplicate artifact ID, out-of-declaration-order staging, kind/schema/payload-kind/descriptor/order-key mismatch, two declared IDs sharing kind/schema but remaining separately addressable, an unstaged returned ref, a staged-but-unreturned ref, reordered returned refs, duplicate refs, and a staged payload whose ref is altered before return.
 
@@ -1824,7 +1824,7 @@ Cover independent per-anchor staging, contract validation before publish, read-a
 
 Expected: RED because the sink protocols have no implementation.
 
-- [ ] **Step 2: Implement protocol and in-memory reference sink**
+- [x] **Step 2: Implement protocol and in-memory reference sink**
 
 ~~~text
 DerivedArtifactSink.begin_evaluation(evaluation_key: str) -> EvaluationArtifactTransaction
@@ -1849,7 +1849,7 @@ AnchorArtifactTransaction.abort() -> None
 
 `begin_anchor()` freezes the current entry's exact recipe map together with an `ArtifactProducer` containing the current anchor ID; it rejects duplicate recipe IDs before returning an emitter. `AnchorArtifactTransaction.emitter()` returns the narrow `AnchorArtifactEmitter` protocol from Task 5; its `stage_table(artifact_id, ...)`/`stage_blob(artifact_id, ...)` methods look up that exact recipe, validate/clone the payload kind/schema, compute a ref with the producer anchor/plugin identity, and append it to transaction-owned canonical order. Unknown or duplicate emissions are rejected; artifact identity never falls back to kind/schema. The transaction itself owns commit/abort and is never passed to plugin code. Before commit, the service must require exact ordered equality between `measurement.derived_artifacts` and `transaction.staged_refs()`; any missing, extra, duplicate, reordered, mutated, or otherwise schema-invalid ref aborts that anchor and maps to `extractor_error`. `AnchorArtifactTransaction.commit()` revalidates its staged payload set and makes it resolvable inside the evaluation transaction but does not publish it outside that transaction. `EvaluationArtifactTransaction.resolve()` verifies the complete ref/logical hash and returns an immutable payload handle; after abort it must reject every handle. `stage_preprocessing()` validates/clones a provider payload, computes `PreprocessingArtifactIdentity`, and returns an evaluation-local immutable handle; preprocessing products are never added to an anchor's public `derived_artifacts`. Provide `InMemoryDerivedArtifactSink` for tests/smoke. M6 will later own managed durable storage.
 
-- [ ] **Step 3: Run GREEN**
+- [x] **Step 3: Run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run pytest tests/anchors/test_artifacts.py -v
@@ -1863,6 +1863,22 @@ Expected: PASS; downstream reads resolve immutable logical payloads only after a
 git add src/pilot_assessment/anchors/artifacts.py src/pilot_assessment/anchors/protocols.py tests/anchors/test_artifacts.py
 git commit -m "feat: add transactional M4 artifact sink"
 ~~~
+
+**Completion evidence (2026-07-15):** Commit `da8cb42` adds the narrow transaction protocols,
+`InMemoryDerivedArtifactSink`, per-anchor staging/commit/abort, evaluation-local resolution,
+preprocessing identities and the exact returned-ref closure helper. The RED gate was the expected
+`ModuleNotFoundError` for the absent `pilot_assessment.anchors.artifacts` module. The GREEN suite
+proves declaration-order recipe lookup, table physical/logical schema validation, canonical row
+order, immutable readback, independent anchor abort, global publication abort, raw blob SHA-256,
+storage-independent logical table identity, no Session Bundle writes and exact equality between
+staged and returned refs. `tests/anchors/test_artifacts.py` = `18 passed`; the focused compatibility
+run with `tests/contracts/test_anchor_measurement_report.py` = `49 passed`. Ruff check, Ruff format
+check and `ty check` pass for all three Task 11 files. This Task was implemented and self-reviewed
+**INLINE** under the user's quota-conservation instruction; no subagent or independent/external
+review and no Task-local full-suite rerun are claimed. The last recorded full suite remains Task 9's
+`1062 passed, 3 skipped`. The sink is evaluation-local and writes no managed artifact root; durable
+persistence remains M6 ownership. Production plugins remain 0/18, M4 is not engineering-verified,
+and `formal_run_authorized=false`.
 
 ### Task 12: Implement central scoring and breakdown aggregation
 

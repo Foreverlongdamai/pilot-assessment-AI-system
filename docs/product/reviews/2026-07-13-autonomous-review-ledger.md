@@ -179,3 +179,15 @@
 | Inline self-review decisions saved for later audit | `source_row_index` addresses the caller's original DataFrame order; left-hold integration returns value-nanoseconds; a gap is strictly `delta > gap_threshold_ns`; only the final support row extends to an explicit semantic end; nearest matching returns original right indexes, forbids extrapolation outside the right time range, and resolves ties by earlier timestamp then stable ID; semantic windows use the explicit `semantic-span-v1` or `fixed-full-with-end-tail-v1` policy, with short spans kept whole and at most one deduplicated end-aligned tail |
 | Commit | `6db08c9` (`feat: add segment-aware M4 temporal support`); docs/status closure committed separately |
 | Release conclusion | Task 10 complete; Task 11 transactional content-addressed artifact publication is next. The temporal layer introduces no coverage threshold or raw-data quality filter. Production plugins remain 0/18, M4 remains not engineering-verified, and `formal_run_authorized=false` |
+
+### AR-013 — M4 Task 11 Transactional Artifact Publication (INLINE finalization)
+
+| Field | Record |
+|---|---|
+| Artifacts | `anchors/artifacts.py`, the transaction ports added to `anchors/protocols.py`, and `tests/anchors/test_artifacts.py` |
+| Approval | Covered by accepted M4 design §13.2/§13.4–§13.6 and replacement Task 11 plus the user's explicit inline continuation instruction; it changes no anchor formula, scorer threshold, CPT, production-plugin count, formal-run boundary, or scientific-validity claim |
+| Finalization mode | **Implemented and self-reviewed INLINE** to conserve quota. No subagent was created and no independent/external verdict is claimed |
+| TDD evidence | RED: expected `ModuleNotFoundError` for the absent artifacts module. GREEN: Task 11 focused = `18 passed`; focused run with the existing anchor measurement/artifact contract = `49 passed`; Ruff check, Ruff format check and `ty check` clean for all Task 11 files. No full-suite rerun was made; Task 9's `1062 passed, 3 skipped` remains the latest full-suite evidence |
+| Inline self-review decisions saved for later audit | The plugin sees only a two-method staging emitter; artifact IDs bind exact declaration-order recipes rather than kind/schema lookup; table identity hashes canonical logical rows and excludes storage metadata; blob logical/storage digests both hash raw bytes; refs become resolvable only after the producing anchor commits; exact staged/returned ref equality is mandatory; an anchor abort is isolated while evaluation abort/publish failure invalidates all local resolution; preprocessing identity includes complete scope; the sink has no Session Bundle or durable-root path surface |
+| Commit | `da8cb42` (`feat: add transactional M4 artifact sink`); docs/status closure committed separately |
+| Release conclusion | Task 11 complete; Task 12 central scoring and breakdown aggregation is next. Durable artifact persistence remains M6 ownership. Production plugins remain 0/18, M4 remains not engineering-verified, and `formal_run_authorized=false` |
