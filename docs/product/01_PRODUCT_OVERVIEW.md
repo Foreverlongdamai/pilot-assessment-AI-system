@@ -1,6 +1,6 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0 设计基线（M4 完整书面规格、轻量工作流验证、Task 3/7/8 定向修订与 replacement plan 均已获明确或授权默认批准；D-026–D-030 已接受；原实施计划已被取代；Task 0–7 已分别由 `bc544bf`、`f56365c`、`928e9a4`、`e054620`、`1528d09`、`b63d38b`、`93c4ddb`、`583a1e7` 完成，M4-A contract/schema 与 Task 7 exact-18 catalog/24 parameter resources 已实现，下一步为 Task 8 canonical identity；18/18 specified、0/18 production plugins 已实现；M4 尚未 engineering verified，`formal_run_authorized=false`，无科学有效性声明）
+**文档状态：** 产品 v0 设计基线（M4 完整书面规格、轻量工作流验证、Task 3/7/8 定向修订与 replacement plan 均已获明确或授权默认批准；D-026–D-030 已接受；原实施计划已被取代；replacement Task 0–15 已完成，M4-A/M4-B framework 与 O1/O2 production plugins 已实现，O1/O2 capability 均为 `available`；下一步为 Task 16 O3；18/18 specified、2/18 production plugins 已实现；M4-C 与 M4 整体尚未 engineering verified，`formal_run_authorized=false`，无科学有效性声明）
 **日期：** 2026-07-13
 **适用目录：** `pilot_assessment_system/`
 
@@ -223,12 +223,12 @@ v0 完成必须同时满足：
 - [Session Bundle 规范](./03_SESSION_BUNDLE_SPEC.md)
 - [M3 Native-Rate Time Synchronization 规格](./specs/2026-07-12-m3-native-time-synchronization-design.md)
 - [M3 实施计划](./plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md)
-- [M4 Anchor Calculation and Evidence Availability 规格](./specs/2026-07-13-m4-anchor-evidence-availability-design.md)（已批准；18/18 已设计、0/18 production plugins 已实现）
+- [M4 Anchor Calculation and Evidence Availability 规格](./specs/2026-07-13-m4-anchor-evidence-availability-design.md)（已批准；18/18 已设计、2/18 production plugins 已实现）
 - [M4 Anchor Calculation and Evidence Availability 原实施计划](./plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（历史上已批准，现已被取代且不得执行）
 - [M4 Lightweight Workflow Validation Amendment](./specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)（已批准）
 - [M4 Task 3 Reference Candidate Binding Amendment](./specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)（已于 2026-07-13 批准；D-028）
 - [M4 Task 7 Catalog/Resource Identity Amendment](./specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)（已于 2026-07-13 按授权默认批准；D-029；由提交 `583a1e7` 完成）
-- [M4 Task 8 Canonical Fingerprint/Runtime Identity Amendment](./specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md)（已于 2026-07-13 按授权默认批准；D-030；代码尚未完成）
-- [M4 Anchor Calculation and Evidence Availability Replacement Implementation Plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已于 2026-07-13 批准并修订；Task 0–7 已完成，下一步为 Task 8 canonical identity）
+- [M4 Task 8 Canonical Fingerprint/Runtime Identity Amendment](./specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md)（已于 2026-07-13 按授权默认批准；D-030；canonical identity/runtime code 已完成）
+- [M4 Anchor Calculation and Evidence Availability Replacement Implementation Plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已于 2026-07-13 批准并修订；Task 0–15 已完成，下一步为 Task 16 O3）
 - [M4 Autonomous Review Ledger](./reviews/2026-07-13-autonomous-review-ledger.md)（保存默认批准期间的独立复核证据与工具边界）
 - 既有后端方向稿：`docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md`

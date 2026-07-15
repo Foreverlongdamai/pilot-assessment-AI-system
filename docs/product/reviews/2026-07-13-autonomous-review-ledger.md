@@ -229,3 +229,16 @@
 | Identity | Packaged registry fingerprint `dfa7b3a3fec7251b2d4c5535e38adfaaa147d09c38dcf60a24538646c3ff41cd`; O1 implementation digest `36be1bf1d8409ab74d805a3eadb26c58b75ca898c2a8e780df5ced02a2a8ef23` |
 | Commits | `ee67364` (`fix: canonicalize catalog input projections`) and `b1d1fc9` (`feat: add phase-state precision anchor`) |
 | Release conclusion | Task 14 is complete and O1 is the sole available packaged production capability. The honest state is 18/18 specified, 1/18 production plugins; M4-C and M4 overall remain incomplete, `formal_run_authorized=false`, and Task 15 O2 Peak Tracking Excursion is next |
+
+### AR-017 — M4 Task 15 O2 Peak Tracking Excursion (INLINE)
+
+| Field | Record |
+|---|---|
+| Artifacts | `anchors/primitives/reference_join.py`, `anchors/plugins/o2_peak_tracking_excursion.py`, O2 micro constructors/tests, packaged registry entry and catalog/registry/package honesty tests |
+| Approval | Covered by the approved replacement Task 15 and the user's explicit INLINE continuation instruction; no accepted formula, threshold, CPT, formal-run boundary or scientific-validity claim changed |
+| Finalization mode | **Implemented and self-reviewed INLINE** to conserve quota. No subagent was created and no independent/external verdict is claimed |
+| TDD evidence | RED: 15 focused failures while O2 was absent; four registry failures before registration; one finite-extreme overflow failure during numerical self-review. GREEN: final O2/catalog/registry/package `110 passed`; fresh full repository `1193 passed, 3 skipped`. Registry verify, zero-drift schema export, Ruff check/format, `ty check src`, `git diff --check`, fresh sdist/wheel build and repository-external isolated-wheel O1/O2 capability loading passed |
+| Inline self-review decisions saved for later audit | Evaluation grid is applicable native X timestamps; exact reference duplicates choose lowest stable row; interpolation is same-segment linear only, with no extrapolation, gap bridging, nearest-path or actual-X fallback; reference units convert to metre before an explicit plan-hashed affine frame transform and errors output in ft; transform binding is immutable plan input rather than O2 `{}` parameters; all joined points across applicable phases contribute to the session maximum; peak ties use earliest timestamp then stable X row; stable `math.hypot` keeps representable finite extreme performance computed U rather than overflowing into extractor error |
+| Identity | Packaged registry fingerprint `752f680401c5482df3897db9dcaa06e4787aa4a54290045285c1bb086760982c`; O2 implementation digest `60638db920b8f3865365625e812104956b9160ca962a116121d8365460ae9966` |
+| Commit | `b1a8743` (`feat: add peak tracking excursion anchor`); docs/status closure committed separately |
+| Release conclusion | Task 15 is complete and O1/O2 are the only available packaged production capabilities. The honest state is 18/18 specified, 2/18 production plugins; M4-C and M4 overall remain incomplete, `formal_run_authorized=false`, and Task 16 O3 Terminal Capture Quality is next |

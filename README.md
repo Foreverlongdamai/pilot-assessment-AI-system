@@ -2,7 +2,7 @@
 
 本目录是 “Development of AI-Based System for Evaluating eVTOL Pilot Training Effectiveness” 项目的产品化工作区。系统目标是把多模态飞行训练 session 转换为可追溯的证据锚点，并通过可编辑的贝叶斯网络输出飞行员能力后验分布。
 
-当前状态：**产品设计基线 v0.1 已建立；后端 M1/M2/M3 已实现并通过工程完成门。M3 只完成 native-rate 时间对齐，不包含插值、重采样或 anchor window grid。M4 的 O1–O13、H1–H5 主规格、轻量、Task 3/7/8 定向修订与 replacement 实施计划均已于 2026-07-13 获明确或授权默认批准，D-026–D-030 已接受；原四套 90 秒 fixture 实施计划已被取代且不再授权执行。Replacement Task 0–6 已分别由提交 `bc544bf`、`f56365c`、`928e9a4`、`e054620`、`1528d09`、`b63d38b`、`93c4ddb` 完成；M4-A contract/schema slice 已完成并发布 14 个 package schema resources，下一步为 Task 7 exact-18 catalog 与参数资源。Task 7/8 amendments 已批准，但 catalog/canonical identity 代码仍待实现。真实状态仍为 18/18 specified、0/18 production plugins 已实现；M4 尚未 engineering verified，`formal_run_authorized=false`。完整产品仍为 `in_progress`，Gate B 尚未通过；18 个 AnchorPlugin、BN、runtime 和 WinUI 仍未实现。参考评估模型的科学状态仍为 `engineering_default`，synthetic fixture 为 `not_supported`；现有合同/schema 测试不构成科学有效性声明。**
+当前状态：**产品设计基线 v0.1 已建立；后端 M1/M2/M3 已实现并通过工程完成门。M3 只完成 native-rate 时间对齐，不包含插值、重采样或 anchor window grid。M4 的 O1–O13、H1–H5 主规格、轻量、Task 3/7/8 定向修订与 replacement 实施计划均已于 2026-07-13 获明确或授权默认批准，D-026–D-030 已接受；原四套 90 秒 fixture 实施计划已被取代且不再授权执行。Replacement Task 0–15 已完成，M4-A/M4-B framework、O1 Phase-state Precision 与 O2 Peak Tracking Excursion 已进入生产代码和可信注册表；O1/O2 capability 均为 `available`。真实状态为 18/18 specified、2/18 production plugins 已实现；下一步是 Task 16 O3，M4-C 与 M4 整体尚未 engineering verified，`formal_run_authorized=false`。完整产品仍为 `in_progress`，Gate B 尚未通过；其余 16 个 AnchorPlugin、BN、runtime 和 WinUI 仍未实现。参考评估模型的科学状态仍为 `engineering_default`，synthetic fixture 为 `not_supported`；现有软件测试不构成科学有效性声明。**
 
 ## 从这里开始
 
@@ -17,7 +17,7 @@
 - M4 Task 3 Reference Candidate Binding 修订：[docs/product/specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md](docs/product/specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)（已于 2026-07-13 批准；D-028）
 - M4 Task 7 Catalog and Resource Identity 修订：[docs/product/specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md](docs/product/specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)（已按授权默认批准；D-029）
 - M4 Task 8 Canonical Fingerprint and Runtime Identity 修订：[docs/product/specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md](docs/product/specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md)（已按授权默认批准；D-030）
-- M4 replacement 实施计划：[docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md](docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已于 2026-07-13 批准并按方案 A 修订；Task 0–6 已完成，下一步为 Task 7）
+- M4 replacement 实施计划：[docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md](docs/product/plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已于 2026-07-13 批准并按方案 A 修订；Task 0–15 已完成，下一步为 Task 16 O3）
 - 当前设计决策：[docs/product/DECISIONS.md](docs/product/DECISIONS.md)
 - 术语表：[docs/product/GLOSSARY.md](docs/product/GLOSSARY.md)
 - 历史后端草案：[docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md](docs/superpowers/specs/2026-07-08-backend-core-runtime-adapter-design.md)（仅保留追溯，不再是实现依据）
@@ -51,7 +51,7 @@ uv build
 
 2026-07-12 的 M3 完成门实测为 `694 passed, 2 skipped`；两个 skip 仅对应未显式提供 repository-external CSV 的 M2/M3 opt-in 格式样例测试。配置该 CSV 后，两条格式样例 E2E 为 `2 passed`。Schema regeneration、Ruff format/lint、`ty check src`、build、tracked raw-data scan 和隔离 wheel smoke 也均通过。详细数字、golden counts 与 wheel 证据见 [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md)。
 
-这些结果只验证相应的软件合同和运行路径。格式样例是一次随意飞行记录，只用于格式、接口和时间路径；结果不证明轨迹、任务、表现、生理指标、anchor 或飞行员能力有效。M4 replacement Task 0–6 已完成；Task 6 的 focused 与 contracts/schema gates 分别为 `36 passed`、`376 passed`，Ruff/ty clean，fresh build 成功并包含 14 个 package schema resources，两路终审 P0/P1 均为 0。上述证据只关闭 M4-A contract/schema slice；catalog 与 canonical identity 仍待 Task 7–8，不代表任何 production AnchorPlugin 已实现。真实计数仍为 18/18 specified、0/18 production plugins，M4 尚未 engineering verified，所有路径保持 `formal_run_authorized=false`，也不构成科学有效性证明。
+这些结果只验证相应的软件合同和运行路径。格式样例是一次随意飞行记录，只用于格式、接口和时间路径；结果不证明轨迹、任务、表现、生理指标、anchor 或飞行员能力有效。M4 replacement Task 0–15 已完成；Task 15 O2 focused gate 为 `110 passed`，最新全仓为 `1193 passed, 3 skipped`，registry/schema/Ruff/format/ty/build/isolated-wheel gates 均通过。O1/O2 是当前仅有的两个 production capabilities，真实计数为 18/18 specified、2/18 production plugins；M4-C 与 M4 整体仍未 engineering verified，所有路径保持 `formal_run_authorized=false`，也不构成科学有效性证明。
 
 ## 当前产品方向
 

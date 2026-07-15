@@ -1,6 +1,6 @@
 # M4 Anchor Calculation and Evidence Availability Replacement Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Execution mode:** Implement task-by-task with TDD. On 2026-07-15 the user explicitly replaced the earlier subagent recommendation with INLINE execution to conserve quota; no subagent is required while that instruction remains active. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement the approved M4 contract, deterministic plugin runtime, all 18 reference AnchorPlugins, a lightweight layered verification pyramid, and one public 10-second M1-to-M4 wheel smoke without introducing a performance-quality gate or claiming scientific validation.
 
@@ -14,8 +14,8 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
 - Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-13: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–7 are complete in commits `bc544bf`, `f56365c`, `928e9a4`, `e054620`, `1528d09`, `b63d38b`, `93c4ddb`, and `583a1e7`; the user explicitly approved the Task 3 candidate-binding amendment and later authorized intermediate Task 7/8 closures by default while resting. Task 8 is next.
-- Current implementation truth: 18/18 reference anchors specified, 0/18 production plugins implemented; M4 is not engineering verified.
+- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–15 are complete, with O1 in `b1d1fc9` and O2 in `b1a8743`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. Task 16 O3 is next.
+- Current implementation truth: 18/18 reference anchors specified, 2/18 production plugins implemented; M4-C and M4 overall are not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
 - Scope truth: M4 consumes a compiled plan. Building/editing/publishing a ModelBundle, graph, CPT, or plan compiler belongs to M5.
@@ -2230,8 +2230,10 @@ git commit -m "feat: add phase-state precision anchor"
 - Create: `tests/anchors/test_o2_peak_tracking_excursion.py`
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
 - Modify: `tests/anchors/test_registry.py`
+- Modify: `tests/anchors/test_catalog.py`
+- Modify: `tests/test_package_metadata.py`
 
-- [ ] **Step 1: Write RED join/error tests**
+- [x] **Step 1: Write RED join/error tests**
 
 Test exact timestamp ties, same-segment linear interpolation, no extrapolation/cross-gap join, earliest peak tie, unit/frame conversion, tiny nonzero overlap still computed, no overlap `not_computable + no_reference_overlap`, missing independent reference, and an explicit assertion that actual X cannot satisfy commanded reference.
 
@@ -2241,7 +2243,7 @@ Test exact timestamp ties, same-segment linear interpolation, no extrapolation/c
 
 Expected: RED because O2 is unavailable.
 
-- [ ] **Step 2: Implement the exact reference join and metric**
+- [x] **Step 2: Implement the exact reference join and metric**
 
 ~~~text
 evaluation grid = applicable native X timestamps
@@ -2252,7 +2254,7 @@ D <= 2 ft; A <= 5 ft; U > 5 ft
 
 Save per-axis error and tracking-error trace. Never fall back to nearest-path or actual X.
 
-- [ ] **Step 3: Register, verify, and run GREEN**
+- [x] **Step 3: Register, verify, and run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh --anchor O2 --factory-module pilot_assessment.anchors.plugins.o2_peak_tracking_excursion --factory-symbol create_plugin
@@ -2268,6 +2270,16 @@ Expected: PASS; capability count is 2/18.
 git add src/pilot_assessment/anchors/primitives/reference_join.py src/pilot_assessment/anchors/plugins/o2_peak_tracking_excursion.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o2_peak_tracking_excursion.py tests/anchors/test_registry.py
 git commit -m "feat: add peak tracking excursion anchor"
 ~~~
+
+**Completion evidence (2026-07-15):**
+
+- RED was observed as 15 focused failures while the O2 primitive/plugin were absent, then as four registry-honesty failures before O2 registration. Inline numerical self-review added a finite `1e200 ft` case, reproduced one extractor-error overflow, and closed the root cause by using stable `math.hypot` rather than square-then-root L2.
+- `b1a8743` implements the pure reference-join kernel, thin O2 production plugin, exact tracking-error artifact and trusted registry entry. Evaluation uses applicable native X timestamps, exact/stable-row reference ties, same-segment linear interpolation, no extrapolation/cross-gap join, explicit unit/frame conversion, and never substitutes actual X or nearest-path for an independent commanded reference.
+- O2 v0.1 parameters remain exact `{}`. The plan-hashed temporal binding carries ordered axis mappings, non-negative reference gap threshold and an explicit versioned affine transform; missing/mismatched frame binding is `not_computable`, never guessed.
+- Fresh O2/catalog/registry/package gate: `110 passed`; fresh full repository gate: `1193 passed, 3 skipped`. The skips are the host-symlink capability and two opt-in repository-external captured-format CSV tests, not O2 behavior.
+- Packaged registry fingerprint is `752f680401c5482df3897db9dcaa06e4787aa4a54290045285c1bb086760982c`; O2 implementation digest is `60638db920b8f3865365625e812104956b9160ca962a116121d8365460ae9966`.
+- Registry verification, zero-drift schema export, Ruff check/format, `ty check src`, `git diff --check`, fresh sdist/wheel build and repository-external isolated-wheel O1/O2 capability loading all passed.
+- No subagent or external review was used. The honest state is 2/18 production plugins; M4-C and M4 overall remain incomplete, `formal_run_authorized=false`, and Task 16 O3 is next.
 
 ### Task 16: Implement O3 Terminal Capture Quality
 
