@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import heapq
 from collections import Counter, defaultdict
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
+from pydantic import JsonValue
 
 from pilot_assessment.contracts.evidence_recipe import (
     EvidenceRecipe,
@@ -20,8 +22,14 @@ from pilot_assessment.contracts.evidence_recipe import (
     PortType,
     RecipeNode,
     ScoringMode,
+    TemporalSemantics,
+)
+from pilot_assessment.evidence.operators import (
+    OperatorParameterValidationContext,
+    OperatorParameterValidator,
 )
 from pilot_assessment.evidence.registry import OperatorRegistry, OperatorRegistryError
+from pilot_assessment.evidence.scoring import scoring_operator_identity
 
 
 class RecipeValidationDisposition(StrEnum):
@@ -89,7 +97,7 @@ def _report_duplicates(
 def _validate_parameters(
     diagnostics: list[RecipeDiagnostic],
     definition: OperatorDefinition,
-    parameters: object,
+    parameters: Mapping[str, JsonValue],
     *,
     location: str,
     invalid_code: str,
@@ -116,6 +124,47 @@ def _validate_parameters(
             invalid_code,
             f"{location}{suffix}",
             error.message,
+        )
+
+
+def _validate_operator_parameter_hook(
+    diagnostics: list[RecipeDiagnostic],
+    registry: OperatorRegistry,
+    definition: OperatorDefinition,
+    parameters: Mapping[str, JsonValue],
+    *,
+    input_slots: dict[str, tuple[str, ...]],
+    location: str,
+) -> None:
+    try:
+        implementation = registry.implementation(
+            definition.operator_id,
+            definition.implementation_version,
+        )
+    except OperatorRegistryError:
+        return
+    if not isinstance(implementation, OperatorParameterValidator):
+        return
+    try:
+        issues = implementation.validate_parameters(
+            parameters,
+            OperatorParameterValidationContext(input_slots=input_slots),
+        )
+    except Exception as error:
+        _error(
+            diagnostics,
+            "recipe.operator_parameter_validator_failed",
+            location,
+            f"trusted technical parameter validator failed: {error}",
+        )
+        return
+    for issue in issues:
+        suffix = issue.parameter_path if issue.parameter_path.startswith("/") else ""
+        _error(
+            diagnostics,
+            "recipe.operator_parameters_invalid",
+            f"{location}{suffix}",
+            issue.message,
         )
 
 
@@ -153,7 +202,11 @@ def _validate_port_compatibility(
             location,
             f"units are incompatible: {source.unit} -> {target.unit}",
         )
-    if source.temporal_semantics is not target.temporal_semantics:
+    if (
+        source.temporal_semantics is not target.temporal_semantics
+        and source.temporal_semantics is not TemporalSemantics.MIXED
+        and target.temporal_semantics is not TemporalSemantics.MIXED
+    ):
         _error(
             diagnostics,
             "recipe.port_temporal_mismatch",
@@ -295,7 +348,7 @@ def validate_recipe(
             invalid_code="recipe.parameters_invalid",
         )
 
-    incoming: dict[tuple[str, str], list[str]] = defaultdict(list)
+    incoming: dict[tuple[str, str], list[tuple[str, str | None]]] = defaultdict(list)
     graph_edges: list[tuple[str, str]] = []
     for edge in recipe.graph.edges:
         edge_location = f"/graph/edges/{_pointer_token(edge.edge_id)}"
@@ -343,7 +396,29 @@ def validate_recipe(
             )
         if source_type is None or target_type is None:
             continue
-        incoming[(target_node.node_id, edge.target.port_id)].append(edge.edge_id)
+        incoming[(target_node.node_id, edge.target.port_id)].append(
+            (edge.edge_id, edge.target_slot_id)
+        )
+        if (
+            target_type.cardinality is PortCardinality.MANY
+            and edge.target_slot_id is None
+        ):
+            _error(
+                diagnostics,
+                "recipe.many_input_slot_missing",
+                f"{edge_location}/target_slot_id",
+                "an edge into a many input requires a stable target slot ID",
+            )
+        if (
+            target_type.cardinality is not PortCardinality.MANY
+            and edge.target_slot_id is not None
+        ):
+            _error(
+                diagnostics,
+                "recipe.single_input_slot_unexpected",
+                f"{edge_location}/target_slot_id",
+                "target slot IDs are only valid for many input ports",
+            )
         _validate_port_compatibility(
             diagnostics,
             source_type,
@@ -353,12 +428,12 @@ def validate_recipe(
 
     for node_id, definition in definitions.items():
         for port in definition.input_ports:
-            edge_ids = incoming.get((node_id, port.port_id), [])
+            incoming_edges = incoming.get((node_id, port.port_id), [])
             port_location = (
                 f"/graph/nodes/{_pointer_token(node_id)}/inputs/"
                 f"{_pointer_token(port.port_id)}"
             )
-            if port.port_type.cardinality is PortCardinality.ONE and not edge_ids:
+            if port.port_type.cardinality is PortCardinality.ONE and not incoming_edges:
                 _error(
                     diagnostics,
                     "recipe.required_input_missing",
@@ -368,14 +443,50 @@ def validate_recipe(
             if (
                 port.port_type.cardinality
                 in {PortCardinality.ONE, PortCardinality.OPTIONAL}
-                and len(edge_ids) > 1
+                and len(incoming_edges) > 1
             ):
                 _error(
                     diagnostics,
                     "recipe.input_cardinality_exceeded",
                     port_location,
-                    f"input accepts at most one edge but received {len(edge_ids)}",
+                    f"input accepts at most one edge but received {len(incoming_edges)}",
                 )
+            if port.port_type.cardinality is PortCardinality.MANY:
+                slots = tuple(
+                    slot_id for _, slot_id in incoming_edges if slot_id is not None
+                )
+                duplicate_slots = sorted(
+                    slot_id
+                    for slot_id, count in Counter(slots).items()
+                    if count > 1
+                )
+                for slot_id in duplicate_slots:
+                    _error(
+                        diagnostics,
+                        "recipe.many_input_slot_duplicate",
+                        f"{port_location}/{_pointer_token(slot_id)}",
+                        f"many input slot {slot_id!r} is connected more than once",
+                    )
+
+    for node_id, definition in definitions.items():
+        input_slots = {
+            port.port_id: tuple(
+                sorted(
+                    slot_id
+                    for _, slot_id in incoming.get((node_id, port.port_id), [])
+                    if slot_id is not None
+                )
+            )
+            for port in definition.input_ports
+        }
+        _validate_operator_parameter_hook(
+            diagnostics,
+            registry,
+            definition,
+            nodes[node_id].parameters,
+            input_slots=input_slots,
+            location=f"/graph/nodes/{_pointer_token(node_id)}/parameters",
+        )
 
     if nodes and _has_cycle(set(nodes), graph_edges):
         _error(
@@ -443,50 +554,82 @@ def validate_recipe(
             scoring.custom_operator_id,
             scoring.custom_operator_version,
         )
-        if scoring.mode is ScoringMode.CUSTOM_OPERATOR:
-            if any(value is None for value in custom_identity):
-                _error(
-                    diagnostics,
-                    "recipe.custom_scorer_identity_missing",
-                    "/scoring",
-                    "custom scoring requires operator ID and version",
-                )
-            else:
-                operator_id = scoring.custom_operator_id
-                operator_version = scoring.custom_operator_version
-                assert operator_id is not None
-                assert operator_version is not None
-                try:
-                    definition = registry.definition(operator_id, operator_version)
-                except OperatorRegistryError:
-                    _error(
-                        diagnostics,
-                        "recipe.custom_scorer_unknown",
-                        "/scoring/custom_operator_id",
-                        f"custom scorer {operator_id}@{operator_version} is not registered",
-                    )
-                else:
-                    if definition.family is not OperatorFamily.SCORING:
-                        _error(
-                            diagnostics,
-                            "recipe.custom_scorer_family_mismatch",
-                            "/scoring/custom_operator_id",
-                            "custom scorer must reference a scoring-family operator",
-                        )
-                    _validate_parameters(
-                        diagnostics,
-                        definition,
-                        scoring.parameters,
-                        location="/scoring/parameters",
-                        invalid_code="recipe.scoring_parameters_invalid",
-                    )
-        elif any(value is not None for value in custom_identity):
+        if scoring.mode is ScoringMode.CUSTOM_OPERATOR and any(
+            value is None for value in custom_identity
+        ):
+            _error(
+                diagnostics,
+                "recipe.custom_scorer_identity_missing",
+                "/scoring",
+                "custom scoring requires operator ID and version",
+            )
+        if scoring.mode is not ScoringMode.CUSTOM_OPERATOR and any(
+            value is not None for value in custom_identity
+        ):
             _error(
                 diagnostics,
                 "recipe.custom_scorer_identity_unexpected",
                 "/scoring",
                 "built-in scoring mode cannot carry a custom operator identity",
             )
+        scorer_identity = scoring_operator_identity(scoring)
+        if scorer_identity is not None:
+            operator_id, operator_version = scorer_identity
+            try:
+                scorer_definition = registry.definition(operator_id, operator_version)
+            except OperatorRegistryError:
+                _error(
+                    diagnostics,
+                    "recipe.scorer_unknown",
+                    "/scoring",
+                    f"scorer {operator_id}@{operator_version} is not registered",
+                )
+            else:
+                if scorer_definition.family is not OperatorFamily.SCORING:
+                    _error(
+                        diagnostics,
+                        "recipe.scorer_family_mismatch",
+                        "/scoring",
+                        "scorer must reference a scoring-family operator",
+                    )
+                _validate_parameters(
+                    diagnostics,
+                    scorer_definition,
+                    scoring.parameters,
+                    location="/scoring/parameters",
+                    invalid_code="recipe.scoring_parameters_invalid",
+                )
+                _validate_operator_parameter_hook(
+                    diagnostics,
+                    registry,
+                    scorer_definition,
+                    scoring.parameters,
+                    input_slots={},
+                    location="/scoring/parameters",
+                )
+                scorer_inputs = _port_map(scorer_definition, output=False)
+                scorer_input_type = scorer_inputs.get("value")
+                if scorer_input_type is None:
+                    _error(
+                        diagnostics,
+                        "recipe.scorer_value_port_missing",
+                        "/scoring",
+                        "scoring operator must declare an input port named 'value'",
+                    )
+                elif scoring.input is not None:
+                    source_definition = definitions.get(scoring.input.node_id)
+                    if source_definition is not None:
+                        source_type = _port_map(
+                            source_definition,
+                            output=True,
+                        ).get(scoring.input.port_id)
+                        if source_type is not None:
+                            _validate_port_compatibility(
+                                diagnostics,
+                                source_type,
+                                scorer_input_type,
+                                location="/scoring/input",
+                            )
 
     ordered = tuple(
         sorted(

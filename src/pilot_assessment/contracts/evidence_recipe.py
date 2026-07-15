@@ -259,6 +259,7 @@ class RecipeEdge(StrictContractModel):
     edge_id: StableId
     source: NodePortReference
     target: NodePortReference
+    target_slot_id: StableId | None = None
 
 
 class RecipeGraph(StrictContractModel):

@@ -34,6 +34,7 @@ class CompiledIncomingEdge:
     source_node_id: str
     source_port_id: str
     target_port_id: str
+    target_slot_id: str | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -96,6 +97,7 @@ def compile_recipe(
                 source_node_id=edge.source.node_id,
                 source_port_id=edge.source.port_id,
                 target_port_id=edge.target.port_id,
+                target_slot_id=edge.target_slot_id,
             )
         )
     for values in incoming.values():

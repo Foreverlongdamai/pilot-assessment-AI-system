@@ -54,6 +54,7 @@ def number_port(
 def definition(
     operator_id: str,
     *,
+    family: OperatorFamily = OperatorFamily.COMPOSITION,
     inputs: tuple[OperatorPortDefinition, ...] = (),
     outputs: tuple[OperatorPortDefinition, ...] = (number_port("value"),),
     parameter_schema: dict[str, JsonValue] | None = None,
@@ -61,7 +62,7 @@ def definition(
     return OperatorDefinition(
         operator_id=operator_id,
         implementation_version="0.1.0",
-        family=OperatorFamily.COMPOSITION,
+        family=family,
         name=operator_id,
         description="Runtime test definition.",
         pseudocode=None,
@@ -113,7 +114,22 @@ def registry_with(
     *entries: tuple[OperatorDefinition, RuntimeImplementation],
 ) -> OperatorRegistry:
     registry = OperatorRegistry()
-    for operator_definition, implementation in entries:
+    all_entries = list(entries)
+    if not any(
+        operator_definition.operator_id == "scoring.ordered-dau"
+        for operator_definition, _ in all_entries
+    ):
+        scorer_definition = definition(
+            "scoring.ordered-dau",
+            family=OperatorFamily.SCORING,
+            inputs=(number_port("value"),),
+        )
+        scorer_implementation = RuntimeImplementation(
+            "scoring.ordered-dau",
+            lambda inputs, _parameters, _context: {"value": inputs["value"]},
+        )
+        all_entries.append((scorer_definition, scorer_implementation))
+    for operator_definition, implementation in all_entries:
         registry.register(operator_definition, implementation)
     return registry
 

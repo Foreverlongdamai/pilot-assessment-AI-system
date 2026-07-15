@@ -379,18 +379,18 @@ GREEN：
 
 步骤：
 
-- [ ] 先实现最小 operator definitions/implementations，并直接组合一个可运行 recipe。
-- [ ] 实现后增加每个 operator 1–3 个 focused behavior/parameter-contract smoke；不建立逐 Anchor golden。
-- [ ] safe-formula 只允许常量、已声明变量、算术、比较、布尔、min/max/abs/clip；禁止 attribute、subscript、import、call 任意函数和名称逃逸。
-- [ ] ordered-dau 输出 EvidenceState 与三状态 likelihood，不把表现极差视为 missing。
-- [ ] 垂直切片 recipe 使用 input.binding -> safe-formula -> ordered-dau；只改 recipe parameter 即改变输出，Python 文件和 registry identity 不变。
-- [ ] 运行：
+- [x] 先实现最小 operator definitions/implementations，并直接组合一个可运行 recipe。
+- [x] 实现后增加每个 operator 1–3 个 focused behavior/parameter-contract smoke；不建立逐 Anchor golden。
+- [x] safe-formula 只允许常量、已声明变量、算术、比较、布尔、min/max/abs/clip；禁止 attribute、subscript、import、任意 call 和名称逃逸；语法在 apply 前通过通用 technical hook 校验。
+- [x] ordered-dau 输出 EvidenceState 与三状态 likelihood，不把表现极差视为 missing。
+- [x] 垂直切片 recipe 使用 input.binding -> safe-formula -> ordered-dau；只改 recipe parameter 即改变输出，Python 文件和 registry identity 不变。
+- [x] 运行：
 
-      uv run pytest tests/evidence/builtins tests/evidence/test_parameter_edit_vertical_slice.py -q
+      .venv\Scripts\python.exe -m pytest tests/evidence/builtins tests/evidence/test_parameter_edit_vertical_slice.py -q
 
-  预期：exit 0。
+  结果：完整 evidence suite 38 passed；相关 contracts/schemas/evidence 79 passed；ruff、ty exit 0。
 
-- [ ] 提交：
+- [x] 提交：
 
       git add src/pilot_assessment/evidence/builtins tests/evidence
       git commit -m "feat: add editable core evidence operators"

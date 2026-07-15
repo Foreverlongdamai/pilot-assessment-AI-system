@@ -61,6 +61,7 @@ def _port(
 def _definition(
     operator_id: str,
     *,
+    family: OperatorFamily = OperatorFamily.COMPOSITION,
     inputs: tuple[OperatorPortDefinition, ...] = (),
     outputs: tuple[OperatorPortDefinition, ...] = (_port("value"),),
     parameter_schema: dict[str, JsonValue] | None = None,
@@ -68,7 +69,7 @@ def _definition(
     return OperatorDefinition(
         operator_id=operator_id,
         implementation_version="0.1.0",
-        family=OperatorFamily.COMPOSITION,
+        family=family,
         name=operator_id,
         description="Test definition.",
         pseudocode=None,
@@ -108,8 +109,20 @@ class _Implementation:
 
 def _registry(*definitions: OperatorDefinition) -> OperatorRegistry:
     registry = OperatorRegistry()
-    for definition in definitions:
-        registry.register(definition, _Implementation(definition.operator_id))
+    all_definitions = list(definitions)
+    if not any(item.operator_id == "scoring.ordered-dau" for item in all_definitions):
+        all_definitions.append(
+            _definition(
+                "scoring.ordered-dau",
+                family=OperatorFamily.SCORING,
+                inputs=(_port("value"),),
+            )
+        )
+    for definition_item in all_definitions:
+        registry.register(
+            definition_item,
+            _Implementation(definition_item.operator_id),
+        )
     return registry
 
 
@@ -413,3 +426,47 @@ def test_node_external_input_binding_must_resolve_by_stable_id() -> None:
     )
 
     assert "recipe.input_binding_missing" in _codes(candidate, _base_registry())
+
+
+def test_many_input_edges_require_unique_stable_target_slots() -> None:
+    recipe = _valid_recipe()
+    source, sink = recipe.graph.nodes
+    many_sink = _definition(
+        "identity.number",
+        inputs=(_port("input", cardinality=PortCardinality.MANY),),
+    )
+    registry = _registry(
+        _definition(
+            "constant.number",
+            parameter_schema={
+                "type": "object",
+                "properties": {"value": {"type": "number"}},
+                "required": ["value"],
+                "additionalProperties": False,
+            },
+        ),
+        many_sink,
+    )
+    first = recipe.graph.edges[0].model_copy(update={"target_slot_id": "x"})
+    second = RecipeEdge(
+        edge_id="second-slot",
+        source=NodePortReference(node_id=source.node_id, port_id="value"),
+        target=NodePortReference(node_id=sink.node_id, port_id="input"),
+        target_slot_id="y",
+    )
+    valid = recipe.model_copy(
+        update={"graph": RecipeGraph(nodes=(source, sink), edges=(first, second))}
+    )
+    assert validate_recipe(valid, registry).disposition == "executable"
+
+    missing_slot = first.model_copy(update={"target_slot_id": None})
+    missing = valid.model_copy(
+        update={"graph": RecipeGraph(nodes=(source, sink), edges=(missing_slot, second))}
+    )
+    assert "recipe.many_input_slot_missing" in _codes(missing, registry)
+
+    duplicate_slot = second.model_copy(update={"target_slot_id": "x"})
+    duplicate = valid.model_copy(
+        update={"graph": RecipeGraph(nodes=(source, sink), edges=(first, duplicate_slot))}
+    )
+    assert "recipe.many_input_slot_duplicate" in _codes(duplicate, registry)

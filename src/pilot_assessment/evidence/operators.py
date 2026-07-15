@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from pydantic import JsonValue
 
@@ -45,4 +45,40 @@ class OperatorImplementation(Protocol):
         """Return values keyed by declared output port ID."""
 
 
-__all__ = ["OperatorExecutionContext", "OperatorImplementation"]
+@dataclass(frozen=True, slots=True)
+class OperatorParameterDiagnostic:
+    parameter_path: str
+    message: str
+
+
+@dataclass(frozen=True, slots=True)
+class OperatorParameterValidationContext:
+    input_slots: Mapping[str, tuple[str, ...]]
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self,
+            "input_slots",
+            MappingProxyType(dict(self.input_slots)),
+        )
+
+
+@runtime_checkable
+class OperatorParameterValidator(Protocol):
+    """Optional pure technical validator used before a recipe can be applied."""
+
+    def validate_parameters(
+        self,
+        parameters: Mapping[str, JsonValue],
+        context: OperatorParameterValidationContext,
+    ) -> tuple[OperatorParameterDiagnostic, ...]:
+        """Return syntax/configuration issues without executing session data."""
+
+
+__all__ = [
+    "OperatorExecutionContext",
+    "OperatorImplementation",
+    "OperatorParameterDiagnostic",
+    "OperatorParameterValidationContext",
+    "OperatorParameterValidator",
+]

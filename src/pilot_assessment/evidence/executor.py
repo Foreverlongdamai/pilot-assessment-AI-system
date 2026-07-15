@@ -11,6 +11,7 @@ from pilot_assessment.contracts.evidence_recipe import PortCardinality
 from pilot_assessment.evidence.compiler import CompiledNode, CompiledRecipe
 from pilot_assessment.evidence.operators import OperatorExecutionContext
 from pilot_assessment.evidence.registry import OperatorRegistry, OperatorRegistryError
+from pilot_assessment.evidence.scoring import scoring_operator_identity
 
 
 class RecipeExecutionError(RuntimeError):
@@ -63,10 +64,16 @@ class RecipeExecutionResult:
     recipe_version: int
     outputs: Mapping[str, object]
     scoring_input: object
+    scoring_outputs: Mapping[str, object]
     traces: tuple[NodeExecutionTrace, ...]
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "outputs", MappingProxyType(dict(self.outputs)))
+        object.__setattr__(
+            self,
+            "scoring_outputs",
+            MappingProxyType(dict(self.scoring_outputs)),
+        )
 
 
 def _fail(
@@ -87,7 +94,7 @@ def _node_inputs(
     node: CompiledNode,
     values: Mapping[tuple[str, str], object],
 ) -> dict[str, object]:
-    collected: dict[str, list[object]] = defaultdict(list)
+    collected: dict[str, list[tuple[str | None, object]]] = defaultdict(list)
     for edge in node.incoming_edges:
         key = (edge.source_node_id, edge.source_port_id)
         try:
@@ -98,17 +105,21 @@ def _node_inputs(
                 "recipe.execution.upstream_value_missing",
                 f"upstream value {key!r} was not produced",
             ) from error
-        collected[edge.target_port_id].append(value)
+        collected[edge.target_port_id].append((edge.target_slot_id, value))
 
     port_types = {
         port.port_id: port.port_type for port in node.definition.input_ports
     }
     result: dict[str, object] = {}
-    for port_id, port_values in collected.items():
+    for port_id, slotted_values in collected.items():
         if port_types[port_id].cardinality is PortCardinality.MANY:
-            result[port_id] = tuple(port_values)
+            named_values: dict[str, object] = {}
+            for slot_id, value in slotted_values:
+                assert slot_id is not None
+                named_values[slot_id] = value
+            result[port_id] = MappingProxyType(named_values)
         else:
-            result[port_id] = port_values[0]
+            result[port_id] = slotted_values[0][1]
     return result
 
 
@@ -148,6 +159,59 @@ def _validated_outputs(
             node,
             "recipe.execution.operator_output_missing",
             f"operator did not return required output ports: {missing!r}",
+        )
+    return outputs
+
+
+def _scoring_error(
+    code: str,
+    message: str,
+    operator_id: str,
+    operator_version: str,
+) -> RecipeExecutionError:
+    return RecipeExecutionError(
+        code,
+        message,
+        node_id="scoring",
+        operator_id=operator_id,
+        operator_version=operator_version,
+    )
+
+
+def _validated_scoring_outputs(
+    raw_outputs: object,
+    declared_ports: Mapping[str, PortCardinality],
+    *,
+    operator_id: str,
+    operator_version: str,
+) -> dict[str, object]:
+    if not isinstance(raw_outputs, Mapping):
+        raise _scoring_error(
+            "recipe.execution.scorer_output_not_mapping",
+            "scorer output must be a mapping keyed by output port ID",
+            operator_id,
+            operator_version,
+        )
+    outputs = dict(raw_outputs)
+    extra = sorted(set(outputs) - set(declared_ports))
+    if extra:
+        raise _scoring_error(
+            "recipe.execution.scorer_output_undeclared",
+            f"scorer returned undeclared output ports: {extra!r}",
+            operator_id,
+            operator_version,
+        )
+    missing = sorted(
+        port_id
+        for port_id, cardinality in declared_ports.items()
+        if cardinality is not PortCardinality.OPTIONAL and port_id not in outputs
+    )
+    if missing:
+        raise _scoring_error(
+            "recipe.execution.scorer_output_missing",
+            f"scorer did not return required output ports: {missing!r}",
+            operator_id,
+            operator_version,
         )
     return outputs
 
@@ -255,11 +319,55 @@ def execute_recipe(
             "scoring input port did not produce a value",
         ) from error
 
+    scorer_identity = scoring_operator_identity(compiled.scoring)
+    assert scorer_identity is not None
+    scorer_id, scorer_version = scorer_identity
+    try:
+        scorer_definition = registry.definition(scorer_id, scorer_version)
+        scorer_implementation = registry.implementation(scorer_id, scorer_version)
+    except OperatorRegistryError as error:
+        raise _scoring_error(
+            "recipe.execution.scorer_unavailable",
+            str(error),
+            scorer_id,
+            scorer_version,
+        ) from error
+    scoring_context = OperatorExecutionContext(
+        recipe_id=compiled.recipe.recipe_id,
+        recipe_version=compiled.recipe.recipe_version,
+        node_id="scoring",
+        binding_values=binding_values,
+        trace_requested=False,
+    )
+    try:
+        raw_scoring_outputs = scorer_implementation.execute(
+            {"value": scoring_input},
+            compiled.scoring.parameters,
+            scoring_context,
+        )
+    except Exception as error:
+        raise _scoring_error(
+            "recipe.execution.scorer_failed",
+            f"scorer raised {type(error).__name__}: {error}",
+            scorer_id,
+            scorer_version,
+        ) from error
+    scoring_outputs = _validated_scoring_outputs(
+        raw_scoring_outputs,
+        {
+            port.port_id: port.port_type.cardinality
+            for port in scorer_definition.output_ports
+        },
+        operator_id=scorer_id,
+        operator_version=scorer_version,
+    )
+
     return RecipeExecutionResult(
         recipe_id=compiled.recipe.recipe_id,
         recipe_version=compiled.recipe.recipe_version,
         outputs=result_outputs,
         scoring_input=scoring_input,
+        scoring_outputs=scoring_outputs,
         traces=tuple(traces),
     )
 
