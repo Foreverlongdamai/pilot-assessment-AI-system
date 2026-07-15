@@ -421,6 +421,63 @@
         }
       ],
       "implementation_digest": "5575610b31ca3dd0654a7b2cb54265c0420634d722a1d27a7fb117c278936b0d"
+    },
+    {
+      "anchor_id": "O9",
+      "definition_version": "0.1.0",
+      "plugin_id": "o9-dead-band-activity",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.o9_dead_band_activity",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "2f5e86abf7565df90dd957159bac8624c177da3fea8b439c27986b4ae46f96d0",
+      "parameter_schema_id": "o9-parameters-0.1",
+      "parameter_schema_sha256": "cad6eee5191adfadcec0853cce3d19ddea6007cb9c51aed0805eebe09491b597",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "micro-movement-events-v0.1": "e0162c95a31cfe9f5fa68674881e4a87cfc75b3dd861709f91e410b3c4088a40"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/o9_dead_band_activity.py",
+          "content_sha256": "a01cda595a79b772f85c5f30ea74baa0024f1dda9abb42ca64d66529f6bb4e8c"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/movement.py",
+          "content_sha256": "5688b1ddf618759b179374b28c950bc76558784e8099579bcb8f8f447430faf0"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "numpy",
+          "version": "2.3.5",
+          "record_content_sha256": "2b47aa4ffce19e4e2a4c59e7eba0d2e767079ce6412e9466e4038ee04ff27d69"
+        },
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        },
+        {
+          "normalized_name": "scipy",
+          "version": "1.17.1",
+          "record_content_sha256": "fab4b505cf70d0ac437cfcd74f3c476c960266f0e1519ff5453103e3fac4d8af"
+        }
+      ],
+      "implementation_digest": "456210971c5cd528cc8060515e3d427bb0b40239941ac50d61673ae7925ba3dd"
     }
   ],
   "preprocessors": [

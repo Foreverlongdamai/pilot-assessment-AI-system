@@ -56,13 +56,13 @@ def provider_entry(
 # --------------------------------------------------------------------------- #
 
 
-def test_packaged_registry_has_o1_through_o8_and_reports_remaining_not_implemented() -> None:
+def test_packaged_registry_has_o1_through_o9_and_reports_remaining_not_implemented() -> None:
     catalog = load_packaged_catalog()
     packaged = registry.load_packaged_registry()
 
     for entry in catalog.entries:
         capability = packaged.capability(entry.plugin_id, entry.plugin_version)
-        if entry.anchor_id in {"O1", "O2", "O3", "O4", "O5", "O6", "O7", "O8"}:
+        if entry.anchor_id in {"O1", "O2", "O3", "O4", "O5", "O6", "O7", "O8", "O9"}:
             assert capability.status is AnchorCapabilityStatus.AVAILABLE
             assert capability.entry is not None
             assert capability.entry.anchor_id == entry.anchor_id
@@ -97,6 +97,7 @@ def test_packaged_registry_fingerprint_binds_the_canonical_model() -> None:
         "O6",
         "O7",
         "O8",
+        "O9",
     ]
     assert [entry.provider_id for entry in model.preprocessors] == ["movement-events-v1"]
     assert fingerprint == runtime_registry_fingerprint(model)
@@ -163,6 +164,21 @@ def test_o8_registry_closure_binds_only_its_plugin_and_polars_runtime() -> None:
     assert tuple(item.normalized_name for item in o8.numeric_runtimes) == ("polars",)
     assert tuple(item.package_relative_path for item in o8.implementation_members) == (
         "pilot_assessment/anchors/plugins/o8_tpx_composite.py",
+    )
+
+
+def test_o9_registry_closure_binds_plugin_movement_and_numeric_runtimes() -> None:
+    model = registry._load_registry_model()
+    o9 = next(entry for entry in model.entries if entry.anchor_id == "O9")
+
+    assert tuple(item.normalized_name for item in o9.numeric_runtimes) == (
+        "numpy",
+        "polars",
+        "scipy",
+    )
+    assert tuple(item.package_relative_path for item in o9.implementation_members) == (
+        "pilot_assessment/anchors/plugins/o9_dead_band_activity.py",
+        "pilot_assessment/anchors/primitives/movement.py",
     )
 
 
