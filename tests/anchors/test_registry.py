@@ -56,13 +56,13 @@ def provider_entry(
 # --------------------------------------------------------------------------- #
 
 
-def test_packaged_registry_has_o1_through_o6_and_reports_remaining_not_implemented() -> None:
+def test_packaged_registry_has_o1_through_o7_and_reports_remaining_not_implemented() -> None:
     catalog = load_packaged_catalog()
     packaged = registry.load_packaged_registry()
 
     for entry in catalog.entries:
         capability = packaged.capability(entry.plugin_id, entry.plugin_version)
-        if entry.anchor_id in {"O1", "O2", "O3", "O4", "O5", "O6"}:
+        if entry.anchor_id in {"O1", "O2", "O3", "O4", "O5", "O6", "O7"}:
             assert capability.status is AnchorCapabilityStatus.AVAILABLE
             assert capability.entry is not None
             assert capability.entry.anchor_id == entry.anchor_id
@@ -95,6 +95,7 @@ def test_packaged_registry_fingerprint_binds_the_canonical_model() -> None:
         "O4",
         "O5",
         "O6",
+        "O7",
     ]
     assert [entry.provider_id for entry in model.preprocessors] == ["movement-events-v1"]
     assert fingerprint == runtime_registry_fingerprint(model)
@@ -134,6 +135,23 @@ def test_o6_registry_closure_binds_only_its_plugin_and_polars_runtime() -> None:
     assert tuple(item.normalized_name for item in o6.numeric_runtimes) == ("polars",)
     assert tuple(item.package_relative_path for item in o6.implementation_members) == (
         "pilot_assessment/anchors/plugins/o6_control_magnitude_rms.py",
+    )
+
+
+def test_o7_registry_closure_binds_shared_movement_reversal_and_models() -> None:
+    model = registry._load_registry_model()
+    o7 = next(entry for entry in model.entries if entry.anchor_id == "O7")
+
+    assert tuple(item.normalized_name for item in o7.numeric_runtimes) == (
+        "numpy",
+        "polars",
+        "scipy",
+    )
+    assert tuple(item.package_relative_path for item in o7.implementation_members) == (
+        "pilot_assessment/anchors/plugins/o7_control_reversal_rate.py",
+        "pilot_assessment/anchors/primitives/models.py",
+        "pilot_assessment/anchors/primitives/movement.py",
+        "pilot_assessment/anchors/primitives/reversal.py",
     )
 
 

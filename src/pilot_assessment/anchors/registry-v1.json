@@ -34,7 +34,7 @@
         },
         {
           "package_relative_path": "pilot_assessment/anchors/primitives/models.py",
-          "content_sha256": "6428251079a39d1b63269825804a865b0f8a817639e603ae1b7f772420fcf22d"
+          "content_sha256": "c6ff186b60bf796f9e8decedfff54f12704e9f4102f49c90aced7a7a9d77bee7"
         }
       ],
       "resource_members": [],
@@ -55,7 +55,7 @@
           "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
         }
       ],
-      "implementation_digest": "1086389e8ff8cc4318f2e50e8b07893aac0c76756fff5f4e72efba739e5a8480"
+      "implementation_digest": "85b46ae967e5404c6e31fbe94a7e1dbcacbdd709e2c253b11d78f288e5c9a70d"
     },
     {
       "anchor_id": "O2",
@@ -136,7 +136,7 @@
         },
         {
           "package_relative_path": "pilot_assessment/anchors/primitives/models.py",
-          "content_sha256": "6428251079a39d1b63269825804a865b0f8a817639e603ae1b7f772420fcf22d"
+          "content_sha256": "c6ff186b60bf796f9e8decedfff54f12704e9f4102f49c90aced7a7a9d77bee7"
         }
       ],
       "resource_members": [],
@@ -157,7 +157,7 @@
           "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
         }
       ],
-      "implementation_digest": "fbd7b5e969adec626ceb419ca00b5dbdb9a06c974da35ac21cc3db52ad602ee0"
+      "implementation_digest": "9a0156ae53b7912560e623405a534bbc06bf85c1a08fadb90ba8658f109c68fa"
     },
     {
       "anchor_id": "O4",
@@ -191,7 +191,7 @@
         },
         {
           "package_relative_path": "pilot_assessment/anchors/primitives/models.py",
-          "content_sha256": "6428251079a39d1b63269825804a865b0f8a817639e603ae1b7f772420fcf22d"
+          "content_sha256": "c6ff186b60bf796f9e8decedfff54f12704e9f4102f49c90aced7a7a9d77bee7"
         }
       ],
       "resource_members": [],
@@ -212,7 +212,7 @@
           "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
         }
       ],
-      "implementation_digest": "18ea08a73bdb972a67c279d2b2ebc985909bf3a3a64113e8ca7a1aea1ca0c95f"
+      "implementation_digest": "b234298acecbb346dec0b4ec47c369feef58695ab9c9f3bb407d38a96db1439a"
     },
     {
       "anchor_id": "O5",
@@ -313,6 +313,71 @@
         }
       ],
       "implementation_digest": "af352fa2ff55d58c53fe89e5b8ff23b188ca6c38e03df9522001898ec6fc8d09"
+    },
+    {
+      "anchor_id": "O7",
+      "definition_version": "0.1.0",
+      "plugin_id": "o7-control-reversal-rate",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.o7_control_reversal_rate",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "16d1cba45c41c72588908a050fbcf969bef27129087674505eb7def6ceb0196a",
+      "parameter_schema_id": "o7-parameters-0.1",
+      "parameter_schema_sha256": "b34f7c14027eac47e928b2400cb7bb54a090c353940e2ca29311c5a8e930dc50",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "reversal-events-v0.1": "c3cff89ce7a10b09f81fe17623ff392b5b2ed9bc258b421e05cad858d6757a7b"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/o7_control_reversal_rate.py",
+          "content_sha256": "9ab79e695426b4256513e9ec521c142120484316be76defb4274f4f7ead066d6"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/models.py",
+          "content_sha256": "c6ff186b60bf796f9e8decedfff54f12704e9f4102f49c90aced7a7a9d77bee7"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/movement.py",
+          "content_sha256": "5688b1ddf618759b179374b28c950bc76558784e8099579bcb8f8f447430faf0"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/reversal.py",
+          "content_sha256": "b8f830d7da4b4b047f45ad24fed76e335d32ee5f6e6c55bdfa698045517cf08d"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "numpy",
+          "version": "2.3.5",
+          "record_content_sha256": "2b47aa4ffce19e4e2a4c59e7eba0d2e767079ce6412e9466e4038ee04ff27d69"
+        },
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        },
+        {
+          "normalized_name": "scipy",
+          "version": "1.17.1",
+          "record_content_sha256": "fab4b505cf70d0ac437cfcd74f3c476c960266f0e1519ff5453103e3fac4d8af"
+        }
+      ],
+      "implementation_digest": "9980be18a95de3d4a367b5297689b6dcce998d722af9968fad78e49e3b6420bd"
     }
   ],
   "preprocessors": [

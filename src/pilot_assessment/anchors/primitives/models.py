@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 O1KernelStatus = Literal["computed", "missing_input", "not_computable"]
+O7KernelStatus = Literal["computed", "missing_input", "not_computable"]
 
 
 def _strict_nonnegative_int(value: int, label: str) -> None:
@@ -108,4 +109,76 @@ class O1KernelResult:
             raise ValueError("axis summaries must use contiguous canonical order")
 
 
-__all__ = ["O1AxisSummary", "O1KernelResult", "O1KernelStatus", "O1MaskRow"]
+@dataclass(frozen=True, slots=True)
+class O7ReversalEvent:
+    event_t_ns: int
+    amplitude_pct: float
+
+    def __post_init__(self) -> None:
+        _strict_nonnegative_int(self.event_t_ns, "event_t_ns")
+        if not math.isfinite(self.amplitude_pct) or self.amplitude_pct < 0.0:
+            raise ValueError("reversal amplitude must be finite and non-negative")
+
+
+@dataclass(frozen=True, slots=True)
+class O7ChannelRate:
+    channel_id: str
+    observed_support_duration_ns: int
+    reversal_events: tuple[O7ReversalEvent, ...]
+    rate_hz: float
+
+    def __post_init__(self) -> None:
+        if type(self.channel_id) is not str or not self.channel_id:
+            raise ValueError("O7 channel_id must be non-empty")
+        _strict_nonnegative_int(self.observed_support_duration_ns, "observed_support_duration_ns")
+        if self.observed_support_duration_ns == 0:
+            raise ValueError("computed O7 channels require positive temporal support")
+        if tuple(sorted(self.reversal_events, key=lambda item: item.event_t_ns)) != (
+            self.reversal_events
+        ):
+            raise ValueError("O7 reversal events must be canonical")
+        if not math.isfinite(self.rate_hz) or self.rate_hz < 0.0:
+            raise ValueError("O7 channel rate must be finite and non-negative")
+
+
+@dataclass(frozen=True, slots=True)
+class O7KernelResult:
+    status: O7KernelStatus
+    reason: str | None
+    reversal_rate_hz: float | None
+    total_reversal_count: int
+    channel_rates: tuple[O7ChannelRate, ...]
+
+    def __post_init__(self) -> None:
+        _strict_nonnegative_int(self.total_reversal_count, "total_reversal_count")
+        if self.status == "computed":
+            if self.reason is not None or self.reversal_rate_hz is None or not self.channel_rates:
+                raise ValueError("computed O7 results require channel rates and no reason")
+            if not math.isfinite(self.reversal_rate_hz) or self.reversal_rate_hz < 0.0:
+                raise ValueError("computed O7 primary must be finite and non-negative")
+            if self.total_reversal_count != sum(
+                len(channel.reversal_events) for channel in self.channel_rates
+            ):
+                raise ValueError("O7 total reversal count must equal the channel event sum")
+        elif (
+            self.reason is None
+            or self.reversal_rate_hz is not None
+            or self.total_reversal_count != 0
+            or self.channel_rates
+        ):
+            raise ValueError("non-computed O7 results require only a reason")
+        channel_ids = tuple(channel.channel_id for channel in self.channel_rates)
+        if channel_ids != tuple(sorted(channel_ids)) or len(channel_ids) != len(set(channel_ids)):
+            raise ValueError("O7 channel rates must be unique and canonical")
+
+
+__all__ = [
+    "O1AxisSummary",
+    "O1KernelResult",
+    "O1KernelStatus",
+    "O1MaskRow",
+    "O7ChannelRate",
+    "O7KernelResult",
+    "O7KernelStatus",
+    "O7ReversalEvent",
+]
