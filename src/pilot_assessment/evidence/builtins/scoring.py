@@ -174,9 +174,7 @@ class OrderedDauScoringOperator:
         except OrderedDauScoringError:
             return ()
         direction = parameters.get("direction")
-        invalid = (
-            direction == "higher_is_better" and desired < adequate
-        ) or (
+        invalid = (direction == "higher_is_better" and desired < adequate) or (
             direction == "lower_is_better" and desired > adequate
         )
         if not invalid:
@@ -209,9 +207,7 @@ class OrderedDauScoringOperator:
             "likelihood strength",
         )
         if not 1.0 / 3.0 <= strength <= 1.0:
-            raise OrderedDauScoringError(
-                "likelihood strength must be between one third and one"
-            )
+            raise OrderedDauScoringError("likelihood strength must be between one third and one")
         direction = parameters.get("direction")
         if direction == "higher_is_better":
             if desired < adequate:

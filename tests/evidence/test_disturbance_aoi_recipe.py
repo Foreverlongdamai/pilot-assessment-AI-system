@@ -68,7 +68,7 @@ def _binding(
     )
 
 
-def _disturbance_aoi_recipe(
+def disturbance_aoi_recipe(
     *,
     expected_aoi: str = "instrument",
     window_end_offset_ns: int = 5_000_000_000,
@@ -220,39 +220,45 @@ def _disturbance_aoi_recipe(
     )
 
 
+def disturbance_aoi_inputs() -> dict[str, object]:
+    """Return a tiny normalized event/gaze fixture shared with the M4R E2E smoke."""
+
+    return {
+        "events": (EventRecord("event-1", "disturbance", 1_000_000_000),),
+        "gaze-frames": (
+            GazeFrame("frame-1", 1_000_000_000, 2_000_000_000, "outside", {}),
+            GazeFrame(
+                "frame-2",
+                2_000_000_000,
+                4_000_000_000,
+                "instrument",
+                {},
+            ),
+            GazeFrame("frame-3", 4_000_000_000, 6_000_000_000, "outside", {}),
+        ),
+    }
+
+
 def _preview(recipe: EvidenceRecipe) -> RecipeExecutionResult:
     registry = OperatorRegistry()
     register_builtin_operators(registry)
     return execute_recipe(
         compile_recipe(recipe, registry),
         registry,
-        binding_values={
-            "events": (EventRecord("event-1", "disturbance", 1_000_000_000),),
-            "gaze-frames": (
-                GazeFrame("frame-1", 1_000_000_000, 2_000_000_000, "outside", {}),
-                GazeFrame(
-                    "frame-2",
-                    2_000_000_000,
-                    4_000_000_000,
-                    "instrument",
-                    {},
-                ),
-                GazeFrame("frame-3", 4_000_000_000, 6_000_000_000, "outside", {}),
-            ),
-        },
+        binding_values=disturbance_aoi_inputs(),
     )
 
 
 def test_recipe_parameter_edits_mechanically_change_preview() -> None:
-    matching = _preview(_disturbance_aoi_recipe())
+    matching = _preview(disturbance_aoi_recipe())
     changed_aoi = _preview(
-        _disturbance_aoi_recipe(
+        disturbance_aoi_recipe(
             expected_aoi="unobserved-aoi",
             recipe_version=2,
         )
     )
     shorter_window = _preview(
-        _disturbance_aoi_recipe(
+        disturbance_aoi_recipe(
             window_end_offset_ns=3_000_000_000,
             recipe_version=3,
         )

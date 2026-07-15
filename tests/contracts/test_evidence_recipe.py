@@ -211,9 +211,7 @@ def test_incomplete_graph_is_a_valid_autosave_contract() -> None:
         ("recipe_version", 0),
     ],
 )
-def test_recipe_rejects_structurally_invalid_identity(
-    field: str, value: object
-) -> None:
+def test_recipe_rejects_structurally_invalid_identity(field: str, value: object) -> None:
     payload = _recipe().model_dump(mode="json")
     payload[field] = value
 
@@ -236,12 +234,8 @@ def test_recipe_rejects_nonfinite_or_extra_parameter_data() -> None:
 
 def test_operator_definition_rejects_duplicate_port_and_ui_paths() -> None:
     definition = _operator_definition()
-    duplicate_port = definition.model_copy(
-        update={"output_ports": definition.output_ports * 2}
-    )
-    duplicate_ui = definition.model_copy(
-        update={"parameter_ui": definition.parameter_ui * 2}
-    )
+    duplicate_port = definition.model_copy(update={"output_ports": definition.output_ports * 2})
+    duplicate_ui = definition.model_copy(update={"parameter_ui": definition.parameter_ui * 2})
 
     with pytest.raises(ValidationError):
         OperatorDefinition.model_validate(duplicate_port.model_dump(mode="json"))

@@ -80,11 +80,7 @@ def _validation_diagnostic(value: RecipeDiagnostic) -> RecipeServiceDiagnostic:
 
 
 def _execution_diagnostic(error: RecipeExecutionError) -> RecipeServiceDiagnostic:
-    location = (
-        "/scoring"
-        if error.node_id == "scoring"
-        else f"/graph/nodes/{error.node_id}"
-    )
+    location = "/scoring" if error.node_id == "scoring" else f"/graph/nodes/{error.node_id}"
     return RecipeServiceDiagnostic(
         code=error.code,
         location=location,
@@ -184,9 +180,7 @@ class EvidenceRecipeService:
                 trace_node_ids=trace_node_ids,
             )
         except RecipeCompilationError as error:
-            diagnostics = tuple(
-                _validation_diagnostic(item) for item in error.outcome.diagnostics
-            )
+            diagnostics = tuple(_validation_diagnostic(item) for item in error.outcome.diagnostics)
             return RecipePreviewOutcome(
                 recipe_id=recipe_id,
                 draft_revision=draft.draft_revision,
@@ -225,9 +219,7 @@ class EvidenceRecipeService:
     ) -> AppliedRecipeRevision:
         draft = self._repository.get_draft(recipe_id)
         validation = validate_recipe(draft.recipe, self._registry)
-        diagnostics = tuple(
-            _validation_diagnostic(item) for item in validation.diagnostics
-        )
+        diagnostics = tuple(_validation_diagnostic(item) for item in validation.diagnostics)
         if validation.disposition is not RecipeValidationDisposition.EXECUTABLE:
             raise RecipeApplyError(validation, diagnostics)
         try:

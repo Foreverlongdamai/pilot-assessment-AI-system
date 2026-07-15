@@ -5,7 +5,7 @@
 | 设计基线 | v0.2 |
 | 日期 | 2026-07-13 |
 | 设计状态 | 本文件保留 2026-07-13 固定 reference-plugin 设计与 Task 0–28 的历史/已实现合同；自 2026-07-15 起，普通算法编辑、完成门和后续路线以 [Expert-Editable Evidence and Assessment Model Design](2026-07-15-expert-editable-evidence-and-model-design.md) 与 D-031–D-035 为准 |
-| 实现状态 | 旧路线 Task 0–28 已完成，O1–O12/H1–H3 共 15 个 whole-Anchor plugins 与三个 providers 已实现；Task 29–36 已暂停且不再授权执行。当前进入 M4R EvidenceRecipe/operator 重基线，尚未开始实现 |
+| 实现状态 | 历史路线 Task 0–28 已完成，O1–O12/H1–H3 共 15 个 whole-Anchor plugins 与三个 providers 已实现并保留；Task 29–36 已停止。取代本规格完成门的 M4R EvidenceRecipe/operator foundation 已于 2026-07-15 工程完成 |
 | 上游 | M1 Session integrity + M2 Ingestion readiness + M3 native-rate synchronization |
 | 下游 | M5 ModelBundle/BN/CPT/inference；M6 formal run/persistence |
 | 正式运行授权 | `formal_run_authorized=false` |
@@ -901,4 +901,4 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 9. M4/M5/M6 ownership 与 coverage 公式不冲突；
 10. Git commit 只声称 design/documentation，不声称 M4 implemented。
 
-原书面规格与 amendments 继续解释 Task 0–28。Replacement Task 0–28 已完成，O1–O12/H1–H3 与三个 providers 均存在；但自 2026-07-15 起不再以补齐 exact-18 whole-Anchor plugins 或 M4-G heavy completion gate 为下一步。当前真实状态是：旧 M4 15/18 plugins implemented；M4R EvidenceRecipe/operator 正式规格已批准并开始实施；M4 overall not complete；`formal_run_authorized=false`。
+原书面规格与 amendments 继续解释 Task 0–28。Replacement Task 0–28 已完成，O1–O12/H1–H3 与三个 providers 均存在；但自 2026-07-15 起不再以补齐 exact-18 whole-Anchor plugins 或 M4-G heavy completion gate 为下一步。当前真实状态是：旧 M4 15 个 plugins preserved；M4R EvidenceRecipe/operator foundation 已工程完成；M5–M7 尚未完成；`formal_run_authorized=false`。

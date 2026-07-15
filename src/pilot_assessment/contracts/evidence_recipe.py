@@ -191,9 +191,7 @@ class OperatorDefinition(StrictContractModel):
 
     @field_validator("parameter_schema")
     @classmethod
-    def freeze_parameter_schema(
-        cls, value: dict[str, JsonValue]
-    ) -> dict[str, JsonValue]:
+    def freeze_parameter_schema(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
         return _freeze_json_object(value)
 
     @model_validator(mode="after")
@@ -315,9 +313,7 @@ class RecipeUiMetadata(StrictContractModel):
 
     @field_validator("preferred_layout")
     @classmethod
-    def freeze_preferred_layout(
-        cls, value: dict[str, JsonValue]
-    ) -> dict[str, JsonValue]:
+    def freeze_preferred_layout(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
         return _freeze_json_object(value)
 
 

@@ -170,9 +170,7 @@ def safe_formula_definition() -> OperatorDefinition:
                 label="Formula",
                 group_id="formula",
                 control=ParameterControlKind.FORMULA,
-                help_text=(
-                    "Supports arithmetic, comparisons, and/or/not, min, max, abs and clip."
-                ),
+                help_text=("Supports arithmetic, comparisons, and/or/not, min, max, abs and clip."),
                 unit=None,
             ),
         ),
@@ -267,6 +265,8 @@ _ALLOWED_FUNCTION_ARITY = {
     "max": (1, None),
     "clip": (3, 3),
 }
+
+
 def _call_function(name: str, arguments: list[object]) -> object:
     if name == "abs" and len(arguments) == 1:
         return abs(_numeric(arguments[0]))
@@ -314,24 +314,18 @@ def _validate_formula_node(node: ast.AST, names: frozenset[str]) -> None:
         return
     if isinstance(node, ast.BinOp):
         if not isinstance(node.op, _ALLOWED_BINARY_OPERATOR_TYPES):
-            raise SafeFormulaError(
-                f"binary operator {type(node.op).__name__} is not allowed"
-            )
+            raise SafeFormulaError(f"binary operator {type(node.op).__name__} is not allowed")
         _validate_formula_node(node.left, names)
         _validate_formula_node(node.right, names)
         return
     if isinstance(node, ast.UnaryOp):
         if not isinstance(node.op, (ast.Not, ast.UAdd, ast.USub)):
-            raise SafeFormulaError(
-                f"unary operator {type(node.op).__name__} is not allowed"
-            )
+            raise SafeFormulaError(f"unary operator {type(node.op).__name__} is not allowed")
         _validate_formula_node(node.operand, names)
         return
     if isinstance(node, ast.BoolOp):
         if not isinstance(node.op, (ast.And, ast.Or)):
-            raise SafeFormulaError(
-                f"boolean operator {type(node.op).__name__} is not allowed"
-            )
+            raise SafeFormulaError(f"boolean operator {type(node.op).__name__} is not allowed")
         for value in node.values:
             _validate_formula_node(value, names)
         return
@@ -352,9 +346,7 @@ def _validate_formula_node(node: ast.AST, names: frozenset[str]) -> None:
         if arity is None:
             raise SafeFormulaError(f"function {node.func.id!r} is not allowed")
         minimum, maximum = arity
-        if len(node.args) < minimum or (
-            maximum is not None and len(node.args) > maximum
-        ):
+        if len(node.args) < minimum or (maximum is not None and len(node.args) > maximum):
             raise SafeFormulaError(f"function {node.func.id!r} has invalid arguments")
         for argument in node.args:
             _validate_formula_node(argument, names)

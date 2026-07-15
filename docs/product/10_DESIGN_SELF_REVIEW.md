@@ -3,10 +3,10 @@
 | 字段 | 值 |
 |---|---|
 | 设计基线 | 产品 v0.2 expert-designer rebaseline；旧 M4 Task 0–28 作为历史实现保留 |
-| 审查日期 | 原始审查 2026-07-10；M4 amendment 2026-07-13；方向重基线 2026-07-15 |
-| 审查范围 | pilot_assessment_system 产品文档、项目入口说明、历史草案状态与 M4 跨文档一致性 |
-| 结论 | M1–M3 可作为已验证交接基线；旧 M4 Task 0–28 代码可复用，但 fixed whole-Anchor plugin/exact-18 路线不适合专家自由设计目标，已由 EvidenceRecipe/operator 架构取代 |
-| 软件状态 | M1/M2/M3 已工程验证；旧 M4 Task 0–28、15 个 legacy/reference plugins、共享 primitives 与三个 providers 已实现；M4R 正式规格已批准并开始实施，`formal_run_authorized=false`，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
+| 审查日期 | 原始审查 2026-07-10；M4 amendment 2026-07-13；方向重基线与 M4R 收尾 2026-07-15 |
+| 审查范围 | pilot_assessment_system 产品文档、项目入口说明、历史草案状态、M4R 实现边界与跨文档一致性 |
+| 结论 | M1–M3 与 M4R 可作为已验证交接基线；旧 M4 Task 0–28 代码继续保留，但 fixed whole-Anchor plugin/exact-18 路线已由 EvidenceRecipe/operator 架构取代 |
+| 软件状态 | M1/M2/M3/M4R 已工程验证；15 个 legacy/reference plugins、共享 primitives 与三个 providers 保留；M5 BN/model workspace、M6 sidecar、M7 WinUI 尚未实现，`formal_run_authorized=false`，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
 | 科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | M4 修订 | 2026-07-15 接受 D-031–D-035：旧 Task 29–36 停止；普通专家编辑不再要求 Python/plugin 发布、审批或 per-edit tests；M4R–M8 按 EvidenceRecipe/operator、linked Evidence/BN graphs、autosave + apply 重基线 |
 
@@ -103,16 +103,16 @@
 ### 5.3 实现风险
 
 - M1/M2/M3 已有正式代码、public schemas、版本化 profile/binding catalog、自动化测试和 Git history；
-- 旧 M4 Task 0–28 的 runtime、O1–O12/H1–H3 与 primitives 已实现，但它们尚未迁移为 transparent EvidenceRecipes/operators；
-- M4R contract/compiler/executor、autosaved model workspace、linked Evidence/BN graph、runtime 和 WinUI 均尚未实现；
+- 旧 M4 Task 0–28 的 runtime、O1–O12/H1–H3 与 primitives 已实现；M4R 已把 starter inventory 迁移为 transparent EvidenceRecipes/operators，并保留旧插件作 reference/replay；
+- M4R contract/schema、registry、validator、compiler/executor、built-in operators、进程内 recipe revision service 和轻量 E2E 已实现；项目级 autosaved model workspace、linked BN graph、sidecar 和 WinUI 尚未实现；
 - WinUI graph control、无障碍和大 CPT 编辑体验需要原型；
 - Python/.NET 打包、trusted operator extension、升级和 crash recovery 需要实际验证。
 
 ## 6. 下一阶段入口
 
-截至 2026-07-15，backend M1–M3 已完成工程验证；旧 M4 replacement Task 0–28 已完成并留下 15 个 legacy/reference plugins、共享 primitives 和三个 providers。用户随后批准 [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md) 与 D-031–D-035，明确停止 Task 29–36。下一步是在用户复核本轮书面规格后编写 M4R plan，而不是继续 H4 固定插件。
+截至 2026-07-15，backend M1–M3 与 M4R 已完成工程验证；旧 M4 replacement Task 0–28 留下的 15 个 legacy/reference plugins、共享 primitives 和三个 providers继续保留。用户批准 [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md)、D-031–D-035 与 M4R plan，并明确停止 Task 29–36。下一步是在用户复核后正式设计 M5，而不是继续 H4 固定插件或直接跳到 WinUI。
 
-M4R 先建立 canonical EvidenceRecipe/OperatorDefinition、generic compiler/executor、operator registry 与 backend-only autosave/preview/apply/replay；再进入 M5 linked Evidence/BN workspace、M6 runtime、M7 WinUI 和 M8 packaging/handoff。普通专家修改不需要改 Python 业务结构、发布 whole-Anchor plugin、运行测试或等待审批。
+M4R 已建立 canonical EvidenceRecipe/OperatorDefinition、generic compiler/executor、operator registry 与 backend-only autosave/preview/apply/replay。后续依次进入 M5 linked Evidence/BN workspace、M6 runtime、M7 WinUI 和 M8 packaging/handoff。普通专家修改不需要改 Python 业务结构、发布 whole-Anchor plugin、运行测试或等待审批。
 
 ## 7. 2026-07-13 M4 amendment 自审（历史快照）
 
@@ -200,12 +200,12 @@ Apply 可以因 schema、dangling reference、DAG cycle、operator/version、por
 
 ### 8.4 状态诚实性
 
-- 已实现：M1–M3；旧 M4 Task 0–28；15 个 legacy/reference plugins；共享 primitives；三个 providers。
-- 已设计并获用户确认：expert-editable 总体架构、M4R–M8 milestone rebaseline、D-031–D-035。
-- 尚未实现：EvidenceRecipe/OperatorDefinition、generic compiler/executor、operator registry、autosaved model workspace、linked BN、sidecar 和 WinUI。
+- 已实现：M1–M3；旧 M4 Task 0–28；M4R EvidenceRecipe/OperatorDefinition、generic compiler/executor、operator registry、built-ins、starter recipes 与 backend-only revision service；15 个 legacy/reference plugins、共享 primitives、三个 providers继续保留。
+- 已设计并获用户确认：expert-editable 总体架构、M4R–M8 milestone rebaseline、D-031–D-035；M4R 已进一步完成实施。
+- 尚未实现：项目级 autosaved model workspace、linked BN、sidecar 和 WinUI。
 - 已停止：旧 replacement Task 29–36 与 fixed exact-18 completion gate。
-- 本轮是文档和授权修订，不构成生产代码实现或工程验证。
+- 方向重基线本身不是科学验证；M4R 的工程完成证据以实施计划和 fresh commands 为准。
 
 ### 8.5 后续门槛
 
-用户复核本次正式规格后，才编写新的 M4R implementation plan；随后各自编写 M5–M8 spec/plan。旧计划不得被继续执行或机械改名复用。
+M4R implementation plan 已完成。下一步在用户复核后单独编写 M5 spec/plan；M6–M8 继续分别设计，旧 fixed-plugin 计划不得被继续执行或机械改名复用。

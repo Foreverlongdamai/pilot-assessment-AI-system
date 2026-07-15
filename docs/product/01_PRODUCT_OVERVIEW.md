@@ -1,6 +1,6 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0.2 expert-designer 基线。M1–M3 已工程验证；旧 M4 Task 0–28 已完成并作为迁移历史保留；D-031–D-035 已重设 M4R–M8 路线，旧 Task 29–36 不再执行。M4R 架构已确认，合并规格待用户最终复核，实现尚未开始，`formal_run_authorized=false`。
+**文档状态：** 产品 v0.2 expert-designer 基线。M1–M3 与 M4R 已工程验证；旧 M4 Task 0–28 作为迁移历史保留；D-031–D-035 已重设 M4R–M8 路线，旧 Task 29–36 不再执行。M5 BN/model workspace、M6 runtime、M7 WinUI 与 M8 packaging 尚未完成，`formal_run_authorized=false`。
 **日期：** 2026-07-15
 **适用目录：** `pilot_assessment_system/`
 

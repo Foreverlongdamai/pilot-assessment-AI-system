@@ -44,9 +44,7 @@ def test_event_selection_window_and_intersection_are_composable() -> None:
     intersections = IntervalIntersectOperator().execute(
         {
             "left": windows,
-            "right": (
-                IntervalRecord("look", 2_000_000_000, 4_000_000_000, {}),
-            ),
+            "right": (IntervalRecord("look", 2_000_000_000, 4_000_000_000, {}),),
         },
         {},
         context,

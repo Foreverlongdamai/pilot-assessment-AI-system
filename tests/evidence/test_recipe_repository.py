@@ -26,9 +26,7 @@ class _Clock:
 def test_incomplete_draft_autosave_uses_optimistic_revision_and_structured_diff() -> None:
     repository = InMemoryRecipeRepository(clock=_Clock())
     base = constant_recipe(2.0)
-    incomplete = base.model_copy(
-        update={"graph": RecipeGraph(nodes=(), edges=())}
-    )
+    incomplete = base.model_copy(update={"graph": RecipeGraph(nodes=(), edges=())})
 
     created = repository.create_draft(incomplete, author_id="expert-a")
     edited = incomplete.model_copy(

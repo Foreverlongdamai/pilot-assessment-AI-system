@@ -538,7 +538,7 @@ API：
 
 E2E 流程：
 
-1. 加载一个小型 aligned session fixture；
+1. 加载一个仅含 1 个 disturbance event 与 3 段 gaze 的规范化 binding fixture；完整 AlignedSession→recipe binding orchestration 留给 M6；
 2. 创建 disturbance-AOI recipe draft；
 3. autosave incomplete graph；
 4. 补全连接并通过 technical validation；
@@ -552,24 +552,24 @@ E2E 流程：
 
 步骤：
 
-- [ ] 先用已有 service/runtime 组装最小 E2E，再补一个 focused workflow smoke。
-- [ ] 运行 focused E2E，预期 exit 0 且不生成万行级 fixture。
-- [ ] 更新文档，明确完成的是工程平台能力，不是科学验证。
-- [ ] 运行全量轻量回归：
+- [x] 先用已有 service/runtime 组装最小 E2E，再补一个 focused workflow smoke。
+- [x] 运行 focused E2E：单文件 1 passed；与原 disturbance-AOI smoke 合跑 2 passed；没有生成物理 bundle 或万行级 fixture。
+- [x] 更新文档，明确完成的是进程内工程平台能力，不是科学验证，也不是 M5 BN、M6 sidecar 或 M7 WinUI。
+- [x] 运行全量轻量回归：
 
       uv run pytest -q
       uv run ruff check .
       uv run ty check src/pilot_assessment
       uv build
 
-  预期：全部 exit 0。
+  结果：最终格式化工作树为 `1472 passed, 3 skipped in 211.72s`；三个 skip 为主机不允许测试 symlink，以及两条未配置 repository-external CSV 的 opt-in E2E。Ruff lint、212-file format check 与 ty 均 exit 0。当前环境没有 `uv` CLI，因此使用同一 `uv_build` backend 的标准 PEP 517 命令 `python -m pip wheel . --no-deps --wheel-dir dist`；最终 wheel build exit 0，大小 528,687 bytes，SHA-256 `e71d48e11a6d99efab4c67ba208f2556dc33d4b9248100abba3e07a8b737f700`，并确认包含 18 个 recipe resources、catalog 与两份新 schema。
 
-- [ ] 检查工作树和改动范围：
+- [x] 检查工作树和改动范围：
 
       git status --short
       git diff --check
 
-- [ ] 提交：
+- [x] 提交：
 
       git add src tests schemas docs pyproject.toml
       git commit -m "feat: complete M4R editable evidence foundation"

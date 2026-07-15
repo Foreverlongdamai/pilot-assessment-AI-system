@@ -319,10 +319,7 @@ def validate_recipe(
     definitions: dict[str, OperatorDefinition] = {}
     for node_id, node in nodes.items():
         node_location = f"/graph/nodes/{_pointer_token(node_id)}"
-        if (
-            node.input_binding_id is not None
-            and node.input_binding_id not in binding_ids
-        ):
+        if node.input_binding_id is not None and node.input_binding_id not in binding_ids:
             _error(
                 diagnostics,
                 "recipe.input_binding_missing",
@@ -399,20 +396,14 @@ def validate_recipe(
         incoming[(target_node.node_id, edge.target.port_id)].append(
             (edge.edge_id, edge.target_slot_id)
         )
-        if (
-            target_type.cardinality is PortCardinality.MANY
-            and edge.target_slot_id is None
-        ):
+        if target_type.cardinality is PortCardinality.MANY and edge.target_slot_id is None:
             _error(
                 diagnostics,
                 "recipe.many_input_slot_missing",
                 f"{edge_location}/target_slot_id",
                 "an edge into a many input requires a stable target slot ID",
             )
-        if (
-            target_type.cardinality is not PortCardinality.MANY
-            and edge.target_slot_id is not None
-        ):
+        if target_type.cardinality is not PortCardinality.MANY and edge.target_slot_id is not None:
             _error(
                 diagnostics,
                 "recipe.single_input_slot_unexpected",
@@ -430,8 +421,7 @@ def validate_recipe(
         for port in definition.input_ports:
             incoming_edges = incoming.get((node_id, port.port_id), [])
             port_location = (
-                f"/graph/nodes/{_pointer_token(node_id)}/inputs/"
-                f"{_pointer_token(port.port_id)}"
+                f"/graph/nodes/{_pointer_token(node_id)}/inputs/{_pointer_token(port.port_id)}"
             )
             if port.port_type.cardinality is PortCardinality.ONE and not incoming_edges:
                 _error(
@@ -441,8 +431,7 @@ def validate_recipe(
                     "required input has no incoming edge",
                 )
             if (
-                port.port_type.cardinality
-                in {PortCardinality.ONE, PortCardinality.OPTIONAL}
+                port.port_type.cardinality in {PortCardinality.ONE, PortCardinality.OPTIONAL}
                 and len(incoming_edges) > 1
             ):
                 _error(
@@ -452,13 +441,9 @@ def validate_recipe(
                     f"input accepts at most one edge but received {len(incoming_edges)}",
                 )
             if port.port_type.cardinality is PortCardinality.MANY:
-                slots = tuple(
-                    slot_id for _, slot_id in incoming_edges if slot_id is not None
-                )
+                slots = tuple(slot_id for _, slot_id in incoming_edges if slot_id is not None)
                 duplicate_slots = sorted(
-                    slot_id
-                    for slot_id, count in Counter(slots).items()
-                    if count > 1
+                    slot_id for slot_id, count in Counter(slots).items() if count > 1
                 )
                 for slot_id in duplicate_slots:
                     _error(

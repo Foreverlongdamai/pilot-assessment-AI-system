@@ -77,10 +77,7 @@ class OperatorRegistry:
         return self._resolve(operator_id, implementation_version).implementation
 
     def catalog(self) -> tuple[OperatorDefinition, ...]:
-        return tuple(
-            self._entries[key].definition
-            for key in sorted(self._entries)
-        )
+        return tuple(self._entries[key].definition for key in sorted(self._entries))
 
     def _resolve(
         self,

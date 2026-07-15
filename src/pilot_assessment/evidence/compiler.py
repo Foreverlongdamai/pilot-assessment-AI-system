@@ -87,9 +87,7 @@ def compile_recipe(
     assert recipe.scoring is not None
 
     nodes = {node.node_id: node for node in recipe.graph.nodes}
-    incoming: dict[str, list[CompiledIncomingEdge]] = {
-        node_id: [] for node_id in nodes
-    }
+    incoming: dict[str, list[CompiledIncomingEdge]] = {node_id: [] for node_id in nodes}
     for edge in recipe.graph.edges:
         incoming[edge.target.node_id].append(
             CompiledIncomingEdge(

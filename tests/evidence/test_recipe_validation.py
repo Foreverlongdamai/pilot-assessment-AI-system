@@ -263,13 +263,9 @@ def test_unknown_operator_and_invalid_parameters_are_localized() -> None:
         "recipe.parameters_invalid",
     } <= {item.code for item in outcome.diagnostics}
     assert any(
-        item.location.startswith("/graph/nodes/source/parameters")
-        for item in outcome.diagnostics
+        item.location.startswith("/graph/nodes/source/parameters") for item in outcome.diagnostics
     )
-    assert any(
-        item.location == "/graph/nodes/sink/operator_id"
-        for item in outcome.diagnostics
-    )
+    assert any(item.location == "/graph/nodes/sink/operator_id" for item in outcome.diagnostics)
 
 
 def test_duplicate_ids_are_technical_errors_not_parse_errors() -> None:
@@ -380,9 +376,7 @@ def test_port_type_unit_temporal_and_cardinality_mismatches_are_reported() -> No
             )
         }
     )
-    assert "recipe.input_cardinality_exceeded" in _codes(
-        too_many, _base_registry()
-    )
+    assert "recipe.input_cardinality_exceeded" in _codes(too_many, _base_registry())
 
 
 def test_output_and_custom_scorer_must_resolve_declared_output_ports() -> None:
@@ -390,9 +384,7 @@ def test_output_and_custom_scorer_must_resolve_declared_output_ports() -> None:
     bad_ref = NodePortReference(node_id="sink", port_id="missing")
     candidate = recipe.model_copy(
         update={
-            "outputs": (
-                recipe.outputs[0].model_copy(update={"source": bad_ref}),
-            ),
+            "outputs": (recipe.outputs[0].model_copy(update={"source": bad_ref}),),
             "scoring": RecipeScoring(
                 mode=ScoringMode.CUSTOM_OPERATOR,
                 input=bad_ref,
@@ -413,9 +405,7 @@ def test_output_and_custom_scorer_must_resolve_declared_output_ports() -> None:
 def test_node_external_input_binding_must_resolve_by_stable_id() -> None:
     recipe = _valid_recipe()
     source, sink = recipe.graph.nodes
-    bound_source = source.model_copy(
-        update={"input_binding_id": "missing-binding"}
-    )
+    bound_source = source.model_copy(update={"input_binding_id": "missing-binding"})
     candidate = recipe.model_copy(
         update={
             "graph": RecipeGraph(

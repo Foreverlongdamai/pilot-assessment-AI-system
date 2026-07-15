@@ -31,8 +31,7 @@ def test_builtin_catalog_is_generic_and_deterministically_ordered() -> None:
     register_builtin_operators(registry)
 
     identities = tuple(
-        (item.operator_id, item.implementation_version)
-        for item in registry.catalog()
+        (item.operator_id, item.implementation_version) for item in registry.catalog()
     )
 
     assert identities == tuple(sorted(identities))

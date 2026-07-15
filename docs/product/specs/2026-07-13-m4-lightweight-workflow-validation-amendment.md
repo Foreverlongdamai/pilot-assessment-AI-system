@@ -6,7 +6,7 @@
 | 日期 | 2026-07-13 |
 | 方向状态 | 用户已确认并批准采用轻量测试方向 |
 | 书面状态 | 已于 2026-07-13 获用户批准并生效 |
-| 实现状态 | 历史 Task 0–28 已完成。自 2026-07-15 起，本修订不再定义 M4R completion gate；Task 29–36 已停止，M4R 正式规格已批准并按新计划开始实施 |
+| 实现状态 | 历史 Task 0–28 已完成。自 2026-07-15 起，本修订不再定义 M4R completion gate；Task 29–36 已停止，M4R 已按新规格与计划工程完成 |
 | 取代范围 | 立即取代 M4 主规格 §1.1 的完整 fixture 表述、§14.2–§14.4 的“四套 90 秒 full bundle + frozen full-workflow oracle”要求、§15 的 M4-G full-fixture 口径及 §17 的原计划执行授权；replacement plan 已于 2026-07-13 单独批准 |
 | 不变范围 | 18 个 anchor、AnchorResult v0.2、DAG、算法、阈值、状态语义、no-quality-gate、M1/M2/M3 已发布合同 |
 | 科学状态 | 所有 synthetic 数据继续为 `not_supported`，只验证软件工作流 |

@@ -101,6 +101,7 @@ def register_builtin_operators(registry: OperatorRegistry) -> None:
     register_statistics_operators(registry)
     register_scoring_operators(registry)
 
+
 __all__ = [
     "AoiFilterOperator",
     "AngleOperator",

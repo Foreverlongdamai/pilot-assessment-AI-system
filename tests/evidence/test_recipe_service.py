@@ -68,9 +68,7 @@ def test_preview_apply_edit_and_replay_use_exact_immutable_snapshots() -> None:
 def test_incomplete_draft_can_autosave_but_preview_and_apply_return_technical_diagnostics() -> None:
     service, repository = _service()
     recipe = constant_recipe(2.0, recipe_id="runtime.incomplete")
-    incomplete = recipe.model_copy(
-        update={"graph": RecipeGraph(nodes=(), edges=())}
-    )
+    incomplete = recipe.model_copy(update={"graph": RecipeGraph(nodes=(), edges=())})
     service.create_draft(incomplete, author_id="expert-a")
 
     preview = service.preview(incomplete.recipe_id, execution_inputs={})

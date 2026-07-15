@@ -384,8 +384,7 @@ def _overlap_duration(window: IntervalRecord, matches: tuple[IntervalRecord, ...
             min(window.end_t_ns, match.end_t_ns),
         )
         for match in matches
-        if min(window.end_t_ns, match.end_t_ns)
-        > max(window.start_t_ns, match.start_t_ns)
+        if min(window.end_t_ns, match.end_t_ns) > max(window.start_t_ns, match.start_t_ns)
     )
     total = 0
     current_start: int | None = None
@@ -430,8 +429,7 @@ class FirstMatchLatencyOperator:
             starts = [
                 max(window.start_t_ns, match.start_t_ns)
                 for match in matches
-                if min(window.end_t_ns, match.end_t_ns)
-                > max(window.start_t_ns, match.start_t_ns)
+                if min(window.end_t_ns, match.end_t_ns) > max(window.start_t_ns, match.start_t_ns)
             ]
             if starts:
                 value = (min(starts) - window.start_t_ns) / _NS_PER_SECOND
@@ -461,8 +459,7 @@ class DwellRatioOperator:
         matches = interval_records(inputs.get("matches"))
         values = {
             window.interval_id: (
-                _overlap_duration(window, matches)
-                / (window.end_t_ns - window.start_t_ns)
+                _overlap_duration(window, matches) / (window.end_t_ns - window.start_t_ns)
             )
             for window in windows
         }

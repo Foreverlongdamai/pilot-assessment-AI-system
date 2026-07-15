@@ -431,9 +431,7 @@ class SmoothOperator:
         method = parameters.get("method")
         samples: list[NumericSample] = []
         for index, sample in enumerate(source.samples):
-            values = [
-                item.value for item in source.samples[max(0, index - window + 1) : index + 1]
-            ]
+            values = [item.value for item in source.samples[max(0, index - window + 1) : index + 1]]
             if method == "mean":
                 value = statistics.fmean(values)
             elif method == "median":

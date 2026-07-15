@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import fakes
 import pytest
 
 from pilot_assessment.anchors import registry
@@ -22,6 +21,7 @@ from pilot_assessment.contracts.anchor_execution import (
     PreprocessingRegistryEntry,
     PythonRuntimeIdentity,
 )
+from tests.anchors import fakes
 
 _ANCHOR_MEMBER_PATH = "pilot_assessment/anchors/plugins/fake_reference_anchor.py"
 _PROVIDER_MEMBER_PATH = "pilot_assessment/anchors/primitives/fake_reference_provider.py"

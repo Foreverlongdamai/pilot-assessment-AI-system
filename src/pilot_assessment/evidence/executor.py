@@ -107,9 +107,7 @@ def _node_inputs(
             ) from error
         collected[edge.target_port_id].append((edge.target_slot_id, value))
 
-    port_types = {
-        port.port_id: port.port_type for port in node.definition.input_ports
-    }
+    port_types = {port.port_id: port.port_type for port in node.definition.input_ports}
     result: dict[str, object] = {}
     for port_id, slotted_values in collected.items():
         if port_types[port_id].cardinality is PortCardinality.MANY:
@@ -151,8 +149,7 @@ def _validated_outputs(
     missing = sorted(
         port_id
         for port_id, port_type in declared.items()
-        if port_type.cardinality is not PortCardinality.OPTIONAL
-        and port_id not in outputs
+        if port_type.cardinality is not PortCardinality.OPTIONAL and port_id not in outputs
     )
     if missing:
         raise _fail(
@@ -230,10 +227,7 @@ def execute_recipe(
     traces: list[NodeExecutionTrace] = []
     for compiled_node in compiled.nodes:
         node = compiled_node.node
-        if (
-            node.input_binding_id is not None
-            and node.input_binding_id not in binding_values
-        ):
+        if node.input_binding_id is not None and node.input_binding_id not in binding_values:
             raise _fail(
                 compiled_node,
                 "recipe.execution.binding_value_missing",
@@ -309,9 +303,7 @@ def execute_recipe(
         scoring_input = node_values[scoring_key]
     except KeyError as error:
         source_node = next(
-            node
-            for node in compiled.nodes
-            if node.node.node_id == compiled.scoring.input.node_id
+            node for node in compiled.nodes if node.node.node_id == compiled.scoring.input.node_id
         )
         raise _fail(
             source_node,
@@ -354,10 +346,7 @@ def execute_recipe(
         ) from error
     scoring_outputs = _validated_scoring_outputs(
         raw_scoring_outputs,
-        {
-            port.port_id: port.port_type.cardinality
-            for port in scorer_definition.output_ports
-        },
+        {port.port_id: port.port_type.cardinality for port in scorer_definition.output_ports},
         operator_id=scorer_id,
         operator_version=scorer_version,
     )

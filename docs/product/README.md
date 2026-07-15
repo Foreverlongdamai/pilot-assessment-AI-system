@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | 产品 v0.2 expert-designer rebaseline；D-031–D-035 与 EvidenceRecipe/operator architecture 已获用户确认 |
 | 基线日期 | 2026-07-15 |
-| 产品阶段 | M1/M2/M3 已工程验证；旧 M4 Task 0–28 与 15 个 whole-Anchor plugins 已完成并保留为迁移来源。旧 Task 29–36 已暂停；expert-editable 正式规格已获批准，M4R 按独立计划开始实施；`formal_run_authorized=false` |
+| 产品阶段 | M1/M2/M3 与 M4R Evidence Computation Foundation 已工程验证；旧 M4 Task 0–28 的 15 个 whole-Anchor plugins 保留为迁移来源，旧 Task 29–36 已停止；M5 BN/model workspace、M6 runtime persistence/sidecar 与 M7 WinUI 尚未实现；`formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -45,21 +45,21 @@
 | 18 | [M3 Native-Rate Time Synchronization 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) | 开发、数据、审查者 | 已批准：native-rate clock mapping、session window、aligned views 与同步报告 |
 | 19 | [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) | 开发、审查者 | 已完成：Task 0–14 的实现、实测完成门与 handoff/关闭记录 |
 | 20 | [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md) | 专家、产品、前后端 | 当前权威：typed EvidenceRecipe/operator graph、自动参数表单、autosave draft + apply、最小技术校验、M4R–M8 重基线 |
-| 21 | [M4R Editable Evidence Computation Foundation Implementation Plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md) | 开发、审查者 | 当前执行入口：合同、registry、validator、compiler/executor、recipe 生命周期与 starter migration |
-| 21 | [M4 Anchor Calculation and Evidence Availability 规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md) | 开发、算法、审查者 | 历史/迁移规格：Task 0–28 与 15 个插件已实现；固定插件和 completion gate 已由 2026-07-15 新规格取代 |
-| 22 | [M4 原实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) | 开发、算法、审查者 | 历史计划，已被取代且不得执行 |
-| 23 | [M4 轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md) | 开发、算法、审查者 | 历史 fixed-plugin 验证修订；不再定义 M4R completion gate |
-| 24 | [M4 replacement 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) | 开发、算法、审查者 | Task 0–28 已完成；Task 29–36 已暂停且不得执行，等待新 M4R plan |
-| 25 | [M4 Task 3 Reference Candidate Binding 修订](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md) | 开发、数据、审查者 | 已实现的 session/reference binding 合同，继续保留 |
-| 26 | [M4 Task 7 Catalog and Resource Identity 修订](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md) | 开发、算法、审查者 | 已实现的 legacy catalog/resource identity，供迁移与 replay |
-| 27 | [M4 Task 8 Canonical Fingerprint and Runtime Identity 修订](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) | 开发、审查者 | 已实现的 legacy canonical/runtime identity，供迁移与 replay |
+| 21 | [M4R Editable Evidence Computation Foundation Implementation Plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md) | 开发、审查者 | 已完成：合同、registry、validator、compiler/executor、recipe 生命周期、18 个 starter resources 与轻量 E2E |
+| 22 | [M4 Anchor Calculation and Evidence Availability 规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md) | 开发、算法、审查者 | 历史/迁移规格：Task 0–28 与 15 个插件已实现；固定插件和 completion gate 已由 2026-07-15 新规格取代 |
+| 23 | [M4 原实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) | 开发、算法、审查者 | 历史计划，已被取代且不得执行 |
+| 24 | [M4 轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md) | 开发、算法、审查者 | 历史 fixed-plugin 验证修订；不再定义 M4R completion gate |
+| 25 | [M4 replacement 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) | 开发、算法、审查者 | Task 0–28 已完成；Task 29–36 已停止且不得执行 |
+| 26 | [M4 Task 3 Reference Candidate Binding 修订](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md) | 开发、数据、审查者 | 已实现的 session/reference binding 合同，继续保留 |
+| 27 | [M4 Task 7 Catalog and Resource Identity 修订](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md) | 开发、算法、审查者 | 已实现的 legacy catalog/resource identity，供迁移与 replay |
+| 28 | [M4 Task 8 Canonical Fingerprint and Runtime Identity 修订](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) | 开发、审查者 | 已实现的 legacy canonical/runtime identity，供迁移与 replay |
 | 28 | [Autonomous Review Ledger](reviews/2026-07-13-autonomous-review-ledger.md) | 维护者、审查者 | 保存历史复核与关闭证据 |
 
 ### 2.1 文档目录的职责
 
 - `docs/product/` 根目录中的编号文档、`DECISIONS.md` 和 `GLOSSARY.md` 是当前产品基线；
 - `docs/product/specs/` 保存单个里程碑或子系统的状态受控设计合同，只有标记为“已批准”的规格才进入实施；
-- `docs/product/plans/` 保存从已批准规格派生的 TDD 实施步骤、验证命令和提交边界，计划不能覆盖 `DECISIONS.md` 或已批准规格；完成后继续保留，作为产品如何实现和验证的移交证据。
+- `docs/product/plans/` 保存从已批准规格派生的实施步骤、选择性测试策略、验证命令和提交边界，计划不能覆盖 `DECISIONS.md` 或已批准规格；完成后继续保留，作为产品如何实现和验证的移交证据。
 - `docs/product/reviews/` 保存规格、计划和实现检查点的复核 ledger；它不取代正式决策、测试或 Git 历史。
 
 ## 3. 权威性规则
@@ -91,7 +91,7 @@
 
 截至 2026-07-13，Python Core 已完成 M1、M2 与 M3：严格 SessionManifest/StreamDescriptor/legacy AnchorResult 0.1 合同、inspect-only directory-bundle integrity gate、shared X/U、版本化 profiles/adapters、deterministic multimodal generator、`IngestionReadinessReport`，以及 native-rate `AlignedSession`/`SynchronizationReport`。M3 使用 master-clock X mapped coverage、Decimal round-half-even 与版本化 temporal bindings，保留所有 source rows，并输出确定性的 synchronization fingerprint；它不插值、不重采样，也不建立全局或 anchor window grid。完成门实测仍为 `694 passed, 2 skipped`，配置 repository-external CSV 后 M2/M3 格式样例 E2E 为 `2 passed`，隔离 wheel 的 M3 micro E2E 为 `1 passed`。这些结果不验证样例飞行的任务、表现或科学有效性；M2/M3 report 始终保持 `formal_run_authorized=false`，synthetic fixture 为 `not_supported`。
 
-旧 M4 replacement Task 0–28 已完成：框架、O1–O12/H1–H3、共享 primitives、三个 providers 与 registry 已进入代码。2026-07-15 用户确认产品应首先服务专家自由设计 Evidence 和 BN，接受 D-031–D-035 与 EvidenceRecipe/operator architecture，并随后批准正式规格开始实施。旧 Task 29–36 已暂停；H4/H5/O13 不继续 whole-Anchor plugin 路线。当前真实状态是 15 个 legacy/reference plugins implemented、M4R spec approved、M4R implementation started、`formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+旧 M4 replacement Task 0–28 已完成并保留为历史迁移资产。2026-07-15 用户确认产品应首先服务专家自由设计 Evidence 和 BN，接受 D-031–D-035 与 EvidenceRecipe/operator architecture，并批准正式规格和 replacement M4R plan。M4R 现已实现 canonical contracts/schema、trusted operator catalog、only-technical validator、generic compiler/executor、backend-only draft/preview/apply/replay、18 个可编辑 starter recipes 和轻量 E2E；任意第 19 个 recipe 无需 Anchor-ID 分支即可注册和运行。15 个旧插件继续作为 legacy/reference，H4/H5/O13 使用 operator composition 而没有新增 whole-Anchor plugin。M5–M7 仍未完成，`formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
 ## 6. 维护规则
 

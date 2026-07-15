@@ -1,13 +1,13 @@
-# Implementation Status — M1/M2/M3 Verified; Legacy M4 Tasks 0–28 Preserved; M4R Started
+# Implementation Status — M1/M2/M3/M4R Engineering Verified
 
 | 字段 | 当前值 |
 |---|---|
 | 状态日期 | 2026-07-15 |
 | 产品设计基线 | v0.2 expert-designer rebaseline（D-031–D-035） |
-| 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization |
-| M4 当前状态 | 旧 replacement Task 0–28 已完成，O1–O12/H1–H3、共享 primitives 与三个 preprocessing providers 均已进入代码；历史测试与 fingerprint 保留。2026-07-15 用户批准 expert-editable 正式规格并授权实施：现有 15 个 whole-Anchor plugins 改作 legacy/reference implementations 和迁移来源；旧 Task 29–36 已暂停且不得继续执行；M4R 按 canonical EvidenceRecipe + typed operator graph 路线推进。**Spec approved；implementation started；`formal_run_authorized=false`。** |
-| 下一里程碑 | 执行 M4R implementation plan；先交付 EvidenceRecipe、OperatorDefinition、技术校验、compiler/executor 与 operator registry，再完成 backend-only recipe 生命周期和 starter migration |
-| 软件状态 | `in_progress`（M1/M2/M3 engineering verified；legacy M4 Task 0–28 complete；15 个 legacy/reference plugins 与三个 providers preserved；M4R implementation started；完整 expert designer、BN、runtime 和 WinUI 尚未完成） |
+| 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization + M4R Editable Evidence Computation Foundation |
+| M4 当前状态 | M4R 已完成 canonical EvidenceRecipe/OperatorDefinition schema、trusted registry、only-technical validation、generic compiler/executor、built-in operator library、backend-only draft/preview/apply/replay、18 个 editable starter resources 和轻量 E2E。旧 Task 0–28 的 15 个 whole-Anchor plugins 与三个 providers 保留为 legacy/reference；旧 Task 29–36 已停止。**M4R engineering verified；`formal_run_authorized=false`。** |
+| 下一里程碑 | 与用户复核并设计 M5：autosaved model workspace、Evidence/BN 两张关联图、BN node/edge/state/CPT 编辑与 inference；不自动把 M6/M7 混入 M5 |
+| 软件状态 | `in_progress`（M1/M2/M3/M4R engineering verified；M5 BN/model workspace、M6 persistence/sidecar、M7 WinUI 与 M8 packaging 尚未完成） |
 | 科学状态 | synthetic 数据为 `not_supported`；评估模型仍待领域专家校准与验证 |
 | Python package | `pilot-assessment-system 0.1.0` |
 | 本地运行边界 | Windows、离线、目录形式 Session Bundle |
@@ -23,7 +23,7 @@ M1/M2/M3 已实现，并通过 micro fixture 与 simulator 采集格式样例 CS
 5. 对七个 core modalities、bundle-local task reference 与 annotations 执行版本化 native-rate temporal binding、Decimal round-half-even clock mapping、master-clock X session-window mask，以及 non-gating synchronization/scene-gaze diagnostics；
 6. 输出只读 `AlignedSession` 与 public `SynchronizationReport`，使数据可以进入 M4 anchor/evidence availability，但永远不授权正式 assessment run。
 
-本结论只证明当前合同、文件不变性与 native-rate 时间计算路径按规格运行。Synthetic scene、gaze、EEG、ECG、pilot-camera、annotation 与 commanded path 均是软件测试 fixture，不是航空、生理或训练评估有效性证据。M3 不执行插值、重采样或 analysis/window grid；这些属于 M4 的 AnchorPlugin revision。
+本结论证明 M1–M3 的合同、文件不变性与 native-rate 时间计算路径，以及 M4R 对 editable recipe 的保存、技术校验、编译、执行、预览和 revision replay 均按规格运行。Synthetic scene、gaze、EEG、ECG、pilot-camera、annotation、commanded path 与 M4R 小 fixture 都不是航空、生理或训练评估有效性证据。M3 不执行插值、重采样或 analysis/window grid；M4R 只在 recipe 显式放置相应 operator 时执行变换或建立窗口。
 
 其中 repository-external simulator CSV 只是一次随意飞行产生的采集格式样例，没有标准轨迹、任务 ground truth 或能力标签。对它的 E2E 验证只证明 33-column/100 Hz 格式可以被读取、保留和转换；不证明该飞行符合任务要求，也不支持任何表现或能力结论。
 
@@ -31,7 +31,7 @@ M1/M2/M3 已实现，并通过 micro fixture 与 simulator 采集格式样例 CS
 
 2026-07-13 已新增并批准 [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)，把 AnchorResult v0.2、18 个 anchor、typed dependency DAG、artifact/fingerprint 和状态边界冻结为当时的书面设计；其后 [M4 Lightweight Workflow Validation Amendment](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)、D-026/D-027 与 [replacement M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 也获批准。Task 0–28 随后完成：M4-A contracts/catalog/resources、M4-B framework、O1–O12、H1 AOI Dwell、H2 First Fixation Latency、H3 Off-task Dwell、共享 primitives 与三个 reference preprocessing providers 已进入代码；相关测试与 fingerprint 继续作为历史工程证据。
 
-2026-07-15 用户确认此前路线对 provisional Anchor 算法的固定、审核和测试投入过重，并批准 EvidenceRecipe/operator 总体架构与 D-031–D-035。当前产品权威目标是让专家在前端自由设计 Evidence Computation Graph 与 BN；18 个 Anchor/33-node BN 只是 starter templates。普通修改使用 canonical `EvidenceRecipe` 和既有 operators，不要求 Python 发布、人工审批或 per-edit pytest/golden；只有算子库无法表达新能力时才新增 trusted operator plugin。旧 Task 29–36 因而停止，不能再把 H4/H5/O13 固定插件或 exact-18 closure 写成下一步。用户随后批准合并规格并授权实施，因此准确状态是 **legacy M4 Task 0–28 complete；15 个 legacy/reference plugins preserved；M4R spec approved；M4R implementation started**。各项代码完成度逐项记录，不把“开始实施”误报为“已经完成”。
+2026-07-15 用户确认此前路线对 provisional Anchor 算法的固定、审核和测试投入过重，并批准 EvidenceRecipe/operator 总体架构与 D-031–D-035。当前产品权威目标是让专家在前端自由设计 Evidence Computation Graph 与 BN；18 个 Anchor/33-node BN 只是 starter templates。普通修改使用 canonical `EvidenceRecipe` 和既有 operators，不要求 Python 发布、人工审批或 per-edit pytest/golden；只有算子库无法表达新能力时才新增 trusted operator plugin。旧 Task 29–36 因而停止，不能再把 H4/H5/O13 固定插件或 exact-18 closure 写成下一步。M4R 现已按 replacement plan 完成，因此准确状态是 **legacy M4 Task 0–28 preserved；15 个 legacy/reference plugins preserved；M4R engineering verified**。
 
 旧计划的 provisional Task 0 曾证明原 fixture 范围不合适：四套 90 秒 bundle 每次会临时生成约 43,000 个文件，focused gate 约需 160 秒；测试还主要验证 builder/oracle 自洽，未独立证明 dense raw data 可以产生预期 anchors。该 provisional 工作未提交、不得计作 M4 证据。已接受修订把验证收缩为一个 10 秒全模态 workflow bundle、18 个 per-anchor 微型测试、紧凑 all-Desired/all-Unacceptable/mixed 场景和 fault-hook state matrix；replacement Task 0 已安全移除旧 provisional files、观察正确 RED，并提交新的轻量 fixture 基线。
 
@@ -61,7 +61,7 @@ M4 书面设计明确采用 no-quality-gate 边界：进入 M4 的 aligned input
   - `synchronization-report-0.1.0.schema.json`
 - 可由 JSON Schema 表达的 status/privacy/task-reference/result ownership/disposition 约束已经与 Pydantic 对称；必须访问文件系统、重算 hash 或比较动态 path/checksum 集合的规则保留为 backend runtime invariant。
 
-其中 `anchor-result-0.1.0.schema.json` 和 Python `AnchorResult` 是 M1 阶段建立的 legacy 0.1 合同，仍包含 quality/`invalid_quality` 语义；它们不是 M4 AnchorResult v0.2 的实现证据。Breaking `AnchorResultV2` 与 `anchor-result-0.2.0.schema.json` 已分别由 Task 2/6 显式实现和验证；Task 7 的 exact-18 catalog 与 24 个 parameter resources、Task 8–13 的 canonical/runtime framework 以及 Task 14–28 的 O1–O12/H1–H3 plugins、共享 primitives 与三个 preprocessing providers 也已完成。但其余 H4/H5/O13 三个 production plugins 与完整 M4 workflow 尚未完成，不能把这些分段成果误计为 M4 全部完成。
+其中 `anchor-result-0.1.0.schema.json` 和 Python `AnchorResult` 是 M1 阶段建立的 legacy 0.1 合同，仍包含 quality/`invalid_quality` 语义；它们不是 M4 AnchorResult v0.2 的实现证据。Breaking `AnchorResultV2` 与 `anchor-result-0.2.0.schema.json` 已分别由旧 Task 2/6 显式实现和验证；旧 exact-18 catalog、parameter resources、canonical/runtime framework、O1–O12/H1–H3 plugins、共享 primitives 与三个 providers 也已完成并保留。H4/H5/O13 不再补 whole-Anchor production plugin，而是已在 M4R starter recipes 中直接通过通用 operators 组合；这不是缺项，而是批准后的新扩展路线。
 
 ### 2.3 版本化 ingestion profiles
 
@@ -117,6 +117,19 @@ uv run python -m pilot_assessment.synthetic `
 - phase/event/baseline/reference 只验证 session-time 合同结构和内部自洽性，不判断专家标签或任务真实性；
 - `SynchronizationReport.validation_scope=native_rate_session_time_alignment_v1`，同一 root-independent `synchronization_fingerprint` 写入 report 与非 blocked `AlignedSession`；
 - 所有结果保持 `formal_run_authorized=false`，所有 timed artifact 的 `interpolated_rows=0`。
+
+### 2.7 M4R Editable Evidence Computation Foundation
+
+- `EvidenceRecipe` 与 `OperatorDefinition` 使用 strict/frozen Pydantic DTO，并确定性导出前端可消费的 JSON Schema；
+- trusted `OperatorRegistry` 按 operator ID/version 绑定 definition 与 implementation，不动态执行 recipe 提供的 Python；
+- only-technical validator 检查 binding、DAG、port type/cardinality/time semantics/unit、parameters、outputs 和 scorer，但不判断公式或阈值是否科学；
+- generic compiler/executor 不按 Anchor ID 分支，支持 deterministic topological order、显式 binding propagation、selected node trace 和 node/operator-localized diagnostics；
+- built-in library 覆盖 input、signal、temporal、event、gaze/AOI、flight geometry、statistics、composition、aggregation 与 D/A/U scoring；所有 smoothing、detrend、window、filter 和 aggregation 都必须由 recipe 显式放置；
+- backend-only service 支持 incomplete draft autosave、optimistic revision、clone、active/disabled/retired、preview、apply、immutable snapshot 和 exact replay；
+- package 中提供 O1–O13/H1–H5 共 18 个 `starter_template` JSON resources，全部可修改/替换；catalog 不固定数量，第 19 个任意 recipe 已实际通过注册、执行与应用；
+- O1–O12/H1–H3 的 15 个旧 Python plugins 保留为 legacy/reference/replay source；O13/H4/H5 仅引用旧参数资源并直接使用 operator composition。
+
+M4R 没有实现 BN、项目级 model workspace、持久化、JSON-RPC sidecar 或 WinUI。这些边界分别属于 M5–M7；当前仍不能创建正式 assessment run。
 
 ## 3. 验证证据
 
@@ -271,6 +284,18 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 
 这是早期遗留目录名，其中 `real_xu` 只表示当时直接复制了 repository-external CSV bytes，不表示有效任务或 ground truth；该 bundle 在 M3 gaze/frame 修复后必须重新生成。该目录不得提交或当作真实多模态采集数据。当前 M3 opt-in E2E 每次从冻结 CSV 新鲜生成临时 bundle，不依赖该遗留目录。
 
+### 3.5 M4R 轻量 Evidence 工作流
+
+M4R 验证采用选择性测试，不再为 provisional 专家算法维护逐 Anchor 重型 golden：
+
+- contracts/schema、registry、validator、compiler/executor、safe formula、revision immutability 与 replay 使用平台不变量测试；
+- operator library 使用小型 focused smoke；18 个 starter resources 全部加载并编译，但只对 O2 trajectory、H1 gaze、H4 physiology 做三个代表 migration wiring smoke；
+- editable E2E 只使用 1 个 disturbance event 与 3 段 gaze，覆盖 incomplete autosave、补全、preview、AOI/window/scorer 修改、两次 apply、旧 revision replay、clone/new Anchor 和 disable；
+- 任何第 19 个 recipe 无需修改 orchestrator 或增加 whole-Anchor plugin；
+- 该验证不读取 repository-external CSV、不生成大 bundle，不证明 starter 算法或阈值科学正确。
+
+最终 fresh gate 为 `1472 passed, 3 skipped in 211.72s`；三个 skip 仅来自当前主机不允许测试 symlink，以及两条未配置 repository-external CSV 的 opt-in E2E。Ruff lint、212-file format check、`ty check src/pilot_assessment`、schema regeneration 与 whitespace check 均通过。当前 shell 没有 `uv` CLI，因此通过同一 `uv_build` backend 的标准 PEP 517 `pip wheel` 构建；最终 wheel 为 528,687 bytes，SHA-256 `e71d48e11a6d99efab4c67ba208f2556dc33d4b9248100abba3e07a8b737f700`，其中 18 个 recipe resources、catalog 与两份新 schema 齐全。M4R completion gate 因此关闭。
+
 ## 4. 本轮自审与关闭项
 
 本轮跨文档与集成自审未发现残余 P0。已关闭的主要 P1：
@@ -287,7 +312,6 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 
 ## 5. 尚未实现
 
-- M4R：`EvidenceRecipe`、`OperatorDefinition`、typed ports/units/cardinality、recipe compiler/executor、operator registry、自动表单 metadata、backend-only create/edit/clone/disable/preview/apply/replay，以及当前 primitives/15 个 legacy plugins 的迁移；
 - M5：autosaved model workspace、相互连接的 Evidence/BN graphs、BN node/edge/state/CPT 编辑、inference、technical validation、immutable applied revision、diff/undo/replay；
 - M6：project/session/model/run persistence、受管理 artifact、JSON-RPC sidecar、run orchestration、progress/cancel/error 与 revision lock；
 - M7：WinUI 3 专家设计器、Evidence/BN 画布、schema-driven 参数/CPT 表单、preview/result/trace 与版本历史；
@@ -297,14 +321,14 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 
 ## 6. 下一里程碑
 
-下一步不是 Task 29。用户已经批准 [expert-editable architecture spec](specs/2026-07-15-expert-editable-evidence-and-model-design.md)，当前按 [M4R implementation plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md) 围绕最小可运行 vertical slice 实施：
+下一步不是旧 Task 29，也不是直接开始 WinUI。M4R 已按 [implementation plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md) 完成；下一阶段应先与用户复核并正式设计 M5：
 
-1. 定义 `EvidenceRecipe`、`OperatorDefinition`、typed ports、units、parameters 与 graph contracts；
-2. 建立 operator registry、recipe technical validator、compiler/executor 和 trace；
-3. 将少量现有 primitives 包装为 operators，跑通“扰动期间关注目标 AOI”的轻量示例；
-4. 实现 backend-only 的 create/edit/clone/disable/autosave/preview/apply/replay；
-5. 将现有 O1–O12/H1–H3 逐步转换为 starter recipes，保留 legacy implementation 供比较和重放；
-6. 仅验证平台准确执行 recipe，不把 provisional 公式输出或 exact-18 closure 当作科学完成门。
+1. 定义项目级 autosaved model workspace，把多个 EvidenceRecipes、Evidence graph 和 BN graph 放在同一 canonical draft；
+2. 实现 BN node/edge/state/CPT 合同、编辑 operations、technical validation 和 inference adapter；
+3. 定义 Anchor result/output 到 BN evidence node 的显式 binding，以及 missing/omitted/virtual evidence 语义；
+4. 建立项目级 immutable applied model revision、diff、undo/redo 与 replay；
+5. 保持普通 Evidence/BN 修改 free-to-modify，不把人工审批、科学有效性或 per-edit pytest 加回 apply gate；
+6. M6 persistence/JSON-RPC 和 M7 WinUI 只保留接口边界，不在 M5 中提前宣称完成。
 
 当前权威与历史材料见：
 
@@ -316,11 +340,11 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 - [M4 Task 8 Canonical Fingerprint and Runtime Identity Amendment](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md)
 - [Autonomous Review Ledger](reviews/2026-07-13-autonomous-review-ledger.md)
 
-两份旧实施计划均只供历史追溯。Replacement Task 0–28 的完成事实保留，但 Task 29–36 已暂停且不得执行；当前执行入口为新的 M4R plan：
+两份旧实施计划均只供历史追溯。Replacement Task 0–28 的完成事实保留，但 Task 29–36 已停止且不得执行；M4R plan 已完成并保留为实现记录：
 
 - [M4 Anchor Calculation and Evidence Availability Implementation Plan](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)
 - [M4 Anchor Calculation and Evidence Availability Replacement Implementation Plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（Task 0–28 历史；Task 29–36 superseded）
-- [M4R Editable Evidence Computation Foundation Implementation Plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md)（当前执行入口）
+- [M4R Editable Evidence Computation Foundation Implementation Plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md)（已完成；M4R 实现与验收记录）
 
 M2 的批准规格与逐任务实施证据分别见：
 

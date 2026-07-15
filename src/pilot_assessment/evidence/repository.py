@@ -141,9 +141,7 @@ def recipe_content_sha256(recipe: EvidenceRecipe) -> str:
     """Return a deterministic identity over the canonical editable recipe DTO."""
 
     snapshot = _snapshot(recipe)
-    return hashlib.sha256(
-        canonical_json_bytes(snapshot.model_dump(mode="json"))
-    ).hexdigest()
+    return hashlib.sha256(canonical_json_bytes(snapshot.model_dump(mode="json"))).hexdigest()
 
 
 def _pointer_token(value: object) -> str:
@@ -243,9 +241,7 @@ class InMemoryRecipeRepository:
             try:
                 return self._drafts[recipe_id]
             except KeyError as error:
-                raise RecipeNotFoundError(
-                    f"recipe draft {recipe_id!r} does not exist"
-                ) from error
+                raise RecipeNotFoundError(f"recipe draft {recipe_id!r} does not exist") from error
 
     def save_draft(
         self,
@@ -256,9 +252,7 @@ class InMemoryRecipeRepository:
     ) -> RecipeDraftRecord:
         author = _author(author_id)
         if type(expected_draft_revision) is not int or expected_draft_revision < 1:
-            raise RecipeRepositoryError(
-                "expected_draft_revision must be a positive strict integer"
-            )
+            raise RecipeRepositoryError("expected_draft_revision must be a positive strict integer")
         snapshot = _snapshot(recipe)
         with self._lock:
             current = self.get_draft(snapshot.recipe_id)
@@ -314,9 +308,7 @@ class InMemoryRecipeRepository:
             current = self.get_draft(recipe_id)
             changed = current.recipe.model_copy(
                 update={
-                    "anchor": current.recipe.anchor.model_copy(
-                        update={"lifecycle": normalized}
-                    )
+                    "anchor": current.recipe.anchor.model_copy(update={"lifecycle": normalized})
                 }
             )
             return self.save_draft(
@@ -356,12 +348,8 @@ class InMemoryRecipeRepository:
                 revision_number=revision_number,
                 recipe=snapshot,
                 content_sha256=recipe_content_sha256(snapshot),
-                previous_revision_id=(
-                    None if previous is None else previous.revision_id
-                ),
-                previous_content_sha256=(
-                    None if previous is None else previous.content_sha256
-                ),
+                previous_revision_id=(None if previous is None else previous.revision_id),
+                previous_content_sha256=(None if previous is None else previous.content_sha256),
                 changed_paths=changed_paths,
                 source_draft_revision=draft.draft_revision,
                 applied_at=self._now(),

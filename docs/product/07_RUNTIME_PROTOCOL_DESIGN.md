@@ -8,7 +8,7 @@
 | 服务端 | Python Assessment Core sidecar |
 | 适用范围 | 本地、单用户、离线评估 |
 
-> **当前权威补充：** 协议必须承载 canonical EvidenceRecipe/operator catalog、两张图的 autosave operations、preview、technical validation 与 apply/replay。普通 expert edit 不触发 Python/plugin 发布或测试流程。方法命名与 DTO 的最终冻结将在 M4R/M5/M6 各自规格中完成；本文件旧 `publish` 语义统一解释为 one-click `apply`。详见 [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)。
+> **当前权威补充：** 协议必须承载 canonical EvidenceRecipe/operator catalog、两张图的 autosave operations、preview、technical validation 与 apply/replay。普通 expert edit 不触发 Python/plugin 发布或测试流程。M4R 已实现进程内 EvidenceRecipe service 和 DTO 语义；M5 冻结 BN/model workspace，M6 才把这些 use cases 绑定到持久化与 JSON-RPC sidecar。本文件旧 `publish` 语义统一解释为 one-click `apply`。详见 [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)。
 
 ## 1. 目标与边界
 
@@ -135,6 +135,8 @@ Runtime DTO 必须保持阶段顺序和命名：`IngestionReadinessReport`（sou
 binding.create/update/remove 不设绕过事务的独立写入口；它们作为 graph.operations.apply 内的 semantic operations，DTO 见 [06_VISUAL_GRAPH_EDITOR_DESIGN.md](06_VISUAL_GRAPH_EDITOR_DESIGN.md) 的 AnchorBinding 小节。
 
 node/edge/anchor.parameters/cpt 的便利写方法同样必须携带 draft_id、expected_graph_version 和 transaction_id；后端把它们转换为单 operation batch。不存在绕过 canonical transaction 的第二套写路径。
+
+M4R 当前已经提供 backend-only `create_draft`、`save_draft`、`clone_draft`、`set_lifecycle`、`preview`、`apply`、`get_applied_revision` 和 `replay` use cases，并使用进程内 repository 验证 immutable snapshot。上表的 JSON-RPC 方法、项目级 autosave、幂等 transaction 和持久化 repository 仍是 M6 交付，不能因 Python service 已存在而标记为协议已实现。
 
 ### 6.4 Assessment 与结果
 

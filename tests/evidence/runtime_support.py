@@ -92,9 +92,7 @@ class RuntimeImplementation:
     operator_id: str
     function: ExecuteFunction
     implementation_version: str = "0.1.0"
-    calls: list[tuple[Mapping[str, object], Mapping[str, JsonValue]]] = field(
-        default_factory=list
-    )
+    calls: list[tuple[Mapping[str, object], Mapping[str, JsonValue]]] = field(default_factory=list)
 
     @property
     def implementation_ref(self) -> str:

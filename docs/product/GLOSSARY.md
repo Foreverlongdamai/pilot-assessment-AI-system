@@ -6,17 +6,20 @@
 | Anchor / Evidence anchor | 从原始或派生数据计算的可解释指标，例如 O2 Peak Tracking Excursion。 |
 | Starter template | 随产品提供、用于演示和起步的 Anchor/EvidenceRecipe/BN；可复制、修改、停用、删除或替换，不表示科学正确，也不限制通用引擎的节点数量。 |
 | EvidenceRecipe | 前端显示、后端保存和运行时执行某个 Anchor 计算方法的唯一 canonical object；包含 bindings、typed operator graph、outputs、scoring、documentation 与 UI metadata。 |
+| EvidenceRecipe catalog | 运行时大小可变的 recipe inventory；安装包当前提供 O1–O13/H1–H5 共 18 个 starter templates，但 catalog 和 executor 不把 18 写成上限。 |
+| Recipe draft | 可自动保存的 EvidenceRecipe 工作副本；允许 graph 暂时 incomplete，只有 preview/apply 要求达到相应技术可执行状态。 |
+| Recipe preview | 对 exact draft snapshot 和显式 inputs 的临时执行；返回 outputs、scoring、selected node trace 或定位到 node/operator 的 technical diagnostics，不创建 applied revision。 |
 | Evidence Computation Graph | EvidenceRecipe 内把 session stream/semantic/reference 通过可复用算子转换成 AnchorMeasurement/AnchorResult 的有向无环图。 |
 | Operator / OperatorDefinition | 可复用计算积木及其机器合同；声明 typed input/output ports、unit/cardinality/time semantics、parameter schema、UI metadata 和 implementation identity，不等于一个完整 Anchor。 |
 | Trusted operator plugin | 当现有 operator library 无法表达一种全新计算能力时，由开发者安装的受控扩展；它提供可复用 operators，不要求每个新 Anchor 都发布 Python plugin。 |
 | AnchorPlugin | Task 0–28 已实现的 legacy whole-Anchor 插件合同；用于旧 revision replay、迁移比较和参考实现。新 Anchor 的默认扩展方式已改为 EvidenceRecipe + operators。 |
 | AnchorCatalog | 某 model profile 的版本化 anchor inventory、definition、lifecycle 与 canonical order；generic M4 engine 不固定其数量。 |
-| AnchorLifecycle | Anchor catalog definition 的 `active/deprecated/retired` 状态；M4 可执行 plan 只允许 `active` entry。 |
+| AnchorLifecycle | 旧 Anchor catalog definition 的 `active/deprecated/retired` 状态；legacy M4 可执行 plan 只允许 `active` entry。editable EvidenceRecipe 另用 `active/disabled/retired` 的 RecipeLifecycle。 |
 | AnchorExecutionPlan | M5 根据 exact model/session snapshot 编译、M4 消费的冻结计划；锁定 plugin、参数、core-stream input-table contracts、typed dependencies、grid/window、scorer 和 artifact recipe。 |
 | ResolvedInputTableContract | M5 从锁定 core-stream profile 编译进 execution plan 的表合同；分别冻结 stream-level/table-role-level aligned schema、坐标系与有序 field name/dtype/unit/nullability。合法 optional non-aligned stream 下沉为 `missing_input`，aligned stream 的合同错配在 request 前拒绝。 |
 | ReferenceBindingError | Task 3 在 reference snapshot/candidate 三参数绑定阶段使用的稳定错误；发生时尚无 `ResolvedReferenceSet` 或 M4 request。 |
 | AnchorRequestValidationError | Task 4/13 在 binder 成功后对 session/semantic/reference provenance/fingerprint 闭合失败使用的稳定错误；不生成 M4 report。 |
-| AnchorMeasurement | AnchorPlugin 在中央 scorer 之前产生的 raw metrics、phase/event breakdown、override candidate、typed artifacts 与 computation trace。 |
+| AnchorMeasurement | recipe executor（或 legacy AnchorPlugin）在中央 scorer 之前产生的 raw metrics、phase/event breakdown、override candidate、typed artifacts 与 computation trace。 |
 | AnchorResult v0.2 | M4 的 per-anchor 结果合同（`anchor-result-0.2.0`）；记录 calculation status、raw metrics、D/A/U likelihood、override、artifact、diagnostics、provenance 和 fingerprint。 |
 | ComputationTrace | M4 保存的 sample/time range、grid/window、匹配方法和 technical diagnostics；只用于审计，不生成 quality score 或改变 likelihood。 |
 | Evidence node | BN 中接收 Desired / Adequate / Unacceptable 观测的节点。参考模型有 18 个。 |
@@ -74,6 +77,7 @@
 | Autosaved draft | 专家正在编辑的模型工作副本；每个用户意图自动保存，允许 incomplete/invalid，并支持 undo/redo 和 preview。 |
 | Draft | `Autosaved draft` 的简称；尚未成为后续新 run 的默认模型。 |
 | Applied revision | 用户点击“应用到后续评估”并通过最小技术可运行校验后形成的不可变模型版本；不表示科学审批或软件发布。 |
+| Applied recipe revision | M4R 对单个 EvidenceRecipe 保存的不可变 snapshot、content hash、parent/diff、作者、时间与可选 note；M5/M6 将其纳入项目级 applied model revision。 |
 | Published revision | 旧文档/UI 术语；在当前产品中统一解释为 `Applied revision`，不得附加人工审批、golden 或 per-edit test 语义。 |
 | Technical validation | 只检查 schema、引用、DAG、operator/type/unit/parameter、formula/scorer 与 BN CPT 是否可执行；不判断算法、Anchor mapping 或 CPT 是否科学合理。 |
 | graph_version | 草稿内整个 semantic model（node、edge、state、CPT、binding、anchor parameters、profile）每次原子修改后递增的乐观并发版本。 |

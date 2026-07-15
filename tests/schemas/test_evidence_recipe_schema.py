@@ -53,9 +53,7 @@ def test_rendered_evidence_schemas_have_stable_identity_and_accept_drafts() -> N
     recipe_schema = json.loads(rendered[RECIPE_SCHEMA])
     operator_schema = json.loads(rendered[OPERATOR_SCHEMA])
 
-    assert recipe_schema["$id"] == (
-        "urn:cranfield:pilot-assessment:schema:evidence-recipe:0.1.0"
-    )
+    assert recipe_schema["$id"] == ("urn:cranfield:pilot-assessment:schema:evidence-recipe:0.1.0")
     assert operator_schema["$id"] == (
         "urn:cranfield:pilot-assessment:schema:operator-definition:0.1.0"
     )

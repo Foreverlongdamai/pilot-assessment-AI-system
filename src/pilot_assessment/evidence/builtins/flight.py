@@ -512,9 +512,7 @@ class VectorComposeOperator:
         unit = _optional_text(parameters.get("unit"), "vector unit")
         if any(item.unit != unit for item in series):
             raise FlightOperatorError("component units must equal the declared vector unit")
-        by_time = tuple(
-            {sample.t_ns: sample.value for sample in item.samples} for item in series
-        )
+        by_time = tuple({sample.t_ns: sample.value for sample in item.samples} for item in series)
         common_times = sorted(set.intersection(*(set(values) for values in by_time)))
         return {
             "value": VectorSeries(
@@ -657,9 +655,7 @@ class EnvelopeMembershipOperator:
                     MaskSample(
                         sample.t_ns,
                         all(
-                            (low <= value <= high)
-                            if inclusive
-                            else (low < value < high)
+                            (low <= value <= high) if inclusive else (low < value < high)
                             for value, low, high in zip(
                                 sample.values,
                                 lower,
@@ -703,15 +699,12 @@ class CaptureOperator:
         intervals = tuple(
             CausalBooleanInterval(
                 start_t_ns=sample.t_ns,
-                end_t_ns=(
-                    selected[index + 1].t_ns if index + 1 < len(selected) else end
-                ),
+                end_t_ns=(selected[index + 1].t_ns if index + 1 < len(selected) else end),
                 source_row_id=index,
                 active=abs(sample.value) <= tolerance,
             )
             for index, sample in enumerate(selected)
-            if (selected[index + 1].t_ns if index + 1 < len(selected) else end)
-            >= sample.t_ns
+            if (selected[index + 1].t_ns if index + 1 < len(selected) else end) >= sample.t_ns
         )
         runs = confirmed_true_runs(intervals, minimum_duration_ns=hold)
         captured = bool(runs)

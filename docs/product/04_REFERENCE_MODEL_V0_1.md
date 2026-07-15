@@ -279,7 +279,7 @@ Synthetic multimodal fixtures 只验证软件闭环，始终 `scientific_validat
 
 ## 11. 实现与验收边界
 
-当前只可声称：旧 M4 Task 0–28 已完成，15 个 whole-Anchor plugins 与三个 providers 已实现并保留为 legacy/reference code；M4R EvidenceRecipe/operator architecture 已确认，合并规格待最终复核，尚未实现。不得再声称“补齐 18 个固定插件”是当前完成路径。
+当前只可声称：旧 M4 Task 0–28 已完成，15 个 whole-Anchor plugins 与三个 providers 已实现并保留为 legacy/reference code；M4R EvidenceRecipe/operator foundation 已工程验证，18 个 packaged recipes 是可编辑 starter inventory，而不是固定插件或引擎上限。M5 BN/model workspace、M6 runtime 与 M7 WinUI 尚未实现。不得再声称“补齐 18 个固定插件”是当前完成路径。
 
 M4R 的平台验收关注：
 

@@ -13,10 +13,7 @@ def scoring_operator_identity(scoring: RecipeScoring) -> tuple[str, str] | None:
         return ORDERED_DAU_OPERATOR_IDENTITY
     if scoring.mode is ScoringMode.SOFT_LIKELIHOOD:
         return SOFT_LIKELIHOOD_OPERATOR_IDENTITY
-    if (
-        scoring.custom_operator_id is None
-        or scoring.custom_operator_version is None
-    ):
+    if scoring.custom_operator_id is None or scoring.custom_operator_version is None:
         return None
     return scoring.custom_operator_id, scoring.custom_operator_version
 

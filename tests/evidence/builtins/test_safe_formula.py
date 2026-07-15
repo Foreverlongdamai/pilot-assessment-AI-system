@@ -55,11 +55,14 @@ def _execute(
 
 
 def test_safe_formula_supports_bounded_arithmetic_logic_and_named_functions() -> None:
-    assert _execute(
-        "clip(x * gain + y, lower, upper)",
-        variables={"x": 2.0, "y": 1.0},
-        constants={"gain": 3.0, "lower": 0.0, "upper": 5.0},
-    ) == 5.0
+    assert (
+        _execute(
+            "clip(x * gain + y, lower, upper)",
+            variables={"x": 2.0, "y": 1.0},
+            constants={"gain": 3.0, "lower": 0.0, "upper": 5.0},
+        )
+        == 5.0
+    )
     assert _execute("x > 2 and y <= 4", variables={"x": 3.0, "y": 4.0}) is True
     assert _execute("max(abs(x), y)", variables={"x": -3.0, "y": 2.0}) == 3.0
 
@@ -219,6 +222,4 @@ def test_recipe_validation_blocks_unsafe_formula_before_apply() -> None:
     outcome = validate_recipe(candidate, registry)
 
     assert outcome.disposition == "incomplete"
-    assert "recipe.operator_parameters_invalid" in {
-        item.code for item in outcome.diagnostics
-    }
+    assert "recipe.operator_parameters_invalid" in {item.code for item in outcome.diagnostics}

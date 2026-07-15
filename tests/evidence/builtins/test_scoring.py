@@ -127,6 +127,4 @@ def test_executor_runs_recipe_scoring_from_the_same_editable_parameters() -> Non
     invalid = recipe.model_copy(update={"scoring": reversed_scoring})
     outcome = validate_recipe(invalid, registry)
     assert outcome.disposition == "incomplete"
-    assert "recipe.operator_parameters_invalid" in {
-        item.code for item in outcome.diagnostics
-    }
+    assert "recipe.operator_parameters_invalid" in {item.code for item in outcome.diagnostics}

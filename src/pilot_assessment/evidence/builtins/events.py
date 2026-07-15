@@ -576,11 +576,7 @@ class MaskRunOperator:
                 sample.active,
             )
             for index, sample in enumerate(mask.samples)
-            if (
-                mask.samples[index + 1].t_ns
-                if index + 1 < len(mask.samples)
-                else observation_end
-            )
+            if (mask.samples[index + 1].t_ns if index + 1 < len(mask.samples) else observation_end)
             >= sample.t_ns
         )
         minimum = _strict_int(parameters.get("minimum_duration_ns"), "minimum_duration_ns")
@@ -804,9 +800,7 @@ def _recovery_intervals(
     horizon_ns: int,
 ) -> tuple[CausalBooleanInterval, ...]:
     end = event.t_ns + horizon_ns
-    selected = tuple(
-        sample for sample in series.samples if event.t_ns <= sample.t_ns <= end
-    )
+    selected = tuple(sample for sample in series.samples if event.t_ns <= sample.t_ns <= end)
     intervals: list[CausalBooleanInterval] = []
     for index, sample in enumerate(selected):
         interval_end = selected[index + 1].t_ns if index + 1 < len(selected) else end

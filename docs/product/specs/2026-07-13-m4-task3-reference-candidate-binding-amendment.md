@@ -6,7 +6,7 @@
 | 日期 | 2026-07-13 |
 | 方向状态 | 用户已批准方案 A：新增独立 `ReferenceViewCandidate`，不修改 M3 |
 | 书面状态 | 已于 2026-07-13 获用户明确批准；本文现为 Task 3 权威修订 |
-| 实现状态 | 已由提交 `e054620` 完成并继续保留为 M4R 输入绑定基础；旧 Task 29–36 已于 2026-07-15 停止，M4R implementation not started |
+| 实现状态 | 已由提交 `e054620` 完成并继续保留为 M4R 输入绑定基础；旧 Task 29–36 已于 2026-07-15 停止，M4R foundation 随后已工程完成 |
 | 取代范围 | 取代 replacement plan Task 3 原两参数 binder、未展开的 semantic/reference 字段口径和 `ResolvedReferenceSet` 缺失的 session identity；并为 Task 8、32、34、35 补充该端口的既有职责落点 |
 | 不变范围 | M1/M2/M3 合同、18 个 anchor 算法/阈值、AnchorResult v0.2、DAG、轻量测试策略及 M4 完成门均不变 |
 

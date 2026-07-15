@@ -164,12 +164,12 @@ def test_executor_localizes_missing_binding_and_operator_failure() -> None:
             definition(
                 "math.add",
                 inputs=(
-                    definition("identity.left").output_ports[0].model_copy(
-                        update={"port_id": "left"}
-                    ),
-                    definition("identity.right").output_ports[0].model_copy(
-                        update={"port_id": "right"}
-                    ),
+                    definition("identity.left")
+                    .output_ports[0]
+                    .model_copy(update={"port_id": "left"}),
+                    definition("identity.right")
+                    .output_ports[0]
+                    .model_copy(update={"port_id": "right"}),
                 ),
             ),
             RuntimeImplementation(

@@ -86,9 +86,7 @@ def _definition(
         description=f"Reusable editable {operator_id} operator.",
         pseudocode=None,
         input_ports=inputs,
-        output_ports=(
-            _number_port("value", cardinality=PortCardinality.ONE),
-        ),
+        output_ports=(_number_port("value", cardinality=PortCardinality.ONE),),
         parameter_schema=parameter_schema,
         parameter_ui=parameter_ui,
         trace_capability=TraceCapability.SUMMARY,
@@ -295,9 +293,7 @@ def percentile_definition() -> OperatorDefinition:
             "required": ["percentile"],
             "additionalProperties": False,
         },
-        parameter_ui=(
-            _ui("/percentile", "Percentile", ParameterControlKind.SLIDER, unit="%"),
-        ),
+        parameter_ui=(_ui("/percentile", "Percentile", ParameterControlKind.SLIDER, unit="%"),),
     )
 
 
@@ -349,9 +345,7 @@ def pooled_ratio_definition() -> OperatorDefinition:
             "required": ["zero_denominator"],
             "additionalProperties": False,
         },
-        parameter_ui=(
-            _ui("/zero_denominator", "Zero denominator", ParameterControlKind.SELECT),
-        ),
+        parameter_ui=(_ui("/zero_denominator", "Zero denominator", ParameterControlKind.SELECT),),
     )
 
 
@@ -421,10 +415,7 @@ def _named_numbers(inputs: Mapping[str, object], port_id: str) -> list[float]:
     raw_values = inputs.get(port_id)
     if not isinstance(raw_values, Mapping):
         raise StatisticsOperatorError(f"{port_id} must be a named many-input mapping")
-    values = [
-        _number(value, f"{port_id}.{slot_id}")
-        for slot_id, value in raw_values.items()
-    ]
+    values = [_number(value, f"{port_id}.{slot_id}") for slot_id, value in raw_values.items()]
     if not values:
         raise StatisticsOperatorError(f"{port_id} cannot be empty")
     return values
@@ -546,17 +537,9 @@ class EventAggregationOperator:
         elif mode == "median":
             value = statistics.median(values)
         elif mode == "worst":
-            value = (
-                min(values)
-                if direction == "higher_is_better"
-                else max(values)
-            )
+            value = min(values) if direction == "higher_is_better" else max(values)
         elif mode == "best":
-            value = (
-                max(values)
-                if direction == "higher_is_better"
-                else min(values)
-            )
+            value = max(values) if direction == "higher_is_better" else min(values)
         else:
             raise StatisticsOperatorError("aggregation mode is not supported")
         return {"value": value}
@@ -763,12 +746,8 @@ class CorrelationOperator:
             (left_value - left_mean) * (right_value - right_mean)
             for left_value, right_value in pairs
         )
-        left_scale = math.sqrt(
-            math.fsum((value - left_mean) ** 2 for value in left_values)
-        )
-        right_scale = math.sqrt(
-            math.fsum((value - right_mean) ** 2 for value in right_values)
-        )
+        left_scale = math.sqrt(math.fsum((value - left_mean) ** 2 for value in left_values))
+        right_scale = math.sqrt(math.fsum((value - right_mean) ** 2 for value in right_values))
         if left_scale == 0.0 or right_scale == 0.0:
             if parameters.get("degenerate") == "zero":
                 return {"value": 0.0}

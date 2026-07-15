@@ -103,8 +103,7 @@ def test_parameter_edit_changes_backend_result_without_new_python_operator() -> 
     registry = OperatorRegistry()
     register_builtin_operators(registry)
     identities_before = tuple(
-        (item.operator_id, item.implementation_version)
-        for item in registry.catalog()
+        (item.operator_id, item.implementation_version) for item in registry.catalog()
     )
 
     first = execute_recipe(
@@ -122,7 +121,7 @@ def test_parameter_edit_changes_backend_result_without_new_python_operator() -> 
     assert first.scoring_outputs["state"] is EvidenceState.UNACCEPTABLE
     assert second.outputs == {"primary": 10.0}
     assert second.scoring_outputs["state"] is EvidenceState.DESIRED
-    assert tuple(
-        (item.operator_id, item.implementation_version)
-        for item in registry.catalog()
-    ) == identities_before
+    assert (
+        tuple((item.operator_id, item.implementation_version) for item in registry.catalog())
+        == identities_before
+    )
