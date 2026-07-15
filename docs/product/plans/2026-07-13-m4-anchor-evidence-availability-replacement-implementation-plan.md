@@ -14,8 +14,8 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
 - Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–17 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, and O4 in `056d9d5`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. Task 18 O5 is next.
-- Current implementation truth: 18/18 reference anchors specified, 4/18 production plugins implemented; M4-C and M4 overall are not engineering verified.
+- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–18 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, and O5 plus `movement-events-v1` in `1a119af`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. Task 19 O6 is next.
+- Current implementation truth: 18/18 reference anchors specified, 5/18 production plugins implemented and one preprocessing provider available; M4-C and M4 overall are not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
 - Scope truth: M4 consumes a compiled plan. Building/editing/publishing a ModelBundle, graph, CPT, or plan compiler belongs to M5.
@@ -2416,10 +2416,16 @@ git commit -m "feat: add sustained hover anchor"
 - Create: `src/pilot_assessment/anchors/plugins/o5_workload_rate.py`
 - Create: `tests/anchors/test_movement.py`
 - Create: `tests/anchors/test_o5_workload_rate.py`
+- Modify: `src/pilot_assessment/anchors/protocols.py`
+- Modify: `src/pilot_assessment/anchors/service.py`
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
+- Modify: `tests/anchors/test_catalog.py`
 - Modify: `tests/anchors/test_registry.py`
+- Modify: `tests/anchors/test_service.py`
+- Modify: `tests/contracts/test_anchor_measurement_report.py`
+- Modify: `tests/test_package_metadata.py`
 
-- [ ] **Step 1: Write RED primitive and O5 golden tests**
+- [x] **Step 1: Write RED primitive and O5 golden tests**
 
 Cover 100 Hz phase-start grids per support segment; 5 Hz fourth-order Butterworth SOS; `sosfiltfilt(padtype=odd,padlen=min(15,n-1))`; n<3 bypass; central/one-sided derivative; ±0.5%/s sign deadband; 50 ms left-hold run; zero-platform termination; opposite-run turning points; flat-extreme midpoint rounded half-even; 0.5% travel movement threshold; configured zero-movement channels retained; and no cross-gap movement.
 
@@ -2429,7 +2435,7 @@ Cover 100 Hz phase-start grids per support segment; 5 Hz fourth-order Butterwort
 
 Expected: RED because movement/O5 are absent.
 
-- [ ] **Step 2: Implement the detector and score**
+- [x] **Step 2: Implement the detector and score**
 
 `movement.py` exposes two exact side-effect-free callables in addition to the provider factory:
 
@@ -2462,7 +2468,7 @@ A single point with zero support duration is not-computable. Any finite partial 
 
 `movement.py` also exposes `create_provider()` for `movement-events-v1`/`1.0.0`. Its provider definition declares U, active-channel semantics, the exact movement profile, no provider dependency, and a typed movement-event table. O5 consumes that dynamic preprocessing recipe in normal execution; the shared pure function is an implementation member, not an unregistered provider or hidden cache path.
 
-- [ ] **Step 3: Register with exact NumPy/SciPy runtime provenance and run GREEN**
+- [x] **Step 3: Register with exact NumPy/SciPy runtime provenance and run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh-preprocessor --provider movement-events-v1 --factory-module pilot_assessment.anchors.primitives.movement --factory-symbol create_provider
@@ -2473,12 +2479,23 @@ A single point with zero support duration is not-computable. Any finite partial 
 
 Expected: PASS; O5/provider closures declare NumPy/SciPy, anchor count is 5/18, provider count is 1, and the provider product hash is a declared O5 dependency fingerprint.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/movement.py src/pilot_assessment/anchors/plugins/o5_workload_rate.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_movement.py tests/anchors/test_o5_workload_rate.py tests/anchors/test_registry.py
 git commit -m "feat: add deterministic workload-rate anchor"
 ~~~
+
+**Completion evidence (2026-07-15):**
+
+- RED was observed first as two collection failures while the movement primitive and O5 plugin were absent. After implementation, the updated registry/package honesty tests produced three expected RED failures before O5/provider registration; a later exact `U/samples` role test independently failed before the provider stopped guessing by field shape.
+- `1a119af` implements the side-effect-free movement detector and O5 kernel, the registered session-scoped `movement-events-v1` provider, the O5 production plugin, immutable input-table-contract projection through the provider context, stream-fingerprint binding, trusted NumPy/Polars/SciPy runtime closures, and package/registry honesty updates. No dense fixture or generated full-rate bundle was added.
+- The provider explicitly selects the validated `U/samples` table even when the U stream has other declared table roles. Its existing typed event table uses `support-start`/`support-end` rows to preserve each continuous support segment and therefore the gap-aware denominator; turning-point, movement and short-filter-bypass rows preserve replay diagnostics. O5 rehydrates only its exact phase/channel scope and publishes only true `movement` rows as its public anchor artifact.
+- The detector implements the approved 100 Hz phase-start grid, same-segment interpolation, fourth-order 5 Hz Butterworth SOS filter/padding, n<3 bypass, derivative deadband, 50 ms left-hold sign runs, zero-platform termination, round-half-even flat extrema, 0.5% travel movements and no cross-gap movement. Configured zero-movement channels remain in the mean; zero movement is computed 0, finite extreme inputs remain computed, and a high finite ratio is centrally scored Unacceptable rather than filtered.
+- Focused movement/O5 tests are `18 passed`; the exact Task 18 movement/O5/preprocessing/registry gate is `59 passed`; the controlled O1–O5 plus runtime/DAG/request/contracts/catalog/package regression is `261 passed`. In accordance with the user's lightweight-test instruction, the full repository suite was not repeated for this single anchor; Task 16's `1210 passed, 3 skipped` remains the latest full-suite evidence until the M4-C stage gate.
+- Packaged registry fingerprint is `c7d3344f748c9572854a6933f6c1a4dc7b5432fb91adc4be46bd76928f384b33`; O5 implementation digest is `13a1a0b1f2bd33341205792e059d60de41df48fbfccbe44044314d8e3b9cc0aa`; `movement-events-v1` provider digest is `2ca02450424cda13c0efde6f36400fac6e2af7998c2bfd3f9e9b2eecd89a7bcc`.
+- Registry verification, double schema export with zero drift, Ruff check/format, `ty check src`, `git diff --check`, fresh sdist/wheel build and repository-external isolated-wheel O1–O5/provider loading passed. The documentation-bearing wheel is 346,272 bytes with SHA-256 `93129b95a13fbf46af154590f6285fcf6dabf8b40a8a1630da5d3aa7ca68c52e`.
+- No subagent or external review was used. The honest state is 5/18 production plugins and one available preprocessing provider; M4-C and M4 overall remain incomplete, `formal_run_authorized=false`, and Task 19 O6 is next.
 
 ### Task 19: Implement O6 Control Magnitude RMS
 
