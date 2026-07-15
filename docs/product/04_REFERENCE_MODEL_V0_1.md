@@ -6,7 +6,7 @@
 | 模型 profile | `reference-model-v0.1`（尚未发布为不可变 ModelBundle） |
 | 日期 | 2026-07-13 |
 | BN inventory | 4 competencies + 11 sub-skills + O1–O13/H1–H5，合计 33 nodes |
-| Anchor 实现状态 | 18/18 已设计，7/18 production plugins 已实现；原 M4 实施计划已被取代，replacement plan 与 Task 3/7/8 amendments、D-028–D-030 已批准；Task 0–20 与 M4-C stage gate 已完成，O1–O7 capability 均为 `available`，`movement-events-v1` provider 为 `available`，下一步为 Task 21 O8 |
+| Anchor 实现状态 | 18/18 已设计，8/18 production plugins 已实现；原 M4 实施计划已被取代，replacement plan 与 Task 3/7/8 amendments、D-028–D-030 已批准；Task 0–21 已完成，M4-C stage gate 已关闭、M4-D 已开始，O1–O8 capability 均为 `available`，`movement-events-v1` provider 为 `available`，下一步为 Task 22 O9 |
 | 科学状态 | engineering defaults，未完成航空、人因或医学验证 |
 
 本文件定义 `reference-model-v0.1` 的可实现模型摘要。M4 的公式与总体合同以 [M4 Anchor Calculation and Evidence Availability Design](./specs/2026-07-13-m4-anchor-evidence-availability-design.md) 为主规格；[Task 7 Catalog/Resource Identity](./specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md) 与 [Task 8 Canonical Fingerprint/Runtime Identity](./specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) amendments 分别对精确资源和 canonical bytes 具有优先权。本文件不得另造一套 M4 语义。
@@ -280,7 +280,7 @@ Synthetic multimodal fixtures 只验证软件闭环，始终 `scientific_validat
 
 ## 11. 实现与验收边界
 
-当前只可声称 **18/18 anchors specified，7/18 production plugins implemented，M4-C software-verified**。Reference M4 完成至少需要：
+当前只可声称 **18/18 anchors specified，8/18 production plugins implemented，M4-C software-verified，M4-D in progress**。Reference M4 完成至少需要：
 
 1. `AnchorResult` v0.2、catalog/plan/report schemas 和 typed DAG 通过合同测试；
 2. 每个 anchor 的手算 D/A/U、精确边界、aggregation、override 和状态 golden；
@@ -293,4 +293,4 @@ Synthetic multimodal fixtures 只验证软件闭环，始终 `scientific_validat
 9. full tests、schema symmetry、lint/type、build，以及复用唯一 10 秒全模态 bundle 的 fresh-wheel isolated M1→M4 smoke 全部通过；
 10. 只有新鲜证据完成 M4-G 后才能把状态改为 M4 engineering-verified。
 
-M4 书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](./specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](./specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity](./specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订与 [replacement plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准，D-026–D-030 已接受；原实施计划已被取代且不再提供执行授权。Replacement Task 0–20 与 M4-C stage gate 已完成，O1–O7 capability 与 `movement-events-v1` provider 均为 `available`，下一步为 Task 21 O8；在全部 production-plugin 与 M4-G 完成门通过前仍保持 M4 未整体 engineering verified。
+M4 书面规格、轻量工作流验证、[Task 3 Reference Candidate Binding](./specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)、[Task 7 Catalog/Resource Identity](./specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity](./specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 修订与 [replacement plan](./plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 均已获明确或授权默认批准，D-026–D-030 已接受；原实施计划已被取代且不再提供执行授权。Replacement Task 0–21 已完成，M4-C stage gate 已关闭、M4-D 已开始，O1–O8 capability 与 `movement-events-v1` provider 均为 `available`，下一步为 Task 22 O9；在全部 production-plugin 与 M4-G 完成门通过前仍保持 M4 未整体 engineering verified。

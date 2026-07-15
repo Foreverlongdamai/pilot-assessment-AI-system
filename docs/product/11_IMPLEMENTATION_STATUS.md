@@ -1,13 +1,13 @@
-# Implementation Status — M1/M2/M3 Engineering Verified; M4 Tasks 0–20 and M4-C Complete
+# Implementation Status — M1/M2/M3 Engineering Verified; M4 Tasks 0–21 Complete, M4-D In Progress
 
 | 字段 | 当前值 |
 |---|---|
 | 状态日期 | 2026-07-15 |
 | 产品设计基线 | v0.1 |
 | 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization |
-| M4 当前状态 | Replacement Task 0–20 已完成。`b1d1fc9`/`b1a8743`/`f7d5261`/`056d9d5`/`1a119af`/`2ca3540`/`eb9cca6` 分别实现 O1–O7，其中 `1a119af` 同时实现 `movement-events-v1` provider。Task 20 focused/精确 M4-C/full-repository gate 分别为 `14 passed`、`153 passed`、`1275 passed, 3 skipped`；registry verify、schema 双次导出零漂移、schema tests、Ruff/format/ty/build/isolated-wheel 均通过。按用户节省额度的明确要求全程 INLINE，未走独立审查子代理。packaged registry 现有且仅有 O1–O7，capability count 为 7/18，preprocessor count 为 1（`movement-events-v1`）；因此准确口径是 **M4-B framework engineering-verified；M4-C software-verified；18/18 specified、7/18 production plugins；M4 整体尚未 engineering verified；`formal_run_authorized=false`** |
-| 下一里程碑 | 执行 replacement Task 21，实现并验证 O8 TPX Composite，开始 M4-D |
-| 软件状态 | `in_progress`（M1/M2/M3 engineering verified；M4 Tasks 0–20 与 M4-C complete、O1–O7 与 `movement-events-v1` provider available、Task 21 next；完整 Assessment Core alpha 与 Gate B 尚未完成） |
+| M4 当前状态 | Replacement Task 0–21 已完成。`b1d1fc9`/`b1a8743`/`f7d5261`/`056d9d5`/`1a119af`/`2ca3540`/`eb9cca6`/`15da2ea` 分别实现 O1–O8，其中 `1a119af` 同时实现 `movement-events-v1` provider。Task 21 focused/受控相关 gate 分别为 `8 passed`、`161 passed`；registry verify、Ruff/format/ty/diff 均通过。Task 20 的 `1275 passed, 3 skipped` 及 build/isolated-wheel 仍是最新 stage-gate 证据，本单 anchor 未重复重门。按用户节省额度的明确要求全程 INLINE，未走独立审查子代理。packaged registry 现有且仅有 O1–O8，capability count 为 8/18，preprocessor count 为 1（`movement-events-v1`）；因此准确口径是 **M4-B framework engineering-verified；M4-C software-verified；M4-D in progress；18/18 specified、8/18 production plugins；M4 整体尚未 engineering verified；`formal_run_authorized=false`** |
+| 下一里程碑 | 执行 replacement Task 22，实现并验证 O9 Dead-band Activity |
+| 软件状态 | `in_progress`（M1/M2/M3 engineering verified；M4 Tasks 0–21 complete、M4-C closed、M4-D in progress、O1–O8 与 `movement-events-v1` provider available、Task 22 next；完整 Assessment Core alpha 与 Gate B 尚未完成） |
 | 科学状态 | synthetic 数据为 `not_supported`；评估模型仍待领域专家校准与验证 |
 | Python package | `pilot-assessment-system 0.1.0` |
 | 本地运行边界 | Windows、离线、目录形式 Session Bundle |
@@ -29,7 +29,7 @@ M1/M2/M3 已实现，并通过 micro fixture 与 simulator 采集格式样例 CS
 
 2026-07-12 已将 M3 的 D-016–D-020 正式写入决策记录并完成实现：M3 只做 native-rate alignment，使用 scale-only/round-half-even clock mapping 和 master-clock X 技术时间窗口，输出独立 `SynchronizationReport`。§3 记录的完成门已经实测通过；这仍不表示完整 Assessment Core、正式 assessment run 或科学有效性已经成立。
 
-2026-07-13 已新增并批准 [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)，把 AnchorResult v0.2、18 个 anchor、typed dependency DAG、artifact/fingerprint 和状态边界冻结为书面设计；其后 [M4 Lightweight Workflow Validation Amendment](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)、D-026/D-027 与 [replacement M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 也已获用户批准。2026-07-13 同日又批准 [Task 3 Reference Candidate Binding 修订](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md) 与 D-028：M3 保持不变，M4 使用 session-bound candidate 和三参数 exact binder，并在 request 前绑定 M3 reference provenance。用户休息期间按其明确默认批准授权，又形成并经两路独立 P0/P1 终审通过 [Task 7 Catalog/Resource Identity 修订](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity 修订](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 与 D-029/D-030；它们只关闭机器资源、深度不可变性和 canonical bytes，不改公式、阈值或 golden。原 [M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 的四套 90 秒 fixture 路线已被取代且不再授权执行。Replacement Task 0–20 已完成：M4-A contracts/catalog/resources、M4-B framework、O1 Phase-state Precision、O2 Peak Tracking Excursion、O3 Terminal Capture Quality、O4 Sustained Hover Time、O5 Workload Rate、O6 Control Magnitude RMS、O7 Control Reversal Rate 与 `movement-events-v1` provider 已进入代码。Task 20 focused/精确 M4-C/full-repository gate 分别为 `14 passed`、`153 passed`、`1275 passed, 3 skipped`。M4-B framework 与 M4-C stage gate 已关闭，O1–O7 capability 与 `movement-events-v1` provider 均为 `available`，因此真实计数是 **18/18 specified、7/18 production plugins implemented**；M4 整体尚未 engineering verified，所有 M4 路径保持 `formal_run_authorized=false`；这些资源与测试不构成 quality gate、科学有效性或飞行员能力证明。
+2026-07-13 已新增并批准 [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)，把 AnchorResult v0.2、18 个 anchor、typed dependency DAG、artifact/fingerprint 和状态边界冻结为书面设计；其后 [M4 Lightweight Workflow Validation Amendment](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)、D-026/D-027 与 [replacement M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 也已获用户批准。2026-07-13 同日又批准 [Task 3 Reference Candidate Binding 修订](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md) 与 D-028：M3 保持不变，M4 使用 session-bound candidate 和三参数 exact binder，并在 request 前绑定 M3 reference provenance。用户休息期间按其明确默认批准授权，又形成并经两路独立 P0/P1 终审通过 [Task 7 Catalog/Resource Identity 修订](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md)、[Task 8 Canonical Fingerprint/Runtime Identity 修订](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 与 D-029/D-030；它们只关闭机器资源、深度不可变性和 canonical bytes，不改公式、阈值或 golden。原 [M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) 的四套 90 秒 fixture 路线已被取代且不再授权执行。Replacement Task 0–21 已完成：M4-A contracts/catalog/resources、M4-B framework、O1 Phase-state Precision、O2 Peak Tracking Excursion、O3 Terminal Capture Quality、O4 Sustained Hover Time、O5 Workload Rate、O6 Control Magnitude RMS、O7 Control Reversal Rate、O8 TPX Composite 与 `movement-events-v1` provider 已进入代码。Task 21 focused/受控相关 gate 分别为 `8 passed`、`161 passed`，registry/Ruff/format/ty/diff 均通过。M4-B framework 与 M4-C stage gate 已关闭，M4-D 已开始，O1–O8 capability 与 `movement-events-v1` provider 均为 `available`，因此真实计数是 **18/18 specified、8/18 production plugins implemented**；M4 整体尚未 engineering verified，所有 M4 路径保持 `formal_run_authorized=false`；这些资源与测试不构成 quality gate、科学有效性或飞行员能力证明。
 
 旧计划的 provisional Task 0 曾证明原 fixture 范围不合适：四套 90 秒 bundle 每次会临时生成约 43,000 个文件，focused gate 约需 160 秒；测试还主要验证 builder/oracle 自洽，未独立证明 dense raw data 可以产生预期 anchors。该 provisional 工作未提交、不得计作 M4 证据。已接受修订把验证收缩为一个 10 秒全模态 workflow bundle、18 个 per-anchor 微型测试、紧凑 all-Desired/all-Unacceptable/mixed 场景和 fault-hook state matrix；replacement Task 0 已安全移除旧 provisional files、观察正确 RED，并提交新的轻量 fixture 基线。
 
@@ -59,7 +59,7 @@ M4 书面设计明确采用 no-quality-gate 边界：进入 M4 的 aligned input
   - `synchronization-report-0.1.0.schema.json`
 - 可由 JSON Schema 表达的 status/privacy/task-reference/result ownership/disposition 约束已经与 Pydantic 对称；必须访问文件系统、重算 hash 或比较动态 path/checksum 集合的规则保留为 backend runtime invariant。
 
-其中 `anchor-result-0.1.0.schema.json` 和 Python `AnchorResult` 是 M1 阶段建立的 legacy 0.1 合同，仍包含 quality/`invalid_quality` 语义；它们不是 M4 AnchorResult v0.2 的实现证据。Breaking `AnchorResultV2` 与 `anchor-result-0.2.0.schema.json` 已分别由 Task 2/6 显式实现和验证；Task 7 的 exact-18 catalog 与 24 个 parameter resources、Task 8–13 的 canonical/runtime framework 以及 Task 14–20 的 O1–O7 plugins 与首个 preprocessing provider 也已完成。但其余 11 个 production plugins 与完整 M4 workflow 尚未完成，不能把这些分段成果误计为 M4 全部完成。
+其中 `anchor-result-0.1.0.schema.json` 和 Python `AnchorResult` 是 M1 阶段建立的 legacy 0.1 合同，仍包含 quality/`invalid_quality` 语义；它们不是 M4 AnchorResult v0.2 的实现证据。Breaking `AnchorResultV2` 与 `anchor-result-0.2.0.schema.json` 已分别由 Task 2/6 显式实现和验证；Task 7 的 exact-18 catalog 与 24 个 parameter resources、Task 8–13 的 canonical/runtime framework 以及 Task 14–21 的 O1–O8 plugins 与首个 preprocessing provider 也已完成。但其余 10 个 production plugins 与完整 M4 workflow 尚未完成，不能把这些分段成果误计为 M4 全部完成。
 
 ### 2.3 版本化 ingestion profiles
 
@@ -285,8 +285,8 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 
 ## 5. 尚未实现
 
-- M4：O1–O7 已实现；其余 11 个 production AnchorPlugin、plugin-specific window materialization、raw availability 与 O8/O13 派生证据仍待实现；`AnchorResultV2`、catalog/dependency/execution-plan/immutable-request、measurement/artifact/inventory/report contracts、v0.2/M4 schema export、packaged exact-18 catalog/24 parameter resources、canonical fingerprints/runtime identity、trusted registry closure、通用 temporal primitives、transactional artifact sink、central scorer、typed DAG、preprocessing resolver、evaluator、public API、O1–O7 shared kernels/plugins 与 `movement-events-v1` provider 已实现，当前为 18/18 specified、7/18 production plugins 已实现；
-- M4 replacement plan：Task 0–20 与 M4-C 已完成；O1 由 `b1d1fc9` 实现，O2 由 `b1a8743` 实现，O3 由 `f7d5261` 实现，O4 由 `056d9d5` 实现，O5 与 `movement-events-v1` provider 由 `1a119af` 实现，O6 由 `2ca3540` 实现，O7 由 `eb9cca6` 实现，下一步执行 Task 21 O8；不得把 M4-C 完成误计为 M4 整体 engineering verification；
+- M4：O1–O8 已实现；其余 10 个 production AnchorPlugin、plugin-specific window materialization 与 raw availability 仍待实现；`AnchorResultV2`、catalog/dependency/execution-plan/immutable-request、measurement/artifact/inventory/report contracts、v0.2/M4 schema export、packaged exact-18 catalog/24 parameter resources、canonical fingerprints/runtime identity、trusted registry closure、通用 temporal primitives、transactional artifact sink、central scorer、typed DAG、preprocessing resolver、evaluator、public API、O1–O8 shared kernels/plugins 与 `movement-events-v1` provider 已实现，当前为 18/18 specified、8/18 production plugins 已实现；
+- M4 replacement plan：Task 0–21 已完成；M4-C 已关闭、M4-D 已开始。O1 由 `b1d1fc9` 实现，O2 由 `b1a8743` 实现，O3 由 `f7d5261` 实现，O4 由 `056d9d5` 实现，O5 与 `movement-events-v1` provider 由 `1a119af` 实现，O6 由 `2ca3540` 实现，O7 由 `eb9cca6` 实现，O8 由 `15da2ea` 实现，下一步执行 Task 22 O9；不得把 M4-D 分段进展误计为 M4 整体 engineering verification；
 - M5：model bundle、33-node reference BN、CPT、missing-evidence inference、draft/revision/publish；
 - M6：端到端 assessment runner、artifact/report persistence；
 - JSON-RPC sidecar 与受管理存储 importer；
@@ -296,7 +296,7 @@ local_data/m2_real_xu_synthetic_full_seed20260711/
 
 ## 6. 下一里程碑
 
-下一步是依据已批准的 replacement implementation plan 执行 Task 21：实现并验证 O8 TPX Composite，开始 M4-D。Tasks 8–13 已依次关闭 canonical identity、trusted packaged registry/implementation closure、segment-aware temporal primitives、transactional artifact publication、central scoring，以及 typed DAG/preprocessing/evaluator/public API；Task 14–20 已完成 O1–O7 与首个 preprocessing provider，M4-B framework 与 M4-C stage gate 已关闭。Production AnchorPlugin 当前为 7/18，M4 整体尚未 engineering verified，更不能提前进入 BN、runner 或 WinUI。Replacement plan 后续覆盖：
+下一步是依据已批准的 replacement implementation plan 执行 Task 22：实现并验证 O9 Dead-band Activity，继续 M4-D。Tasks 8–13 已依次关闭 canonical identity、trusted packaged registry/implementation closure、segment-aware temporal primitives、transactional artifact publication、central scoring，以及 typed DAG/preprocessing/evaluator/public API；Task 14–21 已完成 O1–O8 与首个 preprocessing provider，M4-B framework 与 M4-C stage gate 已关闭，M4-D 已开始。Production AnchorPlugin 当前为 8/18，M4 整体尚未 engineering verified，更不能提前进入 BN、runner 或 WinUI。Replacement plan 后续覆盖：
 
 1. M4-A：AnchorResult v0.2、catalog、execution-plan、inventory/report schemas；
 2. M4-B：registry、typed DAG、temporal kernel、artifact sink、fingerprint 和 fake-plugin tests；
@@ -315,10 +315,10 @@ M4 当前已批准的书面规格与验证修订见：
 - [M4 Task 8 Canonical Fingerprint and Runtime Identity Amendment](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md)
 - [Autonomous Review Ledger](reviews/2026-07-13-autonomous-review-ledger.md)
 
-原逐任务实施计划已被取代、仅供历史追溯；replacement plan 与 Task 3/7/8 amendments 已于 2026-07-13 获明确或授权默认批准，Task 0–20 与 M4-C 已完成，下一步为 Task 21：
+原逐任务实施计划已被取代、仅供历史追溯；replacement plan 与 Task 3/7/8 amendments 已于 2026-07-13 获明确或授权默认批准，Task 0–21 已完成，M4-C 已关闭、M4-D 已开始，下一步为 Task 22：
 
 - [M4 Anchor Calculation and Evidence Availability Implementation Plan](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)
-- [M4 Anchor Calculation and Evidence Availability Replacement Implementation Plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已批准并按方案 A 修订；Task 0–20 已完成，M4-B/M4-C gate 已关闭，O1–O7 与 `movement-events-v1` provider available，下一步为 Task 21 O8）
+- [M4 Anchor Calculation and Evidence Availability Replacement Implementation Plan](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md)（已批准并按方案 A 修订；Task 0–21 已完成，M4-B/M4-C gate 已关闭、M4-D 已开始，O1–O8 与 `movement-events-v1` provider available，下一步为 Task 22 O9）
 
 M2 的批准规格与逐任务实施证据分别见：
 

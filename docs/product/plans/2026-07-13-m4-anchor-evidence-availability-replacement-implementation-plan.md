@@ -14,8 +14,8 @@
 
 - Design sources of truth: `docs/product/specs/2026-07-13-m4-anchor-evidence-availability-design.md` plus the accepted lightweight-workflow, Task 3 reference-binding, Task 7 catalog/resource-identity, and Task 8 canonical-fingerprint/runtime-identity amendments in the same directory. The lightweight amendment takes precedence for verification scope; Task 3 takes precedence for semantic/reference binding and producer boundaries; Task 7 takes precedence for exact catalog/plugin/dependency/artifact/provider/parameter/scorer resource identity; Task 8 takes precedence for canonical bytes, fingerprint ownership, Python ABI and installed-distribution identity.
 - Accepted decisions: D-021 through D-030 in `docs/product/DECISIONS.md`.
-- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–20 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, and O7 in `eb9cca6`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C stage gate is closed and Task 21 O8 is next.
-- Current implementation truth: 18/18 reference anchors specified, 7/18 production plugins implemented and one preprocessing provider available; M4-C is software-verified, while M4 overall is not engineering verified.
+- Plan status on 2026-07-15: explicitly approved by the user after approval of the lightweight amendment; Tasks 0–21 are complete, with O1 in `b1d1fc9`, O2 in `b1a8743`, O3 in `f7d5261`, O4 in `056d9d5`, O5 plus `movement-events-v1` in `1a119af`, O6 in `2ca3540`, O7 in `eb9cca6`, and O8 in `15da2ea`. The user explicitly approved the Task 3 candidate-binding amendment, authorized intermediate Task 7/8 closures by default while resting, and later required INLINE execution to conserve quota. The M4-C stage gate is closed, M4-D is in progress, and Task 22 O9 is next.
+- Current implementation truth: 18/18 reference anchors specified, 8/18 production plugins implemented and one preprocessing provider available; M4-C is software-verified and M4-D is in progress, while M4 overall is not engineering verified.
 - Scientific truth: `reference-model-v0.1` remains `engineering_default`; every synthetic M4 fixture plan/report is `not_supported`. M4 copies the frozen plan status and never promotes it because a calculation or software test passed.
 - Runtime truth: every M4 report remains `formal_run_authorized=false`; M6 alone may authorize a formal assessment run.
 - Scope truth: M4 consumes a compiled plan. Building/editing/publishing a ModelBundle, graph, CPT, or plan compiler belongs to M5.
@@ -2611,8 +2611,9 @@ git commit -m "feat: add control reversal anchor and close M4-C"
 - Create: `tests/anchors/test_o8_tpx_composite.py`
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
 - Modify: `tests/anchors/test_registry.py`
+- Modify: `tests/anchors/test_catalog.py`
 
-- [ ] **Step 1: Write RED dependency/composite tests**
+- [x] **Step 1: Write RED dependency/composite tests**
 
 Test O1/O5 computed D/A/U combinations, upstream computed-U still available, upstream non-computed producing `dependency_missing`, exact 0.4/0.6 boundaries, bounded output, and a component trace that references upstream result fingerprints.
 
@@ -2622,7 +2623,7 @@ Test O1/O5 computed D/A/U combinations, upstream computed-U still available, ups
 
 Expected: RED because O8 and its typed result dependencies do not exist.
 
-- [ ] **Step 2: Implement the exact derived formula**
+- [x] **Step 2: Implement the exact derived formula**
 
 ~~~text
 TPX=(P/100)^2*sqrt(W_min/max(W,W_min))
@@ -2632,7 +2633,7 @@ D >=0.6; A >=0.4; otherwise U
 
 The clamp is formula-defined, not outlier filtering. M5, not M4, applies `likelihood_strength=0.50`.
 
-- [ ] **Step 3: Register and run GREEN**
+- [x] **Step 3: Register and run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh --anchor O8 --factory-module pilot_assessment.anchors.plugins.o8_tpx_composite --factory-symbol create_plugin
@@ -2641,12 +2642,21 @@ The clamp is formula-defined, not outlier filtering. M5, not M4, applies `likeli
 
 Expected: PASS; count is 8/18.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
-git add src/pilot_assessment/anchors/plugins/o8_tpx_composite.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o8_tpx_composite.py tests/anchors/test_registry.py
+git add src/pilot_assessment/anchors/plugins/o8_tpx_composite.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o8_tpx_composite.py tests/anchors/test_registry.py tests/anchors/test_catalog.py
 git commit -m "feat: add TPX composite anchor"
 ~~~
+
+**Completion evidence (2026-07-15):**
+
+- RED was first observed as the expected collection error because the O8 module did not exist. After the plugin test turned green, three registry assertions correctly failed while O8 was still absent; the broader controlled gate then exposed two sequential stale catalog-honesty assertions (raw JSON list and validated DTO tuple), both updated to the same exact O1–O8 boundary.
+- `15da2ea` implements the production O8 plugin, exact typed O1/O5 result dependencies, formula-defined `[0,1]` clamp and `tpx-component-trace-v0.1` publication. A computed Unacceptable upstream result remains available evidence; only an absent or non-computed required result yields `dependency_missing`. The component trace records each source anchor ID, source result fingerprint, upstream state and canonical hard-evidence score.
+- O5 publishes `workload_ratio=W/W_min`, so O8 computes the exact algebraic equivalent `(P/100)^2/sqrt(max(workload_ratio,1))`; it does not duplicate or infer `w_min_hz`. The 0.4/0.6 inclusive boundaries, bounded extreme finite output, D/A/U combinations and computed-U continuation are covered by independent micro assertions.
+- Focused O8 is `8 passed`; the controlled O8/registry/catalog/DAG/service/scoring gate is `161 passed`. Packaged registry verification reports fingerprint `0697427a836ea88fd98404e9ffe1aebf6215fcc1e5e9d9e086f0c72fc2906d89`; O8 implementation digest is `5575610b31ca3dd0654a7b2cb54265c0420634d722a1d27a7fb117c278936b0d`.
+- Full-project Ruff check/format, `ty check src` and `git diff --check` passed. In accordance with the lightweight-test instruction, the full repository, build and isolated-wheel gates were not repeated for this single derived anchor; Task 20's `1275 passed, 3 skipped` and final wheel remain the latest stage-gate evidence.
+- No subagent or external review was used. The honest state is 8/18 production plugins and one available preprocessing provider; M4-C remains software-verified, M4-D is in progress, M4 overall remains incomplete, `formal_run_authorized=false`, and Task 22 O9 is next.
 
 ### Task 22: Implement O9 Dead-band Activity
 
