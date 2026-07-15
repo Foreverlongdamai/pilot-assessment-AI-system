@@ -56,13 +56,13 @@ def provider_entry(
 # --------------------------------------------------------------------------- #
 
 
-def test_packaged_registry_has_o1_through_o5_and_reports_remaining_not_implemented() -> None:
+def test_packaged_registry_has_o1_through_o6_and_reports_remaining_not_implemented() -> None:
     catalog = load_packaged_catalog()
     packaged = registry.load_packaged_registry()
 
     for entry in catalog.entries:
         capability = packaged.capability(entry.plugin_id, entry.plugin_version)
-        if entry.anchor_id in {"O1", "O2", "O3", "O4", "O5"}:
+        if entry.anchor_id in {"O1", "O2", "O3", "O4", "O5", "O6"}:
             assert capability.status is AnchorCapabilityStatus.AVAILABLE
             assert capability.entry is not None
             assert capability.entry.anchor_id == entry.anchor_id
@@ -88,7 +88,14 @@ def test_packaged_registry_has_o1_through_o5_and_reports_remaining_not_implement
 def test_packaged_registry_fingerprint_binds_the_canonical_model() -> None:
     fingerprint = registry.packaged_registry_fingerprint()
     model = registry._load_registry_model()
-    assert [entry.anchor_id for entry in model.entries] == ["O1", "O2", "O3", "O4", "O5"]
+    assert [entry.anchor_id for entry in model.entries] == [
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+    ]
     assert [entry.provider_id for entry in model.preprocessors] == ["movement-events-v1"]
     assert fingerprint == runtime_registry_fingerprint(model)
     assert fingerprint == registry.packaged_registry_fingerprint()
@@ -117,6 +124,16 @@ def test_o5_and_movement_provider_registry_closures_bind_shared_code_and_numeric
     )
     assert tuple(item.package_relative_path for item in movement.implementation_members) == (
         "pilot_assessment/anchors/primitives/movement.py",
+    )
+
+
+def test_o6_registry_closure_binds_only_its_plugin_and_polars_runtime() -> None:
+    model = registry._load_registry_model()
+    o6 = next(entry for entry in model.entries if entry.anchor_id == "O6")
+
+    assert tuple(item.normalized_name for item in o6.numeric_runtimes) == ("polars",)
+    assert tuple(item.package_relative_path for item in o6.implementation_members) == (
+        "pilot_assessment/anchors/plugins/o6_control_magnitude_rms.py",
     )
 
 

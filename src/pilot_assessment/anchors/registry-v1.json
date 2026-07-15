@@ -270,6 +270,49 @@
         }
       ],
       "implementation_digest": "13a1a0b1f2bd33341205792e059d60de41df48fbfccbe44044314d8e3b9cc0aa"
+    },
+    {
+      "anchor_id": "O6",
+      "definition_version": "0.1.0",
+      "plugin_id": "o6-control-magnitude-rms",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.o6_control_magnitude_rms",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "480f766452e7a174a94299cd2960d96a3ccbe7164256e39d84fa2cff928f28d2",
+      "parameter_schema_id": "o6-parameters-0.1",
+      "parameter_schema_sha256": "b212253d02670533af7b6e6d3adc10089f6555d36a0b3ba9c768f6ecb3243975",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "rms-contribution-trace-v0.1": "a6b50bacc9b17e3f08a2c445e585d6192d49402aafd94a634821d6bb6d7b23d8"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/o6_control_magnitude_rms.py",
+          "content_sha256": "0c8e9e23290e73283ba0bb30da5cab7d3851b8fddc33b3c9d3c3f721582fa4d6"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "af352fa2ff55d58c53fe89e5b8ff23b188ca6c38e03df9522001898ec6fc8d09"
     }
   ],
   "preprocessors": [
