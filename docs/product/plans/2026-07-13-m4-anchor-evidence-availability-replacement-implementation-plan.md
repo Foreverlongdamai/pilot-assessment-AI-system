@@ -2933,7 +2933,7 @@ git commit -m "feat: add AOI dwell anchor"
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
 - Modify: `tests/anchors/test_registry.py`
 
-- [ ] **Step 1: Write RED raw-gaze I-VT tests**
+- [x] **Step 1: Write RED raw-gaze I-VT tests**
 
 Test shortest-sphere angular velocity, duplicate-timestamp stable-first behavior, 100 deg/s threshold, 100 ms minimum, cue-available start, 2-second horizon clipping, exact 500/1000 ms boundaries, finite miss, and multi-event veto. Insert deliberately contradictory `G.tables["fixations"]`; H2 must recompute from 120 Hz raw gaze and ignore that derived table.
 
@@ -2943,13 +2943,13 @@ Test shortest-sphere angular velocity, duplicate-timestamp stable-first behavior
 
 Expected: RED because fixation provider/H2 do not exist.
 
-- [ ] **Step 2: Implement fixation-v1 and H2**
+- [x] **Step 2: Implement fixation-v1 and H2**
 
 The pilot not turning cannot delay the cue start. No relevant-AOI fixation by observation end is `computed + U + fixation_missed`, primary null, finite wait. Missing cue/AOI mapping is not-computable; absent G is missing-input.
 
 `fixation.py` exposes `create_provider()` for `fixation-intervals-v1`/`1.0.0`, declaring raw G plus cue/AOI semantics and a typed fixation-interval output. It does not consume `G.tables["fixations"]`.
 
-- [ ] **Step 3: Register and run GREEN**
+- [x] **Step 3: Register and run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh-preprocessor --provider fixation-intervals-v1 --factory-module pilot_assessment.anchors.primitives.fixation --factory-symbol create_provider
@@ -2959,12 +2959,19 @@ The pilot not turning cannot delay the cue start. No relevant-AOI fixation by ob
 
 Expected: PASS; anchor count is 14/18 and provider count is 3.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/fixation.py src/pilot_assessment/anchors/plugins/h2_first_fixation_latency.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_fixation.py tests/anchors/test_h2_first_fixation_latency.py tests/anchors/test_registry.py
 git commit -m "feat: add first-fixation latency anchor"
 ~~~
+
+**Task 27 completion evidence (2026-07-15):**
+
+- RED was first observed as the expected two collection failures while fixation/H2 modules were absent. GREEN focused fixation/H2 behavior is `18 passed`; the controlled H1/H2/preprocessing/registry/catalog/DAG/service/scoring/artifact/temporal/package regression is `231 passed`.
+- `ed9cf24` implements shortest-sphere raw-gaze I-VT with stable-first duplicate timestamps, inclusive `<=100 deg/s` and `>=100 ms` thresholds, fixed `>50 ms`/blink/tracking cuts, low-confidence retention, deterministic AOI/role labeling and a typed `fixation-intervals-v1` product. It deliberately ignores `G.tables["fixations"]`. H2 binds cue/AOI semantics, starts latency at cue availability, clips the horizon to 2 s/session/opportunity end, takes worst latency when all events succeed, and lets any finite miss veto the session with `fixation_missed` while preserving every breakdown.
+- Registry verify, Ruff check/format, `ty check src` and `git diff --check` pass. Registry fingerprint is `90df48976a6b4b508f24ab58827a2266a35a7df2be4a18ce735ae6ac02366389`; H2 digest is `49a179b7ad08e46bce611f7f418c837b1fc8722608546bd67dc3f4b18547ae1f`; fixation provider digest is `e3751b783b37ff0e1c6cc68dfdd752b6c38ca92a434c3b38373a0cae5a8fe72a`.
+- Per the approved lightweight policy, the full repository/build/isolated-wheel gates were not repeated for this single anchor; Task 20 remains the latest full stage-gate evidence (`1275 passed, 3 skipped`). No subagent or external review was used. The honest state is 14/18 production plugins and three available preprocessing providers; M4-E is still in progress, M4 overall remains incomplete, `formal_run_authorized=false`, and Task 28 H3 is next.
 
 ### Task 28: Implement H3 Off-task Dwell and close M4-E
 
