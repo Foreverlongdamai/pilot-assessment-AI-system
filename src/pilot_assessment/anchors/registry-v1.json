@@ -81,7 +81,7 @@
         },
         {
           "package_relative_path": "pilot_assessment/anchors/primitives/events.py",
-          "content_sha256": "2644d73b38d115c788cc5459f04d76c06ec4251fb7d6a816d08ca97f571d335b"
+          "content_sha256": "9e9822c91f2061418ae1b2e5bf769095781130af4030209f715da2812476a723"
         }
       ],
       "resource_members": [],
@@ -102,7 +102,54 @@
           "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
         }
       ],
-      "implementation_digest": "20dd10667c160e61c2246bf69d290013fbab267cfecd948b2f423cd337b162bf"
+      "implementation_digest": "b86a83189cb8ae5e7da965cbab0293ad928a0cefb9155f4c95594e3226854d6f"
+    },
+    {
+      "anchor_id": "O11",
+      "definition_version": "0.1.0",
+      "plugin_id": "o11-disturbance-latency",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.o11_disturbance_latency",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "5d923bbcf3c3c92cf80ee08184232373ac89014a3ae844f10115f61ac64f6577",
+      "parameter_schema_id": "o11-parameters-0.1",
+      "parameter_schema_sha256": "d983932fb19d043465afceca8932c455769c496109594e90e236aa471951e1ab",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "response-events-v0.1": "2903d87c91cd470f1c6c67da71c304857f015e9e8bdf87453b0d5b49c2b806c8"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/o11_disturbance_latency.py",
+          "content_sha256": "39b314d6f36f7cb17992ec3a708f4e71c936950f68c4d7c45f3f960d775c61dc"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/events.py",
+          "content_sha256": "9e9822c91f2061418ae1b2e5bf769095781130af4030209f715da2812476a723"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "8618bb2d9e41e1d346f80abd4ce8d0de2fff57260029005fb7acd776c8a394c6"
     },
     {
       "anchor_id": "O2",

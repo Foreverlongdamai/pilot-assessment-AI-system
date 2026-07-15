@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Sequence
 from dataclasses import dataclass
 from itertools import pairwise
+from statistics import median
 
 
 def _strict_int(value: object, label: str, *, minimum: int = 0) -> int:
@@ -46,6 +48,83 @@ class ConfirmedBooleanRun:
         _strict_int(self.end_t_ns, "end_t_ns")
         if not self.onset_t_ns <= self.confirmation_t_ns <= self.end_t_ns:
             raise ValueError("confirmed run bounds must be ordered")
+
+
+@dataclass(frozen=True, slots=True)
+class CausalNumericSample:
+    """One numeric observation with an explicit continuous-support segment."""
+
+    t_ns: int
+    source_row_id: int
+    segment_id: int
+    value: float
+
+    def __post_init__(self) -> None:
+        _strict_int(self.t_ns, "t_ns")
+        _strict_int(self.source_row_id, "source_row_id")
+        _strict_int(self.segment_id, "segment_id")
+        if isinstance(self.value, bool) or not isinstance(self.value, (int, float)):
+            raise TypeError("causal numeric value must be a real number")
+        if not math.isfinite(float(self.value)):
+            raise ValueError("causal numeric value must be finite")
+
+
+def _validated_numeric_samples(
+    samples: Sequence[CausalNumericSample],
+) -> tuple[CausalNumericSample, ...]:
+    if isinstance(samples, (str, bytes)) or not isinstance(samples, Sequence):
+        raise TypeError("samples must be a non-string sequence")
+    normalized = tuple(samples)
+    if any(not isinstance(item, CausalNumericSample) for item in normalized):
+        raise TypeError("samples must contain CausalNumericSample values")
+    if normalized != tuple(sorted(normalized, key=lambda item: (item.t_ns, item.source_row_id))):
+        raise ValueError("causal numeric samples must use canonical temporal order")
+    source_ids = tuple(item.source_row_id for item in normalized)
+    if len(source_ids) != len(set(source_ids)):
+        raise ValueError("causal numeric sample source rows must be unique")
+    segment_ids = tuple(item.segment_id for item in normalized)
+    if any(current < previous for previous, current in pairwise(segment_ids)):
+        raise ValueError("causal numeric segment IDs must be monotonic")
+    seen: set[int] = set()
+    previous: int | None = None
+    for segment_id in segment_ids:
+        if segment_id != previous:
+            if segment_id in seen:
+                raise ValueError("causal numeric segments must be contiguous")
+            seen.add(segment_id)
+            previous = segment_id
+    return normalized
+
+
+def trailing_causal_median(
+    samples: Sequence[CausalNumericSample],
+    *,
+    window_ns: int,
+) -> tuple[CausalNumericSample, ...]:
+    """Apply a timestamp-based trailing median without crossing support gaps."""
+
+    window = _strict_int(window_ns, "window_ns", minimum=1)
+    normalized = _validated_numeric_samples(samples)
+    filtered: list[CausalNumericSample] = []
+    segment_start = 0
+    for index, current in enumerate(normalized):
+        if index == 0 or current.segment_id != normalized[index - 1].segment_id:
+            segment_start = index
+        lower_t_ns = current.t_ns - window
+        values = [
+            float(candidate.value)
+            for candidate in normalized[segment_start : index + 1]
+            if candidate.t_ns >= lower_t_ns
+        ]
+        filtered.append(
+            CausalNumericSample(
+                t_ns=current.t_ns,
+                source_row_id=current.source_row_id,
+                segment_id=current.segment_id,
+                value=float(median(values)),
+            )
+        )
+    return tuple(filtered)
 
 
 def _validated_intervals(
@@ -162,8 +241,10 @@ def clip_observation_end(
 
 __all__ = [
     "CausalBooleanInterval",
+    "CausalNumericSample",
     "ConfirmedBooleanRun",
     "clip_boolean_intervals",
     "clip_observation_end",
     "confirmed_true_runs",
+    "trailing_causal_median",
 ]

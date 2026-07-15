@@ -114,7 +114,7 @@ def test_m4_reference_catalog_parameter_schemas_and_trusted_registry_are_package
         assert parameter_package.joinpath(name).read_bytes()
 
 
-def test_m4_packaged_registry_is_loadable_with_o1_through_o10_and_movement_provider() -> None:
+def test_m4_packaged_registry_is_loadable_with_o1_through_o11_and_movement_provider() -> None:
     raw = files("pilot_assessment.anchors").joinpath("registry-v1.json").read_bytes()
     model = AnchorRuntimeRegistry.model_validate_json(raw)
 
@@ -123,6 +123,7 @@ def test_m4_packaged_registry_is_loadable_with_o1_through_o10_and_movement_provi
     assert tuple(entry.anchor_id for entry in model.entries) == (
         "O1",
         "O10",
+        "O11",
         "O2",
         "O3",
         "O4",

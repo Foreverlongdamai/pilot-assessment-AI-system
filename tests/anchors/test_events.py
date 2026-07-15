@@ -4,8 +4,10 @@ import pytest
 
 from pilot_assessment.anchors.primitives.events import (
     CausalBooleanInterval,
+    CausalNumericSample,
     clip_observation_end,
     confirmed_true_runs,
+    trailing_causal_median,
 )
 
 NS = 1_000_000_000
@@ -37,6 +39,20 @@ def test_false_intervals_and_temporal_gaps_break_confirmation_runs() -> None:
     )
 
     assert confirmed_true_runs(intervals, minimum_duration_ns=100_000_000) == ()
+
+
+def test_trailing_median_is_causal_inclusive_and_never_crosses_segments() -> None:
+    filtered = trailing_causal_median(
+        (
+            CausalNumericSample(0, 0, 0, 0.0),
+            CausalNumericSample(10_000_000, 1, 0, 10.0),
+            CausalNumericSample(20_000_000, 2, 0, 10.0),
+            CausalNumericSample(100_000_000, 3, 1, -5.0),
+        ),
+        window_ns=20_000_000,
+    )
+
+    assert tuple(item.value for item in filtered) == (0.0, 5.0, 10.0, -5.0)
 
 
 def test_zero_duration_confirmation_uses_the_first_true_sample() -> None:
