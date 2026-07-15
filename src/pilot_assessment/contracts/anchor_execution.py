@@ -570,8 +570,8 @@ class SessionSemanticSnapshot(StrictContractModel):
     @staticmethod
     def _root_item_id(item: object) -> str:
         for field_name in (
-            "phase_id",
             "event_id",
+            "phase_id",
             "aoi_id",
             "control_mapping_id",
             "baseline_id",

@@ -2287,10 +2287,13 @@ git commit -m "feat: add peak tracking excursion anchor"
 - Create: `src/pilot_assessment/anchors/plugins/o3_terminal_capture_quality.py`
 - Create: `tests/anchors/test_o3_terminal_capture_quality.py`
 - Modify: `src/pilot_assessment/anchors/primitives/envelopes.py`
+- Modify: `src/pilot_assessment/contracts/anchor_execution.py`
 - Modify: `src/pilot_assessment/anchors/registry-v1.json`
+- Modify: `tests/contracts/test_anchor_execution.py`
+- Modify: `tests/anchors/test_catalog.py`
 - Modify: `tests/anchors/test_registry.py`
 
-- [ ] **Step 1: Write RED capture-conjunction tests**
+- [x] **Step 1: Write RED capture-conjunction tests**
 
 Test finite/nonzero arrival-axis validation, D-to-H horizon clipping, overshoot direction, full 2-second hold confirmation with latency recorded at hold start, exact D/A conjunctions, normal `primary_value=null + composite_conjunction`, and missed capture `computed U + capture_missed` with finite observed wait.
 
@@ -2300,7 +2303,7 @@ Test finite/nonzero arrival-axis validation, D-to-H horizon clipping, overshoot 
 
 Expected: RED because O3 and its capture-envelope behavior do not exist.
 
-- [ ] **Step 2: Implement the exact two-metric observation**
+- [x] **Step 2: Implement the exact two-metric observation**
 
 ~~~text
 overshoot = max(0, max(arrival_axis dot (position - hover_target)))
@@ -2312,7 +2315,16 @@ otherwise U
 
 Missing target/frame/axis is not-computable. Never use Infinity for a miss.
 
-- [ ] **Step 3: Register and run GREEN**
+The compiled O3 temporal binding uses `semantic.events` with `event_span=auto`: event
+`duration_ns` materializes the default D-to-H-to-hover-end span and an explicit
+`opportunity_end_t_ns` clips it earlier. Exact ordered
+`position_bindings[{axis_id,x_field,target_component_index}]` bind all three target
+components to X fields; O3 performs deterministic length-unit conversion and requires the
+target/X coordinate-frame IDs to match rather than guessing a transform. The Task 16
+contract regression also corrects root event identity extraction so distinct events in one
+phase remain distinct by `event_id`.
+
+- [x] **Step 3: Register and run GREEN**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.anchors.registry refresh --anchor O1
@@ -2369,7 +2381,7 @@ Do not repair collection gaps. Any behavioral tolerance must be the explicit ver
 
 Expected: PASS; count is 4/18.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/envelopes.py src/pilot_assessment/anchors/plugins/o4_sustained_hover_time.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o4_sustained_hover_time.py tests/anchors/test_registry.py
@@ -2440,7 +2452,7 @@ A single point with zero support duration is not-computable. Any finite partial 
 
 Expected: PASS; O5/provider closures declare NumPy/SciPy, anchor count is 5/18, provider count is 1, and the provider product hash is a declared O5 dependency fingerprint.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/movement.py src/pilot_assessment/anchors/plugins/o5_workload_rate.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_movement.py tests/anchors/test_o5_workload_rate.py tests/anchors/test_registry.py
@@ -2486,7 +2498,7 @@ No runtime trim estimation and no endpoint clipping.
 
 Expected: PASS; count is 6/18.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/plugins/o6_control_magnitude_rms.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o6_control_magnitude_rms.py tests/anchors/test_registry.py
@@ -2526,7 +2538,7 @@ Declare the existing `movement-events-v1` preprocessing recipe and consume its i
 
 Expected: PASS; exactly 7/18 production capabilities are available and software-verified.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/reversal.py src/pilot_assessment/anchors/plugins/o7_control_reversal_rate.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o7_control_reversal_rate.py tests/anchors/test_registry.py
@@ -2572,7 +2584,7 @@ The clamp is formula-defined, not outlier filtering. M5, not M4, applies `likeli
 
 Expected: PASS; count is 8/18.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/plugins/o8_tpx_composite.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o8_tpx_composite.py tests/anchors/test_registry.py
@@ -2616,7 +2628,7 @@ Do not create 0 Hz when no stable opportunity exists; primary is null for `no_st
 
 Expected: PASS; count is 9/18.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/plugins/o9_dead_band_activity.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o9_dead_band_activity.py tests/anchors/test_registry.py
@@ -2656,7 +2668,7 @@ Never convert a short observable horizon into missing data. If the observation e
 
 Expected: PASS; count is 10/18.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/events.py src/pilot_assessment/anchors/plugins/o10_recovery_time.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_events.py tests/anchors/test_o10_recovery_time.py tests/anchors/test_registry.py
@@ -2696,7 +2708,7 @@ The wrong-direction override is `computed + U`, primary null, one-hot U. Missing
 
 Expected: PASS; count is 11/18.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/events.py src/pilot_assessment/anchors/plugins/o11_disturbance_latency.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o11_disturbance_latency.py tests/anchors/test_registry.py
@@ -2738,7 +2750,7 @@ Do not reuse confirmation timestamp as `t_exit`. A missing effect mapping is not
 
 Expected: PASS; exactly 12/18 production plugins are software-verified.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/events.py src/pilot_assessment/anchors/plugins/o12_envelope_drift_latency.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o12_envelope_drift_latency.py tests/anchors/test_registry.py
@@ -2789,7 +2801,7 @@ Use gaze-interval duration, not fixation duration. If G stream is truly absent/z
 
 Expected: PASS; anchor count is 13/18 and provider count is 2.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/gaze_aoi.py src/pilot_assessment/anchors/plugins/h1_aoi_dwell.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_gaze_aoi.py tests/anchors/test_h1_aoi_dwell.py tests/anchors/test_registry.py
@@ -2832,7 +2844,7 @@ The pilot not turning cannot delay the cue start. No relevant-AOI fixation by ob
 
 Expected: PASS; anchor count is 14/18 and provider count is 3.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/fixation.py src/pilot_assessment/anchors/plugins/h2_first_fixation_latency.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_fixation.py tests/anchors/test_h2_first_fixation_latency.py tests/anchors/test_registry.py
@@ -2875,7 +2887,7 @@ No nonzero dwell produces `computed + U + no_gaze_dwell`. M5 later declares H1/H
 
 Expected: PASS; exactly 15/18 production plugins and 3 preprocessing providers are software-verified.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/plugins/h3_off_task_dwell.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_h3_off_task_dwell.py tests/anchors/test_registry.py
@@ -2941,7 +2953,7 @@ Use only packaged `provided_r_peaks_v1`; never auto-fallback to raw peak detecti
 
 Expected: PASS; anchor count is 16/18, provider count is 5, and signed-HR window trace is available for O13.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/physio_windows.py src/pilot_assessment/anchors/primitives/ecg.py src/pilot_assessment/anchors/plugins/h4_ecg_fluctuation.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_physio_windows.py tests/anchors/test_ecg.py tests/anchors/test_h4_ecg_fluctuation.py tests/anchors/test_registry.py
@@ -3003,7 +3015,7 @@ Convert every configured channel with the frozen `input_unit` plus finite positi
 
 Expected: PASS; anchor count is 17/18 and provider count is 6. DSP float goldens pass `abs<=1e-6 OR rel<=1e-6`; boundary constructions lie outside tolerance.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/eeg.py src/pilot_assessment/anchors/plugins/h5_eeg_fluctuation.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_eeg.py tests/anchors/test_h5_eeg_fluctuation.py tests/anchors/test_registry.py
@@ -3058,7 +3070,7 @@ For each window, O13 reconstructs the exact kernel arguments from the already va
 
 Expected: PASS; registry/catalog closure is exact, 18/18 individual production plugins and all 6 preprocessing providers are software-verified, and both H4 and O13 pass after the shared window-provider refresh.
 
-- [x] **Step 4: Commit**
+- [ ] **Step 4: Commit**
 
 ~~~powershell
 git add src/pilot_assessment/anchors/primitives/physio_windows.py src/pilot_assessment/anchors/plugins/o13_physio_control_coupling.py src/pilot_assessment/anchors/registry-v1.json tests/anchors/test_o13_physio_control_coupling.py tests/anchors/test_registry.py

@@ -30,7 +30,7 @@
         },
         {
           "package_relative_path": "pilot_assessment/anchors/primitives/envelopes.py",
-          "content_sha256": "154055a73328d2aa2bb015851b482940e93371a7e3016957eb8c500d937e5289"
+          "content_sha256": "f44d7612eafc8c4357e8c18443b504a82a54ddabe19978ecdf39506abc5932c3"
         },
         {
           "package_relative_path": "pilot_assessment/anchors/primitives/models.py",
@@ -55,7 +55,7 @@
           "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
         }
       ],
-      "implementation_digest": "36be1bf1d8409ab74d805a3eadb26c58b75ca898c2a8e780df5ced02a2a8ef23"
+      "implementation_digest": "ce09512d0efab462a5058a051c0f903d91d9bd6db83cebb54d535bbe0e99d142"
     },
     {
       "anchor_id": "O2",
@@ -103,6 +103,61 @@
         }
       ],
       "implementation_digest": "60638db920b8f3865365625e812104956b9160ca962a116121d8365460ae9966"
+    },
+    {
+      "anchor_id": "O3",
+      "definition_version": "0.1.0",
+      "plugin_id": "o3-terminal-capture-quality",
+      "plugin_version": "0.1.0",
+      "api_version": "0.1.0",
+      "factory_module": "pilot_assessment.anchors.plugins.o3_terminal_capture_quality",
+      "factory_symbol": "create_plugin",
+      "allowed_package_namespace": "pilot_assessment.anchors.plugins",
+      "definition_fingerprint": "5feb9fbd167a843eac35d0e217ddbde90f3e85cbff79ac90fcd73e552985b732",
+      "parameter_schema_id": "o3-parameters-0.1",
+      "parameter_schema_sha256": "af287d3f3519a8758a677713722b63d35a0769f5f640a4fba999111f618c581f",
+      "measurement_schema_id": "anchor-measurement-0.1.0",
+      "measurement_schema_sha256": "7e8fe9d2165dc55b6648bcc1f4a31f4648cdc709ce02ca6bf4bfcc5cbf8e1a63",
+      "artifact_schema_hashes": {
+        "capture-trace-v0.1": "e3f6a39cda26e6598cb7bf2d0860bccdb4eecd169fc78c8900bf7c84d2d082b0"
+      },
+      "implementation_members": [
+        {
+          "package_relative_path": "pilot_assessment/anchors/plugins/o3_terminal_capture_quality.py",
+          "content_sha256": "33192d06b55bfe02ad04ea0014a331b24ab26f8e12a17285e7095be6ce889a71"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/__init__.py",
+          "content_sha256": "147e200d2cd9ce9ca3e0dee70a1ed5e769d0e18526eb5a54b69c28fffd720cb6"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/envelopes.py",
+          "content_sha256": "f44d7612eafc8c4357e8c18443b504a82a54ddabe19978ecdf39506abc5932c3"
+        },
+        {
+          "package_relative_path": "pilot_assessment/anchors/primitives/models.py",
+          "content_sha256": "6428251079a39d1b63269825804a865b0f8a817639e603ae1b7f772420fcf22d"
+        }
+      ],
+      "resource_members": [],
+      "python_runtime": {
+        "implementation_name": "cpython",
+        "version": [
+          3,
+          11,
+          15
+        ],
+        "cache_tag": "cpython-311",
+        "soabi": "cp311-win_amd64"
+      },
+      "numeric_runtimes": [
+        {
+          "normalized_name": "polars",
+          "version": "1.42.1",
+          "record_content_sha256": "80872105c128b14ea5788bb56137212fedf6859e4708d0d121c1d0cb72878dd7"
+        }
+      ],
+      "implementation_digest": "532f02d8c0a41c36d0c4208f2e25c5be839d801a257d93cb984aa89f45f7838a"
     }
   ],
   "preprocessors": []

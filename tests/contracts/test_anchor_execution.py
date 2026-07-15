@@ -237,6 +237,25 @@ def test_semantic_snapshot_round_trip_is_strict_and_frozen() -> None:
         snapshot.session_id = "changed"  # type: ignore[misc]
 
 
+def test_semantic_snapshot_allows_distinct_events_in_the_same_phase() -> None:
+    payload = _semantic_payload()
+    second_event = deepcopy(payload["events"][0])  # type: ignore[index]
+    second_event.update(
+        {
+            "event_id": "event-2",
+            "t_ns": 7_000_000_000,
+            "duration_ns": 1_000_000_000,
+            "opportunity_end_t_ns": 9_000_000_000,
+        }
+    )
+    payload["events"].append(second_event)  # type: ignore[union-attr]
+    payload["applicability"][0]["event_ids"] = ["event-1", "event-2"]  # type: ignore[index]
+
+    snapshot = SessionSemanticSnapshot.model_validate(payload)
+
+    assert tuple(event.event_id for event in snapshot.events) == ("event-1", "event-2")
+
+
 @pytest.mark.parametrize(
     ("mutate", "expected_fragment"),
     [
