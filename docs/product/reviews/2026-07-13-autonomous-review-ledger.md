@@ -204,3 +204,15 @@
 | Scan correction | The replacement plan's original broad literal scan false-positive matched only `catalog.py::_PROHIBITED_KEYS`, the Task 7 denylist that rejects quality-gate fields. The scan now excludes that defensive file while covering the remaining M4 runtime/scoring code and AnchorResult v0.2; the denylist and its tests remain intact |
 | Commit | `d6d8288` (`feat: add central M4 evidence scoring`); docs/status closure committed separately |
 | Release conclusion | Task 12 complete; Task 13 typed DAG, preprocessing resolver, evaluator/public API and M4-B stage gate is next. Production plugins remain 0/18, M4 remains not engineering-verified, and `formal_run_authorized=false` |
+
+### AR-015 — M4 Task 13 Typed DAG, Resolver, Evaluator and Public API (INLINE finalization)
+
+| Field | Record |
+|---|---|
+| Artifacts | `anchors/dag.py`, `anchors/preprocessing.py`, `anchors/service.py`, `anchors/api.py`, the lazy package export, runtime `jsonschema` dependency, supporting protocol/artifact/registry/fingerprint changes, and `test_dag.py`/`test_preprocessing.py`/`test_service.py` plus compatibility tests |
+| Approval | Covered by accepted M4 design §13/§15, replacement Task 13 and the user's explicit inline continuation instruction; it changes no anchor formula, threshold, CPT, production-plugin count, formal-run boundary or scientific-validity claim |
+| Finalization mode | **Implemented and self-reviewed INLINE** to conserve quota. No subagent was created and no independent/external verdict is claimed |
+| TDD evidence | RED was observed independently for the absent DAG, preprocessing and service modules. GREEN: Task 13 focused = `31 passed`; contracts/anchors gate = `425 passed, 1 skipped`; fresh full repository gate = `1158 passed, 3 skipped` (host-symlink plus two repository-external captured-format samples skipped). Schema export has zero drift; Ruff check/format, `ty check src`, build and `git diff --check` pass. A fresh isolated wheel imports runtime `jsonschema` and the lazy public `evaluate` API without a runpy warning |
+| Inline self-review decisions saved for later audit | A production plan must exactly match the trusted packaged catalog inventory, not merely carry its fingerprint; optional dependency absence is not a required-dependency failure; preprocessing input fingerprints enter producer, artifact and downstream dependency identity; public package export is lazy to keep module execution clean; public API cannot inject registry/policy/fault hooks; request validation remains first and idempotent at both boundaries |
+| Commit | `498f611` (`feat: execute M4 plans through plugin protocol`); docs/status closure committed separately |
+| Release conclusion | Task 13 complete and the M4-B framework gate is engineering-verified. Both packaged registry maps remain empty, so the honest state is 18/18 specified, 0/18 production plugins, M4 overall not engineering-verified, and `formal_run_authorized=false`. Task 14 O1 Phase-state Precision is next |

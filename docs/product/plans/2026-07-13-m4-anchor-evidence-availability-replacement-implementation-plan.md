@@ -1960,14 +1960,23 @@ remain 0/18, M4 is not engineering-verified, and `formal_run_authorized=false`.
 - Create: `src/pilot_assessment/anchors/service.py`
 - Create: `src/pilot_assessment/anchors/api.py`
 - Modify: `src/pilot_assessment/anchors/__init__.py`
+- Modify: `src/pilot_assessment/anchors/artifacts.py`
+- Modify: `src/pilot_assessment/anchors/fingerprint.py`
+- Modify: `src/pilot_assessment/anchors/protocols.py`
+- Modify: `src/pilot_assessment/anchors/registry.py`
+- Modify: `src/pilot_assessment/contracts/anchor_execution.py`
 - Create: `tests/anchors/test_dag.py`
 - Create: `tests/anchors/test_preprocessing.py`
 - Create: `tests/anchors/test_service.py`
+- Modify: `tests/anchors/fakes.py`
+- Modify: `tests/anchors/test_artifacts.py`
 - Modify: `tests/anchors/test_catalog.py`
+- Modify: `tests/anchors/test_registry.py`
 - Modify: `tests/anchors/test_scoring.py`
+- Modify: `tests/contracts/test_anchor_measurement_report.py`
 - Modify: `tests/test_package_metadata.py`
 
-- [ ] **Step 1: Write RED plan/service tests with injected fakes**
+- [x] **Step 1: Write RED plan/service tests with injected fakes**
 
 Cover duplicate/missing dependency, schema/type mismatch, anchor cycle, preprocessing-provider cycle, unique recipe dependency resolution, cross-`scope_policy` provider-edge rejection, exact registry identity, canonical topological levels, canonical semantic/reference fingerprint recomputation before evaluator construction, valid-request checks before any plugin call, M4 plan/registry blocked reporting, independent-node continuation, true-downstream `dependency_missing`, computed-U dependency availability, plugin/provider exception and artifact failure isolation, global transaction failure, canonical report order independent of completion order, complete inventory, and raw availability. Move the locked `jsonschema` version from development-only to runtime dependencies without changing its resolved version, and prove an isolated wheel can import it. Validate every materialized anchor/provider parameter object against its registry-bound canonical schema before factory access.
 
@@ -1992,7 +2001,7 @@ The RED suite must include these executable security/lifecycle probes:
 
 Expected: RED because DAG/service/API do not exist.
 
-- [ ] **Step 2: Implement plan validation and levels**
+- [x] **Step 2: Implement plan validation and levels**
 
 ~~~python
 @dataclass(frozen=True, slots=True)
@@ -2039,7 +2048,7 @@ validate_anchor_evaluation_request(request: AnchorEvaluationRequest) -> None
 
 Reference level 0 is O1-O7/O10-O12/H1-H5; level 1 is O8/O9/O13. Canonical report order comes from catalog, not scheduler completion. The idempotent request validator first rechecks exact two-way equality between report-aligned modalities and `aligned_session.streams`, then checks all aligned plan-required core streams against their complete input-table contracts, dynamic AOI against its plan contract and conditionally aligned I view, and exact applicability equality with `plan.entries` before any plan or factory access. Optional `not_attempted/unavailable/invalid/unsupported/not_applicable` streams bypass only the live table comparison and remain available to the normal per-anchor `missing_input` path with exact status reason. Stable validation precedence is session identity, then semantic/annotation/input-table/applicability relations, then reference inventory/provenance, then canonical fingerprints; a mutation that both breaks a semantic relation and leaves a stale plan fingerprint therefore returns `request_semantic_identity_mismatch`, while an otherwise relationally valid stale digest returns `request_fingerprint_mismatch`. Before factory access, plan validation reconstructs each plugin/provider definition from the execution-entry/recipe snapshot, recomputes its `definition_fingerprint`, and matches the registry entry. It validates every fully materialized parameter object with the installed Draft 2020-12 validator against the exact registry-bound authoritative schema/hash, recomputes parameter/scorer hashes, applies the Task 7 O6 matrix, and reconstructs the complete three-profile O13 closure; no schema default is applied during validation. It then builds the provider-recipe DAG: each recipe's copied dependency spec is matched by exactly one binding with the same `dependency_id`; each binding's `target_recipe_id` resolves to exactly one plan recipe whose output schema/kind matches the spec; no extra binding is allowed; and every edge has exactly equal upstream/downstream `scope_policy` in v0.1. Missing/duplicate/extra/unresolved/schema-kind-mismatched/cyclic/cross-policy edges block before registry factory, provider, plugin, or sink access.
 
-- [ ] **Step 3: Implement the dynamic preprocessing resolver/cache**
+- [x] **Step 3: Implement the dynamic preprocessing resolver/cache**
 
 The exact cache key is a typed fingerprint over this frozen dataclass:
 
@@ -2064,7 +2073,7 @@ PreprocessingCacheKey:
 
 `input_fingerprints` is canonical order over only the recipe's declared stream, context, semantic, and reference projections. The provider parameter schema ID/hash is registry-bound and included through the validated recipe/producer identity. The remaining scope fields are copied from one validated `PreprocessingScope`, so two equal labels with different interval or phase/event/window identity cannot alias. Build a provider-only topological order from the already validated target-recipe bindings; it is separate from the anchor DAG. `PreprocessingResolver.resolve(recipe, context, scope, evaluation_transaction)` resolves the exact provider/version/digest from the independent registry map, validates parameters against the exact registry-bound schema before factory access, recursively resolves each binding's `target_recipe_id` using the same exact scope, passes that scope and only the resulting `Mapping[dependency_id, ResolvedPreprocessingDependency]` positive projection into provider `compute`, computes once per cache key, stages the immutable payload through `stage_preprocessing()`, verifies schema/kind/hash, and memoizes the returned handle only for that evaluation. `dependency_fingerprints` is canonical provider-definition dependency-slot order. `PreprocessingProducer` and `PreprocessingArtifactIdentity` copy the full scope and parameter-schema identity; downstream dependency fingerprints hash that identity plus logical content, not logical content alone. The resolver never accepts a complete request or undeclared input. There is no cross-session process cache in v0.1.
 
-- [ ] **Step 4: Implement service and fixed public entry**
+- [x] **Step 4: Implement service and fixed public entry**
 
 ~~~text
 AnchorEvaluator(registry: PluginRegistry, policy: EvaluationPolicy)
@@ -2091,7 +2100,7 @@ For each executable entry the service constructs only that entry's separately de
 
 The public function does not accept an arbitrary registry, policy, or fault hook. Test injection occurs only through `AnchorEvaluator.for_testing`; `EvaluationPolicy` and `TestFaultHooks` are internal frozen dataclasses absent from every DTO/schema/JSON resource. A direct-stream hook is consulted after the positive context projection and before plugin invocation; it removes only that consumer's declared stream, emits canonical `missing_input` plus the hook diagnostic, and leaves the immutable session/request unchanged. A preprocessing hook is consulted only after valid plan/provider resolution and before returning that one consumer's dependency; it cannot mutate the provider cache or affect another consumer. An anchor-transaction hook is consulted only after measurement/schema and staged-ref validation but immediately before commit; it fails and aborts only the named anchor transaction, preserves ordered diagnostics in that anchor's `extractor_error`, and cannot affect another transaction or the evaluation sink. Even in tests these mechanisms cannot waive schema, fingerprint, dependency, cycle, or per-entry registry validation.
 
-- [ ] **Step 5: Run GREEN and the M4-B completion gate**
+- [x] **Step 5: Run GREEN and the M4-B completion gate**
 
 ~~~powershell
 & .\.tools\uv\uv.exe run python -m pilot_assessment.schemas.export
@@ -2107,14 +2116,16 @@ git diff --check
 
 Expected: PASS. The exact-18 production plan remains blocked because both packaged registry maps still have zero executable entries; fully valid injected test profiles pass only through `AnchorEvaluator.for_testing`. Positive-projection, blocked-M3/request-fingerprint rejection without an M4 report, valid-request M4-plan-blocked reporting, memoization, and provider-failure isolation probes all pass.
 
-- [ ] **Step 6: Commit and record the M4-B gate**
+- [x] **Step 6: Commit and record the M4-B gate**
 
 ~~~powershell
-git add pyproject.toml uv.lock src/pilot_assessment/anchors/dag.py src/pilot_assessment/anchors/preprocessing.py src/pilot_assessment/anchors/service.py src/pilot_assessment/anchors/api.py src/pilot_assessment/anchors/__init__.py tests/anchors/test_dag.py tests/anchors/test_preprocessing.py tests/anchors/test_service.py tests/anchors/test_catalog.py tests/anchors/test_scoring.py tests/test_package_metadata.py
+git add pyproject.toml uv.lock src/pilot_assessment/anchors/__init__.py src/pilot_assessment/anchors/api.py src/pilot_assessment/anchors/artifacts.py src/pilot_assessment/anchors/dag.py src/pilot_assessment/anchors/fingerprint.py src/pilot_assessment/anchors/preprocessing.py src/pilot_assessment/anchors/protocols.py src/pilot_assessment/anchors/registry.py src/pilot_assessment/anchors/service.py src/pilot_assessment/contracts/anchor_execution.py tests/anchors/fakes.py tests/anchors/test_artifacts.py tests/anchors/test_dag.py tests/anchors/test_preprocessing.py tests/anchors/test_registry.py tests/anchors/test_service.py tests/contracts/test_anchor_measurement_report.py tests/test_package_metadata.py
 git commit -m "feat: execute M4 plans through plugin protocol"
 ~~~
 
 After this commit the only valid claim is: `M4-B framework engineering-verified; 18/18 specified; 0/18 reference plugins implemented; formal_run_authorized=false`.
+
+**Completion evidence (2026-07-15):** Commit `498f611` adds typed plan/provider DAG validation, request-bound canonical validation, the evaluation-local preprocessing resolver/cache, deterministic evaluator and the fixed public `evaluate(request, sink)` entry. RED was observed independently for the absent DAG, resolver and service modules before implementation. The final Task 13 focused gate is `31 passed`; the contract/anchor gate is `425 passed, 1 skipped`; the fresh full repository gate is `1158 passed, 3 skipped`. Schema export has zero drift; Ruff format/check, `ty check src`, build and `git diff --check` pass. A fresh isolated wheel imports the runtime `jsonschema` dependency and the lazy public `evaluate` entry without a runpy warning. Inline self-review additionally closed four lifecycle gaps: the public production plan must exactly equal the trusted packaged catalog inventory; optional dependency absence does not create a false `dependency_missing`; preprocessing input fingerprints participate in producer/artifact/dependency identity; and package-level public export is lazy. No subagent or external review is claimed. Both packaged registry maps remain empty, so M4-B is framework engineering-verified while the honest production count remains 0/18 and `formal_run_authorized=false`.
 
 ## M4-C: O1-O7 task/control anchors
 
