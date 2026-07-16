@@ -553,8 +553,8 @@ def build_annotations(*, duration_s: float, seed: int) -> dict[str, dict[str, Js
     events: list[JsonValue] = [
         {"event_id": "disturbance-001", "event_type": "disturbance", "time_s": 0.45 * duration_s},
         {
-            "event_id": "critical-monitoring-001",
-            "event_type": "critical_monitoring",
+            "event_id": "attention-cue-001",
+            "event_type": "attention_cue",
             "time_s": 0.62 * duration_s,
         },
     ]

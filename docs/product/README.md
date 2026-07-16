@@ -58,6 +58,8 @@
 | 31 | [M4 Task 7 Catalog and Resource Identity 修订](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md) | 开发、算法、审查者 | 已实现的 legacy catalog/resource identity，供迁移与 replay |
 | 32 | [M4 Task 8 Canonical Fingerprint and Runtime Identity 修订](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) | 开发、审查者 | 已实现的 legacy canonical/runtime identity，供迁移与 replay |
 | 33 | [Autonomous Review Ledger](reviews/2026-07-13-autonomous-review-ledger.md) | 维护者、审查者 | 保存历史复核与关闭证据 |
+| 34 | [Captured-Format Multimodal Software Demo](specs/2026-07-16-external-multimodal-session-demo-design.md) | 开发、数据、审查者 | 已执行：格式样例 X/U + 合成缺失模态经完整 M6 后端运行；仅证明软件闭环 |
+| 35 | [Captured-Format Multimodal Software Demo Plan](plans/2026-07-16-external-multimodal-session-demo-implementation-plan.md) | 开发、接手者 | 已完成：轻量生成、真实故障定位、18/18 Evidence、BN 推理与结果路径 |
 
 ### 2.1 文档目录的职责
 
@@ -101,6 +103,8 @@
 旧 M4 replacement Task 0–28 已完成并保留为历史迁移资产。2026-07-15 用户确认产品应首先服务专家自由设计 Evidence 和 BN，接受 D-031–D-035 与 EvidenceRecipe/operator architecture，并批准正式规格和 replacement M4R plan。M4R 现已实现 canonical contracts/schema、trusted operator catalog、only-technical validator、generic compiler/executor、backend-only draft/preview/apply/replay、18 个可编辑 starter recipes 和轻量 E2E；任意第 19 个 recipe 无需 Anchor-ID 分支即可注册和运行。15 个旧插件继续作为 legacy/reference，H4/H5/O13 使用 operator composition 而没有新增 whole-Anchor plugin。2026-07-16 用户进一步确认 D-036–D-040：全局 immutable component versions、exact-pinned task schemes、三类节点/两类边、starter canonical BN 与 posterior inference flow 的区分，以及 legacy Evidence-to-Evidence extraction 的非覆盖迁移规则。M5 已完成 generic identity、model/BN/scheme/inference public DTO、16 类双目录 Draft 2020-12 schema、typed source/M4R preflight、global exact-version repository/service、exact-pinned scheme closure/technical validation、typed scheme operations、incomplete autosave、undo/redo、copy-on-write atomic publish、exact replay、generic CPT validation/materialization/migration、finite-discrete exact inference/read-only influence trace、17 个 compatible M4R active imports/同 concept compliant TPX parallel version、checksummed Hover starter BN package，以及 read-only draft preview/posterior/influence/copy-on-write publish/replay workflow。该 starter 物化 4 个 competency、11 个 sub-skill、18 个 Evidence binding 与 33 张工程默认 CPT，全部可由专家另行 clone/修改；这些数量未进入 generic loader。旧 O8 原 bytes/hash 仍作为 legacy/replay 资产保留。
 
 M6 completion gate 也已关闭：受管 project/session/artifact、SQLite component/draft/run persistence、idempotency/audit、exact technical preflight、dynamic Evidence→Observation→BN pipeline、single-worker progress/cancel/recovery，以及无网络端口的 JSON-RPC/JSONL stdio sidecar 均已实现。轻量纵向闭环证明 external bundle 删除后仍可从受管副本运行，整个 project 换目录重开后 exact scheme/result/artifact 仍可回放。下一里程碑是 M7 WinUI Expert Designer；M8 最终打包与科学验证仍未完成，starter/synthetic `formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+
+2026-07-16 另以 repository-external 的 2,902-row 格式样例 X/U 和工程合成 I/G/EEG/ECG/pilot-camera 跑通一次完整 M6 software-test：ingestion/preflight ready、18/18 Evidence computed、exact BN inference completed、39 个结果/追踪工件成功回读且 sidecar stderr 为空。该运行继续标记 `scientific_status=not_supported`；它验证真实产品接口与计算流水线，不验证样例飞行、starter algorithms、阈值或 CPT 的科学正确性。详见 [Captured-Format Multimodal Software Demo](specs/2026-07-16-external-multimodal-session-demo-design.md)。
 
 ## 6. 维护规则
 

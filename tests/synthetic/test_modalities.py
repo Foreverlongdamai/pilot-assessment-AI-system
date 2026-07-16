@@ -189,6 +189,8 @@ def test_reference_and_annotations_have_stable_software_test_semantics() -> None
         "hover_stabilization",
     ]
     assert phases[-1]["end_s"] == 2.0
+    events = cast(list[dict[str, object]], annotations["events"]["events"])
+    assert [event["event_type"] for event in events] == ["disturbance", "attention_cue"]
 
 
 def test_png_writer_is_byte_deterministic_rgb8_and_metadata_free(tmp_path: Path) -> None:
