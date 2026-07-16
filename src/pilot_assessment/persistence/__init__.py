@@ -1,5 +1,16 @@
 """Durable, project-scoped persistence adapters for the local runtime."""
 
+from pilot_assessment.persistence.artifacts import (
+    ArtifactIntegrityError,
+    ArtifactNotFoundError,
+    ArtifactOwner,
+    ArtifactPathError,
+    ArtifactRecoveryReport,
+    ArtifactReferenceConflictError,
+    ArtifactStoreError,
+    ArtifactTransactionConflictError,
+    ManagedArtifactStore,
+)
 from pilot_assessment.persistence.audit import AuditQuery, AuditRepository
 from pilot_assessment.persistence.database import (
     DatabaseIntegrityError,
@@ -32,6 +43,14 @@ from pilot_assessment.persistence.transactions import (
 )
 
 __all__ = [
+    "ArtifactIntegrityError",
+    "ArtifactNotFoundError",
+    "ArtifactOwner",
+    "ArtifactPathError",
+    "ArtifactRecoveryReport",
+    "ArtifactReferenceConflictError",
+    "ArtifactStoreError",
+    "ArtifactTransactionConflictError",
     "DatabaseIntegrityError",
     "DatabaseMigrationError",
     "DatabaseTransactionError",
@@ -48,6 +67,7 @@ __all__ = [
     "IdempotencyResult",
     "IdempotencyStore",
     "MutationResult",
+    "ManagedArtifactStore",
     "SqliteComponentLibraryRepository",
     "SqliteSchemeDraftRepository",
     "SqliteWorkspaceUnitOfWork",
