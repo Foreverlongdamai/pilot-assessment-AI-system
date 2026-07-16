@@ -1,0 +1,573 @@
+{
+  "bn_node_versions": [
+    {
+      "content_hash": "dfa34e263ff56d60c622d679f51e2816bd3b51d952acd73743212c3f75c49c76",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.TCP.v1"
+    },
+    {
+      "content_hash": "6f064ea2898967e2e75a17c204c75ed6b9518b70d09abef0bca44e96d0a86d6d",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.PC.v1"
+    },
+    {
+      "content_hash": "06ee1dce8abd7cdccf5f13bb60b51d1b6b35596f22a8f8c8862f2bbf3dceaf6f",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.SM.v1"
+    },
+    {
+      "content_hash": "1e3ab6f52f302ce2053dfd4d9df5fb6d91c8929c14ab1a9ba9ea7605d79f7327",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.OC.v1"
+    },
+    {
+      "content_hash": "e442e448825497869a265991d3f91b57217ad540421afadfad85c86ac5efd34e",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.TCP.1.v1"
+    },
+    {
+      "content_hash": "ea2ced22c1fd0764fe5a48169ed5d6f280bf1442dded6b872afc467e86133a2e",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.TCP.2.v1"
+    },
+    {
+      "content_hash": "1db1d9131ad7e19e84634b609cf3c4640833755ea6952eddb193ab69f2caf5ca",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.TCP.3.v1"
+    },
+    {
+      "content_hash": "d80efd01c81d327d25969f97d1ab3f6785716850c940bb28f8d582933a91b94f",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.TCP.4.v1"
+    },
+    {
+      "content_hash": "ffa284c976d7b306466de984c3dfcaa61dc7333dfbe85335d708776397e7d482",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.PC.1.v1"
+    },
+    {
+      "content_hash": "641a09bac417afc23eeb8d9346215e7c89dd08a1f048c7a526b45bd51797ad5c",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.PC.2.v1"
+    },
+    {
+      "content_hash": "511244b4c1e1b2232b97b687ff423925c8de2ff5fb9cc1464b0bcd9d392989cb",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.SM.1.v1"
+    },
+    {
+      "content_hash": "c491257598d78a418cf48c082ae92425111cb8fa5fa766be8234e5211c295ac3",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.SM.2.v1"
+    },
+    {
+      "content_hash": "2d647ea3ea4274653a9f64383b73489ccca1c3015fdc7eee3529c872e833861c",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.OC.1.v1"
+    },
+    {
+      "content_hash": "7c91bb5f8285237a21ef9ac4d536eb3706f6affc1eabec385469f4ee9387edcc",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.OC.2.v1"
+    },
+    {
+      "content_hash": "d32870681165b762a8b487ac37868f58d4861cb5d83cfc67719b29819ea7619c",
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.OC.3.v1"
+    }
+  ],
+  "content_hash": "228152120c41726c057108fbe90b711b3c1f26ad2782f593a79e39bffb13eee7",
+  "contract_id": "assessment-scheme-version",
+  "contract_version": "0.1.0",
+  "cpt_versions": [
+    {
+      "content_hash": "f886ccced80c8133befc669bb8562452b1112836f91c865d4ac04388623b5b89",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.TCP.v1"
+    },
+    {
+      "content_hash": "1f34dc566611c6bd68c51dcaed5e6644827017485921a98f28f9a1c7e6e49d37",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.PC.v1"
+    },
+    {
+      "content_hash": "b96c3a0906dc2b79dc1af1e9510be45621f4ad0c7ee0ca804244889b9b72da2f",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.SM.v1"
+    },
+    {
+      "content_hash": "4afcd72a8be088432889ebfaee0c9a45c67f03b52f65fee529397999ce0872eb",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.OC.v1"
+    },
+    {
+      "content_hash": "f62fddead00750f4c9d781cd820b16ef0783e9429ad8e63d7f6299ca1a3a4467",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.TCP.1.v1"
+    },
+    {
+      "content_hash": "abb29a3c1c0fe1af50241c9d34c67ab0ea2d7cd77e254d6ffa9532308e7af269",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.TCP.2.v1"
+    },
+    {
+      "content_hash": "ebb7d330f6397bd78f383734624fb5ef6cee85ef6c4ae24b4051c492500ff836",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.TCP.3.v1"
+    },
+    {
+      "content_hash": "0ef890d8fef787afbe1ca5cdac8fe566bb0b31e5f2b7449e9321d494788da097",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.TCP.4.v1"
+    },
+    {
+      "content_hash": "bc31ae772d7fbad8de75604041fa5eb4b104cba7985eb258af56b5b48baced1e",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.PC.1.v1"
+    },
+    {
+      "content_hash": "d925224f74f455dfa70c085de10742c45556f00b08e075635fc94153295b2924",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.PC.2.v1"
+    },
+    {
+      "content_hash": "7527051899408061ef6be511c6908d95dde0389ac61539d1c040d563bfd699af",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.SM.1.v1"
+    },
+    {
+      "content_hash": "a9710545c8627f6aa28dd5d206535ae69c8a963a226f539ee06af004e6c2afe1",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.SM.2.v1"
+    },
+    {
+      "content_hash": "86db0495f8aef56b865fc4d3724f103cd03682848ffa0ddcdc82870b82ea9be5",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.OC.1.v1"
+    },
+    {
+      "content_hash": "acc231d5c49662dd37f116a32e66a0a85229db48fd98af974e4ba1c114786fb4",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.OC.2.v1"
+    },
+    {
+      "content_hash": "77f4a6ceb4a18a0315616f1c5cbbf0e1d7fb332e5a39e312f032f04e69f0c780",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.bn.OC.3.v1"
+    },
+    {
+      "content_hash": "fa6ee98aec64c3ace75f221b976be5b69a8bc7cc84b656e2900f4e7fa2350e83",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O1.v1"
+    },
+    {
+      "content_hash": "fcd4fb6e5373054def7c3a56727cc7987023dfc124328aa4a5deeb18d6e0b32c",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O2.v1"
+    },
+    {
+      "content_hash": "ac2c0a1a0909004dc438f8fbd817b97a56bf4488f8352fad23fef51fefce54d4",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O3.v1"
+    },
+    {
+      "content_hash": "79b590016bd217b9713d0200760900b39ab52d9d1cff1cb2aa126c4469a570cc",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O4.v1"
+    },
+    {
+      "content_hash": "0aba6219d396d0dfcaacef0c22c3d498879a5f4e5441f903b1eabc3c22471082",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O5.v1"
+    },
+    {
+      "content_hash": "12d1d25f97331d11a157bf5a5ba9469415d6d104803bc60cb71d1ceea3178d4f",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O6.v1"
+    },
+    {
+      "content_hash": "331402be74bff678e4fc8625aebd8bafb50e78a8a478e52d7aa9835881a53b8f",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O7.v1"
+    },
+    {
+      "content_hash": "76af543f17105718fbe77b74f84cffdf855796b53479aa51594355de77f19a54",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O8.v1"
+    },
+    {
+      "content_hash": "1584ed502219ad742210cde13ee5cb75a981c3eb69f6580d50be5b613b0ce8e5",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O9.v1"
+    },
+    {
+      "content_hash": "5512d46239828b6cb09e73b97435deb5cd1ca337efbe39aa119fe96a666bb102",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O10.v1"
+    },
+    {
+      "content_hash": "5f9016f3f9bde7415b25a76db21c67939450512fa9fe5c3acdcefce4b5d2e389",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O11.v1"
+    },
+    {
+      "content_hash": "6fff40a9e994764fdbc918d81b06f41ce4eee95b3ca505c6fd5a1ea577989437",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O12.v1"
+    },
+    {
+      "content_hash": "7912f4303d2502736c6a2bd083db753f513de2a9df3a8a18d1cf9de75cf51dbc",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.O13.v1"
+    },
+    {
+      "content_hash": "c6b30f685791e8c24099aa643ecca28b0ee8ea7986eb7c5e57b121cbf17a1b52",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.H1.v1"
+    },
+    {
+      "content_hash": "6ca5335d038d0405cbd6f8bab054d679cdc6211a66c86fc9ed492de1dfb2bdc3",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.H2.v1"
+    },
+    {
+      "content_hash": "b07c5ccbae3828674f92a78a4833236da8921d7bfc3c2c06219bd3ee81c8b974",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.H3.v1"
+    },
+    {
+      "content_hash": "4029c6362d4acdefa6e055a96d89e352ccfe8fe8c4ae6eb0bd62faef32ff7fc6",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.H4.v1"
+    },
+    {
+      "content_hash": "0148e2d49831215f034944448f16c75fae72d23890096f5532831db84b16f56e",
+      "kind": "cpt_version",
+      "version_id": "cpt-version.hover.evidence.H5.v1"
+    }
+  ],
+  "description": "Editable engineering template. It demonstrates the platform and is not a scientifically validated pilot assessment model.",
+  "evidence_binding_versions": [
+    {
+      "content_hash": "c66eb2b7675e67c7655ba49af922fab6b67cafd983bfb3957298f6f860ecd9c3",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O1.v1"
+    },
+    {
+      "content_hash": "9e3fa192372fc6e31e0d8f57d356d6c615af3f8111eb32a7f5fa04a429e6023b",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O2.v1"
+    },
+    {
+      "content_hash": "ad285259b41b87e4fbf5bf0050fbe0bdbfad8d7483d36df3674d0fc6e69dcfc5",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O3.v1"
+    },
+    {
+      "content_hash": "67b383a239c867ae5de8df1613724600f5168d04817ec2616e4b050a6dab2908",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O4.v1"
+    },
+    {
+      "content_hash": "c5e553d322bfd0226a7ecc04e621d115cf10607314aa734b1f3bb5f21d494a4e",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O5.v1"
+    },
+    {
+      "content_hash": "1a6c5f643597dd12acf5f70e6eb6718f3206da982033b0c5043b93b94c360c3b",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O6.v1"
+    },
+    {
+      "content_hash": "3df63f60c0a75a9a63be8c01c11232f3dffc50fdcbb192d3c3d4674f9de2fa47",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O7.v1"
+    },
+    {
+      "content_hash": "92e3ed454df24e0073507f43677f3201dd243313fceef8a787c149d6f1fe838c",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O8.v1"
+    },
+    {
+      "content_hash": "06e451ab27ef87689a017a38cd96459a8c744ea839b3fe152ae0ff7f4daea591",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O9.v1"
+    },
+    {
+      "content_hash": "a94a2e943bd2d6206ed55a9c8f7df2a493aed8bfa8df2a5338cd3851db6bbafd",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O10.v1"
+    },
+    {
+      "content_hash": "deaf7645331be9eceb786784c41f646ed96e5397719d7ee49080f625f0a70f1d",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O11.v1"
+    },
+    {
+      "content_hash": "ed27743f18975109d4ef5ad49389757628a5d6f4f0d1b0c6109d23fb17ac5422",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O12.v1"
+    },
+    {
+      "content_hash": "dbc4e8bb1ead09c9861cb26f9e93ebf1158d5dceba57102db34ed9dd0404e460",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.O13.v1"
+    },
+    {
+      "content_hash": "99448e3cb77335d6404c7e0bafccfe44c07e6173c7b4b581dc0f1d5c9dd5a077",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.H1.v1"
+    },
+    {
+      "content_hash": "c24d63792106569084382d2b63cf79ca50b4dfd5eeb7eb063a3d6983d4d9aeee",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.H2.v1"
+    },
+    {
+      "content_hash": "da50b43da5d13a507d5345bd1ec048003b1dc45d315f2d80d8e0f72447245c00",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.H3.v1"
+    },
+    {
+      "content_hash": "75a0776242838990116267caf9f2716f8d60d5264b2f8d14da6ecccbcc7d430a",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.H4.v1"
+    },
+    {
+      "content_hash": "0e5ac813a66415c11b5275e883937ba3cd6d01faabe7b8b9fad4c3583093bf0c",
+      "kind": "evidence_binding_version",
+      "version_id": "evidence-binding-version.hover.H5.v1"
+    }
+  ],
+  "evidence_versions": [
+    {
+      "content_hash": "72ff7a6c67b1cb8f706360fd770d653808cd81d513122b15be3a9e56ff16cf21",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O1.v1"
+    },
+    {
+      "content_hash": "419590306caa98a01d35396bb855c9680b8e173c769b6e9bd7d0f2a569834e71",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O2.v1"
+    },
+    {
+      "content_hash": "8c4796b4f366b96d2b5689caa0aa9740d01ce61d0ed737a489c69d8bdf9bf0ef",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O3.v1"
+    },
+    {
+      "content_hash": "0715b8f85893fb2048faf250a1736bf0ccfa51f31d9ac25167c9595259977aa3",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O4.v1"
+    },
+    {
+      "content_hash": "1d711aa3a0b311e03df4eec5e0d3de000c75fa6a9adcdcda911b98261825e1a0",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O5.v1"
+    },
+    {
+      "content_hash": "ad2da4867f68ffe82a72b6d639bc81944e5190d5789af9d5540fea895c71df91",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O6.v1"
+    },
+    {
+      "content_hash": "1e1156dbe63b4be7378b0107cee1c41d18a5eca0ca1df31b5ec30263a683fd38",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O7.v1"
+    },
+    {
+      "content_hash": "f4368bc9b99dad0f5d9e4eaf6b4cf23fbfe0deaae481b1503f4e6ff8c0a9c3a8",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m5.O8.raw-task-v1"
+    },
+    {
+      "content_hash": "de86a156d66d4a18374680475aac9231ac8bba7e59ce3e2b72078bd051483ea5",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O9.v1"
+    },
+    {
+      "content_hash": "ce5cd8357c3a3555c145279093fb9a111a65001746b9d131492725f47c5fc404",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O10.v1"
+    },
+    {
+      "content_hash": "0f867500c1d14c52a7afbaa03f261e14f481866d8a9b8f04f667bf3d567d603b",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O11.v1"
+    },
+    {
+      "content_hash": "e9cc68d243e7d8df4bfeefb264680c27212044071210b15791be58b201f76a33",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O12.v1"
+    },
+    {
+      "content_hash": "f835bdfab1ef5ce1d7d7b5cbb5a52f79eac10e5a54d3d1d2c70fe1d06ee20d5d",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O13.v1"
+    },
+    {
+      "content_hash": "0212559e611c797cc06a964cfd52a3932e1f00297e08e67cfb64e1b4b1361bf1",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.H1.v1"
+    },
+    {
+      "content_hash": "b61f3f1bd0cd77cff5dc990ebcac67f5a6ad80089223fbd44824e5050e70dad3",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.H2.v1"
+    },
+    {
+      "content_hash": "c6b75a4fe9e8cb4a6641a86bbc8affb5e03074a5acf29196b71544fc34a4868c",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.H3.v1"
+    },
+    {
+      "content_hash": "6342dead756cbad10d267a93844c04917b7369e43c090f4bec44689e84a587d6",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.H4.v1"
+    },
+    {
+      "content_hash": "7ba901dec4d666019dc258f303ae2f16b3020b28df3098ce6394d760465dbe7f",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.H5.v1"
+    }
+  ],
+  "layout": {
+    "content_hash": "3f13fc665f312f80122ec670927bda2e7a27b488dc15722699b6bc78ab99e48f",
+    "kind": "layout_version",
+    "version_id": "layout-version.hover-starter.v1"
+  },
+  "lineage": {
+    "created_at": "2026-07-16T19:00:00Z",
+    "created_by": "generator.m5.task10",
+    "note": "Generated first exact-pinned Hover starter scheme.",
+    "source_version_ids": []
+  },
+  "name": "Hover starter assessment scheme",
+  "output_node_ids": [
+    {
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.TCP.v1"
+    },
+    {
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.PC.v1"
+    },
+    {
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.SM.v1"
+    },
+    {
+      "kind": "bn_node_version",
+      "version_id": "bn-node-version.hover.OC.v1"
+    }
+  ],
+  "reporting_policy": {
+    "content_hash": "bc1dfa36dd1b59078e5dc3508d4a3424100588445618efae5a434e008db9cf2e",
+    "kind": "coverage_reporting_policy_version",
+    "version_id": "coverage-reporting-policy-version.hover-starter.v1"
+  },
+  "scheme_concept_id": "assessment-scheme-concept.hover-starter",
+  "scheme_version_id": "assessment-scheme-version.hover-starter.v1",
+  "source_descriptors": [
+    {
+      "content_hash": "7b48dbffa8c8bd4f568c8ec67aa0a2a1ac9f0b28879177f9a65503891308786f",
+      "kind": "source_descriptor",
+      "version_id": "ECG.channels"
+    },
+    {
+      "content_hash": "dce0cfeb69d66ce64043d1ff0f157e7605973f76a7508e0b6d979781524edc88",
+      "kind": "source_descriptor",
+      "version_id": "EEG.channels"
+    },
+    {
+      "content_hash": "431754107e048bba46b2e5a87eacae9c0eb8d20c47ea8a87e16fbd5dfa226313",
+      "kind": "source_descriptor",
+      "version_id": "G.frames"
+    },
+    {
+      "content_hash": "326ac1b3afd122f075d281684444327007e27e957e9e5f3cd00a5bf75d5c4c29",
+      "kind": "source_descriptor",
+      "version_id": "I.frames"
+    },
+    {
+      "content_hash": "9f71745fc613ddc919871ed6dcad64827f84f401c7553ea302604ff03a1c303f",
+      "kind": "source_descriptor",
+      "version_id": "U.channels"
+    },
+    {
+      "content_hash": "24468b842697b96e8fbff4d0cc87f31e689289df8e4af67585c1a2a5d4b09870",
+      "kind": "source_descriptor",
+      "version_id": "U.primary-control"
+    },
+    {
+      "content_hash": "a850c6adea5ace9fbe8fd0dfb2be0ad7575a407cccb469952c97c90fc87fdbcc",
+      "kind": "source_descriptor",
+      "version_id": "X.hover-vector"
+    },
+    {
+      "content_hash": "6cb9d07342cad323eb38914f812d57081c2f16c51d3d95adff6696c89386b73f",
+      "kind": "source_descriptor",
+      "version_id": "X.position-vector"
+    },
+    {
+      "content_hash": "5f83b2aa892283c03ea135842aa5e2adf29e0d9d783df015cc9bde568dcad9ca",
+      "kind": "source_descriptor",
+      "version_id": "X.state-vector"
+    },
+    {
+      "content_hash": "c436ca5a251afe5e36c15422ba416794bbd7b0cdf29f390cd7355643e17d6516",
+      "kind": "source_descriptor",
+      "version_id": "derived.envelope-error"
+    },
+    {
+      "content_hash": "5c0ff19e95cbbecb4cb0337b6f3b604d2092c1b3060c95357605b61d5a0b9f57",
+      "kind": "source_descriptor",
+      "version_id": "derived.flight-error"
+    },
+    {
+      "content_hash": "bd44fb3da9cf02583308954945391e56073cd8667c51dce3d86307801c4471a8",
+      "kind": "source_descriptor",
+      "version_id": "derived.terminal-error"
+    },
+    {
+      "content_hash": "9221a02a66ce0f8506a7176c28e1a0d4dc57f570024a4bd11c4c17114e926aed",
+      "kind": "source_descriptor",
+      "version_id": "semantic.attention-events"
+    },
+    {
+      "content_hash": "3fc034e8354d6484051e90e9f084e6518342ff49fecff5c46cbd49089624dee1",
+      "kind": "source_descriptor",
+      "version_id": "semantic.control-excursions"
+    },
+    {
+      "content_hash": "445c68015e3ce8a64e18e973c6cf4cbda3f1db3ca0a80357c8a125a24be40b09",
+      "kind": "source_descriptor",
+      "version_id": "semantic.disturbances"
+    },
+    {
+      "content_hash": "1d7c03a0adb1cbad2f385e700b2eee6b34c63bb124f8a9a96c2f7393eb0d063f",
+      "kind": "source_descriptor",
+      "version_id": "session.duration-s"
+    },
+    {
+      "content_hash": "564e40a1e2d70593ea66db6c596e4ae1e890a2cf274f370e803c2094bf438bc8",
+      "kind": "source_descriptor",
+      "version_id": "task-reference.commanded-path"
+    },
+    {
+      "content_hash": "b4ecff0d18147ac3bb7761994a48d9b0cac05a4fb8213770afe7deaa8df65a9d",
+      "kind": "source_descriptor",
+      "version_id": "task-reference.expected-envelope"
+    },
+    {
+      "content_hash": "12d9e3648e0ce5490a3fec4f3b5d013c8e8e2ef550211e15483009099f13f679",
+      "kind": "source_descriptor",
+      "version_id": "task-reference.terminal-target"
+    }
+  ],
+  "task_profile": {
+    "content_hash": "3fec27bb8ce877779484ce43a6c3aae337c58815ae7ccc5449353c48974d7355",
+    "kind": "task_profile_version",
+    "version_id": "task-profile-version.hover-starter.v1"
+  }
+}

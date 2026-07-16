@@ -1,0 +1,2054 @@
+{
+  "contract_id": "model-profile-manifest",
+  "contract_version": "0.1.0",
+  "created_at": "2026-07-16T19:00:00Z",
+  "created_by": "generator.m5.task10",
+  "entry_scheme_ref": {
+    "content_hash": "228152120c41726c057108fbe90b711b3c1f26ad2782f593a79e39bffb13eee7",
+    "kind": "assessment_scheme_version",
+    "version_id": "assessment-scheme-version.hover-starter.v1"
+  },
+  "external_component_refs": [
+    {
+      "content_hash": "72ff7a6c67b1cb8f706360fd770d653808cd81d513122b15be3a9e56ff16cf21",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O1.v1"
+    },
+    {
+      "content_hash": "419590306caa98a01d35396bb855c9680b8e173c769b6e9bd7d0f2a569834e71",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O2.v1"
+    },
+    {
+      "content_hash": "8c4796b4f366b96d2b5689caa0aa9740d01ce61d0ed737a489c69d8bdf9bf0ef",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O3.v1"
+    },
+    {
+      "content_hash": "0715b8f85893fb2048faf250a1736bf0ccfa51f31d9ac25167c9595259977aa3",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O4.v1"
+    },
+    {
+      "content_hash": "1d711aa3a0b311e03df4eec5e0d3de000c75fa6a9adcdcda911b98261825e1a0",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O5.v1"
+    },
+    {
+      "content_hash": "ad2da4867f68ffe82a72b6d639bc81944e5190d5789af9d5540fea895c71df91",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O6.v1"
+    },
+    {
+      "content_hash": "1e1156dbe63b4be7378b0107cee1c41d18a5eca0ca1df31b5ec30263a683fd38",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O7.v1"
+    },
+    {
+      "content_hash": "f4368bc9b99dad0f5d9e4eaf6b4cf23fbfe0deaae481b1503f4e6ff8c0a9c3a8",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m5.O8.raw-task-v1"
+    },
+    {
+      "content_hash": "de86a156d66d4a18374680475aac9231ac8bba7e59ce3e2b72078bd051483ea5",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O9.v1"
+    },
+    {
+      "content_hash": "ce5cd8357c3a3555c145279093fb9a111a65001746b9d131492725f47c5fc404",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O10.v1"
+    },
+    {
+      "content_hash": "0f867500c1d14c52a7afbaa03f261e14f481866d8a9b8f04f667bf3d567d603b",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O11.v1"
+    },
+    {
+      "content_hash": "e9cc68d243e7d8df4bfeefb264680c27212044071210b15791be58b201f76a33",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O12.v1"
+    },
+    {
+      "content_hash": "f835bdfab1ef5ce1d7d7b5cbb5a52f79eac10e5a54d3d1d2c70fe1d06ee20d5d",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.O13.v1"
+    },
+    {
+      "content_hash": "0212559e611c797cc06a964cfd52a3932e1f00297e08e67cfb64e1b4b1361bf1",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.H1.v1"
+    },
+    {
+      "content_hash": "b61f3f1bd0cd77cff5dc990ebcac67f5a6ad80089223fbd44824e5050e70dad3",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.H2.v1"
+    },
+    {
+      "content_hash": "c6b75a4fe9e8cb4a6641a86bbc8affb5e03074a5acf29196b71544fc34a4868c",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.H3.v1"
+    },
+    {
+      "content_hash": "6342dead756cbad10d267a93844c04917b7369e43c090f4bec44689e84a587d6",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.H4.v1"
+    },
+    {
+      "content_hash": "7ba901dec4d666019dc258f303ae2f16b3020b28df3098ce6394d760465dbe7f",
+      "kind": "evidence_version",
+      "version_id": "evidence-version.m4r.H5.v1"
+    }
+  ],
+  "manifest_hash": "d4b3f2759a38979faf471b0322f156a0e17b4e9e62eaef08d163519049f51ff8",
+  "profile_id": "hover-starter-v0.1",
+  "resources": [
+    {
+      "dependency_refs": [],
+      "path": "bn-node-concepts.json",
+      "record_refs": [
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.TCP"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.PC"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.SM"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.OC"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.TCP.1"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.TCP.2"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.TCP.3"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.TCP.4"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.PC.1"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.PC.2"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.SM.1"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.SM.2"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.OC.1"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.OC.2"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.OC.3"
+        }
+      ],
+      "schema_id": "bn-node-concept-catalog-v0.1",
+      "sha256": "156f84255081469949e053c9a877f1ec2be8cd5316f54fb5a6f0dad585bbb43d",
+      "type_id": "bn_node_concept_catalog"
+    },
+    {
+      "dependency_refs": [
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.TCP"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.PC"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.SM"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.OC"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.TCP.1"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.TCP.2"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.TCP.3"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.TCP.4"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.PC.1"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.PC.2"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.SM.1"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.SM.2"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.OC.1"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.OC.2"
+        },
+        {
+          "kind": "bn_node_concept",
+          "record_id": "bn-concept.OC.3"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.PC.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.SM.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.OC.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.4.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.PC.1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.PC.2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.SM.1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.SM.2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.OC.1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.OC.2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.OC.3.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.v1"
+        }
+      ],
+      "path": "bn-node-versions.json",
+      "record_refs": [
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.3.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.4.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.3.v1"
+        }
+      ],
+      "schema_id": "bn-node-version-catalog-v0.1",
+      "sha256": "d13c213f3e1ad9d7356c65675c48475a2c7571030acffdce99385229518047ca",
+      "type_id": "bn_node_version_catalog"
+    },
+    {
+      "dependency_refs": [
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.3.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.4.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.3.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O1.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O2.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O3.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O4.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O5.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O6.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O7.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O8.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O9.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O10.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O11.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O12.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O13.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H1.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H2.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H3.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H4.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H5.v1"
+        }
+      ],
+      "path": "cpts.json",
+      "record_refs": [
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.PC.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.SM.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.OC.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.4.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.PC.1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.PC.2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.SM.1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.SM.2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.OC.1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.OC.2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.OC.3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O4.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O5.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O6.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O7.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O8.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O9.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O10.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O11.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O12.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O13.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H4.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H5.v1"
+        }
+      ],
+      "schema_id": "cpt-version-catalog-v0.1",
+      "sha256": "adca7150319af4ac5e44f839a42ac3db51c7c0c5d30c2ba7205a45a273cb9cf0",
+      "type_id": "cpt_version_catalog"
+    },
+    {
+      "dependency_refs": [
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O1.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O2.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O3.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O4.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O5.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O6.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O7.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m5.O8.raw-task-v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O9.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O10.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O11.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O12.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O13.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H1.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H2.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H3.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H4.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H5.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.3.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.4.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O4.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O5.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O6.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O7.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O8.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O9.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O10.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O11.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O12.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O13.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H4.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H5.v1"
+        }
+      ],
+      "path": "evidence-bindings.json",
+      "record_refs": [
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O1.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O2.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O3.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O4.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O5.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O6.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O7.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O8.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O9.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O10.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O11.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O12.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O13.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H1.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H2.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H3.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H4.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H5.v1"
+        }
+      ],
+      "schema_id": "evidence-binding-version-catalog-v0.1",
+      "sha256": "053289527070bc2f65b5db571cecd784c5a53e13f12e7b8e09b89afe3c71b07f",
+      "type_id": "evidence_binding_version_catalog"
+    },
+    {
+      "dependency_refs": [],
+      "path": "evidence-concepts.json",
+      "record_refs": [
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.H1"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.H2"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.H3"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.H4"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.H5"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O1"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O10"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O11"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O12"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O13"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O2"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O3"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O4"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O5"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O6"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O7"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O8"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O9"
+        }
+      ],
+      "schema_id": "evidence-concept-catalog-v0.1",
+      "sha256": "7cd186c4810d5c9eaf9817fe67d421c0964cf109d9ee91e79ac91589914eab67",
+      "type_id": "evidence_concept_catalog"
+    },
+    {
+      "dependency_refs": [
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.3.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.4.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.3.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O1.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O2.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O3.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O4.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O5.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O6.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O7.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O8.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O9.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O10.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O11.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O12.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O13.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H1.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H2.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H3.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H4.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H5.v1"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "ECG.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "EEG.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "G.frames"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "I.frames"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "U.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "U.primary-control"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.hover-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.position-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.state-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "derived.envelope-error"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "derived.flight-error"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "derived.terminal-error"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "semantic.attention-events"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "semantic.control-excursions"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "semantic.disturbances"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "session.duration-s"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "task-reference.commanded-path"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "task-reference.expected-envelope"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "task-reference.terminal-target"
+        }
+      ],
+      "path": "layout.json",
+      "record_refs": [
+        {
+          "kind": "layout_version",
+          "record_id": "layout-version.hover-starter.v1"
+        }
+      ],
+      "schema_id": "layout-version-v0.1",
+      "sha256": "0cceb15399bb78208c0a6eb6bb666e4b5f3aa2a3377e4b19929fa27ea9bdea4a",
+      "type_id": "layout_version"
+    },
+    {
+      "dependency_refs": [
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.H1"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.H2"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.H3"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.H4"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.H5"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O1"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O10"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O11"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O12"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O13"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O2"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O3"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O4"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O5"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O6"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O7"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O8"
+        },
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O9"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O1.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O2.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O3.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O4.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O5.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O6.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O7.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m5.O8.raw-task-v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O9.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O10.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O11.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O12.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O13.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H1.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H2.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H3.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H4.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H5.v1"
+        }
+      ],
+      "path": "migration-manifest.json",
+      "record_refs": [],
+      "schema_id": "m4r-evidence-migration-manifest-v0.1",
+      "sha256": "84b1aa723027a015cc7b30e3f1020a3852785fc6d4b807f665f6e018da5ada7c",
+      "type_id": "migration_support"
+    },
+    {
+      "dependency_refs": [],
+      "path": "reporting-policy.json",
+      "record_refs": [
+        {
+          "kind": "coverage_reporting_policy_version",
+          "record_id": "coverage-reporting-policy-version.hover-starter.v1"
+        }
+      ],
+      "schema_id": "coverage-reporting-policy-version-v0.1",
+      "sha256": "fded87e146cf05a9542bc7fd4dc59b1d97b34aa0fdfe97f7b064ef43b15cf4e2",
+      "type_id": "coverage_reporting_policy_version"
+    },
+    {
+      "dependency_refs": [
+        {
+          "kind": "source_descriptor",
+          "record_id": "ECG.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "EEG.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "G.frames"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "I.frames"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "U.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "U.primary-control"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.hover-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.position-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.state-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "derived.envelope-error"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "derived.flight-error"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "derived.terminal-error"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "semantic.attention-events"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "semantic.control-excursions"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "semantic.disturbances"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "session.duration-s"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "task-reference.commanded-path"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "task-reference.expected-envelope"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "task-reference.terminal-target"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O1.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O2.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O3.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O4.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O5.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O6.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O7.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m5.O8.raw-task-v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O9.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O10.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O11.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O12.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.O13.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H1.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H2.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H3.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H4.v1"
+        },
+        {
+          "kind": "evidence_version",
+          "record_id": "evidence-version.m4r.H5.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O1.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O2.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O3.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O4.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O5.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O6.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O7.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O8.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O9.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O10.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O11.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O12.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.O13.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H1.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H2.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H3.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H4.v1"
+        },
+        {
+          "kind": "evidence_binding_version",
+          "record_id": "evidence-binding-version.hover.H5.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.3.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.TCP.4.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.PC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.SM.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "record_id": "bn-node-version.hover.OC.3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.PC.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.SM.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.OC.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.TCP.4.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.PC.1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.PC.2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.SM.1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.SM.2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.OC.1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.OC.2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.bn.OC.3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O4.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O5.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O6.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O7.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O8.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O9.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O10.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O11.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O12.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.O13.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H1.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H2.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H3.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H4.v1"
+        },
+        {
+          "kind": "cpt_version",
+          "record_id": "cpt-version.hover.evidence.H5.v1"
+        },
+        {
+          "kind": "task_profile_version",
+          "record_id": "task-profile-version.hover-starter.v1"
+        },
+        {
+          "kind": "coverage_reporting_policy_version",
+          "record_id": "coverage-reporting-policy-version.hover-starter.v1"
+        },
+        {
+          "kind": "layout_version",
+          "record_id": "layout-version.hover-starter.v1"
+        }
+      ],
+      "path": "scheme.json",
+      "record_refs": [
+        {
+          "kind": "assessment_scheme_version",
+          "record_id": "assessment-scheme-version.hover-starter.v1"
+        }
+      ],
+      "schema_id": "assessment-scheme-version-v0.1",
+      "sha256": "88f4d4ae4ea5f0a5abaed200d71ff42d21a14c8a0084f902359339cb3f4eccaa",
+      "type_id": "assessment_scheme_version"
+    },
+    {
+      "dependency_refs": [],
+      "path": "source-descriptors.json",
+      "record_refs": [
+        {
+          "kind": "source_descriptor",
+          "record_id": "ECG.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "EEG.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "G.frames"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "I.frames"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "U.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "U.primary-control"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.hover-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.position-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.state-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "derived.envelope-error"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "derived.flight-error"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "derived.terminal-error"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "pilot_camera.frames"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "semantic.attention-events"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "semantic.control-excursions"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "semantic.disturbances"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "session.duration-s"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "task-reference.commanded-path"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "task-reference.expected-envelope"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "task-reference.terminal-target"
+        }
+      ],
+      "schema_id": "source-descriptor-catalog-v0.1",
+      "sha256": "149fcf4d03b94b35bb01dfb6bb8d09998f41fd74e9e0651632713482eaefe6a3",
+      "type_id": "source_descriptor_catalog"
+    },
+    {
+      "dependency_refs": [
+        {
+          "kind": "source_descriptor",
+          "record_id": "ECG.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "EEG.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "G.frames"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "I.frames"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "U.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "U.primary-control"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.hover-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.position-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.state-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "derived.envelope-error"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "derived.flight-error"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "derived.terminal-error"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "semantic.attention-events"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "semantic.control-excursions"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "semantic.disturbances"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "session.duration-s"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "task-reference.commanded-path"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "task-reference.expected-envelope"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "task-reference.terminal-target"
+        }
+      ],
+      "path": "task-profile.json",
+      "record_refs": [
+        {
+          "kind": "task_profile_version",
+          "record_id": "task-profile-version.hover-starter.v1"
+        }
+      ],
+      "schema_id": "task-profile-version-v0.1",
+      "sha256": "fc217a438ee92ddb8aa1b2fedaefe27a9f5eb15d616b37a7c0aa4ae431c21230",
+      "type_id": "task_profile_version"
+    },
+    {
+      "dependency_refs": [
+        {
+          "kind": "evidence_concept",
+          "record_id": "evidence-concept.O8"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "X.state-vector"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "U.channels"
+        },
+        {
+          "kind": "source_descriptor",
+          "record_id": "session.duration-s"
+        }
+      ],
+      "path": "tpx-raw-task-v1.json",
+      "record_refs": [],
+      "schema_id": "evidence-recipe-support-v0.1",
+      "sha256": "b5ed7b301bfaced48014893aa8d2eec9681a408600035fd5cd94537a0b8f081e",
+      "type_id": "evidence_recipe_support"
+    }
+  ],
+  "scientific_status": "starter_template"
+}

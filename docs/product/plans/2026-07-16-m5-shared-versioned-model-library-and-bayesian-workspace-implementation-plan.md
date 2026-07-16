@@ -1,6 +1,6 @@
 # M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan
 
-> 状态：Approved / active implementation；Task 1–9 已完成，Task 10 为下一执行入口
+> 状态：Approved / active implementation；Task 1–10 已完成，Task 11 为下一执行入口
 > 执行方式：INLINE，严格按任务顺序推进；不启用 subagent
 > 工程方式：平台不变量采用轻量 test-first；starter resources、迁移和组装采用 focused smoke
 > 权威规格：[M5 Shared Versioned Model Library and Bayesian Workspace Design](../specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)
@@ -632,13 +632,21 @@ GREEN：
 
 步骤：
 
-- [ ] 由 generator 物化 Hover starter resources；生成器的输入是显式 Python data definitions，输出使用 deterministic sorted JSON/UTF-8/LF。
-- [ ] 资源声明 4 root competencies、11 sub-skills、18 active Evidence bindings、当前文档映射和工程默认 CPT；这些数量只在 starter-specific test 中断言。
-- [ ] manifest 保存每个 resource checksum、type/schema ID、stable version ID 与 dependency closure。
-- [ ] generic loader 仅按 manifest/type dispatch，不按 O1/TCP/Hover 写分支。
-- [ ] 运行两次 generator，并断言第二次 `git diff` 为空；运行：
+- [x] 由 generator 物化 Hover starter resources；生成器的输入是显式 Python data definitions，输出使用 deterministic sorted JSON/UTF-8/LF。
+- [x] 资源声明 4 root competencies、11 sub-skills、18 active Evidence bindings、当前文档映射和工程默认 CPT；这些数量只在 starter-specific test 中断言。
+- [x] manifest 保存每个 resource checksum、type/schema ID、stable version ID 与 dependency closure。
+- [x] generic loader 仅按 manifest/type dispatch，不按 O1/TCP/Hover 写分支。
+- [x] 运行两次 generator，并断言第二次 `git diff` 为空；运行：
 
       .venv\Scripts\python.exe -m pytest tests/model_library/test_hover_starter_package.py -q
+
+完成证据（2026-07-16）：
+
+- RED 在 collection 阶段因 `pilot_assessment.model_library.profile` 尚不存在而正确失败；实现后 focused gate 为 `4 passed`。
+- 显式 generator definitions 物化 15 个 BN concepts/versions、18 个 Evidence bindings、33 张完整 CPT、task/reporting/layout 与 exact-pinned scheme；旧 O8 未被选择，compliant TPX parallel version 被精确 pin。
+- generic loader 先验证 manifest typed hash、exact JSON inventory、每个 resource SHA-256、type/schema dispatch、record refs、dependency closure 与 external exact pins，再构造 repository/source catalog；篡改 `cpts.json` 的 focused smoke 被 checksum gate 拒绝。
+- 重复生成后所有 JSON SHA-256 均不变；33 张 CPT 全部通过通用 executable validation，scheme 通过 only-technical validation，并可编译为 33-variable inference plan；generic loader source 中没有 starter node-ID 分支。
+- model-library/schemes/bayesian 扩展 regression 为 `89 passed`；定向 Ruff format/check、ty 与 `git diff --check` 均通过。manifest typed hash 为 `d4b3f2759a38979faf471b0322f156a0e17b4e9e62eaef08d163519049f51ff8`。
 
 提交边界：`feat: add Hover starter scheme package`
 

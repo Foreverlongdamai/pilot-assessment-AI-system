@@ -1,0 +1,369 @@
+{
+  "content_hash": "3f13fc665f312f80122ec670927bda2e7a27b488dc15722699b6bc78ab99e48f",
+  "contract_id": "layout-version",
+  "contract_version": "0.1.0",
+  "groups": [
+    {
+      "group_id": "layout-group.sources",
+      "label": "Raw and task inputs",
+      "metadata": {
+        "node_family": "source"
+      },
+      "node_ids": [
+        "ECG.channels",
+        "EEG.channels",
+        "G.frames",
+        "I.frames",
+        "U.channels",
+        "U.primary-control",
+        "X.hover-vector",
+        "X.position-vector",
+        "X.state-vector",
+        "derived.envelope-error",
+        "derived.flight-error",
+        "derived.terminal-error",
+        "semantic.attention-events",
+        "semantic.control-excursions",
+        "semantic.disturbances",
+        "session.duration-s",
+        "task-reference.commanded-path",
+        "task-reference.expected-envelope",
+        "task-reference.terminal-target"
+      ]
+    },
+    {
+      "group_id": "layout-group.competencies",
+      "label": "Aggregate competencies",
+      "metadata": {
+        "node_family": "bn_node"
+      },
+      "node_ids": [
+        "bn-node-version.hover.TCP.v1",
+        "bn-node-version.hover.PC.v1",
+        "bn-node-version.hover.SM.v1",
+        "bn-node-version.hover.OC.v1"
+      ]
+    },
+    {
+      "group_id": "layout-group.sub-skills",
+      "label": "Sub-skills",
+      "metadata": {
+        "node_family": "bn_node"
+      },
+      "node_ids": [
+        "bn-node-version.hover.TCP.1.v1",
+        "bn-node-version.hover.TCP.2.v1",
+        "bn-node-version.hover.TCP.3.v1",
+        "bn-node-version.hover.TCP.4.v1",
+        "bn-node-version.hover.PC.1.v1",
+        "bn-node-version.hover.PC.2.v1",
+        "bn-node-version.hover.SM.1.v1",
+        "bn-node-version.hover.SM.2.v1",
+        "bn-node-version.hover.OC.1.v1",
+        "bn-node-version.hover.OC.2.v1",
+        "bn-node-version.hover.OC.3.v1"
+      ]
+    },
+    {
+      "group_id": "layout-group.evidence",
+      "label": "Evidence observations",
+      "metadata": {
+        "node_family": "evidence"
+      },
+      "node_ids": [
+        "evidence-binding-version.hover.O1.v1",
+        "evidence-binding-version.hover.O2.v1",
+        "evidence-binding-version.hover.O3.v1",
+        "evidence-binding-version.hover.O4.v1",
+        "evidence-binding-version.hover.O5.v1",
+        "evidence-binding-version.hover.O6.v1",
+        "evidence-binding-version.hover.O7.v1",
+        "evidence-binding-version.hover.O8.v1",
+        "evidence-binding-version.hover.O9.v1",
+        "evidence-binding-version.hover.O10.v1",
+        "evidence-binding-version.hover.O11.v1",
+        "evidence-binding-version.hover.O12.v1",
+        "evidence-binding-version.hover.O13.v1",
+        "evidence-binding-version.hover.H1.v1",
+        "evidence-binding-version.hover.H2.v1",
+        "evidence-binding-version.hover.H3.v1",
+        "evidence-binding-version.hover.H4.v1",
+        "evidence-binding-version.hover.H5.v1"
+      ]
+    }
+  ],
+  "layout_version_id": "layout-version.hover-starter.v1",
+  "lineage": {
+    "created_at": "2026-07-16T19:00:00Z",
+    "created_by": "generator.m5.task10",
+    "note": "Generated editable integrated-workspace starter layout.",
+    "source_version_ids": []
+  },
+  "node_positions": [
+    {
+      "node_id": "ECG.channels",
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "node_id": "EEG.channels",
+      "x": 0.0,
+      "y": 100.0
+    },
+    {
+      "node_id": "G.frames",
+      "x": 0.0,
+      "y": 200.0
+    },
+    {
+      "node_id": "I.frames",
+      "x": 0.0,
+      "y": 300.0
+    },
+    {
+      "node_id": "U.channels",
+      "x": 0.0,
+      "y": 400.0
+    },
+    {
+      "node_id": "U.primary-control",
+      "x": 0.0,
+      "y": 500.0
+    },
+    {
+      "node_id": "X.hover-vector",
+      "x": 0.0,
+      "y": 600.0
+    },
+    {
+      "node_id": "X.position-vector",
+      "x": 0.0,
+      "y": 700.0
+    },
+    {
+      "node_id": "X.state-vector",
+      "x": 0.0,
+      "y": 800.0
+    },
+    {
+      "node_id": "derived.envelope-error",
+      "x": 0.0,
+      "y": 900.0
+    },
+    {
+      "node_id": "derived.flight-error",
+      "x": 0.0,
+      "y": 1000.0
+    },
+    {
+      "node_id": "derived.terminal-error",
+      "x": 0.0,
+      "y": 1100.0
+    },
+    {
+      "node_id": "semantic.attention-events",
+      "x": 0.0,
+      "y": 1200.0
+    },
+    {
+      "node_id": "semantic.control-excursions",
+      "x": 0.0,
+      "y": 1300.0
+    },
+    {
+      "node_id": "semantic.disturbances",
+      "x": 0.0,
+      "y": 1400.0
+    },
+    {
+      "node_id": "session.duration-s",
+      "x": 0.0,
+      "y": 1500.0
+    },
+    {
+      "node_id": "task-reference.commanded-path",
+      "x": 0.0,
+      "y": 1600.0
+    },
+    {
+      "node_id": "task-reference.expected-envelope",
+      "x": 0.0,
+      "y": 1700.0
+    },
+    {
+      "node_id": "task-reference.terminal-target",
+      "x": 0.0,
+      "y": 1800.0
+    },
+    {
+      "node_id": "bn-node-version.hover.TCP.v1",
+      "x": 360.0,
+      "y": 0.0
+    },
+    {
+      "node_id": "bn-node-version.hover.PC.v1",
+      "x": 360.0,
+      "y": 240.0
+    },
+    {
+      "node_id": "bn-node-version.hover.SM.v1",
+      "x": 360.0,
+      "y": 480.0
+    },
+    {
+      "node_id": "bn-node-version.hover.OC.v1",
+      "x": 360.0,
+      "y": 720.0
+    },
+    {
+      "node_id": "bn-node-version.hover.TCP.1.v1",
+      "x": 720.0,
+      "y": 0.0
+    },
+    {
+      "node_id": "bn-node-version.hover.TCP.2.v1",
+      "x": 720.0,
+      "y": 120.0
+    },
+    {
+      "node_id": "bn-node-version.hover.TCP.3.v1",
+      "x": 720.0,
+      "y": 240.0
+    },
+    {
+      "node_id": "bn-node-version.hover.TCP.4.v1",
+      "x": 720.0,
+      "y": 360.0
+    },
+    {
+      "node_id": "bn-node-version.hover.PC.1.v1",
+      "x": 720.0,
+      "y": 480.0
+    },
+    {
+      "node_id": "bn-node-version.hover.PC.2.v1",
+      "x": 720.0,
+      "y": 600.0
+    },
+    {
+      "node_id": "bn-node-version.hover.SM.1.v1",
+      "x": 720.0,
+      "y": 720.0
+    },
+    {
+      "node_id": "bn-node-version.hover.SM.2.v1",
+      "x": 720.0,
+      "y": 840.0
+    },
+    {
+      "node_id": "bn-node-version.hover.OC.1.v1",
+      "x": 720.0,
+      "y": 960.0
+    },
+    {
+      "node_id": "bn-node-version.hover.OC.2.v1",
+      "x": 720.0,
+      "y": 1080.0
+    },
+    {
+      "node_id": "bn-node-version.hover.OC.3.v1",
+      "x": 720.0,
+      "y": 1200.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O1.v1",
+      "x": 1080.0,
+      "y": 0.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O2.v1",
+      "x": 1080.0,
+      "y": 90.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O3.v1",
+      "x": 1080.0,
+      "y": 180.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O4.v1",
+      "x": 1080.0,
+      "y": 270.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O5.v1",
+      "x": 1080.0,
+      "y": 360.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O6.v1",
+      "x": 1080.0,
+      "y": 450.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O7.v1",
+      "x": 1080.0,
+      "y": 540.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O8.v1",
+      "x": 1080.0,
+      "y": 630.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O9.v1",
+      "x": 1080.0,
+      "y": 720.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O10.v1",
+      "x": 1080.0,
+      "y": 810.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O11.v1",
+      "x": 1080.0,
+      "y": 900.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O12.v1",
+      "x": 1080.0,
+      "y": 990.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.O13.v1",
+      "x": 1080.0,
+      "y": 1080.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.H1.v1",
+      "x": 1080.0,
+      "y": 1170.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.H2.v1",
+      "x": 1080.0,
+      "y": 1260.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.H3.v1",
+      "x": 1080.0,
+      "y": 1350.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.H4.v1",
+      "x": 1080.0,
+      "y": 1440.0
+    },
+    {
+      "node_id": "evidence-binding-version.hover.H5.v1",
+      "x": 1080.0,
+      "y": 1530.0
+    }
+  ],
+  "viewport": {
+    "x": 0.0,
+    "y": 0.0,
+    "zoom": 0.75
+  }
+}

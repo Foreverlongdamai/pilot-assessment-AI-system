@@ -1,0 +1,616 @@
+{
+  "contract_id": "bn-node-version-catalog",
+  "contract_version": "0.1.0",
+  "versions": [
+    {
+      "bn_node_version_id": "bn-node-version.hover.TCP.v1",
+      "concept_id": "bn-concept.TCP",
+      "content_hash": "dfa34e263ff56d60c622d679f51e2816bd3b51d952acd73743212c3f75c49c76",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.TCP.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.PC.v1",
+      "concept_id": "bn-concept.PC",
+      "content_hash": "6f064ea2898967e2e75a17c204c75ed6b9518b70d09abef0bca44e96d0a86d6d",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.PC.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.SM.v1",
+      "concept_id": "bn-concept.SM",
+      "content_hash": "06ee1dce8abd7cdccf5f13bb60b51d1b6b35596f22a8f8c8862f2bbf3dceaf6f",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.SM.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.OC.v1",
+      "concept_id": "bn-concept.OC",
+      "content_hash": "1e3ab6f52f302ce2053dfd4d9df5fb6d91c8929c14ab1a9ba9ea7605d79f7327",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.OC.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.TCP.1.v1",
+      "concept_id": "bn-concept.TCP.1",
+      "content_hash": "e442e448825497869a265991d3f91b57217ad540421afadfad85c86ac5efd34e",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.TCP.1.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.v1"
+        }
+      ],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.TCP.2.v1",
+      "concept_id": "bn-concept.TCP.2",
+      "content_hash": "ea2ced22c1fd0764fe5a48169ed5d6f280bf1442dded6b872afc467e86133a2e",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.TCP.2.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.v1"
+        }
+      ],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.TCP.3.v1",
+      "concept_id": "bn-concept.TCP.3",
+      "content_hash": "1db1d9131ad7e19e84634b609cf3c4640833755ea6952eddb193ab69f2caf5ca",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.TCP.3.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.v1"
+        }
+      ],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.TCP.4.v1",
+      "concept_id": "bn-concept.TCP.4",
+      "content_hash": "d80efd01c81d327d25969f97d1ab3f6785716850c940bb28f8d582933a91b94f",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.TCP.4.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.v1"
+        }
+      ],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.PC.1.v1",
+      "concept_id": "bn-concept.PC.1",
+      "content_hash": "ffa284c976d7b306466de984c3dfcaa61dc7333dfbe85335d708776397e7d482",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.PC.1.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.PC.v1"
+        }
+      ],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.PC.2.v1",
+      "concept_id": "bn-concept.PC.2",
+      "content_hash": "641a09bac417afc23eeb8d9346215e7c89dd08a1f048c7a526b45bd51797ad5c",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.PC.2.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.PC.v1"
+        }
+      ],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.SM.1.v1",
+      "concept_id": "bn-concept.SM.1",
+      "content_hash": "511244b4c1e1b2232b97b687ff423925c8de2ff5fb9cc1464b0bcd9d392989cb",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.SM.1.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.v1"
+        }
+      ],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.SM.2.v1",
+      "concept_id": "bn-concept.SM.2",
+      "content_hash": "c491257598d78a418cf48c082ae92425111cb8fa5fa766be8234e5211c295ac3",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.SM.2.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.v1"
+        }
+      ],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.OC.1.v1",
+      "concept_id": "bn-concept.OC.1",
+      "content_hash": "2d647ea3ea4274653a9f64383b73489ccca1c3015fdc7eee3529c872e833861c",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.OC.1.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.v1"
+        }
+      ],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.OC.2.v1",
+      "concept_id": "bn-concept.OC.2",
+      "content_hash": "7c91bb5f8285237a21ef9ac4d536eb3706f6affc1eabec385469f4ee9387edcc",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.OC.2.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.v1"
+        }
+      ],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    },
+    {
+      "bn_node_version_id": "bn-node-version.hover.OC.3.v1",
+      "concept_id": "bn-concept.OC.3",
+      "content_hash": "d32870681165b762a8b487ac37868f58d4861cb5d83cfc67719b29819ea7619c",
+      "contract_id": "bn-node-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.bn.OC.3.v1"
+      },
+      "documentation": "Hover starter only. Experts may clone and change states, parents, or CPT.",
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated Hover starter BN node.",
+        "source_version_ids": []
+      },
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.v1"
+        }
+      ],
+      "ordered_states": [
+        {
+          "description": "Starter low ability state; expert calibration required.",
+          "label": "At Risk",
+          "state_id": "at_risk"
+        },
+        {
+          "description": "Starter intermediate ability state; expert calibration required.",
+          "label": "Developing",
+          "state_id": "developing"
+        },
+        {
+          "description": "Starter high ability state; expert calibration required.",
+          "label": "Proficient",
+          "state_id": "proficient"
+        }
+      ],
+      "scientific_status": "starter_template"
+    }
+  ]
+}

@@ -1,0 +1,2106 @@
+{
+  "contract_id": "cpt-version-catalog",
+  "contract_version": "0.1.0",
+  "cpts": [
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.TCP.v1"
+      },
+      "content_hash": "f886ccced80c8133befc669bb8562452b1112836f91c865d4ac04388623b5b89",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.TCP.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "uniform-prior-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [],
+      "ordered_parent_variable_ids": [],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.PC.v1"
+      },
+      "content_hash": "1f34dc566611c6bd68c51dcaed5e6644827017485921a98f28f9a1c7e6e49d37",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.PC.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "uniform-prior-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [],
+      "ordered_parent_variable_ids": [],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.SM.v1"
+      },
+      "content_hash": "b96c3a0906dc2b79dc1af1e9510be45621f4ad0c7ee0ca804244889b9b72da2f",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.SM.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "uniform-prior-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [],
+      "ordered_parent_variable_ids": [],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.OC.v1"
+      },
+      "content_hash": "4afcd72a8be088432889ebfaee0c9a45c67f03b52f65fee529397999ce0872eb",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.OC.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "uniform-prior-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3333333333333333
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [],
+      "ordered_parent_variable_ids": [],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.TCP.1.v1"
+      },
+      "content_hash": "f62fddead00750f4c9d781cd820b16ef0783e9429ad8e63d7f6299ca1a3a4467",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.TCP.1.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.TCP.2.v1"
+      },
+      "content_hash": "abb29a3c1c0fe1af50241c9d34c67ab0ea2d7cd77e254d6ffa9532308e7af269",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.TCP.2.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.TCP.3.v1"
+      },
+      "content_hash": "ebb7d330f6397bd78f383734624fb5ef6cee85ef6c4ae24b4051c492500ff836",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.TCP.3.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.TCP.4.v1"
+      },
+      "content_hash": "0ef890d8fef787afbe1ca5cdac8fe566bb0b31e5f2b7449e9321d494788da097",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.TCP.4.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.PC.1.v1"
+      },
+      "content_hash": "bc31ae772d7fbad8de75604041fa5eb4b104cba7985eb258af56b5b48baced1e",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.PC.1.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.PC.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.PC.2.v1"
+      },
+      "content_hash": "d925224f74f455dfa70c085de10742c45556f00b08e075635fc94153295b2924",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.PC.2.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.PC.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.SM.1.v1"
+      },
+      "content_hash": "7527051899408061ef6be511c6908d95dde0389ac61539d1c040d563bfd699af",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.SM.1.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.SM.2.v1"
+      },
+      "content_hash": "a9710545c8627f6aa28dd5d206535ae69c8a963a226f539ee06af004e6c2afe1",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.SM.2.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.OC.1.v1"
+      },
+      "content_hash": "86db0495f8aef56b865fc4d3724f103cd03682848ffa0ddcdc82870b82ea9be5",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.OC.1.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.OC.2.v1"
+      },
+      "content_hash": "acc231d5c49662dd37f116a32e66a0a85229db48fd98af974e4ba1c114786fb4",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.OC.2.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "at_risk",
+        "developing",
+        "proficient"
+      ],
+      "child_variable_id": {
+        "kind": "bn_node_version",
+        "version_id": "bn-node-version.hover.OC.3.v1"
+      },
+      "content_hash": "77f4a6ceb4a18a0315616f1c5cbbf0e1d7fb332e5a39e312f032f04e69f0c780",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.bn.OC.3.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O1.v1"
+      },
+      "content_hash": "fa6ee98aec64c3ace75f221b976be5b69a8bc7cc84b656e2900f4e7fa2350e83",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O1.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ranked-node-v1",
+        "scientific_status": "engineering_default",
+        "sigma": 0.6,
+        "weakest_link_strength": 0.5,
+        "weights": [
+          0.5,
+          0.5
+        ]
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.7979456863302476,
+          0.19896951937076282,
+          0.0030847942989895563
+        ],
+        [
+          0.6601289074309735,
+          0.32963655063174263,
+          0.010234541937283787
+        ],
+        [
+          0.4849245388797158,
+          0.4849245388797158,
+          0.03015092224056833
+        ],
+        [
+          0.6601289074309735,
+          0.32963655063174263,
+          0.010234541937283787
+        ],
+        [
+          0.16637851056992245,
+          0.667242978860155,
+          0.16637851056992245
+        ],
+        [
+          0.07667778714781305,
+          0.6158142604510264,
+          0.3075079524011605
+        ],
+        [
+          0.4849245388797158,
+          0.4849245388797158,
+          0.03015092224056833
+        ],
+        [
+          0.07667778714781305,
+          0.6158142604510264,
+          0.3075079524011605
+        ],
+        [
+          0.0030847942989895563,
+          0.19896951937076282,
+          0.7979456863302476
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ],
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.PC.1.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O2.v1"
+      },
+      "content_hash": "fcd4fb6e5373054def7c3a56727cc7987023dfc124328aa4a5deeb18d6e0b32c",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O2.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ranked-node-v1",
+        "scientific_status": "engineering_default",
+        "sigma": 0.6,
+        "weakest_link_strength": 0.5,
+        "weights": [
+          0.5,
+          0.5
+        ]
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.7979456863302476,
+          0.19896951937076282,
+          0.0030847942989895563
+        ],
+        [
+          0.6601289074309735,
+          0.32963655063174263,
+          0.010234541937283787
+        ],
+        [
+          0.4849245388797158,
+          0.4849245388797158,
+          0.03015092224056833
+        ],
+        [
+          0.6601289074309735,
+          0.32963655063174263,
+          0.010234541937283787
+        ],
+        [
+          0.16637851056992245,
+          0.667242978860155,
+          0.16637851056992245
+        ],
+        [
+          0.07667778714781305,
+          0.6158142604510264,
+          0.3075079524011605
+        ],
+        [
+          0.4849245388797158,
+          0.4849245388797158,
+          0.03015092224056833
+        ],
+        [
+          0.07667778714781305,
+          0.6158142604510264,
+          0.3075079524011605
+        ],
+        [
+          0.0030847942989895563,
+          0.19896951937076282,
+          0.7979456863302476
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ],
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.2.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O3.v1"
+      },
+      "content_hash": "ac2c0a1a0909004dc438f8fbd817b97a56bf4488f8352fad23fef51fefce54d4",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O3.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.2.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O4.v1"
+      },
+      "content_hash": "79b590016bd217b9713d0200760900b39ab52d9d1cff1cb2aa126c4469a570cc",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O4.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.2.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O5.v1"
+      },
+      "content_hash": "0aba6219d396d0dfcaacef0c22c3d498879a5f4e5441f903b1eabc3c22471082",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O5.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.3.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O6.v1"
+      },
+      "content_hash": "12d1d25f97331d11a157bf5a5ba9469415d6d104803bc60cb71d1ceea3178d4f",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O6.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.3.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O7.v1"
+      },
+      "content_hash": "331402be74bff678e4fc8625aebd8bafb50e78a8a478e52d7aa9835881a53b8f",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O7.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ranked-node-v1",
+        "scientific_status": "engineering_default",
+        "sigma": 0.6,
+        "weakest_link_strength": 0.5,
+        "weights": [
+          0.5,
+          0.5
+        ]
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.7979456863302476,
+          0.19896951937076282,
+          0.0030847942989895563
+        ],
+        [
+          0.6601289074309735,
+          0.32963655063174263,
+          0.010234541937283787
+        ],
+        [
+          0.4849245388797158,
+          0.4849245388797158,
+          0.03015092224056833
+        ],
+        [
+          0.6601289074309735,
+          0.32963655063174263,
+          0.010234541937283787
+        ],
+        [
+          0.16637851056992245,
+          0.667242978860155,
+          0.16637851056992245
+        ],
+        [
+          0.07667778714781305,
+          0.6158142604510264,
+          0.3075079524011605
+        ],
+        [
+          0.4849245388797158,
+          0.4849245388797158,
+          0.03015092224056833
+        ],
+        [
+          0.07667778714781305,
+          0.6158142604510264,
+          0.3075079524011605
+        ],
+        [
+          0.0030847942989895563,
+          0.19896951937076282,
+          0.7979456863302476
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ],
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.4.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.2.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O8.v1"
+      },
+      "content_hash": "76af543f17105718fbe77b74f84cffdf855796b53479aa51594355de77f19a54",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O8.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.3.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O9.v1"
+      },
+      "content_hash": "1584ed502219ad742210cde13ee5cb75a981c3eb69f6580d50be5b613b0ce8e5",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O9.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.4.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O10.v1"
+      },
+      "content_hash": "5512d46239828b6cb09e73b97435deb5cd1ca337efbe39aa119fe96a666bb102",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O10.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.1.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O11.v1"
+      },
+      "content_hash": "5f9016f3f9bde7415b25a76db21c67939450512fa9fe5c3acdcefce4b5d2e389",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O11.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ranked-node-v1",
+        "scientific_status": "engineering_default",
+        "sigma": 0.6,
+        "weakest_link_strength": 0.5,
+        "weights": [
+          0.5,
+          0.5
+        ]
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.7979456863302476,
+          0.19896951937076282,
+          0.0030847942989895563
+        ],
+        [
+          0.6601289074309735,
+          0.32963655063174263,
+          0.010234541937283787
+        ],
+        [
+          0.4849245388797158,
+          0.4849245388797158,
+          0.03015092224056833
+        ],
+        [
+          0.6601289074309735,
+          0.32963655063174263,
+          0.010234541937283787
+        ],
+        [
+          0.16637851056992245,
+          0.667242978860155,
+          0.16637851056992245
+        ],
+        [
+          0.07667778714781305,
+          0.6158142604510264,
+          0.3075079524011605
+        ],
+        [
+          0.4849245388797158,
+          0.4849245388797158,
+          0.03015092224056833
+        ],
+        [
+          0.07667778714781305,
+          0.6158142604510264,
+          0.3075079524011605
+        ],
+        [
+          0.0030847942989895563,
+          0.19896951937076282,
+          0.7979456863302476
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ],
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.PC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.1.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O12.v1"
+      },
+      "content_hash": "6fff40a9e994764fdbc918d81b06f41ce4eee95b3ca505c6fd5a1ea577989437",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O12.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ranked-node-v1",
+        "scientific_status": "engineering_default",
+        "sigma": 0.6,
+        "weakest_link_strength": 0.5,
+        "weights": [
+          0.5,
+          0.5
+        ]
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.7979456863302476,
+          0.19896951937076282,
+          0.0030847942989895563
+        ],
+        [
+          0.6601289074309735,
+          0.32963655063174263,
+          0.010234541937283787
+        ],
+        [
+          0.4849245388797158,
+          0.4849245388797158,
+          0.03015092224056833
+        ],
+        [
+          0.6601289074309735,
+          0.32963655063174263,
+          0.010234541937283787
+        ],
+        [
+          0.16637851056992245,
+          0.667242978860155,
+          0.16637851056992245
+        ],
+        [
+          0.07667778714781305,
+          0.6158142604510264,
+          0.3075079524011605
+        ],
+        [
+          0.4849245388797158,
+          0.4849245388797158,
+          0.03015092224056833
+        ],
+        [
+          0.07667778714781305,
+          0.6158142604510264,
+          0.3075079524011605
+        ],
+        [
+          0.0030847942989895563,
+          0.19896951937076282,
+          0.7979456863302476
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ],
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.PC.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.1.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.O13.v1"
+      },
+      "content_hash": "7912f4303d2502736c6a2bd083db753f513de2a9df3a8a18d1cf9de75cf51dbc",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.O13.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.2.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.H1.v1"
+      },
+      "content_hash": "c6b30f685791e8c24099aa643ecca28b0ee8ea7986eb7c5e57b121cbf17a1b52",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.H1.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ranked-node-v1",
+        "scientific_status": "engineering_default",
+        "sigma": 0.6,
+        "weakest_link_strength": 0.5,
+        "weights": [
+          0.5,
+          0.5
+        ]
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.7979456863302476,
+          0.19896951937076282,
+          0.0030847942989895563
+        ],
+        [
+          0.6601289074309735,
+          0.32963655063174263,
+          0.010234541937283787
+        ],
+        [
+          0.4849245388797158,
+          0.4849245388797158,
+          0.03015092224056833
+        ],
+        [
+          0.6601289074309735,
+          0.32963655063174263,
+          0.010234541937283787
+        ],
+        [
+          0.16637851056992245,
+          0.667242978860155,
+          0.16637851056992245
+        ],
+        [
+          0.07667778714781305,
+          0.6158142604510264,
+          0.3075079524011605
+        ],
+        [
+          0.4849245388797158,
+          0.4849245388797158,
+          0.03015092224056833
+        ],
+        [
+          0.07667778714781305,
+          0.6158142604510264,
+          0.3075079524011605
+        ],
+        [
+          0.0030847942989895563,
+          0.19896951937076282,
+          0.7979456863302476
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ],
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.PC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.2.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.H2.v1"
+      },
+      "content_hash": "6ca5335d038d0405cbd6f8bab054d679cdc6211a66c86fc9ed492de1dfb2bdc3",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.H2.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.1.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.H3.v1"
+      },
+      "content_hash": "b07c5ccbae3828674f92a78a4833236da8921d7bfc3c2c06219bd3ee81c8b974",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.H3.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.2.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.H4.v1"
+      },
+      "content_hash": "4029c6362d4acdefa6e055a96d89e352ccfe8fe8c4ae6eb0bd62faef32ff7fc6",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.H4.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.3.v1"
+        }
+      ],
+      "source": "engineering_default"
+    },
+    {
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "child_variable_id": {
+        "kind": "evidence_binding_version",
+        "version_id": "evidence-binding-version.hover.H5.v1"
+      },
+      "content_hash": "0148e2d49831215f034944448f16c75fae72d23890096f5532831db84b16f56e",
+      "contract_id": "cpt-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": "cpt-version.hover.evidence.H5.v1",
+      "generator_metadata": {
+        "editable": true,
+        "generator_type": "ordered-single-parent-preset-v1",
+        "scientific_status": "engineering_default"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Editable engineering-default CPT.",
+        "source_version_ids": []
+      },
+      "materialized_probabilities": [
+        [
+          0.79,
+          0.2,
+          0.01
+        ],
+        [
+          0.17,
+          0.66,
+          0.17
+        ],
+        [
+          0.01,
+          0.2,
+          0.79
+        ]
+      ],
+      "mode": "generated",
+      "ordered_parent_state_ids": [
+        [
+          "at_risk",
+          "developing",
+          "proficient"
+        ]
+      ],
+      "ordered_parent_variable_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.3.v1"
+        }
+      ],
+      "source": "engineering_default"
+    }
+  ]
+}

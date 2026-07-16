@@ -1,0 +1,1239 @@
+{
+  "bindings": [
+    {
+      "content_hash": "c66eb2b7675e67c7655ba49af922fab6b67cafd983bfb3957298f6f860ecd9c3",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O1.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O1.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.O1.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.O1.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "X": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.PC.1.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "9e3fa192372fc6e31e0d8f57d356d6c615af3f8111eb32a7f5fa04a429e6023b",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O2.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O2.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.O2.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.O2.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "X": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.2.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "ad285259b41b87e4fbf5bf0050fbe0bdbfad8d7483d36df3674d0fc6e69dcfc5",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O3.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O3.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.O3.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.O3.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "X": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.2.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "67b383a239c867ae5de8df1613724600f5168d04817ec2616e4b050a6dab2908",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O4.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O4.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.O4.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.O4.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "X": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.2.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "c5e553d322bfd0226a7ecc04e621d115cf10607314aa734b1f3bb5f21d494a4e",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O5.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O5.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.O5.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.O5.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "U": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.3.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "1a6c5f643597dd12acf5f70e6eb6718f3206da982033b0c5043b93b94c360c3b",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O6.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O6.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.O6.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.O6.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "U": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.3.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "3df63f60c0a75a9a63be8c01c11232f3dffc50fdcbb192d3c3d4674f9de2fa47",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O7.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O7.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.O7.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.O7.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "U": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.4.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.2.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "92e3ed454df24e0073507f43677f3201dd243313fceef8a787c149d6f1fe838c",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O8.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O8.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m5.O8.raw-task-v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m5.O8.raw-task-v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "U": 0.5,
+        "X": 0.5
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": "control-performance-shared-source",
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 0.5,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.3.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "06e451ab27ef87689a017a38cd96459a8c744ea839b3fe152ae0ff7f4daea591",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O9.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O9.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.O9.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.O9.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "U": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.TCP.4.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "a94a2e943bd2d6206ed55a9c8f7df2a493aed8bfa8df2a5338cd3851db6bbafd",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O10.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O10.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.O10.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.O10.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "X": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.1.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "deaf7645331be9eceb786784c41f646ed96e5397719d7ee49080f625f0a70f1d",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O11.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O11.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.O11.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.O11.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "U": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.PC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.1.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "ed27743f18975109d4ef5ad49389757628a5d6f4f0d1b0c6109d23fb17ac5422",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O12.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O12.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.O12.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.O12.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "U": 0.5,
+        "X": 0.5
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.PC.1.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.1.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "dbc4e8bb1ead09c9861cb26f9e93ebf1158d5dceba57102db34ed9dd0404e460",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.O13.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.O13.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.O13.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.O13.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "ECG": 0.5,
+        "U": 0.5
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": "control-physiology-shared-source",
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 0.5,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.2.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "99448e3cb77335d6404c7e0bafccfe44c07e6173c7b4b581dc0f1d5c9dd5a077",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.H1.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.H1.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.H1.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.H1.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "G": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": "gaze-allocation",
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 0.5,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.PC.2.v1"
+        },
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.2.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "c24d63792106569084382d2b63cf79ca50b4dfd5eeb7eb063a3d6983d4d9aeee",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.H2.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.H2.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.H2.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.H2.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "G": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.1.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "da50b43da5d13a507d5345bd1ec048003b1dc45d315f2d80d8e0f72447245c00",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.H3.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.H3.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.H3.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.H3.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "G": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": "gaze-allocation",
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 0.5,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.SM.2.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "75a0776242838990116267caf9f2716f8d60d5264b2f8d14da6ecccbcc7d430a",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.H4.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.H4.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.H4.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.H4.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "ECG": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.3.v1"
+        }
+      ]
+    },
+    {
+      "content_hash": "0e5ac813a66415c11b5275e883937ba3cd6d01faabe7b8b9fad4c3583093bf0c",
+      "contract_id": "evidence-binding-version",
+      "contract_version": "0.1.0",
+      "cpt_version_id": {
+        "kind": "cpt_version",
+        "version_id": "cpt-version.hover.evidence.H5.v1"
+      },
+      "evidence_binding_version_id": "evidence-binding-version.hover.H5.v1",
+      "evidence_version_id": {
+        "kind": "evidence_version",
+        "version_id": "evidence-version.m4r.H5.v1"
+      },
+      "lineage": {
+        "created_at": "2026-07-16T19:00:00Z",
+        "created_by": "generator.m5.task10",
+        "note": "Generated observation binding for an editable Hover starter Evidence.",
+        "source_version_ids": [
+          "evidence-version.m4r.H5.v1"
+        ]
+      },
+      "modality_attribution_weights": {
+        "EEG": 1.0
+      },
+      "observation_mapping": {
+        "calculation_status": {
+          "computed": "observe",
+          "dependency_missing": "omit",
+          "extractor_error": "omit",
+          "missing_input": "omit",
+          "not_applicable": "omit",
+          "not_computable": "omit"
+        },
+        "dependence_group": null,
+        "evidence_state_map": {
+          "adequate": "adequate",
+          "desired": "desired",
+          "unacceptable": "unacceptable"
+        },
+        "likelihood_strength": 1.0,
+        "quality_gate": null
+      },
+      "observation_policy": "hard_or_virtual",
+      "ordered_observation_states": [
+        {
+          "description": "Computed negative performance evidence.",
+          "label": "Unacceptable",
+          "state_id": "unacceptable"
+        },
+        {
+          "description": "Computed adequate performance evidence.",
+          "label": "Adequate",
+          "state_id": "adequate"
+        },
+        {
+          "description": "Computed desired performance evidence.",
+          "label": "Desired",
+          "state_id": "desired"
+        }
+      ],
+      "ordered_probabilistic_parent_ids": [
+        {
+          "kind": "bn_node_version",
+          "version_id": "bn-node-version.hover.OC.3.v1"
+        }
+      ]
+    }
+  ],
+  "contract_id": "evidence-binding-version-catalog",
+  "contract_version": "0.1.0"
+}

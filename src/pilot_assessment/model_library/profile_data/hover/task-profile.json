@@ -1,0 +1,62 @@
+{
+  "annotation_parameters": {
+    "attention_event_source": "semantic.attention-events",
+    "disturbance_source": "semantic.disturbances",
+    "expert_editable": true
+  },
+  "aoi_parameters": {
+    "expert_editable": true,
+    "scene_source": "I.frames",
+    "taxonomy": "task-defined"
+  },
+  "content_hash": "3fec27bb8ce877779484ce43a6c3aae337c58815ae7ccc5449353c48974d7355",
+  "contract_id": "task-profile-version",
+  "contract_version": "0.1.0",
+  "description": "Editable engineering template for a Hover-like task; not a validated task standard.",
+  "lineage": {
+    "created_at": "2026-07-16T19:00:00Z",
+    "created_by": "generator.m5.task10",
+    "note": "Generated editable Hover starter task profile.",
+    "source_version_ids": []
+  },
+  "name": "Hover starter task profile",
+  "reference_parameters": {
+    "commanded_path_source": "task-reference.commanded-path",
+    "expected_envelope_source": "task-reference.expected-envelope",
+    "expert_editable": true,
+    "terminal_target_source": "task-reference.terminal-target"
+  },
+  "required_source_descriptor_ids": [
+    "ECG.channels",
+    "EEG.channels",
+    "G.frames",
+    "I.frames",
+    "U.channels",
+    "U.primary-control",
+    "X.hover-vector",
+    "X.position-vector",
+    "X.state-vector",
+    "derived.envelope-error",
+    "derived.flight-error",
+    "derived.terminal-error",
+    "semantic.attention-events",
+    "semantic.control-excursions",
+    "semantic.disturbances",
+    "session.duration-s",
+    "task-reference.commanded-path",
+    "task-reference.expected-envelope",
+    "task-reference.terminal-target"
+  ],
+  "source": "engineering_default",
+  "task_concept_id": "task-concept.hover",
+  "task_profile_version_id": "task-profile-version.hover-starter.v1",
+  "task_semantics": {
+    "phase_labels": [
+      "translation",
+      "deceleration",
+      "hover_stabilization"
+    ],
+    "starter_only": true,
+    "task_family": "hover"
+  }
+}

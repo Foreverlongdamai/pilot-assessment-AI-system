@@ -1,0 +1,201 @@
+{
+  "concepts": [
+    {
+      "concept_id": "bn-concept.TCP",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable aggregate competency starter concept.",
+      "lifecycle": "active",
+      "name": "Task Control Proficiency",
+      "node_role": "aggregate_competency",
+      "tags": [
+        "hover-starter",
+        "competency"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.PC",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable aggregate competency starter concept.",
+      "lifecycle": "active",
+      "name": "Procedural Compliance",
+      "node_role": "aggregate_competency",
+      "tags": [
+        "hover-starter",
+        "competency"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.SM",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable aggregate competency starter concept.",
+      "lifecycle": "active",
+      "name": "Situational Monitoring",
+      "node_role": "aggregate_competency",
+      "tags": [
+        "hover-starter",
+        "competency"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.OC",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable aggregate competency starter concept.",
+      "lifecycle": "active",
+      "name": "Operational Composure",
+      "node_role": "aggregate_competency",
+      "tags": [
+        "hover-starter",
+        "competency"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.TCP.1",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable latent sub-skill starter concept.",
+      "lifecycle": "active",
+      "name": "Trajectory tracking",
+      "node_role": "sub_skill",
+      "tags": [
+        "hover-starter",
+        "sub-skill"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.TCP.2",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable latent sub-skill starter concept.",
+      "lifecycle": "active",
+      "name": "Maneuver precision",
+      "node_role": "sub_skill",
+      "tags": [
+        "hover-starter",
+        "sub-skill"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.TCP.3",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable latent sub-skill starter concept.",
+      "lifecycle": "active",
+      "name": "Control efficiency",
+      "node_role": "sub_skill",
+      "tags": [
+        "hover-starter",
+        "sub-skill"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.TCP.4",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable latent sub-skill starter concept.",
+      "lifecycle": "active",
+      "name": "Control smoothness",
+      "node_role": "sub_skill",
+      "tags": [
+        "hover-starter",
+        "sub-skill"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.PC.1",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable latent sub-skill starter concept.",
+      "lifecycle": "active",
+      "name": "Envelope discipline",
+      "node_role": "sub_skill",
+      "tags": [
+        "hover-starter",
+        "sub-skill"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.PC.2",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable latent sub-skill starter concept.",
+      "lifecycle": "active",
+      "name": "Event response",
+      "node_role": "sub_skill",
+      "tags": [
+        "hover-starter",
+        "sub-skill"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.SM.1",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable latent sub-skill starter concept.",
+      "lifecycle": "active",
+      "name": "Reactive vigilance",
+      "node_role": "sub_skill",
+      "tags": [
+        "hover-starter",
+        "sub-skill"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.SM.2",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable latent sub-skill starter concept.",
+      "lifecycle": "active",
+      "name": "Attention allocation",
+      "node_role": "sub_skill",
+      "tags": [
+        "hover-starter",
+        "sub-skill"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.OC.1",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable latent sub-skill starter concept.",
+      "lifecycle": "active",
+      "name": "Disturbance recovery",
+      "node_role": "sub_skill",
+      "tags": [
+        "hover-starter",
+        "sub-skill"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.OC.2",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable latent sub-skill starter concept.",
+      "lifecycle": "active",
+      "name": "Stress resilience",
+      "node_role": "sub_skill",
+      "tags": [
+        "hover-starter",
+        "sub-skill"
+      ]
+    },
+    {
+      "concept_id": "bn-concept.OC.3",
+      "contract_id": "bn-node-concept",
+      "contract_version": "0.1.0",
+      "description": "Editable latent sub-skill starter concept.",
+      "lifecycle": "active",
+      "name": "Physio regulation",
+      "node_role": "sub_skill",
+      "tags": [
+        "hover-starter",
+        "sub-skill"
+      ]
+    }
+  ],
+  "contract_id": "bn-node-concept-catalog",
+  "contract_version": "0.1.0"
+}
