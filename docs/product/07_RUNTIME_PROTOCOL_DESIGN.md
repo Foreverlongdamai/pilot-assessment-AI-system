@@ -8,7 +8,7 @@
 | 服务端 | Python Assessment Core sidecar |
 | 适用范围 | 本地、单用户、离线评估 |
 
-> **当前权威补充：** M5 域语义以 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 和 [M5 Implementation Plan](./plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) 为准：协议最终必须承载全局 component versions、exact-pinned schemes、两类 typed mutation edge、只读 inference overlay、scheme draft/preview 与 copy-on-write atomic publish。M4R 只实现进程内 EvidenceRecipe service；M5 当前完成 Task 1–8 generic identity、transport-neutral public contracts/schema、typed source/migration preflight、进程内 component repository/service、scheme reference closure/technical validation、进程内 draft composer/undo/redo/atomic publish、generic CPT validation/materialization/migration，以及 finite-discrete exact inference/read-only influence trace；M6 durable persistence/sidecar 尚未实现。本文件的方法名仍是 M6 前候选，不得被描述为已冻结或已实现协议；但候选命名已消除无类型 `edge.add` 和单一 whole-model revision 口径。
+> **当前权威补充：** M5 域语义以 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 和 [M5 Implementation Plan](./plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) 为准：协议必须承载全局 component versions、exact-pinned schemes、两类 typed mutation edge、只读 inference overlay、scheme draft/preview 与 copy-on-write atomic publish。M4R 的进程内 EvidenceRecipe service 和 M5 transport-neutral/in-memory model workspace 已工程验证；M6 durable persistence/sidecar 尚未实现。本文件只是 M6 前 placeholder，方法名仍是候选，不得被描述为已冻结或已实现协议；M6 正式规格必须在复用 M5 domain services 的同时冻结 repository transaction、artifact、framing、progress/cancel/error 与 run-lock 语义。
 
 ## 1. 目标与边界
 

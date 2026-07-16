@@ -4,10 +4,10 @@
 |---|---|
 | 设计基线 | M5 v0.1 |
 | 日期 | 2026-07-16 |
-| 状态 | Approved；已完成仓库一致性复核，可进入轻量 implementation plan |
+| 状态 | Approved / engineering verified |
 | 上位设计 | [Expert-Editable Evidence and Assessment Model Design](./2026-07-15-expert-editable-evidence-and-model-design.md) |
 | 决策 | D-036–D-040 |
-| 实施状态 | 实施中；Task 1–11 generic typed content identity、public contracts/Schema、typed source/M4R preflight、进程内 global component library、exact-pinned validation、scheme draft/atomic publish、通用 CPT 校验/生成/迁移、finite-discrete exact inference/只读 influence trace、M4R active import/compliant TPX parallel version、checksummed Hover starter BN package 与 lightweight preview/posterior/publish/replay workflow 已完成，仅 Task 12 completion gate 尚未完成；M4R 已完成，M5 implementation plan 与本文配套保存 |
+| 实施状态 | Task 1–12 已完成；implementation head `a2cc913` 后的 focused、M4R regression、full repository、Ruff/format、`ty check src`、Schema、fresh build 与仓库外 wheel smoke 全部通过；M6–M8 尚未实现，`formal_run_authorized=false` |
 
 ## 1. 目的
 

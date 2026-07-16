@@ -1,13 +1,13 @@
-# Implementation Status — M1/M2/M3/M4R Engineering Verified
+# Implementation Status — M1/M2/M3/M4R/M5 Engineering Verified
 
 | 字段 | 当前值 |
 |---|---|
 | 状态日期 | 2026-07-16 |
 | 产品设计基线 | v0.3 shared-versioned-model architecture（D-031–D-040） |
-| 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization + M4R Editable Evidence Computation Foundation |
+| 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization + M4R Editable Evidence Computation Foundation + M5 Shared Model Library and Bayesian Workspace |
 | M4 当前状态 | M4R 已完成 canonical EvidenceRecipe/OperatorDefinition schema、trusted registry、only-technical validation、generic compiler/executor、built-in operator library、backend-only draft/preview/apply/replay、18 个 editable starter resources 和轻量 E2E。旧 Task 0–28 的 15 个 whole-Anchor plugins 与三个 providers 保留为 legacy/reference；旧 Task 29–36 已停止。**M4R engineering verified；`formal_run_authorized=false`。** |
-| 下一里程碑 | M5 Task 1–11 已完成 generic identity、public contracts/Schema、typed source/M4R preflight、进程内 global component library、exact-pinned validation、scheme draft/atomic publish、通用 CPT 校验/生成/迁移、finite-discrete exact inference/只读 influence trace、M4R active import/compliant TPX parallel version、checksummed Hover starter BN package 与 lightweight preview/posterior/publish/replay workflow；下一执行入口为 Task 12 completion gate；不自动把 M6/M7 混入 M5 |
-| 软件状态 | `in_progress`（M1/M2/M3/M4R engineering verified；M5 Task 1–11 已完成，但 Task 12 completion gate、M6 durable persistence/sidecar、M7 WinUI 与 M8 packaging 尚未完成） |
+| 下一里程碑 | M6 persistence/runtime protocol：先形成正式规格，再实现 durable project/session/model/run repository、managed artifacts、JSON-RPC sidecar 与 run lifecycle；不直接跳到 M7 WinUI |
+| 软件状态 | `in_progress`（M1/M2/M3/M4R/M5 engineering verified；M6 durable persistence/sidecar、M7 WinUI 与 M8 packaging 尚未完成，`formal_run_authorized=false`） |
 | 科学状态 | synthetic 数据为 `not_supported`；评估模型仍待领域专家校准与验证 |
 | Python package | `pilot-assessment-system 0.1.0` |
 | 本地运行边界 | Windows、离线、目录形式 Session Bundle |
@@ -23,7 +23,7 @@ M1/M2/M3 已实现，并通过 micro fixture 与 simulator 采集格式样例 CS
 5. 对七个 core modalities、bundle-local task reference 与 annotations 执行版本化 native-rate temporal binding、Decimal round-half-even clock mapping、master-clock X session-window mask，以及 non-gating synchronization/scene-gaze diagnostics；
 6. 输出只读 `AlignedSession` 与 public `SynchronizationReport`，使数据可以进入 M4 anchor/evidence availability，但永远不授权正式 assessment run。
 
-本结论证明 M1–M3 的合同、文件不变性与 native-rate 时间计算路径，以及 M4R 对 editable recipe 的保存、技术校验、编译、执行、预览和 revision replay 均按规格运行。Synthetic scene、gaze、EEG、ECG、pilot-camera、annotation、commanded path 与 M4R 小 fixture 都不是航空、生理或训练评估有效性证据。M3 不执行插值、重采样或 analysis/window grid；M4R 只在 recipe 显式放置相应 operator 时执行变换或建立窗口。
+本结论证明 M1–M3 的合同、文件不变性与 native-rate 时间计算路径，M4R 对 editable recipe 的保存、技术校验、编译、执行、预览和 revision replay，以及 M5 对全局组件版本、exact-pinned scheme、CPT、BN inference、迁移和 copy-on-write publish/replay 均按规格运行。Synthetic scene、gaze、EEG、ECG、pilot-camera、annotation、commanded path、starter Evidence/BN/CPT 与轻量 fixtures 都不是航空、生理或训练评估有效性证据。M3 不执行插值、重采样或 analysis/window grid；M4R 只在 recipe 显式放置相应 operator 时执行变换或建立窗口。
 
 其中 repository-external simulator CSV 只是一次随意飞行产生的采集格式样例，没有标准轨迹、任务 ground truth 或能力标签。对它的 E2E 验证只证明 33-column/100 Hz 格式可以被读取、保留和转换；不证明该飞行符合任务要求，也不支持任何表现或能力结论。
 
@@ -41,7 +41,9 @@ M4 书面设计明确采用 no-quality-gate 边界：进入 M4 的 aligned input
 
 2026-07-16 M5 Task 10 随后用显式 Python definitions 确定性物化 checksummed Hover starter package：15 个 BN concepts/versions、18 个 exact active Evidence bindings、33 张完整工程默认 CPT、task/reporting/layout 与 exact-pinned scheme。generic loader 只按 manifest type/schema dispatch，并验证 checksum、record/dependency closure 和 external exact pins；starter ID/数量没有进入通用 loader。focused 为 `4 passed`，model-library/schemes/bayesian 扩展 regression 为 `89 passed`，重复生成无 byte drift，全部 CPT 与 33-variable inference compile 通过。前面 Task 9 时点记录中的“Task 10–12 尚未完成”已被本段取代；当前准确剩余范围为 Task 11–12。
 
-2026-07-16 M5 Task 11 新增 read-only draft preview：以完整 draft typed hash 锁定 graph/layout revision，在隔离 staging repository 中物化 candidate IDs，执行 exact scheme validation、33-variable inference compile、hard/virtual observation、posterior 和 influence trace；preview 不消耗正式 ID，也不写 repository。轻量集成流程 clone O2 Evidence/binding/CPT，将 percentile 参数从 100 改为 95，并以 manual mode 修改一行 CPT；publish 只创建三个 changed versions 与一个并行 scheme，旧 starter 完全不变且两套方案均可 replay。commit 前 failure injection 不留下半成品；旧 O8 仍是 legacy-only。focused 为 `2 passed`，integration/schemes/model-library/bayesian 扩展 regression 为 `91 passed`，定向 Ruff/ty 通过。当前 M5 只剩 Task 12 completion gate。
+2026-07-16 M5 Task 11 新增 read-only draft preview：以完整 draft typed hash 锁定 graph/layout revision，在隔离 staging repository 中物化 candidate IDs，执行 exact scheme validation、33-variable inference compile、hard/virtual observation、posterior 和 influence trace；preview 不消耗正式 ID，也不写 repository。轻量集成流程 clone O2 Evidence/binding/CPT，将 percentile 参数从 100 改为 95，并以 manual mode 修改一行 CPT；publish 只创建三个 changed versions 与一个并行 scheme，旧 starter 完全不变且两套方案均可 replay。commit 前 failure injection 不留下半成品；旧 O8 仍是 legacy-only。focused 为 `2 passed`，integration/schemes/model-library/bayesian 扩展 regression 为 `91 passed`，定向 Ruff/ty 通过。该段记录 Task 11 提交时点；当时只剩 Task 12 completion gate。
+
+2026-07-16 M5 Task 12 已运行并关闭 completion gate：focused `91 passed`、M4R Evidence regression `59 passed`、full repository `1579 passed, 3 skipped`，Ruff/format、`ty check src`、Schema zero-drift、fresh build 和仓库外 wheel smoke 均通过。前文 Task 9/10/11 的“剩余任务”均为对应提交时点的历史记录；当前权威状态是 **M5 engineering verified，下一里程碑为 M6 persistence/runtime protocol**。
 
 ## 2. 已实现能力
 
@@ -136,6 +138,19 @@ uv run python -m pilot_assessment.synthetic `
 - O1–O12/H1–H3 的 15 个旧 Python plugins 保留为 legacy/reference/replay source；O13/H4/H5 仅引用旧参数资源并直接使用 operator composition。
 
 M4R 没有实现 BN、项目级 model workspace、持久化、JSON-RPC sidecar 或 WinUI。这些边界分别属于 M5–M7；当前仍不能创建正式 assessment run。
+
+### 2.8 M5 Shared Model Library and Bayesian Workspace
+
+- strict/frozen public DTO 与 16 类双目录 Draft 2020-12 Schema 覆盖 component、scheme draft、edge、observation、posterior 与 inference trace；
+- global in-memory repository/service 保存同 concept 的并行 immutable versions，不提供隐式 `latest`；scheme exact-pin ID 与 content hash；
+- typed operations 支持 incomplete autosave、optimistic revision、undo/redo、独立 layout revision、copy-on-write staged atomic publish 与 historical replay；
+- generic validator/compiler 支持任意合法 state count、node count 和 DAG，不按 Hover、18/11/4 或具体 node ID 分支；
+- CPT 支持 strict validation、deterministic generated materialization、显式 parent/state migration 和 manual table editing；finite-discrete inference 支持 hard/virtual/omitted observation、posterior 与只读 influence trace；
+- generic provenance preflight active-import 17 个 compatible M4R Evidence versions，保留旧 O8 bytes/hash 为 legacy-only，并发布同 concept 的 raw/session/task-derived TPX parallel version；
+- checksummed Hover starter package 提供 4 competency、11 sub-skill、18 Evidence binding、33 CPT 的工程起步模板；这些数量只属于资源包，不限制 generic engine；
+- lightweight workflow 从 O2 clone 并修改 percentile/CPT，preview posterior/influence 后仅发布三个 changed components 与新 scheme；旧 scheme 不变且两者均可 exact replay，失败注入不消耗正式 ID。
+
+M5 只实现 transport-neutral、进程内建模工作区后端。durable persistence、managed artifacts、JSON-RPC sidecar、正式 run orchestration、progress/cancel/crash recovery 属于 M6；WinUI 属于 M7。`formal_run_authorized=false`。
 
 ## 3. 验证证据
 
@@ -302,6 +317,19 @@ M4R 验证采用选择性测试，不再为 provisional 专家算法维护逐 An
 
 最终 fresh gate 为 `1472 passed, 3 skipped in 211.72s`；三个 skip 仅来自当前主机不允许测试 symlink，以及两条未配置 repository-external CSV 的 opt-in E2E。Ruff lint、212-file format check、`ty check src/pilot_assessment`、schema regeneration 与 whitespace check 均通过。当前 shell 没有 `uv` CLI，因此通过同一 `uv_build` backend 的标准 PEP 517 `pip wheel` 构建；最终 wheel 为 528,687 bytes，SHA-256 `e71d48e11a6d99efab4c67ba208f2556dc33d4b9248100abba3e07a8b737f700`，其中 18 个 recipe resources、catalog 与两份新 schema 齐全。M4R completion gate 因此关闭。
 
+### 3.6 M5 完成门
+
+2026-07-16 在 implementation head `a2cc913` 后执行 Task 12：
+
+- M5 focused model-library/scheme/BN/lightweight-workflow：`91 passed in 4.25s`；
+- M4R Evidence regression：`59 passed in 2.12s`；
+- full repository：`1579 passed, 3 skipped in 251.26s`；三个 skip 仅为 host symlink 限制和两条未配置 repository-external CSV 的 opt-in E2E；
+- Ruff lint 通过，Ruff format 确认 264 files 已格式化，`ty check src` 通过；32 份 root/package JSON Schema 再生成后 tracked drift 为零，whitespace diff 通过；
+- `.tools/uv/uv.exe 0.11.28` fresh build 生成 652,665-byte wheel（SHA-256 `91992f5e7b741a1e50f5dd2366c9b008f7756f845f7ae9d76a70c05e35235c96`）与 481,987-byte sdist（SHA-256 `e70f593c331e629cf0bb5c02afb1f23244a7ad4f0d42a5f5f2ce56284d663ee9`）；
+- 仓库外 `uv pip --target` 安装后的 module origin 位于临时安装目录。wheel manifest exact inventory 为 13 个 Hover JSON；checksummed loader 返回 15 BN concepts、15 BN versions、18 Evidence versions、18 bindings、33 CPT，并编译 33-variable inference plan。
+
+Task 12 还修正了计划中单处裸 `ty check`：仓库既有完成门的静态合同一直是 production source `ty check src`，而测试目录包含刻意构造的动态 JSON/Polars 负例。该修订没有放宽生产代码检查，也没有新增 ignore。上述证据关闭 M5 engineering gate，但不授权 formal run，也不证明 starter 算法、CPT 或能力输出科学有效。
+
 ## 4. 本轮自审与关闭项
 
 本轮跨文档与集成自审未发现残余 P0。已关闭的主要 P1：
@@ -318,7 +346,6 @@ M4R 验证采用选择性测试，不再为 provisional 专家算法维护逐 An
 
 ## 5. 尚未实现
 
-- M5 剩余：Task 12 completion gate；Task 1–11 identity、public DTO/schema、source/M4R preflight、进程内 global component repository/service、exact-pinned validation、scheme draft/atomic publish、通用 CPT validation/materialization/migration、finite-discrete exact inference/read-only influence trace、M4R active import/compliant TPX parallel version、checksummed Hover starter BN package 与 lightweight preview/posterior/publish/replay workflow 已完成；
 - M6：project/session/model/run persistence、受管理 artifact、JSON-RPC sidecar、run orchestration、progress/cancel/error 与 revision lock；
 - M7：WinUI 3 专家设计器、Evidence/BN 画布、schema-driven 参数/CPT 表单、preview/result/trace 与版本历史；
 - M8：安装包、示例项目、扩展算子指南、备份/恢复与完整交付验收；
@@ -327,21 +354,19 @@ M4R 验证采用选择性测试，不再为 provisional 专家算法维护逐 An
 
 ## 6. 下一里程碑
 
-下一步不是旧 Task 29，也不是直接开始 WinUI。M4R 已按 [implementation plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md) 完成；M5 [正式规格](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 与 [轻量 inline implementation plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) 均已批准保存。M5 plan Task 1–11 已完成，当前执行入口是 Task 12 completion gate；代码完成状态继续按任务和 fresh tests 逐项更新。该计划覆盖：
+下一步不是旧 Task 29，也不是直接开始 WinUI。M4R 与 M5 已分别按各自 implementation plan 完成；当前执行入口是 M6 persistence/runtime protocol 正式规格。M6 必须复用 M5 transport-neutral contracts 和 `WorkspaceUnitOfWork` 原子语义，但把进程内存储替换为 durable transaction，并明确：
 
-1. 定义全局 concept/component-version contracts、lineage、content identity 和查询；
-2. 定义 TaskProfile/AssessmentScheme draft、exact version selection、reference closure 与 copy-on-write atomic publish；
-3. 实现 Raw Input/Evidence/BN Node 与 extraction/probabilistic 两类 edge 的独立合同、operation 和 validation；
-4. 实现 EvidenceBinding、BN node/state/CPT、hard/soft/omitted observation 与 exact inference adapter；
-5. 建立 scheme-level diff、undo/redo、preview、publish 与 historical replay；
-6. 保持普通 Evidence/BN 修改 free-to-modify，不把人工审批、科学有效性或 per-edit pytest 加回 apply gate；
-7. 通用检查 legacy recipe source provenance，保留旧 O8 并创建 D-037-compliant TPX parallel version；
-8. M6 persistence/JSON-RPC 和 M7 WinUI 只保留接口边界，不在 M5 中提前宣称完成。
+1. project/session/component/scheme/draft/run 的 durable identity、transaction 和 recovery；
+2. managed artifact root、checksum、引用计数/保留和失败清理；
+3. JSON-RPC 2.0/JSONL framing、capability negotiation、method/error contract 与大数据 path boundary；
+4. preview 与正式 run 的 revision lock、progress、cancel、crash recovery 和 exact replay；
+5. 保持普通 Evidence/BN 修改 free-to-modify，不把人工审批、科学有效性或 per-edit pytest 加回 apply gate；
+6. 为 M7 暴露稳定协议，但不在 M6 冒充 WinUI 已实现。
 
 当前权威与历史材料见：
 
 - [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)（已批准的当前 M5 规格）
-- [M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md)（已批准的当前 inline 实施入口）
+- [M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md)（已完成的 inline 实施与验收记录）
 - [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md)（M4R–M8 expert-designer 重基线）
 - [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)
 - [M4 Lightweight Workflow Validation Amendment](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)

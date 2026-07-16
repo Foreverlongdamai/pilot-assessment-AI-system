@@ -1,6 +1,6 @@
 # M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan
 
-> 状态：Approved / active implementation；Task 1–11 已完成，Task 12 completion gate 为下一执行入口
+> 状态：Completed / engineering verified；Task 1–12 已完成
 > 执行方式：INLINE，严格按任务顺序推进；不启用 subagent
 > 工程方式：平台不变量采用轻量 test-first；starter resources、迁移和组装采用 focused smoke
 > 权威规格：[M5 Shared Versioned Model Library and Bayesian Workspace Design](../specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)
@@ -696,26 +696,30 @@ GREEN：
 
 步骤：
 
-- [ ] 运行所有 M5 focused tests：
+- [x] 运行所有 M5 focused tests：
 
       .venv\Scripts\python.exe -m pytest tests/model_library tests/schemes tests/bayesian tests/integration/test_m5_lightweight_workflow.py -q
 
-- [ ] 运行现有 M4R regression：
+- [x] 运行现有 M4R regression：
 
       .venv\Scripts\python.exe -m pytest tests/evidence -q
 
-- [ ] 仅在里程碑关闭时运行一次 repository gate：
+- [x] 仅在里程碑关闭时运行一次 repository gate：
 
       .venv\Scripts\python.exe -m pytest -q
       .venv\Scripts\ruff.exe check src tests
       .venv\Scripts\ruff.exe format --check src tests
-      .venv\Scripts\ty.exe check
+      .venv\Scripts\ty.exe check src
       .venv\Scripts\python.exe -m pilot_assessment.schemas.export
       git diff --check
 
-- [ ] 记录实际测试数、耗时、commit 和未实现边界；不得预填通过数字。
-- [ ] 只有以上 fresh evidence 全部通过，才能将 M5 标记为 engineering verified。
-- [ ] M5 关闭后下一份规格是 M6 persistence/runtime protocol，不直接实现 WinUI。
+- [x] 记录实际测试数、耗时、commit 和未实现边界；不得预填通过数字。
+- [x] 只有以上 fresh evidence 全部通过，才能将 M5 标记为 engineering verified。
+- [x] M5 关闭后下一份规格是 M6 persistence/runtime protocol，不直接实现 WinUI。
+
+完成证据（2026-07-16，implementation head `a2cc913`）：M5 focused `91 passed in 4.25s`；M4R Evidence regression `59 passed in 2.12s`；full repository `1579 passed, 3 skipped in 251.26s`。三个 skip 仅为 host symlink 限制和两条未配置 repository-external CSV 的 opt-in E2E。Ruff lint、264-file format check、`ty check src`、32 份双目录 Schema regeneration 与 whitespace diff 均通过。计划原来的裸 `ty check` 与仓库既有 production-source 静态合同不一致，已修正为自 M2 起统一使用的 `ty check src`；没有增加 ignore。
+
+fresh `uv build` 生成 652,665-byte wheel（SHA-256 `91992f5e7b741a1e50f5dd2366c9b008f7756f845f7ae9d76a70c05e35235c96`）和 481,987-byte sdist（SHA-256 `e70f593c331e629cf0bb5c02afb1f23244a7ad4f0d42a5f5f2ce56284d663ee9`）。仓库外 `uv pip --target` smoke 确认 import origin 位于临时安装目录；manifest exact inventory 的 13 个 Hover JSON 均在 wheel 内，checksummed loader 返回 15 BN concepts、15 BN versions、18 Evidence versions、18 bindings、33 CPT，并编译 33-variable inference plan。M6 durable persistence/sidecar、M7 WinUI、M8 product packaging 与科学验证均未实现，`formal_run_authorized=false`。
 
 提交边界：`docs: close M5 model workspace milestone`
 

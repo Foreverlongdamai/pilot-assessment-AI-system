@@ -115,5 +115,6 @@
 | Sidecar | 由 Windows 前端启动和管理的本地 Python 后端进程。 |
 | JSON-RPC / JSONL | 每行一个 JSON-RPC 2.0 消息的 stdio 进程协议。 |
 | TPX | O8 使用的 task performance composite。M4R `starter.o8` 从 O1/O5 score 组合的 recipe 只作 legacy migration/replay；M5 active starter 使用同一 concept 下从 raw/session/task sources 计算的并行 compliant version。两者不要求 provisional 数值等价。 |
-| Software verified | 软件按设计合同执行且通过规定测试。 |
+| Engineering verified / Software verified | 某个明确里程碑的软件按其设计合同执行，并通过该里程碑规定的 fresh tests、static/schema/build/package gates；它是里程碑范围内的工程结论，不表示完整产品、后续里程碑或科学有效性已经完成。 |
+| formal_run_authorized | 是否允许创建正式 AssessmentRun 的显式状态。M1–M5 的 ingestion、alignment、Evidence、scheme preview 和 inference 工程通过都不能自动把它设为 true；durable run preflight/lifecycle 属于 M6，当前始终为 false。 |
 | Scientifically validated | 评估指标、阈值、CPT 和输出经过足够样本、专家标注及统计研究证明有效。 |
