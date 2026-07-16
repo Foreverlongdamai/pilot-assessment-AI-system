@@ -1,6 +1,6 @@
 # M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan
 
-> 状态：Approved / active implementation；Task 1–3 已完成，Task 4 为下一执行入口
+> 状态：Approved / active implementation；Task 1–4 已完成，Task 5 为下一执行入口
 > 执行方式：INLINE，严格按任务顺序推进；不启用 subagent
 > 工程方式：平台不变量采用轻量 test-first；starter resources、迁移和组装采用 focused smoke
 > 权威规格：[M5 Shared Versioned Model Library and Bayesian Workspace Design](../specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)
@@ -431,19 +431,19 @@ GREEN：
 
 RED：
 
-- [ ] 覆盖 concept create、同 concept 多个 parallel versions、不同 concepts 同名、exact get、stable list、lineage query、archive metadata、duplicate ID 不可覆盖和 hash claim mismatch。
-- [ ] 明确断言 service 没有 `latest` resolution；调用不存在的 version 必须 exact not-found。
-- [ ] 运行：
+- [x] 覆盖 concept create、同 concept 多个 parallel versions、不同 concepts 同名、exact get、stable list、lineage query、archive metadata、duplicate ID 不可覆盖和 hash claim mismatch。
+- [x] 明确断言 service 没有 `latest` resolution；调用不存在的 version 必须 exact not-found。
+- [x] 运行：
 
       .venv\Scripts\python.exe -m pytest tests/model_library/test_repository.py tests/model_library/test_service.py -q
 
-  预期 RED：repository/service 尚不存在。
+  实际 RED：测试收集阶段因 `pilot_assessment.model_library.repository` 不存在产生预期 `ModuleNotFoundError`；未先写生产实现。
 
 GREEN：
 
-- [ ] 实现 protocol、in-memory store、injected Clock/IdFactory 和 immutable snapshot boundary。
-- [ ] list/filter 允许按 concept/type/lifecycle/tags 查询，但不替用户选择版本。
-- [ ] 复跑 focused tests。
+- [x] 实现 protocol、in-memory store、injected Clock/IdFactory 和 immutable snapshot boundary；同 kind/exact ID 永不可覆盖，所有 hash-bearing records 入库前重算 typed content hash。
+- [x] list/filter 允许按 concept/type/lifecycle/tags 查询，以 `(created_at, record_id)` 为主键稳定排序，但不替用户选择版本；archive/retire 是独立 library metadata，不删除或改写 frozen item。
+- [x] 复跑 focused tests：`8 passed`；完整 `tests/model_library` 为 `34 passed`，并覆盖 Task 3 SourceDescriptor identity 原样入库；定向 Ruff、format、ty 与 `git diff --check` 通过。
 
 提交边界：`feat: add global versioned model library`
 

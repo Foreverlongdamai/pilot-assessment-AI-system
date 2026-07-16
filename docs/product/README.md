@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | 产品 v0.3 shared-versioned-model architecture；D-031–D-040 已获用户确认 |
 | 基线日期 | 2026-07-16 |
-| 产品阶段 | M1/M2/M3 与 M4R Evidence Computation Foundation 已工程验证；M5 正在按轻量 inline 计划实施，Task 1–3 generic identity、public contracts/Schema、typed source provenance 与 M4R migration preflight 已完成，Task 4–12 尚未完成；M6 runtime persistence/sidecar、M7 WinUI 与 M8 packaging 尚未实现；`formal_run_authorized=false` |
+| 产品阶段 | M1/M2/M3 与 M4R Evidence Computation Foundation 已工程验证；M5 正在按轻量 inline 计划实施，Task 1–4 generic identity、public contracts/Schema、typed source/M4R preflight 与进程内 global component library 已完成，Task 5–12 尚未完成；M6 runtime persistence/sidecar、M7 WinUI 与 M8 packaging 尚未实现；`formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
