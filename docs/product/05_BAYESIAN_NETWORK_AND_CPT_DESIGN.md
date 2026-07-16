@@ -55,7 +55,7 @@ Posterior concentration、evidence coverage 和模型科学有效性是三个不
 
 系统中的 `X/U/I/G/P -> Evidence` 是 data/extraction relation，回答 EvidenceRecipe 读取哪些 session/task sources。Raw Input node 不属于 BN random variable set，也没有 CPT。Evidence 高层节点同时关联：
 
-- `EvidenceVersion.source_bindings` 与内部 typed operator graph；
+- `EvidenceVersion.recipe.inputs`（extraction source bindings）与内部 typed operator graph；
 - `EvidenceBindingVersion` 中的 observation state mapping、probabilistic parents 和 CPD/likelihood。
 
 这两类关系使用不同 DTO、operation、视觉样式和 validator。禁止用一个无类型 `parents` 或 `edge` 字段混装。
@@ -227,21 +227,21 @@ P(child = k) = exp(-(k - μ)² / (2σ²)) / Σj exp(-(j - μ)² / (2σ²))
 
 Guided 编辑模式修改生成器参数，并即时预览物化 CPT。Advanced 编辑模式可以覆盖完整 CPT 或指定行。发生手工覆盖后，系统不得静默重新生成并覆盖专家修改；必须明确执行“恢复生成器结果”操作。
 
-### 5.4 派生 anchor 的相关性保护
+### 5.4 共享来源与 legacy 派生关系的相关性保护
 
-O8 使用 O1 和 O5 的信息，O13 使用 O1/O5/O7 与 H4 trace；H1/H3 共享同一 gaze-allocation 时长。若把它们和来源/共享 anchor 当成完全条件独立证据，可能导致后验过度集中。
+Legacy O8 曾直接组合 O1/O5 score；该 recipe 现按 D-040 只保留为 migration/replay，不进入 active M5 starter scheme。新的 TPX EvidenceVersion 从 raw/session/task sources 自行计算。O13 与其他 evidence 可能复用相同控制/生理信息，H1/H3 共享 gaze-allocation 来源；若把共享来源的 observations 当成完全条件独立证据，仍可能导致后验过度集中。
 
-v0.1 为派生 anchor 保留以下可配置字段：
+Starter/legacy metadata 保留下列可配置字段，用于迁移说明或显式 observation-strength policy：
 
 - derived_from；
 - dependence_group；
 - likelihood_strength。
 
-默认 O8 和 O13 的 likelihood_strength s 均为 0.50。直接使用 M4 产生的版本化 anchor likelihood `L_anchor`，再向无信息分布 U=(1/3,1/3,1/3) 收缩：
+Legacy reference 中 O8/O13 的 likelihood-strength engineering default 曾为 0.50。若某个新 scheme 明确选择 relation-specific virtual-evidence strength，可把该 EvidenceVersion 产生的 likelihood `L_evidence` 向无信息分布 U=(1/3,1/3,1/3) 收缩：
 
-L_model = s × L_anchor + (1-s) × U
+L_model = s × L_evidence + (1-s) × U
 
-Starter template 中普通非派生 evidence 使用 s=1，H1/H3 暂以同一 `gaze_allocation` dependence group 和各自 `likelihood_strength=0.50` 做重复计数保护。专家可以直接在 draft 中改为 relation-specific strength、其他 dependence operator，或显式 evidence-to-derived-evidence 结构与 CPT；apply 自动形成新 revision，只要求图/CPT 可编译，不要求 major-profile 手工发布或 golden tests。Dependence strength 不表示数据质量，也不得因表现差而改变 calculation status/availability。
+Starter template 中普通 evidence 使用 s=1，H1/H3 可暂以同一 `gaze_allocation` dependence group 和各自 `likelihood_strength=0.50` 做重复计数保护。专家可以在 draft 中修改 strength、选择其他显式 dependence policy，或在 BN 中增加 Evidence variables 之间的 **probabilistic edge** 并提供完整 CPT；后者不是 extraction edge，也不能让一个 EvidenceRecipe 读取另一 Evidence 的 score/state/likelihood。Apply 自动创建改动组件和 scheme 的新 versions，只要求图/CPT 技术可执行，不要求人工审批或 per-edit golden。Dependence strength 不表示数据质量，也不得因表现差而改变 calculation status/availability。
 
 ## 6. Evidence 输入、缺失和 observation mode
 

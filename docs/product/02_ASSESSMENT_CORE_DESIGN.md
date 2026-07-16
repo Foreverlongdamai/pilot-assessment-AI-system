@@ -138,12 +138,12 @@ Legacy whole-Anchor plugin 保留以下历史合同，用于旧 revision replay 
 
 ### 5.2 Starter Anchor catalog
 
-安装包内 `reference-model-v0.1` starter catalog 有 **18 个节点：O1–O13 + H1–H5**。它是可复制、可删除、可替换的示例，不是 generic engine 的 required inventory。图编辑器允许专家在 draft 中自由增删节点；apply 时系统自动创建新的 revision identity，不要求专家手工提升 major version。
+安装包内 `reference-model-v0.1` starter catalog 有 **18 个节点：O1–O13 + H1–H5**。它是可复制、可删除、可替换的示例，不是 generic engine 的 required inventory。图编辑器允许专家在 draft 中自由增删节点；publish 时系统对改动内容创建新的 component versions 和 `AssessmentSchemeVersion`，不要求专家手工提升 major version。
 
 - O2 的正式名称为 **Peak Tracking Excursion**。
 - O1 可以输出 Translation、Deceleration、Hover 三个 phase value，但 v0 仍把 O1 作为一个逻辑 BN evidence node；phase 明细保留在 evidence trace 中。
-- 如果专家将 O1 拆为多个 BN 节点，binding、recipe output 和 BN graph 必须显式更新；系统在 apply 时自动形成新 revision，不得在运行时隐式改变节点数。
-- O8、O13 等依赖其他 anchor 或跨模态窗口的计算由依赖 DAG 明确表达。
+- 如果专家将 O1 拆为多个 BN 节点，binding、recipe output 和 BN graph 必须显式更新；系统在 publish 时自动形成新的 exact component/scheme versions，不得在运行时隐式改变节点数。
+- Legacy O8 的 anchor-to-anchor dependency DAG 只用于历史 replay；active M5 `EvidenceVersion` 不能读取另一 Evidence observation。新的 TPX 与 O13 等跨模态计算通过 raw/session/task bindings、operator DAG 和 provenance 闭合的 typed derived artifacts 表达。
 - H1–H5 starter recipes 的数据合同来自 gaze/AOI、ECG 和 EEG 等正式模态；当前未导出的 stream 使用 `export_pending`，不是自动删除或停用 recipe。
 
 Anchor 的具体公式、阈值、单位、窗口、聚合和 scorer 由 canonical EvidenceRecipe 定义。代码不能根据显示名称或 Anchor ID 猜测公式。

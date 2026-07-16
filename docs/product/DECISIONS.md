@@ -1,6 +1,17 @@
 # 设计决策记录
 
-本文件记录会影响多个模块、不能由单一实现文件自行决定的产品级决策。状态“已接受”表示对应版本及后续未被取代的基线必须遵守；后续可以通过新的决策记录显式替换，但不得静默修改。早期 `reference-model-v0.1` 固定内容只约束该 starter，D-031–D-039 定义当前通用产品方向。
+本文件记录会影响多个模块、不能由单一实现文件自行决定的产品级决策。状态“已接受”表示该决策曾经正式进入项目路线，不表示其全部内容在今天仍具有相同适用范围。后续决策可以显式限定、部分取代或完全取代早期决策，但不得删除历史或静默改写其原意。
+
+### 当前适用性索引
+
+| 当前适用性 | 决策 | 解释 |
+|---|---|---|
+| 当前通用基线 | D-001、D-003、D-005–D-007、D-009–D-014、D-016–D-022、D-024 的 no-quality-mixing 原则、D-027 的 raw-driven 原则、D-028、D-030–D-032、D-034、D-036–D-040 | 继续约束通用产品、合同或运行语义；其中 D-007 的“后端权威”只指 canonical state/version/execution，不表示后端决定科学内容 |
+| Starter/reference 范围 | D-002、D-004、D-015、D-024 的具体默认权重、D-029 的 fixed resource inventory | 只描述 `reference-model-v0.1` / Hover starter 或已发布 legacy resource，不构成 generic engine 的任务、数量、拓扑或算法限制 |
+| 已被部分取代或具体化 | D-008、D-023、D-033、D-035 | 不可变历史、typed DAG、最小技术校验等原则仍有效；whole-model revision、whole-Anchor plugin、inference-smoke gate 和旧里程碑边界由 D-031–D-040 具体化或取代 |
+| 历史完成门 | D-025、D-026，以及 D-027 中 fixed-18 测试范围 | 只记录旧 M4 Task 0–28 的工程过程，不再定义 M4R/M5 的完成条件或专家每次修改的测试义务 |
+
+若单条决策正文与该索引或更晚决策冲突，以明确列出的后续决策为准。D-031–D-040 定义当前专家可设计、全局组件版本化产品方向；历史材料继续保留用于迁移、回放和说明路线演进。
 
 ## D-001：产品提供可配置参考模型，而非最终航空标准
 
@@ -44,9 +55,10 @@
 - 理由：本地离线产品无需端口、防火墙或服务发现，打包和生命周期边界清晰。
 - 影响：FastAPI 仅可作为未来可选 adapter，不能成为核心业务依赖。
 
-## D-007：前端允许可视化修改节点和边，后端保持权威
+## D-007：专家通过前端设计模型，后端维护 canonical 状态与执行一致性
 
 - 状态：已接受
+- 当前适用性：当前通用基线；由 D-031–D-040 澄清。“权威”不包括科学内容决定权或固定模型清单。
 - 决策：用户可拖拽新增、删除、移动节点和边，并编辑 anchor 参数、state space 与 CPT；所有语义修改以原子 domain operation 发往后端。
 - 理由：领域专家必须能直接在产品中优化模型，而不是修改源代码。
 - 影响：前端的 pending 图形不是已保存事实；后端负责 cycle、CPT、binding、版本冲突等验证并返回 canonical graph。
@@ -54,6 +66,7 @@
 ## D-008：草稿可变，发布 revision 不可变
 
 - 状态：已接受
+- 当前适用性：部分取代。不可变发布、exact snapshot、撤销/重放继续有效；`inference smoke test` 被 D-033/D-034 的最小技术校验取代，单一 whole-model revision 被 D-036 的 component versions + `AssessmentSchemeVersion` 取代。
 - 决策：编辑先创建 draft；通过验证和 inference smoke test 后发布新 revision。正式运行锁定 published revision 和内容 hash；non-formal preview 锁定 exact draft_id + graph_version。
 - 理由：防止编辑中的图影响正在执行或已经完成的评估，保证结果可重现。
 - 影响：撤销/重做基于后端命令日志；发布后修改或“回滚”都必须从选定 revision 建立新 draft。draft_validation_state、revision_lifecycle、scientific_validation_status 和 permitted_use 是独立字段。
@@ -89,20 +102,21 @@
 ## D-013：Ingestion readiness 与 Run preflight 是不同阶段
 
 - 状态：已接受
-- 决策：M2 输出 `IngestionReadinessReport`，scope 固定为 `inspect_only_ingestion_content_v1`，只回答 source artifact 能否进入 M3 synchronization；其中 `formal_run_authorized` 永远为 false。完成同步、annotation/reference 语义检查并锁定 model revision 后，`run.preflight` 才输出 `RunPreflightReport` 并决定是否允许创建 AssessmentRun。
+- 决策：M2 输出 `IngestionReadinessReport`，scope 固定为 `inspect_only_ingestion_content_v1`，只回答 source artifact 能否进入 M3 synchronization；其中 `formal_run_authorized` 永远为 false。完成同步、annotation/reference 语义检查并锁定 exact `AssessmentSchemeVersion` 及其 component hashes 后，`run.preflight` 才输出 `RunPreflightReport` 并决定是否允许创建 AssessmentRun。
 - 理由：两种检查共用“preflight”名称会让前端和审计记录误以为通过 ingestion 就已获准评分。
 - 影响：M2 raw schemas 不伪造 authoritative `t_ns`；M3 生成 aligned schemas。DTO、协议、术语表和界面必须使用完整名称。
 
 ## D-014：Bundle-local task reference 通过可选 stream 间接声明
 
 - 状态：已接受
-- 决策：session-local commanded/reference path 的文件位于 `references/`，由可选 `streams.task_reference` descriptor 声明 format、schema、clock、units、paths 和 checksums；`task.reference` 使用 `source=bundle` 与 `stream_id=task_reference` 指向它。`source=model_bundle` 时禁止 `stream_id`，由锁定的 model bundle 根据 `reference_id` 解析。
+- 决策：session-local commanded/reference path 的文件位于 `references/`，由可选 `streams.task_reference` descriptor 声明 format、schema、clock、units、paths 和 checksums；`task.reference` 使用 `source=bundle` 与 `stream_id=task_reference` 指向它。`source=model_bundle` 时禁止 `stream_id`，由锁定 `AssessmentSchemeVersion` dependency closure 的 portable model bundle 根据 `reference_id` 解析。
 - 理由：reference 是可采样的时序 artifact，复用 StreamDescriptor 可避免第二套路径、checksum 和时钟权威，同时保持它不属于七个 core modalities。
 - 影响：bundle reference 必须通过普通路径安全、integrity 和 adapter gate，但在 readiness/coverage 中单独报告，不能伪装成飞行员输入模态。
 
 ## D-015：Reference-model-v0.1 固定为 33 节点三层 BN
 
 - 状态：已接受
+- 当前适用性：仅 `reference-model-v0.1` / Hover starter；不得解释为 generic BN engine 约束。当前通用语义见 D-036–D-040。
 - 决策：reference-model-v0.1 的 Guided palette 只包含 competency、subskill 和 evidence，结构边只允许 competency→subskill 与 subskill→evidence。Phase/task context 保留在 BN 外供 AnchorPlugin 使用；O8/O13 通过 `derived_from`、`dependence_group` 和 `likelihood_strength` 处理相关性，不创建 evidence→derived_evidence 结构边。
 - 理由：当前 CPT 和推理语义只定义了四 competency、十一 sub-skill、十八 evidence 的三层网络；允许未定义的 context 或派生结构边会产生无法解释的 CPT。
 - 影响：context node 或 structural derived evidence 只能在明确声明其语义、CPT、编译和 golden tests 的新 model profile 中启用；从 reference-v0.1 切换必须使用新的 major model profile，不能只改 draft/revision 标识。
@@ -159,6 +173,7 @@
 ## D-023：M4 使用可扩展 catalog、typed DAG 与 AnchorResult v0.2
 
 - 状态：已接受
+- 当前适用性：部分取代。AnchorResult v0.2、typed dependency 和 legacy replay 保留；普通新 Evidence/公式不再要求 whole-Anchor plugin 或 whole-model catalog revision，见 D-032/D-036。
 - 决策：M4 engine 按版本化 `AnchorCatalog` 与编译后的 `AnchorExecutionPlan` 运行可变数量插件；只有 `reference-model-v0.1` profile 精确包含 O1–O13、H1–H5。插件先产生 `AnchorMeasurement`，中央 scorer 生成 breaking contract `anchor-result-0.2.0`；其计算状态只允许 `computed`、`missing_input`、`not_applicable`、`not_computable`、`dependency_missing`、`extractor_error`。执行通过 typed dependency DAG、受控 artifact sink 和 canonical inventory 完成。
 - 理由：前端未来增、删、改 anchor 和算法时，orchestrator 不应写死 18 个分支；同时必须保留可验证、可重放的依赖与合同边界。
 - 影响：`anchor-result-0.1.0` 仅保留为只读 legacy 合同，M4 不写它，也不静默改写 schema ID。新增/retire anchor 发布新 catalog/model revision；参数变更产生新 parameter snapshot；公式变更必须发布新 plugin version。`plugin_unavailable`、`not_implemented`、`not_attempted` 只属于 capability/plan/report inventory，不冒充 session calculation status。
@@ -166,6 +181,7 @@
 ## D-024：M5 不按所谓数据质量衰减 evidence
 
 - 状态：已接受
+- 当前适用性：no-quality-mixing 原则继续有效；O8/O13/H1/H3 的具体 strength 只属于 starter engineering defaults，专家版本不受这些数值限制。
 - 决策：M5 直接消费 M4 的版本化 D/A/U likelihood，不使用 quality score 向均匀分布收缩。O8/O13 的默认 `likelihood_strength=0.50`，以及 H1/H3 `gaze_allocation` dependence group 的 reference strength `0.50 each`，只用于相关性和重复计数保护，不表示数据质量。
 - 理由：quality mixing 会把最差但有效的表现重新拉回无信息分布，违背 D-022。
 - 影响：coverage 衡量适用 evidence 是否成功产生：`computed` 的 D/A/U 都贡献完整 availability，`not_applicable` 不进入分母；模型影响强度可以另作 diagnostic，但不能命名为 coverage 或 quality。
@@ -173,6 +189,7 @@
 ## D-025：M4 工程完成必须同时证明全好、全差与可扩展重放
 
 - 状态：已接受
+- 当前适用性：历史完成门；不再定义 M4R/M5 completion gate，也不约束专家通过前端发布新版本，见 D-034。
 - 决策：M4-G 只有在逐 anchor 手算 golden、精确边界、状态矩阵、18/18 computed Desired、18/18 computed Unacceptable、扩展/retire/version replay、确定性 fingerprint、source immutability、完整测试、构建和隔离 wheel 全部通过后，才可声称 M4 engineering-verified。
 - 理由：只证明理想信号能运行不能发现“差表现被过滤”的核心失效模式，也不能证明专家未来修改 anchor 后仍可重放。
 - 影响：全 Unacceptable fixture 的 raw availability 必须为 1，M4 输出不得出现 `invalid_quality`；synthetic fixture 继续标记 `scientific_validation_status=not_supported`。M4-A 至 M4-F 的局部完成状态必须如实报告，不能冒充 M4 整体实现。
@@ -180,6 +197,7 @@
 ## D-026：M4 默认采用轻量分层验证
 
 - 状态：已接受
+- 当前适用性：历史 fixed-plugin 验证方案；“保持测试轻量”继续作为工程偏好，但 exact-18 场景不再是当前平台完成条件。
 - 决策：M4 的默认验证由合同/纯框架测试、18 个 per-anchor 定向微型测试、紧凑 all-Desired/all-Unacceptable/mixed aligned-input 场景、fault-hook state matrix，以及唯一一个 10 秒全模态 M1→M4 physical bundle smoke 组成。90 秒或更长的 full-rate bundle 不属于 Task 0、默认 pytest、isolated-wheel smoke 或 M4 engineering-verified 的必要条件；未来如需长 session 性能、内存或吞吐验证，必须作为独立且手动触发的 performance milestone。
 - 理由：原四套 90 秒 dense fixture 每次临时生成约 43,000 个文件且 focused gate 约需 160 秒，却没有比小型定向输入和单个物理工作流 smoke 提供更多 data-to-anchor 语义保证。验证规模不应阻塞 AnchorPlugin 的实现与频繁回归。
 - 影响：D-025 的 18/18 Desired、18/18 Unacceptable、状态矩阵、扩展重放、确定性和隔离 wheel 义务全部保留，但由正确层级分别证明；“完整”表示 exact-18 inventory、依赖、状态和结果完整，不表示每个场景都必须是 90 秒 physical Session Bundle。除唯一 workflow bundle 外，默认 M4 测试不得生成 dense image/file assets。
@@ -187,6 +205,7 @@
 ## D-027：Expected evidence 必须由 raw/aligned inputs 机械驱动
 
 - 状态：已接受
+- 当前适用性：raw-driven、禁止答案回灌的原则继续有效；O1–O13/H1–H5 的固定测试 inventory 只属于旧 M4 历史范围。
 - 决策：M4 测试 input recipe 只能包含 source data、semantic/config bindings、reference、events 和 fault controls；expected vectors 必须存放在独立文件或模块，并由不 import `pilot_assessment.anchors` 的小型 oracle 或手算公式产生。Production plugin 不得读取 expected vectors，production result/artifact 也不得回写为后续测试输入。测试必须通过有针对性的输入扰动证明相关 anchor 随输入改变、无关 anchor 保持不变。
 - 理由：provisional heavy fixture 曾把部分 mixed anchor 结果保存为 recipe 输入；这种 builder/oracle 自洽即使通过 hash 和合同测试，也不能证明原始或 aligned data 真正驱动了 evidence。
 - 影响：recipe/schema 必须拒绝序列化 AnchorResult/AnchorMeasurement、result-like `anchor_id + primary_value/state/likelihood` 结构、预计算 `q_control` 或 O8/O13 composite，以及以 O1–O13/H1–H5 为键的 expected-result map。文件 checksum 只证明输入不可变，不能替代 data-to-anchor 语义断言；违反本决定的 provisional `8 passed` 不构成 M4 实现证据。
@@ -194,6 +213,7 @@
 ## D-028：M4 reference 通过 session-bound candidate 精确绑定
 
 - 状态：已接受
+- 当前适用性：技术绑定原则继续有效；文中的 ModelBundle 在 M5 后解释为一个 exact `AssessmentSchemeVersion` 及其 dependency closure 的可移植封装。
 - 决策：M4 v0.1 使用可序列化 `ResolvedReferenceSetSnapshot` 与独立、受信的 runtime `ReferenceViewCandidate`。`bind_resolved_reference_snapshot(snapshot, aligned_session, candidates)` 只绑定 session/source/synchronization/window、reference/source、schema、clock mapping、table/frame/unit、resource/content/alignment fingerprint 全部精确一致的 candidate；不按列名、列数、shape 或相似 modality 猜测。v0.1 snapshot 总计最多一个 task reference，`bundle` 与 `model_bundle` 二选一。M3 合同、golden 和 `AlignedSession` 不变；bundle reference 的 M3 provenance 在 M4 request 构造前逐字段绑定 `SynchronizationReport.task_reference_result`。ModelBundle 必须先有同 reference ID 的 M3 `deferred_model_bundle_resolution` record；M5 验证并冻结不可变 reference resource，M6 在 model/session lock 后执行 session-time mapping 并在 M3 外构造同形的 immutable view container/candidate。
 - 理由：原两参数 binder 无法诚实证明 frame/unit 或接收 M3 明确 deferred 的 ModelBundle reference；只让 descriptor 与 runtime view 相互自证又可能绕过 D-019 的真实同步 provenance。独立 candidate port 保留 M3 边界，同时让 configuration expectation、source resolver 事实和 M3 report 可以机械交叉验证。
 - 影响：合法 `absent` reference 保留为 `aligned_view=None`，使依赖它的 anchor 产生 `not_computable`；present candidate 缺失、inventory/identity/contract 错配在有效 `AnchorEvaluationRequest` 之前失败，不生成 M4 evaluation report，也不能降级为 absent。Task 8 负责 canonical reference fingerprints，Task 13/35 在 evaluator 前重算；未来多 reference 支持必须版本化 M3 provenance 与本合同，不能只放宽 tuple cardinality。
@@ -201,6 +221,7 @@
 ## D-029：M4 reference catalog 与可编辑参数使用唯一机器资源身份
 
 - 状态：已接受
+- 当前适用性：只冻结 legacy `reference-model-v0.1` 资源和回放身份；不得作为全局组件库的数量、ID 或算法限制。
 - 决策：`reference-model-v0.1` 的 Task 7 资源严格冻结为 18 个有序 catalog entries、18 个公开 anchor artifact descriptors、6 个 preprocessing provider/output descriptors、24 个 canonical parameter-schema JSON resources 和真实零项 runtime registry。Parameter schema 使用排序键、两空格缩进、UTF-8 无 BOM、单 LF 的唯一权威字节，`parameter_schema_sha256` 是这些原始字节的 SHA-256；scorer annotation、O6 applicability-scoped channel weights 与 O13 的 O1/O5/O7 七键 algorithm-profile closure 均采用 [Task 7 amendment](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md) 的精确形状。所有 plan-time JSON 参数/temporal/scorer surfaces 在合同构造时递归复制并冻结。
 - 理由：可编辑和可扩展不等于允许 loader、测试、编译器和插件各自猜测 ID、schema、默认值、通道集合或 profile 内容。只有唯一资源字节、显式 ownership 与深度不可变 snapshot 才能让专家后续修改形成可审计的新 revision，而不是静默改变旧结果。
 - 影响：Task 7 发布资源但不伪造 executable plugins；Task 8 计算 canonical identities；Task 12 编译/执行 scorer；Task 13 使用 runtime Draft 2020-12 validator 完成实例、O6 与 profile closure 校验。O13 通过被各 implementation digest 覆盖的共享纯 O1/O5/O7/movement/scorer kernels 逐窗重算，不在插件内部调用 source factories、复制算法或发布 source artifacts。任何 ID、字段顺序、constraint、默认值、dependency、profile shape 或公式实现变化都必须产生新资源、参数 snapshot 或 plugin/model revision。
@@ -208,6 +229,7 @@
 ## D-030：M4 canonical fingerprint 与 Python runtime identity 使用单一字节合同
 
 - 状态：已接受
+- 当前适用性：M4 identity 合同继续有效；M5 必须为 component/scheme contracts 单独冻结新 type IDs、canonical projections 与 hashes，不能把 legacy catalog fingerprint 冒充新身份。
 - 决策：M4 typed identity 使用 RFC 8785 JCS、固定 NUL/uint64 framing 和 `[-(2^53-1), 2^53-1]` safe-integer domain；logical table 以完整 descriptor、声明字段顺序、已严格排序的 row arrays 和逻辑值计算，与 storage path/bytes 分离。Scorer policy 使用 `scorer-policy/0.1.0`，algorithm-profile parameters 复用 `parameter-snapshot/0.1.0`。自 fingerprint 字段只从自身 projection 排除，并由命名 trust boundary 重算拒绝 stale claim。Python identity 优先 `SOABI`，仅 Windows 缺失时严格解析 `EXT_SUFFIX`；numeric distribution identity 验证 wheel `RECORD` 中稳定成员的声明与实际 SHA-256/size，并排除安装根相关 launcher/mutable metadata。
 - 理由：同一逻辑 session/plan/result 必须跨 TEMP、venv 根和进程产生同一 identity，同时必须让任一真正的 schema、参数、算法、输入、依赖或结果变化改变下游 identity。路径、压缩或自报 hash 不应制造伪差异或自证循环。
 - 影响：[Task 8 amendment](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) 是 Task 8/9/11/13/32/34/35 的字节与验证 ownership 权威；Task 8 只在 catalog/runtime/artifact 三个自有边界声明 mismatch rejection，后续 owner 的拒绝测试不得被提前冒充完成。修改 type ID、payload、整数域、ABI precedence、logical ordering 或 RECORD inclusion rule 必须发布新 identity version 或正式 amendment。
@@ -229,6 +251,7 @@
 ## D-033：专家修改自动保存草稿，一键应用到后续评估
 
 - 状态：已接受
+- 当前适用性：当前通用交互原则；D-036 将单一 applied revision 具体化为改动 component versions 与新 `AssessmentSchemeVersion` 的 copy-on-write 原子发布。新 run 必须显式选择 exact scheme version，不自动跟随 `latest`。
 - 决策：模型修改自动保存到可撤销 draft；incomplete draft 可以继续编辑。用户点击“应用到后续评估”后，后端只做最小技术可运行检查，通过即创建 immutable applied revision 并供后续新 run 使用。正在运行和历史 run 不改变。Apply 不要求人工审批、pytest、build、wheel 或科学验证。
 - 理由：版本与历史的作用是撤销、比较和重放，不应变成专家修改参数、公式或网络的阻力。
 - 影响：technical validation 只覆盖 schema、dangling reference、DAG、operator/type/unit/parameter、safe formula、output 和 CPT 可执行性。未校准、无文献支持或偏离 starter template 只显示 metadata/warning，不阻止保存或 apply。
@@ -243,6 +266,7 @@
 ## D-035：M4 及后续里程碑按专家设计系统重基线
 
 - 状态：已接受
+- 当前适用性：重基线继续有效；M5 的详细范围已由 D-036–D-040 和正式 M5 规格具体化。
 - 决策：旧 replacement plan Task 29–36 暂停且不再授权执行。M4R 交付 EvidenceRecipe/operator foundation 与 starter migration；M5 交付 linked Evidence/BN model workspace、revision 和 inference；M6 交付 local runtime/persistence/protocol；M7 交付 WinUI expert designer；M8 交付 integration、packaging 和 handoff。
 - 理由：继续补完三个固定 AnchorPlugin 会扩大错误路线。Evidence engine、model workspace、runtime 和 Windows UI 又是不同子系统，应分别形成可执行规格和计划。
 - 影响：Task 0–28、15 个现有插件和测试保留为历史实现事实与迁移来源，不回滚或删除。新 M4R 计划必须在 [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md) 复核后编写，M5–M8 分别建立正式 spec/plan。
@@ -257,7 +281,7 @@
 ## D-037：Evidence 提取关系与 BN 概率关系是两种不同的图语义
 
 - 状态：已接受
-- 决策：系统高层只显示 Raw Input、Evidence、BN Node 三类节点，但使用两个不同 edge type。`Raw/task source -> Evidence` 是 data/extraction edge，只形成 `source_bindings` 和 recipe execution dependency；BN probabilistic edge 表示 child CPD 的 parents 并进入 joint factorization。Raw inputs 不属于 BN random variables，也没有 CPT。
+- 决策：系统高层只显示 Raw Input、Evidence、BN Node 三类节点，但使用两个不同 edge type。`Raw/task source -> Evidence` 是 data/extraction edge，只形成 `EvidenceVersion.recipe.inputs` 和 recipe execution dependency；BN probabilistic edge 表示 child CPD 的 parents 并进入 joint factorization。Raw inputs 不属于 BN random variables，也没有 CPT。
 - 理由：Evidence 确实先由 X/U/I/G/P 等 session 数据提取，但这不意味着这些数据源是 BN parents；若混用“父节点”与无类型 edge，前端、CPT 和推理方向都会产生歧义。
 - 影响：两类 edge 必须有不同 DTO、operation、视觉样式和 validator。Evidence inspector 同时展示 extraction definition 与 BN interpretation，但不得把两组依赖合并。
 
@@ -274,3 +298,11 @@
 - 决策：当前 Hover 场景、18 个 Evidence、11 个 sub-skills 和 4 个 competencies 用于提供第一个可运行 starter scheme。通用 schema、代码、存储、API、UI 和测试不得硬编码这些任务名、ID、数量或连接。专家可为任意任务创建任意数量方案，并从任意方案继续派生。
 - 理由：产品要随专家加入不同任务、Evidence 算法和能力模型而持续扩展；基础示例不应成为系统边界。
 - 影响：M5 验收以版本复用、方案组合、可编辑性、技术可运行和历史不变性为准，不以 starter 算法的科学正确性或 exact-18 输出等价为完成门。
+
+## D-040：Legacy Evidence-to-Evidence 提取不能直接进入当前高层模型
+
+- 状态：已接受
+- 当前适用性：当前通用基线；明确 D-037 对 legacy/M4R recipe migration 的处理。
+- 决策：高层 `EvidenceVersion.recipe.inputs`（即 extraction source bindings）只能引用 raw/session/task sources，不能引用另一条已经评分的 Evidence observation。现有 `starter.o8` 使用 `anchor.O1-score` 与 `anchor.O5-score` 的版本保留为 legacy migration/replay artifact，不得直接成为 D-037-compliant scheme 的 active EvidenceVersion。M5 为 TPX 建立新的并行 EvidenceVersion：其输入必须来自 raw/task sources，或来自 provenance 最终闭合到 raw/task sources 的 typed derived artifact；若专家要表达 Evidence 变量之间的概率关系，则使用 probabilistic edge 和完整 CPD/CPT。
+- 理由：把另一 Evidence 的评分当作 extraction input 会混合计算依赖与 BN 概率依赖，并使高层三类节点/两类边失真。静默改写旧 O8 又会破坏 immutable history。
+- 影响：M5 migration preflight 必须检测 Evidence-to-Evidence source binding，返回结构化 compatibility diagnostic，并保留旧资源与 lineage；迁移可以为同一 concept 创建新的 compliant version，但不能覆盖旧 recipe。当前已知命中只有 `starter.o8`，实施时仍须对全部导入资源执行通用检查，不能按 O8 ID 写死分支。

@@ -235,7 +235,7 @@ scorer_policy:
     computed_u_overrides: []
 ~~~
 
-在 legacy `o2-peak-tracking-excursion/0.1.0` 中，`parameters` 为空，time-aligned linear、禁止外推、三轴 L2、单位转换、aggregation 与 tie-break 属于当时的 fixed implementation。迁移为 starter EvidenceRecipe 后，这些步骤、参数和 scorer 都必须在图中透明展示并可编辑；修改只创建新 recipe/model revision，不要求新的 whole-Anchor plugin version。
+在 legacy `o2-peak-tracking-excursion/0.1.0` 中，`parameters` 为空，time-aligned linear、禁止外推、三轴 L2、单位转换、aggregation 与 tie-break 属于当时的 fixed implementation。迁移为 starter EvidenceRecipe 后，这些步骤、参数和 scorer 都必须在图中透明展示并可编辑；修改通过 copy-on-write 创建新的 EvidenceVersion 与 AssessmentSchemeVersion，不要求新的 whole-Anchor plugin version。
 
 M4R schema 必须拒绝 `quality_gates`、`min_valid_coverage`、`failed_quality`、`binary_quality_v1` 和 v0.2 `invalid_quality`。还必须拒绝 duplicate ID、未知 dependency、DAG cycle、单位不兼容、不可用 operator/scorer/schema、越界 artifact recipe 和无法编译的公式。专家选择的阈值方向属于 recipe 内容，不由平台判断科学合理性。
 

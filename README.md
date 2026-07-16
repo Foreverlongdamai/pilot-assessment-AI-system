@@ -125,7 +125,7 @@ Evidence 节点的 Inspector 必须同时让专家看到两件事：
 | M2 Multimodal Synthetic Foundation | 已工程验证 |
 | M3 Native-Rate Time Synchronization | 已工程验证 |
 | M4R Editable Evidence Computation Foundation | 已工程验证；canonical `EvidenceRecipe`、typed operators、compiler/executor、draft/preview/apply/replay 与 18 个 starter recipes 已实现 |
-| M5 Shared Model Library and Bayesian Workspace | 核心架构已确认，正式规格待书面复核；代码尚未实施 |
+| M5 Shared Model Library and Bayesian Workspace | 正式规格与轻量 inline 实施计划已批准保存；production code 尚未开始 |
 | M6 Local Runtime / Persistence / Protocol | 尚未实施 |
 | M7 WinUI Expert Designer | 尚未实施 |
 | M8 Packaging / Handoff | 尚未实施 |
@@ -135,11 +135,12 @@ Evidence 节点的 Inspector 必须同时让专家看到两件事：
 ## 从这里开始阅读
 
 1. [M5 Shared Versioned Model Library and Bayesian Workspace Design](docs/product/specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) — 当前已确认的系统核心模型与 BN 语义。
-2. [产品设计文档中心](docs/product/README.md) — 全部正式文档、阅读顺序与权威规则。
-3. [产品总览](docs/product/01_PRODUCT_OVERVIEW.md) — 用户、工作流和总体架构。
-4. [Expert-Editable Evidence and Assessment Model Design](docs/product/specs/2026-07-15-expert-editable-evidence-and-model-design.md) — M4R–M8 expert-designer 重基线。
-5. [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md) — 真实代码状态、验证证据和下一步。
-6. [Decisions](docs/product/DECISIONS.md) 与 [Glossary](docs/product/GLOSSARY.md) — 已锁定口径和术语。
+2. [M5 Implementation Plan](docs/product/plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) — 当前批准的 inline 实施入口；不代表代码已完成。
+3. [产品设计文档中心](docs/product/README.md) — 全部正式文档、阅读顺序与权威规则。
+4. [产品总览](docs/product/01_PRODUCT_OVERVIEW.md) — 用户、工作流和总体架构。
+5. [Expert-Editable Evidence and Assessment Model Design](docs/product/specs/2026-07-15-expert-editable-evidence-and-model-design.md) — M4R–M8 expert-designer 重基线。
+6. [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md) — 真实代码状态、验证证据和下一步。
+7. [Decisions](docs/product/DECISIONS.md) 与 [Glossary](docs/product/GLOSSARY.md) — 已锁定口径和术语。
 
 ## 目录
 

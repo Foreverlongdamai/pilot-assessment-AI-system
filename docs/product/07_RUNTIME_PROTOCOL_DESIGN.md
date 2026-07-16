@@ -8,7 +8,7 @@
 | 服务端 | Python Assessment Core sidecar |
 | 适用范围 | 本地、单用户、离线评估 |
 
-> **当前权威补充：** M5 域语义以 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 为准：协议最终必须承载全局 component versions、exact-pinned schemes、两类 typed edge、scheme draft/preview 与 copy-on-write atomic apply。M4R 只实现进程内 EvidenceRecipe service；M5/M6 尚未实现。本文件现有 `model.revision`、`edge.add` 等方法名是 M6 前的历史占位，不能覆盖 M5 domain contracts，也不得被描述为已冻结或已实现协议。
+> **当前权威补充：** M5 域语义以 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 和 [M5 Implementation Plan](./plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) 为准：协议最终必须承载全局 component versions、exact-pinned schemes、两类 typed mutation edge、只读 inference overlay、scheme draft/preview 与 copy-on-write atomic publish。M4R 只实现进程内 EvidenceRecipe service；M5/M6 尚未实现。本文件的方法名仍是 M6 前候选，不得被描述为已冻结或已实现协议；但候选命名已消除无类型 `edge.add` 和单一 whole-model revision 口径。
 
 ## 1. 目标与边界
 
@@ -105,16 +105,17 @@ stopped → starting → ready ↔ busy → stopping → stopped
 | session.get | 获取 session metadata 与 modality coverage |
 | session.artifact.get | 获取可展示 artifact 的受控文件引用 |
 
-Runtime DTO 必须保持阶段顺序和命名：`IngestionReadinessReport`（source content）→ `SynchronizationReport`（native-rate session-time alignment）→ 锁定 model revision/reference resolution → `RunPreflightReport`（正式运行门）。M3 同步实现完成前，capabilities/session.validate 必须把该阶段标记为 unavailable/unimplemented，不能伪造同步成功。
+Runtime DTO 必须保持阶段顺序和命名：`IngestionReadinessReport`（source content）→ `SynchronizationReport`（native-rate session-time alignment）→ 锁定 exact `AssessmentSchemeVersion`/component closure 并解析 reference → `RunPreflightReport`（正式运行门）。M3 同步实现完成前，capabilities/session.validate 必须把该阶段标记为 unavailable/unimplemented，不能伪造同步成功。
 
 ### 6.3 Model、graph、anchor 与 CPT
 
 | 方法 | 用途 |
 |---|---|
-| model.revision.list / model.revision.get | 查询不可变 applied revisions |
-| model.revision.diff | 比较两个 applied revisions 或 draft 与 base revision |
-| model.draft.create / get / discard | 管理 autosaved model draft |
-| model.draft.apply | 最小技术校验后创建 immutable applied revision，并用于后续 run |
+| component.concept.list / get | 查询全局 Evidence/BN concepts |
+| component.version.list / get / diff | 查询指定 concept 的全部并行 immutable versions 或比较 exact versions；不提供 latest resolution |
+| scheme.version.list / get / diff | 查询、比较 exact `AssessmentSchemeVersion` |
+| scheme.draft.create / get / discard | 从任意 scheme version 管理 autosaved scheme draft |
+| scheme.draft.publish | 最小技术校验后原子创建 changed component versions 与新的 immutable scheme version |
 | evidence.recipe.get / create / clone / update / disable / retire | 查询或编辑 canonical EvidenceRecipe；写操作进入 autosaved draft |
 | evidence.recipe.preview | 在选定 session 上执行 exact draft recipe 并返回 node trace/result |
 | operator.catalog.list / operator.definition.get | 获取 operator palette、typed ports、parameter schema、UI metadata 与 implementation identity |
@@ -125,14 +126,15 @@ Runtime DTO 必须保持阶段顺序和命名：`IngestionReadinessReport`（sou
 | graph.undo / graph.redo | 基于后端命令日志撤销或重做 |
 | layout.update | 批量提交节点位置；只更新 layout_version |
 | node.get / add / update / remove | 查询节点或使用单操作便利入口；修改在内部转换为 graph operation |
-| edge.add / remove | 单操作便利入口 |
-| binding.get | 查询 evidence node 的 AnchorBinding |
+| extraction.edge.add / remove | 修改 raw/session/task source 到 Evidence 的 extraction dependency |
+| bn.edge.add / remove | 修改 probabilistic BN dependency，并显式携带 CPT migration intent |
+| evidence.binding.get / update | 查询或修改 EvidenceVersion 到 BN observation 的 binding candidate |
 | extension.operator.list / install | 查询或安装 trusted operator extensions；普通 Anchor 编辑不调用 |
 | cpt.get / validate / update | 读取、校验和更新 CPT |
 | cpt.migration.preview | 预览增删 parent 或改 state space 后的 CPT 迁移 |
 | cpt.generate | 使用可选 generator 生成候选 CPT；专家仍可直接编辑 |
 
-binding.create/update/remove 不设绕过事务的独立写入口；它们作为 graph.operations.apply 内的 semantic operations，DTO 见 [06_VISUAL_GRAPH_EDITOR_DESIGN.md](06_VISUAL_GRAPH_EDITOR_DESIGN.md) 的 AnchorBinding 小节。
+binding create/update/remove 不设绕过事务的独立写入口；它们作为 graph.operations.apply 内的 semantic operations，DTO 见 [06_VISUAL_GRAPH_EDITOR_DESIGN.md](06_VISUAL_GRAPH_EDITOR_DESIGN.md) 的 Evidence binding 小节。
 
 node/edge/anchor.parameters/cpt 的便利写方法同样必须携带 draft_id、expected_graph_version 和 transaction_id；后端把它们转换为单 operation batch。不存在绕过 canonical transaction 的第二套写路径。
 
@@ -142,8 +144,8 @@ M4R 当前已经提供 backend-only `create_draft`、`save_draft`、`clone_draft
 
 | 方法 | 用途 |
 |---|---|
-| run.preflight | M6 检查 frozen session/model、任务前提、compiled recipe/BN plan、operator/schema/engine compatibility 和运行授权；不预先按表现或实际 coverage 过滤 evidence |
-| run.start | 启动锁定 applied revision_id 的评估 |
+| run.preflight | M6 检查 frozen session、exact scheme/component closure、任务前提、compiled recipe/BN plan、operator/schema/engine compatibility 和运行授权；不预先按表现或实际 coverage 过滤 evidence |
+| run.start | 启动锁定 exact scheme version ID 与全部 pinned component hashes 的评估 |
 | run.preview | 对 executable draft 的 exact graph_version 执行不改变历史的临时预览 |
 | run.status | 查询阶段、进度和诊断 |
 | run.cancel | 请求协作式取消 |
@@ -152,7 +154,7 @@ M4R 当前已经提供 backend-only `create_draft`、`save_draft`、`clone_draft
 | diagnostics.bundle.export | 导出脱敏支持包 |
 | audit.events.list | 查询模型 autosave、apply、导入与运行的自动审计事件 |
 
-`run.preflight` 是 M6 operation，返回 `RunPreflightReport`；它与 M2 的 `IngestionReadinessReport`、M3 的 `SynchronizationReport` 和 M4 的 `AnchorEvaluationReport` 都不是同一 DTO。M2/M3/M4 报告的 `formal_run_authorized` 固定为 false；只有 M6 基于 frozen `AlignedSession`、已解析 reference、锁定 model revision 和已编译 execution plan 决定是否可以创建 AssessmentRun。实际 AnchorResult/raw availability 要等 M4 执行后产生，model-weighted coverage 由 M5 计算，不属于 preflight 的伪预测值。
+`run.preflight` 是 M6 operation，返回 `RunPreflightReport`；它与 M2 的 `IngestionReadinessReport`、M3 的 `SynchronizationReport` 和 M4 的 `AnchorEvaluationReport` 都不是同一 DTO。M2/M3/M4 报告的 `formal_run_authorized` 固定为 false；只有 M6 基于 frozen `AlignedSession`、已解析 reference、锁定 exact `AssessmentSchemeVersion`/component hashes 和已编译 Evidence/BN plan 决定是否可以创建 AssessmentRun。实际 AnchorResult/raw availability 要等 M4 执行后产生，model-weighted coverage 由 M5 计算，不属于 preflight 的伪预测值。
 
 ## 7. 大数据与路径合同
 
@@ -174,7 +176,7 @@ session.inspect 可以接收用户选择的绝对 bundle 路径。正式 import 
 所有语义图编辑以 graph.operations.apply 为主入口。
 
 ~~~json
-{"jsonrpc":"2.0","id":"req-1042","method":"graph.operations.apply","params":{"project_id":"prj-01","draft_id":"draft-07","expected_graph_version":12,"transaction_id":"550e8400-e29b-41d4-a716-446655440010","actor":"user@example","note":"Add expert-proposed evidence relationship","operations":[{"op_id":"550e8400-e29b-41d4-a716-446655440011","type":"edge.add","edge":{"edge_id":"550e8400-e29b-41d4-a716-446655440012","source_node_id":"PC.1","target_node_id":"H3"},"cpt_migration":{"strategy":"neutral_replication"}}]}}
+{"jsonrpc":"2.0","id":"req-1042","method":"graph.operations.apply","params":{"project_id":"prj-01","draft_id":"draft-07","expected_graph_version":12,"transaction_id":"550e8400-e29b-41d4-a716-446655440010","actor":"user@example","note":"Add expert-proposed probabilistic relationship","operations":[{"op_id":"550e8400-e29b-41d4-a716-446655440011","type":"bn.edge.add","edge":{"edge_id":"550e8400-e29b-41d4-a716-446655440012","source_node_id":"PC.1","target_node_id":"H3"},"cpt_migration":{"strategy":"independence_preserving_replication"}}]}}
 ~~~
 
 成功时，整个 batch 一次提交：
@@ -205,7 +207,7 @@ layout.update 不改变 graph_version 或 semantic hash。LAYOUT_VERSION_CONFLIC
 
 ## 9. 长任务、进度和取消
 
-run.start 硬性要求 applied revision_id，并生成可追溯 AssessmentResult。run.preview 要求 draft_id + graph_version，结果标记 draft/non-applied、不得覆盖 applied result history。两者成功后均立即返回 run_id，不等待计算结束；进度通过 notification：
+run.start 硬性要求 exact scheme version ID 与 pinned component hashes，并生成可追溯 AssessmentResult。run.preview 要求 draft_id + graph_version，结果标记 draft/non-formal、不得覆盖正式 result history。两者成功后均立即返回 run_id，不等待计算结束；进度通过 notification：
 
 ~~~json
 {"jsonrpc":"2.0","method":"run.progress","params":{"run_id":"run-88","stage":"anchors","completed":7,"total":18,"percent":38.9,"message":"Computed O7 Control Reversal Rate","model_profile_id":"reference-model-v0.1"}}
@@ -242,11 +244,11 @@ run.start 硬性要求 applied revision_id，并生成可追溯 AssessmentResult
 
 ## 11. 并发、版本和幂等
 
-- applied revision 不允许写。
+- published component/scheme versions 不允许写。
 - 所有 semantic draft mutation 必须携带 expected_graph_version；layout mutation 携带 expected_layout_version。
 - 同一 draft 的写入在后端串行化；读请求可并发。
 - 所有 mutation、import、apply 和 run.start 都必须携带 transaction_id；同一 transaction_id 重试返回第一次结果，不得重复执行。
-- run.start 锁定 model revision ID、bundle hash、session revision 和参数 hash。
+- run.start 锁定 scheme version ID、全部 component hashes、bundle hash、session revision 和运行参数 hash。
 - v0.1 默认每个 runtime 只运行一个重计算 job；具体上限由 capabilities 报告。
 - 前端断开不会改变已发布模型；活动 run 是否继续由启动参数 detach_policy 决定并记录。
 

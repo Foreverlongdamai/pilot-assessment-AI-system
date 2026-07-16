@@ -3,12 +3,12 @@
 | 字段 | 值 |
 |---|---|
 | 设计基线 | 产品 v0.3 shared-versioned-model architecture；旧 M4 Task 0–28 作为历史实现保留 |
-| 审查日期 | 原始审查 2026-07-10；M4 amendment 2026-07-13；方向重基线与 M4R 收尾 2026-07-15；M5 架构自审 2026-07-16 |
+| 审查日期 | 原始审查 2026-07-10；M4 amendment 2026-07-13；方向重基线与 M4R 收尾 2026-07-15；M5 架构、决策适用性与实施计划自审 2026-07-16 |
 | 审查范围 | pilot_assessment_system 产品文档、项目入口说明、M4R 实现边界、M5 component/scheme/BN 语义与跨文档一致性 |
 | 结论 | M1–M3 与 M4R 可作为已验证交接基线；M5 全局组件版本库、任务方案、三类节点/两类边和 BN/inference 方向形成一致书面规格，但 M5 代码尚未实施 |
-| 软件状态 | M1/M2/M3/M4R 已工程验证；15 个 legacy/reference plugins、共享 primitives 与三个 providers 保留；M5 正式规格待用户书面复核，M6 sidecar、M7 WinUI 尚未实现，`formal_run_authorized=false`，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
+| 软件状态 | M1/M2/M3/M4R 已工程验证；15 个 legacy/reference plugins、共享 primitives 与三个 providers 保留；M5 正式规格和 inline 实施计划已批准保存但 production code 尚未开始，M6 sidecar、M7 WinUI 尚未实现，`formal_run_authorized=false`，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
 | 科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
-| M4/M5 修订 | 2026-07-15 接受 D-031–D-035；2026-07-16 接受 D-036–D-039：普通专家编辑不要求 Python/plugin 发布、审批或 per-edit tests；全局 immutable components 由 exact-pinned schemes 组合，BN topology 与 posterior inference flow 分开 |
+| M4/M5 修订 | 2026-07-15 接受 D-031–D-035；2026-07-16 接受 D-036–D-040：普通专家编辑不要求 Python/plugin 发布、审批或 per-edit tests；全局 immutable components 由 exact-pinned schemes 组合，BN topology 与 posterior inference flow 分开，legacy Evidence-to-Evidence extraction 非覆盖迁移 |
 
 ## 1. 结论边界
 
@@ -208,7 +208,7 @@ Apply 可以因 schema、dangling reference、DAG cycle、operator/version、por
 
 ### 8.5 后续门槛
 
-M4R implementation plan 已完成。下一步在用户复核后单独编写 M5 spec/plan；M6–M8 继续分别设计，旧 fixed-plugin 计划不得被继续执行或机械改名复用。
+M4R implementation plan 已完成。M5 正式规格和轻量 inline plan 现已批准保存，下一步从 M5 Task 1 开始逐项实现；M6–M8 继续分别设计，旧 fixed-plugin 计划不得被继续执行或机械改名复用。
 
 ## 9. 2026-07-16 M5 Shared-Versioned Model 自审
 
@@ -228,19 +228,23 @@ M4R implementation plan 已完成。下一步在用户复核后单独编写 M5 s
 | M5-SR-06 | 发布方案时一部分组件成功、一部分失败 | component versions 与 scheme version 原子发布，任一失败整体回滚 |
 | M5-SR-07 | 新版本出现后历史方案自动跟随 `latest` | Scheme/run 同时锁定 exact IDs 和 content hashes，禁止隐式升级 |
 | M5-SR-08 | 前端集成显示使 operator nodes 变成第四类高层节点 | 高层仍只有 Raw Input、Evidence、BN Node；operator graph 仅作为 Evidence 展开细节 |
-| M5-SR-09 | 用户误以为正式设计等于代码完成 | 所有状态文档明确：M4R 已实现；M5 只有正式规格，implementation plan 与 production code 均未完成 |
+| M5-SR-09 | 用户误以为正式设计或实施计划等于代码完成 | 所有状态文档明确：M4R 已实现；M5 规格/plan 已批准，production code 尚未开始 |
+| M5-SR-10 | M4R O8 把 O1/O5 score 当 extraction input，违反两类 edge 边界 | D-040：旧 bytes/hash 仅 legacy migration/replay；generic source-provenance preflight 拒绝 active import；新 TPX version 从 raw/session/task sources 计算 |
+| M5-SR-11 | 早期“后端权威”被误解为后端决定科学模型 | D-007 标题和适用性已修订：专家决定模型内容，后端仅维护 canonical state、版本、技术校验和执行一致性 |
 
-### 9.3 仍需在实施计划中冻结的细节
+### 9.3 已在实施计划冻结的细节
 
-以下内容不会改变已确认架构，但必须在 M5 implementation plan 前结合现有代码确定：
+[M5 implementation plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) 已结合现有代码冻结：
 
-- 具体 Python DTO 文件和 schema IDs；
-- component store 的进程内接口与 M6 persistence port；
-- exact inference engine 的库选择或自实现边界；
-- atomic publish transaction 的 repository interface；
-- M4R applied recipe revision 的导入映射和兼容性测试；
-- typed graph operations 的最终 Python 方法名。M6 JSON-RPC 名称在 M6 规格中冻结，不能由 M5 文档提前冒充已实现协议。
+- 三个 public contract modules、generic identity、新 type IDs 与 JSON Schema 路径；
+- global component repository、scheme repository 与 M6 可复用的 `WorkspaceUnitOfWork` port；
+- NumPy finite-discrete variable elimination、deterministic min-fill 和手算小 BN 验证；
+- staged batch + single atomic commit，不采用失败后删除的补偿式发布；
+- M4R source-provenance migration、旧 O8 legacy preservation 与 compliant TPX parallel version；
+- `ExtractionEdge`、`BayesianDependencyEdge`、`InferenceInfluenceEdge` 分离，以及 typed domain operation 范围。
+
+M6 JSON-RPC 方法名仍由 M6 规格冻结；M5 plan 只冻结 transport-neutral domain contracts，不冒充已实现协议。
 
 ### 9.4 自审结论
 
-未发现会迫使专家覆盖旧任务模型、混淆 BN 概率方向或重新引入科学审批门的 P0/P1 设计冲突。M5 书面架构可以进入用户复核；在用户确认本文档前，不进入 implementation plan 或代码实现。
+未发现会迫使专家覆盖旧任务模型、混淆 BN 概率方向或重新引入科学审批门的 P0/P1 设计冲突。仓库路线已按 D-036–D-040 收口，M5 规格和 plan 可以进入实施；当前没有 M5 production code，因此不得把本轮文档工作报告为 M5 engineering verified。

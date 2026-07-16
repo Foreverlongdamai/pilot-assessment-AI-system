@@ -3,11 +3,13 @@
 | 字段 | 值 |
 |---|---|
 | 设计版本 | v0.3 shared-versioned-model validation baseline |
-| 当前软件状态 | in_progress（M1/M2/M3 与 M4R engineering verified；M5 正式架构规格已形成但代码未实施；M6 runtime persistence/sidecar、M7 WinUI 与 M8 packaging 尚未完成，`formal_run_authorized=false`） |
+| 当前软件状态 | in_progress（M1/M2/M3 与 M4R engineering verified；M5 正式规格和轻量 inline plan 已批准保存但 production code 尚未开始；M6 runtime persistence/sidecar、M7 WinUI 与 M8 packaging 尚未完成，`formal_run_authorized=false`） |
 | 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
-> **当前权威补充：** 工程测试证明平台、built-in operators、recipe/inference executor、exact version pinning、atomic publish 和 UI/后端映射按合同工作；它不评判专家 recipe、Anchor、阈值或 CPT 是否科学合理。Autosave 不设门，apply 只执行最小技术校验。M5 的完成门只使用小型平台不变量和手算 BN，不建立重型多模态 fixtures。详见 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)。
+> **当前权威补充：** M5 后续工程测试只用于证明平台、built-in operators、recipe/inference executor、exact version pinning、atomic publish 和 UI/后端映射按合同工作；它不评判专家 recipe、Anchor、阈值或 CPT 是否科学合理。Autosave 不设门，apply 只执行最小技术校验。M5 的完成门只使用小型平台不变量和手算 BN，不建立重型多模态 fixtures。详见 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)。
+
+M5 还必须有一个 D-040 migration smoke：对全部 M4R recipe source bindings 执行 generic provenance closure；旧 `starter.o8` 因 Evidence observation input 被保留但拒绝 active import，新 raw/session/task-derived TPX parallel version 可执行。该 smoke 不比较两版 provisional 数值，也不按 O8 ID 写特判。
 
 ## 1. 两条独立的验证轴
 

@@ -40,7 +40,7 @@ WinUI 图编辑器至少支持：
 
 | Edge type | 示例 | 后端含义 |
 |---|---|---|
-| data/extraction | Raw Input → Evidence | `source_bindings` 或 recipe typed ports；只影响数据/执行依赖 |
+| data/extraction | Raw Input → Evidence | `EvidenceVersion.recipe.inputs` 或 recipe typed ports；只影响数据/执行依赖 |
 | probabilistic BN | Competency → Sub-skill → Evidence | `P(child \| parents)` 的 parent relation；影响 DAG 与 CPT |
 
 两类 edge 使用不同颜色/线型、DTO、operation 和 validator。`Evidence ⇢ Sub-skill ⇢ Competency` 的后验信息影响只在 inference overlay 中以第三种只读视觉标记显示；它不可选择、拖拽或保存为 topology。
@@ -97,7 +97,7 @@ Advanced 模式仍然不能绕过以下硬约束：
 
 若 Advanced draft 删除 TCP、PC、SM、OC 或改变输出契约，它不再等同于原 starter snapshot，但仍可作为新的 expert scheme apply。系统自动记录 structured diff、新 component versions 和 scheme identity，不要求专家恢复默认节点或手工提升 major version。
 
-## 3. 后端权威模型
+## 3. 专家主导设计与后端 canonical 状态
 
 ### 3.1 Stable ID
 
@@ -183,7 +183,7 @@ expected_graph_version ≠ backend graph_version
 
 不推荐。
 
-### 4.3 方案 C：后端权威 draft + 用户意图级原子事务
+### 4.3 方案 C：后端 canonical draft + 用户意图级原子事务
 
 推荐方案。
 
@@ -262,7 +262,6 @@ mode: recipe_output
 target:
   evidence_version_id: gaze_aoi_dwell-v1
   output_id: evidence_likelihood
-source_bindings: [I, G, dynamic_aoi_map]
 modality_attribution_weights: {I: 0.5, G: 0.5}
 result_contract: anchor-result-0.2.0
 probabilistic_parents: [SM.2-v1]
@@ -274,11 +273,11 @@ mode 支持：
 - recipe_output：绑定 canonical EvidenceRecipe 的一个声明 output；这是普通 evidence node 的默认模式；
 - legacy_plugin_output：只用于历史 revision replay，不作为新增 Anchor 的默认入口。
 
-从 session field、existing Evidence clone 或 safe formula 创建 evidence 时，向导先生成 canonical `EvidenceConcept/EvidenceVersion` candidate，再建立 observation binding candidate。`session_field` 由 Input/Statistics operators 表达，`safe_formula` 由 deterministic safe-expression operator 执行。它们不得动态生成/import Python，也不得绕过 operator registry、typed ports、unit、artifact、identity 或 AnchorResult v0.2 校验。
+从 session field、existing Evidence clone 或 safe formula 创建 evidence 时，向导先生成 canonical `EvidenceConcept/EvidenceVersion` candidate，再建立 observation binding candidate。Clone 只复制所选版本的 recipe 内容作为新 candidate，不创建 Evidence→Evidence extraction edge。`session_field` 由 Input/Statistics operators 表达，`safe_formula` 由 deterministic safe-expression operator 执行。它们不得动态生成/import Python，也不得绕过 operator registry、typed ports、unit、artifact、identity 或 AnchorResult v0.2 校验。
 
 binding.create、binding.update 和 binding.remove 都是 semantic operation，与 typed node/edge/CPT 一起走 graph.operations.apply 并增加 graph_version。Binding validation 分开检查 extraction source/recipe output 与 BN observation parent/CPT；两者不能共用无类型 `parents`。Legacy plugin binding 只用于旧 revision replay。
 
-`modality_attribution_weights` 的 key 只能是 `source_bindings` 中声明的 core stream modality；`dynamic_aoi_map` 等非模态依赖不进入该 map。权重必须 finite、非负且和为 1；省略时对 distinct required core modalities 等分。该字段进入 binding content hash，供 per-modality coverage 使用。
+Evidence extraction sources 只在 target `EvidenceVersion.recipe.inputs` 中保存，`EvidenceBindingVersion` 不复制第二份 `source_bindings`。`modality_attribution_weights` 的 key 只能是该 EvidenceVersion source-provenance closure 中声明的 core stream modality；`dynamic_aoi_map` 等非模态依赖不进入该 map。权重必须 finite、非负且和为 1；省略时对 distinct required core modalities 等分。该字段进入 binding content hash，供 per-modality coverage 使用。
 
 安装 trusted operator extension 不属于图 transaction。`extension.operator.install` 通过受信任流程完成 manifest 和兼容性检查；UI 不得把任意 Python 文本当作 operator 执行。未绑定或 operator target 尚不可用的 evidence node 可以保存在 incomplete draft，并明确显示 `operator_unavailable`，但不能 preview/apply/run；它不得伪装成 session `not_computable`。
 

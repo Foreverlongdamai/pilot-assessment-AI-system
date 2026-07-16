@@ -16,6 +16,7 @@
 | Global component library | 保存全局 Evidence/BN concepts 及全部并行 immutable versions 的组件库；只有被某个 AssessmentSchemeVersion 引用的版本才参与该方案。 |
 | Exact version pinning | 方案和 run 显式保存 component version ID 与 content hash，而不使用会随时间变化的 `latest`。 |
 | Copy-on-write publication | 从任意历史方案编辑时复用未改版本，只为改动部分创建新 component versions，并原子发布新的 scheme version；旧版本永不覆盖。 |
+| Expert-led model design / backend canonical state | Evidence、算法、参数、BN topology/state/CPT 的内容由专家通过前端决定；后端保存同一 canonical object、签发版本、执行最小技术校验并保证运行一致性。“canonical”不表示后端拥有科学内容决定权。 |
 | EvidenceRecipe | 前端显示、后端保存和运行时执行某个 Anchor 计算方法的唯一 canonical object；包含 bindings、typed operator graph、outputs、scoring、documentation 与 UI metadata。 |
 | EvidenceRecipe catalog | 运行时大小可变的 recipe inventory；安装包当前提供 O1–O13/H1–H5 共 18 个 starter templates，但 catalog 和 executor 不把 18 写成上限。 |
 | Recipe draft | 可自动保存的 EvidenceRecipe 工作副本；允许 graph 暂时 incomplete，只有 preview/apply 要求达到相应技术可执行状态。 |
@@ -37,6 +38,7 @@
 | Evidence node | 高层工作区中表示可从 session 提取并可被 BN 观察的变量；组合 EvidenceVersion 与 EvidenceBindingVersion。Starter 参考模型有 18 个，但引擎数量不受限。 |
 | BN node | BN 中的 latent/derived random variable，例如 sub-skill 或 aggregate competency；其版本定义 states、probabilistic parents 和 CPD/CPT。 |
 | Data / extraction edge | 从 raw/session/task source 到 Evidence 的数据依赖，或 EvidenceRecipe 内 typed operator ports；不进入 BN factorization，也不等于 BN parent。高层不使用 Evidence→Evidence extraction edge。 |
+| Source provenance closure | 对 Evidence extraction source 递归证明其最终来自 raw stream、session semantic 或 task semantic 的技术闭包。另一 Evidence 的 score/state/likelihood 属于 `evidence_observation`，不能通过改名冒充 raw/derived source。 |
 | Probabilistic BN edge | 从 parent random variable 到 child random variable 的概率边，表示 child CPD 的条件变量并进入 BN joint factorization。 |
 | BN parent | 出现在 `P(child | parents)` 中的概率父随机变量；不得用来指 EvidenceRecipe 的 raw source binding。 |
 | Inference flow / overlay | 观测 Evidence 后对 sub-skill/competency posterior 的信息影响方向；前端可只读显示 `Evidence ⇢ ability`，但它不是可保存的 BN edge。 |
@@ -86,7 +88,7 @@
 | Release-scale / performance fixture | 未来可选的长 session、full-rate、吞吐/内存/soak 测试资产；不属于 M4 Task 0、默认 pytest、isolated-wheel smoke 或 engineering-verification 必要门槛。 |
 | Answer leakage / 答案回灌 | 把 expected AnchorResult、state、likelihood、预计算 composite 或 production output 写入测试 input recipe，使测试只证明 builder/oracle 自洽而没有证明 raw/aligned data 驱动 evidence；D-027 明确禁止。 |
 | SynchronizationReport | M3 公共同步报告，记录七个 core modality、task reference、annotation、clock/coverage/window diagnostics 与 source/policy/catalog/alignment fingerprints；证明结构／时间合同并提供 non-gating diagnostics，始终 `formal_run_authorized=false`。 |
-| Run preflight | `run.preflight` 在 aligned session、annotation/reference 和锁定 model revision 上执行的正式运行门；输出 `RunPreflightReport` 并决定能否创建 AssessmentRun。 |
+| Run preflight | `run.preflight` 在 aligned session、annotation/reference、exact `AssessmentSchemeVersion` 及其 pinned component IDs/content hashes 上执行的正式运行门；输出 `RunPreflightReport` 并决定能否创建 AssessmentRun。它不同于 M2 ingestion readiness。 |
 | BN | Bayesian Network，贝叶斯网络。 |
 | CPD | Conditional Probability Distribution，BN child 在给定 probabilistic parents 下的条件分布；有限离散模型通常物化为 CPT。 |
 | CPT | Conditional Probability Table，节点在给定 parent state 下的条件概率表。 |
@@ -98,7 +100,7 @@
 | Draft | `Autosaved draft` 的简称；尚未成为后续新 run 的默认模型。 |
 | Applied revision | M4R/旧文档的不可变模型术语；M5 后具体化为 copy-on-write 发布的 component versions 与 `AssessmentSchemeVersion`，不表示科学审批或 Python 软件发布。 |
 | Scheme draft | 从 starter 或任意 AssessmentSchemeVersion 创建的可自动保存工作副本；允许 incomplete，通过 copy-on-write 形成候选 component versions。 |
-| Applied recipe revision | M4R 对单个 EvidenceRecipe 保存的不可变 snapshot、content hash、parent/diff、作者、时间与可选 note；M5/M6 将其纳入项目级 applied model revision。 |
+| Applied recipe revision | M4R 对单个 EvidenceRecipe 保存的不可变 snapshot、content hash、parent/diff、作者、时间与可选 note；M5 将它保留为 EvidenceVersion migration lineage，不把它冒充 `AssessmentSchemeVersion`。 |
 | Published revision | 旧文档/UI 术语；在当前产品中统一解释为 `Applied revision`，不得附加人工审批、golden 或 per-edit test 语义。 |
 | Technical validation | 只检查 schema、引用、DAG、operator/type/unit/parameter、formula/scorer 与 BN CPT 是否可执行；不判断算法、Anchor mapping 或 CPT 是否科学合理。 |
 | graph_version | 草稿内整个 semantic model（node、edge、state、CPT、binding、anchor parameters、profile）每次原子修改后递增的乐观并发版本。 |
@@ -112,6 +114,6 @@
 | revision_id | M4R/legacy 中标识不可变 recipe/model revision 的稳定 ID；M5 新合同分别使用 component version ID 与 scheme version ID。 |
 | Sidecar | 由 Windows 前端启动和管理的本地 Python 后端进程。 |
 | JSON-RPC / JSONL | 每行一个 JSON-RPC 2.0 消息的 stdio 进程协议。 |
-| TPX | O8 使用的 task performance composite，由 phase-state precision 与 workload rate 组合。 |
+| TPX | O8 使用的 task performance composite。M4R `starter.o8` 从 O1/O5 score 组合的 recipe 只作 legacy migration/replay；M5 active starter 使用同一 concept 下从 raw/session/task sources 计算的并行 compliant version。两者不要求 provisional 数值等价。 |
 | Software verified | 软件按设计合同执行且通过规定测试。 |
 | Scientifically validated | 评估指标、阈值、CPT 和输出经过足够样本、专家标注及统计研究证明有效。 |

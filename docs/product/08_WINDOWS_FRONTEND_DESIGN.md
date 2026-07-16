@@ -6,7 +6,7 @@
 | 平台 | Windows 10/11 |
 | 推荐技术 | C#、.NET、WinUI 3 |
 | 后端连接 | 本地 JSON-RPC sidecar |
-| 核心原则 | 专家自由编辑、前后端同一 canonical recipe、后端权威、离线优先 |
+| 核心原则 | 专家主导模型设计、前后端同一 canonical recipe、后端维护状态/版本/执行一致性、离线优先 |
 
 > **当前权威补充：** 前端必须提供 global component library、scheme composer 和 integrated model workspace。高层画布显示 Raw Input、Evidence、BN Node 三类节点，并严格区分 data/extraction 与 probabilistic BN 两类边；Evidence operator graph 可展开，posterior inference overlay 只读。Evidence Designer 根据 backend schema 自动生成画布、表单和帮助，不在 C# 中复制计算逻辑。详见 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)。
 
@@ -28,13 +28,15 @@
 
 | 前端负责 | 后端负责 |
 |---|---|
-| 可视化、交互、表格编辑、输入预检查提示 | session schema、component versions、scheme draft、typed graph、CPT 和参数的权威状态 |
+| 专家模型设计的可视化、交互、表格编辑、输入预检查提示 | session schema、component versions、scheme draft、typed graph、CPT 和参数的 canonical 状态 |
 | pending 操作、乐观 UI、冲突提示 | 原子 transaction、并发版本、验证与持久化 |
 | 展示 canonical graph 和差异 | CPT 生成/迁移、DAG 编译、BN 推理 |
 | 提供可选修改说明、apply 操作和历史入口 | 自动 audit event、provenance、content identity 与 immutable component/scheme versions |
 | sidecar 启动、监控和恢复入口 | 计算 job、取消点、结果 artifact |
 
 前端不能直接修改 YAML/JSON model files，也不能在 UI 中执行任意 Python。
+
+这里的责任分工不把模型内容决定权交给后端：Evidence、算法、参数、BN topology/state/CPT 由专家通过前端决定；后端只保存并执行同一 canonical object、签发不可变版本、处理并发，并阻止技术上不可解析或不可执行的状态。科学合理性不属于 backend apply gate。
 
 ## 3. 应用外壳
 
