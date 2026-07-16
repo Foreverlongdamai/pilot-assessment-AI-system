@@ -1,6 +1,6 @@
 # M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan
 
-> 状态：Approved / active implementation；Task 1–2 已完成，Task 3 为下一执行入口
+> 状态：Approved / active implementation；Task 1–3 已完成，Task 4 为下一执行入口
 > 执行方式：INLINE，严格按任务顺序推进；不启用 subagent
 > 工程方式：平台不变量采用轻量 test-first；starter resources、迁移和组装采用 focused smoke
 > 权威规格：[M5 Shared Versioned Model Library and Bayesian Workspace Design](../specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)
@@ -387,7 +387,7 @@ GREEN：
 
       .venv\Scripts\python.exe -m pilot_assessment.schemas.export
 
-- [x] 复跑 focused tests：`46 passed`；完整 `tests/contracts` + schema-export regression 为 `400 passed`；16 类新增 schema 在 root/package 双目录 byte-identical，legacy schema hash regression 保持通过；本次生产与测试文件定向 Ruff、format、ty 通过。
+- [x] 复跑 focused tests：`46 passed`；提交前完整 `tests/contracts` + schema-export regression 为 `403 passed`；16 类新增 schema 在 root/package 双目录 byte-identical，legacy schema hash regression 保持通过；本次生产与测试文件定向 Ruff、format、ty 通过。
 
 提交边界：`feat: define M5 model and scheme contracts`
 
@@ -403,20 +403,20 @@ GREEN：
 
 RED：
 
-- [ ] 覆盖 raw/session/task root、合法 derived closure、unknown source、cycle、evidence-observation rejection 和 structured path diagnostic。
-- [ ] 对全部 packaged M4R recipes 运行 generic preflight；断言旧 O8 因两个 `anchor.*` bindings 不兼容，且诊断不依赖 `recipe_id`/`anchor_id` 特判。
-- [ ] 运行：
+- [x] 覆盖 raw/session/task root、合法 derived closure、unknown source、cycle、evidence-observation rejection 和 structured path diagnostic。
+- [x] 对全部 packaged M4R recipes 运行 generic preflight；断言旧 O8 因两个 `anchor.*` bindings 不兼容，且诊断不依赖 `recipe_id`/`anchor_id` 特判。
+- [x] 运行：
 
       .venv\Scripts\python.exe -m pytest tests/model_library/test_sources.py tests/model_library/test_m4r_migration_preflight.py -q
 
-  预期 RED：source catalog 和 migration module 尚不存在。
+  实际 RED：测试收集阶段分别因 `pilot_assessment.model_library.sources` 与 `.migration` 不存在产生预期 `ModuleNotFoundError`；没有先写生产实现。
 
 GREEN：
 
-- [ ] 实现 descriptor registry、namespace fallback、provenance DFS 与 compatibility report。
-- [ ] 为 starter `semantic.*`/`derived.*` bindings 保存显式 provenance descriptors；未知 source 默认拒绝 active import。
-- [ ] 旧 recipe bytes 不改写，migration result 只产生 lineage 与 compatibility metadata。
-- [ ] 复跑 focused tests。
+- [x] 实现 descriptor registry、仅用于识别 legacy Evidence observation 的窄 namespace fallback、provenance DFS 与 compatibility report；active raw/session/task/derived sources 均要求显式 descriptor。
+- [x] 为 starter raw/session/task、`semantic.*`/`derived.*` bindings 保存 20 个 typed provenance descriptors，覆盖 X/U/I/G/EEG/ECG/pilot_camera；未知 source 默认拒绝 active import。
+- [x] 旧 recipe bytes 不改写，migration result 只产生 lineage 与 compatibility metadata；全部 18 个 packaged recipes 使用同一预检，17 个 compatible，旧 `starter.o8` 因两个 `anchor.*` inputs 自然为 legacy-only。
+- [x] 复跑 focused tests：`11 passed`；`tests/model_library` + M4R starter catalog regression 为 `29 passed`；定向 Ruff、format、ty 与 `git diff --check` 通过。
 
 提交边界：`feat: validate M4R source provenance for M5`
 

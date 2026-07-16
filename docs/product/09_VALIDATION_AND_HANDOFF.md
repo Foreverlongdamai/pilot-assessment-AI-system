@@ -3,7 +3,7 @@
 | 字段 | 值 |
 |---|---|
 | 设计版本 | v0.3 shared-versioned-model validation baseline |
-| 当前软件状态 | in_progress（M1/M2/M3 与 M4R engineering verified；M5 Task 1–2 generic identity、public contracts 与 schema 已完成，Task 3–12 尚未完成；M6 runtime persistence/sidecar、M7 WinUI 与 M8 packaging 尚未完成，`formal_run_authorized=false`） |
+| 当前软件状态 | in_progress（M1/M2/M3 与 M4R engineering verified；M5 Task 1–3 generic identity、public contracts/schema、typed source provenance 与 migration preflight 已完成，Task 4–12 尚未完成；M6 runtime persistence/sidecar、M7 WinUI 与 M8 packaging 尚未完成，`formal_run_authorized=false`） |
 | 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
