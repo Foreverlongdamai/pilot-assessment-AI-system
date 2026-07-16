@@ -2,13 +2,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 设计版本 | v0.3 M6 protocol placeholder aligned to M5 domain semantics |
+| 设计版本 | v0.4 overview aligned to the approved M6 formal specification |
 | Transport | JSON-RPC 2.0 / JSONL over stdin/stdout |
 | 客户端 | Windows WinUI 3 前端 |
 | 服务端 | Python Assessment Core sidecar |
 | 适用范围 | 本地、单用户、离线评估 |
 
-> **当前权威补充：** M5 域语义以 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 和 [M5 Implementation Plan](./plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) 为准：协议必须承载全局 component versions、exact-pinned schemes、两类 typed mutation edge、只读 inference overlay、scheme draft/preview 与 copy-on-write atomic publish。M4R 的进程内 EvidenceRecipe service 和 M5 transport-neutral/in-memory model workspace 已工程验证；M6 durable persistence/sidecar 尚未实现。本文件只是 M6 前 placeholder，方法名仍是候选，不得被描述为已冻结或已实现协议；M6 正式规格必须在复用 M5 domain services 的同时冻结 repository transaction、artifact、framing、progress/cancel/error 与 run-lock 语义。
+> **当前权威补充：** M6 的冻结边界以 [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](./specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) 为准；M5 域语义继续以 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 为准。本文件是面向前后端的协议总览，不覆盖 M6 正式规格中的 project-relative storage、SQLite transaction、managed-copy import、artifact recovery、run purpose/lock 和 completion gate。M4R/M5 已工程验证；M6 尚未实现，不能把已批准协议描述成已交付能力。
 
 ## 1. 目标与边界
 
@@ -158,7 +158,7 @@ M4R 当前已经提供 backend-only `create_draft`、`save_draft`、`clone_draft
 
 ## 7. 大数据与路径合同
 
-session.inspect 可以接收用户选择的绝对 bundle 路径。正式 import 后，后端把文件复制或以明确策略注册到受管理 project storage，并生成 session_id。后续运行只使用 session_id。
+session.inspect 可以接收用户选择的绝对 bundle 路径。正式 import 后，后端把文件逐字节复制到受管理 project storage，并生成 exact session/session-revision identity。后续运行只使用 managed session revision，不保留对外部源的运行依赖。
 
 协议只传：
 

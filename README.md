@@ -126,7 +126,7 @@ Evidence 节点的 Inspector 必须同时让专家看到两件事：
 | M3 Native-Rate Time Synchronization | 已工程验证 |
 | M4R Editable Evidence Computation Foundation | 已工程验证；canonical `EvidenceRecipe`、typed operators、compiler/executor、draft/preview/apply/replay 与 18 个 starter recipes 已实现 |
 | M5 Shared Model Library and Bayesian Workspace | 已工程验证；global immutable component library、exact-pinned scheme、draft/undo/redo、copy-on-write atomic publish、通用 CPT、finite-discrete exact inference、M4R migration、Hover starter package 与 lightweight preview/publish/replay workflow 已完成 |
-| M6 Local Runtime / Persistence / Protocol | 下一里程碑；尚未实施，先形成 persistence/runtime protocol 正式规格 |
+| M6 Local Runtime / Persistence / Protocol | 正式规格已批准、实施计划编制中；生产代码尚未实施 |
 | M7 WinUI Expert Designer | 尚未实施 |
 | M8 Packaging / Handoff | 尚未实施 |
 

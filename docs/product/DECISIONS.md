@@ -6,7 +6,7 @@
 
 | 当前适用性 | 决策 | 解释 |
 |---|---|---|
-| 当前通用基线 | D-001、D-003、D-005–D-007、D-009–D-014、D-016–D-022、D-024 的 no-quality-mixing 原则、D-027 的 raw-driven 原则、D-028、D-030–D-032、D-034、D-036–D-040 | 继续约束通用产品、合同或运行语义；其中 D-007 的“后端权威”只指 canonical state/version/execution，不表示后端决定科学内容 |
+| 当前通用基线 | D-001、D-003、D-005–D-007、D-009–D-014、D-016–D-022、D-024 的 no-quality-mixing 原则、D-027 的 raw-driven 原则、D-028、D-030–D-032、D-034、D-036–D-046 | 继续约束通用产品、合同或运行语义；其中 D-007 的“后端权威”只指 canonical state/version/execution，不表示后端决定科学内容 |
 | Starter/reference 范围 | D-002、D-004、D-015、D-024 的具体默认权重、D-029 的 fixed resource inventory | 只描述 `reference-model-v0.1` / Hover starter 或已发布 legacy resource，不构成 generic engine 的任务、数量、拓扑或算法限制 |
 | 已被部分取代或具体化 | D-008、D-023、D-033、D-035 | 不可变历史、typed DAG、最小技术校验等原则仍有效；whole-model revision、whole-Anchor plugin、inference-smoke gate 和旧里程碑边界由 D-031–D-040 具体化或取代 |
 | 历史完成门 | D-025、D-026，以及 D-027 中 fixed-18 测试范围 | 只记录旧 M4 Task 0–28 的工程过程，不再定义 M4R/M5 的完成条件或专家每次修改的测试义务 |
@@ -306,3 +306,45 @@
 - 决策：高层 `EvidenceVersion.recipe.inputs`（即 extraction source bindings）只能引用 raw/session/task sources，不能引用另一条已经评分的 Evidence observation。现有 `starter.o8` 使用 `anchor.O1-score` 与 `anchor.O5-score` 的版本保留为 legacy migration/replay artifact，不得直接成为 D-037-compliant scheme 的 active EvidenceVersion。M5 为 TPX 建立新的并行 EvidenceVersion：其输入必须来自 raw/task sources，或来自 provenance 最终闭合到 raw/task sources 的 typed derived artifact；若专家要表达 Evidence 变量之间的概率关系，则使用 probabilistic edge 和完整 CPD/CPT。
 - 理由：把另一 Evidence 的评分当作 extraction input 会混合计算依赖与 BN 概率依赖，并使高层三类节点/两类边失真。静默改写旧 O8 又会破坏 immutable history。
 - 影响：M5 migration preflight 必须检测 Evidence-to-Evidence source binding，返回结构化 compatibility diagnostic，并保留旧资源与 lineage；迁移可以为同一 concept 创建新的 compliant version，但不能覆盖旧 recipe。当前已知命中只有 `starter.o8`，实施时仍须对全部导入资源执行通用检查，不能按 O8 ID 写死分支。
+
+## D-041：M6 使用自包含受管项目目录
+
+- 状态：已接受
+- 决策：每个项目使用一个可整体移动的根目录，内部保存 `project.json`、SQLite 数据库、managed sessions、content-addressed artifacts、logs 与 staging。外部 Session Bundle 在 import 时逐字节复制并复核 checksum；导入后运行只引用 exact managed `SessionRevision`。数据库只保存项目相对路径，应用安装包不包含任何用户项目、session 或 run 数据。
+- 理由：用户已确认复制到受管项目存储最适合最终 Windows 产品；自包含目录同时满足离线运行、设备迁移、外部源可删除和后续 M8 备份/导出。
+- 影响：M5 的“全局组件库”解释为 project-wide、跨任务/方案共享；不同项目默认隔离。跨项目 merge/cloud sync 属于后续版本，不能通过隐式绝对路径关联实现。
+
+## D-042：SQLite 保存 canonical durable state，受管文件保存大型 payload
+
+- 状态：已接受
+- 决策：M6 以标准库 SQLite 实现 M5 repository 与 `WorkspaceUnitOfWork` 的 durable adapters；canonical domain object 使用 RFC 8785 JSON bytes 与 exact hash 保存，不使用 pickle。视频、图像、长时序、派生结果和 export payload 进入 managed filesystem，不进入 SQLite BLOB 或 JSON-RPC。
+- 理由：SQLite 能在本地单用户环境中提供 component/scheme/draft/run 的原子事务和恢复；大型 payload 由文件合同承载可以避免数据库、内存和协议膨胀。
+- 影响：进程内 repositories 继续用于 focused tests；M5 services 和 identities 不因 storage adapter 改变。所有 DB 读取必须重新通过 typed contract/hash 验证。
+
+## D-043：File-backed mutation 使用 staging、content hash 与可恢复 promotion
+
+- 状态：已接受
+- 决策：session import、derived artifact 和 result artifact 先写 project-local staging，close 后计算 SHA-256/size/schema，再原子 promote，并在 SQLite 中提交 owner reference、transaction receipt 和 audit event。引用数由引用表推导；无引用 payload 进入保留/清理流程。启动恢复清理没有 durable owner 的 staging/orphan，不把半写结果标为完成。
+- 理由：SQLite transaction 不能单独让文件系统写入原子化；显式 intent/staging/promotion/recovery 才能在崩溃点维持确定状态。
+- 影响：Evidence/BN 执行不回写原始 Session Bundle。v0.1 crash recovery 恢复到可重试边界，而不是从 operator 中间点继续。
+
+## D-044：M6 冻结本地 stdio JSON-RPC sidecar
+
+- 状态：已接受
+- 决策：Windows 前端以隐藏子进程管理 Python sidecar；stdin/stdout 使用 UTF-8 JSON-RPC 2.0 + 单行 JSONL，不监听网络端口。stdout 只允许协议消息，日志写 stderr/文件；单消息默认上限 4 MiB，大数据只传 managed IDs、相对路径、metadata、size 与 checksum。
+- 理由：本地离线产品无需 HTTP 端口、服务发现或防火墙配置；stdio 清楚地绑定应用和后端生命周期，并遵守 D-009 的大数据边界。
+- 影响：协议层只映射 M5/M6 application services，不复制 Evidence/BN 逻辑。未来 HTTP adapter 必须复用相同 domain services/contracts。
+
+## D-045：所有持久化写操作同时使用幂等 transaction 和 optimistic revision
+
+- 状态：已接受
+- 决策：mutation/import/publish/run.start 必须携带稳定 `transaction_id`，以 canonical method+params hash 作为幂等身份；同 ID 同请求返回首次 response，同 ID 不同请求拒绝。草稿 semantic/layout 修改继续分别携带 expected graph/layout revision；幂等不能绕过 revision，revision 也不能替代幂等。
+- 理由：stdio response 丢失或 sidecar 重启会触发安全重试，而前端拖拽/编辑又可能基于过期状态；两类机制解决不同问题。
+- 影响：成功 response、audit ID 和新 canonical revisions 必须持久化。便利 RPC 也要转换为同一 typed operation/transaction，不能形成绕过路径。
+
+## D-046：M6 run 锁定 exact snapshot，并以可查询状态恢复长任务
+
+- 状态：已接受
+- 决策：recorded run 锁定 exact managed session revision/root hash、published scheme/components、EvidenceRecipe/operators/scorer、BN/runtime 和参数 identities。progress 先持久化再 notification；cancel 为 cooperative；sidecar crash 后非 terminal run 标记 `interrupted`，不伪造 completed。`preview`、`software_test` 和 `assessment` 分开；synthetic/engineering starter 可完成 software test，但不能冒充正式科学评估。
+- 理由：前端断开、响应丢失或进程崩溃不应丢失历史或改变模型；同时当前 synthetic 数据和 starter policy 明确不支持正式结论。
+- 影响：run preflight 只检查 frozen technical closure、purpose 和 declared provenance，不按飞行/生理表现或所谓数据质量过滤 Evidence。v0.1 interrupted run 通过新 run 重试，不原地续算。
