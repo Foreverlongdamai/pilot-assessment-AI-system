@@ -15,10 +15,8 @@ import csv
 import hashlib
 import io
 import json
-import math
 import os
 import re
-import struct
 import sys
 import sysconfig
 from collections.abc import Mapping, Sequence
@@ -27,7 +25,6 @@ from pathlib import Path, PurePosixPath
 from typing import NoReturn, cast
 
 import polars as pl
-import rfc8785
 from pydantic import BaseModel, JsonValue
 
 from pilot_assessment.anchors.protocols import (
@@ -56,8 +53,16 @@ from pilot_assessment.contracts.anchor_execution import (
 )
 from pilot_assessment.contracts.anchor_v2 import AnchorArtifactRef, AnchorResultV2
 from pilot_assessment.contracts.common import Sha256Digest, StableId
+from pilot_assessment.model_library.identity import (
+    I_JSON_SAFE_INTEGER_MAX,
+    jcs_bytes,
+    typed_content_sha256,
+)
+from pilot_assessment.model_library.identity import (
+    canonical_json_value as _json_projection,
+)
 
-_SAFE_INTEGER = 9_007_199_254_740_991
+_SAFE_INTEGER = I_JSON_SAFE_INTEGER_MAX
 _F32_MAX = 3.4028234663852886e38
 _TYPE_VERSION = "0.1.0"
 _TABLE_DESCRIPTOR_KEYS = frozenset({"type", "fields", "canonical_order_keys"})
@@ -79,73 +84,10 @@ _CANONICAL_SHA256_B64 = re.compile(r"[A-Za-z0-9_-]{43}", re.ASCII)
 _CANONICAL_NONNEGATIVE_DECIMAL = re.compile(r"(?:0|[1-9][0-9]*)", re.ASCII)
 
 
-def _json_projection(value: object) -> JsonValue:
-    """Copy the exact accepted Task 8 JSON domain to built-in containers."""
-
-    if value is None or type(value) in {bool, str}:
-        if type(value) is str:
-            try:
-                value.encode("utf-8", errors="strict")
-            except UnicodeEncodeError as error:
-                raise ValueError(
-                    "canonical JSON strings must not contain unpaired surrogates"
-                ) from error
-        return cast(JsonValue, value)
-    if type(value) is int:
-        if not -_SAFE_INTEGER <= value <= _SAFE_INTEGER:
-            raise ValueError("canonical JSON integers must be in the I-JSON safe range")
-        return value
-    if type(value) is float:
-        if not math.isfinite(value):
-            raise ValueError("canonical JSON numbers must be finite")
-        return value
-    if isinstance(value, Mapping):
-        result: dict[str, JsonValue] = {}
-        for key, member in value.items():
-            if type(key) is not str:
-                raise TypeError("canonical JSON object keys must be exact strings")
-            try:
-                key.encode("utf-8", errors="strict")
-            except UnicodeEncodeError as error:
-                raise ValueError(
-                    "canonical JSON keys must not contain unpaired surrogates"
-                ) from error
-            result[key] = _json_projection(member)
-        return result
-    if isinstance(value, (list, tuple)):
-        return [_json_projection(member) for member in value]
-    raise TypeError("value is outside the Task 8 canonical JSON domain")
-
-
-def jcs_bytes(value: object) -> bytes:
-    """Return RFC 8785 bytes for the explicitly restricted M4 JSON domain."""
-
-    projected = _json_projection(value)
-    try:
-        return rfc8785.dumps(projected)
-    except (rfc8785.CanonicalizationError, UnicodeError, ValueError) as error:
-        raise ValueError("RFC 8785 canonicalization failed") from error
-
-
-def _ascii_identity(value: str, *, label: str) -> bytes:
-    if type(value) is not str or not value or "\0" in value:
-        raise ValueError(f"{label} must be a non-empty ASCII string without NUL")
-    try:
-        return value.encode("ascii")
-    except UnicodeEncodeError as error:
-        raise ValueError(f"{label} must be ASCII") from error
-
-
 def typed_json_sha256(type_id: str, schema_version: str, value: object) -> str:
-    """Hash RFC 8785 bytes with the fixed NUL/uint64 typed framing."""
+    """Preserve the legacy public API while using the shared primitive."""
 
-    type_bytes = _ascii_identity(type_id, label="type_id")
-    version_bytes = _ascii_identity(schema_version, label="schema_version")
-    canonical = jcs_bytes(value)
-    framed = (
-        type_bytes + b"\0" + version_bytes + b"\0" + struct.pack(">Q", len(canonical)) + canonical
-    )
-    return hashlib.sha256(framed).hexdigest()
+    return typed_content_sha256(type_id, schema_version, value)
 
 
 def _require_plain_sequence(value: object, *, label: str) -> list[object]:

@@ -70,6 +70,12 @@ from pilot_assessment.contracts.anchor_v2 import (
     MetricValue,
 )
 from pilot_assessment.contracts.session import CoreModality
+from pilot_assessment.model_library.identity import (
+    jcs_bytes as generic_jcs_bytes,
+)
+from pilot_assessment.model_library.identity import (
+    typed_content_sha256,
+)
 
 SHA_A = "a" * 64
 SHA_B = "b" * 64
@@ -446,6 +452,15 @@ def test_typed_hash_uses_exact_ascii_nul_and_uint64_framing() -> None:
     for type_id, version in (("", "0.1.0"), ("é", "0.1.0"), ("type\0id", "0.1.0")):
         with pytest.raises(ValueError):
             typed_json_sha256(type_id, version, payload)
+
+
+def test_legacy_identity_exports_match_generic_primitives() -> None:
+    payload = {"threshold": 1.25, "enabled": True}
+
+    assert jcs_bytes(payload) == generic_jcs_bytes(payload)
+    assert typed_json_sha256("parameter-snapshot", "0.1.0", payload) == (
+        typed_content_sha256("parameter-snapshot", "0.1.0", payload)
+    )
 
 
 def test_schema_descriptor_and_logical_table_use_the_exact_nested_arrays() -> None:
