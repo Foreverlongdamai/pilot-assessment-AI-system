@@ -1,6 +1,6 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0.3 shared-versioned-model 基线。M1–M3、M4R 与 M5 已工程验证；D-031–D-040 已确认专家可编辑、全局组件版本库、任务方案、BN 语义与 legacy Evidence-to-Evidence 非覆盖迁移。M6 persistence/runtime protocol 是下一里程碑，M7 WinUI 与 M8 packaging 尚未完成，`formal_run_authorized=false`。
+**文档状态：** 产品 v0.4 durable expert-designer runtime 基线。M1–M3、M4R、M5 与 M6 已工程验证；D-031–D-046 已确认专家可编辑、全局组件版本库、任务方案、BN 语义、legacy Evidence-to-Evidence 非覆盖迁移，以及 portable managed project/stdio sidecar。下一里程碑为 M7 WinUI，M8 packaging 仍放在最后；starter/synthetic `formal_run_authorized=false`。
 **日期：** 2026-07-16
 **适用目录：** `pilot_assessment_system/`
 
@@ -158,7 +158,7 @@ Assessment Core 保留 transport-neutral command service，未来可以增加 lo
 
 ### 6.4 Global Model Library and Assessment Schemes
 
-全局库保存 `EvidenceConcept/EvidenceVersion`、`BnNodeConcept/BnNodeVersion`、`EvidenceBindingVersion` 和 `CptVersion`。方案层保存 `TaskProfileVersion` 与 `AssessmentSchemeVersion`，只引用 exact component versions。Project runtime store 在 M6 持久化 drafts、published versions、runs、artifacts 和 operation history；它不得把 starter package 当作唯一模型。
+全局库保存 `EvidenceConcept/EvidenceVersion`、`BnNodeConcept/BnNodeVersion`、`EvidenceBindingVersion` 和 `CptVersion`。方案层保存 `TaskProfileVersion` 与 `AssessmentSchemeVersion`，只引用 exact component versions。M6 Project runtime store 已持久化 drafts、published versions、runs、artifacts 和 operation history；它不把 starter package 当作唯一模型。
 
 ## 7. 前端产品区域
 

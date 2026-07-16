@@ -2,7 +2,7 @@
 
 | 字段 | 值 |
 |---|---|
-| 状态 | Approved；用户已确认 M6 方案与四项核心选择 |
+| 状态 | Implemented / engineering verified；Task 1–15 与 completion gate 已关闭 |
 | 日期 | 2026-07-16 |
 | 上游里程碑 | M1–M3、M4R、M5 engineering verified |
 | 下游里程碑 | M7 WinUI Expert Designer；M8 packaging/handoff |

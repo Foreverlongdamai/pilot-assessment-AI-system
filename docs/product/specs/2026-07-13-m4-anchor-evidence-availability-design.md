@@ -901,4 +901,4 @@ Isolated-wheel public entry 仍固定为 `python -m pilot_assessment.verificatio
 9. M4/M5/M6 ownership 与 coverage 公式不冲突；
 10. Git commit 只声称 design/documentation，不声称 M4 implemented。
 
-原书面规格与 amendments 继续解释 Task 0–28。Replacement Task 0–28 已完成，O1–O12/H1–H3 与三个 providers 均存在；但自 2026-07-15 起不再以补齐 exact-18 whole-Anchor plugins 或 M4-G heavy completion gate 为下一步。当前真实状态是：旧 M4 15 个 plugins preserved；M4R EvidenceRecipe/operator foundation 与 M5 shared model/Bayesian workspace 已工程完成；M6–M7 尚未完成；`formal_run_authorized=false`。
+原书面规格与 amendments 继续解释 Task 0–28。Replacement Task 0–28 已完成，O1–O12/H1–H3 与三个 providers 均存在；但自 2026-07-15 起不再以补齐 exact-18 whole-Anchor plugins 或 M4-G heavy completion gate 为下一步。当前真实状态是：旧 M4 15 个 plugins preserved；M4R EvidenceRecipe/operator foundation、M5 shared model/Bayesian workspace 与 M6 durable runtime/sidecar 已工程完成；M7 WinUI 尚未完成；starter/synthetic `formal_run_authorized=false`。

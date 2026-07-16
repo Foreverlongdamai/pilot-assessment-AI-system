@@ -7,7 +7,7 @@
 | 状态 | Approved / engineering verified |
 | 上位设计 | [Expert-Editable Evidence and Assessment Model Design](./2026-07-15-expert-editable-evidence-and-model-design.md) |
 | 决策 | D-036–D-040 |
-| 实施状态 | Task 1–12 已完成；implementation head `a2cc913` 后的 focused、M4R regression、full repository、Ruff/format、`ty check src`、Schema、fresh build 与仓库外 wheel smoke 全部通过；M6–M8 尚未实现，`formal_run_authorized=false` |
+| 实施状态 | Task 1–12 已完成；implementation head `a2cc913` 后的 M5 gate 全部通过；下游 M6 也已于 2026-07-16 engineering verified，M7–M8 尚未实现，starter/synthetic `formal_run_authorized=false` |
 
 ## 1. 目的
 

@@ -110,11 +110,11 @@
 | observation_mode | M5 的 hard、virtual 或 omitted 绑定方式，表示某条 AnchorResult 如何进入 BN；M4 不按技术诊断把 computed evidence 改为 omitted。 |
 | ready / ready_partial / blocked (M4) | `ready` 表示所有适用 anchor 均 computed；`ready_partial` 表示 inventory 完整但有 missing/config/dependency/error；`blocked` 只表示有效 request 之后的 plan/registry/DAG/global inventory/atomic commit 失败。pre-request rejection 不生成 M4 disposition/report。 |
 | plugin_unavailable / not_implemented / not_attempted | 旧 M4 whole-Anchor plugin capability/plan/report inventory 状态，不是 AnchorResult calculation status。M4R 对新 recipe 使用 `operator_unavailable`；两者都不得伪造 session result。 |
-| DerivedArtifactSink | M4 通过依赖注入写入 typed、content-addressed 临时派生产物的 port；M6 才拥有正式 managed artifact root 和持久化生命周期。 |
+| DerivedArtifactSink | M4 通过依赖注入写入 typed、content-addressed 派生产物的 port；M6 已提供正式 managed artifact root、staging/promotion/reference 与持久化生命周期。 |
 | revision_id | M4R/legacy 中标识不可变 recipe/model revision 的稳定 ID；M5 新合同分别使用 component version ID 与 scheme version ID。 |
 | Sidecar | 由 Windows 前端启动和管理的本地 Python 后端进程。 |
 | JSON-RPC / JSONL | 每行一个 JSON-RPC 2.0 消息的 stdio 进程协议。 |
 | TPX | O8 使用的 task performance composite。M4R `starter.o8` 从 O1/O5 score 组合的 recipe 只作 legacy migration/replay；M5 active starter 使用同一 concept 下从 raw/session/task sources 计算的并行 compliant version。两者不要求 provisional 数值等价。 |
 | Engineering verified / Software verified | 某个明确里程碑的软件按其设计合同执行，并通过该里程碑规定的 fresh tests、static/schema/build/package gates；它是里程碑范围内的工程结论，不表示完整产品、后续里程碑或科学有效性已经完成。 |
-| formal_run_authorized | 是否允许创建正式 AssessmentRun 的显式状态。M1–M5 的 ingestion、alignment、Evidence、scheme preview 和 inference 工程通过都不能自动把它设为 true；durable run preflight/lifecycle 属于 M6，当前始终为 false。 |
+| formal_run_authorized | 是否允许创建 `purpose=assessment` 的显式状态。M1–M5 的 ingestion、alignment、Evidence、scheme preview 和 inference 工程通过都不能自动把它设为 true；M6 preflight 只有在 technical disposition ready、输入非 synthetic 且 exact reporting policy 显式声明授权时才设为 true。当前 starter/synthetic 流程仍为 false，`purpose=software_test` 可在 ready 且 false 时运行。 |
 | Scientifically validated | 评估指标、阈值、CPT 和输出经过足够样本、专家标注及统计研究证明有效。 |

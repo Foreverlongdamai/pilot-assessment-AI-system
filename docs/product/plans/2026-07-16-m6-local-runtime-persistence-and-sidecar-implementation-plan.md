@@ -1,6 +1,6 @@
 # M6 Local Runtime, Durable Persistence and Sidecar Implementation Plan
 
-> 状态：Approved / ready for INLINE execution
+> 状态：Completed / engineering verified（2026-07-16）
 > 执行方式：INLINE，严格按任务顺序推进；不启用 subagent
 > 工程方式：平台不变量采用轻量 test-first；文件工作流、starter 组装和纵向闭环采用 focused smoke
 > 权威规格：[M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](../specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md)
@@ -511,3 +511,37 @@ docs: close M6 local runtime milestone
 10. focused、regression、full suite、schema zero-drift、lint、format、type check、build 和 external-wheel smoke 全部通过。
 
 M6 完成只说明系统框架可持久、可运行、可供前端调用；不代表任何 starter Evidence、BN 或飞行员能力评分已获专家认可。
+
+## 7. 实施关闭记录
+
+Task 1–14 已按顺序形成独立提交：
+
+| Task | Commit | 结果 |
+|---:|---|---|
+| 1 | `339ca98` | project/run contracts 与双目录 schema |
+| 2 | `4af8bcd` | portable project 与 SQLite foundation |
+| 3 | `39be69f` | durable exact component library |
+| 4 | `41d862e` | durable draft/history 与 atomic publication |
+| 5 | `7895bf0` | transaction idempotency 与 audit |
+| 6 | `5b590cb` | content-addressed managed artifacts |
+| 7 | `e0d107a` | managed Session Bundle import |
+| 8 | `698294e` | project application composition 与 starter seed |
+| 9 | `1169e5f` | exact run plan 与 technical preflight |
+| 10 | `bb7df13` | versioned runtime source resolution |
+| 11 | `c4e8913` | Evidence → Observation → BN pipeline |
+| 12 | `5c6e54a` | durable coordinator、progress/cancel/recovery |
+| 13 | `6bb24ba` | JSONL framing 与 JSON-RPC dispatcher |
+| 14 | `43e87d6` | method adapters 与 stdio sidecar |
+| 15 | 本计划关闭提交 | managed vertical slice、完成门与文档收口 |
+
+Task 15 使用单个轻量全模态 fixture 和仅包含 O1 及其 BN ancestor closure 的测试方案完成：external bundle 导入后删除原目录，评估仍从 managed copy 完成；project 整体换目录并 reopen 后，session revision、published scheme、component hashes、result 和 artifacts 均可 exact replay。
+
+2026-07-16 fresh completion gate：
+
+- M4R/M5/M6 focused regression：`151 passed in 17.99s`；
+- full repository：`1632 passed, 3 skipped in 337.27s`；三个 skip 仅为 host symlink 限制和两条未配置 repository-external CSV 的 opt-in E2E；
+- 44 种 Schema 在 root/package 双目录间重生成后 tracked drift 为零；Ruff lint、313-file format check 与 `ty check src` 通过；
+- fresh build 成功生成 wheel 与 sdist；
+- repository 外临时安装的 wheel 已通过 module-origin、schema-resource、project create/close/open 与 `python -m pilot_assessment.sidecar` hello/shutdown smoke。
+
+因此 Task 1–15 与 §6 完成条件均已满足，M6 状态为 **engineering verified**。M7 WinUI、M8 packaging/handoff 和领域专家科学校准仍不属于本结论。
