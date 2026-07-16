@@ -1,6 +1,6 @@
 # M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan
 
-> 状态：Approved / active implementation；Task 1–8 已完成，Task 9 为下一执行入口
+> 状态：Approved / active implementation；Task 1–9 已完成，Task 10 为下一执行入口
 > 执行方式：INLINE，严格按任务顺序推进；不启用 subagent
 > 工程方式：平台不变量采用轻量 test-first；starter resources、迁移和组装采用 focused smoke
 > 权威规格：[M5 Shared Versioned Model Library and Bayesian Workspace Design](../specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)
@@ -588,19 +588,26 @@ GREEN：
 
 步骤：
 
-- [ ] 保存旧 `src/pilot_assessment/evidence/profile_data/recipes/o8.json` 的原 bytes/hash；不修改该文件。
-- [ ] 导入通过 provenance preflight 的 M4R recipes，并记录原 recipe ID/version/hash/applied revision lineage。
-- [ ] 创建同一 TPX concept 下的新 parallel version。其 direct inputs 为 `X.state-vector`、`U.channels` 和 `session.duration-s`；内部复用 envelope membership、movement detection、ratio 与 safe-formula operators，工程初值公式为：
+- [x] 保存旧 `src/pilot_assessment/evidence/profile_data/recipes/o8.json` 的原 bytes/hash；不修改该文件。
+- [x] 导入通过 provenance preflight 的 M4R recipes，并记录原 recipe ID/version/hash/applied revision lineage。
+- [x] 创建同一 TPX concept 下的新 parallel version。其 direct inputs 为 `X.state-vector`、`U.channels` 和 `session.duration-s`；内部复用 envelope membership、movement detection、ratio 与 safe-formula operators，工程初值公式为：
 
       precision_ratio = inside_expected_envelope_duration / session_duration
       workload_score = 1 / (1 + movement_rate)
       tpx = (precision_ratio + workload_score) / 2
 
   expected envelope 作为该 EvidenceVersion 中由 task profile 派生并冻结的参数，不读取 O1/O5 observation。
-- [ ] focused smoke 断言旧 O8 `legacy_only=true` 且不能进入 active scheme，新版本 source provenance 合法并可由 M4R compiler/executor 执行。
-- [ ] 运行：
+- [x] focused smoke 断言旧 O8 `legacy_only=true` 且不能进入 active scheme，新版本 source provenance 合法并可由 M4R compiler/executor 执行。
+- [x] 运行：
 
       .venv\Scripts\python.exe -m pytest tests/model_library/test_hover_evidence_migration.py tests/model_library/test_tpx_compliant_version.py -q
+
+完成证据（2026-07-16）：
+
+- RED 首先因 `load_hover_evidence_inventory` 尚不存在而在 collection 阶段失败；实现后又由测试暴露新旧私有 lineage helper 同名覆盖，修正后 focused gate 为 `4 passed`。
+- migration manifest 精确覆盖 18 个 M4R recipes：17 个 provenance-compatible recipes 成为 immutable active versions；旧 `starter.o8` 保持 legacy-only，原始 SHA-256 仍为 `ceec4439a2769a0aef78b3e4a9852e8b836d8df0adf58241ecd6d6a8a8a1372d`。
+- 同一 TPX concept 下新增 D-040-compliant parallel version；其 extraction closure 只包含 `X.state-vector`、`U.channels` 与 `session.duration-s`，没有 `anchor.*` source，也没有按 O8/Anchor ID 的代码特判。
+- model-library、starter-catalog 与 legacy comparison 扩展 regression 为 `44 passed`；定向 Ruff format/check、ty 与原 O8 hash/no-special-case 检查通过。
 
 提交边界：`feat: migrate M4R evidence into M5 library`
 

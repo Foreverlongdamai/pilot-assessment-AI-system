@@ -1,0 +1,24 @@
+{
+  "contract_id": "evidence-concept-catalog",
+  "contract_version": "0.1.0",
+  "concepts": [
+    {"concept_id": "evidence-concept.H1", "name": "AOI dwell", "description": "Stable AOI-dwell Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.H1"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.H2", "name": "First fixation latency", "description": "Stable first-fixation-latency Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.H2"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.H3", "name": "Off-task dwell", "description": "Stable off-task-dwell Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.H3"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.H4", "name": "ECG fluctuation", "description": "Stable ECG-fluctuation Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.H4"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.H5", "name": "EEG fluctuation", "description": "Stable EEG-fluctuation Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.H5"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O1", "name": "Phase-state precision", "description": "Stable phase-state-precision Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.O1"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O10", "name": "Recovery time", "description": "Stable recovery-time Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.O10"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O11", "name": "Disturbance latency", "description": "Stable disturbance-latency Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.O11"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O12", "name": "Envelope-drift latency", "description": "Stable envelope-drift-latency Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.O12"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O13", "name": "Physio-control coupling", "description": "Stable physio-control-coupling Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.O13"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O2", "name": "Peak tracking excursion", "description": "Stable peak-tracking-excursion Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.O2"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O3", "name": "Terminal capture quality", "description": "Stable terminal-capture-quality Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.O3"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O4", "name": "Sustained hover time", "description": "Stable sustained-hover-time Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.O4"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O5", "name": "Workload rate", "description": "Stable workload-rate Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.O5"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O6", "name": "Control magnitude RMS", "description": "Stable control-magnitude-RMS Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.O6"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O7", "name": "Control reversal rate", "description": "Stable control-reversal-rate Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.O7"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O8", "name": "TPX composite", "description": "Stable TPX Evidence concept; legacy Evidence-to-Evidence and compliant raw/task-derived methods remain parallel records.", "tags": ["starter.hover", "evidence.O8", "composite.TPX"], "lifecycle": "active"},
+    {"concept_id": "evidence-concept.O9", "name": "Dead-band activity", "description": "Stable dead-band-activity Evidence concept; task-specific extraction methods are parallel versions.", "tags": ["starter.hover", "evidence.O9"], "lifecycle": "active"}
+  ]
+}

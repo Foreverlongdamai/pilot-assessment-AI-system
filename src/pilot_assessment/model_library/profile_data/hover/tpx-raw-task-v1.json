@@ -1,0 +1,104 @@
+{
+  "contract_id": "evidence-recipe",
+  "contract_version": "0.1.0",
+  "recipe_id": "starter.tpx.raw-task-v1",
+  "recipe_version": 1,
+  "anchor": {
+    "anchor_id": "O8",
+    "name": "TPX composite",
+    "description": "Editable raw/task-derived TPX starter. It does not read another scored Evidence observation.",
+    "lifecycle": "active",
+    "scientific_status": "starter_template"
+  },
+  "inputs": [
+    {
+      "binding_id": "flight-state",
+      "kind": "stream",
+      "source_id": "X.state-vector",
+      "name": "Flight State",
+      "declared_type": {"value_type": "vector_series", "cardinality": "one", "temporal_semantics": "sampled", "unit": null},
+      "selector": {}
+    },
+    {
+      "binding_id": "control-bundle",
+      "kind": "stream",
+      "source_id": "U.channels",
+      "name": "Control Bundle",
+      "declared_type": {"value_type": "signal_bundle", "cardinality": "one", "temporal_semantics": "sampled", "unit": null},
+      "selector": {}
+    },
+    {
+      "binding_id": "session-duration-s",
+      "kind": "semantic",
+      "source_id": "session.duration-s",
+      "name": "Session Duration S",
+      "declared_type": {"value_type": "number", "cardinality": "one", "temporal_semantics": "timeless", "unit": null},
+      "selector": {}
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {"node_id": "flight-state-input", "operator_id": "input.binding", "operator_version": "0.1.0", "input_binding_id": "flight-state", "parameters": {}},
+      {"node_id": "expected-envelope", "operator_id": "flight.envelope-membership", "operator_version": "0.1.0", "input_binding_id": null, "parameters": {"inclusive": true, "lower_bounds": [-1.0, -1.0, -1.0], "upper_bounds": [1.0, 1.0, 1.0]}},
+      {"node_id": "inside-runs", "operator_id": "event.mask-run", "operator_version": "0.1.0", "input_binding_id": null, "parameters": {"minimum_duration_ns": 0, "observation_end_ns": 90000000000, "interval_type": "inside-expected-envelope"}},
+      {"node_id": "inside-duration", "operator_id": "statistics.duration", "operator_version": "0.1.0", "input_binding_id": null, "parameters": {"unit": "seconds", "union_overlaps": true}},
+      {"node_id": "control-bundle-input", "operator_id": "input.binding", "operator_version": "0.1.0", "input_binding_id": "control-bundle", "parameters": {}},
+      {"node_id": "control-select", "operator_id": "signal.channel-select", "operator_version": "0.1.0", "input_binding_id": null, "parameters": {"channel_id": "primary"}},
+      {"node_id": "turning-points", "operator_id": "event.turning-point", "operator_version": "0.1.0", "input_binding_id": null, "parameters": {"minimum_delta": 0.0, "event_type": "turning-point"}},
+      {"node_id": "movements", "operator_id": "event.movement", "operator_version": "0.1.0", "input_binding_id": null, "parameters": {"minimum_amplitude": 1.0, "minimum_separation_ns": 0, "event_type": "movement"}},
+      {"node_id": "movement-count", "operator_id": "statistics.count", "operator_version": "0.1.0", "input_binding_id": null, "parameters": {}},
+      {"node_id": "session-duration-s-input", "operator_id": "input.binding", "operator_version": "0.1.0", "input_binding_id": "session-duration-s", "parameters": {}},
+      {"node_id": "precision-ratio", "operator_id": "statistics.ratio", "operator_version": "0.1.0", "input_binding_id": null, "parameters": {"zero_denominator": "zero"}},
+      {"node_id": "movement-rate", "operator_id": "statistics.rate", "operator_version": "0.1.0", "input_binding_id": null, "parameters": {"duration_unit": "seconds", "zero_duration": "zero"}},
+      {"node_id": "workload-score", "operator_id": "composition.safe-formula", "operator_version": "0.1.0", "input_binding_id": null, "parameters": {"constants": {}, "formula": "1 / (1 + movement_rate)"}},
+      {"node_id": "tpx", "operator_id": "composition.safe-formula", "operator_version": "0.1.0", "input_binding_id": null, "parameters": {"constants": {}, "formula": "(precision_ratio + workload_score) / 2"}}
+    ],
+    "edges": [
+      {"edge_id": "e-000-flight-state-envelope", "source": {"node_id": "flight-state-input", "port_id": "value"}, "target": {"node_id": "expected-envelope", "port_id": "vectors"}, "target_slot_id": null},
+      {"edge_id": "e-001-envelope-runs", "source": {"node_id": "expected-envelope", "port_id": "value"}, "target": {"node_id": "inside-runs", "port_id": "mask"}, "target_slot_id": null},
+      {"edge_id": "e-002-runs-duration", "source": {"node_id": "inside-runs", "port_id": "value"}, "target": {"node_id": "inside-duration", "port_id": "intervals"}, "target_slot_id": null},
+      {"edge_id": "e-003-duration-precision", "source": {"node_id": "inside-duration", "port_id": "value"}, "target": {"node_id": "precision-ratio", "port_id": "numerator"}, "target_slot_id": null},
+      {"edge_id": "e-004-session-precision", "source": {"node_id": "session-duration-s-input", "port_id": "value"}, "target": {"node_id": "precision-ratio", "port_id": "denominator"}, "target_slot_id": null},
+      {"edge_id": "e-005-control-select", "source": {"node_id": "control-bundle-input", "port_id": "value"}, "target": {"node_id": "control-select", "port_id": "channels"}, "target_slot_id": null},
+      {"edge_id": "e-006-select-turning", "source": {"node_id": "control-select", "port_id": "value"}, "target": {"node_id": "turning-points", "port_id": "signal"}, "target_slot_id": null},
+      {"edge_id": "e-007-turning-movements", "source": {"node_id": "turning-points", "port_id": "value"}, "target": {"node_id": "movements", "port_id": "turning_points"}, "target_slot_id": null},
+      {"edge_id": "e-008-movements-count", "source": {"node_id": "movements", "port_id": "value"}, "target": {"node_id": "movement-count", "port_id": "values"}, "target_slot_id": null},
+      {"edge_id": "e-009-count-rate", "source": {"node_id": "movement-count", "port_id": "value"}, "target": {"node_id": "movement-rate", "port_id": "count"}, "target_slot_id": null},
+      {"edge_id": "e-010-session-rate", "source": {"node_id": "session-duration-s-input", "port_id": "value"}, "target": {"node_id": "movement-rate", "port_id": "duration"}, "target_slot_id": null},
+      {"edge_id": "e-011-rate-workload", "source": {"node_id": "movement-rate", "port_id": "value"}, "target": {"node_id": "workload-score", "port_id": "variables"}, "target_slot_id": "movement_rate"},
+      {"edge_id": "e-012-precision-tpx", "source": {"node_id": "precision-ratio", "port_id": "value"}, "target": {"node_id": "tpx", "port_id": "variables"}, "target_slot_id": "precision_ratio"},
+      {"edge_id": "e-013-workload-tpx", "source": {"node_id": "workload-score", "port_id": "value"}, "target": {"node_id": "tpx", "port_id": "variables"}, "target_slot_id": "workload_score"}
+    ]
+  },
+  "outputs": [
+    {"output_id": "primary", "role": "primary_value", "name": "TPX raw/task-derived value", "source": {"node_id": "tpx", "port_id": "value"}, "unit": "ratio"}
+  ],
+  "scoring": {
+    "mode": "ordered_dau",
+    "input": {"node_id": "tpx", "port_id": "value"},
+    "parameters": {"direction": "higher_is_better", "desired_boundary": 0.6, "adequate_boundary": 0.4, "likelihood_strength": 0.9},
+    "custom_operator_id": null,
+    "custom_operator_version": null
+  },
+  "documentation": {
+    "summary": "Engineering starter only. Precision and workload are recomputed from raw/session/task inputs instead of scored Evidence observations.",
+    "assumptions": [
+      "The expected envelope and 90-second observation end are editable task-specific starter parameters.",
+      "Finite poor-performance values remain directional evidence and are not quality-filtered.",
+      "This provisional TPX formula is explicitly open to expert replacement."
+    ],
+    "parameter_notes": {
+      "/graph/nodes/expected-envelope/parameters": "Task-specific expected-envelope bounds.",
+      "/graph/nodes/inside-runs/parameters/observation_end_ns": "Must match the selected task duration when this starter is cloned."
+    },
+    "references": ["decision:D-040", "migration:starter.o8"]
+  },
+  "ui": {
+    "groups": [
+      {"group_id": "precision", "label": "Trajectory precision", "parameter_paths": ["/graph/nodes/1/parameters", "/graph/nodes/2/parameters", "/graph/nodes/3/parameters", "/graph/nodes/10/parameters"]},
+      {"group_id": "workload", "label": "Control workload", "parameter_paths": ["/graph/nodes/5/parameters", "/graph/nodes/6/parameters", "/graph/nodes/7/parameters", "/graph/nodes/11/parameters", "/graph/nodes/12/parameters"]},
+      {"group_id": "composite", "label": "TPX composition", "parameter_paths": ["/graph/nodes/13/parameters"]}
+    ],
+    "preferred_layout": {"generated": true, "layout": "left-to-right"}
+  }
+}

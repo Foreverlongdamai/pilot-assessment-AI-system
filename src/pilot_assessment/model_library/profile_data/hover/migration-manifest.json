@@ -1,0 +1,29 @@
+{
+  "contract_id": "m4r-evidence-migration-manifest",
+  "contract_version": "0.1.0",
+  "created_at": "2026-07-16T18:00:00Z",
+  "created_by": "migration.m5.task9",
+  "entries": [
+    {"source_recipe_id": "starter.h1", "concept_id": "evidence-concept.H1", "source_applied_revision_id": "starter.h1-applied-000001", "evidence_version_id": "evidence-version.m4r.H1.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.h2", "concept_id": "evidence-concept.H2", "source_applied_revision_id": "starter.h2-applied-000001", "evidence_version_id": "evidence-version.m4r.H2.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.h3", "concept_id": "evidence-concept.H3", "source_applied_revision_id": "starter.h3-applied-000001", "evidence_version_id": "evidence-version.m4r.H3.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.h4", "concept_id": "evidence-concept.H4", "source_applied_revision_id": "starter.h4-applied-000001", "evidence_version_id": "evidence-version.m4r.H4.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.h5", "concept_id": "evidence-concept.H5", "source_applied_revision_id": "starter.h5-applied-000001", "evidence_version_id": "evidence-version.m4r.H5.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.o1", "concept_id": "evidence-concept.O1", "source_applied_revision_id": "starter.o1-applied-000001", "evidence_version_id": "evidence-version.m4r.O1.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.o10", "concept_id": "evidence-concept.O10", "source_applied_revision_id": "starter.o10-applied-000001", "evidence_version_id": "evidence-version.m4r.O10.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.o11", "concept_id": "evidence-concept.O11", "source_applied_revision_id": "starter.o11-applied-000001", "evidence_version_id": "evidence-version.m4r.O11.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.o12", "concept_id": "evidence-concept.O12", "source_applied_revision_id": "starter.o12-applied-000001", "evidence_version_id": "evidence-version.m4r.O12.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.o13", "concept_id": "evidence-concept.O13", "source_applied_revision_id": "starter.o13-applied-000001", "evidence_version_id": "evidence-version.m4r.O13.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.o2", "concept_id": "evidence-concept.O2", "source_applied_revision_id": "starter.o2-applied-000001", "evidence_version_id": "evidence-version.m4r.O2.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.o3", "concept_id": "evidence-concept.O3", "source_applied_revision_id": "starter.o3-applied-000001", "evidence_version_id": "evidence-version.m4r.O3.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.o4", "concept_id": "evidence-concept.O4", "source_applied_revision_id": "starter.o4-applied-000001", "evidence_version_id": "evidence-version.m4r.O4.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.o5", "concept_id": "evidence-concept.O5", "source_applied_revision_id": "starter.o5-applied-000001", "evidence_version_id": "evidence-version.m4r.O5.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.o6", "concept_id": "evidence-concept.O6", "source_applied_revision_id": "starter.o6-applied-000001", "evidence_version_id": "evidence-version.m4r.O6.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.o7", "concept_id": "evidence-concept.O7", "source_applied_revision_id": "starter.o7-applied-000001", "evidence_version_id": "evidence-version.m4r.O7.v1", "legacy_raw_sha256": null},
+    {"source_recipe_id": "starter.o8", "concept_id": "evidence-concept.O8", "source_applied_revision_id": "starter.o8-applied-000001", "evidence_version_id": null, "legacy_raw_sha256": "ceec4439a2769a0aef78b3e4a9852e8b836d8df0adf58241ecd6d6a8a8a1372d"},
+    {"source_recipe_id": "starter.o9", "concept_id": "evidence-concept.O9", "source_applied_revision_id": "starter.o9-applied-000001", "evidence_version_id": "evidence-version.m4r.O9.v1", "legacy_raw_sha256": null}
+  ],
+  "parallel_versions": [
+    {"concept_id": "evidence-concept.O8", "evidence_version_id": "evidence-version.m5.O8.raw-task-v1", "recipe_resource": "tpx-raw-task-v1.json", "source_version_ids": ["starter.o8-applied-000001"]}
+  ]
+}
