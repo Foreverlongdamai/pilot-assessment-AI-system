@@ -28,6 +28,8 @@ from pilot_assessment.sidecar.framing import (
     decode_json_line,
     read_json_line,
 )
+from pilot_assessment.sidecar.methods import SidecarMethods
+from pilot_assessment.sidecar.server import serve
 
 __all__ = [
     "DEFAULT_CAPABILITIES",
@@ -48,8 +50,10 @@ __all__ = [
     "RpcId",
     "RpcMethodHandler",
     "RpcRequestContext",
+    "SidecarMethods",
     "decode_json_line",
     "domain_rpc_code",
     "error_response",
     "read_json_line",
+    "serve",
 ]

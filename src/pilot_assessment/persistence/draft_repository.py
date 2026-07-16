@@ -175,7 +175,7 @@ class SqliteSchemeDraftRepository:
         now = self._now()
         now_text = _utc_text(now)
         payload = encode_canonical_json(canonical.model_dump(mode="json"))
-        with self.database.transaction() as connection:
+        with self.database.transaction(join_existing=True) as connection:
             if connection.execute(
                 "SELECT 1 FROM scheme_drafts WHERE draft_id = ?", (canonical.draft_id,)
             ).fetchone():
@@ -221,6 +221,12 @@ class SqliteSchemeDraftRepository:
             raise SchemeDraftNotFoundError(draft_id)
         return self._record(row)
 
+    def discard(self, draft_id: str) -> SchemeDraftRecord:
+        with self.database.transaction(join_existing=True) as connection:
+            record = self._record(self._row(connection, draft_id))
+            connection.execute("DELETE FROM scheme_drafts WHERE draft_id = ?", (draft_id,))
+        return record
+
     def save(
         self,
         proposed: SchemeDraft,
@@ -235,7 +241,7 @@ class SqliteSchemeDraftRepository:
         author = _author(author_id)
         if not graph_changed and not layout_changed:
             raise SchemeDraftRepositoryError("an operation must change graph or layout state")
-        with self.database.transaction() as connection:
+        with self.database.transaction(join_existing=True) as connection:
             row = self._row(connection, proposed.draft_id)
             current_record = self._record(row)
             current = current_record.draft
@@ -328,7 +334,7 @@ class SqliteSchemeDraftRepository:
         author_id: str,
     ) -> SchemeDraftRecord:
         author = _author(author_id)
-        with self.database.transaction() as connection:
+        with self.database.transaction(join_existing=True) as connection:
             row = self._row(connection, draft_id)
             current_record = self._record(row)
             current = current_record.draft
@@ -536,7 +542,7 @@ class SqliteWorkspaceUnitOfWork:
         _aware(recorded_at, "recorded_at")
         if rebased_draft.draft_id != draft_id:
             raise SchemeDraftRepositoryError("rebased draft ID must match publication draft_id")
-        with self.database.transaction() as connection:
+        with self.database.transaction(join_existing=True) as connection:
             for item in items:
                 self.components.add_in_transaction(
                     connection,

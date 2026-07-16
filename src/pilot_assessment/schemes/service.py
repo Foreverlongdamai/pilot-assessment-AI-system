@@ -61,6 +61,7 @@ from pilot_assessment.schemes.operations import (
     apply_scheme_operation,
 )
 from pilot_assessment.schemes.repository import (
+    DraftRevisionConflictError,
     SchemeDraftRecord,
     SchemeDraftRepository,
     WorkspaceUnitOfWork,
@@ -504,18 +505,80 @@ class SchemeWorkspaceService:
         *,
         author_id: str,
     ) -> SchemeDraftRecord:
+        return self.apply_operations(draft_id, (operation,), author_id=author_id)
+
+    def apply_operations(
+        self,
+        draft_id: str,
+        operations: Sequence[SchemeOperation],
+        *,
+        author_id: str,
+    ) -> SchemeDraftRecord:
+        if not operations:
+            raise SchemePublicationError("operation batch must not be empty")
         current = self._drafts.get(draft_id).draft
-        application = apply_scheme_operation(current, operation, self._components)
-        annotated = _annotate_draft(application.draft, self._components)
+        proposed = current
+        applications = []
+        for operation in operations:
+            application = apply_scheme_operation(proposed, operation, self._components)
+            applications.append(application)
+            proposed = application.draft
+        graph_changed = any(application.graph_changed for application in applications)
+        layout_changed = any(application.layout_changed for application in applications)
+        expected_graph_versions = {
+            application.expected_graph_version
+            for application in applications
+            if application.graph_changed
+        }
+        expected_layout_versions = {
+            application.expected_layout_version
+            for application in applications
+            if application.layout_changed
+        }
+        if graph_changed and expected_graph_versions != {current.graph_version}:
+            raise DraftRevisionConflictError(
+                "all graph operations in a batch must target the current graph version"
+            )
+        if layout_changed and expected_layout_versions != {current.layout_version}:
+            raise DraftRevisionConflictError(
+                "all layout operations in a batch must target the current layout version"
+            )
+        annotated = _annotate_draft(proposed, self._components)
+        changed_paths = tuple(
+            dict.fromkeys(
+                path for application in applications for path in application.diff.changed_paths
+            )
+        )
+        diff = OperationDiff(
+            operation_type=(
+                applications[0].diff.operation_type
+                if len(applications) == 1
+                else "AtomicOperationBatch"
+            ),
+            changed_paths=changed_paths,
+            added_component_ids=tuple(
+                item
+                for application in applications
+                for item in application.diff.added_component_ids
+            ),
+            removed_component_ids=tuple(
+                item
+                for application in applications
+                for item in application.diff.removed_component_ids
+            ),
+        )
         return self._drafts.save(
             annotated,
-            expected_graph_version=application.expected_graph_version,
-            expected_layout_version=application.expected_layout_version,
-            graph_changed=application.graph_changed,
-            layout_changed=application.layout_changed,
-            diff=application.diff,
+            expected_graph_version=current.graph_version if graph_changed else None,
+            expected_layout_version=current.layout_version if layout_changed else None,
+            graph_changed=graph_changed,
+            layout_changed=layout_changed,
+            diff=diff,
             author_id=author_id,
         )
+
+    def discard_draft(self, draft_id: str) -> SchemeDraftRecord:
+        return self._drafts.discard(draft_id)
 
     def undo(
         self,

@@ -71,6 +71,8 @@ class SchemeDraftRepository(Protocol):
 
     def get(self, draft_id: str) -> SchemeDraftRecord: ...
 
+    def discard(self, draft_id: str) -> SchemeDraftRecord: ...
+
     def save(
         self,
         proposed: SchemeDraft,
@@ -204,6 +206,14 @@ class InMemorySchemeDraftRepository:
                 return self._timelines[draft_id].record
             except KeyError as error:
                 raise SchemeDraftNotFoundError(draft_id) from error
+
+    def discard(self, draft_id: str) -> SchemeDraftRecord:
+        with self._lock:
+            try:
+                timeline = self._timelines.pop(draft_id)
+            except KeyError as error:
+                raise SchemeDraftNotFoundError(draft_id) from error
+            return timeline.record
 
     def save(
         self,

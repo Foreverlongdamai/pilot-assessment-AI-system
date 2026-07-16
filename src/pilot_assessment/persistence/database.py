@@ -140,11 +140,21 @@ class ProjectDatabase:
             return self._require_open().execute(sql, parameters).fetchall()
 
     @contextmanager
-    def transaction(self, *, immediate: bool = True) -> Iterator[sqlite3.Connection]:
+    def transaction(
+        self,
+        *,
+        immediate: bool = True,
+        join_existing: bool = False,
+    ) -> Iterator[sqlite3.Connection]:
         with self._lock:
             connection = self._require_open()
             if connection.in_transaction:
-                raise DatabaseTransactionError("nested project database transactions are forbidden")
+                if not join_existing:
+                    raise DatabaseTransactionError(
+                        "nested project database transactions are forbidden"
+                    )
+                yield connection
+                return
             connection.execute("BEGIN IMMEDIATE" if immediate else "BEGIN")
             try:
                 yield connection

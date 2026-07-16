@@ -160,6 +160,20 @@ class JsonRpcDispatcher:
                 raise ValueError(f"RPC method {method!r} is already registered")
             self._handlers[method] = handler
 
+    def fault_response(
+        self,
+        fault: JsonRpcFault,
+        *,
+        request_id: RpcId = None,
+    ) -> JsonRpcMessage:
+        """Create a protocol error for failures that happen before dispatch."""
+
+        return error_response(
+            fault,
+            request_id=request_id,
+            trace_id=self.trace_id_factory(),
+        )
+
     def dispatch(self, message: object) -> JsonRpcMessage | None:
         trace_id = self.trace_id_factory()
         try:

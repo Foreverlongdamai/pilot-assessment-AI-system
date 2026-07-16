@@ -104,7 +104,7 @@ class RunRepository:
             cancellation_requested_at=None,
         )
         try:
-            with self.database.transaction() as connection:
+            with self.database.transaction(join_existing=True) as connection:
                 preflight = connection.execute(
                     "SELECT preflight_hash FROM run_preflights WHERE preflight_id = ?",
                     (preflight_id,),
@@ -350,7 +350,7 @@ class RunRepository:
         set_cancel: bool = False,
     ) -> AssessmentRun:
         occurred_text = _utc_text(occurred_at)
-        with self.database.transaction() as connection:
+        with self.database.transaction(join_existing=True) as connection:
             row = connection.execute("SELECT * FROM runs WHERE run_id = ?", (run_id,)).fetchone()
             if row is None:
                 raise RunNotFoundError(run_id)
