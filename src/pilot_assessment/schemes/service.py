@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from typing import cast
 
 from pydantic import BaseModel, JsonValue, ValidationError
 
+from pilot_assessment.bayesian.inference import InferenceEngine
 from pilot_assessment.contracts.assessment_scheme import (
     AssessmentSchemeVersion,
     CoverageReportingPolicyVersion,
@@ -21,7 +22,15 @@ from pilot_assessment.contracts.assessment_scheme import (
     SchemeDraft,
     TaskProfileVersion,
 )
-from pilot_assessment.contracts.bayesian import BayesianDependencyEdge, ExtractionEdge
+from pilot_assessment.contracts.bayesian import (
+    BayesianDependencyEdge,
+    ExtractionEdge,
+    InferencePlan,
+    InferenceTrace,
+    Observation,
+    ObservationSet,
+    PosteriorResult,
+)
 from pilot_assessment.contracts.model_components import (
     BnNodeVersion,
     ComponentIdRef,
@@ -34,6 +43,7 @@ from pilot_assessment.contracts.model_components import (
     VersionLineage,
 )
 from pilot_assessment.evidence.registry import OperatorRegistry
+from pilot_assessment.model_library.identity import typed_content_sha256
 from pilot_assessment.model_library.repository import (
     ComponentLibraryRepository,
     InMemoryComponentLibraryRepository,
@@ -96,6 +106,20 @@ class SchemeReplaySnapshot:
     scheme: AssessmentSchemeVersion
     component_refs: tuple[PinnedComponentRef, ...]
     components: tuple[VersionLibraryItem, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class SchemePreviewResult:
+    draft_id: str
+    graph_version: int
+    layout_version: int
+    draft_hash: str
+    scheme: AssessmentSchemeVersion
+    validation: SchemeValidationOutcome
+    plan: InferencePlan
+    observations: ObservationSet
+    posterior: PosteriorResult
+    trace: InferenceTrace
 
 
 _VERSION_MODELS: dict[ComponentKind, type[BaseModel]] = {
@@ -577,6 +601,39 @@ class SchemeWorkspaceService:
             materialized.append(item)
         return tuple(materialized), id_map
 
+    def _materialize_preview_candidates(
+        self,
+        draft: SchemeDraft,
+    ) -> tuple[VersionLibraryItem, ...]:
+        """Materialize candidate IDs as-is without consuming publish IDs or writing state."""
+
+        materialized: list[VersionLibraryItem] = []
+        for candidate in draft.candidate_components:
+            model = _VERSION_MODELS.get(candidate.kind)
+            if model is None:
+                raise SchemePublicationError(
+                    f"candidate kind {candidate.kind.value} cannot be previewed"
+                )
+            payload = dict(candidate.payload)
+            payload["content_hash"] = ZERO_HASH
+            try:
+                provisional = cast(VersionLibraryItem, model.model_validate(payload))
+                item = cast(
+                    VersionLibraryItem,
+                    model.model_validate(
+                        {
+                            **provisional.model_dump(mode="json"),
+                            "content_hash": component_content_hash(provisional),
+                        }
+                    ),
+                )
+            except ValidationError as error:
+                raise SchemePublicationError(
+                    f"candidate {candidate.candidate_id!r} is incomplete or invalid"
+                ) from error
+            materialized.append(item)
+        return tuple(materialized)
+
     @staticmethod
     def _one(
         refs: Mapping[ComponentKind, list[PinnedComponentRef]],
@@ -772,6 +829,89 @@ class SchemeWorkspaceService:
             rebased_draft=rebased,
         )
 
+    def preview(
+        self,
+        draft_id: str,
+        *,
+        expected_graph_version: int,
+        expected_layout_version: int,
+        observations: Sequence[Observation],
+        query_node_ids: Sequence[ComponentIdRef] | None = None,
+    ) -> SchemePreviewResult:
+        """Compile and infer one exact draft snapshot without publishing or mutating state."""
+
+        current = self._drafts.get(draft_id).draft
+        if (
+            current.graph_version != expected_graph_version
+            or current.layout_version != expected_layout_version
+        ):
+            raise SchemePublicationError("draft revision changed before preview")
+        if current.validation_state is not DraftValidationState.EXECUTABLE:
+            raise SchemePublicationError(
+                "draft is persistable but not technically previewable",
+                diagnostics=current.diagnostics,
+            )
+        if current.base_scheme_version_id is None:
+            raise SchemePublicationError("draft preview requires a base scheme in M5 v0")
+        base = _require_scheme(
+            self._components.get_exact(
+                ComponentKind.ASSESSMENT_SCHEME_VERSION,
+                current.base_scheme_version_id,
+            )
+        )
+        draft_hash = typed_content_sha256(
+            current.contract_id,
+            current.contract_version,
+            current.model_dump(mode="json"),
+        )
+        candidates = self._materialize_preview_candidates(current)
+        preview_scheme = self._prepare_scheme(
+            current,
+            base,
+            candidates,
+            {},
+            scheme_version_id=f"preview-scheme.{draft_hash[:24]}",
+            author_id="preview.engine",
+            note="Read-only draft preview.",
+            created_at=base.lineage.created_at,
+        )
+        staging = self._staging_repository(
+            candidates,
+            recorded_at=base.lineage.created_at,
+        )
+        source_descriptors = list(self._source_catalog.descriptors())
+        source_descriptors.extend(item for item in candidates if isinstance(item, SourceDescriptor))
+        validation = validate_executable_scheme(
+            preview_scheme,
+            staging,
+            SourceCatalog(source_descriptors),
+            self._operator_registry,
+        )
+        if validation.disposition is not SchemeValidationDisposition.EXECUTABLE:
+            raise SchemePublicationError(
+                "draft failed exact preview validation",
+                validation=validation,
+            )
+        staging.add(preview_scheme, recorded_at=base.lineage.created_at)
+        engine = InferenceEngine(staging)
+        plan = engine.compile(preview_scheme)
+        observation_set = engine.observe(plan, observations)
+        queries = tuple(current.output_node_ids if query_node_ids is None else query_node_ids)
+        posterior = engine.infer(plan, observation_set, queries)
+        trace = engine.explain(plan, observation_set, queries)
+        return SchemePreviewResult(
+            draft_id=current.draft_id,
+            graph_version=current.graph_version,
+            layout_version=current.layout_version,
+            draft_hash=draft_hash,
+            scheme=preview_scheme,
+            validation=validation,
+            plan=plan,
+            observations=observation_set,
+            posterior=posterior,
+            trace=trace,
+        )
+
     def replay_exact(self, scheme_version_id: str) -> SchemeReplaySnapshot:
         scheme = _require_scheme(
             self._components.get_exact(
@@ -800,6 +940,7 @@ class SchemeWorkspaceService:
 __all__ = [
     "SchemePublicationError",
     "SchemePublicationResult",
+    "SchemePreviewResult",
     "SchemeReplaySnapshot",
     "SchemeWorkspaceService",
 ]

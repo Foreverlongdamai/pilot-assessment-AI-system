@@ -212,6 +212,7 @@ def test_typed_component_and_edge_commands_update_only_the_selected_draft_candid
     assert isinstance(state_payload[1], dict)
     assert state_payload[1]["state_id"] == "high"
     assert candidates["candidate.cpt"].payload["materialized_probabilities"] == [[0.6, 0.4]]
+    assert candidates["candidate.cpt"].payload["mode"] == "manual"
     assert any(edge.edge_id == "edge.metric-restored" for edge in draft.extraction_edges)
     assert any(edge.edge_id == "edge.bn-restored" for edge in draft.bayesian_edges)
     assert (

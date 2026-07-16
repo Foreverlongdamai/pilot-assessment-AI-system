@@ -1,6 +1,6 @@
 # M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan
 
-> 状态：Approved / active implementation；Task 1–10 已完成，Task 11 为下一执行入口
+> 状态：Approved / active implementation；Task 1–11 已完成，Task 12 completion gate 为下一执行入口
 > 执行方式：INLINE，严格按任务顺序推进；不启用 subagent
 > 工程方式：平台不变量采用轻量 test-first；starter resources、迁移和组装采用 focused smoke
 > 权威规格：[M5 Shared Versioned Model Library and Bayesian Workspace Design](../specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)
@@ -671,6 +671,14 @@ GREEN：
 运行：
 
     .venv\Scripts\python.exe -m pytest tests/integration/test_m5_lightweight_workflow.py -q
+
+完成证据（2026-07-16）：
+
+- RED 首先因 `SchemeWorkspaceService.preview` 尚不存在而失败；实现后 focused lightweight workflow 为 `2 passed`。
+- 新增 read-only draft preview：以完整 `SchemeDraft` typed hash 锁定 graph/layout revision，在隔离 staging repository 中以 candidate IDs 物化 exact components、执行 only-technical scheme validation、编译 inference plan，并返回 hard/virtual observations、posterior 与 leave-one-observation-out influence trace；preview 不消耗正式 ID、不写 component/draft repository。
+- 集成流程从 Hover starter clone O2 Evidence/binding/CPT，显式把 percentile 从 100 改为 95，并手工修改一行 CPT；手工表单操作自动把 CPT mode 设为 `manual`，避免 stale generated mode。流程只注入一个 hard 与一个 virtual observation，不生成 session、图片或长数据。
+- publish 只创建三个 changed component versions 与一个新 scheme；旧 Hover scheme pins/hashes 不变，两套 scheme 均 exact replay。旧 `starter.o8` 仍只以 legacy artifact 加载，未进入新 active scheme。failure hook 在 commit 前抛错时四个新 exact IDs 均不存在。
+- integration/schemes/model-library/bayesian 扩展 regression 为 `91 passed`；定向 Ruff format/check 与 ty 均通过。
 
 提交边界：`feat: complete lightweight M5 model workflow`
 

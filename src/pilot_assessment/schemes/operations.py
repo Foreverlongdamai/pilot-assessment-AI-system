@@ -23,6 +23,7 @@ from pilot_assessment.contracts.model_components import (
     BnNodeVersion,
     ComponentIdRef,
     ComponentKind,
+    CptMode,
     EvidenceBindingVersion,
     PinnedComponentRef,
     VariableState,
@@ -479,6 +480,7 @@ def _replace_cpt_probabilities(
     updated = _updated_candidate(
         candidate,
         materialized_probabilities=cast(JsonValue, probabilities),
+        mode=CptMode.MANUAL.value,
     )
     return _replace_candidate(draft, updated)
 
