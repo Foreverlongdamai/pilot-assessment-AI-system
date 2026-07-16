@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Date | 2026-07-16 |
-| Status | User-approved direction; written-spec review pending |
+| Status | Approved for external demo implementation |
 | Scope | External test-data preparation and one M6 software-test run |
 | Product impact | None: no synthetic-data capability is added to runtime, sidecar, or UI |
 
