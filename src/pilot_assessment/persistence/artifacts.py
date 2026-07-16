@@ -209,15 +209,26 @@ class ManagedArtifactStore:
         if not isinstance(reference, ArtifactReference):
             raise TypeError("reference must be an ArtifactReference")
         with self.database.transaction() as connection:
-            row = connection.execute(
-                "SELECT * FROM managed_artifacts WHERE artifact_id = ?",
-                (reference.artifact_id,),
-            ).fetchone()
-            if row is None:
-                raise ArtifactNotFoundError(f"artifact {reference.artifact_id!r} does not exist")
-            artifact = self._artifact_from_row(row)
-            self._add_reference_in_transaction(connection, reference)
-            return self._set_derived_lifecycle(connection, artifact)
+            return self.add_reference_in_transaction(connection, reference)
+
+    def add_reference_in_transaction(
+        self,
+        connection: sqlite3.Connection,
+        reference: ArtifactReference,
+    ) -> ManagedArtifact:
+        """Bind a reference through an owning service's existing DB transaction."""
+
+        if not isinstance(reference, ArtifactReference):
+            raise TypeError("reference must be an ArtifactReference")
+        row = connection.execute(
+            "SELECT * FROM managed_artifacts WHERE artifact_id = ?",
+            (reference.artifact_id,),
+        ).fetchone()
+        if row is None:
+            raise ArtifactNotFoundError(f"artifact {reference.artifact_id!r} does not exist")
+        artifact = self._artifact_from_row(row)
+        self._add_reference_in_transaction(connection, reference)
+        return self._set_derived_lifecycle(connection, artifact)
 
     def remove_reference(self, owner: ArtifactOwner) -> bool:
         if not isinstance(owner, ArtifactOwner):
@@ -269,7 +280,11 @@ class ManagedArtifactStore:
         """Resolve incomplete puts and remove only provable staging/orphan payloads."""
 
         rows = self.database.fetchall(
-            "SELECT * FROM file_operation_intents ORDER BY created_at, intent_id"
+            """
+            SELECT * FROM file_operation_intents
+            WHERE operation = 'artifact.put'
+            ORDER BY created_at, intent_id
+            """
         )
         validated_intents = [self._validate_intent_row(row) for row in rows]
         registered_rows = self.database.fetchall(
