@@ -20,12 +20,34 @@ from pilot_assessment.contracts.anchor_execution import (
     SessionSemanticSnapshot,
 )
 from pilot_assessment.contracts.anchor_v2 import AnchorMeasurement, AnchorResultV2
+from pilot_assessment.contracts.assessment_scheme import (
+    AssessmentSchemeVersion,
+    CoverageReportingPolicyVersion,
+    LayoutVersion,
+    SchemeDraft,
+    TaskProfileVersion,
+)
+from pilot_assessment.contracts.bayesian import (
+    InferencePlan,
+    InferenceTrace,
+    ObservationSet,
+    PosteriorResult,
+)
 from pilot_assessment.contracts.common import (
     BUNDLE_RELATIVE_PATH_JSON_SCHEMA_PATTERN,
     BUNDLE_RELATIVE_PATH_PATTERN,
 )
 from pilot_assessment.contracts.evidence_recipe import EvidenceRecipe, OperatorDefinition
 from pilot_assessment.contracts.ingestion import IngestionReadinessReport
+from pilot_assessment.contracts.model_components import (
+    BnNodeConcept,
+    BnNodeVersion,
+    CptVersion,
+    EvidenceBindingVersion,
+    EvidenceConcept,
+    EvidenceVersion,
+    SourceDescriptor,
+)
 from pilot_assessment.contracts.session import (
     BIOMETRIC_MODALITIES,
     CORE_MODALITIES,
@@ -170,6 +192,143 @@ _M4_SCHEMA_MODELS: tuple[
             "operator identity binds portable metadata to one trusted implementation",
             "parameter schema and UI paths are part of the portable definition",
         ],
+    ),
+)
+
+_M5_SCHEMA_MODELS: tuple[
+    tuple[str, type[BaseModel], str, str, str, list[str]],
+    ...,
+] = (
+    (
+        "evidence-concept-0.1.0.schema.json",
+        EvidenceConcept,
+        "urn:cranfield:pilot-assessment:schema:evidence-concept:0.1.0",
+        "Pilot Assessment Evidence Concept 0.1.0",
+        "0.1.0",
+        ["concept IDs are immutable and tags are unique"],
+    ),
+    (
+        "evidence-version-0.1.0.schema.json",
+        EvidenceVersion,
+        "urn:cranfield:pilot-assessment:schema:evidence-version:0.1.0",
+        "Pilot Assessment Evidence Version 0.1.0",
+        "0.1.0",
+        ["each version binds one exact EvidenceRecipe and canonical content hash"],
+    ),
+    (
+        "bn-node-concept-0.1.0.schema.json",
+        BnNodeConcept,
+        "urn:cranfield:pilot-assessment:schema:bn-node-concept:0.1.0",
+        "Pilot Assessment BN Node Concept 0.1.0",
+        "0.1.0",
+        ["concept IDs are immutable and node role is explicit"],
+    ),
+    (
+        "bn-node-version-0.1.0.schema.json",
+        BnNodeVersion,
+        "urn:cranfield:pilot-assessment:schema:bn-node-version:0.1.0",
+        "Pilot Assessment BN Node Version 0.1.0",
+        "0.1.0",
+        ["state and probabilistic-parent order is canonical and ID references are exact"],
+    ),
+    (
+        "evidence-binding-version-0.1.0.schema.json",
+        EvidenceBindingVersion,
+        "urn:cranfield:pilot-assessment:schema:evidence-binding-version:0.1.0",
+        "Pilot Assessment Evidence Binding Version 0.1.0",
+        "0.1.0",
+        [
+            "observation state and parent order is canonical",
+            "modality attribution weights are reporting-only and sum to one",
+        ],
+    ),
+    (
+        "cpt-version-0.1.0.schema.json",
+        CptVersion,
+        "urn:cranfield:pilot-assessment:schema:cpt-version:0.1.0",
+        "Pilot Assessment CPT Version 0.1.0",
+        "0.1.0",
+        ["parent variables and state spaces use declared stable order"],
+    ),
+    (
+        "task-profile-version-0.1.0.schema.json",
+        TaskProfileVersion,
+        "urn:cranfield:pilot-assessment:schema:task-profile-version:0.1.0",
+        "Pilot Assessment Task Profile Version 0.1.0",
+        "0.1.0",
+        ["task semantics and required source IDs are immutable version content"],
+    ),
+    (
+        "coverage-reporting-policy-version-0.1.0.schema.json",
+        CoverageReportingPolicyVersion,
+        "urn:cranfield:pilot-assessment:schema:coverage-reporting-policy-version:0.1.0",
+        "Pilot Assessment Coverage Reporting Policy Version 0.1.0",
+        "0.1.0",
+        ["reporting policy cannot act as a scientific or raw-data quality gate"],
+    ),
+    (
+        "layout-version-0.1.0.schema.json",
+        LayoutVersion,
+        "urn:cranfield:pilot-assessment:schema:layout-version:0.1.0",
+        "Pilot Assessment Layout Version 0.1.0",
+        "0.1.0",
+        ["node positions and groups use unique stable IDs"],
+    ),
+    (
+        "assessment-scheme-version-0.1.0.schema.json",
+        AssessmentSchemeVersion,
+        "urn:cranfield:pilot-assessment:schema:assessment-scheme-version:0.1.0",
+        "Pilot Assessment Scheme Version 0.1.0",
+        "0.1.0",
+        ["all scheme dependencies are exact ID and content-hash pins"],
+    ),
+    (
+        "source-descriptor-0.1.0.schema.json",
+        SourceDescriptor,
+        "urn:cranfield:pilot-assessment:schema:source-descriptor:0.1.0",
+        "Pilot Assessment Source Descriptor 0.1.0",
+        "0.1.0",
+        ["source kind, declared type, and provenance dependencies are explicit"],
+    ),
+    (
+        "scheme-draft-0.1.0.schema.json",
+        SchemeDraft,
+        "urn:cranfield:pilot-assessment:schema:scheme-draft:0.1.0",
+        "Pilot Assessment Scheme Draft 0.1.0",
+        "0.1.0",
+        ["drafts may be incomplete while retaining typed edges and finite canonical JSON"],
+    ),
+    (
+        "inference-plan-0.1.0.schema.json",
+        InferencePlan,
+        "urn:cranfield:pilot-assessment:schema:inference-plan:0.1.0",
+        "Pilot Assessment Inference Plan 0.1.0",
+        "0.1.0",
+        ["variables, state order, CPT pins, and scheme identity are exact"],
+    ),
+    (
+        "observation-set-0.1.0.schema.json",
+        ObservationSet,
+        "urn:cranfield:pilot-assessment:schema:observation-set:0.1.0",
+        "Pilot Assessment Observation Set 0.1.0",
+        "0.1.0",
+        ["each variable has at most one explicit hard, virtual, or omitted observation"],
+    ),
+    (
+        "posterior-result-0.1.0.schema.json",
+        PosteriorResult,
+        "urn:cranfield:pilot-assessment:schema:posterior-result:0.1.0",
+        "Pilot Assessment Posterior Result 0.1.0",
+        "0.1.0",
+        ["prior and posterior distributions use identical query-variable order"],
+    ),
+    (
+        "inference-trace-0.1.0.schema.json",
+        InferenceTrace,
+        "urn:cranfield:pilot-assessment:schema:inference-trace:0.1.0",
+        "Pilot Assessment Inference Trace 0.1.0",
+        "0.1.0",
+        ["inference influence edges are read-only leave-one-observation-out overlays"],
     ),
 )
 
@@ -1336,7 +1495,7 @@ def render_schemas() -> dict[str, bytes]:
                 title,
                 contract_version,
                 runtime_invariants,
-            ) in _M4_SCHEMA_MODELS
+            ) in (*_M4_SCHEMA_MODELS, *_M5_SCHEMA_MODELS)
         }
     )
     return schemas

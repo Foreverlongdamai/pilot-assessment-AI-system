@@ -1,0 +1,181 @@
+{
+  "$defs": {
+    "JsonValue": {},
+    "PortCardinality": {
+      "enum": [
+        "one",
+        "optional",
+        "many"
+      ],
+      "title": "PortCardinality",
+      "type": "string"
+    },
+    "PortType": {
+      "additionalProperties": false,
+      "description": "Type information shared by operator ports and external recipe bindings.",
+      "properties": {
+        "cardinality": {
+          "$ref": "#/$defs/PortCardinality"
+        },
+        "temporal_semantics": {
+          "$ref": "#/$defs/TemporalSemantics"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unit"
+        },
+        "value_type": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Value Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value_type",
+        "cardinality",
+        "temporal_semantics",
+        "unit"
+      ],
+      "title": "PortType",
+      "type": "object"
+    },
+    "RawModality": {
+      "enum": [
+        "X",
+        "U",
+        "I",
+        "G",
+        "EEG",
+        "ECG",
+        "pilot_camera"
+      ],
+      "title": "RawModality",
+      "type": "string"
+    },
+    "SourceKind": {
+      "enum": [
+        "raw_stream",
+        "session_semantic",
+        "task_semantic",
+        "derived_artifact",
+        "evidence_observation"
+      ],
+      "title": "SourceKind",
+      "type": "string"
+    },
+    "TemporalSemantics": {
+      "enum": [
+        "timeless",
+        "sampled",
+        "point",
+        "interval",
+        "mixed"
+      ],
+      "title": "TemporalSemantics",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:source-descriptor:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "content_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "source-descriptor",
+      "default": "source-descriptor",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "declared_type": {
+      "$ref": "#/$defs/PortType"
+    },
+    "description": {
+      "maxLength": 8000,
+      "title": "Description",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/SourceKind"
+    },
+    "metadata": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Metadata",
+      "type": "object"
+    },
+    "name": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "raw_modality": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RawModality"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source_dependencies": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Source Dependencies",
+      "type": "array"
+    },
+    "source_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Source Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_id",
+    "kind",
+    "name",
+    "description",
+    "declared_type",
+    "raw_modality",
+    "source_dependencies",
+    "metadata",
+    "content_hash"
+  ],
+  "title": "Pilot Assessment Source Descriptor 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "source kind, declared type, and provenance dependencies are explicit"
+  ]
+}

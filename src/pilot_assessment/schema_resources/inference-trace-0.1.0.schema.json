@@ -1,0 +1,240 @@
+{
+  "$defs": {
+    "ComponentIdRef": {
+      "additionalProperties": false,
+      "description": "An internal exact ID reference without a recursive content hash.",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id"
+      ],
+      "title": "ComponentIdRef",
+      "type": "object"
+    },
+    "ComponentKind": {
+      "enum": [
+        "evidence_concept",
+        "evidence_version",
+        "bn_node_concept",
+        "bn_node_version",
+        "evidence_binding_version",
+        "cpt_version",
+        "task_profile_version",
+        "coverage_reporting_policy_version",
+        "layout_version",
+        "assessment_scheme_version",
+        "source_descriptor"
+      ],
+      "title": "ComponentKind",
+      "type": "string"
+    },
+    "FactorScope": {
+      "additionalProperties": false,
+      "properties": {
+        "variable_ids": {
+          "items": {
+            "$ref": "#/$defs/ComponentIdRef"
+          },
+          "minItems": 1,
+          "title": "Variable Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "variable_ids"
+      ],
+      "title": "FactorScope",
+      "type": "object"
+    },
+    "InferenceInfluenceEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_path": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "minItems": 2,
+          "title": "Canonical Path",
+          "type": "array"
+        },
+        "edge_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Edge Id",
+          "type": "string"
+        },
+        "edge_kind": {
+          "const": "inference_influence",
+          "default": "inference_influence",
+          "title": "Edge Kind",
+          "type": "string"
+        },
+        "l1_delta": {
+          "maximum": 2.0,
+          "minimum": 0.0,
+          "title": "L1 Delta",
+          "type": "number"
+        },
+        "method_id": {
+          "const": "leave-one-observation-out-v1",
+          "title": "Method Id",
+          "type": "string"
+        },
+        "observed_variable_id": {
+          "$ref": "#/$defs/ComponentIdRef"
+        },
+        "queried_variable_id": {
+          "$ref": "#/$defs/ComponentIdRef"
+        }
+      },
+      "required": [
+        "edge_id",
+        "observed_variable_id",
+        "queried_variable_id",
+        "method_id",
+        "l1_delta",
+        "canonical_path"
+      ],
+      "title": "InferenceInfluenceEdge",
+      "type": "object"
+    },
+    "PinnedComponentRef": {
+      "additionalProperties": false,
+      "description": "An external replay pin binding an exact ID to its canonical content.",
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id",
+        "content_hash"
+      ],
+      "title": "PinnedComponentRef",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:inference-trace:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_id": {
+      "const": "inference-trace",
+      "default": "inference-trace",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "elimination_order": {
+      "items": {
+        "$ref": "#/$defs/ComponentIdRef"
+      },
+      "title": "Elimination Order",
+      "type": "array"
+    },
+    "factor_scopes": {
+      "items": {
+        "$ref": "#/$defs/FactorScope"
+      },
+      "title": "Factor Scopes",
+      "type": "array"
+    },
+    "influence_edges": {
+      "items": {
+        "$ref": "#/$defs/InferenceInfluenceEdge"
+      },
+      "title": "Influence Edges",
+      "type": "array"
+    },
+    "observation_set_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Observation Set Hash",
+      "type": "string"
+    },
+    "observed_variable_ids": {
+      "items": {
+        "$ref": "#/$defs/ComponentIdRef"
+      },
+      "title": "Observed Variable Ids",
+      "type": "array"
+    },
+    "plan_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Plan Hash",
+      "type": "string"
+    },
+    "query_variable_ids": {
+      "items": {
+        "$ref": "#/$defs/ComponentIdRef"
+      },
+      "title": "Query Variable Ids",
+      "type": "array"
+    },
+    "scheme_ref": {
+      "$ref": "#/$defs/PinnedComponentRef"
+    },
+    "trace_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Trace Hash",
+      "type": "string"
+    }
+  },
+  "required": [
+    "scheme_ref",
+    "plan_hash",
+    "observation_set_hash",
+    "query_variable_ids",
+    "observed_variable_ids",
+    "elimination_order",
+    "factor_scopes",
+    "influence_edges",
+    "trace_hash"
+  ],
+  "title": "Pilot Assessment Inference Trace 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "inference influence edges are read-only leave-one-observation-out overlays"
+  ]
+}

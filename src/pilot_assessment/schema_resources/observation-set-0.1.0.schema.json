@@ -1,0 +1,149 @@
+{
+  "$defs": {
+    "ComponentIdRef": {
+      "additionalProperties": false,
+      "description": "An internal exact ID reference without a recursive content hash.",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id"
+      ],
+      "title": "ComponentIdRef",
+      "type": "object"
+    },
+    "ComponentKind": {
+      "enum": [
+        "evidence_concept",
+        "evidence_version",
+        "bn_node_concept",
+        "bn_node_version",
+        "evidence_binding_version",
+        "cpt_version",
+        "task_profile_version",
+        "coverage_reporting_policy_version",
+        "layout_version",
+        "assessment_scheme_version",
+        "source_descriptor"
+      ],
+      "title": "ComponentKind",
+      "type": "string"
+    },
+    "Observation": {
+      "additionalProperties": false,
+      "properties": {
+        "hard_state_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Hard State Id"
+        },
+        "kind": {
+          "$ref": "#/$defs/ObservationKind"
+        },
+        "likelihood": {
+          "anyOf": [
+            {
+              "items": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Likelihood"
+        },
+        "variable_id": {
+          "$ref": "#/$defs/ComponentIdRef"
+        }
+      },
+      "required": [
+        "variable_id",
+        "kind",
+        "hard_state_id",
+        "likelihood"
+      ],
+      "title": "Observation",
+      "type": "object"
+    },
+    "ObservationKind": {
+      "enum": [
+        "hard",
+        "virtual",
+        "omitted"
+      ],
+      "title": "ObservationKind",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:observation-set:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_id": {
+      "const": "observation-set",
+      "default": "observation-set",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "observation_set_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Observation Set Hash",
+      "type": "string"
+    },
+    "observations": {
+      "items": {
+        "$ref": "#/$defs/Observation"
+      },
+      "title": "Observations",
+      "type": "array"
+    },
+    "plan_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Plan Hash",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_hash",
+    "observations",
+    "observation_set_hash"
+  ],
+  "title": "Pilot Assessment Observation Set 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "each variable has at most one explicit hard, virtual, or omitted observation"
+  ]
+}

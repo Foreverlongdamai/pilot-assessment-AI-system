@@ -1,0 +1,178 @@
+{
+  "$defs": {
+    "ComponentIdRef": {
+      "additionalProperties": false,
+      "description": "An internal exact ID reference without a recursive content hash.",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id"
+      ],
+      "title": "ComponentIdRef",
+      "type": "object"
+    },
+    "ComponentKind": {
+      "enum": [
+        "evidence_concept",
+        "evidence_version",
+        "bn_node_concept",
+        "bn_node_version",
+        "evidence_binding_version",
+        "cpt_version",
+        "task_profile_version",
+        "coverage_reporting_policy_version",
+        "layout_version",
+        "assessment_scheme_version",
+        "source_descriptor"
+      ],
+      "title": "ComponentKind",
+      "type": "string"
+    },
+    "PinnedComponentRef": {
+      "additionalProperties": false,
+      "description": "An external replay pin binding an exact ID to its canonical content.",
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id",
+        "content_hash"
+      ],
+      "title": "PinnedComponentRef",
+      "type": "object"
+    },
+    "PosteriorDistribution": {
+      "additionalProperties": false,
+      "properties": {
+        "ordered_state_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Ordered State Ids",
+          "type": "array"
+        },
+        "probabilities": {
+          "items": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "type": "number"
+          },
+          "minItems": 1,
+          "title": "Probabilities",
+          "type": "array"
+        },
+        "variable_id": {
+          "$ref": "#/$defs/ComponentIdRef"
+        }
+      },
+      "required": [
+        "variable_id",
+        "ordered_state_ids",
+        "probabilities"
+      ],
+      "title": "PosteriorDistribution",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:posterior-result:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_id": {
+      "const": "posterior-result",
+      "default": "posterior-result",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "observation_set_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Observation Set Hash",
+      "type": "string"
+    },
+    "plan_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Plan Hash",
+      "type": "string"
+    },
+    "posteriors": {
+      "items": {
+        "$ref": "#/$defs/PosteriorDistribution"
+      },
+      "title": "Posteriors",
+      "type": "array"
+    },
+    "priors": {
+      "items": {
+        "$ref": "#/$defs/PosteriorDistribution"
+      },
+      "title": "Priors",
+      "type": "array"
+    },
+    "result_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Result Hash",
+      "type": "string"
+    },
+    "scheme_ref": {
+      "$ref": "#/$defs/PinnedComponentRef"
+    }
+  },
+  "required": [
+    "scheme_ref",
+    "plan_hash",
+    "observation_set_hash",
+    "priors",
+    "posteriors",
+    "result_hash"
+  ],
+  "title": "Pilot Assessment Posterior Result 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "prior and posterior distributions use identical query-variable order"
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "$defs": {
+    "ComponentIdRef": {
+      "additionalProperties": false,
+      "description": "An internal exact ID reference without a recursive content hash.",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id"
+      ],
+      "title": "ComponentIdRef",
+      "type": "object"
+    },
+    "ComponentKind": {
+      "enum": [
+        "evidence_concept",
+        "evidence_version",
+        "bn_node_concept",
+        "bn_node_version",
+        "evidence_binding_version",
+        "cpt_version",
+        "task_profile_version",
+        "coverage_reporting_policy_version",
+        "layout_version",
+        "assessment_scheme_version",
+        "source_descriptor"
+      ],
+      "title": "ComponentKind",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "ObservationPolicy": {
+      "enum": [
+        "hard",
+        "virtual",
+        "hard_or_virtual"
+      ],
+      "title": "ObservationPolicy",
+      "type": "string"
+    },
+    "VariableState": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 8000,
+          "title": "Description",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "state_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "State Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "state_id",
+        "label",
+        "description"
+      ],
+      "title": "VariableState",
+      "type": "object"
+    },
+    "VersionLineage": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Created By",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 8000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Note"
+        },
+        "source_version_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Source Version Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source_version_ids",
+        "created_at",
+        "created_by",
+        "note"
+      ],
+      "title": "VersionLineage",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:evidence-binding-version:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "content_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "evidence-binding-version",
+      "default": "evidence-binding-version",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "cpt_version_id": {
+      "$ref": "#/$defs/ComponentIdRef"
+    },
+    "evidence_binding_version_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Evidence Binding Version Id",
+      "type": "string"
+    },
+    "evidence_version_id": {
+      "$ref": "#/$defs/ComponentIdRef"
+    },
+    "lineage": {
+      "$ref": "#/$defs/VersionLineage"
+    },
+    "modality_attribution_weights": {
+      "patternProperties": {
+        "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 128,
+        "minLength": 1
+      },
+      "title": "Modality Attribution Weights",
+      "type": "object"
+    },
+    "observation_mapping": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Observation Mapping",
+      "type": "object"
+    },
+    "observation_policy": {
+      "$ref": "#/$defs/ObservationPolicy"
+    },
+    "ordered_observation_states": {
+      "items": {
+        "$ref": "#/$defs/VariableState"
+      },
+      "minItems": 2,
+      "title": "Ordered Observation States",
+      "type": "array"
+    },
+    "ordered_probabilistic_parent_ids": {
+      "items": {
+        "$ref": "#/$defs/ComponentIdRef"
+      },
+      "title": "Ordered Probabilistic Parent Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "evidence_binding_version_id",
+    "evidence_version_id",
+    "ordered_observation_states",
+    "observation_mapping",
+    "ordered_probabilistic_parent_ids",
+    "cpt_version_id",
+    "observation_policy",
+    "modality_attribution_weights",
+    "lineage",
+    "content_hash"
+  ],
+  "title": "Pilot Assessment Evidence Binding Version 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "observation state and parent order is canonical",
+    "modality attribution weights are reporting-only and sum to one"
+  ]
+}

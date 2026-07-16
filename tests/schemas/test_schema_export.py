@@ -112,7 +112,92 @@ M4_SCHEMA_METADATA = {
     ),
 }
 
-ALL_SCHEMA_NAMES = frozenset(LEGACY_SCHEMA_SHA256) | frozenset(M4_SCHEMA_METADATA)
+M5_SCHEMA_METADATA = {
+    "evidence-concept-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:evidence-concept:0.1.0",
+        "Pilot Assessment Evidence Concept 0.1.0",
+        "0.1.0",
+    ),
+    "evidence-version-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:evidence-version:0.1.0",
+        "Pilot Assessment Evidence Version 0.1.0",
+        "0.1.0",
+    ),
+    "bn-node-concept-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:bn-node-concept:0.1.0",
+        "Pilot Assessment BN Node Concept 0.1.0",
+        "0.1.0",
+    ),
+    "bn-node-version-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:bn-node-version:0.1.0",
+        "Pilot Assessment BN Node Version 0.1.0",
+        "0.1.0",
+    ),
+    "evidence-binding-version-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:evidence-binding-version:0.1.0",
+        "Pilot Assessment Evidence Binding Version 0.1.0",
+        "0.1.0",
+    ),
+    "cpt-version-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:cpt-version:0.1.0",
+        "Pilot Assessment CPT Version 0.1.0",
+        "0.1.0",
+    ),
+    "task-profile-version-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:task-profile-version:0.1.0",
+        "Pilot Assessment Task Profile Version 0.1.0",
+        "0.1.0",
+    ),
+    "coverage-reporting-policy-version-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:coverage-reporting-policy-version:0.1.0",
+        "Pilot Assessment Coverage Reporting Policy Version 0.1.0",
+        "0.1.0",
+    ),
+    "layout-version-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:layout-version:0.1.0",
+        "Pilot Assessment Layout Version 0.1.0",
+        "0.1.0",
+    ),
+    "assessment-scheme-version-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:assessment-scheme-version:0.1.0",
+        "Pilot Assessment Scheme Version 0.1.0",
+        "0.1.0",
+    ),
+    "source-descriptor-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:source-descriptor:0.1.0",
+        "Pilot Assessment Source Descriptor 0.1.0",
+        "0.1.0",
+    ),
+    "scheme-draft-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:scheme-draft:0.1.0",
+        "Pilot Assessment Scheme Draft 0.1.0",
+        "0.1.0",
+    ),
+    "inference-plan-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:inference-plan:0.1.0",
+        "Pilot Assessment Inference Plan 0.1.0",
+        "0.1.0",
+    ),
+    "observation-set-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:observation-set:0.1.0",
+        "Pilot Assessment Observation Set 0.1.0",
+        "0.1.0",
+    ),
+    "posterior-result-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:posterior-result:0.1.0",
+        "Pilot Assessment Posterior Result 0.1.0",
+        "0.1.0",
+    ),
+    "inference-trace-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:inference-trace:0.1.0",
+        "Pilot Assessment Inference Trace 0.1.0",
+        "0.1.0",
+    ),
+}
+
+ALL_SCHEMA_NAMES = (
+    frozenset(LEGACY_SCHEMA_SHA256) | frozenset(M4_SCHEMA_METADATA) | frozenset(M5_SCHEMA_METADATA)
+)
 QUALITY_GATE_FIELD_NAMES = {
     "quality",
     "quality_gate",
@@ -347,6 +432,19 @@ def test_m4_schema_ids_titles_and_contract_versions_are_frozen() -> None:
     rendered = render_schemas()
 
     for name, (schema_id, title, contract_version) in M4_SCHEMA_METADATA.items():
+        schema = json.loads(rendered[name])
+        assert schema["$schema"] == SCHEMA_DIALECT
+        assert schema["$id"] == schema_id
+        assert schema["title"] == title
+        assert schema["x-contract-version"] == contract_version
+        assert schema["x-runtime-invariants"]
+        Draft202012Validator.check_schema(schema)
+
+
+def test_m5_schema_ids_titles_and_contract_versions_are_frozen() -> None:
+    rendered = render_schemas()
+
+    for name, (schema_id, title, contract_version) in M5_SCHEMA_METADATA.items():
         schema = json.loads(rendered[name])
         assert schema["$schema"] == SCHEMA_DIALECT
         assert schema["$id"] == schema_id

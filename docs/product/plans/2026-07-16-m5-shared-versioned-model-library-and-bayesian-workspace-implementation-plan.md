@@ -1,6 +1,6 @@
 # M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan
 
-> 状态：Approved / active implementation；Task 1 已完成，Task 2 为下一执行入口
+> 状态：Approved / active implementation；Task 1–2 已完成，Task 3 为下一执行入口
 > 执行方式：INLINE，严格按任务顺序推进；不启用 subagent
 > 工程方式：平台不变量采用轻量 test-first；starter resources、迁移和组装采用 focused smoke
 > 权威规格：[M5 Shared Versioned Model Library and Bayesian Workspace Design](../specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)
@@ -351,7 +351,7 @@ GREEN：
 - Create: `tests/contracts/test_model_components.py`
 - Create: `tests/contracts/test_bayesian_contracts.py`
 - Create: `tests/contracts/test_assessment_scheme.py`
-- Modify: `tests/contracts/test_schema_export.py`
+- Modify: `tests/schemas/test_schema_export.py`
 - Create: `schemas/evidence-concept-0.1.0.schema.json`
 - Create: `schemas/evidence-version-0.1.0.schema.json`
 - Create: `schemas/bn-node-concept-0.1.0.schema.json`
@@ -372,22 +372,22 @@ GREEN：
 
 RED：
 
-- [ ] 覆盖 strict/frozen round-trip、extra fields、duplicate states、NaN、invalid IDs、ID-only internal ref、pinned ref、draft incomplete parse 和三种 edge DTO 不可互换。
-- [ ] 覆盖 schema filename/ID、deterministic bytes 与双目录 byte parity。
-- [ ] 运行：
+- [x] 覆盖 strict/frozen round-trip、extra fields、duplicate states、NaN、invalid IDs、ID-only internal ref、pinned ref、draft incomplete parse 和三种 edge DTO 不可互换。
+- [x] 覆盖 schema filename/ID、deterministic bytes 与双目录 byte parity。
+- [x] 运行：
 
-      .venv\Scripts\python.exe -m pytest tests/contracts/test_model_components.py tests/contracts/test_bayesian_contracts.py tests/contracts/test_assessment_scheme.py tests/contracts/test_schema_export.py -q
+      .venv\Scripts\python.exe -m pytest tests/contracts/test_model_components.py tests/contracts/test_bayesian_contracts.py tests/contracts/test_assessment_scheme.py tests/schemas/test_schema_export.py -q
 
-  预期 RED：三个 M5 contract modules 尚不存在。
+  实测 RED：三个目标测试模块分别因 `pilot_assessment.contracts.model_components`、`bayesian`、`assessment_scheme` 不存在而在 collection 阶段失败，原因与目标缺口一致。
 
 GREEN：
 
-- [ ] 按 §4 实现 contracts；所有 published semantic DTO 使用 strict/frozen nested data。
-- [ ] 为 M5 public DTO 注册 Draft 2020-12 schemas，并执行：
+- [x] 按 §4 实现 contracts；所有 published semantic DTO 使用 strict/frozen nested data。
+- [x] 为 M5 public DTO 注册 Draft 2020-12 schemas，并执行：
 
       .venv\Scripts\python.exe -m pilot_assessment.schemas.export
 
-- [ ] 复跑 focused tests。
+- [x] 复跑 focused tests：`46 passed`；完整 `tests/contracts` + schema-export regression 为 `400 passed`；16 类新增 schema 在 root/package 双目录 byte-identical，legacy schema hash regression 保持通过；本次生产与测试文件定向 Ruff、format、ty 通过。
 
 提交边界：`feat: define M5 model and scheme contracts`
 

@@ -1,0 +1,382 @@
+{
+  "$defs": {
+    "BayesianDependencyEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "child_variable_id": {
+          "$ref": "#/$defs/ComponentIdRef"
+        },
+        "edge_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Edge Id",
+          "type": "string"
+        },
+        "edge_kind": {
+          "const": "bayesian_dependency",
+          "default": "bayesian_dependency",
+          "title": "Edge Kind",
+          "type": "string"
+        },
+        "parent_variable_id": {
+          "$ref": "#/$defs/ComponentIdRef"
+        }
+      },
+      "required": [
+        "edge_id",
+        "parent_variable_id",
+        "child_variable_id"
+      ],
+      "title": "BayesianDependencyEdge",
+      "type": "object"
+    },
+    "ComponentIdRef": {
+      "additionalProperties": false,
+      "description": "An internal exact ID reference without a recursive content hash.",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id"
+      ],
+      "title": "ComponentIdRef",
+      "type": "object"
+    },
+    "ComponentKind": {
+      "enum": [
+        "evidence_concept",
+        "evidence_version",
+        "bn_node_concept",
+        "bn_node_version",
+        "evidence_binding_version",
+        "cpt_version",
+        "task_profile_version",
+        "coverage_reporting_policy_version",
+        "layout_version",
+        "assessment_scheme_version",
+        "source_descriptor"
+      ],
+      "title": "ComponentKind",
+      "type": "string"
+    },
+    "DraftComponentCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "base_version_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Base Version Id"
+        },
+        "candidate_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "payload": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Payload",
+          "type": "object"
+        }
+      },
+      "required": [
+        "kind",
+        "candidate_id",
+        "base_version_id",
+        "payload"
+      ],
+      "title": "DraftComponentCandidate",
+      "type": "object"
+    },
+    "DraftDiagnostic": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "component_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Component Id"
+        },
+        "location": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Location",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/DraftDiagnosticSeverity"
+        }
+      },
+      "required": [
+        "code",
+        "severity",
+        "location",
+        "component_id",
+        "message"
+      ],
+      "title": "DraftDiagnostic",
+      "type": "object"
+    },
+    "DraftDiagnosticSeverity": {
+      "enum": [
+        "info",
+        "warning",
+        "error"
+      ],
+      "title": "DraftDiagnosticSeverity",
+      "type": "string"
+    },
+    "DraftValidationState": {
+      "enum": [
+        "incomplete",
+        "invalid",
+        "executable"
+      ],
+      "title": "DraftValidationState",
+      "type": "string"
+    },
+    "ExtractionEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "edge_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Edge Id",
+          "type": "string"
+        },
+        "edge_kind": {
+          "const": "extraction",
+          "default": "extraction",
+          "title": "Edge Kind",
+          "type": "string"
+        },
+        "input_binding_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Input Binding Id",
+          "type": "string"
+        },
+        "source_descriptor_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Source Descriptor Id",
+          "type": "string"
+        },
+        "target_evidence_version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Target Evidence Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "edge_id",
+        "source_descriptor_id",
+        "target_evidence_version_id",
+        "input_binding_id"
+      ],
+      "title": "ExtractionEdge",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "PinnedComponentRef": {
+      "additionalProperties": false,
+      "description": "An external replay pin binding an exact ID to its canonical content.",
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id",
+        "content_hash"
+      ],
+      "title": "PinnedComponentRef",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:scheme-draft:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "base_scheme_version_id": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Base Scheme Version Id"
+    },
+    "bayesian_edges": {
+      "items": {
+        "$ref": "#/$defs/BayesianDependencyEdge"
+      },
+      "title": "Bayesian Edges",
+      "type": "array"
+    },
+    "candidate_components": {
+      "items": {
+        "$ref": "#/$defs/DraftComponentCandidate"
+      },
+      "title": "Candidate Components",
+      "type": "array"
+    },
+    "contract_id": {
+      "const": "scheme-draft",
+      "default": "scheme-draft",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "diagnostics": {
+      "items": {
+        "$ref": "#/$defs/DraftDiagnostic"
+      },
+      "title": "Diagnostics",
+      "type": "array"
+    },
+    "draft_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Draft Id",
+      "type": "string"
+    },
+    "extraction_edges": {
+      "items": {
+        "$ref": "#/$defs/ExtractionEdge"
+      },
+      "title": "Extraction Edges",
+      "type": "array"
+    },
+    "graph_version": {
+      "minimum": 0,
+      "title": "Graph Version",
+      "type": "integer"
+    },
+    "history_cursor": {
+      "minimum": 0,
+      "title": "History Cursor",
+      "type": "integer"
+    },
+    "layout_version": {
+      "minimum": 0,
+      "title": "Layout Version",
+      "type": "integer"
+    },
+    "output_node_ids": {
+      "items": {
+        "$ref": "#/$defs/ComponentIdRef"
+      },
+      "title": "Output Node Ids",
+      "type": "array"
+    },
+    "retained_component_refs": {
+      "items": {
+        "$ref": "#/$defs/PinnedComponentRef"
+      },
+      "title": "Retained Component Refs",
+      "type": "array"
+    },
+    "validation_state": {
+      "$ref": "#/$defs/DraftValidationState"
+    }
+  },
+  "required": [
+    "draft_id",
+    "base_scheme_version_id",
+    "graph_version",
+    "layout_version",
+    "history_cursor",
+    "retained_component_refs",
+    "candidate_components",
+    "extraction_edges",
+    "bayesian_edges",
+    "output_node_ids",
+    "validation_state",
+    "diagnostics"
+  ],
+  "title": "Pilot Assessment Scheme Draft 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "drafts may be incomplete while retaining typed edges and finite canonical JSON"
+  ]
+}

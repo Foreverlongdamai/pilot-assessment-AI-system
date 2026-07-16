@@ -1,0 +1,212 @@
+{
+  "$defs": {
+    "JsonValue": {},
+    "LayoutGroup": {
+      "additionalProperties": false,
+      "properties": {
+        "group_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Group Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Metadata",
+          "type": "object"
+        },
+        "node_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Node Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "group_id",
+        "label",
+        "node_ids",
+        "metadata"
+      ],
+      "title": "LayoutGroup",
+      "type": "object"
+    },
+    "NodePosition": {
+      "additionalProperties": false,
+      "properties": {
+        "node_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "node_id",
+        "x",
+        "y"
+      ],
+      "title": "NodePosition",
+      "type": "object"
+    },
+    "VersionLineage": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Created By",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 8000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Note"
+        },
+        "source_version_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Source Version Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source_version_ids",
+        "created_at",
+        "created_by",
+        "note"
+      ],
+      "title": "VersionLineage",
+      "type": "object"
+    },
+    "Viewport": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        },
+        "zoom": {
+          "exclusiveMinimum": 0.0,
+          "title": "Zoom",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "zoom"
+      ],
+      "title": "Viewport",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:layout-version:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "content_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "layout-version",
+      "default": "layout-version",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "groups": {
+      "items": {
+        "$ref": "#/$defs/LayoutGroup"
+      },
+      "title": "Groups",
+      "type": "array"
+    },
+    "layout_version_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Layout Version Id",
+      "type": "string"
+    },
+    "lineage": {
+      "$ref": "#/$defs/VersionLineage"
+    },
+    "node_positions": {
+      "items": {
+        "$ref": "#/$defs/NodePosition"
+      },
+      "title": "Node Positions",
+      "type": "array"
+    },
+    "viewport": {
+      "$ref": "#/$defs/Viewport"
+    }
+  },
+  "required": [
+    "layout_version_id",
+    "node_positions",
+    "groups",
+    "viewport",
+    "lineage",
+    "content_hash"
+  ],
+  "title": "Pilot Assessment Layout Version 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "node positions and groups use unique stable IDs"
+  ]
+}

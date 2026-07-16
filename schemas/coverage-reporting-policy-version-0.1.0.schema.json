@@ -1,0 +1,135 @@
+{
+  "$defs": {
+    "ComponentSource": {
+      "enum": [
+        "engineering_default",
+        "expert_defined",
+        "calibrated",
+        "imported"
+      ],
+      "title": "ComponentSource",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "VersionLineage": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Created By",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 8000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Note"
+        },
+        "source_version_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Source Version Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source_version_ids",
+        "created_at",
+        "created_by",
+        "note"
+      ],
+      "title": "VersionLineage",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:coverage-reporting-policy-version:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "applicability_rules": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Applicability Rules",
+      "type": "object"
+    },
+    "content_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "coverage-reporting-policy-version",
+      "default": "coverage-reporting-policy-version",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "coverage_rules": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Coverage Rules",
+      "type": "object"
+    },
+    "lineage": {
+      "$ref": "#/$defs/VersionLineage"
+    },
+    "output_rules": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Output Rules",
+      "type": "object"
+    },
+    "policy_version_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Policy Version Id",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/ComponentSource"
+    }
+  },
+  "required": [
+    "policy_version_id",
+    "applicability_rules",
+    "coverage_rules",
+    "output_rules",
+    "source",
+    "lineage",
+    "content_hash"
+  ],
+  "title": "Pilot Assessment Coverage Reporting Policy Version 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "reporting policy cannot act as a scientific or raw-data quality gate"
+  ]
+}

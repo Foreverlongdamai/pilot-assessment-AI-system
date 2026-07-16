@@ -1,0 +1,222 @@
+{
+  "$defs": {
+    "ComponentIdRef": {
+      "additionalProperties": false,
+      "description": "An internal exact ID reference without a recursive content hash.",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id"
+      ],
+      "title": "ComponentIdRef",
+      "type": "object"
+    },
+    "ComponentKind": {
+      "enum": [
+        "evidence_concept",
+        "evidence_version",
+        "bn_node_concept",
+        "bn_node_version",
+        "evidence_binding_version",
+        "cpt_version",
+        "task_profile_version",
+        "coverage_reporting_policy_version",
+        "layout_version",
+        "assessment_scheme_version",
+        "source_descriptor"
+      ],
+      "title": "ComponentKind",
+      "type": "string"
+    },
+    "ComponentSource": {
+      "enum": [
+        "engineering_default",
+        "expert_defined",
+        "calibrated",
+        "imported"
+      ],
+      "title": "ComponentSource",
+      "type": "string"
+    },
+    "CptMode": {
+      "enum": [
+        "manual",
+        "generated",
+        "incomplete"
+      ],
+      "title": "CptMode",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "VersionLineage": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Created By",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 8000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Note"
+        },
+        "source_version_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Source Version Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source_version_ids",
+        "created_at",
+        "created_by",
+        "note"
+      ],
+      "title": "VersionLineage",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:cpt-version:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "child_state_ids": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "minItems": 2,
+      "title": "Child State Ids",
+      "type": "array"
+    },
+    "child_variable_id": {
+      "$ref": "#/$defs/ComponentIdRef"
+    },
+    "content_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "cpt-version",
+      "default": "cpt-version",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "cpt_version_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Cpt Version Id",
+      "type": "string"
+    },
+    "generator_metadata": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Generator Metadata",
+      "type": "object"
+    },
+    "lineage": {
+      "$ref": "#/$defs/VersionLineage"
+    },
+    "materialized_probabilities": {
+      "items": {
+        "items": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        "type": "array"
+      },
+      "title": "Materialized Probabilities",
+      "type": "array"
+    },
+    "mode": {
+      "$ref": "#/$defs/CptMode"
+    },
+    "ordered_parent_state_ids": {
+      "items": {
+        "items": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Ordered Parent State Ids",
+      "type": "array"
+    },
+    "ordered_parent_variable_ids": {
+      "items": {
+        "$ref": "#/$defs/ComponentIdRef"
+      },
+      "title": "Ordered Parent Variable Ids",
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/$defs/ComponentSource"
+    }
+  },
+  "required": [
+    "cpt_version_id",
+    "child_variable_id",
+    "ordered_parent_variable_ids",
+    "child_state_ids",
+    "ordered_parent_state_ids",
+    "materialized_probabilities",
+    "mode",
+    "generator_metadata",
+    "source",
+    "lineage",
+    "content_hash"
+  ],
+  "title": "Pilot Assessment CPT Version 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "parent variables and state spaces use declared stable order"
+  ]
+}

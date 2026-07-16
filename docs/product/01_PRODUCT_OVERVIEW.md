@@ -1,6 +1,6 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0.3 shared-versioned-model 基线。M1–M3 与 M4R 已工程验证；D-031–D-040 已确认专家可编辑、全局组件版本库、任务方案、BN 语义与 legacy Evidence-to-Evidence 非覆盖迁移。M5 正在按轻量 inline 计划实施，Task 1 generic identity 已完成，Task 2–12 尚未完成；M6 runtime、M7 WinUI 与 M8 packaging 尚未完成，`formal_run_authorized=false`。
+**文档状态：** 产品 v0.3 shared-versioned-model 基线。M1–M3 与 M4R 已工程验证；D-031–D-040 已确认专家可编辑、全局组件版本库、任务方案、BN 语义与 legacy Evidence-to-Evidence 非覆盖迁移。M5 正在按轻量 inline 计划实施，Task 1–2 generic identity、public contracts 与 JSON Schema 已完成，Task 3–12 尚未完成；M6 runtime、M7 WinUI 与 M8 packaging 尚未完成，`formal_run_authorized=false`。
 **日期：** 2026-07-16
 **适用目录：** `pilot_assessment_system/`
 

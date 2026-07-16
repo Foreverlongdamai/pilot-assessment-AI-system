@@ -1,0 +1,175 @@
+{
+  "$defs": {
+    "ComponentSource": {
+      "enum": [
+        "engineering_default",
+        "expert_defined",
+        "calibrated",
+        "imported"
+      ],
+      "title": "ComponentSource",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "VersionLineage": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Created By",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 8000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Note"
+        },
+        "source_version_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Source Version Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source_version_ids",
+        "created_at",
+        "created_by",
+        "note"
+      ],
+      "title": "VersionLineage",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:task-profile-version:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "annotation_parameters": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Annotation Parameters",
+      "type": "object"
+    },
+    "aoi_parameters": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Aoi Parameters",
+      "type": "object"
+    },
+    "content_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "task-profile-version",
+      "default": "task-profile-version",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "description": {
+      "maxLength": 8000,
+      "title": "Description",
+      "type": "string"
+    },
+    "lineage": {
+      "$ref": "#/$defs/VersionLineage"
+    },
+    "name": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "reference_parameters": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Reference Parameters",
+      "type": "object"
+    },
+    "required_source_descriptor_ids": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Required Source Descriptor Ids",
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/$defs/ComponentSource"
+    },
+    "task_concept_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Task Concept Id",
+      "type": "string"
+    },
+    "task_profile_version_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Task Profile Version Id",
+      "type": "string"
+    },
+    "task_semantics": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Task Semantics",
+      "type": "object"
+    }
+  },
+  "required": [
+    "task_profile_version_id",
+    "task_concept_id",
+    "name",
+    "description",
+    "task_semantics",
+    "required_source_descriptor_ids",
+    "reference_parameters",
+    "annotation_parameters",
+    "aoi_parameters",
+    "source",
+    "lineage",
+    "content_hash"
+  ],
+  "title": "Pilot Assessment Task Profile Version 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "task semantics and required source IDs are immutable version content"
+  ]
+}

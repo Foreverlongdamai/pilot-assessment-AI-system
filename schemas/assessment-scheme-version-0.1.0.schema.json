@@ -1,0 +1,246 @@
+{
+  "$defs": {
+    "ComponentIdRef": {
+      "additionalProperties": false,
+      "description": "An internal exact ID reference without a recursive content hash.",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id"
+      ],
+      "title": "ComponentIdRef",
+      "type": "object"
+    },
+    "ComponentKind": {
+      "enum": [
+        "evidence_concept",
+        "evidence_version",
+        "bn_node_concept",
+        "bn_node_version",
+        "evidence_binding_version",
+        "cpt_version",
+        "task_profile_version",
+        "coverage_reporting_policy_version",
+        "layout_version",
+        "assessment_scheme_version",
+        "source_descriptor"
+      ],
+      "title": "ComponentKind",
+      "type": "string"
+    },
+    "PinnedComponentRef": {
+      "additionalProperties": false,
+      "description": "An external replay pin binding an exact ID to its canonical content.",
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id",
+        "content_hash"
+      ],
+      "title": "PinnedComponentRef",
+      "type": "object"
+    },
+    "VersionLineage": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Created By",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "maxLength": 8000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Note"
+        },
+        "source_version_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Source Version Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source_version_ids",
+        "created_at",
+        "created_by",
+        "note"
+      ],
+      "title": "VersionLineage",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:assessment-scheme-version:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "bn_node_versions": {
+      "items": {
+        "$ref": "#/$defs/PinnedComponentRef"
+      },
+      "title": "Bn Node Versions",
+      "type": "array"
+    },
+    "content_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "assessment-scheme-version",
+      "default": "assessment-scheme-version",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "cpt_versions": {
+      "items": {
+        "$ref": "#/$defs/PinnedComponentRef"
+      },
+      "title": "Cpt Versions",
+      "type": "array"
+    },
+    "description": {
+      "maxLength": 8000,
+      "title": "Description",
+      "type": "string"
+    },
+    "evidence_binding_versions": {
+      "items": {
+        "$ref": "#/$defs/PinnedComponentRef"
+      },
+      "title": "Evidence Binding Versions",
+      "type": "array"
+    },
+    "evidence_versions": {
+      "items": {
+        "$ref": "#/$defs/PinnedComponentRef"
+      },
+      "title": "Evidence Versions",
+      "type": "array"
+    },
+    "layout": {
+      "$ref": "#/$defs/PinnedComponentRef"
+    },
+    "lineage": {
+      "$ref": "#/$defs/VersionLineage"
+    },
+    "name": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "output_node_ids": {
+      "items": {
+        "$ref": "#/$defs/ComponentIdRef"
+      },
+      "title": "Output Node Ids",
+      "type": "array"
+    },
+    "reporting_policy": {
+      "$ref": "#/$defs/PinnedComponentRef"
+    },
+    "scheme_concept_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Scheme Concept Id",
+      "type": "string"
+    },
+    "scheme_version_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Scheme Version Id",
+      "type": "string"
+    },
+    "source_descriptors": {
+      "items": {
+        "$ref": "#/$defs/PinnedComponentRef"
+      },
+      "title": "Source Descriptors",
+      "type": "array"
+    },
+    "task_profile": {
+      "$ref": "#/$defs/PinnedComponentRef"
+    }
+  },
+  "required": [
+    "scheme_version_id",
+    "scheme_concept_id",
+    "name",
+    "description",
+    "task_profile",
+    "source_descriptors",
+    "evidence_versions",
+    "evidence_binding_versions",
+    "bn_node_versions",
+    "cpt_versions",
+    "reporting_policy",
+    "layout",
+    "output_node_ids",
+    "lineage",
+    "content_hash"
+  ],
+  "title": "Pilot Assessment Scheme Version 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "all scheme dependencies are exact ID and content-hash pins"
+  ]
+}
