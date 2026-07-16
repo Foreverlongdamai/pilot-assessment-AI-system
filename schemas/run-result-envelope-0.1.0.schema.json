@@ -1,0 +1,146 @@
+{
+  "$defs": {
+    "ArtifactIdRef": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "sha256"
+      ],
+      "title": "ArtifactIdRef",
+      "type": "object"
+    },
+    "RunScientificStatus": {
+      "enum": [
+        "not_supported",
+        "engineering_default",
+        "expert_reviewed",
+        "calibrated",
+        "internally_validated",
+        "externally_validated"
+      ],
+      "title": "RunScientificStatus",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:run-result-envelope:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_id": {
+      "const": "run-result-envelope",
+      "default": "run-result-envelope",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "coverage_refs": {
+      "items": {
+        "$ref": "#/$defs/ArtifactIdRef"
+      },
+      "title": "Coverage Refs",
+      "type": "array"
+    },
+    "evidence_result_refs": {
+      "items": {
+        "$ref": "#/$defs/ArtifactIdRef"
+      },
+      "title": "Evidence Result Refs",
+      "type": "array"
+    },
+    "evidence_trace_refs": {
+      "items": {
+        "$ref": "#/$defs/ArtifactIdRef"
+      },
+      "title": "Evidence Trace Refs",
+      "type": "array"
+    },
+    "inference_trace_ref": {
+      "$ref": "#/$defs/ArtifactIdRef"
+    },
+    "observation_set_ref": {
+      "$ref": "#/$defs/ArtifactIdRef"
+    },
+    "posterior_ref": {
+      "$ref": "#/$defs/ArtifactIdRef"
+    },
+    "reporting_refs": {
+      "items": {
+        "$ref": "#/$defs/ArtifactIdRef"
+      },
+      "title": "Reporting Refs",
+      "type": "array"
+    },
+    "result_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Result Hash",
+      "type": "string"
+    },
+    "result_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Result Id",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "scientific_status": {
+      "$ref": "#/$defs/RunScientificStatus"
+    },
+    "snapshot_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Snapshot Hash",
+      "type": "string"
+    }
+  },
+  "required": [
+    "result_id",
+    "run_id",
+    "snapshot_hash",
+    "evidence_result_refs",
+    "evidence_trace_refs",
+    "observation_set_ref",
+    "posterior_ref",
+    "inference_trace_ref",
+    "reporting_refs",
+    "coverage_refs",
+    "scientific_status",
+    "result_hash"
+  ],
+  "title": "Pilot Assessment Run Result Envelope 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "result artifacts are exact SHA-256 references and use unique semantic roles"
+  ]
+}

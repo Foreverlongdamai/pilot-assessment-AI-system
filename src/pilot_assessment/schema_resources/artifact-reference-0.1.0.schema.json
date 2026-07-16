@@ -1,0 +1,68 @@
+{
+  "$defs": {
+    "ArtifactOwnerKind": {
+      "enum": [
+        "session_revision",
+        "run_preflight",
+        "run",
+        "run_result",
+        "export"
+      ],
+      "title": "ArtifactOwnerKind",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:artifact-reference:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifact_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "artifact-reference",
+      "default": "artifact-reference",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "owner_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Owner Id",
+      "type": "string"
+    },
+    "owner_kind": {
+      "$ref": "#/$defs/ArtifactOwnerKind"
+    },
+    "role": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "owner_kind",
+    "owner_id",
+    "role",
+    "artifact_id"
+  ],
+  "title": "Pilot Assessment Artifact Reference 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "artifact ownership and semantic role are explicit"
+  ]
+}

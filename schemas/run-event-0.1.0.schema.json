@@ -1,0 +1,120 @@
+{
+  "$defs": {
+    "JsonValue": {},
+    "RunStage": {
+      "enum": [
+        "queued",
+        "snapshot_validation",
+        "ingestion",
+        "synchronization",
+        "evidence",
+        "inference",
+        "reporting",
+        "completed"
+      ],
+      "title": "RunStage",
+      "type": "string"
+    },
+    "RunState": {
+      "enum": [
+        "queued",
+        "running",
+        "cancelling",
+        "cancelled",
+        "completed",
+        "failed",
+        "interrupted"
+      ],
+      "title": "RunState",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:run-event:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "completed_units": {
+      "minimum": 0,
+      "title": "Completed Units",
+      "type": "integer"
+    },
+    "contract_id": {
+      "const": "run-event",
+      "default": "run-event",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "details": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Details",
+      "type": "object"
+    },
+    "event_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "message": {
+      "maxLength": 2000,
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    },
+    "occurred_at": {
+      "format": "date-time",
+      "title": "Occurred At",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "sequence": {
+      "exclusiveMinimum": 0,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "stage": {
+      "$ref": "#/$defs/RunStage"
+    },
+    "state": {
+      "$ref": "#/$defs/RunState"
+    },
+    "total_units": {
+      "minimum": 0,
+      "title": "Total Units",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "event_id",
+    "run_id",
+    "sequence",
+    "state",
+    "stage",
+    "completed_units",
+    "total_units",
+    "message",
+    "occurred_at",
+    "details"
+  ],
+  "title": "Pilot Assessment Run Event 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "event sequence is positive and completed units never exceed frozen total units"
+  ]
+}

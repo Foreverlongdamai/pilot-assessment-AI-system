@@ -1,0 +1,230 @@
+{
+  "$defs": {
+    "ComponentKind": {
+      "enum": [
+        "evidence_concept",
+        "evidence_version",
+        "bn_node_concept",
+        "bn_node_version",
+        "evidence_binding_version",
+        "cpt_version",
+        "task_profile_version",
+        "coverage_reporting_policy_version",
+        "layout_version",
+        "assessment_scheme_version",
+        "source_descriptor"
+      ],
+      "title": "ComponentKind",
+      "type": "string"
+    },
+    "ExecutableIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "identity_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Identity Id",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity_id",
+        "version",
+        "content_hash"
+      ],
+      "title": "ExecutableIdentity",
+      "type": "object"
+    },
+    "PinnedComponentRef": {
+      "additionalProperties": false,
+      "description": "An external replay pin binding an exact ID to its canonical content.",
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id",
+        "content_hash"
+      ],
+      "title": "PinnedComponentRef",
+      "type": "object"
+    },
+    "RunPurpose": {
+      "enum": [
+        "preview",
+        "software_test",
+        "assessment"
+      ],
+      "title": "RunPurpose",
+      "type": "string"
+    },
+    "SessionRevisionRef": {
+      "additionalProperties": false,
+      "properties": {
+        "bundle_root_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Bundle Root Hash",
+          "type": "string"
+        },
+        "session_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "session_revision_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Session Revision Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id",
+        "session_revision_id",
+        "bundle_root_hash"
+      ],
+      "title": "SessionRevisionRef",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:run-snapshot:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_id": {
+      "const": "run-snapshot",
+      "default": "run-snapshot",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "engine_identity": {
+      "$ref": "#/$defs/ExecutableIdentity"
+    },
+    "locked_component_refs": {
+      "items": {
+        "$ref": "#/$defs/PinnedComponentRef"
+      },
+      "title": "Locked Component Refs",
+      "type": "array"
+    },
+    "locked_operator_identities": {
+      "items": {
+        "$ref": "#/$defs/ExecutableIdentity"
+      },
+      "title": "Locked Operator Identities",
+      "type": "array"
+    },
+    "locked_source_refs": {
+      "items": {
+        "$ref": "#/$defs/PinnedComponentRef"
+      },
+      "title": "Locked Source Refs",
+      "type": "array"
+    },
+    "numeric_runtime_identities": {
+      "items": {
+        "$ref": "#/$defs/ExecutableIdentity"
+      },
+      "title": "Numeric Runtime Identities",
+      "type": "array"
+    },
+    "preflight_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Preflight Hash",
+      "type": "string"
+    },
+    "purpose": {
+      "$ref": "#/$defs/RunPurpose"
+    },
+    "run_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "runtime_parameters_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Runtime Parameters Hash",
+      "type": "string"
+    },
+    "scheme_ref": {
+      "$ref": "#/$defs/PinnedComponentRef"
+    },
+    "session_revision_ref": {
+      "$ref": "#/$defs/SessionRevisionRef"
+    },
+    "snapshot_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Snapshot Hash",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "purpose",
+    "session_revision_ref",
+    "scheme_ref",
+    "locked_component_refs",
+    "locked_source_refs",
+    "locked_operator_identities",
+    "engine_identity",
+    "numeric_runtime_identities",
+    "runtime_parameters_hash",
+    "preflight_hash",
+    "snapshot_hash"
+  ],
+  "title": "Pilot Assessment Run Snapshot 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "session, scheme, component, source, operator, engine, and runtime identities are exact"
+  ]
+}

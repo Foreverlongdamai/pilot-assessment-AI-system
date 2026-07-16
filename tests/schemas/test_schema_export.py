@@ -195,8 +195,74 @@ M5_SCHEMA_METADATA = {
     ),
 }
 
+M6_SCHEMA_METADATA = {
+    "project-descriptor-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:project-descriptor:0.1.0",
+        "Pilot Assessment Project Descriptor 0.1.0",
+        "0.1.0",
+    ),
+    "session-record-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:session-record:0.1.0",
+        "Pilot Assessment Session Record 0.1.0",
+        "0.1.0",
+    ),
+    "session-revision-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:session-revision:0.1.0",
+        "Pilot Assessment Session Revision 0.1.0",
+        "0.1.0",
+    ),
+    "managed-artifact-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:managed-artifact:0.1.0",
+        "Pilot Assessment Managed Artifact 0.1.0",
+        "0.1.0",
+    ),
+    "artifact-reference-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:artifact-reference:0.1.0",
+        "Pilot Assessment Artifact Reference 0.1.0",
+        "0.1.0",
+    ),
+    "transaction-receipt-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:transaction-receipt:0.1.0",
+        "Pilot Assessment Transaction Receipt 0.1.0",
+        "0.1.0",
+    ),
+    "audit-event-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:audit-event:0.1.0",
+        "Pilot Assessment Audit Event 0.1.0",
+        "0.1.0",
+    ),
+    "run-preflight-report-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:run-preflight-report:0.1.0",
+        "Pilot Assessment Run Preflight Report 0.1.0",
+        "0.1.0",
+    ),
+    "run-snapshot-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:run-snapshot:0.1.0",
+        "Pilot Assessment Run Snapshot 0.1.0",
+        "0.1.0",
+    ),
+    "assessment-run-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:assessment-run:0.1.0",
+        "Pilot Assessment Run 0.1.0",
+        "0.1.0",
+    ),
+    "run-event-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:run-event:0.1.0",
+        "Pilot Assessment Run Event 0.1.0",
+        "0.1.0",
+    ),
+    "run-result-envelope-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:run-result-envelope:0.1.0",
+        "Pilot Assessment Run Result Envelope 0.1.0",
+        "0.1.0",
+    ),
+}
+
 ALL_SCHEMA_NAMES = (
-    frozenset(LEGACY_SCHEMA_SHA256) | frozenset(M4_SCHEMA_METADATA) | frozenset(M5_SCHEMA_METADATA)
+    frozenset(LEGACY_SCHEMA_SHA256)
+    | frozenset(M4_SCHEMA_METADATA)
+    | frozenset(M5_SCHEMA_METADATA)
+    | frozenset(M6_SCHEMA_METADATA)
 )
 QUALITY_GATE_FIELD_NAMES = {
     "quality",
@@ -445,6 +511,19 @@ def test_m5_schema_ids_titles_and_contract_versions_are_frozen() -> None:
     rendered = render_schemas()
 
     for name, (schema_id, title, contract_version) in M5_SCHEMA_METADATA.items():
+        schema = json.loads(rendered[name])
+        assert schema["$schema"] == SCHEMA_DIALECT
+        assert schema["$id"] == schema_id
+        assert schema["title"] == title
+        assert schema["x-contract-version"] == contract_version
+        assert schema["x-runtime-invariants"]
+        Draft202012Validator.check_schema(schema)
+
+
+def test_m6_schema_ids_titles_and_contract_versions_are_frozen() -> None:
+    rendered = render_schemas()
+
+    for name, (schema_id, title, contract_version) in M6_SCHEMA_METADATA.items():
         schema = json.loads(rendered[name])
         assert schema["$schema"] == SCHEMA_DIALECT
         assert schema["$id"] == schema_id

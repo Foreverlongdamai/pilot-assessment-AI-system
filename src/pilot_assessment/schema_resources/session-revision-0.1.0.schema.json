@@ -1,0 +1,130 @@
+{
+  "$defs": {
+    "SessionSourceKind": {
+      "enum": [
+        "managed_import"
+      ],
+      "title": "SessionSourceKind",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:session-revision:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "bundle_root_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Bundle Root Hash",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "session-revision",
+      "default": "session-revision",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "file_inventory_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "File Inventory Hash",
+      "type": "string"
+    },
+    "imported_at": {
+      "format": "date-time",
+      "title": "Imported At",
+      "type": "string"
+    },
+    "imported_by": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Imported By",
+      "type": "string"
+    },
+    "ingestion_readiness_ref": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Ingestion Readiness Ref",
+      "type": "string"
+    },
+    "managed_bundle_path": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+      "title": "Managed Bundle Path",
+      "type": "string",
+      "x-runtime-invariants": [
+        "segments are not empty, '.' or '..'",
+        "segments do not end in a dot or space",
+        "resolved files remain below the owning artifact root"
+      ]
+    },
+    "manifest_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Manifest Hash",
+      "type": "string"
+    },
+    "session_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "session_revision_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Session Revision Id",
+      "type": "string"
+    },
+    "source_kind": {
+      "$ref": "#/$defs/SessionSourceKind"
+    },
+    "synchronization_ref": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Synchronization Ref"
+    }
+  },
+  "required": [
+    "session_revision_id",
+    "session_id",
+    "managed_bundle_path",
+    "manifest_hash",
+    "bundle_root_hash",
+    "file_inventory_hash",
+    "source_kind",
+    "imported_at",
+    "imported_by",
+    "ingestion_readiness_ref",
+    "synchronization_ref"
+  ],
+  "title": "Pilot Assessment Session Revision 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "managed bundle paths are project relative and bound to exact content hashes"
+  ]
+}

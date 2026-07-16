@@ -1,0 +1,107 @@
+{
+  "$defs": {
+    "ArtifactLifecycle": {
+      "enum": [
+        "active",
+        "unreferenced",
+        "quarantined"
+      ],
+      "title": "ArtifactLifecycle",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:managed-artifact:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifact_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "byte_size": {
+      "maximum": 9223372036854775807,
+      "minimum": 0,
+      "title": "Byte Size",
+      "type": "integer"
+    },
+    "contract_id": {
+      "const": "managed-artifact",
+      "default": "managed-artifact",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "lifecycle": {
+      "$ref": "#/$defs/ArtifactLifecycle"
+    },
+    "managed_relative_path": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+      "title": "Managed Relative Path",
+      "type": "string",
+      "x-runtime-invariants": [
+        "segments are not empty, '.' or '..'",
+        "segments do not end in a dot or space",
+        "resolved files remain below the owning artifact root"
+      ]
+    },
+    "media_type": {
+      "maxLength": 255,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+$",
+      "title": "Media Type",
+      "type": "string"
+    },
+    "schema_id": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Schema Id"
+    },
+    "sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "artifact_id",
+    "sha256",
+    "byte_size",
+    "media_type",
+    "schema_id",
+    "managed_relative_path",
+    "lifecycle",
+    "created_at"
+  ],
+  "title": "Pilot Assessment Managed Artifact 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "the managed relative path is derived from the artifact SHA-256 digest"
+  ]
+}

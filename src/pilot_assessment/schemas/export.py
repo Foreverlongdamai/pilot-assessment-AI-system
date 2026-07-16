@@ -48,6 +48,22 @@ from pilot_assessment.contracts.model_components import (
     EvidenceVersion,
     SourceDescriptor,
 )
+from pilot_assessment.contracts.project import (
+    ArtifactReference,
+    AuditEvent,
+    ManagedArtifact,
+    ProjectDescriptor,
+    SessionRecord,
+    SessionRevision,
+    TransactionReceipt,
+)
+from pilot_assessment.contracts.run import (
+    AssessmentRun,
+    RunEvent,
+    RunPreflightReport,
+    RunResultEnvelope,
+    RunSnapshot,
+)
 from pilot_assessment.contracts.session import (
     BIOMETRIC_MODALITIES,
     CORE_MODALITIES,
@@ -329,6 +345,111 @@ _M5_SCHEMA_MODELS: tuple[
         "Pilot Assessment Inference Trace 0.1.0",
         "0.1.0",
         ["inference influence edges are read-only leave-one-observation-out overlays"],
+    ),
+)
+
+_M6_SCHEMA_MODELS: tuple[
+    tuple[str, type[BaseModel], str, str, str, list[str]],
+    ...,
+] = (
+    (
+        "project-descriptor-0.1.0.schema.json",
+        ProjectDescriptor,
+        "urn:cranfield:pilot-assessment:schema:project-descriptor:0.1.0",
+        "Pilot Assessment Project Descriptor 0.1.0",
+        "0.1.0",
+        ["project identity is portable and does not contain an absolute storage path"],
+    ),
+    (
+        "session-record-0.1.0.schema.json",
+        SessionRecord,
+        "urn:cranfield:pilot-assessment:schema:session-record:0.1.0",
+        "Pilot Assessment Session Record 0.1.0",
+        "0.1.0",
+        ["a session points to one exact current managed revision"],
+    ),
+    (
+        "session-revision-0.1.0.schema.json",
+        SessionRevision,
+        "urn:cranfield:pilot-assessment:schema:session-revision:0.1.0",
+        "Pilot Assessment Session Revision 0.1.0",
+        "0.1.0",
+        ["managed bundle paths are project relative and bound to exact content hashes"],
+    ),
+    (
+        "managed-artifact-0.1.0.schema.json",
+        ManagedArtifact,
+        "urn:cranfield:pilot-assessment:schema:managed-artifact:0.1.0",
+        "Pilot Assessment Managed Artifact 0.1.0",
+        "0.1.0",
+        ["the managed relative path is derived from the artifact SHA-256 digest"],
+    ),
+    (
+        "artifact-reference-0.1.0.schema.json",
+        ArtifactReference,
+        "urn:cranfield:pilot-assessment:schema:artifact-reference:0.1.0",
+        "Pilot Assessment Artifact Reference 0.1.0",
+        "0.1.0",
+        ["artifact ownership and semantic role are explicit"],
+    ),
+    (
+        "transaction-receipt-0.1.0.schema.json",
+        TransactionReceipt,
+        "urn:cranfield:pilot-assessment:schema:transaction-receipt:0.1.0",
+        "Pilot Assessment Transaction Receipt 0.1.0",
+        "0.1.0",
+        ["prepared and completed transactions use mutually exclusive field shapes"],
+    ),
+    (
+        "audit-event-0.1.0.schema.json",
+        AuditEvent,
+        "urn:cranfield:pilot-assessment:schema:audit-event:0.1.0",
+        "Pilot Assessment Audit Event 0.1.0",
+        "0.1.0",
+        ["audit events are immutable metadata and do not embed managed payload bytes"],
+    ),
+    (
+        "run-preflight-report-0.1.0.schema.json",
+        RunPreflightReport,
+        "urn:cranfield:pilot-assessment:schema:run-preflight-report:0.1.0",
+        "Pilot Assessment Run Preflight Report 0.1.0",
+        "0.1.0",
+        [
+            "technical readiness is independent of scientific calibration",
+            "formal authorization requires ready non-synthetic input",
+        ],
+    ),
+    (
+        "run-snapshot-0.1.0.schema.json",
+        RunSnapshot,
+        "urn:cranfield:pilot-assessment:schema:run-snapshot:0.1.0",
+        "Pilot Assessment Run Snapshot 0.1.0",
+        "0.1.0",
+        ["session, scheme, component, source, operator, engine, and runtime identities are exact"],
+    ),
+    (
+        "assessment-run-0.1.0.schema.json",
+        AssessmentRun,
+        "urn:cranfield:pilot-assessment:schema:assessment-run:0.1.0",
+        "Pilot Assessment Run 0.1.0",
+        "0.1.0",
+        ["run states, stages, and lifecycle timestamps use one consistent shape"],
+    ),
+    (
+        "run-event-0.1.0.schema.json",
+        RunEvent,
+        "urn:cranfield:pilot-assessment:schema:run-event:0.1.0",
+        "Pilot Assessment Run Event 0.1.0",
+        "0.1.0",
+        ["event sequence is positive and completed units never exceed frozen total units"],
+    ),
+    (
+        "run-result-envelope-0.1.0.schema.json",
+        RunResultEnvelope,
+        "urn:cranfield:pilot-assessment:schema:run-result-envelope:0.1.0",
+        "Pilot Assessment Run Result Envelope 0.1.0",
+        "0.1.0",
+        ["result artifacts are exact SHA-256 references and use unique semantic roles"],
     ),
 )
 
@@ -1495,7 +1616,7 @@ def render_schemas() -> dict[str, bytes]:
                 title,
                 contract_version,
                 runtime_invariants,
-            ) in (*_M4_SCHEMA_MODELS, *_M5_SCHEMA_MODELS)
+            ) in (*_M4_SCHEMA_MODELS, *_M5_SCHEMA_MODELS, *_M6_SCHEMA_MODELS)
         }
     )
     return schemas
