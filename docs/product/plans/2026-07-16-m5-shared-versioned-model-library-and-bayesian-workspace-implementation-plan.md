@@ -1,6 +1,6 @@
 # M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan
 
-> 状态：Approved / active implementation；Task 1–5 已完成，Task 6 为下一执行入口
+> 状态：Approved / active implementation；Task 1–6 已完成，Task 7 为下一执行入口
 > 执行方式：INLINE，严格按任务顺序推进；不启用 subagent
 > 工程方式：平台不变量采用轻量 test-first；starter resources、迁移和组装采用 focused smoke
 > 权威规格：[M5 Shared Versioned Model Library and Bayesian Workspace Design](../specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)
@@ -483,27 +483,29 @@ GREEN：
 - Create: `src/pilot_assessment/schemes/operations.py`
 - Create: `src/pilot_assessment/schemes/repository.py`
 - Create: `src/pilot_assessment/schemes/service.py`
+- Modify: `src/pilot_assessment/model_library/repository.py`
 - Create: `tests/schemes/test_operations.py`
 - Create: `tests/schemes/test_draft_repository.py`
 - Create: `tests/schemes/test_publish.py`
+- Create: `tests/schemes/workspace_support.py`
 
 RED：
 
-- [ ] 覆盖从任意 scheme 建 draft、autosave incomplete、expected graph/layout revision、canonical state return、operation diff、undo、redo 和 redo-branch truncation。
-- [ ] 覆盖 clone/replace EvidenceVersion、add/remove component、update recipe/scorer、update BN states/CPT、两类 edge add/remove 和 output selection。
-- [ ] 覆盖 publish 只创建 changed versions、复用 unchanged pins、旧 scheme 不变、failure injection 无 partial component/scheme、replay exact hashes。
-- [ ] 运行：
+- [x] 覆盖从任意 scheme 建 draft、autosave incomplete、expected graph/layout revision、canonical state return、operation diff、undo、redo 和 redo-branch truncation。
+- [x] 覆盖 clone/replace EvidenceVersion、stage new/add/remove component、update recipe/scorer、update BN states/CPT、两类 edge add/remove 和 output selection。
+- [x] 覆盖 publish 只创建 changed versions、复用 unchanged pins、旧 scheme 不变、failure injection 无 partial component/scheme、replay exact hashes。
+- [x] 运行：
 
       .venv\Scripts\python.exe -m pytest tests/schemes/test_operations.py tests/schemes/test_draft_repository.py tests/schemes/test_publish.py -q
 
-  预期 RED：operations/repository/service 尚不存在。
+  实测 RED：三个测试模块在 collection 阶段因 `pilot_assessment.schemes.operations` 尚不存在产生预期 `ModuleNotFoundError`；补充 scorer/new-component 表单操作时也分别先观察到缺失 command 的 import RED。
 
 GREEN：
 
-- [ ] 实现 typed command dispatch；不提供无类型 `edge.add` domain method。
-- [ ] 实现 in-memory `WorkspaceUnitOfWork` staged-batch transaction 和 failure injection hook。
-- [ ] publish 返回 new component refs、new scheme ref、retained refs 和 structured diff。
-- [ ] 复跑 focused tests。
+- [x] 实现 typed command dispatch；extraction 与 Bayesian dependency 使用不同 command，不提供无类型 `edge.add` domain method；支持从旧版本 clone，也支持 autosave 全新 incomplete candidate。
+- [x] 实现独立 graph/layout revision、branch-aware undo/redo、draft reference-closure diagnostics，以及 in-memory `WorkspaceUnitOfWork` staged-batch transaction/failure injection hook。
+- [x] publish 只创建 changed component versions 与新 scheme，返回 new/retained refs 和 structured diff；成功后 draft rebase，旧 scheme/components 不变，exact replay 复核 pins/hashes。
+- [x] 复跑 focused tests：`8 passed`；`tests/model_library` + `tests/schemes` + recipe-validation regression 为 `66 passed`；定向 Ruff、format、ty、no-latest/starter-ID scan 与 `git diff --check` 均通过。
 
 提交边界：`feat: publish scheme drafts atomically`
 

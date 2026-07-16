@@ -353,6 +353,22 @@ class InMemoryComponentLibraryRepository:
     def get_lineage(self, kind: ComponentKind, record_id: str) -> VersionLineage | None:
         return component_lineage(self.get_exact(kind, record_id))
 
+    def clone(self) -> InMemoryComponentLibraryRepository:
+        """Return an isolated staging copy for an in-memory workspace transaction."""
+
+        cloned = InMemoryComponentLibraryRepository()
+        cloned._items = {key: _snapshot(item) for key, item in self._items.items()}
+        cloned._metadata = dict(self._metadata)
+        return cloned
+
+    def replace_from(self, staged: InMemoryComponentLibraryRepository) -> None:
+        """Commit a fully validated staging copy using two non-failing assignments."""
+
+        if not isinstance(staged, InMemoryComponentLibraryRepository):
+            raise ComponentLibraryError("staged repository must use the in-memory adapter")
+        self._items = {key: _snapshot(item) for key, item in staged._items.items()}
+        self._metadata = dict(staged._metadata)
+
 
 __all__ = [
     "ComponentHashMismatchError",

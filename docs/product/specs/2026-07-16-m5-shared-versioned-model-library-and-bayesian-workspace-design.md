@@ -7,7 +7,7 @@
 | 状态 | Approved；已完成仓库一致性复核，可进入轻量 implementation plan |
 | 上位设计 | [Expert-Editable Evidence and Assessment Model Design](./2026-07-15-expert-editable-evidence-and-model-design.md) |
 | 决策 | D-036–D-040 |
-| 实施状态 | 实施中；Task 1–5 generic typed content identity、public contracts/Schema、typed source/M4R preflight、进程内 global component library 与 exact-pinned scheme technical validation 已完成，Task 6–12 尚未完成；M4R 已完成，M5 implementation plan 与本文配套保存 |
+| 实施状态 | 实施中；Task 1–6 generic typed content identity、public contracts/Schema、typed source/M4R preflight、进程内 global component library、exact-pinned validation 与 scheme draft/atomic publish 已完成，Task 7–12 尚未完成；M4R 已完成，M5 implementation plan 与本文配套保存 |
 
 ## 1. 目的
 
