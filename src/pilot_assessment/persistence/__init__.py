@@ -8,6 +8,10 @@ from pilot_assessment.persistence.database import (
     decode_canonical_json,
     encode_canonical_json,
 )
+from pilot_assessment.persistence.draft_repository import (
+    SqliteSchemeDraftRepository,
+    SqliteWorkspaceUnitOfWork,
+)
 from pilot_assessment.persistence.model_repository import SqliteComponentLibraryRepository
 from pilot_assessment.persistence.project import (
     PROJECT_DATABASE_NAME,
@@ -32,6 +36,8 @@ __all__ = [
     "ProjectIntegrityError",
     "ProjectStore",
     "SqliteComponentLibraryRepository",
+    "SqliteSchemeDraftRepository",
+    "SqliteWorkspaceUnitOfWork",
     "decode_canonical_json",
     "encode_canonical_json",
 ]
