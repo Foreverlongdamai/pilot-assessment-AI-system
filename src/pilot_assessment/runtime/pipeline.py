@@ -60,6 +60,7 @@ from pilot_assessment.persistence.database import (
     decode_canonical_json,
     encode_canonical_json,
 )
+from pilot_assessment.runtime.coordinator import run_total_units
 from pilot_assessment.runtime.preflight import (
     RunPreflightService,
     preflight_id_from_hash,
@@ -450,7 +451,16 @@ class AssessmentPipeline:
             pass
         cancel = cancellation or (lambda: None)
         report = progress or (lambda _stage, _completed, _total, _message: None)
+        total = run_total_units(snapshot)
+        cancel()
         self._validate_snapshot(snapshot)
+        report(
+            RunStage.SNAPSHOT_VALIDATION,
+            1,
+            total,
+            "Validated frozen run snapshot",
+        )
+        cancel()
         scheme = self._load_scheme(snapshot.scheme_ref)
         prepared = self.preflight.get(preflight_id_from_hash(snapshot.preflight_hash))
         if prepared.report.preflight_hash != snapshot.preflight_hash:
@@ -458,6 +468,13 @@ class AssessmentPipeline:
                 "pipeline.preflight_mismatch",
                 "snapshot preflight identity does not exist exactly",
             )
+        report(
+            RunStage.INGESTION,
+            2,
+            total,
+            "Loaded exact managed session revision",
+        )
+        cancel()
         synchronized = self.preflight.synchronization_outcome(prepared.report.preflight_id)
         aligned = synchronized.aligned_session
         if aligned is None:
@@ -465,6 +482,13 @@ class AssessmentPipeline:
                 "pipeline.aligned_session_missing",
                 "ready preflight did not produce an aligned session",
             )
+        report(
+            RunStage.SYNCHRONIZATION,
+            3,
+            total,
+            "Loaded exact synchronized session",
+        )
+        cancel()
         pins = _scheme_pins(scheme)
         expected_components = tuple(
             reference for reference in pins if reference.kind is not ComponentKind.SOURCE_DESCRIPTOR
@@ -509,7 +533,6 @@ class AssessmentPipeline:
         evidence_result_refs: list[ArtifactIdRef] = []
         evidence_trace_refs: list[ArtifactIdRef] = []
         observations: list[Observation] = []
-        total = len(evidence_versions) + 2
         try:
             for index, evidence in enumerate(evidence_versions):
                 cancel()
@@ -572,6 +595,7 @@ class AssessmentPipeline:
                         owners=owners,
                     )
                 )
+                cancel()
                 evidence_trace_refs.append(
                     self._put_json(
                         trace_payload,
@@ -583,7 +607,7 @@ class AssessmentPipeline:
                 )
                 report(
                     RunStage.EVIDENCE,
-                    index + 1,
+                    index + 4,
                     total,
                     f"Executed Evidence {index + 1} of {len(evidence_versions)}",
                 )
@@ -601,6 +625,7 @@ class AssessmentPipeline:
                 schema_id="observation-set-0.1.0",
                 owners=owners,
             )
+            cancel()
             posterior_ref = self._put_contract(
                 posterior,
                 result_id=result_id,
@@ -608,6 +633,7 @@ class AssessmentPipeline:
                 schema_id="posterior-result-0.1.0",
                 owners=owners,
             )
+            cancel()
             inference_trace_ref = self._put_contract(
                 inference_trace,
                 result_id=result_id,
@@ -617,7 +643,7 @@ class AssessmentPipeline:
             )
             report(
                 RunStage.INFERENCE,
-                len(evidence_versions) + 1,
+                len(evidence_versions) + 4,
                 total,
                 "Computed exact Bayesian posterior",
             )
@@ -639,10 +665,11 @@ class AssessmentPipeline:
             envelope = provisional.model_copy(
                 update={"result_hash": result_envelope_hash(provisional)}
             )
+            cancel()
             persisted = self.results.add(envelope)
             report(
                 RunStage.REPORTING,
-                total,
+                len(evidence_versions) + 5,
                 total,
                 "Persisted exact run result envelope",
             )

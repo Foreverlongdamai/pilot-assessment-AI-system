@@ -4,6 +4,8 @@ import shutil
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pytest
+
 from pilot_assessment.contracts.assessment_scheme import AssessmentSchemeVersion
 from pilot_assessment.contracts.bayesian import ObservationKind
 from pilot_assessment.contracts.model_components import (
@@ -15,10 +17,14 @@ from pilot_assessment.contracts.model_components import (
     PinnedComponentRef,
     VersionLineage,
 )
-from pilot_assessment.contracts.run import RunPurpose
+from pilot_assessment.contracts.run import RunPurpose, RunStage
 from pilot_assessment.model_library.repository import component_content_hash
 from pilot_assessment.persistence.database import decode_canonical_json
-from pilot_assessment.runtime import ProjectApplication
+from pilot_assessment.runtime import (
+    ProjectApplication,
+    RunCancelledError,
+    RunResultNotFoundError,
+)
 
 NOW = datetime(2026, 7, 16, 12, 0, tzinfo=UTC)
 ZERO_HASH = "0" * 64
@@ -167,7 +173,13 @@ def test_pipeline_executes_one_dynamic_evidence_to_bn_and_persists_exact_result(
             requested_at=NOW,
         )
 
-        result = application.pipeline.execute(snapshot)
+        progress: list[tuple[RunStage, int, int]] = []
+        result = application.pipeline.execute(
+            snapshot,
+            progress=lambda stage, completed, total, _message: progress.append(
+                (stage, completed, total)
+            ),
+        )
         artifact_count = application.project.database.fetchone(
             "SELECT COUNT(*) FROM managed_artifacts"
         )[0]
@@ -197,10 +209,50 @@ def test_pipeline_executes_one_dynamic_evidence_to_bn_and_persists_exact_result(
         assert posterior_payload["posteriors"]
         assert evidence_payload["evidence_version_id"] == (scheme.evidence_versions[0].version_id)
         assert evidence_payload["calculation_status"] == "computed"
+        assert progress == [
+            (RunStage.SNAPSHOT_VALIDATION, 1, 6),
+            (RunStage.INGESTION, 2, 6),
+            (RunStage.SYNCHRONIZATION, 3, 6),
+            (RunStage.EVIDENCE, 4, 6),
+            (RunStage.INFERENCE, 5, 6),
+            (RunStage.REPORTING, 6, 6),
+        ]
         assert (
             application.sessions.verify_managed_revision(imported.revision.session_revision_id)
             == imported.revision
         )
         assert (external / "manifest.json").read_bytes() == external_manifest
+
+        cancelled_snapshot = application.preflight.build_snapshot(
+            prepared.report.preflight_id,
+            run_id="run.pipeline-o1-cancelled",
+        )
+        application.runs.create(
+            cancelled_snapshot,
+            preflight_id=prepared.report.preflight_id,
+            requested_at=NOW,
+        )
+        cancellation_checks = 0
+
+        def cancel_at_first_artifact_boundary() -> None:
+            nonlocal cancellation_checks
+            cancellation_checks += 1
+            if cancellation_checks == 7:
+                raise RunCancelledError("cancel at artifact boundary")
+
+        reference_count_before = application.project.database.fetchone(
+            "SELECT COUNT(*) FROM artifact_references"
+        )[0]
+        with pytest.raises(RunCancelledError, match="artifact boundary"):
+            application.pipeline.execute(
+                cancelled_snapshot,
+                cancellation=cancel_at_first_artifact_boundary,
+            )
+        with pytest.raises(RunResultNotFoundError):
+            application.results.get_by_run(cancelled_snapshot.run_id)
+        assert (
+            application.project.database.fetchone("SELECT COUNT(*) FROM artifact_references")[0]
+            == reference_count_before
+        )
     finally:
         application.close()

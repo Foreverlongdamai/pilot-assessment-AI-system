@@ -8,6 +8,16 @@ from pilot_assessment.runtime.application import (
     StarterSeedResult,
     UuidComponentIdFactory,
 )
+from pilot_assessment.runtime.coordinator import (
+    AssessmentRunExecutor,
+    RunCancelledError,
+    RunCoordinator,
+    RunCoordinatorClosedError,
+    RunCoordinatorError,
+    RunEventSink,
+    RunNotScheduledError,
+    run_total_units,
+)
 from pilot_assessment.runtime.pipeline import (
     AssessmentPipeline,
     AssessmentPipelineError,
@@ -55,6 +65,7 @@ __all__ = [
     "HOVER_STARTER_SEED_ID",
     "AssessmentPipeline",
     "AssessmentPipelineError",
+    "AssessmentRunExecutor",
     "FunctionSourceProvider",
     "PreflightExecutionLock",
     "PreparedRunPreflight",
@@ -65,8 +76,14 @@ __all__ = [
     "StarterSeedResult",
     "UuidComponentIdFactory",
     "RunAlreadyExistsError",
+    "RunCancelledError",
+    "RunCoordinator",
+    "RunCoordinatorClosedError",
+    "RunCoordinatorError",
+    "RunEventSink",
     "RunIntegrityError",
     "RunNotFoundError",
+    "RunNotScheduledError",
     "RunPreflightBlockedError",
     "RunPreflightError",
     "RunPreflightIntegrityError",
@@ -92,4 +109,5 @@ __all__ = [
     "register_hover_source_providers",
     "result_envelope_hash",
     "run_snapshot_hash",
+    "run_total_units",
 ]

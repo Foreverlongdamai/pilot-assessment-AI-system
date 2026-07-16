@@ -215,13 +215,14 @@ class RunRepository:
         current = self.get(run_id)
         if current.state in _TERMINAL_STATES or current.state is RunState.CANCELLING:
             return current
+        completed_units, total_units = self._last_progress(current)
         return self._apply(
             run_id,
             allowed_states=(RunState.RUNNING,),
             target_state=RunState.CANCELLING,
             target_stage=None,
-            completed_units=current.progress_sequence,
-            total_units=max(current.progress_sequence, 1),
+            completed_units=completed_units,
+            total_units=total_units,
             message="Cancellation requested",
             occurred_at=occurred_at,
             set_cancel=True,
@@ -237,7 +238,7 @@ class RunRepository:
     ) -> AssessmentRun:
         return self._apply(
             run_id,
-            allowed_states=(RunState.RUNNING,),
+            allowed_states=(RunState.RUNNING, RunState.CANCELLING),
             target_state=RunState.COMPLETED,
             target_stage=RunStage.COMPLETED,
             completed_units=total_units,
@@ -256,13 +257,14 @@ class RunRepository:
         details: Mapping[str, JsonValue] | None = None,
     ) -> AssessmentRun:
         current = self.get(run_id)
+        completed_units, total_units = self._last_progress(current)
         return self._apply(
             run_id,
             allowed_states=(RunState.RUNNING, RunState.CANCELLING),
             target_state=RunState.FAILED,
             target_stage=None,
-            completed_units=current.progress_sequence,
-            total_units=max(current.progress_sequence, 1),
+            completed_units=completed_units,
+            total_units=total_units,
             message=message,
             occurred_at=occurred_at,
             details=details,
@@ -277,13 +279,14 @@ class RunRepository:
         occurred_at: datetime,
     ) -> AssessmentRun:
         current = self.get(run_id)
+        completed_units, total_units = self._last_progress(current)
         return self._apply(
             run_id,
             allowed_states=(RunState.CANCELLING,),
             target_state=RunState.CANCELLED,
             target_stage=None,
-            completed_units=current.progress_sequence,
-            total_units=max(current.progress_sequence, 1),
+            completed_units=completed_units,
+            total_units=total_units,
             message=message,
             occurred_at=occurred_at,
             set_finished=True,
@@ -291,13 +294,14 @@ class RunRepository:
 
     def interrupt(self, run_id: str, *, occurred_at: datetime) -> AssessmentRun:
         current = self.get(run_id)
+        completed_units, total_units = self._last_progress(current)
         return self._apply(
             run_id,
             allowed_states=(RunState.RUNNING, RunState.CANCELLING),
             target_state=RunState.INTERRUPTED,
             target_stage=None,
-            completed_units=current.progress_sequence,
-            total_units=max(current.progress_sequence, 1),
+            completed_units=completed_units,
+            total_units=total_units,
             message="Run interrupted during runtime recovery",
             occurred_at=occurred_at,
             details={"reason": "previous_runtime_ended_before_terminal_state"},
@@ -313,6 +317,21 @@ class RunRepository:
             (RunState.RUNNING.value, RunState.CANCELLING.value),
         )
         return tuple(self.interrupt(row["run_id"], occurred_at=occurred_at) for row in rows)
+
+    def _last_progress(self, current: AssessmentRun) -> tuple[int, int]:
+        if current.progress_sequence == 0:
+            return (0, 0)
+        events = self.list_events(
+            current.run_id,
+            after_sequence=current.progress_sequence - 1,
+        )
+        event = next(
+            (item for item in events if item.sequence == current.progress_sequence),
+            None,
+        )
+        if event is None:
+            raise RunIntegrityError("run progress sequence has no matching durable event")
+        return (event.completed_units, event.total_units)
 
     def _apply(
         self,

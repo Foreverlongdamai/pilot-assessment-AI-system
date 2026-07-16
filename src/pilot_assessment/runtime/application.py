@@ -43,6 +43,7 @@ from pilot_assessment.persistence.sessions import (
     SessionRecoveryReport,
 )
 from pilot_assessment.persistence.transactions import IdempotencyStore
+from pilot_assessment.runtime.coordinator import RunCoordinator
 from pilot_assessment.runtime.pipeline import AssessmentPipeline, RunResultRepository
 from pilot_assessment.runtime.preflight import RunPreflightService
 from pilot_assessment.runtime.repository import RunRepository
@@ -116,6 +117,7 @@ class ProjectApplication:
     preflight: RunPreflightService
     results: RunResultRepository
     pipeline: AssessmentPipeline
+    coordinator: RunCoordinator
     audit: AuditRepository
     idempotency: IdempotencyStore
     starter_scheme_id: str
@@ -235,6 +237,7 @@ class ProjectApplication:
             operator_registry=operator_registry,
             source_provider_registry=source_provider_registry,
         )
+        coordinator = RunCoordinator(runs, pipeline, clock=clock)
         return cls(
             project=project,
             components=components,
@@ -251,6 +254,7 @@ class ProjectApplication:
             preflight=preflight,
             results=results,
             pipeline=pipeline,
+            coordinator=coordinator,
             audit=audit,
             idempotency=idempotency,
             starter_scheme_id=profile.scheme.scheme_version_id,
@@ -283,6 +287,7 @@ class ProjectApplication:
     def close(self) -> None:
         if self._closed:
             return
+        self.coordinator.close()
         self.project.close()
         self._closed = True
 
