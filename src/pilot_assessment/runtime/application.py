@@ -12,6 +12,7 @@ from pilot_assessment.contracts.model_components import (
     ComponentKind,
     SourceDescriptor,
 )
+from pilot_assessment.contracts.run import AssessmentRun
 from pilot_assessment.evidence.builtins import register_builtin_operators
 from pilot_assessment.evidence.registry import OperatorRegistry
 from pilot_assessment.model_library.profile import (
@@ -42,6 +43,8 @@ from pilot_assessment.persistence.sessions import (
     SessionRecoveryReport,
 )
 from pilot_assessment.persistence.transactions import IdempotencyStore
+from pilot_assessment.runtime.preflight import RunPreflightService
+from pilot_assessment.runtime.repository import RunRepository
 from pilot_assessment.schemes.service import SchemeWorkspaceService
 
 HOVER_STARTER_SEED_ID = "starter.hover.package.0.1.0"
@@ -103,12 +106,15 @@ class ProjectApplication:
     source_catalog: SourceCatalog
     artifacts: ManagedArtifactStore
     sessions: SessionImportService
+    runs: RunRepository
+    preflight: RunPreflightService
     audit: AuditRepository
     idempotency: IdempotencyStore
     starter_scheme_id: str
     seed_result: StarterSeedResult
     artifact_recovery: ArtifactRecoveryReport
     session_recovery: SessionRecoveryReport
+    run_recovery: tuple[AssessmentRun, ...]
     _starter_profile: LoadedModelProfile = field(repr=False)
     _clock: Clock = field(repr=False)
     _closed: bool = field(default=False, init=False, repr=False)
@@ -200,6 +206,16 @@ class ProjectApplication:
             clock=service_clock,
             ids=ids,
         )
+        runs = RunRepository(database)
+        run_recovery = runs.recover_interrupted(occurred_at=clock())
+        preflight = RunPreflightService(
+            database,
+            components,
+            sessions,
+            source_catalog=source_catalog,
+            operator_registry=operator_registry,
+            clock=clock,
+        )
         return cls(
             project=project,
             components=components,
@@ -211,12 +227,15 @@ class ProjectApplication:
             source_catalog=source_catalog,
             artifacts=artifacts,
             sessions=sessions,
+            runs=runs,
+            preflight=preflight,
             audit=audit,
             idempotency=idempotency,
             starter_scheme_id=profile.scheme.scheme_version_id,
             seed_result=seed_result,
             artifact_recovery=artifact_recovery,
             session_recovery=session_recovery,
+            run_recovery=run_recovery,
             _starter_profile=profile,
             _clock=clock,
         )

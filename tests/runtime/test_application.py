@@ -31,6 +31,9 @@ def test_application_composes_services_seeds_once_and_reopens_after_project_move
         assert len(application.operator_registry.catalog()) > 0
         assert len(application.source_catalog) == len(profile.source_catalog)
         assert application.starter_scheme_id == profile.scheme.scheme_version_id
+        assert application.run_recovery == ()
+        assert application.runs.list_runs() == ()
+        assert application.preflight.operator_registry is application.operator_registry
 
         repeated = application.initialize_starter()
         assert repeated.applied is False
