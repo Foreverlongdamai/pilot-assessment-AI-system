@@ -1,6 +1,6 @@
 # M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan
 
-> 状态：Approved / active implementation；Task 1–7 已完成，Task 8 为下一执行入口
+> 状态：Approved / active implementation；Task 1–8 已完成，Task 9 为下一执行入口
 > 执行方式：INLINE，严格按任务顺序推进；不启用 subagent
 > 工程方式：平台不变量采用轻量 test-first；starter resources、迁移和组装采用 focused smoke
 > 权威规格：[M5 Shared Versioned Model Library and Bayesian Workspace Design](../specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)
@@ -551,23 +551,27 @@ GREEN：
 - Create: `tests/bayesian/test_inference.py`
 - Create: `tests/bayesian/test_observations.py`
 - Create: `tests/bayesian/test_inference_trace.py`
+- Create: `tests/bayesian/inference_support.py`
 
 RED：
 
-- [ ] 用 2-node 与 collider 小 BN 手算 prior/posterior，覆盖反向 posterior propagation、multi-query 和 stable min-fill order。
-- [ ] 覆盖 hard、unnormalized virtual、omitted、computed Unacceptable、impossible evidence 和 state-order mismatch。
-- [ ] 覆盖 `InferenceInfluenceEdge` 只能由 `explain()` 返回，leave-one-observation-out delta 与手算一致，零 delta 不生成 overlay edge，传入 scheme operation 在 DTO 层即失败。
-- [ ] 运行：
+- [x] 用 2-node 与 collider 小 BN 手算 prior/posterior，覆盖反向 posterior propagation、multi-query 和 stable min-fill order。
+- [x] 覆盖 hard、unnormalized virtual、omitted、computed Unacceptable、impossible evidence 和 state-order mismatch。
+- [x] 覆盖 `InferenceInfluenceEdge` 只能由 `explain()` 返回，leave-one-observation-out delta 与手算一致，零 delta 不生成 overlay edge，且该 DTO 不属于 `SchemeOperation` union。
+- [x] 运行：
 
       .venv\Scripts\python.exe -m pytest tests/bayesian/test_factors.py tests/bayesian/test_inference.py tests/bayesian/test_observations.py tests/bayesian/test_inference_trace.py -q
 
   预期 RED：factor/inference modules 尚不存在。
 
+  实测 RED：四个 focused test 模块在 collection 阶段分别因 `pilot_assessment.bayesian.factors` / `pilot_assessment.bayesian.inference` 尚不存在产生预期 `ModuleNotFoundError`。
+
 GREEN：
 
-- [ ] 实现 factor algebra、compile、observe、infer、explain 与 deterministic trace。
-- [ ] inference 输入只接受已通过 closure/CPT validation 的 immutable plan。
-- [ ] 复跑 focused tests。
+- [x] 实现 immutable NumPy factor algebra、deterministic min-fill variable elimination、compile、observe、infer、explain 与 stable content hashes/trace。
+- [x] compile 重算 exact scheme/component pins，检查 variable/CPT closure、CPT technical diagnostics、orphan CPT、DAG 与 output closure；运行阶段拒绝 forged/stale plan 和 observation hashes。
+- [x] hard/virtual/omitted observations 均按 exact state order 适配；零概率证据返回 `inference.impossible_evidence`，不伪造 uniform posterior；只读 influence 使用 leave-one-observation-out L1 delta 与 stable undirected navigation path。
+- [x] 复跑 focused tests：`10 passed`；`tests/bayesian` + `tests/schemes` + `tests/model_library` + Bayesian contract regression 为 `85 passed`；定向 Ruff、format、ty 与 `git diff --check` 均通过。
 
 提交边界：`feat: add exact Bayesian inference engine`
 
