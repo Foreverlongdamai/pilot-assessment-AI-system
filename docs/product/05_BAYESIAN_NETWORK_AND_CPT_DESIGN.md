@@ -395,7 +395,7 @@ Apply 前只需满足技术可执行性：
 每个 CPT 必须满足：
 
 - parent 顺序、维度和 state cardinality 一致；
-- 在物化前计算组合规模；默认上限为 4096 rows、16384 probability cells 和 2 MiB serialized CPT；
+- 在物化前计算组合规模；M5 v0 默认上限为 `250_000` probability cells；该上限按部署可配置，不另设与之冲突的固定 row/serialized-size 门；
 - 所有值为有限数；
 - 0 ≤ p ≤ 1；
 - 每一行概率和为 1，容差 1e-9；
@@ -404,7 +404,7 @@ Apply 前只需满足技术可执行性：
 - ordered CPT generator 若声明 monotonic contract，则其生成结果必须满足该 operator contract；
 - manual non-monotonic CPT 可以 apply，系统只显示非阻断 warning，不要求 reviewer waiver。
 
-这些是本地 runtime 的可配置技术资源上限，不是科学限制。超过当前上限返回 `CPT_SIZE_LIMIT_EXCEEDED` 并说明所需资源；调整部署级上限不需要改变模型科学状态，但应先确认本机能够执行，避免 Advanced DAG 使内存失控。
+这是本地 runtime 的可配置技术资源上限，不是科学限制。超过当前上限返回稳定的 cell-limit diagnostic 并说明所需单元格数；调整部署级上限不需要改变模型科学状态，但应先确认本机能够执行，避免 Advanced DAG 使内存失控。
 
 ### 10.3 生成器参数验证
 

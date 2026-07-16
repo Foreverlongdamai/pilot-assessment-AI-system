@@ -8,6 +8,10 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import TypeVar, cast
 
+from pilot_assessment.bayesian.validation import (
+    CptDiagnosticSeverity,
+    validate_cpt,
+)
 from pilot_assessment.contracts.assessment_scheme import (
     AssessmentSchemeVersion,
     SchemeDraft,
@@ -414,6 +418,22 @@ def validate_executable_scheme(
             )
     for record_id, binding in binding_items.items():
         variables[(ComponentKind.EVIDENCE_BINDING_VERSION, record_id)] = binding
+
+    for cpt_id, cpt in cpt_items.items():
+        cpt_outcome = validate_cpt(cpt, variables)
+        for cpt_diagnostic in cpt_outcome.diagnostics:
+            _diagnostic(
+                diagnostics,
+                cpt_diagnostic.code,
+                f"/cpt_versions/{_pointer(cpt_id)}{cpt_diagnostic.location}",
+                cpt_diagnostic.message,
+                component_id=cpt_id,
+                severity=(
+                    SchemeDiagnosticSeverity.WARNING
+                    if cpt_diagnostic.severity is CptDiagnosticSeverity.WARNING
+                    else SchemeDiagnosticSeverity.ERROR
+                ),
+            )
 
     used_evidence_ids: set[str] = set()
     used_cpt_ids: set[str] = set()

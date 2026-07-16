@@ -1,6 +1,6 @@
 # M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan
 
-> 状态：Approved / active implementation；Task 1–6 已完成，Task 7 为下一执行入口
+> 状态：Approved / active implementation；Task 1–7 已完成，Task 8 为下一执行入口
 > 执行方式：INLINE，严格按任务顺序推进；不启用 subagent
 > 工程方式：平台不变量采用轻量 test-first；starter resources、迁移和组装采用 focused smoke
 > 权威规格：[M5 Shared Versioned Model Library and Bayesian Workspace Design](../specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)
@@ -521,20 +521,23 @@ GREEN：
 
 RED：
 
-- [ ] 覆盖 root/单父/多父 shape、parent order、negative/>1/NaN、row sum tolerance、cell cap、state mismatch 和 valid manual non-monotonic warning。
-- [ ] 覆盖 add-parent row replication；remove-parent 缺 weights 拒绝、显式 weights 加权结果；state edit 使 dependent CPT incomplete。
-- [ ] 手算 ranked generator 一组 parent assignment，并断言 materialized table 行序稳定。
-- [ ] 运行：
+- [x] 覆盖 root/单父/多父 shape、parent order、negative/>1/NaN、row sum tolerance、cell cap、state mismatch 和 valid manual non-monotonic warning。
+- [x] 覆盖 add-parent row replication；remove-parent 缺 weights 拒绝、显式 weights 加权结果；state edit 使 dependent CPT incomplete。
+- [x] 手算 ranked generator 一组 parent assignment，并断言 materialized table 行序稳定。
+- [x] 运行：
 
       .venv\Scripts\python.exe -m pytest tests/bayesian/test_cpt_validation.py tests/bayesian/test_cpt_migration.py tests/bayesian/test_ranked_cpt.py -q
 
   预期 RED：BN validation 尚不存在。
 
+  实测 RED：三个 focused test 模块在 collection 阶段因 `pilot_assessment.bayesian` 尚不存在产生预期 `ModuleNotFoundError`；把 CPT 校验接入 exact scheme validator 前，新增集成断言先观察到 invalid CPT 被错误标记为 executable。
+
 GREEN：
 
-- [ ] 实现 generic validators 和 pure migration functions；不引用 Hover IDs。
-- [ ] 实现 uniform prior、ordered single-parent 与 ranked-node materializer helpers，参数全部显式输入。
-- [ ] 复跑 focused tests。
+- [x] 实现 generic validators 和 pure migration functions；不引用 Hover IDs。add-parent 复制概率行，remove-parent 只接受 exact parent ref 与显式 marginal weights，state edit 将 child/dependent CPT 标记为 incomplete。
+- [x] 实现 uniform prior、ordered single-parent 与 ranked-node materializer helpers，参数全部显式输入；生成行序固定为 ordered-parent Cartesian product、末级 parent state 最快变化。
+- [x] 把 CPT blocking diagnostics/warnings 接入 exact scheme validation；manual non-monotonic 只告警，概率、shape、state/order、cell cap 与显式 generator contract 错误阻断发布。
+- [x] 复跑 focused tests：`14 passed`；`tests/schemes` 为 `23 passed`；定向 Ruff、format、ty 与 `git diff --check` 均通过。
 
 提交边界：`feat: validate and migrate editable CPTs`
 

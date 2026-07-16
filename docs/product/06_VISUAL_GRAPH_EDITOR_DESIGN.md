@@ -589,7 +589,7 @@ Run 请求必须指定：
 - generator 参数合法；
 - evidence binding 唯一、target EvidenceVersion output 可解析、recipe/operator 依赖无环、probabilistic parents/CPT 完整，executor 输出满足 measurement/result contracts；
 - Guided Mode 每个节点最多 3 个 parents；Advanced DAG Mode 默认最多 6 个 parents；
-- 物化前计算 CPT 大小，默认不得超过 4096 rows、16384 probability cells 或 2 MiB serialized size；
+- 物化前计算 CPT 大小；M5 v0 默认不得超过 `250_000` probability cells，部署可调整，不另设冲突的固定 row/serialized-size 门；
 - migration 后概率质量守恒。
 
 ### 11.2 Apply technical validation
