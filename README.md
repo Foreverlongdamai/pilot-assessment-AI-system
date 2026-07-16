@@ -125,7 +125,7 @@ Evidence 节点的 Inspector 必须同时让专家看到两件事：
 | M2 Multimodal Synthetic Foundation | 已工程验证 |
 | M3 Native-Rate Time Synchronization | 已工程验证 |
 | M4R Editable Evidence Computation Foundation | 已工程验证；canonical `EvidenceRecipe`、typed operators、compiler/executor、draft/preview/apply/replay 与 18 个 starter recipes 已实现 |
-| M5 Shared Model Library and Bayesian Workspace | 实施中；Task 1–4 已完成：generic identity、public contracts/Schema、typed source/M4R preflight，以及支持并行 immutable versions 与 exact query 的进程内 global component library；Task 5 scheme reference closure/technical validation 为下一步 |
+| M5 Shared Model Library and Bayesian Workspace | 实施中；Task 1–5 已完成：generic identity、public contracts/Schema、typed source/M4R preflight、支持并行 immutable versions 与 exact query 的进程内 global component library，以及 exact-pinned scheme reference closure/technical validation；Task 6 draft operations/undo/redo/atomic publish 为下一步 |
 | M6 Local Runtime / Persistence / Protocol | 尚未实施 |
 | M7 WinUI Expert Designer | 尚未实施 |
 | M8 Packaging / Handoff | 尚未实施 |

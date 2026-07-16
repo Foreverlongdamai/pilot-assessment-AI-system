@@ -1,6 +1,6 @@
 # M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan
 
-> 状态：Approved / active implementation；Task 1–4 已完成，Task 5 为下一执行入口
+> 状态：Approved / active implementation；Task 1–5 已完成，Task 6 为下一执行入口
 > 执行方式：INLINE，严格按任务顺序推进；不启用 subagent
 > 工程方式：平台不变量采用轻量 test-first；starter resources、迁移和组装采用 focused smoke
 > 权威规格：[M5 Shared Versioned Model Library and Bayesian Workspace Design](../specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)
@@ -455,23 +455,24 @@ GREEN：
 - Create: `src/pilot_assessment/schemes/validation.py`
 - Create: `tests/schemes/test_reference_closure.py`
 - Create: `tests/schemes/test_validation.py`
+- Create: `tests/schemes/support.py`
 
 RED：
 
-- [ ] 覆盖缺 parent/CPT/evidence/binding/operator/source/task semantic/output、hash mismatch、duplicate variable、两类 DAG cycle、orphan pin 和 exact valid closure。
-- [ ] 覆盖 generic 2-state/4-state、任意 ID/数量合法；测试不得引用 Hover ID。
-- [ ] 覆盖科学未校准、non-monotonic CPT、非 starter topology 只 warning 或通过，不成为 blocker。
-- [ ] 运行：
+- [x] 覆盖缺 parent/CPT/evidence/binding/operator/source/task semantic/output、hash mismatch、duplicate variable、两类 DAG cycle、orphan pin 和 exact valid closure。
+- [x] 覆盖 generic 2-state/4-state、任意 ID/数量合法；测试不得引用 Hover ID。
+- [x] 覆盖科学未校准、non-monotonic CPT、非 starter topology 只 warning 或通过，不成为 blocker。
+- [x] 运行：
 
       .venv\Scripts\python.exe -m pytest tests/schemes/test_reference_closure.py tests/schemes/test_validation.py -q
 
-  预期 RED：scheme validator 尚不存在。
+  实测 RED：测试收集阶段因 `pilot_assessment.schemes` 尚不存在产生预期 `ModuleNotFoundError`；未先写生产实现。
 
 GREEN：
 
-- [ ] 实现 draft 与 executable 两级 diagnostics，location 使用稳定 JSON Pointer/component ID。
-- [ ] executable disposition 只受 M5 规格 §11 的技术错误影响。
-- [ ] 复跑 focused tests。
+- [x] 实现 draft 与 executable 两级 diagnostics，location 使用稳定 JSON Pointer/component ID。
+- [x] executable disposition 只受 M5 规格 §11 的技术错误影响；科学未校准只返回 warning，合法的非单调 CPT 不被新增门禁拦截。
+- [x] 复跑 focused tests：`15 passed`；`tests/schemes` + `tests/model_library` + recipe-validation regression 为 `58 passed`；定向 Ruff、format、ty、generic-ID scan 与 `git diff --check` 均通过。
 
 提交边界：`feat: validate exact-pinned assessment schemes`
 

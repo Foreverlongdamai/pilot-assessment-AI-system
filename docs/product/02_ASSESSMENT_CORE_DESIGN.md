@@ -1,6 +1,6 @@
 # Python Assessment Core 设计
 
-**文档状态：** 产品 v0.3 后端总体设计；M4R Evidence 计算基础已实现，M5 shared-versioned model 架构已确认并开始实施，当前完成 Task 1–4 generic identity、public contracts/Schema、typed source/M4R preflight 与进程内 global component library
+**文档状态：** 产品 v0.3 后端总体设计；M4R Evidence 计算基础已实现，M5 shared-versioned model 架构已确认并开始实施，当前完成 Task 1–5 generic identity、public contracts/Schema、typed source/M4R preflight、进程内 global component library 与 exact-pinned scheme technical validation
 **日期：** 2026-07-16
 **上位文档：** [产品总览](./01_PRODUCT_OVERVIEW.md)
 
