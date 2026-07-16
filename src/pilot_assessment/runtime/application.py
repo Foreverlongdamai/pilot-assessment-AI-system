@@ -43,6 +43,7 @@ from pilot_assessment.persistence.sessions import (
     SessionRecoveryReport,
 )
 from pilot_assessment.persistence.transactions import IdempotencyStore
+from pilot_assessment.runtime.pipeline import AssessmentPipeline, RunResultRepository
 from pilot_assessment.runtime.preflight import RunPreflightService
 from pilot_assessment.runtime.repository import RunRepository
 from pilot_assessment.runtime.sources import (
@@ -113,6 +114,8 @@ class ProjectApplication:
     sessions: SessionImportService
     runs: RunRepository
     preflight: RunPreflightService
+    results: RunResultRepository
+    pipeline: AssessmentPipeline
     audit: AuditRepository
     idempotency: IdempotencyStore
     starter_scheme_id: str
@@ -223,6 +226,15 @@ class ProjectApplication:
             operator_registry=operator_registry,
             clock=clock,
         )
+        results = RunResultRepository(database)
+        pipeline = AssessmentPipeline(
+            components,
+            artifacts,
+            preflight,
+            results,
+            operator_registry=operator_registry,
+            source_provider_registry=source_provider_registry,
+        )
         return cls(
             project=project,
             components=components,
@@ -237,6 +249,8 @@ class ProjectApplication:
             sessions=sessions,
             runs=runs,
             preflight=preflight,
+            results=results,
+            pipeline=pipeline,
             audit=audit,
             idempotency=idempotency,
             starter_scheme_id=profile.scheme.scheme_version_id,

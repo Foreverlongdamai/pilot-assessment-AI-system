@@ -37,6 +37,7 @@ def test_application_composes_services_seeds_once_and_reopens_after_project_move
         assert application.run_recovery == ()
         assert application.runs.list_runs() == ()
         assert application.preflight.operator_registry is application.operator_registry
+        assert application.pipeline.results is application.results
 
         repeated = application.initialize_starter()
         assert repeated.applied is False

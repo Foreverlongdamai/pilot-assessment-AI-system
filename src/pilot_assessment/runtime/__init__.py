@@ -8,6 +8,15 @@ from pilot_assessment.runtime.application import (
     StarterSeedResult,
     UuidComponentIdFactory,
 )
+from pilot_assessment.runtime.pipeline import (
+    AssessmentPipeline,
+    AssessmentPipelineError,
+    RunResultIntegrityError,
+    RunResultNotFoundError,
+    RunResultRepository,
+    RunResultRepositoryError,
+    result_envelope_hash,
+)
 from pilot_assessment.runtime.preflight import (
     PreflightExecutionLock,
     PreparedRunPreflight,
@@ -44,6 +53,8 @@ from pilot_assessment.runtime.sources import (
 
 __all__ = [
     "HOVER_STARTER_SEED_ID",
+    "AssessmentPipeline",
+    "AssessmentPipelineError",
     "FunctionSourceProvider",
     "PreflightExecutionLock",
     "PreparedRunPreflight",
@@ -64,6 +75,10 @@ __all__ = [
     "RunPreflightStaleError",
     "RunRepository",
     "RunRepositoryError",
+    "RunResultIntegrityError",
+    "RunResultNotFoundError",
+    "RunResultRepository",
+    "RunResultRepositoryError",
     "RunTransitionError",
     "RuntimeSourceDiagnostic",
     "RuntimeSourceProvider",
@@ -75,5 +90,6 @@ __all__ = [
     "SourceResolutionStatus",
     "SourceUnavailableError",
     "register_hover_source_providers",
+    "result_envelope_hash",
     "run_snapshot_hash",
 ]

@@ -10,7 +10,7 @@ from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as package_version
 from typing import Literal
 
-from pydantic import JsonValue, ValidationError, model_validator
+from pydantic import JsonValue, ValidationError, field_validator, model_validator
 
 from pilot_assessment.bayesian.inference import InferenceCompileError, InferenceEngine
 from pilot_assessment.contracts.assessment_scheme import (
@@ -20,6 +20,7 @@ from pilot_assessment.contracts.assessment_scheme import (
 from pilot_assessment.contracts.common import (
     Sha256Digest,
     StrictContractModel,
+    freeze_json_mapping,
 )
 from pilot_assessment.contracts.model_components import (
     ComponentKind,
@@ -99,8 +100,17 @@ class PreflightExecutionLock(StrictContractModel):
     locked_operator_identities: tuple[ExecutableIdentity, ...]
     engine_identity: ExecutableIdentity
     numeric_runtime_identities: tuple[ExecutableIdentity, ...]
+    runtime_parameters: dict[str, JsonValue]
     runtime_parameters_hash: Sha256Digest
     synchronization_fingerprint: Sha256Digest
+
+    @field_validator("runtime_parameters")
+    @classmethod
+    def freeze_runtime_parameters(
+        cls,
+        value: dict[str, JsonValue],
+    ) -> dict[str, JsonValue]:
+        return freeze_json_mapping(value)
 
     @model_validator(mode="after")
     def validate_lock(self) -> PreflightExecutionLock:
@@ -116,6 +126,8 @@ class PreflightExecutionLock(StrictContractModel):
             for reference in self.locked_source_refs
         ):
             raise ValueError("locked_source_refs may contain only source descriptors")
+        if _runtime_parameters_hash(self.runtime_parameters) != self.runtime_parameters_hash:
+            raise ValueError("runtime parameters do not match their canonical hash")
         return self
 
 
@@ -535,6 +547,7 @@ class RunPreflightService:
             locked_operator_identities=operator_identities,
             engine_identity=_engine_identity(),
             numeric_runtime_identities=_numeric_runtime_identities(),
+            runtime_parameters=dict(runtime_parameters),
             runtime_parameters_hash=_runtime_parameters_hash(runtime_parameters),
             synchronization_fingerprint=synchronization_fingerprint,
         )
