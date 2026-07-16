@@ -45,6 +45,10 @@ from pilot_assessment.persistence.sessions import (
 from pilot_assessment.persistence.transactions import IdempotencyStore
 from pilot_assessment.runtime.preflight import RunPreflightService
 from pilot_assessment.runtime.repository import RunRepository
+from pilot_assessment.runtime.sources import (
+    RuntimeSourceProviderRegistry,
+    register_hover_source_providers,
+)
 from pilot_assessment.schemes.service import SchemeWorkspaceService
 
 HOVER_STARTER_SEED_ID = "starter.hover.package.0.1.0"
@@ -103,6 +107,7 @@ class ProjectApplication:
     model_library: ModelLibraryService
     schemes: SchemeWorkspaceService
     operator_registry: OperatorRegistry
+    source_provider_registry: RuntimeSourceProviderRegistry
     source_catalog: SourceCatalog
     artifacts: ManagedArtifactStore
     sessions: SessionImportService
@@ -184,6 +189,8 @@ class ProjectApplication:
         source_catalog = _source_catalog_from_repository(components)
         operator_registry = OperatorRegistry()
         register_builtin_operators(operator_registry)
+        source_provider_registry = RuntimeSourceProviderRegistry()
+        register_hover_source_providers(source_provider_registry)
         drafts = SqliteSchemeDraftRepository(database, clock=clock)
         unit_of_work = SqliteWorkspaceUnitOfWork(
             database,
@@ -224,6 +231,7 @@ class ProjectApplication:
             model_library=model_library,
             schemes=schemes,
             operator_registry=operator_registry,
+            source_provider_registry=source_provider_registry,
             source_catalog=source_catalog,
             artifacts=artifacts,
             sessions=sessions,

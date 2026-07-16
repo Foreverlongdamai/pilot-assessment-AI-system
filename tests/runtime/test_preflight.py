@@ -6,6 +6,8 @@ import shutil
 from datetime import UTC, datetime
 from pathlib import Path
 
+from pilot_assessment.contracts.assessment_scheme import AssessmentSchemeVersion, TaskProfileVersion
+from pilot_assessment.contracts.model_components import ComponentKind
 from pilot_assessment.contracts.run import (
     RunPurpose,
     TechnicalDisposition,
@@ -13,6 +15,11 @@ from pilot_assessment.contracts.run import (
 from pilot_assessment.persistence.database import encode_canonical_json
 from pilot_assessment.runtime import ProjectApplication
 from pilot_assessment.runtime.preflight import RunPreflightService
+from pilot_assessment.runtime.sources import (
+    RuntimeSourceResolver,
+    SourceResolutionContext,
+    SourceResolutionStatus,
+)
 
 NOW = datetime(2026, 7, 16, 12, 0, tzinfo=UTC)
 
@@ -65,6 +72,33 @@ def test_preflight_locks_dynamic_closure_allows_bad_performance_and_blocks_forma
         assert str(application.project.root).encode() not in payload
         assert platform.node().encode() not in payload
         assert str(os.getpid()).encode() not in payload
+
+        synchronized = service.synchronization_outcome(ready.report.preflight_id)
+        assert synchronized.aligned_session is not None
+        scheme = application.components.get_exact(
+            ComponentKind.ASSESSMENT_SCHEME_VERSION,
+            application.starter_scheme_id,
+        )
+        assert isinstance(scheme, AssessmentSchemeVersion)
+        task = application.components.get_exact(
+            ComponentKind.TASK_PROFILE_VERSION,
+            scheme.task_profile.version_id,
+        )
+        assert isinstance(task, TaskProfileVersion)
+        resolver = RuntimeSourceResolver(
+            application.source_catalog,
+            application.source_provider_registry,
+            SourceResolutionContext(
+                aligned_session=synchronized.aligned_session,
+                task_profile=task,
+                runtime_parameters={},
+            ),
+        )
+        resolved = tuple(
+            resolver.resolve(descriptor.source_id)
+            for descriptor in application.source_catalog.descriptors()
+        )
+        assert all(item.status is SourceResolutionStatus.AVAILABLE for item in resolved)
 
         formal = service.prepare(
             session_revision_id=imported.revision.session_revision_id,

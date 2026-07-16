@@ -30,6 +30,9 @@ def test_application_composes_services_seeds_once_and_reopens_after_project_move
         assert len(application.components.list_records()) == expected_count
         assert len(application.operator_registry.catalog()) > 0
         assert len(application.source_catalog) == len(profile.source_catalog)
+        assert set(application.source_provider_registry.source_ids()) == {
+            descriptor.source_id for descriptor in profile.source_catalog.descriptors()
+        }
         assert application.starter_scheme_id == profile.scheme.scheme_version_id
         assert application.run_recovery == ()
         assert application.runs.list_runs() == ()
