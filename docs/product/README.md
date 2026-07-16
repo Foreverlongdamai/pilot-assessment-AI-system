@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | 产品 v0.3 shared-versioned-model architecture；D-031–D-046 已获用户确认 |
 | 基线日期 | 2026-07-16 |
-| 产品阶段 | M1/M2/M3、M4R Evidence Computation Foundation 与 M5 Shared Model Library/Bayesian Workspace 已工程验证；M6 runtime persistence/sidecar 正式规格已批准、实施计划编制中，M7 WinUI 与 M8 packaging 尚未实现；`formal_run_authorized=false` |
+| 产品阶段 | M1/M2/M3、M4R Evidence Computation Foundation 与 M5 Shared Model Library/Bayesian Workspace 已工程验证；M6 runtime persistence/sidecar 正式规格与 INLINE 实施计划已批准，M7 WinUI 与 M8 packaging 尚未实现；`formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -29,34 +29,35 @@
 | 2 | [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) | 专家、产品、前后端 | 当前系统核心：全局组件版本库、任务方案、三类节点、两类边、BN 方向与 publish 语义 |
 | 3 | [M5 Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) | 开发、审查者 | 已完成：inline 任务、合同冻结、O8 迁移、轻量验证与完成门 |
 | 4 | [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) | 前后端、交付、审查者 | 已批准：受管项目、SQLite、artifact、run lifecycle 与 JSON-RPC sidecar |
-| 5 | [03_SESSION_BUNDLE_SPEC.md](03_SESSION_BUNDLE_SPEC.md) | 数据与后端 | X/U/VR/gaze/EEG/ECG 数据合同与同步 |
-| 6 | [04_REFERENCE_MODEL_V0_1.md](04_REFERENCE_MODEL_V0_1.md) | 领域专家、算法 | 18 个 starter anchor 的算法和初始参数 |
-| 7 | [05_BAYESIAN_NETWORK_AND_CPT_DESIGN.md](05_BAYESIAN_NETWORK_AND_CPT_DESIGN.md) | 算法、后端 | BN 拓扑、状态、CPT、缺失证据和解释 |
-| 8 | [02_ASSESSMENT_CORE_DESIGN.md](02_ASSESSMENT_CORE_DESIGN.md) | 后端开发 | 模块边界与完整计算流水线 |
-| 9 | [06_VISUAL_GRAPH_EDITOR_DESIGN.md](06_VISUAL_GRAPH_EDITOR_DESIGN.md) | 前后端开发 | 三类节点、两类边、拖拽编辑、事务和 CPT 迁移 |
-| 10 | [07_RUNTIME_PROTOCOL_DESIGN.md](07_RUNTIME_PROTOCOL_DESIGN.md) | 前后端开发 | sidecar 生命周期与 JSON-RPC 合同 |
-| 11 | [08_WINDOWS_FRONTEND_DESIGN.md](08_WINDOWS_FRONTEND_DESIGN.md) | UI/UX、前端 | 页面、交互、可视化和错误恢复 |
-| 12 | [09_VALIDATION_AND_HANDOFF.md](09_VALIDATION_AND_HANDOFF.md) | 测试、交付 | 验证层级、验收门槛和移交清单 |
-| 13 | [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) | 开发、接手者 | 当前代码、验证证据、限制和下一里程碑 |
-| 14 | [DECISIONS.md](DECISIONS.md) | 维护者 | 已锁定决策及其理由 |
-| 15 | [GLOSSARY.md](GLOSSARY.md) | 所有人 | 术语、ID 和状态语义 |
-| 16 | [REFERENCES.md](REFERENCES.md) | 审查者、领域专家 | 公开文献、DOI 与证据用途 |
-| 17 | [10_DESIGN_SELF_REVIEW.md](10_DESIGN_SELF_REVIEW.md) | 审查者 | 本轮设计自审、发现和遗留风险 |
-| 18 | [后端 M1 实施计划](plans/2026-07-11-backend-foundation-m1-implementation-plan.md) | 开发、审查者 | RED/GREEN 任务、范围和完成定义 |
-| 19 | [M2 多模态合成基础规格](specs/2026-07-11-multimodal-synthetic-foundation-design.md) | 开发、数据、审查者 | 已批准：理想 I/G/EEG/ECG/camera 合同、合成 bundle 与 ingestion readiness |
-| 20 | [M2 实施计划](plans/2026-07-11-m2-multimodal-synthetic-foundation-implementation-plan.md) | 开发、审查者 | shared X/U、adapter、generator、readiness 与本地 E2E 的 TDD 步骤 |
-| 21 | [M3 Native-Rate Time Synchronization 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) | 开发、数据、审查者 | 已批准：native-rate clock mapping、session window、aligned views 与同步报告 |
-| 22 | [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) | 开发、审查者 | 已完成：Task 0–14 的实现、实测完成门与 handoff/关闭记录 |
-| 23 | [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md) | 专家、产品、前后端 | typed EvidenceRecipe/operator graph、自动参数表单、autosave draft + apply、最小技术校验、M4R–M8 重基线 |
-| 24 | [M4R Editable Evidence Computation Foundation Implementation Plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md) | 开发、审查者 | 已完成：合同、registry、validator、compiler/executor、recipe 生命周期、18 个 starter resources 与轻量 E2E |
-| 25 | [M4 Anchor Calculation and Evidence Availability 规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md) | 开发、算法、审查者 | 历史/迁移规格：Task 0–28 与 15 个插件已实现；固定插件和 completion gate 已由 2026-07-15 新规格取代 |
-| 26 | [M4 原实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) | 开发、算法、审查者 | 历史计划，已被取代且不得执行 |
-| 27 | [M4 轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md) | 开发、算法、审查者 | 历史 fixed-plugin 验证修订；不再定义 M4R completion gate |
-| 28 | [M4 replacement 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) | 开发、算法、审查者 | Task 0–28 已完成；Task 29–36 已停止且不得执行 |
-| 29 | [M4 Task 3 Reference Candidate Binding 修订](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md) | 开发、数据、审查者 | 已实现的 session/reference binding 合同，继续保留 |
-| 30 | [M4 Task 7 Catalog and Resource Identity 修订](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md) | 开发、算法、审查者 | 已实现的 legacy catalog/resource identity，供迁移与 replay |
-| 31 | [M4 Task 8 Canonical Fingerprint and Runtime Identity 修订](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) | 开发、审查者 | 已实现的 legacy canonical/runtime identity，供迁移与 replay |
-| 32 | [Autonomous Review Ledger](reviews/2026-07-13-autonomous-review-ledger.md) | 维护者、审查者 | 保存历史复核与关闭证据 |
+| 5 | [M6 Implementation Plan](plans/2026-07-16-m6-local-runtime-persistence-and-sidecar-implementation-plan.md) | 开发、审查者 | 已批准：15 个 INLINE 任务、轻量 test-first、focused smoke 与完成门 |
+| 6 | [03_SESSION_BUNDLE_SPEC.md](03_SESSION_BUNDLE_SPEC.md) | 数据与后端 | X/U/VR/gaze/EEG/ECG 数据合同与同步 |
+| 7 | [04_REFERENCE_MODEL_V0_1.md](04_REFERENCE_MODEL_V0_1.md) | 领域专家、算法 | 18 个 starter anchor 的算法和初始参数 |
+| 8 | [05_BAYESIAN_NETWORK_AND_CPT_DESIGN.md](05_BAYESIAN_NETWORK_AND_CPT_DESIGN.md) | 算法、后端 | BN 拓扑、状态、CPT、缺失证据和解释 |
+| 9 | [02_ASSESSMENT_CORE_DESIGN.md](02_ASSESSMENT_CORE_DESIGN.md) | 后端开发 | 模块边界与完整计算流水线 |
+| 10 | [06_VISUAL_GRAPH_EDITOR_DESIGN.md](06_VISUAL_GRAPH_EDITOR_DESIGN.md) | 前后端开发 | 三类节点、两类边、拖拽编辑、事务和 CPT 迁移 |
+| 11 | [07_RUNTIME_PROTOCOL_DESIGN.md](07_RUNTIME_PROTOCOL_DESIGN.md) | 前后端开发 | sidecar 生命周期与 JSON-RPC 合同 |
+| 12 | [08_WINDOWS_FRONTEND_DESIGN.md](08_WINDOWS_FRONTEND_DESIGN.md) | UI/UX、前端 | 页面、交互、可视化和错误恢复 |
+| 13 | [09_VALIDATION_AND_HANDOFF.md](09_VALIDATION_AND_HANDOFF.md) | 测试、交付 | 验证层级、验收门槛和移交清单 |
+| 14 | [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) | 开发、接手者 | 当前代码、验证证据、限制和下一里程碑 |
+| 15 | [DECISIONS.md](DECISIONS.md) | 维护者 | 已锁定决策及其理由 |
+| 16 | [GLOSSARY.md](GLOSSARY.md) | 所有人 | 术语、ID 和状态语义 |
+| 17 | [REFERENCES.md](REFERENCES.md) | 审查者、领域专家 | 公开文献、DOI 与证据用途 |
+| 18 | [10_DESIGN_SELF_REVIEW.md](10_DESIGN_SELF_REVIEW.md) | 审查者 | 本轮设计自审、发现和遗留风险 |
+| 19 | [后端 M1 实施计划](plans/2026-07-11-backend-foundation-m1-implementation-plan.md) | 开发、审查者 | RED/GREEN 任务、范围和完成定义 |
+| 20 | [M2 多模态合成基础规格](specs/2026-07-11-multimodal-synthetic-foundation-design.md) | 开发、数据、审查者 | 已批准：理想 I/G/EEG/ECG/camera 合同、合成 bundle 与 ingestion readiness |
+| 21 | [M2 实施计划](plans/2026-07-11-m2-multimodal-synthetic-foundation-implementation-plan.md) | 开发、审查者 | shared X/U、adapter、generator、readiness 与本地 E2E 的 TDD 步骤 |
+| 22 | [M3 Native-Rate Time Synchronization 规格](specs/2026-07-12-m3-native-time-synchronization-design.md) | 开发、数据、审查者 | 已批准：native-rate clock mapping、session window、aligned views 与同步报告 |
+| 23 | [M3 实施计划](plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md) | 开发、审查者 | 已完成：Task 0–14 的实现、实测完成门与 handoff/关闭记录 |
+| 24 | [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md) | 专家、产品、前后端 | typed EvidenceRecipe/operator graph、自动参数表单、autosave draft + apply、最小技术校验、M4R–M8 重基线 |
+| 25 | [M4R Editable Evidence Computation Foundation Implementation Plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md) | 开发、审查者 | 已完成：合同、registry、validator、compiler/executor、recipe 生命周期、18 个 starter resources 与轻量 E2E |
+| 26 | [M4 Anchor Calculation and Evidence Availability 规格](specs/2026-07-13-m4-anchor-evidence-availability-design.md) | 开发、算法、审查者 | 历史/迁移规格：Task 0–28 与 15 个插件已实现；固定插件和 completion gate 已由 2026-07-15 新规格取代 |
+| 27 | [M4 原实施计划](plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md) | 开发、算法、审查者 | 历史计划，已被取代且不得执行 |
+| 28 | [M4 轻量工作流验证修订](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md) | 开发、算法、审查者 | 历史 fixed-plugin 验证修订；不再定义 M4R completion gate |
+| 29 | [M4 replacement 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) | 开发、算法、审查者 | Task 0–28 已完成；Task 29–36 已停止且不得执行 |
+| 30 | [M4 Task 3 Reference Candidate Binding 修订](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md) | 开发、数据、审查者 | 已实现的 session/reference binding 合同，继续保留 |
+| 31 | [M4 Task 7 Catalog and Resource Identity 修订](specs/2026-07-13-m4-task7-catalog-resource-identity-amendment.md) | 开发、算法、审查者 | 已实现的 legacy catalog/resource identity，供迁移与 replay |
+| 32 | [M4 Task 8 Canonical Fingerprint and Runtime Identity 修订](specs/2026-07-13-m4-task8-canonical-fingerprint-runtime-identity-amendment.md) | 开发、审查者 | 已实现的 legacy canonical/runtime identity，供迁移与 replay |
+| 33 | [Autonomous Review Ledger](reviews/2026-07-13-autonomous-review-ledger.md) | 维护者、审查者 | 保存历史复核与关闭证据 |
 
 ### 2.1 文档目录的职责
 
