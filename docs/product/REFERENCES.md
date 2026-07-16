@@ -61,3 +61,24 @@ van Weelden, E., Prinsen, J. M., Ceccato, C., Pruss, E., Vrins, A., Alimardani, 
 - [Open arXiv version](https://arxiv.org/abs/2512.09014)
 - 本设计用途：EEG engagement index、VR flight training 与 pilot-specific calibration。
 - 这是 2026 年已发表会议论文；旧本地文件名中的 2025/arXiv 字样不作为正式元数据。
+
+## R7 Heckerman 1995
+
+Heckerman, D. (1995). *A Tutorial on Learning With Bayesian Networks*. Microsoft Research Technical Report MSR-TR-95-06.
+
+- [Microsoft Research publication](https://www.microsoft.com/en-us/research/publication/a-tutorial-on-learning-with-bayesian-networks/)
+- 本设计用途：BN 的 directed acyclic graph、local conditional probability distributions、joint factorization 与 posterior inference 基础语义。
+
+## R8 Stanford CS228 course notes
+
+Stanford University. *CS228: Probabilistic Graphical Models — Course Notes*.
+
+- [Stanford course notes PDF](https://web.stanford.edu/~lindrew/cs228.pdf)
+- 本设计用途：明确 BN arrow 定义 `P(node | parents)` 的 factorization，而 observation 后可以计算与 arrow 方向不同的 posterior query；用于区分 canonical graph 与 inference information flow。
+
+## R9 Mislevy et al. 2000
+
+Mislevy, R. J., Almond, R. G., Yan, D., & Steinberg, L. S. (2000). *Bayes Nets in Educational Assessment: Where Do the Numbers Come From?* CSE Technical Report 518.
+
+- [ERIC full-text PDF](https://files.eric.ed.gov/fulltext/ED443881.pdf)
+- 本设计用途：区分从 work product/session 中提取 observable evidence 的 evidence rules 与用 `P(observable evidence | proficiency/task variables)` 解释证据的 probability model，并由观测反推 proficiency posterior。

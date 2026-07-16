@@ -2,17 +2,17 @@
 
 | 字段 | 值 |
 |---|---|
-| 设计基线 | 产品 v0.2 expert-designer rebaseline；旧 M4 Task 0–28 作为历史实现保留 |
-| 审查日期 | 原始审查 2026-07-10；M4 amendment 2026-07-13；方向重基线与 M4R 收尾 2026-07-15 |
-| 审查范围 | pilot_assessment_system 产品文档、项目入口说明、历史草案状态、M4R 实现边界与跨文档一致性 |
-| 结论 | M1–M3 与 M4R 可作为已验证交接基线；旧 M4 Task 0–28 代码继续保留，但 fixed whole-Anchor plugin/exact-18 路线已由 EvidenceRecipe/operator 架构取代 |
-| 软件状态 | M1/M2/M3/M4R 已工程验证；15 个 legacy/reference plugins、共享 primitives 与三个 providers 保留；M5 BN/model workspace、M6 sidecar、M7 WinUI 尚未实现，`formal_run_authorized=false`，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
+| 设计基线 | 产品 v0.3 shared-versioned-model architecture；旧 M4 Task 0–28 作为历史实现保留 |
+| 审查日期 | 原始审查 2026-07-10；M4 amendment 2026-07-13；方向重基线与 M4R 收尾 2026-07-15；M5 架构自审 2026-07-16 |
+| 审查范围 | pilot_assessment_system 产品文档、项目入口说明、M4R 实现边界、M5 component/scheme/BN 语义与跨文档一致性 |
+| 结论 | M1–M3 与 M4R 可作为已验证交接基线；M5 全局组件版本库、任务方案、三类节点/两类边和 BN/inference 方向形成一致书面规格，但 M5 代码尚未实施 |
+| 软件状态 | M1/M2/M3/M4R 已工程验证；15 个 legacy/reference plugins、共享 primitives 与三个 providers 保留；M5 正式规格待用户书面复核，M6 sidecar、M7 WinUI 尚未实现，`formal_run_authorized=false`，见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) |
 | 科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
-| M4 修订 | 2026-07-15 接受 D-031–D-035：旧 Task 29–36 停止；普通专家编辑不再要求 Python/plugin 发布、审批或 per-edit tests；M4R–M8 按 EvidenceRecipe/operator、linked Evidence/BN graphs、autosave + apply 重基线 |
+| M4/M5 修订 | 2026-07-15 接受 D-031–D-035；2026-07-16 接受 D-036–D-039：普通专家编辑不要求 Python/plugin 发布、审批或 per-edit tests；全局 immutable components 由 exact-pinned schemes 组合，BN topology 与 posterior inference flow 分开 |
 
 ## 1. 结论边界
 
-本文保留 2026-07-10 与 2026-07-13 的历史审查，同时记录 2026-07-15 的产品方向纠正。它不是软件实现验收，也不是航空评估科学有效性证明。后续实现证据以 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) 为准；当前架构权威为 [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md)。Replacement Task 0–28 的逐任务事实继续以旧 plan、review ledger 与 Git commits 为准，但 Task 29–36 已失去执行授权。
+本文保留 2026-07-10 与 2026-07-13 的历史审查，同时记录 2026-07-15 的产品方向纠正和 2026-07-16 的 M5 架构收口。它不是软件实现验收，也不是航空评估科学有效性证明。后续实现证据以 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md) 为准；当前 M5 架构权威为 [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)。Replacement Task 0–28 的逐任务事实继续以旧 plan、review ledger 与 Git commits 为准，但 Task 29–36 已失去执行授权。
 
 通过本轮自审后，文档已经能够让接手者明确：
 
@@ -209,3 +209,38 @@ Apply 可以因 schema、dangling reference、DAG cycle、operator/version、por
 ### 8.5 后续门槛
 
 M4R implementation plan 已完成。下一步在用户复核后单独编写 M5 spec/plan；M6–M8 继续分别设计，旧 fixed-plugin 计划不得被继续执行或机械改名复用。
+
+## 9. 2026-07-16 M5 Shared-Versioned Model 自审
+
+### 9.1 审查方式
+
+本轮按用户的低额度要求完全 inline 完成，没有启动 subagent。自审逐项核对新 M5 规格与 README、产品总览、Assessment Core、BN/CPT、图编辑器、术语、决策和 implementation status；随后执行 Markdown 相对链接、fence、旧口径关键词、whitespace 和 Git diff 检查。
+
+### 9.2 已关闭的设计歧义
+
+| ID | 风险 | 收口结果 |
+|---|---|---|
+| M5-SR-01 | 同名 Evidence 在不同任务中原地升级，导致 Hover/直线保持互相覆盖 | `EvidenceConcept + immutable EvidenceVersion`；方案锁定 exact versions，长期并列 |
+| M5-SR-02 | 每个新任务复制整套模型，复用和来源不清 | 全局 component library + `AssessmentSchemeVersion` references；只 copy-on-write 改动部分 |
+| M5-SR-03 | “Evidence 的父节点是原始输入”与“BN 中 Evidence 的父节点是 sub-skill”概念冲突 | 分成 extraction `source_bindings` 与 probabilistic BN parents，两类 edge/DTO/validator |
+| M5-SR-04 | 把程序计算顺序 `Evidence -> ability` 误画成 BN topology | Starter canonical BN 固定显示 `Competency -> Sub-skill -> Evidence`；反向只作只读 inference overlay |
+| M5-SR-05 | 通用引擎被锁死为 Hover、18/11/4 或固定三层方向 | Starter 只是一套 scheme；generic engine 只强制 DAG/CPD/CPT/closure，可发布其他方向的新模型版本 |
+| M5-SR-06 | 发布方案时一部分组件成功、一部分失败 | component versions 与 scheme version 原子发布，任一失败整体回滚 |
+| M5-SR-07 | 新版本出现后历史方案自动跟随 `latest` | Scheme/run 同时锁定 exact IDs 和 content hashes，禁止隐式升级 |
+| M5-SR-08 | 前端集成显示使 operator nodes 变成第四类高层节点 | 高层仍只有 Raw Input、Evidence、BN Node；operator graph 仅作为 Evidence 展开细节 |
+| M5-SR-09 | 用户误以为正式设计等于代码完成 | 所有状态文档明确：M4R 已实现；M5 只有正式规格，implementation plan 与 production code 均未完成 |
+
+### 9.3 仍需在实施计划中冻结的细节
+
+以下内容不会改变已确认架构，但必须在 M5 implementation plan 前结合现有代码确定：
+
+- 具体 Python DTO 文件和 schema IDs；
+- component store 的进程内接口与 M6 persistence port；
+- exact inference engine 的库选择或自实现边界；
+- atomic publish transaction 的 repository interface；
+- M4R applied recipe revision 的导入映射和兼容性测试；
+- typed graph operations 的最终 Python 方法名。M6 JSON-RPC 名称在 M6 规格中冻结，不能由 M5 文档提前冒充已实现协议。
+
+### 9.4 自审结论
+
+未发现会迫使专家覆盖旧任务模型、混淆 BN 概率方向或重新引入科学审批门的 P0/P1 设计冲突。M5 书面架构可以进入用户复核；在用户确认本文档前，不进入 implementation plan 或代码实现。

@@ -1,10 +1,10 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0.2 expert-designer 基线。M1–M3 与 M4R 已工程验证；旧 M4 Task 0–28 作为迁移历史保留；D-031–D-035 已重设 M4R–M8 路线，旧 Task 29–36 不再执行。M5 BN/model workspace、M6 runtime、M7 WinUI 与 M8 packaging 尚未完成，`formal_run_authorized=false`。
-**日期：** 2026-07-15
+**文档状态：** 产品 v0.3 shared-versioned-model 基线。M1–M3 与 M4R 已工程验证；D-031–D-039 已确认专家可编辑、全局组件版本库、任务方案与 BN 语义。M5 正式规格已形成但代码尚未实施；M6 runtime、M7 WinUI 与 M8 packaging 尚未完成，`formal_run_authorized=false`。
+**日期：** 2026-07-16
 **适用目录：** `pilot_assessment_system/`
 
-> **当前权威：** [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)。本总览中出现的 18 Anchor、11 sub-skills、4 competencies 与默认公式/CPT 均指 starter template，不限制专家模型的节点数量或计算方法。
+> **当前权威：** [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 与 [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)。本总览中出现的 Hover、18 Anchor、11 sub-skills、4 competencies 与默认公式/CPT 均指 starter template，不限制任务、方案、节点或版本数量。
 
 ## 1. 产品目的
 
@@ -27,7 +27,7 @@
 
 完整计算链为：
 
-`session bundle → 数据验证与时间同步 → anchor 计算 → evidence rating → BN inference → competency posterior + evidence trace`
+`session bundle → 数据验证与时间同步 → EvidenceRecipe → observed evidence → BN posterior inference → competency posterior + evidence trace`
 
 任何 posterior 都必须关联：
 
@@ -45,14 +45,14 @@
 - 查看节点名称、类型、状态空间、父子关系和支持的数据接口；
 - 编辑 CPT；
 - 编辑 anchor 阈值和允许公开配置的算法参数；
-- 保存为新的 model revision；
-- 比较、回滚和导出 model revision。
+- 保存为新的 immutable component/scheme versions；
+- 比较、派生、重放和导出 scheme versions。
 
 安装包中的默认模型始终只读。所有编辑发生在 project 的运行时副本中，并经过后端结构、概率和兼容性验证。
 
 ### 2.4 数据与模型分离
 
-Session bundle 是实验事实；model bundle 是解释这些事实的评估模型。修改模型不能改变原始 session，重新运行也必须保留此前结果和其所绑定的 model revision。
+Session bundle 是实验事实；component library 与 assessment scheme 是解释这些事实的评估模型。修改模型不能改变原始 session，重新运行也必须保留此前结果和其所绑定的 exact scheme/component versions。Model bundle 只是可移植的导入/导出封装。
 
 ### 2.5 软件验证与科学验证分离
 
@@ -64,6 +64,12 @@ M1–M3 负责文件完整性、schema、类型和时间合同检查，并可以
 
 只要锚点所需输入存在、任务适用、公式配置完整且依赖可用，M4 就必须按规则计算。轨迹偏差大、控制剧烈、生理数值极端、未响应、未注视或未形成稳定悬停通常产生 `computed + Unacceptable`；这是有效负面 evidence，raw availability 为 1。M4 使用 `AnchorResult v0.2`，不生成 `invalid_quality`。输入缺失、任务不适用、配置不足、依赖缺失或提取器错误分别使用明确的非表现状态，不能与 Unacceptable 混为一谈。
 
+### 2.7 全局组件、任务方案与概率语义分离
+
+Evidence 和 BN 组件以 `Concept + immutable Version` 保存到全局库。`AssessmentSchemeVersion` 为一个任务/评估方案选择 exact versions；它不复制或覆盖其他方案，也不使用可漂移的 `latest`。从任何历史方案修改均采用 copy-on-write，旧方案和历史 run 永远锁定原版本。
+
+高层工作区有 Raw Input、Evidence、BN Node 三类节点和两类边：`Raw/task source -> Evidence` 是 data/extraction dependency，Raw Input 不属于 BN；probabilistic edge 才定义 `P(child | parents)`。Hover starter 的 canonical BN 使用 `Competency -> Sub-skill -> Evidence`，而实际评估观察 Evidence 后计算能力 posterior。前端可以显示只读 inference overlay，但不能为显示目的反转 canonical BN topology。
+
 ## 3. v0 非目标
 
 产品 v0 不包含：
@@ -74,7 +80,7 @@ M1–M3 负责文件完整性、schema、类型和时间合同检查，并可以
 - 根据单个 session 自动学习 CPT；
 - 用缺失模态的先验分布生成看似确定的能力诊断；
 - 将实验评估结果直接用于执照、医疗或适航认证决定；
-- 在未建立新 model revision 的情况下直接覆盖模型默认文件。
+- 在未建立新 component/scheme versions 的情况下直接覆盖已发布模型内容。
 
 实时流式接入、远程 API、自动参数学习和更复杂的动态贝叶斯网络可作为后续扩展，但不进入 v0 的验收范围。
 
@@ -83,7 +89,7 @@ M1–M3 负责文件完整性、schema、类型和时间合同检查，并可以
 | 角色 | 主要任务 | 权限边界 |
 |---|---|---|
 | 评估员／教员 | 导入 session、检查数据、运行评估、解释 posterior 和证据链 | 可运行和导出；是否可编辑模型由 project 权限决定 |
-| 领域专家 | 审查 anchor、能力结构、BN 拓扑和 CPT | 可创建 model revision；不能覆盖安装默认模型 |
+| 领域专家 | 审查 Evidence、能力结构、BN 拓扑和 CPT | 可创建 component/scheme versions；不能覆盖安装默认或历史版本 |
 | 数据研究人员 | 检查 stream、同步技术诊断、phase/event annotation 和数据 coverage | 可修正 session metadata；原始数据保持只读 |
 | 系统开发者 | 维护插件、协议、数据适配器和软件测试 | 代码变更不自动成为科学模型批准 |
 | 受训飞行员 | 查看经评估员批准的结果和解释 | 默认不修改模型或原始数据 |
@@ -99,10 +105,10 @@ M1–M3 负责文件完整性、schema、类型和时间合同检查，并可以
 5. M2 输出 `IngestionReadinessReport`；它只决定 source artifact 能否进入同步，始终 `formal_run_authorized=false`。
 6. M3 用同一文件 snapshot 构造 `SynchronizationInput`，按 native rate 映射原始行并追加 aligned time/flags，不插值或重采样；输出内部 `AlignedSession` 与公共 `SynchronizationReport`。
 7. 用户在 Session Explorer 中同步查看 X/U 曲线、随头动的第一视角 VR scene、gaze/AOI、驾驶员图像、EEG 和 ECG。
-8. 用户打开一个 applied model revision 或 starter template；系统创建或恢复 autosaved draft。
-9. 领域专家在 Evidence Computation Graph 与 BN Graph 中编辑 inputs、operators、参数、公式、scorer、节点、边、state 和 CPT。每次用户意图自动保存；用户可随时对当前 session preview。
-10. 用户点击“应用到后续评估”。后端只执行最小技术可运行校验，随后创建 immutable applied revision；不要求人工审批、Python 发布或 per-edit 测试。
-11. 用户选择 applied revision 启动评估。Run Preflight 检查 frozen inputs、任务前提、compiled recipe/BN plan、operator/engine compatibility；它不按飞行表现或原始信号数值过滤 evidence。sidecar 按该 revision 建立 run snapshot，EvidenceRecipe executor 生成 `AnchorResult v0.2`，BN 再执行 observation、coverage 与 inference。
+8. 用户选择一个 `TaskProfileVersion` 和已发布 `AssessmentSchemeVersion`，或从 starter/任意历史方案创建 autosaved scheme draft。
+9. 领域专家从全局组件库选择 exact Evidence/BN versions，或 copy-on-write 创建新 versions；在 integrated canvas 中编辑 extraction edges、recipe operators/参数/scorer、probabilistic BN edges、states 和 CPT。每次用户意图自动保存；用户可随时对当前 session preview。
+10. 用户点击“应用到后续评估”。后端冻结 draft，只执行最小技术可运行校验，然后原子创建改动的 immutable component versions 与新的 scheme version；不要求人工审批、Python 发布或 per-edit 测试。
+11. 用户选择 exact scheme version 启动评估。Run Preflight 检查 frozen inputs、任务前提、exact component closure、compiled recipe/BN plan、operator/engine compatibility；它不按飞行表现或原始信号数值过滤 evidence。sidecar 按该 scheme 建立 run snapshot，EvidenceRecipe executor 生成 observations，BN 再执行 coverage 与 posterior inference。
 12. Windows 前端显示运行进度，并允许取消。
 13. 结果页显示四项 competency posterior、可评估状态、evidence availability coverage、anchor trace、缺失证据和限制说明。
 14. 只有达到该 competency 的最低 evidence availability 要求时，系统才生成 weak-skill diagnosis；`computed` 的 D、A、U 都计为已提供 evidence，其中 U 是负面观测而不是低质量或缺失数据。
@@ -125,7 +131,7 @@ M1–M3 负责文件完整性、schema、类型和时间合同检查，并可以
                    │                      │
        ┌───────────▼──────────┐  ┌────────▼──────────────────┐
        │ Session Bundles       │  │ Project Runtime Store     │
-       │ 原始/派生多模态数据   │  │ model revisions / runs    │
+       │ 原始/派生多模态数据   │  │ components/schemes/runs   │
        │ manifest + checksums  │  │ audit / results / logs    │
        └──────────────────────┘  └───────────────────────────┘
 
@@ -150,15 +156,21 @@ WinUI 通过重定向 stdin/stdout 启动和控制 sidecar：
 
 Assessment Core 保留 transport-neutral command service，未来可以增加 localhost HTTP adapter，但不改变核心计算接口。
 
+### 6.4 Global Model Library and Assessment Schemes
+
+全局库保存 `EvidenceConcept/EvidenceVersion`、`BnNodeConcept/BnNodeVersion`、`EvidenceBindingVersion` 和 `CptVersion`。方案层保存 `TaskProfileVersion` 与 `AssessmentSchemeVersion`，只引用 exact component versions。Project runtime store 在 M6 持久化 drafts、published versions、runs、artifacts 和 operation history；它不得把 starter package 当作唯一模型。
+
 ## 7. 前端产品区域
 
 | 区域 | 核心职责 |
 |---|---|
-| Project Launcher | project、model revision、最近 session/run |
+| Project Launcher | project、task/scheme version、最近 session/run |
 | Session Import | bundle 导入、接口发现、stream 状态和修复建议 |
 | Session Explorer | 多模态同步播放、phase/event 和上游技术诊断检查 |
-| BN Graph Editor | 查看并编辑 draft 的节点、边和层级；发布后生成新 revision |
-| Node Inspector | 编辑 anchor 参数、状态空间和 CPT |
+| Model Library | 浏览 Evidence/BN concepts、并行 versions、lineage 和被哪些 schemes 使用 |
+| Scheme Composer | 为 task scheme 选择 exact versions，检查依赖闭包并从任意方案派生 |
+| Integrated Graph Editor | 查看三类节点、两类边；展开 Evidence operator graph；编辑 canonical BN topology |
+| Node Inspector | 分别编辑 Evidence extraction 与 BN interpretation，或 BN states/parents/CPT |
 | Assessment Run | preflight、revision 锁定、进度和取消 |
 | Results | posterior、evidence availability coverage、evidence trace、诊断和限制 |
 | Diagnostics | backend/model/protocol 版本、日志和支持包 |
@@ -214,7 +226,7 @@ v0 完成必须同时满足：
 2. 可导入符合规范的 session bundle，并正确显示所有正式模态及其状态。
 3. 可验证时间同步、phase/event 和 baseline。
 4. 可通过 canonical EvidenceRecipe 和 operators 计算当前 model workspace 声明的 Anchor。
-5. 可查看和编辑 Evidence/BN 两张图、输入、参数、公式、scorer 与 CPT，并生成可回滚 applied revision。
+5. 可在 integrated workspace 查看三类节点和两类边，编辑 Evidence recipe/参数/scorer 与 BN topology/state/CPT，并通过 copy-on-write 发布不可变 component/scheme versions。
 6. 可运行固定 revision 的离线推理并输出可追溯结果。
 7. 证据不足时不会产生虚假确定性评分或诊断。
 8. 软件验证状态与科学验证状态在 UI 和导出文件中明确分开。
@@ -226,6 +238,7 @@ v0 完成必须同时满足：
 - [M3 Native-Rate Time Synchronization 规格](./specs/2026-07-12-m3-native-time-synchronization-design.md)
 - [M3 实施计划](./plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md)
 - [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)（当前权威；M4R–M8 重基线）
+- [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)（当前 M5 核心架构与 BN 语义权威）
 - [M4 Anchor Calculation and Evidence Availability 规格](./specs/2026-07-13-m4-anchor-evidence-availability-design.md)（Task 0–28 历史/迁移规格）
 - [M4 Anchor Calculation and Evidence Availability 原实施计划](./plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（历史上已批准，现已被取代且不得执行）
 - [M4 Lightweight Workflow Validation Amendment](./specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)（已批准）

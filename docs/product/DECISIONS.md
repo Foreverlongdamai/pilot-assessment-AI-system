@@ -1,13 +1,13 @@
 # 设计决策记录
 
-本文件记录会影响多个模块、不能由单一实现文件自行决定的产品级决策。状态“已接受”表示 v0.1 必须遵守；后续可以通过新的决策记录替换，但不得静默修改。
+本文件记录会影响多个模块、不能由单一实现文件自行决定的产品级决策。状态“已接受”表示对应版本及后续未被取代的基线必须遵守；后续可以通过新的决策记录显式替换，但不得静默修改。早期 `reference-model-v0.1` 固定内容只约束该 starter，D-031–D-039 定义当前通用产品方向。
 
 ## D-001：产品提供可配置参考模型，而非最终航空标准
 
 - 状态：已接受
 - 决策：先实现当前理解下完整、合理、透明的算法、阈值、子技能和 CPT；把可编辑性、版本化和审计作为产品能力。
 - 理由：这些科学参数仍需领域专家与真实样本校准。等待所有参数最终确定会阻塞软件体系建设。
-- 影响：界面和报告必须显示 model revision 与验证状态，不得把默认值描述成监管认证结论。
+- 影响：界面和报告必须显示 exact component/scheme versions 与验证状态，不得把默认值描述成监管认证结论。
 
 ## D-002：v0.1 使用 18 个逻辑 evidence nodes
 
@@ -246,3 +246,31 @@
 - 决策：旧 replacement plan Task 29–36 暂停且不再授权执行。M4R 交付 EvidenceRecipe/operator foundation 与 starter migration；M5 交付 linked Evidence/BN model workspace、revision 和 inference；M6 交付 local runtime/persistence/protocol；M7 交付 WinUI expert designer；M8 交付 integration、packaging 和 handoff。
 - 理由：继续补完三个固定 AnchorPlugin 会扩大错误路线。Evidence engine、model workspace、runtime 和 Windows UI 又是不同子系统，应分别形成可执行规格和计划。
 - 影响：Task 0–28、15 个现有插件和测试保留为历史实现事实与迁移来源，不回滚或删除。新 M4R 计划必须在 [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md) 复核后编写，M5–M8 分别建立正式 spec/plan。
+
+## D-036：全局组件采用 concept + immutable version，方案锁定 exact versions
+
+- 状态：已接受
+- 决策：Evidence、BN node、Evidence-to-BN binding 和 CPT 进入全局版本化组件库。稳定 concept 表示“它是什么”，immutable version 表示一次精确实现；`AssessmentSchemeVersion` 只保存 exact component version references 和 content hashes，不引用可漂移的 `latest`。同一 concept 可以长期并列多个版本，不同任务和同一任务的不同方案可以自由选择。
+- 理由：Hover、直线保持和未来任务可能需要同名 Evidence/BN node 的不同算法或概率定义。原地升级会迫使用户在任务之间反复手工改回模型，并破坏历史结果。
+- 影响：从任意既有方案编辑都采用 copy-on-write；未改组件继续复用原版本，改动组件与新 scheme 在 publish/apply 时原子创建新版本。旧方案和历史 run 永不被新发布覆盖。完整合同见 [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)。
+
+## D-037：Evidence 提取关系与 BN 概率关系是两种不同的图语义
+
+- 状态：已接受
+- 决策：系统高层只显示 Raw Input、Evidence、BN Node 三类节点，但使用两个不同 edge type。`Raw/task source -> Evidence` 是 data/extraction edge，只形成 `source_bindings` 和 recipe execution dependency；BN probabilistic edge 表示 child CPD 的 parents 并进入 joint factorization。Raw inputs 不属于 BN random variables，也没有 CPT。
+- 理由：Evidence 确实先由 X/U/I/G/P 等 session 数据提取，但这不意味着这些数据源是 BN parents；若混用“父节点”与无类型 edge，前端、CPT 和推理方向都会产生歧义。
+- 影响：两类 edge 必须有不同 DTO、operation、视觉样式和 validator。Evidence inspector 同时展示 extraction definition 与 BN interpretation，但不得把两组依赖合并。
+
+## D-038：Starter 使用生成式 BN 方向，后验信息流不反转 canonical edges
+
+- 状态：已接受
+- 决策：Hover starter 的 canonical BN 使用 `Competency -> Sub-skill -> Evidence`，其 CPD 分别表达 child 在 parents 条件下的分布；实际评估先提取并观察 Evidence，再计算 sub-skill/competency posterior。前端可用只读 inference overlay 显示 `Evidence ⇢ Sub-skill ⇢ Competency` 的信息影响，但不能把 overlay 保存为反向 BN topology。
+- 理由：Bayesian Network 的箭头定义概率分解，不等于程序执行顺序，也不限制 posterior 信息传播方向。把“从证据推断能力”误画成永久反向边会把一个模型变成另一个模型。
+- 影响：通用引擎仍允许专家发布满足 DAG、CPD/CPT 和 observation 合同的其他方向；这必须创建新的 component/scheme versions，并明确标为不同概率模型，而不是同一模型的显示切换。
+
+## D-039：Hover/18/11/4 只是一套 starter scheme，不是引擎基数或任务锁定
+
+- 状态：已接受
+- 决策：当前 Hover 场景、18 个 Evidence、11 个 sub-skills 和 4 个 competencies 用于提供第一个可运行 starter scheme。通用 schema、代码、存储、API、UI 和测试不得硬编码这些任务名、ID、数量或连接。专家可为任意任务创建任意数量方案，并从任意方案继续派生。
+- 理由：产品要随专家加入不同任务、Evidence 算法和能力模型而持续扩展；基础示例不应成为系统边界。
+- 影响：M5 验收以版本复用、方案组合、可编辑性、技术可运行和历史不变性为准，不以 starter 算法的科学正确性或 exact-18 输出等价为完成门。

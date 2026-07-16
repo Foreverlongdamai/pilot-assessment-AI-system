@@ -2,12 +2,12 @@
 
 | 字段 | 值 |
 |---|---|
-| 设计版本 | v0.2 expert-designer validation baseline |
-| 当前软件状态 | in_progress（M1/M2/M3 与 M4R Evidence Computation Foundation engineering verified；15 个 legacy/reference plugins 保留；旧 Task 29–36 已停止；M5 BN/model workspace、M6 runtime persistence/sidecar 与 M7 WinUI 尚未完成，`formal_run_authorized=false`） |
+| 设计版本 | v0.3 shared-versioned-model validation baseline |
+| 当前软件状态 | in_progress（M1/M2/M3 与 M4R engineering verified；M5 正式架构规格已形成但代码未实施；M6 runtime persistence/sidecar、M7 WinUI 与 M8 packaging 尚未完成，`formal_run_authorized=false`） |
 | 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
-> **当前权威补充：** 工程测试证明平台、built-in operators、recipe executor、版本和 UI/后端映射按合同工作；它不评判专家 recipe、Anchor、阈值或 CPT 是否科学合理。Autosave 不设门，apply 只执行 schema/reference/DAG/type/unit/formula/scorer/CPT executable 等最小技术校验。下文旧“发布门槛”若要求 per-model golden、人工审批或科学状态通过，均由本口径取代。详见 [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)。
+> **当前权威补充：** 工程测试证明平台、built-in operators、recipe/inference executor、exact version pinning、atomic publish 和 UI/后端映射按合同工作；它不评判专家 recipe、Anchor、阈值或 CPT 是否科学合理。Autosave 不设门，apply 只执行最小技术校验。M5 的完成门只使用小型平台不变量和手算 BN，不建立重型多模态 fixtures。详见 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)。
 
 ## 1. 两条独立的验证轴
 
@@ -38,7 +38,7 @@
 - externally_validated；
 - not_supported。
 
-一个 model revision 可以软件已验证而科学状态仍是 engineering_default。UI、导出和报告必须同时携带两种状态。
+一个 component/scheme version 可以软件已验证而科学状态仍是 engineering_default。UI、导出和报告必须同时携带两种状态。
 
 ## 2. 验证层级
 
@@ -61,9 +61,9 @@
 - evidence scoring operators：按自身 schema 执行 D/A/U 或 soft likelihood；不要求所有 expert scorer 单调；
 - CPT：维度、非负、有限数、每行和为 1；
 - BN：小型手算网络的 prior/posterior、缺失 evidence 边缘化，以及显式 soft scorer/依赖保护产生的 virtual evidence；不得按原始数据质量衰减 likelihood；
-- graph operations：cycle、duplicate、AnchorBinding、state migration、size caps、atomic rollback、undo/redo；
+- graph operations：typed-edge semantics、cycle、duplicate、EvidenceBinding、state migration、size caps、atomic rollback、undo/redo；
 - layout operations：layout_version conflict、批量位置保存且不改变 semantic hash；
-- model revision：content identity、immutability、parent chain、autosave、apply 和 replay。
+- component/scheme version：exact pinning、content identity、immutability、parent lineage、copy-on-write、atomic apply 和 replay。
 
 对概率和浮点算法使用明确 tolerance；不能用“看起来接近”代替断言。
 
@@ -82,7 +82,7 @@
 - 可变 cardinality expert model：aligned session → recipe executor → AnchorResult inventory → evidence；starter 18 只作迁移示例；
 - evidence → BN posterior、coverage、explanation；
 - recipe/graph/binding edit → autosave → optional preview → technical validation → apply；
-- applied revision → run → reproducible result；
+- published scheme + exact components → run → reproducible result；
 - cancel、crash、restart 与 interrupted recovery。
 
 ### 2.5 End-to-end tests
@@ -96,7 +96,7 @@
 5. legacy-migration-smoke：少量现有 plugins 与迁移 recipe 做输入/输出接线比较，不要求维持全部 provisional 算法等价；
 6. de-identified-reference：如研究团队批准，可用于独立科学研究，不进入公开仓库。
 
-通过 WinUI 执行：创建项目、导入、修复或接受 warning、编辑 Evidence/BN 两张图、preview、apply、运行、查看 trace、导出结果。
+通过 WinUI 执行：创建项目、导入、修复或接受 warning、从全局库选择 exact versions、编辑 integrated three-node/two-edge workspace、preview、apply、运行、查看 trace、导出结果。
 
 ### 2.6 M3 engineering verification record（2026-07-12）
 
@@ -150,7 +150,7 @@ M4R 已按 [实施计划](plans/2026-07-15-m4r-editable-evidence-computation-fou
 | Expert recipes | 系统忠实保存和执行专家定义；不判断其科学合理性 | preview 与用户检查，不设 per-edit pytest/golden gate |
 | BN/CPT | 图合法、概率正确、缺失可边缘化 | hand-computable BN tests |
 | Graph editor | 前后端一一对应、失败原子回滚 | .NET/Python contract + UI tests |
-| Revisions | autosave 可恢复、applied revision 不可变、运行可重现 | autosave/undo/apply/replay tests |
+| Versions | autosave 可恢复、published component/scheme versions 不可变、exact-pinned run 可重现 | autosave/undo/copy-on-write atomic apply/replay tests |
 | Runtime | framing、取消、错误、崩溃恢复 | protocol fault-injection |
 | Results | posterior、coverage、trace 和版本完整 | golden result snapshots |
 | Privacy | 导出和日志默认脱敏 | privacy inspection tests |
@@ -183,7 +183,7 @@ Draft 始终可以自动保存，即使 incomplete。只有点击“应用到后
 - 确认 task profile、reference path、phase/event 与安全边界；
 - 对每条意见记录 accept/reject/defer 和理由。
 
-输出：expert_reviewed model revision，不等同于统计验证。
+输出：expert_reviewed component/scheme versions，不等同于统计验证。
 
 ### Stage S1：参数校准
 
@@ -213,7 +213,7 @@ Draft 始终可以自动保存，即使 incomplete。只有点击“应用到后
 - 不同 pilot、场景、任务难度、设备和日期的外部验证；
 - subgroup performance 和潜在偏差；
 - distribution shift 与 out-of-scope 检测；
-- 新 model revision 与旧 revision 的纵向可比性。
+- 新 scheme/component versions 与旧 versions 的纵向可比性。
 
 科学研究若要用某个 revision 支撑结论，应自行判断并记录该 revision 的验证范围；这不是专家在产品内修改或 apply 的前置条件。
 
@@ -245,7 +245,7 @@ Draft 始终可以自动保存，即使 incomplete。只有点击“应用到后
 ### Gate D：Research release
 
 - 专家确认产品边界和报告措辞；
-- 至少有一个 expert_reviewed 或 calibrated model revision；
+- 至少有一个 expert_reviewed 或 calibrated assessment scheme version；
 - 数据保护、脱敏、同意和保留策略获项目批准；
 - 已知限制与 scientific status 随产品交付。
 
@@ -256,7 +256,7 @@ Research release 不自动意味着 operational certification。
 每次 AssessmentResult 必须能回答：
 
 - 哪个 session 与 session revision；
-- 哪个 applied model revision 与 content identity；
+- 哪个 published scheme、exact component versions 与 content identities；
 - 使用了哪些 engine、EvidenceRecipe、operator implementation、parameter/scorer version；legacy replay 时另记 plugin identity；
 - 哪些原始文件、phase/event 和 source window 支撑每个 anchor；
 - continuous value 如何转为 D/A/U；

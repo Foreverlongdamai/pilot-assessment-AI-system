@@ -2,11 +2,11 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 状态日期 | 2026-07-15 |
-| 产品设计基线 | v0.2 expert-designer rebaseline（D-031–D-035） |
+| 状态日期 | 2026-07-16 |
+| 产品设计基线 | v0.3 shared-versioned-model architecture（D-031–D-039） |
 | 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization + M4R Editable Evidence Computation Foundation |
 | M4 当前状态 | M4R 已完成 canonical EvidenceRecipe/OperatorDefinition schema、trusted registry、only-technical validation、generic compiler/executor、built-in operator library、backend-only draft/preview/apply/replay、18 个 editable starter resources 和轻量 E2E。旧 Task 0–28 的 15 个 whole-Anchor plugins 与三个 providers 保留为 legacy/reference；旧 Task 29–36 已停止。**M4R engineering verified；`formal_run_authorized=false`。** |
-| 下一里程碑 | 与用户复核并设计 M5：autosaved model workspace、Evidence/BN 两张关联图、BN node/edge/state/CPT 编辑与 inference；不自动把 M6/M7 混入 M5 |
+| 下一里程碑 | 复核 M5 正式规格；通过后再编写轻量实施计划。M5 范围为全局 immutable component library、exact-pinned task schemes、三类节点/两类边、BN editing/inference 与 copy-on-write publish；不自动把 M6/M7 混入 M5 |
 | 软件状态 | `in_progress`（M1/M2/M3/M4R engineering verified；M5 BN/model workspace、M6 persistence/sidecar、M7 WinUI 与 M8 packaging 尚未完成） |
 | 科学状态 | synthetic 数据为 `not_supported`；评估模型仍待领域专家校准与验证 |
 | Python package | `pilot-assessment-system 0.1.0` |
@@ -32,6 +32,8 @@ M1/M2/M3 已实现，并通过 micro fixture 与 simulator 采集格式样例 CS
 2026-07-13 已新增并批准 [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)，把 AnchorResult v0.2、18 个 anchor、typed dependency DAG、artifact/fingerprint 和状态边界冻结为当时的书面设计；其后 [M4 Lightweight Workflow Validation Amendment](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)、D-026/D-027 与 [replacement M4 实施计划](plans/2026-07-13-m4-anchor-evidence-availability-replacement-implementation-plan.md) 也获批准。Task 0–28 随后完成：M4-A contracts/catalog/resources、M4-B framework、O1–O12、H1 AOI Dwell、H2 First Fixation Latency、H3 Off-task Dwell、共享 primitives 与三个 reference preprocessing providers 已进入代码；相关测试与 fingerprint 继续作为历史工程证据。
 
 2026-07-15 用户确认此前路线对 provisional Anchor 算法的固定、审核和测试投入过重，并批准 EvidenceRecipe/operator 总体架构与 D-031–D-035。当前产品权威目标是让专家在前端自由设计 Evidence Computation Graph 与 BN；18 个 Anchor/33-node BN 只是 starter templates。普通修改使用 canonical `EvidenceRecipe` 和既有 operators，不要求 Python 发布、人工审批或 per-edit pytest/golden；只有算子库无法表达新能力时才新增 trusted operator plugin。旧 Task 29–36 因而停止，不能再把 H4/H5/O13 固定插件或 exact-18 closure 写成下一步。M4R 现已按 replacement plan 完成，因此准确状态是 **legacy M4 Task 0–28 preserved；15 个 legacy/reference plugins preserved；M4R engineering verified**。
+
+2026-07-16 用户进一步确认 D-036–D-039，并要求固化为核心设计：全局库保存 Evidence/BN concepts 与全部并行 immutable versions；`AssessmentSchemeVersion` 为不同任务/方案锁定 exact versions，编辑和发布采用 copy-on-write，不覆盖旧方案。Integrated workspace 显示 Raw Input、Evidence、BN Node 三类节点，但严格区分 data/extraction edge 与 probabilistic BN edge。Hover starter 的 canonical BN 为 `Competency -> Sub-skill -> Evidence`；实际评估观察 Evidence 后计算能力 posterior，只读 inference overlay 不反转图。该设计已写入 [M5 正式规格](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)，**尚未形成 implementation plan，也尚未写入 M5 production code**。
 
 旧计划的 provisional Task 0 曾证明原 fixture 范围不合适：四套 90 秒 bundle 每次会临时生成约 43,000 个文件，focused gate 约需 160 秒；测试还主要验证 builder/oracle 自洽，未独立证明 dense raw data 可以产生预期 anchors。该 provisional 工作未提交、不得计作 M4 证据。已接受修订把验证收缩为一个 10 秒全模态 workflow bundle、18 个 per-anchor 微型测试、紧凑 all-Desired/all-Unacceptable/mixed 场景和 fault-hook state matrix；replacement Task 0 已安全移除旧 provisional files、观察正确 RED，并提交新的轻量 fixture 基线。
 
@@ -312,7 +314,7 @@ M4R 验证采用选择性测试，不再为 provisional 专家算法维护逐 An
 
 ## 5. 尚未实现
 
-- M5：autosaved model workspace、相互连接的 Evidence/BN graphs、BN node/edge/state/CPT 编辑、inference、technical validation、immutable applied revision、diff/undo/replay；
+- M5：全局 Evidence/BN concept 与 immutable component version library、TaskProfile/AssessmentScheme composition、autosaved scheme draft、三类节点/两类 typed edge、BN node/state/CPT 编辑、exact inference、technical validation、copy-on-write atomic publish、diff/undo/replay；
 - M6：project/session/model/run persistence、受管理 artifact、JSON-RPC sidecar、run orchestration、progress/cancel/error 与 revision lock；
 - M7：WinUI 3 专家设计器、Evidence/BN 画布、schema-driven 参数/CPT 表单、preview/result/trace 与版本历史；
 - M8：安装包、示例项目、扩展算子指南、备份/恢复与完整交付验收；
@@ -321,18 +323,20 @@ M4R 验证采用选择性测试，不再为 provisional 专家算法维护逐 An
 
 ## 6. 下一里程碑
 
-下一步不是旧 Task 29，也不是直接开始 WinUI。M4R 已按 [implementation plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md) 完成；下一阶段应先与用户复核并正式设计 M5：
+下一步不是旧 Task 29，也不是直接开始 WinUI。M4R 已按 [implementation plan](plans/2026-07-15-m4r-editable-evidence-computation-foundation-implementation-plan.md) 完成；M5 核心设计已写成 [正式规格](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)，当前等待书面复核。复核通过后，实施计划必须覆盖：
 
-1. 定义项目级 autosaved model workspace，把多个 EvidenceRecipes、Evidence graph 和 BN graph 放在同一 canonical draft；
-2. 实现 BN node/edge/state/CPT 合同、编辑 operations、technical validation 和 inference adapter；
-3. 定义 Anchor result/output 到 BN evidence node 的显式 binding，以及 missing/omitted/virtual evidence 语义；
-4. 建立项目级 immutable applied model revision、diff、undo/redo 与 replay；
-5. 保持普通 Evidence/BN 修改 free-to-modify，不把人工审批、科学有效性或 per-edit pytest 加回 apply gate；
-6. M6 persistence/JSON-RPC 和 M7 WinUI 只保留接口边界，不在 M5 中提前宣称完成。
+1. 定义全局 concept/component-version contracts、lineage、content identity 和查询；
+2. 定义 TaskProfile/AssessmentScheme draft、exact version selection、reference closure 与 copy-on-write atomic publish；
+3. 实现 Raw Input/Evidence/BN Node 与 extraction/probabilistic 两类 edge 的独立合同、operation 和 validation；
+4. 实现 EvidenceBinding、BN node/state/CPT、hard/soft/omitted observation 与 exact inference adapter；
+5. 建立 scheme-level diff、undo/redo、preview、publish 与 historical replay；
+6. 保持普通 Evidence/BN 修改 free-to-modify，不把人工审批、科学有效性或 per-edit pytest 加回 apply gate；
+7. M6 persistence/JSON-RPC 和 M7 WinUI 只保留接口边界，不在 M5 中提前宣称完成。
 
 当前权威与历史材料见：
 
-- [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md)（当前权威）
+- [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)（当前 M5 权威；待书面复核）
+- [Expert-Editable Evidence and Assessment Model Design](specs/2026-07-15-expert-editable-evidence-and-model-design.md)（M4R–M8 expert-designer 重基线）
 - [M4 Anchor Calculation and Evidence Availability Design](specs/2026-07-13-m4-anchor-evidence-availability-design.md)
 - [M4 Lightweight Workflow Validation Amendment](specs/2026-07-13-m4-lightweight-workflow-validation-amendment.md)
 - [M4 Task 3 Reference Candidate Binding Amendment](specs/2026-07-13-m4-task3-reference-candidate-binding-amendment.md)

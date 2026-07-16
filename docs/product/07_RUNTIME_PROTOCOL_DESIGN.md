@@ -2,13 +2,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 设计版本 | v0.2 expert-designer protocol baseline |
+| 设计版本 | v0.3 M6 protocol placeholder aligned to M5 domain semantics |
 | Transport | JSON-RPC 2.0 / JSONL over stdin/stdout |
 | 客户端 | Windows WinUI 3 前端 |
 | 服务端 | Python Assessment Core sidecar |
 | 适用范围 | 本地、单用户、离线评估 |
 
-> **当前权威补充：** 协议必须承载 canonical EvidenceRecipe/operator catalog、两张图的 autosave operations、preview、technical validation 与 apply/replay。普通 expert edit 不触发 Python/plugin 发布或测试流程。M4R 已实现进程内 EvidenceRecipe service 和 DTO 语义；M5 冻结 BN/model workspace，M6 才把这些 use cases 绑定到持久化与 JSON-RPC sidecar。本文件旧 `publish` 语义统一解释为 one-click `apply`。详见 [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)。
+> **当前权威补充：** M5 域语义以 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 为准：协议最终必须承载全局 component versions、exact-pinned schemes、两类 typed edge、scheme draft/preview 与 copy-on-write atomic apply。M4R 只实现进程内 EvidenceRecipe service；M5/M6 尚未实现。本文件现有 `model.revision`、`edge.add` 等方法名是 M6 前的历史占位，不能覆盖 M5 domain contracts，也不得被描述为已冻结或已实现协议。
 
 ## 1. 目标与边界
 

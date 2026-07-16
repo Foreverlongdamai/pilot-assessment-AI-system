@@ -5,6 +5,17 @@
 | Assessment Core | 执行 session 载入、同步、anchor 计算、evidence 转换、BN 推理和结果构建的 Python 核心。 |
 | Anchor / Evidence anchor | 从原始或派生数据计算的可解释指标，例如 O2 Peak Tracking Excursion。 |
 | Starter template | 随产品提供、用于演示和起步的 Anchor/EvidenceRecipe/BN；可复制、修改、停用、删除或替换，不表示科学正确，也不限制通用引擎的节点数量。 |
+| EvidenceConcept | 一类可观测 Evidence 的稳定语义身份，例如“轨迹偏差”；不包含某个任务的精确算法。 |
+| EvidenceVersion | 某个 EvidenceConcept 的不可变精确实现；锁定 EvidenceRecipe、参数、scorer、source bindings、lineage 和 content hash。Hover 与直线保持可并列选择同一 concept 的不同 versions。 |
+| BnNodeConcept | 一类潜在或聚合能力随机变量的稳定语义身份。 |
+| BnNodeVersion | 某个 BnNodeConcept 的不可变精确定义；锁定 state space、probabilistic parents、CPD/CPT reference、lineage 和 content hash。 |
+| EvidenceBindingVersion | 把一个 exact EvidenceVersion 输出映射为 BN observation 的不可变定义；包含 observation state mapping、probabilistic parents 和 CPD/likelihood table。 |
+| CptVersion | 一个 child 在有序 probabilistic parents/states 条件下的不可变概率定义。 |
+| TaskProfileVersion | 某类任务的不可变上下文定义；声明期望轨迹/包线、phase/event/AOI 语义和适用输入，不直接等同于评估方案。 |
+| AssessmentSchemeVersion | 一套可运行评估方案的不可变发布；选择 exact TaskProfile、Evidence、binding、BN node、CPT、输出和 policy versions，并记录 content hash。 |
+| Global component library | 保存全局 Evidence/BN concepts 及全部并行 immutable versions 的组件库；只有被某个 AssessmentSchemeVersion 引用的版本才参与该方案。 |
+| Exact version pinning | 方案和 run 显式保存 component version ID 与 content hash，而不使用会随时间变化的 `latest`。 |
+| Copy-on-write publication | 从任意历史方案编辑时复用未改版本，只为改动部分创建新 component versions，并原子发布新的 scheme version；旧版本永不覆盖。 |
 | EvidenceRecipe | 前端显示、后端保存和运行时执行某个 Anchor 计算方法的唯一 canonical object；包含 bindings、typed operator graph、outputs、scoring、documentation 与 UI metadata。 |
 | EvidenceRecipe catalog | 运行时大小可变的 recipe inventory；安装包当前提供 O1–O13/H1–H5 共 18 个 starter templates，但 catalog 和 executor 不把 18 写成上限。 |
 | Recipe draft | 可自动保存的 EvidenceRecipe 工作副本；允许 graph 暂时 incomplete，只有 preview/apply 要求达到相应技术可执行状态。 |
@@ -22,7 +33,13 @@
 | AnchorMeasurement | recipe executor（或 legacy AnchorPlugin）在中央 scorer 之前产生的 raw metrics、phase/event breakdown、override candidate、typed artifacts 与 computation trace。 |
 | AnchorResult v0.2 | M4 的 per-anchor 结果合同（`anchor-result-0.2.0`）；记录 calculation status、raw metrics、D/A/U likelihood、override、artifact、diagnostics、provenance 和 fingerprint。 |
 | ComputationTrace | M4 保存的 sample/time range、grid/window、匹配方法和 technical diagnostics；只用于审计，不生成 quality score 或改变 likelihood。 |
-| Evidence node | BN 中接收 Desired / Adequate / Unacceptable 观测的节点。参考模型有 18 个。 |
+| Raw Input node | 高层工作区中表示 X/U/I/G/P、具体物理 stream 或 task source 的数据节点；用于 Evidence extraction，不是 BN random variable，也没有 CPT。 |
+| Evidence node | 高层工作区中表示可从 session 提取并可被 BN 观察的变量；组合 EvidenceVersion 与 EvidenceBindingVersion。Starter 参考模型有 18 个，但引擎数量不受限。 |
+| BN node | BN 中的 latent/derived random variable，例如 sub-skill 或 aggregate competency；其版本定义 states、probabilistic parents 和 CPD/CPT。 |
+| Data / extraction edge | 从 raw/session/task source 到 Evidence 的数据依赖，或 EvidenceRecipe 内 typed operator ports；不进入 BN factorization，也不等于 BN parent。高层不使用 Evidence→Evidence extraction edge。 |
+| Probabilistic BN edge | 从 parent random variable 到 child random variable 的概率边，表示 child CPD 的条件变量并进入 BN joint factorization。 |
+| BN parent | 出现在 `P(child | parents)` 中的概率父随机变量；不得用来指 EvidenceRecipe 的 raw source binding。 |
+| Inference flow / overlay | 观测 Evidence 后对 sub-skill/competency posterior 的信息影响方向；前端可只读显示 `Evidence ⇢ ability`，但它不是可保存的 BN edge。 |
 | Sub-skill | 不可直接观测的中间技能节点。参考模型有 11 个。 |
 | Aggregate competency | 顶层能力节点：TCP、PC、SM、OC。 |
 | TCP | Task Control Proficiency，任务控制熟练度。 |
@@ -71,12 +88,16 @@
 | SynchronizationReport | M3 公共同步报告，记录七个 core modality、task reference、annotation、clock/coverage/window diagnostics 与 source/policy/catalog/alignment fingerprints；证明结构／时间合同并提供 non-gating diagnostics，始终 `formal_run_authorized=false`。 |
 | Run preflight | `run.preflight` 在 aligned session、annotation/reference 和锁定 model revision 上执行的正式运行门；输出 `RunPreflightReport` 并决定能否创建 AssessmentRun。 |
 | BN | Bayesian Network，贝叶斯网络。 |
+| CPD | Conditional Probability Distribution，BN child 在给定 probabilistic parents 下的条件分布；有限离散模型通常物化为 CPT。 |
 | CPT | Conditional Probability Table，节点在给定 parent state 下的条件概率表。 |
+| Generative starter direction | Hover starter 的 canonical BN 方向 `Competency -> Sub-skill -> Evidence`；它定义概率分解，不等于运行时先计算 competency。 |
+| Posterior inference | Evidence 被观察后，由完整 BN joint distribution 计算 `P(Sub-skill/Competency | observations)`；信息可逆于部分 canonical arrows 传播。 |
 | Virtual evidence | M5 用显式、版本化 soft scorer 或 dependence-strength mixing 表达的 likelihood observation；不得因所谓原始数据质量向均匀分布收缩。 |
-| Model bundle | anchor catalog、任务 profile、图、CPT、schema、版本和 provenance 的可发布模型包。 |
+| Model bundle | 一个 AssessmentSchemeVersion 及其 exact dependency closure 的可移植导入/导出包；它不是全局组件库，也不是可原地修改的唯一模型身份。 |
 | Autosaved draft | 专家正在编辑的模型工作副本；每个用户意图自动保存，允许 incomplete/invalid，并支持 undo/redo 和 preview。 |
 | Draft | `Autosaved draft` 的简称；尚未成为后续新 run 的默认模型。 |
-| Applied revision | 用户点击“应用到后续评估”并通过最小技术可运行校验后形成的不可变模型版本；不表示科学审批或软件发布。 |
+| Applied revision | M4R/旧文档的不可变模型术语；M5 后具体化为 copy-on-write 发布的 component versions 与 `AssessmentSchemeVersion`，不表示科学审批或 Python 软件发布。 |
+| Scheme draft | 从 starter 或任意 AssessmentSchemeVersion 创建的可自动保存工作副本；允许 incomplete，通过 copy-on-write 形成候选 component versions。 |
 | Applied recipe revision | M4R 对单个 EvidenceRecipe 保存的不可变 snapshot、content hash、parent/diff、作者、时间与可选 note；M5/M6 将其纳入项目级 applied model revision。 |
 | Published revision | 旧文档/UI 术语；在当前产品中统一解释为 `Applied revision`，不得附加人工审批、golden 或 per-edit test 语义。 |
 | Technical validation | 只检查 schema、引用、DAG、operator/type/unit/parameter、formula/scorer 与 BN CPT 是否可执行；不判断算法、Anchor mapping 或 CPT 是否科学合理。 |
@@ -88,7 +109,7 @@
 | ready / ready_partial / blocked (M4) | `ready` 表示所有适用 anchor 均 computed；`ready_partial` 表示 inventory 完整但有 missing/config/dependency/error；`blocked` 只表示有效 request 之后的 plan/registry/DAG/global inventory/atomic commit 失败。pre-request rejection 不生成 M4 disposition/report。 |
 | plugin_unavailable / not_implemented / not_attempted | 旧 M4 whole-Anchor plugin capability/plan/report inventory 状态，不是 AnchorResult calculation status。M4R 对新 recipe 使用 `operator_unavailable`；两者都不得伪造 session result。 |
 | DerivedArtifactSink | M4 通过依赖注入写入 typed、content-addressed 临时派生产物的 port；M6 才拥有正式 managed artifact root 和持久化生命周期。 |
-| revision_id | 标识不可变发布模型或其父版本的稳定 ID。 |
+| revision_id | M4R/legacy 中标识不可变 recipe/model revision 的稳定 ID；M5 新合同分别使用 component version ID 与 scheme version ID。 |
 | Sidecar | 由 Windows 前端启动和管理的本地 Python 后端进程。 |
 | JSON-RPC / JSONL | 每行一个 JSON-RPC 2.0 消息的 stdio 进程协议。 |
 | TPX | O8 使用的 task performance composite，由 phase-state precision 与 workload rate 组合。 |
