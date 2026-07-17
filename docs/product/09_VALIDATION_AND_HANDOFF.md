@@ -2,12 +2,12 @@
 
 | 字段 | 值 |
 |---|---|
-| 设计版本 | v0.3 shared-versioned-model validation baseline |
+| 设计版本 | v0.4 complete-node/task-activation validation baseline |
 | 当前软件状态 | in_progress（M1/M2/M3、M4R、M5 与 M6 engineering verified；M7 WinUI 与 M8 packaging 尚未完成，starter/synthetic `formal_run_authorized=false`） |
 | 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
-> **当前权威补充：** M5 工程测试只证明平台、built-in operators、recipe/inference executor、exact version pinning、atomic publish 和 transport-neutral domain operation 映射按合同工作；它不评判专家 recipe、Anchor、阈值或 CPT 是否科学合理。Autosave 不设门，apply 只执行最小技术校验。M5 完成门只使用小型平台不变量和手算 BN，没有建立重型多模态 fixtures。详见 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)。
+> **当前权威补充：** M5/M6 工程测试只证明已实现平台、built-in operators、recipe/inference executor、legacy exact version/publish/replay 和 protocol 映射按合同工作；它不评判专家 recipe、Anchor、阈值或 CPT 是否科学合理，也不证明 M7 新语义已实现。M7 current node/scheme autosave 不设发布门，run preflight 只执行最小技术校验并自动冻结 RunSnapshot。继续使用小型平台不变量和手算 BN，不建立重型多模态 fixtures。详见 [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)。
 
 M5 的 D-040 migration smoke 已对全部 M4R recipe source bindings 执行 generic provenance closure：旧 `starter.o8` 因 Evidence observation input 被保留但拒绝 active import，新 raw/session/task-derived TPX parallel version 可执行。该 smoke 不比较两版 provisional 数值，也没有按 O8 ID 写特判。
 
@@ -166,14 +166,14 @@ fresh wheel 已在仓库外临时目录安装，并通过 packaged schema、proj
 | Expert recipes | 系统忠实保存和执行专家定义；不判断其科学合理性 | preview 与用户检查，不设 per-edit pytest/golden gate |
 | BN/CPT | 图合法、概率正确、缺失可边缘化 | hand-computable BN tests |
 | Graph editor | 前后端一一对应、失败原子回滚 | .NET/Python contract + UI tests |
-| Versions | autosave 可恢复、published component/scheme versions 不可变、exact-pinned run 可重现 | autosave/undo/copy-on-write atomic apply/replay tests |
+| Current model + history | node/scheme autosave 可恢复、activation closure 正确、RunSnapshot 不可变且历史 run 可重现 | autosave/undo/copy/cascade/run-snapshot replay tests |
 | Runtime | framing、取消、错误、崩溃恢复 | protocol fault-injection |
 | Results | posterior、coverage、trace 和版本完整 | golden result snapshots |
 | Privacy | 导出和日志默认脱敏 | privacy inspection tests |
 
-## 4. Recipe、Graph 与 CPT Apply 技术门槛
+## 4. Recipe、Graph 与 CPT 保存/运行技术门槛
 
-Draft 始终可以自动保存，即使 incomplete。只有点击“应用到后续评估”时才要求：
+Current ModelNode/TaskScheme 始终可以自动保存，即使 `configuration_incomplete`。每个原子 operation 只校验它自身必须保持的结构不变量；只有 preview/run preflight 才要求所选 active closure 整体技术可执行：
 
 - recipe/node/edge/port/output/Anchor binding 唯一且可解析；
 - 无 self-loop、duplicate edge 或 directed cycle；
@@ -182,13 +182,13 @@ Draft 始终可以自动保存，即使 incomplete。只有点击“应用到后
 - 每个节点 state space 非空、名称唯一且顺序固定；
 - parent order 与 CPT dimension 一致；
 - 所有 CPT 数值有限、非负、每行和为 1；
-- 每个 active evidence node 都有唯一、有效且可解析的 EvidenceRecipe output binding；unbound node 可存在于 incomplete draft；
+- 每个 active evidence node 都有唯一、有效且可解析的 EvidenceRecipe output binding；unbound node 可存在于 incomplete current scheme；
 - parent count 与 CPT cell count 不超过项目安全上限；
 - operator implementation、recipe graph、BN graph 和 engine 兼容；
 - scorer 能产生合同规定的 evidence output，selected model 可以编译为 executable plan；
-- revision manifest、diff、作者、时间和 content identity 可自动生成。
+- semantic/layout revision、diff、作者、时间和 content identity 可自动生成；run.start 可冻结完整 RunSnapshot。
 
-以下内容不是 apply gate：文献支持、专家共识、参数校准、单调性偏好、starter-template 等价、preview 表现，以及任何人工 reviewer/waiver。系统可以显示 warning，但不能以此阻止专家应用。
+以下内容不是 autosave/preview/run gate：文献支持、专家共识、参数校准、单调性偏好、starter-template 等价、preview 表现，以及任何人工 reviewer/waiver。系统可以显示 warning，但不能以此阻止专家保存或运行技术上可执行的方案。
 
 ## 5. 科学校准路线
 
@@ -199,7 +199,7 @@ Draft 始终可以自动保存，即使 incomplete。只有点击“应用到后
 - 确认 task profile、reference path、phase/event 与安全边界；
 - 对每条意见记录 accept/reject/defer 和理由。
 
-输出：expert_reviewed component/scheme versions，不等同于统计验证。
+输出：标记为 expert_reviewed 的 current nodes/TaskSchemes 与对应 review records；运行时由 RunSnapshot 固定，不等同于统计验证。
 
 ### Stage S1：参数校准
 

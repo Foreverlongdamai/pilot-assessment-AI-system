@@ -9,12 +9,12 @@
 | Anchor 实现状态 | 18 个 starter definitions；旧 Task 0–28 已实现 15 个 legacy/reference whole-Anchor plugins。Task 29–36 已停止；H4/H5/O13 与后续新 Anchor 走 EvidenceRecipe/operator 路线 |
 | 科学状态 | engineering defaults，未完成航空、人因或医学验证 |
 
-本文件定义 `reference-model-v0.1` starter template 的历史公式摘要，便于迁移、比较和示例展示。当前 M5 组合、版本和 BN 语义以 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 为最高权威；Evidence 计算总体合同见 [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)。旧 M4/Task 7/Task 8 文档继续约束已实现历史资源和 replay identity，但不再把 exact-18 或 whole-Anchor plugin 设为新完成门。
+本文件定义 `reference-model-v0.1` starter template 的历史公式摘要，便于迁移、比较和示例展示。当前节点/任务组合与编辑语义以 [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) 为最高权威；M5 版本化实现继续作为 migration/replay 基础，Evidence 计算总体合同见 [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)。旧 M4/Task 7/Task 8 文档继续约束已实现历史资源和 replay identity，但不再把 exact-18 或 whole-Anchor plugin 设为新完成门。
 
 ## 1. 模型边界
 
 1. 当前阈值、窗口、滤波、AOI、控制映射、anchor binding 和 CPT 是可编辑工程默认，不是认证限制、医学诊断阈值或最终训练合格标准。
-2. 专家可以在前端修改参数、EvidenceRecipe、图和 CPT；修改自动保存为 scheme draft，点击“应用到后续评估”时只做最小技术可运行校验，并 copy-on-write 创建 immutable component/scheme versions，无科学审批或逐次工程测试。
+2. 专家可以在前端修改参数、EvidenceRecipe、图和 CPT；修改直接自动保存到 current ModelNode/TaskScheme，只做最小技术可运行校验。无需 Draft/Published/Apply/Publish、科学审批或逐次工程测试；每次 run 自动冻结 RunSnapshot。
 3. D/A/U 只表示一次 session 的可观测表现，不代表飞行员永久能力真值。
 4. M4 假定输入已经通过 M1–M3 的文件、schema、字段、有限数值和时间合同。采集质量由仿真采集系统保证，不是 M4 的研究对象。
 5. 轨迹再差、控制再剧烈、生理指标再异常、未响应、未恢复、未注视或未稳定悬停，都是有效负面表现，必须形成 `computed + Unacceptable`，不得被过滤为低质量数据。

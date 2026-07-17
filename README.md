@@ -14,9 +14,10 @@ flowchart LR
     D --> E["Sub-skill posterior"]
     E --> F["Competency posterior"]
 
-    L["Global versioned library<br/>Evidence + BN components"] --> S["AssessmentSchemeVersion<br/>pins exact versions"]
+    L["Global complete-node library<br/>Raw + Evidence + BN nodes"] --> S["Current TaskScheme<br/>active-node selection"]
     S -.-> B
     S -.-> D
+    S --> R["Run start<br/>immutable RunSnapshot"]
 ```
 
 运行时计算顺序是：
@@ -43,7 +44,7 @@ Competency --probability--> Sub-skill --probability--> Evidence
 | Data / extraction edge | `Raw Input -> Evidence`；只表达数据和计算依赖 |
 | Probabilistic BN edge | `BN parent -> child`；表达 child CPD/CPT 的条件依赖 |
 
-Evidence 节点的 Inspector 必须同时让专家看到两件事：
+Evidence 节点的独立浮动窗口必须同时让专家看到两件事：
 
 1. 它如何从原始数据提取，包括输入、窗口、算子、公式、参数、聚合和 scorer；
 2. 它如何在 BN 中被解释，包括 observation states、probabilistic parents 和 CPT/likelihood。
@@ -52,29 +53,27 @@ Evidence 节点的 Inspector 必须同时让专家看到两件事：
 
 高层 extraction graph 不使用 `Evidence -> Evidence` 或 `BN Node -> EvidenceRecipe` 作为数据边。复用计算通过 Evidence 内部的通用 operator/subgraph 或可追溯到 raw/task source 的 typed derived artifact 完成；Evidence 之间若存在概率关系，则必须作为带 CPD/CPT 的 probabilistic BN edge 明确建模。
 
-## 全局组件库与任务方案
+## 全局完整节点库与任务方案
 
-系统不是为每种任务复制并覆盖一整套模型，而是维护一个全局、不可变、可追溯的版本库：
+系统维护一个项目级全局节点库。画布上的每个 Evidence/BN 圆形节点都是一个完整、独立、只有一个当前功能定义的 `ModelNode`：名称、fixed parents、EvidenceRecipe/parameters/scorer 或 BN states/CPT 都属于该节点。
 
-- `EvidenceConcept` 表示“测量什么”；
-- `EvidenceVersion` 表示一种精确计算方法；
-- `BnNodeConcept` 表示一种能力变量；
-- `BnNodeVersion` 表示其精确 states、parents 与 CPD/CPT；
-- `TaskProfileVersion` 表示任务上下文、期望轨迹/包线、phase/event/AOI；
-- `AssessmentSchemeVersion` 选择并锁定上述组件的确切版本。
+如果不同任务需要不同算法、parents 或 CPT，就使用不同节点，而不是在同一个节点中切换版本。例如：
 
-例如，“轨迹偏差”可以同时存在 Hover 版、直线保持版和其他专家版。Hover 方案选择自己的版本，直线保持方案选择另一个版本；二者并列存在，不互相覆盖。
+- `Precise`：starter 节点；
+- `hover.Precise`：从 starter 复制并为 Hover 修改的新节点；
+- `straight.Precise`：为直线保持建立的另一个节点。
 
-发布遵循 copy-on-write：
+每个 `TaskScheme` 只是全局节点上的激活配置：
 
-1. 专家可以从 starter 或任意历史方案创建 draft；
-2. 未修改的组件继续引用原 exact version；
-3. 修改的组件形成新候选 version；
-4. 点击“应用到后续评估”后，后端只做最小技术校验；
-5. 新组件 versions 与新 scheme version 原子发布；
-6. 旧方案和历史 run 永远锁定原 ID 与 content hash。
+- 左侧任务列表直接切换 Base、Hover、Straight 等并列方案；
+- 当前方案采用的节点和边明亮，未采用但真实存在的全局节点和边变暗；
+- 启用 child 自动递归启用全部 fixed parents；
+- 停用仍有 active downstream 的 parent 时，先列出影响并让专家继续或取消；
+- 多个任务可以共享完全相同的节点；某任务需要修改时，专家复制节点、重命名、修改并在该任务停用旧节点。
 
-方案不使用会漂移的 `latest`。同一任务可以有多套方案，多个任务也可以共享完全相同的组件版本。
+默认 copy/paste 只深复制选中节点自身，并继续引用原 fixed parents，不复制整条 parent branch。复制任务方案会立即在左侧新增一个可切换、可编辑的并列方案，默认继续共享全局节点。
+
+正常 UI 没有 Draft/Published/Apply/Publish：所有 current nodes 和 TaskSchemes 自动保存并可直接运行。每次 `run.start` 会先冻结 exact managed session、active closure、完整节点定义、recipes/operators、CPT 与 hashes 为 immutable `RunSnapshot`；后续编辑只影响未来运行，历史结果不会变化。旧 M5/M6 immutable versions 与 published schemes 继续作为迁移和历史 replay 资产，不是新的专家交互模型。
 
 ## 专家最终可以修改什么
 
@@ -85,9 +84,11 @@ Evidence 节点的 Inspector 必须同时让专家看到两件事：
 - 展开 Evidence 内部 operator graph；
 - 新增、删除和连接 BN nodes；
 - 修改 state space、probabilistic parents 和 CPT；
-- 浏览全局组件的所有并行 versions；
-- 为不同任务组合并发布不同方案；
-- preview 当前 draft，并比较或重放历史版本。
+- 在左侧复制、切换和编辑多个任务方案，并以亮暗查看 active closure；
+- 同时打开多个可移动、缩放、最大化的节点浮动窗口进行比较；
+- 修改一个共享节点，或先复制为任务专用新节点再修改；
+- preview 当前节点/方案，并从历史 RunSnapshot 重放结果；
+- 在中文与英文之间即时切换界面和模型名称。
 
 普通修改不需要发布新的 Python whole-Anchor plugin，也不需要人工审批或逐次运行开发测试。只有现有 operator library 无法表达一种全新计算能力时，开发者才增加 trusted operator plugin。
 
@@ -104,7 +105,7 @@ Evidence 节点的 Inspector 必须同时让专家看到两件事：
 | P(t) | EEG、ECG 及未来声明的其他生理模态 |
 | pilot_camera(t) | 可选的驾驶员脸部/身体画面；不等同于 I(t) |
 
-任务 reference、phase/event annotations、AOI 和期望轨迹由版本化 task profile 提供。当前 repository-external CSV 只用于理解采集格式和验证接口；它不是标准飞行轨迹、任务 ground truth 或能力证据。
+任务 reference、phase/event annotations、AOI 和期望轨迹由 TaskScheme 绑定的 typed task resources 提供。当前 repository-external CSV 只用于理解采集格式和验证接口；它不是标准飞行轨迹、任务 ground truth 或能力证据。
 
 ## 差表现与缺失数据
 
@@ -117,7 +118,7 @@ Evidence 节点的 Inspector 必须同时让专家看到两件事：
 
 ## 当前实现状态
 
-截至 2026-07-16：
+截至 2026-07-17：
 
 | 里程碑 | 状态 |
 |---|---|
@@ -127,21 +128,21 @@ Evidence 节点的 Inspector 必须同时让专家看到两件事：
 | M4R Editable Evidence Computation Foundation | 已工程验证；canonical `EvidenceRecipe`、typed operators、compiler/executor、draft/preview/apply/replay 与 18 个 starter recipes 已实现 |
 | M5 Shared Model Library and Bayesian Workspace | 已工程验证；global immutable component library、exact-pinned scheme、draft/undo/redo、copy-on-write atomic publish、通用 CPT、finite-discrete exact inference、M4R migration、Hover starter package 与 lightweight preview/publish/replay workflow 已完成 |
 | M6 Local Runtime / Persistence / Protocol | 已工程验证；受管 project/session/artifact、SQLite 持久化、exact run、Evidence→BN pipeline、progress/cancel/recovery 与 stdio JSON-RPC sidecar 已实现 |
-| M7 WinUI Expert Designer | 尚未实施 |
+| M7 WinUI Expert Designer | 正式设计候选已保存；current complete nodes、task activation、autosave/RunSnapshot backend migration 与 WinUI 均尚未实施 |
 | M8 Packaging / Handoff | 尚未实施 |
 
 当前 18 个 Evidence、11 个 sub-skills、4 个 competencies 和 Hover BN 都只是 `starter_template` / `engineering_default`。通用代码、schema、API、UI 和测试不得依赖这些数量、名称或连接。完整产品仍是 `in_progress`，`formal_run_authorized=false`。
 
 ## 从这里开始阅读
 
-1. [M5 Shared Versioned Model Library and Bayesian Workspace Design](docs/product/specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) — 当前已确认的系统核心模型与 BN 语义。
-2. [M5 Implementation Plan](docs/product/plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) — 已完成的 inline 实施、验证与交接记录。
-3. [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](docs/product/specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) — 已实现的持久化、运行生命周期与本地协议规格。
-4. [M6 Implementation Plan](docs/product/plans/2026-07-16-m6-local-runtime-persistence-and-sidecar-implementation-plan.md) — 已完成的 15 个 INLINE 任务、轻量验证与提交记录。
-5. [产品设计文档中心](docs/product/README.md) — 全部正式文档、阅读顺序与权威规则。
-6. [产品总览](docs/product/01_PRODUCT_OVERVIEW.md) — 用户、工作流和总体架构。
+1. [M7 WinUI Expert Designer and Task Activation Workspace Design](docs/product/specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) — 当前完整节点、任务激活、autosave、浮动窗口与 RunSnapshot 权威设计。
+2. [产品设计文档中心](docs/product/README.md) — 全部正式文档、阅读顺序与权威规则。
+3. [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md) — 真实代码状态、迁移缺口、验证证据和下一步。
+4. [M5 Shared Versioned Model Library and Bayesian Workspace Design](docs/product/specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) — 已实现后端基础与历史 identity/publish 语义。
+5. [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](docs/product/specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) — 已实现的持久化、运行生命周期与本地协议规格。
+6. [产品总览](docs/product/01_PRODUCT_OVERVIEW.md) — 用户、工作流和总体架构；冲突处以 M7 规格为准。
 7. [Expert-Editable Evidence and Assessment Model Design](docs/product/specs/2026-07-15-expert-editable-evidence-and-model-design.md) — M4R–M8 expert-designer 重基线。
-8. [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md) — 真实代码状态、验证证据和下一步。
+8. [M5 Implementation Plan](docs/product/plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) 与 [M6 Implementation Plan](docs/product/plans/2026-07-16-m6-local-runtime-persistence-and-sidecar-implementation-plan.md) — 已完成的 inline 实施、验证与交接记录。
 9. [Decisions](docs/product/DECISIONS.md) 与 [Glossary](docs/product/GLOSSARY.md) — 已锁定口径和术语。
 
 ## 目录

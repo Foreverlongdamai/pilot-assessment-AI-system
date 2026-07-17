@@ -8,7 +8,7 @@
 | 服务端 | Python Assessment Core sidecar |
 | 适用范围 | 本地、单用户、离线评估 |
 
-> **当前权威补充：** M6 的冻结边界以 [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](./specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) 为准；M5 域语义继续以 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 为准。M6 已于 2026-07-16 工程验证；当前实现入口为 `python -m pilot_assessment.sidecar`，method adapters 只调用同一组 application/domain services，不复制 Evidence 或 BN 逻辑。M7 .NET client 与 M8 安装包仍未实现。
+> **当前权威补充：** M6 的已实现冻结边界以 [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](./specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) 为准；M7 的 current ModelNode/TaskScheme/autosave/RunSnapshot 目标以 [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) 为准。M6 已于 2026-07-16 工程验证；当前入口为 `python -m pilot_assessment.sidecar`，但仍暴露 legacy draft/publish surface。M7 必须扩展 current-object methods，method adapters 继续只调用同一组 application/domain services，不复制 Evidence 或 BN 逻辑。M7 .NET client 与 M8 安装包仍未实现。
 
 ## 1. 目标与边界
 

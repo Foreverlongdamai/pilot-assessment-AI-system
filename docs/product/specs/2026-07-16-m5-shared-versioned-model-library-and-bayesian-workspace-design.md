@@ -9,6 +9,8 @@
 | 决策 | D-036–D-040 |
 | 实施状态 | Task 1–12 已完成；implementation head `a2cc913` 后的 M5 gate 全部通过；下游 M6 也已于 2026-07-16 engineering verified，M7–M8 尚未实现，starter/synthetic `formal_run_authorized=false` |
 
+> **2026-07-17 适用性修订：** 本文准确记录已实现的 M5 immutable component-version、scheme draft/publish 与 replay 基础，但不再是 M7 的当前节点/任务交互权威。当前产品改为“每个可见节点一个完整 current definition + TaskScheme activation set + autosave + automatic immutable RunSnapshot”。本文关于同 concept task-specific parallel versions、exact-version scheme composer 和 Draft/Publish 正常流程的段落只用于旧实现迁移与 run replay。详见 [M7 WinUI Expert Designer and Task Activation Workspace Design](./2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) 与 D-047–D-053。
+
 ## 1. 目的
 
 M5 把 M4R 已实现的单个可编辑 `EvidenceRecipe` 能力提升为完整的专家模型工作区。系统必须让专家能够：

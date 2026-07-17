@@ -6,12 +6,12 @@
 
 | 当前适用性 | 决策 | 解释 |
 |---|---|---|
-| 当前通用基线 | D-001、D-003、D-005–D-007、D-009–D-014、D-016–D-022、D-024 的 no-quality-mixing 原则、D-027 的 raw-driven 原则、D-028、D-030–D-032、D-034、D-036–D-046 | 继续约束通用产品、合同或运行语义；其中 D-007 的“后端权威”只指 canonical state/version/execution，不表示后端决定科学内容 |
+| 当前通用基线 | D-001、D-003、D-005–D-007、D-009–D-014、D-016–D-022、D-024 的 no-quality-mixing 原则、D-027 的 raw-driven 原则、D-028、D-030–D-032、D-034–D-035、D-037–D-044、D-045 的 transaction/idempotency 原则、D-046 的 exact snapshot/recovery 原则、D-047–D-053 | 继续约束通用产品、合同或运行语义；其中 D-007 的“后端权威”只指 canonical state/execution，不表示后端决定科学内容 |
 | Starter/reference 范围 | D-002、D-004、D-015、D-024 的具体默认权重、D-029 的 fixed resource inventory | 只描述 `reference-model-v0.1` / Hover starter 或已发布 legacy resource，不构成 generic engine 的任务、数量、拓扑或算法限制 |
-| 已被部分取代或具体化 | D-008、D-023、D-033、D-035 | 不可变历史、typed DAG、最小技术校验等原则仍有效；whole-model revision、whole-Anchor plugin、inference-smoke gate 和旧里程碑边界由 D-031–D-040 具体化或取代 |
+| 已被部分取代、限定或转为历史实现 | D-008、D-023、D-033、D-036，以及 D-045/D-046 中要求 publish/published scheme 的措辞 | 不可变运行历史、typed DAG、最小技术校验、幂等事务与 exact snapshot 仍有效；当前节点身份、任务激活、自动保存和 run 语义由 D-047–D-053 取代。M5/M6 version/draft/publish 实现只用于迁移和旧 run replay |
 | 历史完成门 | D-025、D-026，以及 D-027 中 fixed-18 测试范围 | 只记录旧 M4 Task 0–28 的工程过程，不再定义 M4R/M5 的完成条件或专家每次修改的测试义务 |
 
-若单条决策正文与该索引或更晚决策冲突，以明确列出的后续决策为准。D-031–D-040 定义当前专家可设计、全局组件版本化产品方向；历史材料继续保留用于迁移、回放和说明路线演进。
+若单条决策正文与该索引或更晚决策冲突，以明确列出的后续决策为准。D-031–D-040 保留专家可设计、三类节点/两类边和 BN 语义基础；D-047–D-053 定义当前完整节点、任务激活、自动保存和不可变运行快照方向。历史材料继续保留用于迁移、回放和说明路线演进。
 
 ## D-001：产品提供可配置参考模型，而非最终航空标准
 
@@ -251,7 +251,7 @@
 ## D-033：专家修改自动保存草稿，一键应用到后续评估
 
 - 状态：已接受
-- 当前适用性：当前通用交互原则；D-036 将单一 applied revision 具体化为改动 component versions 与新 `AssessmentSchemeVersion` 的 copy-on-write 原子发布。新 run 必须显式选择 exact scheme version，不自动跟随 `latest`。
+- 当前适用性：被 D-051 部分取代。自动保存、允许 incomplete、撤销/重做与最小技术校验继续有效；“草稿”“应用到后续评估”和只有 applied/published scheme 才能运行的交互不再适用。
 - 决策：模型修改自动保存到可撤销 draft；incomplete draft 可以继续编辑。用户点击“应用到后续评估”后，后端只做最小技术可运行检查，通过即创建 immutable applied revision 并供后续新 run 使用。正在运行和历史 run 不改变。Apply 不要求人工审批、pytest、build、wheel 或科学验证。
 - 理由：版本与历史的作用是撤销、比较和重放，不应变成专家修改参数、公式或网络的阻力。
 - 影响：technical validation 只覆盖 schema、dangling reference、DAG、operator/type/unit/parameter、safe formula、output 和 CPT 可执行性。未校准、无文献支持或偏离 starter template 只显示 metadata/warning，不阻止保存或 apply。
@@ -274,6 +274,7 @@
 ## D-036：全局组件采用 concept + immutable version，方案锁定 exact versions
 
 - 状态：已接受
+- 当前适用性：历史 M5/M6 实现与 replay/migration 合同。当前专家工作区不再把同 concept 的并行 versions 作为不同任务的选择机制；由 D-047/D-048/D-051 取代。
 - 决策：Evidence、BN node、Evidence-to-BN binding 和 CPT 进入全局版本化组件库。稳定 concept 表示“它是什么”，immutable version 表示一次精确实现；`AssessmentSchemeVersion` 只保存 exact component version references 和 content hashes，不引用可漂移的 `latest`。同一 concept 可以长期并列多个版本，不同任务和同一任务的不同方案可以自由选择。
 - 理由：Hover、直线保持和未来任务可能需要同名 Evidence/BN node 的不同算法或概率定义。原地升级会迫使用户在任务之间反复手工改回模型，并破坏历史结果。
 - 影响：从任意既有方案编辑都采用 copy-on-write；未改组件继续复用原版本，改动组件与新 scheme 在 publish/apply 时原子创建新版本。旧方案和历史 run 永不被新发布覆盖。完整合同见 [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)。
@@ -290,7 +291,7 @@
 - 状态：已接受
 - 决策：Hover starter 的 canonical BN 使用 `Competency -> Sub-skill -> Evidence`，其 CPD 分别表达 child 在 parents 条件下的分布；实际评估先提取并观察 Evidence，再计算 sub-skill/competency posterior。前端可用只读 inference overlay 显示 `Evidence ⇢ Sub-skill ⇢ Competency` 的信息影响，但不能把 overlay 保存为反向 BN topology。
 - 理由：Bayesian Network 的箭头定义概率分解，不等于程序执行顺序，也不限制 posterior 信息传播方向。把“从证据推断能力”误画成永久反向边会把一个模型变成另一个模型。
-- 影响：通用引擎仍允许专家发布满足 DAG、CPD/CPT 和 observation 合同的其他方向；这必须创建新的 component/scheme versions，并明确标为不同概率模型，而不是同一模型的显示切换。
+- 影响：通用引擎仍允许专家建立满足 DAG、CPD/CPT 和 observation 合同的其他方向；当前产品中这必须通过新的完整节点或明确修改后的节点定义表达，并由 task scheme 激活，而不是同一模型的显示切换。历史 M5 component/scheme versions 继续用于 replay。
 
 ## D-039：Hover/18/11/4 只是一套 starter scheme，不是引擎基数或任务锁定
 
@@ -338,6 +339,7 @@
 ## D-045：所有持久化写操作同时使用幂等 transaction 和 optimistic revision
 
 - 状态：已接受
+- 当前适用性：transaction、idempotency、semantic/layout revision 与 audit 原则继续适用；`publish` 作为必经 mutation 类型的要求被 D-051 取代。
 - 决策：mutation/import/publish/run.start 必须携带稳定 `transaction_id`，以 canonical method+params hash 作为幂等身份；同 ID 同请求返回首次 response，同 ID 不同请求拒绝。草稿 semantic/layout 修改继续分别携带 expected graph/layout revision；幂等不能绕过 revision，revision 也不能替代幂等。
 - 理由：stdio response 丢失或 sidecar 重启会触发安全重试，而前端拖拽/编辑又可能基于过期状态；两类机制解决不同问题。
 - 影响：成功 response、audit ID 和新 canonical revisions 必须持久化。便利 RPC 也要转换为同一 typed operation/transaction，不能形成绕过路径。
@@ -345,6 +347,56 @@
 ## D-046：M6 run 锁定 exact snapshot，并以可查询状态恢复长任务
 
 - 状态：已接受
+- 当前适用性：exact snapshot、progress/cancel/recovery 与 purpose 分离继续适用；snapshot 输入必须是 published scheme 的限制被 D-051 泛化为任意技术可执行的 current TaskScheme revision。
 - 决策：recorded run 锁定 exact managed session revision/root hash、published scheme/components、EvidenceRecipe/operators/scorer、BN/runtime 和参数 identities。progress 先持久化再 notification；cancel 为 cooperative；sidecar crash 后非 terminal run 标记 `interrupted`，不伪造 completed。`preview`、`software_test` 和 `assessment` 分开；synthetic/engineering starter 可完成 software test，但不能冒充正式科学评估。
 - 理由：前端断开、响应丢失或进程崩溃不应丢失历史或改变模型；同时当前 synthetic 数据和 starter policy 明确不支持正式结论。
 - 影响：run preflight 只检查 frozen technical closure、purpose 和 declared provenance，不按飞行/生理表现或所谓数据质量过滤 Evidence。v0.1 interrupted run 通过新 run 重试，不原地续算。
+
+## D-047：每个可见节点是一个完整、独立、只有一个当前定义的节点
+
+- 状态：已接受
+- 决策：Raw Input、Evidence 和 BN Node 是三个高层节点类型。每个 Evidence/BN `ModelNode` 拥有稳定 `node_id`，其名称、说明、fixed parents、EvidenceRecipe/parameters/scorer 或 states/CPT/CPD 都属于该节点的完整 current definition。若 task-specific 算法、parent set、CPT 或语义不同，必须复制或新建为另一个节点，例如 `Precise`、`hover.Precise` 与 `straight.Precise`，不能让一个圆形节点在任务切换时替换内部 component version。
+- 理由：用户希望专家通过复制基础节点形成直观、并列的任务节点；同 concept 多版本选择会把任务差异隐藏在版本槽位中，并重新引入覆盖/切换歧义。
+- 影响：一个节点可被多个任务共享，但共享时全部定义必须相同。内部 revision/change history 只用于 autosave、并发、undo/replay，不作为任务侧可选业务版本。D-036 的 task-specific parallel version UX 被本决策取代。
+
+## D-048：任务方案是全局完整节点上的可编辑激活集合
+
+- 状态：已接受
+- 决策：每个 `TaskScheme` 并列存在，保存 explicit active node IDs、由 fixed parents 计算的 active closure、outputs、task/reference bindings 和 layout overrides。切换方案只改变节点/边的亮暗与执行集合，不替换节点内部定义。Edges 从 child 节点的 source bindings 或 probabilistic parent set 投影，不由任务方案另行覆盖。
+- 理由：系统会积累大量相似但独立的节点；以 active/dim 展示当前任务使用范围，专家可以直接理解网络，同时保留全局节点以便复制和复用。
+- 影响：画布提供 active-only、active+inactive、all-global、搜索/标签/分组视图。共享节点修改会影响所有引用它的方案的未来运行；若需隔离，专家先复制节点。
+
+## D-049：启用递归闭包；停用有下游影响时由用户确认原子级联
+
+- 状态：已接受
+- 决策：启用 child 时，后端在一个事务中递归启用全部 fixed data/probabilistic parents，不弹提示。停用仍有 active downstream dependents 的 parent 时，前端列出当前任务内全部递归影响，并提供“继续停用/取消”；继续后原子级联停用，其他任务不变。停用 child 后重算闭包，不再被 explicit selection 或其他 child 需要的 ancestors 自动变暗。
+- 理由：自动补齐 parents 符合专家对依赖网络的预期；停用 parent 会扩大影响，必须在执行前可见且可撤销。
+- 影响：方案持久化区分 explicit selection 与 computed closure，支持 canonical diff、undo/redo 和 stable transaction receipt。
+
+## D-050：节点复制只复制所选完整节点，并继续引用原 fixed parents
+
+- 状态：已接受
+- 决策：默认 copy/paste 深复制所选节点自身的 recipe、parameters、states、CPT、metadata 和布局，为副本创建新 `node_id` 与 `copied_from_node_id`；parent nodes 不复制，fixed parent references 保持原 ID，原 downstream children 也不自动改用副本。粘贴到当前任务后，新节点显式激活并自动启用 parent closure。复制方案只复制 activation/configuration/layout，默认共享全局节点。
+- 理由：专家最常见的任务定制是从基础节点复制一个近似定义再修改；复制整条依赖树会产生大量无意义副本，覆盖原节点又会影响其他任务。
+- 影响：支持 Ctrl+C/Ctrl+V、右键、多选和项目内跨任务粘贴。修改副本 parents 时，它仍是同一个新节点的完整定义，CPT 必须原子迁移或重建。
+
+## D-051：取消 Draft/Published/Apply/Publish 正常流程；每次运行自动冻结快照
+
+- 状态：已接受
+- 决策：所有 TaskSchemes 都是并列、autosaved、freely editable、directly runnable 的 current objects。正常 UI 只显示 saving/saved/save failed/configuration incomplete，不提供 Draft/Published 或 Apply/Publish gate。技术可执行的当前 scheme 可直接 run；`run.start` 先冻结 exact managed session、scheme activation closure、完整 node definitions、recipes/operators/scorers、parents、states、CPTs、runtime parameters 与 hashes 为 immutable `RunSnapshot`。后续编辑只影响未来 runs。
+- 理由：任务方案本身就是长期并列的工作对象，额外发布状态没有产品价值，反而妨碍专家自由修改。可重放性真正需要的是每次运行锁定精确输入，而不是强迫用户管理发布版本。
+- 影响：D-033、D-036 的 apply/publish 交互以及 D-045/D-046 中 published-scheme 前提被取代。Append-only change journal、undo/redo、optimistic revision、content hash、历史 run snapshot 和旧 published records 继续保留。Incomplete 方案可保存但 run preflight 会阻止技术上不可执行的运行。
+
+## D-052：M7 使用任务侧栏、亮暗全局画布、多浮动节点窗口和双语模型元数据
+
+- 状态：已接受
+- 决策：Model Studio 左侧直接切换/复制任务方案；圆形节点以 type 区分颜色，active 明亮、inactive 变暗且仍可点击/复制；点击节点打开可移动、缩放、最大化的非模态独立窗口，允许多个窗口和多显示器并排编辑。顶部 `中文 | EN` 即时切换；系统 UI 用 WinUI resources，节点/方案的 bilingual name/description 存在后端。
+- 理由：专家需要在大量节点和多个任务之间直观比较、复制和修改，固定 Inspector、单窗口或只显示 active 子图都不足以支持该工作流。
+- 影响：浮动窗口显示 canonical autosave state、usage、recipe/CPT、preview/trace 和 history；语言切换不得改变 ID、hash 或计算。
+
+## D-053：前端修改必须落到后端 canonical definitions，M7 先迁移 M5/M6 编辑语义
+
+- 状态：已接受
+- 决策：所有前端 node/edge/recipe/parameter/state/CPT/scheme edits 都调用 typed backend operations，并以后端 response 作为 canonical state；C# 不复制算法，UI 也不改写 `.py` 源文件。通用 Python engine 执行 persisted EvidenceRecipe/CPT definitions；只有 operator library 缺少新能力时才新增 trusted Python operator。M7 实施先新增 current ModelNode/TaskScheme persistence、activation closure、autosave/current-scheme run API，再开发 WinUI 页面。
+- 理由：用户要求前端展示的每个可修改部分都真实改变后端计算，同时普通专家编辑不能变成 Python 发布流程。现有 M5/M6 draft/publish API 无法完整表达 D-047–D-052，必须显式迁移而不是在前端伪装。
+- 影响：M1–M4R 数据/recipe/operator、M5 BN inference 和 M6 managed project/artifact/stdio 基础继续复用；旧 component versions、published schemes 和 runs 保持可读/回放，正常 M7 UI 不再调用 publish。权威规格见 [M7 WinUI Expert Designer and Task Activation Workspace Design](specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)。

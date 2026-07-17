@@ -10,6 +10,8 @@
 | 产品目标 | 为领域专家提供可视化、自由增删改 Evidence、计算方法、BN 节点/边、状态与 CPT 的 Windows 本地设计系统 |
 | M5 口径 | 2026-07-16 的 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 已细化全局组件版本、任务方案、三类节点、两类边和 BN/inference 语义；发生冲突时以该 M5 规格为准 |
 
+> **2026-07-17 适用性修订：** 本文关于专家自由设计、EvidenceRecipe/operator、最小技术校验和 starter 非科学真值的原则继续有效；autosaved draft + apply、同 concept 并行 component versions 与 publish 交互已由 [M7 WinUI Expert Designer and Task Activation Workspace Design](./2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) 的 complete nodes、TaskScheme activation、autosaved current objects 和 automatic RunSnapshot 取代。发生冲突时以 D-047–D-053 和 M7 规格为准。
+
 ## 1. 方向纠正
 
 本产品的首要交付不是证明当前 O1–O13、H1–H5、阈值或 CPT 科学有效，而是提供一套专家可以自行设计、查看、修改、运行和比较整个评估模型的系统框架。

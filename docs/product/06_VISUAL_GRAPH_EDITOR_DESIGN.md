@@ -1,15 +1,15 @@
-# 06 可视化 Evidence 与贝叶斯模型工作区设计
+# 06 可视化 Evidence 与贝叶斯模型工作区设计（历史细节）
 
 ## 1. 文档状态与目标
 
-- 文档版本：1.1
+- 文档版本：1.2 compatibility reference
 - 目标前端：Windows WinUI
-- 对应后端模型：global versioned component library + autosaved scheme draft + immutable component/scheme versions
+- 对应后端模型：global complete-node library + autosaved current TaskSchemes + immutable RunSnapshots
 - 核心要求：用户可以在一个 integrated workspace 中查看 Raw Input、Evidence 与 BN Node，分别编辑 Evidence Computation Graph 和 BN probabilistic graph；所有 recipe、operator 参数、两类 edge、结构和 CPT 修改必须一一映射到后端 canonical model。
 
-本设计明确取消“v0 只读拓扑”边界。v0 前端允许在集成画布中编辑 extraction 与 BN 两种图语义；draft 每次修改自动保存，用户点击“应用到后续评估”时只需通过最小技术可运行校验。前端不是模型事实来源；后端保存的 canonical component/scheme draft 才是模型事实来源。`apply` 会 copy-on-write 发布改动的 immutable component versions 和新的 scheme version，不代表审批流程。
+本设计明确取消“v0 只读拓扑”边界。前端允许在集成画布中编辑 extraction 与 BN 两种图语义；每次用户意图直接自动保存到 current node/scheme，后端 canonical definition 才是模型事实来源。正常 M7 交互不再使用 Draft/Published/Apply/Publish；每次运行自动冻结 immutable RunSnapshot。
 
-> **当前权威：** [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 与 [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)。本文件原有 BN 事务/CPT 迁移细节继续作为设计材料；任何无类型 edge、whole-model overwrite 或把 inference overlay 保存成 BN topology 的旧解释均无效。
+> **当前权威与适用性：** [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)。本文件后续段落保留 BN transaction、CPT migration 和早期画布细节；凡涉及同 concept 并行版本选择、scheme draft、apply/publish、固定 Inspector 或与 M7 完整节点/任务激活/多浮窗语义冲突的内容均为历史材料，不得用于新实施。
 
 ## 2. 用户体验
 

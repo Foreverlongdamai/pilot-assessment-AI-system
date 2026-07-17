@@ -1,21 +1,21 @@
 # Python Assessment Core 设计
 
-**文档状态：** 产品 v0.3 后端总体设计；M4R Evidence 计算基础与 M5 shared-versioned model/Bayesian workspace 已工程验证，下一步为 M6 durable persistence、managed artifacts、JSON-RPC sidecar 与 run lifecycle 正式规格。
-**日期：** 2026-07-16
+**文档状态：** 产品后端历史总体设计；M4R/M5/M6 已工程验证，M7 current complete-node/task-activation backend compatibility 尚未实现。
+**日期：** 2026-07-17
 **上位文档：** [产品总览](./01_PRODUCT_OVERVIEW.md)
 
-> **当前权威补充：** Evidence 计算以 canonical `EvidenceRecipe`、typed operator graph 和 generic compiler/executor 为唯一新扩展路线。M5 使用全局 `Concept + immutable Version` 组件库和 exact-pinned `AssessmentSchemeVersion`；data/extraction edge 与 probabilistic BN edge 是不同合同。详见 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 和 [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)。
+> **当前权威补充：** Evidence 计算仍以 canonical `EvidenceRecipe`、typed operator graph 和 generic compiler/executor 为唯一新扩展路线；data/extraction edge 与 probabilistic BN edge 仍是不同合同。M5 的 `Concept + immutable Version` / published scheme 是已实现 legacy/replay 基础；M7 当前目标改为 complete ModelNodes、TaskScheme activation、autosave current objects 与 automatic RunSnapshot。详见 [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)。
 
 ## 1. 设计目标
 
-Assessment Core 是 eVTOL 飞行员训练评估系统的唯一计算权威。它必须同时支持：
+Assessment Core 是 eVTOL 飞行员训练评估系统的唯一通用计算执行内核：专家通过前端决定并保存 Evidence/BN 科学内容，Core 按同一 canonical definitions 执行。它必须同时支持：
 
 - 作为纯 Python package 被测试、脚本或 notebook 调用；
 - 作为本地 sidecar 被 Windows WinUI 应用启动；
 - 加载多模态 session bundle；
 - 在不改变原始数据的前提下完成同步、recipe-driven evidence 和 BN inference；
 - 通过 model workspace/bundle 驱动 EvidenceRecipe、operator graph、BN 拓扑、状态空间和 CPT；
-- 允许专家在 integrated workspace 中编辑 Evidence computation、两类 typed edge、BN state/CPT，并组合 exact component versions；
+- 允许专家在 integrated workspace 中编辑 Evidence computation、两类 typed edge、BN state/CPT，并以完整节点组成 TaskScheme activation closure；
 - 为每次运行生成完整 provenance；
 - 在合同不可读取、必需输入缺失、任务不适用、配置/依赖不足或软件失败时返回精确结构化状态；对任何有限但再差的表现仍按冻结规则产生 D/A/U，而不是过滤负面 evidence。
 

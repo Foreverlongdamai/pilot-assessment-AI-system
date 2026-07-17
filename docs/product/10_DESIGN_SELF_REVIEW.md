@@ -1,5 +1,7 @@
 # Design Self-Review Report
 
+> **当前自审入口：** 本文件保留 2026-07-10 至 2026-07-16 的历史审查。2026-07-17 complete-node/task-activation 修订的当前自审见 [M7 Complete-Node / Task-Activation Design Self-Review](reviews/2026-07-17-m7-complete-node-task-activation-design-self-review.md)；冲突处以后者与 D-047–D-053 为准。
+
 | 字段 | 值 |
 |---|---|
 | 设计基线 | 产品 v0.3 shared-versioned-model architecture；旧 M4 Task 0–28 作为历史实现保留 |

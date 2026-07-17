@@ -4,7 +4,7 @@
 
 - 文档版本：1.1
 - 对应模型版本：pilot-assessment-bn v0.1
-- 状态：可编辑 starter BN 设计，尚未实现或科学验证；2026-07-16 已按 M5 shared-versioned-model 架构澄清
+- 状态：可编辑 starter BN 设计；BN engine 已实现但未科学验证；2026-07-17 按 M7 complete-node/task-activation 架构澄清
 - Starter template 节点数：33；generic BN engine 不固定数量
   - 4 个 aggregate competency 节点
   - 11 个 latent sub-skill 节点
@@ -13,7 +13,7 @@
 
 本设计的目标不是声明当前模型已经得到航空专家或实验数据验证，而是先建立一套可运行、可检查、可修改、可扩展的概率计算逻辑。后续专家可以在不修改推理引擎的情况下调整节点、边、anchor 算法、阈值、CPT 和 phase 参数。
 
-> **当前权威补充：** [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) 定义全局 component versions、task schemes、三类节点、两类边和 BN/inference 语义。BN observation node 通过 `EvidenceBindingVersion` 指向 exact `EvidenceVersion` output。专家修改节点、边、state、CPT 或 binding 后以 copy-on-write 发布新 component/scheme versions，只受 DAG、引用、shape 和概率等技术校验，不受科学审批或 golden gate。
+> **当前权威补充：** [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) 定义完整节点、TaskScheme activation、三类节点、两类边和 current autosave/RunSnapshot 语义。Evidence node 原子包含 observation mapping、probabilistic parents 与 CPT；修改节点、边、state、CPT 或 binding 直接自动保存，只受 DAG、引用、shape 和概率等技术校验，不受 Publish、科学审批或 golden gate。M5 `EvidenceBindingVersion` 等继续作为旧实现 replay/migration 资产。
 
 ## 2. 建模原则
 

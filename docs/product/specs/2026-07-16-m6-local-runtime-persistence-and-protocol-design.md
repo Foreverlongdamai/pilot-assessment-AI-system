@@ -9,6 +9,8 @@
 | 决策基线 | D-006、D-007、D-009、D-031–D-046 |
 | 实施方式 | INLINE；平台不变量采用轻量 test-first，文件/协议/全流程采用 focused smoke |
 
+> **2026-07-17 适用性修订：** M6 的 managed project、SQLite、artifact、idempotency、audit、run lifecycle 与 stdio sidecar 继续作为当前基础；其 scheme draft/publish 和“run 只接受 published scheme”是已实现的兼容层，不是 M7 的最终产品交互。M7 必须扩展为 current ModelNode/TaskScheme autosave、activation closure 和 run-start automatic RunSnapshot，同时保持旧 run/published records 可回放。详见 [M7 WinUI Expert Designer and Task Activation Workspace Design](./2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)。
+
 ## 1. 目的
 
 M6 把 M5 已验证的 transport-neutral、进程内建模后端变成可以被 Windows

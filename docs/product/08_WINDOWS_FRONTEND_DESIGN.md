@@ -1,14 +1,14 @@
-# Windows Frontend Design
+# Windows Frontend Design（v0.3 历史页面细节）
 
 | 字段 | 值 |
 |---|---|
-| 设计版本 | v0.3 shared-versioned-model UX baseline |
+| 设计版本 | v0.3 compatibility reference；当前权威为 M7 v0.1 |
 | 平台 | Windows 10/11 |
 | 推荐技术 | C#、.NET、WinUI 3 |
 | 后端连接 | 本地 JSON-RPC sidecar |
 | 核心原则 | 专家主导模型设计、前后端同一 canonical recipe、后端维护状态/版本/执行一致性、离线优先 |
 
-> **当前权威补充：** 前端必须提供 global component library、scheme composer 和 integrated model workspace。高层画布显示 Raw Input、Evidence、BN Node 三类节点，并严格区分 data/extraction 与 probabilistic BN 两类边；Evidence operator graph 可展开，posterior inference overlay 只读。Evidence Designer 根据 backend schema 自动生成画布、表单和帮助，不在 C# 中复制计算逻辑。详见 [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)。
+> **当前权威与适用性：** [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) 已取代本文件的同 concept 多版本选择、Draft/Published/Apply/Publish、固定 Node Inspector 等交互。本文只保留页面、session/result 展示和错误恢复细节作为历史参考；新实施必须使用完整独立节点、task activation、active/dim 全局画布、多浮动节点窗口、autosave current scheme 与 automatic RunSnapshot。
 
 ## 1. 产品体验目标
 

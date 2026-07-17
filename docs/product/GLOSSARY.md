@@ -5,22 +5,30 @@
 | Assessment Core | 执行 session 载入、同步、anchor 计算、evidence 转换、BN 推理和结果构建的 Python 核心。 |
 | Anchor / Evidence anchor | 从原始或派生数据计算的可解释指标，例如 O2 Peak Tracking Excursion。 |
 | Starter template | 随产品提供、用于演示和起步的 Anchor/EvidenceRecipe/BN；可复制、修改、停用、删除或替换，不表示科学正确，也不限制通用引擎的节点数量。 |
-| EvidenceConcept | 一类可观测 Evidence 的稳定语义身份，例如“轨迹偏差”；不包含某个任务的精确算法。 |
-| EvidenceVersion | 某个 EvidenceConcept 的不可变精确实现；锁定 EvidenceRecipe、参数、scorer、source bindings、lineage 和 content hash。Hover 与直线保持可并列选择同一 concept 的不同 versions。 |
-| BnNodeConcept | 一类潜在或聚合能力随机变量的稳定语义身份。 |
-| BnNodeVersion | 某个 BnNodeConcept 的不可变精确定义；锁定 state space、probabilistic parents、CPD/CPT reference、lineage 和 content hash。 |
-| EvidenceBindingVersion | 把一个 exact EvidenceVersion 输出映射为 BN observation 的不可变定义；包含 observation state mapping、probabilistic parents 和 CPD/likelihood table。 |
-| CptVersion | 一个 child 在有序 probabilistic parents/states 条件下的不可变概率定义。 |
-| TaskProfileVersion | 某类任务的不可变上下文定义；声明期望轨迹/包线、phase/event/AOI 语义和适用输入，不直接等同于评估方案。 |
-| AssessmentSchemeVersion | 一套可运行评估方案的不可变发布；选择 exact TaskProfile、Evidence、binding、BN node、CPT、输出和 policy versions，并记录 content hash。 |
-| Global component library | 保存全局 Evidence/BN concepts 及全部并行 immutable versions 的组件库；只有被某个 AssessmentSchemeVersion 引用的版本才参与该方案。 |
-| Exact version pinning | 方案和 run 显式保存 component version ID 与 content hash，而不使用会随时间变化的 `latest`。 |
-| Copy-on-write publication | 从任意历史方案编辑时复用未改版本，只为改动部分创建新 component versions，并原子发布新的 scheme version；旧版本永不覆盖。 |
-| Expert-led model design / backend canonical state | Evidence、算法、参数、BN topology/state/CPT 的内容由专家通过前端决定；后端保存同一 canonical object、签发版本、执行最小技术校验并保证运行一致性。“canonical”不表示后端拥有科学内容决定权。 |
+| ModelNode | M7 画布上的完整独立节点；一个 `node_id` 只有一个当前功能定义，包含固定 parents 与 EvidenceRecipe/参数/评分或 BN states/CPT。任务需要不同定义时复制或新建另一个节点。 |
+| TaskScheme | 并列、自动保存、可直接运行的任务方案；保存 explicit active nodes、computed parent closure、outputs、task bindings 和 layout，不覆盖节点内部定义。 |
+| Explicit active selection | 专家在某个 TaskScheme 中主动启用的节点集合。 |
+| Computed active closure | 从 explicit selection 沿每个节点的 fixed data/probabilistic parents 递归补齐的实际执行节点集合。 |
+| Global node library | 项目内保存全部 Raw Input、Evidence 与 BN ModelNodes 的全局库；节点可被零个、一个或多个 TaskSchemes 共享。 |
+| Node copy | 深复制所选节点自身的 recipe/parameters/states/CPT/metadata，创建新 `node_id`，但继续引用原 fixed parents，不复制 parent branch。 |
+| RunSnapshot | `run.start` 时自动冻结的不可变计算快照；包含 exact managed session、TaskScheme closure、完整节点定义、edges、recipes/operators、CPT、runtime parameters 与 hashes。历史结果只依赖该快照。 |
+| Change journal | Current node/scheme 每次 autosave 的 append-only operation/history；用于 optimistic concurrency、undo/redo、audit 和恢复，不是任务侧可选择的业务版本。 |
+| EvidenceConcept | M5 legacy/replay 术语：一类可观测 Evidence 的稳定语义身份。M7 正常 UI 不用同 concept 多版本来表达不同任务节点。 |
+| EvidenceVersion | M5 legacy/replay 术语：某 EvidenceConcept 的不可变实现。M7 若任务定义不同，迁移为不同 ModelNode；历史 version 继续供旧 run replay。 |
+| BnNodeConcept | M5 legacy/replay 术语：一类潜在或聚合能力随机变量的稳定语义身份。 |
+| BnNodeVersion | M5 legacy/replay 术语：某 BnNodeConcept 的不可变精确定义。M7 current node 直接拥有 states、parents 和 CPT。 |
+| EvidenceBindingVersion | M5 legacy/replay 术语：把 exact EvidenceVersion 输出映射为 BN observation 的不可变定义。M7 将 observation mapping 与 probabilistic parents/CPT 纳入完整 Evidence node。 |
+| CptVersion | M5 legacy/replay 术语：一个不可变 CPT record。M7 current child node 直接拥有当前 CPT，并在 RunSnapshot 中冻结。 |
+| TaskProfileVersion | M5 legacy/replay 术语：某类任务的不可变上下文定义。M7 TaskScheme 仍可绑定 typed reference/phase/event/AOI resources，但正常 UI 不要求 version picker。 |
+| AssessmentSchemeVersion | M5/M6 legacy/replay 术语：一套不可变发布方案。M7 正常 UI 使用 current TaskScheme + automatic RunSnapshot。 |
+| Global component library | M5 legacy/replay 的 immutable concepts/versions 库；M7 当前产品表面改为 Global node library。 |
+| Exact version pinning | M5/M6 方案锁定 component version 的旧实现；M7 的可重放边界改为 run-start exact RunSnapshot。 |
+| Copy-on-write publication | M5/M6 历史编辑/发布机制；M7 正常 UI 已取消 Apply/Publish，但旧 records 继续可回放。 |
+| Expert-led model design / backend canonical state | Evidence、算法、参数、BN topology/state/CPT 的内容由专家通过前端决定；后端保存并执行同一 canonical objects、执行最小技术校验并保证持久化/运行一致性。“canonical”不表示后端拥有科学内容决定权。 |
 | EvidenceRecipe | 前端显示、后端保存和运行时执行某个 Anchor 计算方法的唯一 canonical object；包含 bindings、typed operator graph、outputs、scoring、documentation 与 UI metadata。 |
 | EvidenceRecipe catalog | 运行时大小可变的 recipe inventory；安装包当前提供 O1–O13/H1–H5 共 18 个 starter templates，但 catalog 和 executor 不把 18 写成上限。 |
-| Recipe draft | 可自动保存的 EvidenceRecipe 工作副本；允许 graph 暂时 incomplete，只有 preview/apply 要求达到相应技术可执行状态。 |
-| Recipe preview | 对 exact draft snapshot 和显式 inputs 的临时执行；返回 outputs、scoring、selected node trace 或定位到 node/operator 的 technical diagnostics，不创建 applied revision。 |
+| Recipe draft | M4R/M5 legacy 术语。M7 直接编辑 current Evidence node；允许暂时 incomplete，并通过 change journal 与 RunSnapshot 保留历史。 |
+| Recipe preview | 对 current Evidence node 的 exact revision 和显式 inputs 做临时执行；返回 outputs、scoring、trace 或定位到 node/operator 的 technical diagnostics，不要求 publish。 |
 | Evidence Computation Graph | EvidenceRecipe 内把 session stream/semantic/reference 通过可复用算子转换成 AnchorMeasurement/AnchorResult 的有向无环图。 |
 | Operator / OperatorDefinition | 可复用计算积木及其机器合同；声明 typed input/output ports、unit/cardinality/time semantics、parameter schema、UI metadata 和 implementation identity，不等于一个完整 Anchor。 |
 | Trusted operator plugin | 当现有 operator library 无法表达一种全新计算能力时，由开发者安装的受控扩展；它提供可复用 operators，不要求每个新 Anchor 都发布 Python plugin。 |
@@ -35,8 +43,8 @@
 | AnchorResult v0.2 | M4 的 per-anchor 结果合同（`anchor-result-0.2.0`）；记录 calculation status、raw metrics、D/A/U likelihood、override、artifact、diagnostics、provenance 和 fingerprint。 |
 | ComputationTrace | M4 保存的 sample/time range、grid/window、匹配方法和 technical diagnostics；只用于审计，不生成 quality score 或改变 likelihood。 |
 | Raw Input node | 高层工作区中表示 X/U/I/G/P、具体物理 stream 或 task source 的数据节点；用于 Evidence extraction，不是 BN random variable，也没有 CPT。 |
-| Evidence node | 高层工作区中表示可从 session 提取并可被 BN 观察的变量；组合 EvidenceVersion 与 EvidenceBindingVersion。Starter 参考模型有 18 个，但引擎数量不受限。 |
-| BN node | BN 中的 latent/derived random variable，例如 sub-skill 或 aggregate competency；其版本定义 states、probabilistic parents 和 CPD/CPT。 |
+| Evidence node | 可从 Raw Input 提取并被 BN 观察的完整 ModelNode；原子包含 source bindings、EvidenceRecipe、parameters/scorer、observation states、probabilistic parents 和 CPT/CPD。Starter 有 18 个，但引擎数量不受限。 |
+| BN node | BN 中的 latent/derived random variable，例如 sub-skill 或 aggregate competency；完整节点直接定义 states、fixed probabilistic parents 和 CPD/CPT。 |
 | Data / extraction edge | 从 raw/session/task source 到 Evidence 的数据依赖，或 EvidenceRecipe 内 typed operator ports；不进入 BN factorization，也不等于 BN parent。高层不使用 Evidence→Evidence extraction edge。 |
 | Source provenance closure | 对 Evidence extraction source 递归证明其最终来自 raw stream、session semantic 或 task semantic 的技术闭包。另一 Evidence 的 score/state/likelihood 属于 `evidence_observation`，不能通过改名冒充 raw/derived source。 |
 | Probabilistic BN edge | 从 parent random variable 到 child random variable 的概率边，表示 child CPD 的条件变量并进入 BN joint factorization。 |
@@ -88,25 +96,25 @@
 | Release-scale / performance fixture | 未来可选的长 session、full-rate、吞吐/内存/soak 测试资产；不属于 M4 Task 0、默认 pytest、isolated-wheel smoke 或 engineering-verification 必要门槛。 |
 | Answer leakage / 答案回灌 | 把 expected AnchorResult、state、likelihood、预计算 composite 或 production output 写入测试 input recipe，使测试只证明 builder/oracle 自洽而没有证明 raw/aligned data 驱动 evidence；D-027 明确禁止。 |
 | SynchronizationReport | M3 公共同步报告，记录七个 core modality、task reference、annotation、clock/coverage/window diagnostics 与 source/policy/catalog/alignment fingerprints；证明结构／时间合同并提供 non-gating diagnostics，始终 `formal_run_authorized=false`。 |
-| Run preflight | `run.preflight` 在 aligned session、annotation/reference、exact `AssessmentSchemeVersion` 及其 pinned component IDs/content hashes 上执行的正式运行门；输出 `RunPreflightReport` 并决定能否创建 AssessmentRun。它不同于 M2 ingestion readiness。 |
+| Run preflight | `run.preflight` 在 managed session、annotation/reference、current TaskScheme exact revision、active closure 与完整 node definitions 上执行技术运行检查；通过后 `run.start` 自动冻结 RunSnapshot。它不同于 M2 ingestion readiness，也不是 publish/scientific approval。 |
 | BN | Bayesian Network，贝叶斯网络。 |
 | CPD | Conditional Probability Distribution，BN child 在给定 probabilistic parents 下的条件分布；有限离散模型通常物化为 CPT。 |
 | CPT | Conditional Probability Table，节点在给定 parent state 下的条件概率表。 |
 | Generative starter direction | Hover starter 的 canonical BN 方向 `Competency -> Sub-skill -> Evidence`；它定义概率分解，不等于运行时先计算 competency。 |
 | Posterior inference | Evidence 被观察后，由完整 BN joint distribution 计算 `P(Sub-skill/Competency | observations)`；信息可逆于部分 canonical arrows 传播。 |
 | Virtual evidence | M5 用显式、版本化 soft scorer 或 dependence-strength mixing 表达的 likelihood observation；不得因所谓原始数据质量向均匀分布收缩。 |
-| Model bundle | 一个 AssessmentSchemeVersion 及其 exact dependency closure 的可移植导入/导出包；它不是全局组件库，也不是可原地修改的唯一模型身份。 |
-| Autosaved draft | 专家正在编辑的模型工作副本；每个用户意图自动保存，允许 incomplete/invalid，并支持 undo/redo 和 preview。 |
-| Draft | `Autosaved draft` 的简称；尚未成为后续新 run 的默认模型。 |
-| Applied revision | M4R/旧文档的不可变模型术语；M5 后具体化为 copy-on-write 发布的 component versions 与 `AssessmentSchemeVersion`，不表示科学审批或 Python 软件发布。 |
-| Scheme draft | 从 starter 或任意 AssessmentSchemeVersion 创建的可自动保存工作副本；允许 incomplete，通过 copy-on-write 形成候选 component versions。 |
+| Model bundle | 历史/导入导出格式：一个可重放模型及 dependency closure。M7 最终可移植格式应保存完整 ModelNodes、TaskSchemes 与兼容 identities，不等于应用安装包。 |
+| Autosaved draft | M4R/M5 legacy UI 术语。M7 已取消 Draft/Published 双态，直接 autosave current node/scheme。 |
+| Draft | 历史 UI 术语；不得用于 M7 正常任务侧栏。 |
+| Applied revision | M4R/M5 历史术语；M7 不要求 apply，历史不可变运行由 RunSnapshot 保证。 |
+| Scheme draft | M5/M6 历史术语；M7 使用 current TaskScheme。 |
 | Applied recipe revision | M4R 对单个 EvidenceRecipe 保存的不可变 snapshot、content hash、parent/diff、作者、时间与可选 note；M5 将它保留为 EvidenceVersion migration lineage，不把它冒充 `AssessmentSchemeVersion`。 |
-| Published revision | 旧文档/UI 术语；在当前产品中统一解释为 `Applied revision`，不得附加人工审批、golden 或 per-edit test 语义。 |
+| Published revision | 旧文档/UI 术语；M7 正常 UI 不显示、不要求，也不得附加人工审批、golden 或 per-edit test 语义。 |
 | Technical validation | 只检查 schema、引用、DAG、operator/type/unit/parameter、formula/scorer 与 BN CPT 是否可执行；不判断算法、Anchor mapping 或 CPT 是否科学合理。 |
-| graph_version | 草稿内整个 semantic model（node、edge、state、CPT、binding、anchor parameters、profile）每次原子修改后递增的乐观并发版本。 |
-| layout_version | 仅版本化节点位置等显示布局；变化不影响 graph_version 或 scientific model hash。 |
-| draft_validation_state | `draft_incomplete`、`draft_invalid` 或 `draft_executable`，表示草稿技术完整性与可运行性；任何状态都可 autosave。 |
-| revision_lifecycle | `applied`、`archived` 或 `superseded`，表示不可变 model revision 的生命周期。 |
+| semantic_revision | Current ModelNode/TaskScheme 每次原子语义修改后递增的乐观并发 revision；不是任务可选版本。 |
+| layout_revision | 节点位置、缩放、分组等显示布局的乐观 revision；变化不改变 computation hash。 |
+| technical_status | Current node/scheme 的 `complete`、`configuration_incomplete` 或 stable technical error 状态；任何状态都可 autosave，只有技术可执行状态可 run。 |
+| revision_lifecycle | M4R/M5 legacy immutable record 的生命周期；M7 current node 通常使用 active/archived，历史 run 由 RunSnapshot 保持。 |
 | observation_mode | M5 的 hard、virtual 或 omitted 绑定方式，表示某条 AnchorResult 如何进入 BN；M4 不按技术诊断把 computed evidence 改为 omitted。 |
 | ready / ready_partial / blocked (M4) | `ready` 表示所有适用 anchor 均 computed；`ready_partial` 表示 inventory 完整但有 missing/config/dependency/error；`blocked` 只表示有效 request 之后的 plan/registry/DAG/global inventory/atomic commit 失败。pre-request rejection 不生成 M4 disposition/report。 |
 | plugin_unavailable / not_implemented / not_attempted | 旧 M4 whole-Anchor plugin capability/plan/report inventory 状态，不是 AnchorResult calculation status。M4R 对新 recipe 使用 `operator_unavailable`；两者都不得伪造 session result。 |
