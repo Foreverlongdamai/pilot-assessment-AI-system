@@ -254,14 +254,14 @@ git commit -m "feat: supervise the local assessment sidecar"
 - Create: `src/PilotAssessment.Desktop/Views/Pages/DiagnosticsPage.xaml`
 - Create: `tests/PilotAssessment.Desktop.UnitTests/State/ShellStateTests.cs`
 
-- [ ] Compose services/view models using `Host.CreateApplicationBuilder`, dependency injection and one application lifetime owner.
-- [ ] Build a `NavigationView` shell with Project, Session, Model Studio, Runs/Results, Library and Diagnostics destinations.
-- [ ] Add a top command bar showing current project, session, task scheme, backend health, autosave state, language, theme and run status.
-- [ ] Disable domain commands until the sidecar handshake and project context are ready; show an actionable diagnostics page on startup failure.
-- [ ] Store only non-domain preferences at `%LOCALAPPDATA%\PilotAssessmentSystem\ui-state.json` using an atomic temp/write/replace sequence. Do not store current nodes/schemes outside the managed project.
-- [ ] Dispose windows, pending requests and the sidecar in deterministic order during app shutdown.
-- [ ] Unit-test shell readiness/error/reconnect command states without WinUI controls.
-- [ ] Run:
+- [x] Compose services/view models using `Host.CreateApplicationBuilder`, dependency injection and one application lifetime owner.
+- [x] Build a `NavigationView` shell with Project, Session, Model Studio, Runs/Results, Library and Diagnostics destinations.
+- [x] Add a top command bar showing current project, session, task scheme, backend health, autosave state, language, theme and run status.
+- [x] Disable domain commands until the sidecar handshake and project context are ready; show an actionable diagnostics page on startup failure.
+- [x] Store only non-domain preferences at `%LOCALAPPDATA%\PilotAssessmentSystem\ui-state.json` using an atomic temp/write/replace sequence. Do not store current nodes/schemes outside the managed project.
+- [x] Dispose windows, pending requests and the sidecar in deterministic order during app shutdown.
+- [x] Unit-test shell readiness/error/reconnect command states without WinUI controls.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~ShellStateTests
@@ -270,7 +270,9 @@ dotnet build src/PilotAssessment.Desktop/PilotAssessment.Desktop.slnx -p:Platfor
 
 Expected: shell builds and state tests pass.
 
-- [ ] Commit:
+Recorded: focused shell-state tests passed `4/4`; the full desktop suite passed Unit `25/25` and Contract `2/2`; the x64 Debug solution build completed with `0` warnings and `0` errors. A normal visible launch reached a non-zero `MainWindowHandle`, displayed backend state `Ready`, exposed all planned navigation destinations, and started the supervised `uv`/Python sidecar chain. Closing the top-level window terminated the application and every recorded child process. The persisted `%LOCALAPPDATA%\PilotAssessmentSystem\ui-state.json` contained only `language`, `theme` and `lastDestination`, with no domain model state.
+
+- [x] Commit:
 
 ```powershell
 git add src/PilotAssessment.Desktop/App.xaml src/PilotAssessment.Desktop/App.xaml.cs src/PilotAssessment.Desktop/Services src/PilotAssessment.Desktop/ViewModels/ShellViewModel.cs src/PilotAssessment.Desktop/Views tests/PilotAssessment.Desktop.UnitTests/State
@@ -658,7 +660,7 @@ git commit -m "test: close M7 WinUI expert designer"
 | 1 | `build: scaffold M7 WinUI expert designer` | `6809bcc` |
 | 2 | `feat: add typed M7 desktop contracts` | `5f64ca3` |
 | 3 | `feat: supervise the local assessment sidecar` | `b039d46` |
-| 4 | `feat: add the WinUI application shell` | Not executed |
+| 4 | `feat: add the WinUI application shell` | `6e1974e` (`fd15c2b` removes the generated Core placeholder) |
 | 5 | `feat: add managed project and session workspace` | Not executed |
 | 6 | `feat: add task scheme navigation` | Not executed |
 | 7 | `feat: add the active task model graph` | Not executed |
