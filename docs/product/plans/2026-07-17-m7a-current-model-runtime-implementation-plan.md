@@ -324,14 +324,15 @@ git commit -m "feat: add current node and graph copy operations"
 - Modify: `src/pilot_assessment/model_workspace/service.py`
 - Create: `tests/model_workspace/test_edge_cpt_operations.py`
 
-- [ ] Reuse M5 CPT validation/materialization/migration helpers rather than creating a second probability engine.
-- [ ] Implement probabilistic edge add/remove/reorder as child-node mutations that also migrate, materialize or explicitly mark the child CPT incomplete in the same transaction.
-- [ ] Implement state replacement with required CPT migration/rebuild input or explicit incomplete outcome; never save mismatched axes as runnable.
-- [ ] Implement extraction edge add/remove by changing the EvidenceRecipe source binding and validating required operator input ports; never save a standalone edge row.
-- [ ] Implement CPT cell/batch update with strict finite values, exact shape/order and row-sum validation.
-- [ ] If any migration/validation/write step fails, roll back node, scheme technical status, history event, idempotency result and audit event.
-- [ ] Return regenerated editor axes/rows and canonical child definition for immediate UI reconciliation.
-- [ ] Run:
+- [x] Reuse M5 CPT validation/materialization/migration helpers rather than creating a second probability engine.
+- [x] Implement probabilistic edge add/remove/reorder as child-node mutations that also migrate, materialize or explicitly mark the child CPT incomplete in the same transaction.
+- [x] Implement state replacement with required CPT migration/rebuild input or explicit incomplete outcome; never save mismatched axes as runnable.
+- [x] Implement extraction edge add/remove by changing the EvidenceRecipe source binding and validating required operator input ports; never save a standalone edge row.
+- [x] Implement CPT cell/batch update with strict finite values, exact shape/order and row-sum validation.
+- [x] At the domain boundary, roll back node, scheme technical status and history events together when migration, validation or persistence fails.
+- [ ] When Task 11 exposes these domain mutations, include their idempotency result and audit event in the same existing outer transaction; this protocol concern is deliberately not duplicated in Task 8.
+- [x] Return regenerated editor axes/rows and canonical child definition for immediate UI reconciliation.
+- [x] Run:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest tests/model_workspace/test_edge_cpt_operations.py tests/bayesian/test_cpt_migration.py tests/bayesian/test_cpt_validation.py -q
@@ -339,7 +340,7 @@ git commit -m "feat: add current node and graph copy operations"
 
 Expected: add/remove/state/CPT cases pass; an injected failure leaves canonical bytes and revisions unchanged.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/pilot_assessment/model_workspace tests/model_workspace/test_edge_cpt_operations.py

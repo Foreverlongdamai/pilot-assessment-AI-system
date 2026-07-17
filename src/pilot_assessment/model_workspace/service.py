@@ -13,9 +13,15 @@ from datetime import UTC, datetime
 from typing import Final
 from uuid import uuid4
 
+from pilot_assessment.bayesian.validation import CptValidationOutcome
+from pilot_assessment.contracts.evidence_recipe import EvidenceRecipe
+from pilot_assessment.contracts.model_components import CptMode, VariableState
 from pilot_assessment.contracts.model_workspace import (
+    BnNodeDefinition,
     CanonicalModelDiff,
     DeactivationImpact,
+    EvidenceDataBinding,
+    EvidenceNodeDefinition,
     ModelChangeEvent,
     ModelDiagnostic,
     ModelDiagnosticSeverity,
@@ -23,9 +29,11 @@ from pilot_assessment.contracts.model_workspace import (
     ModelGraphSnapshot,
     ModelNode,
     ModelNodeKind,
+    ModelNodeRef,
     ModelObjectLifecycle,
     ModelTechnicalStatus,
     NodeLayout,
+    RawInputNodeDefinition,
     TaskScheme,
 )
 from pilot_assessment.evidence.registry import OperatorRegistry
@@ -34,6 +42,21 @@ from pilot_assessment.model_workspace.activation import (
     ActivationPlanningError,
     plan_activation,
     plan_deactivation,
+)
+from pilot_assessment.model_workspace.cpt import (
+    CptEditorState,
+    CurrentCptError,
+    add_parent_to_cpt,
+    editor_state,
+    invalidate_state_change_cpts,
+    materialize_cpt,
+    node_state_ids,
+    remove_parent_from_cpt,
+    reorder_cpt_parents,
+    replace_definition_cpt,
+    replace_definition_states,
+    update_cpt_probabilities,
+    validate_node_cpt,
 )
 from pilot_assessment.model_workspace.graph import (
     ModelGraphError,
@@ -140,6 +163,14 @@ class CurrentDeactivationImpactConflict(CurrentModelMutationConflict):
         self.current_impact = current_impact
 
 
+class CurrentModelOperationError(CurrentModelMutationConflict):
+    """Stable typed graph/CPT operation failure before canonical state is written."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+
+
 @dataclass(frozen=True, slots=True)
 class NodeUsage:
     """One task-scheme relationship shown by node usage inspection."""
@@ -182,6 +213,22 @@ class GraphBatchResult:
     copied_nodes: tuple[ModelNode, ...]
     scheme: TaskScheme
     graph: ModelGraphSnapshot
+    diff: CanonicalModelDiff
+
+
+@dataclass(frozen=True, slots=True)
+class CptMutationResult:
+    node: ModelNode
+    affected_scheme_ids: tuple[str, ...]
+    semantic_revision: int
+    editor: CptEditorState
+    diff: CanonicalModelDiff
+
+
+@dataclass(frozen=True, slots=True)
+class StateMutationResult:
+    nodes: tuple[ModelNode, ...]
+    affected_scheme_ids: tuple[str, ...]
     diff: CanonicalModelDiff
 
 
@@ -452,11 +499,18 @@ class CurrentModelWorkspaceService:
         )
 
     def _affected_active_schemes(self, node_id: str) -> tuple[TaskScheme, ...]:
+        return self._affected_active_schemes_for_nodes((node_id,))
+
+    def _affected_active_schemes_for_nodes(
+        self,
+        node_ids: tuple[str, ...],
+    ) -> tuple[TaskScheme, ...]:
+        selected = set(node_ids)
         return tuple(
             scheme
             for scheme in self.repository.list_schemes(lifecycle=ModelObjectLifecycle.ACTIVE)
-            if node_id in scheme.computed_active_closure
-            or node_id in scheme.explicit_active_node_ids
+            if selected.intersection(scheme.computed_active_closure)
+            or selected.intersection(scheme.explicit_active_node_ids)
         )
 
     def _revalidate_affected_schemes(
@@ -468,7 +522,24 @@ class CurrentModelWorkspaceService:
         actor_id: str,
         occurred_at: datetime,
     ) -> tuple[str, ...]:
-        affected = self._affected_active_schemes(node_id)
+        return self._revalidate_schemes_for_nodes(
+            (node_id,),
+            nodes=nodes,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+            occurred_at=occurred_at,
+        )
+
+    def _revalidate_schemes_for_nodes(
+        self,
+        node_ids: tuple[str, ...],
+        *,
+        nodes: tuple[ModelNode, ...],
+        transaction_id: str,
+        actor_id: str,
+        occurred_at: datetime,
+    ) -> tuple[str, ...]:
+        affected = self._affected_active_schemes_for_nodes(node_ids)
         for scheme in affected:
             normalized = self._normalize_scheme(scheme, nodes)
             changed_paths = tuple(
@@ -501,7 +572,7 @@ class CurrentModelWorkspaceService:
                     removed_edge_ids=(),
                     metadata={
                         "mutation": "revalidate_after_shared_node_change",
-                        "changed_node_id": node_id,
+                        "changed_node_ids": list(node_ids),
                     },
                 ),
                 join_existing=True,
@@ -618,6 +689,593 @@ class CurrentModelWorkspaceService:
         except CurrentObjectConflictError as error:
             raise CurrentModelMutationConflict(str(error)) from error
         return self._result(saved, (), diff)
+
+    def _validate_operation_candidate(
+        self,
+        candidate: ModelNode,
+        *,
+        allow_incomplete_cpt: bool,
+    ) -> None:
+        normalized, _ = self._normalize_node(candidate, self.repository.list_nodes())
+        errors = tuple(
+            diagnostic
+            for diagnostic in normalized.diagnostics
+            if diagnostic.severity is ModelDiagnosticSeverity.ERROR
+            and (
+                diagnostic.location.startswith(f"/nodes/{candidate.node_id}")
+                or not diagnostic.location.startswith("/nodes/")
+            )
+        )
+        if not errors:
+            return
+        if allow_incomplete_cpt and all(
+            diagnostic.code == "model.cpt_incomplete" for diagnostic in errors
+        ):
+            return
+        first = errors[0]
+        raise CurrentModelOperationError(first.code, first.message)
+
+    def _save_node_operation(
+        self,
+        candidate: ModelNode,
+        *,
+        expected_semantic_revision: int,
+        transaction_id: str,
+        actor_id: str,
+        allow_incomplete_cpt: bool = False,
+    ) -> NodeMutationResult:
+        try:
+            canonical_candidate = ModelNode.model_validate(candidate.model_dump(mode="json"))
+        except ValueError as error:
+            raise CurrentModelOperationError(
+                "model.operation_contract_invalid",
+                str(error),
+            ) from error
+        self._validate_operation_candidate(
+            canonical_candidate,
+            allow_incomplete_cpt=allow_incomplete_cpt,
+        )
+        return self.update_node(
+            canonical_candidate,
+            expected_semantic_revision=expected_semantic_revision,
+            expected_layout_revision=None,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+        )
+
+    def _cpt_result(self, result: NodeMutationResult) -> CptMutationResult:
+        return CptMutationResult(
+            node=result.node,
+            affected_scheme_ids=result.affected_scheme_ids,
+            semantic_revision=result.semantic_revision,
+            editor=editor_state(result.node, self.repository.list_nodes()),
+            diff=result.diff,
+        )
+
+    def validate_current_cpt(self, node_id: str) -> CptValidationOutcome:
+        node = self.repository.get_node(node_id)
+        return validate_node_cpt(node, self.repository.list_nodes())
+
+    def current_cpt_editor(self, node_id: str) -> CptEditorState:
+        node = self.repository.get_node(node_id)
+        return editor_state(node, self.repository.list_nodes())
+
+    def update_cpt_rows(
+        self,
+        node_id: str,
+        rows: tuple[tuple[float, ...], ...],
+        *,
+        expected_semantic_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> CptMutationResult:
+        node = self.repository.get_node(node_id)
+        definition = node.definition
+        if not isinstance(definition, (EvidenceNodeDefinition, BnNodeDefinition)):
+            raise CurrentModelOperationError(
+                "model.cpt_raw_input_forbidden",
+                "Raw Input nodes do not have a CPT",
+            )
+        try:
+            cpt = update_cpt_probabilities(definition.cpt, rows)
+        except CurrentCptError as error:
+            raise CurrentModelOperationError("model.cpt_update_invalid", str(error)) from error
+        result = self._save_node_operation(
+            replace_definition_cpt(node, cpt),
+            expected_semantic_revision=expected_semantic_revision,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+        )
+        return self._cpt_result(result)
+
+    def materialize_current_cpt(
+        self,
+        node_id: str,
+        *,
+        strategy: str,
+        weights: tuple[float, ...] | None = None,
+        weakest_link_strength: float = 0.0,
+        sigma: float = 0.8,
+        expected_semantic_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> CptMutationResult:
+        node = self.repository.get_node(node_id)
+        definition = node.definition
+        if not isinstance(definition, (EvidenceNodeDefinition, BnNodeDefinition)):
+            raise CurrentModelOperationError(
+                "model.cpt_raw_input_forbidden",
+                "Raw Input nodes do not have a CPT",
+            )
+        try:
+            cpt = materialize_cpt(
+                definition.cpt,
+                strategy=strategy,
+                weights=weights,
+                weakest_link_strength=weakest_link_strength,
+                sigma=sigma,
+            )
+        except CurrentCptError as error:
+            raise CurrentModelOperationError(
+                "model.cpt_materialization_invalid",
+                str(error),
+            ) from error
+        result = self._save_node_operation(
+            replace_definition_cpt(node, cpt),
+            expected_semantic_revision=expected_semantic_revision,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+        )
+        return self._cpt_result(result)
+
+    def add_probabilistic_edge(
+        self,
+        child_node_id: str,
+        parent_node_id: str,
+        *,
+        strategy: str,
+        expected_semantic_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> CptMutationResult:
+        child = self.repository.get_node(child_node_id)
+        parent = self.repository.get_node(parent_node_id)
+        definition = child.definition
+        if not isinstance(definition, (EvidenceNodeDefinition, BnNodeDefinition)):
+            raise CurrentModelOperationError(
+                "model.probabilistic_child_kind_invalid",
+                "probabilistic edge child must be Evidence or BN",
+            )
+        if parent.node_kind is ModelNodeKind.RAW_INPUT:
+            raise CurrentModelOperationError(
+                "model.probabilistic_parent_kind_invalid",
+                "probabilistic parent cannot be Raw Input",
+            )
+        if (
+            isinstance(definition, EvidenceNodeDefinition)
+            and parent.node_kind is not ModelNodeKind.BN
+        ):
+            raise CurrentModelOperationError(
+                "model.evidence_parent_kind_invalid",
+                "Evidence probabilistic parents must be BN nodes",
+            )
+        parent_ref = ModelNodeRef(
+            node_id=parent.node_id,
+            node_kind=parent.node_kind,
+        )
+        if parent_ref in definition.ordered_probabilistic_parent_nodes:
+            raise CurrentModelOperationError(
+                "model.probabilistic_parent_duplicate",
+                f"parent {parent_node_id!r} is already present",
+            )
+        try:
+            cpt = add_parent_to_cpt(
+                definition.cpt,
+                parent_ref,
+                node_state_ids(parent),
+                strategy=strategy,
+            )
+        except CurrentCptError as error:
+            raise CurrentModelOperationError(
+                "model.cpt_parent_add_invalid",
+                str(error),
+            ) from error
+        parents = (*definition.ordered_probabilistic_parent_nodes, parent_ref)
+        candidate = child.model_copy(
+            update={
+                "definition": definition.model_copy(
+                    update={
+                        "ordered_probabilistic_parent_nodes": parents,
+                        "cpt": cpt,
+                    }
+                )
+            }
+        )
+        result = self._save_node_operation(
+            candidate,
+            expected_semantic_revision=expected_semantic_revision,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+            allow_incomplete_cpt=strategy == "incomplete",
+        )
+        return self._cpt_result(result)
+
+    def remove_probabilistic_edge(
+        self,
+        child_node_id: str,
+        parent_node_id: str,
+        *,
+        strategy: str,
+        marginal_weights: tuple[float, ...] | None = None,
+        expected_semantic_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> CptMutationResult:
+        child = self.repository.get_node(child_node_id)
+        definition = child.definition
+        if not isinstance(definition, (EvidenceNodeDefinition, BnNodeDefinition)):
+            raise CurrentModelOperationError(
+                "model.probabilistic_child_kind_invalid",
+                "probabilistic edge child must be Evidence or BN",
+            )
+        parent_ref = next(
+            (
+                parent
+                for parent in definition.ordered_probabilistic_parent_nodes
+                if parent.node_id == parent_node_id
+            ),
+            None,
+        )
+        if parent_ref is None:
+            raise CurrentModelOperationError(
+                "model.probabilistic_parent_missing",
+                f"parent {parent_node_id!r} is not present",
+            )
+        try:
+            cpt = remove_parent_from_cpt(
+                definition.cpt,
+                parent_ref,
+                strategy=strategy,
+                marginal_weights=marginal_weights,
+            )
+        except CurrentCptError as error:
+            raise CurrentModelOperationError(
+                "model.cpt_parent_remove_invalid",
+                str(error),
+            ) from error
+        parents = tuple(
+            parent
+            for parent in definition.ordered_probabilistic_parent_nodes
+            if parent != parent_ref
+        )
+        candidate = child.model_copy(
+            update={
+                "definition": definition.model_copy(
+                    update={
+                        "ordered_probabilistic_parent_nodes": parents,
+                        "cpt": cpt,
+                    }
+                )
+            }
+        )
+        result = self._save_node_operation(
+            candidate,
+            expected_semantic_revision=expected_semantic_revision,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+            allow_incomplete_cpt=strategy == "incomplete",
+        )
+        return self._cpt_result(result)
+
+    def reorder_probabilistic_parents(
+        self,
+        child_node_id: str,
+        ordered_parent_node_ids: tuple[str, ...],
+        *,
+        expected_semantic_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> CptMutationResult:
+        child = self.repository.get_node(child_node_id)
+        definition = child.definition
+        if not isinstance(definition, (EvidenceNodeDefinition, BnNodeDefinition)):
+            raise CurrentModelOperationError(
+                "model.probabilistic_child_kind_invalid",
+                "probabilistic edge child must be Evidence or BN",
+            )
+        parent_by_id = {
+            parent.node_id: parent for parent in definition.ordered_probabilistic_parent_nodes
+        }
+        try:
+            parents = tuple(parent_by_id[node_id] for node_id in ordered_parent_node_ids)
+            cpt = reorder_cpt_parents(definition.cpt, parents)
+        except (KeyError, CurrentCptError) as error:
+            raise CurrentModelOperationError(
+                "model.cpt_parent_reorder_invalid",
+                str(error),
+            ) from error
+        candidate = child.model_copy(
+            update={
+                "definition": definition.model_copy(
+                    update={
+                        "ordered_probabilistic_parent_nodes": parents,
+                        "cpt": cpt,
+                    }
+                )
+            }
+        )
+        result = self._save_node_operation(
+            candidate,
+            expected_semantic_revision=expected_semantic_revision,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+            allow_incomplete_cpt=cpt.mode is CptMode.INCOMPLETE,
+        )
+        return self._cpt_result(result)
+
+    def add_extraction_edge(
+        self,
+        evidence_node_id: str,
+        raw_input_node_id: str,
+        recipe_input_binding_id: str,
+        updated_recipe: EvidenceRecipe,
+        *,
+        expected_semantic_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> NodeMutationResult:
+        evidence = self.repository.get_node(evidence_node_id)
+        raw = self.repository.get_node(raw_input_node_id)
+        definition = evidence.definition
+        raw_definition = raw.definition
+        if not isinstance(definition, EvidenceNodeDefinition) or not isinstance(
+            raw_definition, RawInputNodeDefinition
+        ):
+            raise CurrentModelOperationError(
+                "model.extraction_edge_kind_invalid",
+                "extraction edge must connect Raw Input to Evidence",
+            )
+        if updated_recipe.recipe_id != definition.recipe.recipe_id:
+            raise CurrentModelOperationError(
+                "model.recipe_identity_changed",
+                "edge editing cannot replace the Evidence recipe identity",
+            )
+        existing_ids = {item.binding_id for item in definition.recipe.inputs}
+        new_ids = {item.binding_id for item in updated_recipe.inputs}
+        if recipe_input_binding_id in existing_ids or new_ids != (
+            existing_ids | {recipe_input_binding_id}
+        ):
+            raise CurrentModelOperationError(
+                "model.recipe_input_add_mismatch",
+                "updated recipe must add exactly the requested input binding",
+            )
+        recipe_input = next(
+            item for item in updated_recipe.inputs if item.binding_id == recipe_input_binding_id
+        )
+        if recipe_input.source_id != raw_definition.source_descriptor.source_id:
+            raise CurrentModelOperationError(
+                "model.recipe_source_binding_mismatch",
+                "new recipe input source does not match the Raw Input descriptor",
+            )
+        binding_by_id = {item.recipe_input_binding_id: item for item in definition.data_bindings}
+        binding_by_id[recipe_input_binding_id] = EvidenceDataBinding(
+            recipe_input_binding_id=recipe_input_binding_id,
+            raw_input_node=ModelNodeRef(
+                node_id=raw.node_id,
+                node_kind=ModelNodeKind.RAW_INPUT,
+            ),
+        )
+        bindings = tuple(
+            binding_by_id[recipe_input.binding_id] for recipe_input in updated_recipe.inputs
+        )
+        candidate = evidence.model_copy(
+            update={
+                "definition": definition.model_copy(
+                    update={
+                        "recipe": updated_recipe,
+                        "data_bindings": bindings,
+                    }
+                )
+            }
+        )
+        return self._save_node_operation(
+            candidate,
+            expected_semantic_revision=expected_semantic_revision,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+        )
+
+    def remove_extraction_edge(
+        self,
+        evidence_node_id: str,
+        recipe_input_binding_id: str,
+        updated_recipe: EvidenceRecipe,
+        *,
+        expected_semantic_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> NodeMutationResult:
+        evidence = self.repository.get_node(evidence_node_id)
+        definition = evidence.definition
+        if not isinstance(definition, EvidenceNodeDefinition):
+            raise CurrentModelOperationError(
+                "model.extraction_edge_kind_invalid",
+                "extraction edge child must be Evidence",
+            )
+        if updated_recipe.recipe_id != definition.recipe.recipe_id:
+            raise CurrentModelOperationError(
+                "model.recipe_identity_changed",
+                "edge editing cannot replace the Evidence recipe identity",
+            )
+        existing_ids = {item.binding_id for item in definition.recipe.inputs}
+        new_ids = {item.binding_id for item in updated_recipe.inputs}
+        if recipe_input_binding_id not in existing_ids or new_ids != (
+            existing_ids - {recipe_input_binding_id}
+        ):
+            raise CurrentModelOperationError(
+                "model.recipe_input_remove_mismatch",
+                "updated recipe must remove exactly the requested input binding",
+            )
+        binding_by_id = {
+            item.recipe_input_binding_id: item
+            for item in definition.data_bindings
+            if item.recipe_input_binding_id != recipe_input_binding_id
+        }
+        bindings = tuple(
+            binding_by_id[recipe_input.binding_id] for recipe_input in updated_recipe.inputs
+        )
+        candidate = evidence.model_copy(
+            update={
+                "definition": definition.model_copy(
+                    update={
+                        "recipe": updated_recipe,
+                        "data_bindings": bindings,
+                    }
+                )
+            }
+        )
+        return self._save_node_operation(
+            candidate,
+            expected_semantic_revision=expected_semantic_revision,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+        )
+
+    def replace_node_states(
+        self,
+        node_id: str,
+        states: tuple[VariableState, ...],
+        *,
+        outcome: str,
+        expected_semantic_revisions: dict[str, int],
+        transaction_id: str,
+        actor_id: str,
+    ) -> StateMutationResult:
+        if outcome != "mark_incomplete":
+            raise CurrentModelOperationError(
+                "model.state_outcome_unsupported",
+                "state replacement requires explicit mark_incomplete in this operation",
+            )
+        before_nodes = self.repository.list_nodes()
+        node_index = {node.node_id: node for node in before_nodes}
+        target = node_index.get(node_id)
+        if target is None:
+            raise CurrentModelOperationError(
+                "model.state_node_missing",
+                f"state-edit node {node_id!r} does not resolve",
+            )
+        if target.node_kind is ModelNodeKind.RAW_INPUT:
+            raise CurrentModelOperationError(
+                "model.state_raw_input_forbidden",
+                "Raw Input nodes do not have Bayesian states",
+            )
+        new_state_ids = tuple(state.state_id for state in states)
+        try:
+            migrated_cpts = invalidate_state_change_cpts(
+                before_nodes,
+                ModelNodeRef(node_id=node_id, node_kind=target.node_kind),
+                new_state_ids,
+            )
+        except CurrentCptError as error:
+            raise CurrentModelOperationError(
+                "model.state_cpt_invalidation_failed",
+                str(error),
+            ) from error
+
+        proposed_by_id: dict[str, ModelNode] = {}
+        for node in before_nodes:
+            definition = node.definition
+            if not isinstance(definition, (EvidenceNodeDefinition, BnNodeDefinition)):
+                continue
+            migrated_cpt = migrated_cpts[node.node_id]
+            if node.node_id == node_id:
+                proposed = replace_definition_states(node, states, migrated_cpt)
+            elif migrated_cpt != definition.cpt:
+                proposed = replace_definition_cpt(node, migrated_cpt)
+            else:
+                continue
+            try:
+                proposed_by_id[node.node_id] = ModelNode.model_validate(
+                    proposed.model_dump(mode="json")
+                )
+            except ValueError as error:
+                raise CurrentModelOperationError(
+                    "model.state_contract_invalid",
+                    str(error),
+                ) from error
+
+        changed_ids = tuple(sorted(proposed_by_id))
+        if set(expected_semantic_revisions) != set(changed_ids):
+            raise CurrentModelOperationError(
+                "model.state_revision_set_mismatch",
+                "expected revisions must exactly cover changed child and dependent CPT nodes: "
+                + ", ".join(changed_ids),
+            )
+        candidates = before_nodes
+        for changed_id in changed_ids:
+            candidates = _replace_node(
+                candidates,
+                rehash_model_node(proposed_by_id[changed_id]),
+            )
+        normalized_by_id: dict[str, ModelNode] = {}
+        for changed_id in changed_ids:
+            normalized, candidates = self._normalize_node(
+                next(node for node in candidates if node.node_id == changed_id),
+                candidates,
+            )
+            normalized_by_id[changed_id] = normalized
+
+        diff = CanonicalModelDiff(
+            changed_paths=tuple(f"/nodes/{changed_id}/definition" for changed_id in changed_ids),
+            added_node_ids=(),
+            removed_node_ids=(),
+            added_edge_ids=(),
+            removed_edge_ids=(),
+            metadata={
+                "mutation": "replace_node_states",
+                "changed_node_id": node_id,
+                "new_state_ids": list(new_state_ids),
+                "cpt_outcome": outcome,
+                "dependent_node_ids": [
+                    changed_id for changed_id in changed_ids if changed_id != node_id
+                ],
+            },
+        )
+        occurred_at = self._clock()
+        try:
+            with self.repository.database.transaction():
+                saved_nodes = tuple(
+                    self.repository.update_node(
+                        normalized_by_id[changed_id],
+                        expected_semantic_revision=expected_semantic_revisions[changed_id],
+                        expected_layout_revision=None,
+                        event_id=self._event_id(),
+                        actor_id=actor_id,
+                        transaction_id=transaction_id,
+                        occurred_at=occurred_at,
+                        diff=diff,
+                        join_existing=True,
+                    )
+                    for changed_id in changed_ids
+                )
+                final_nodes = self.repository.list_nodes()
+                affected = self._revalidate_schemes_for_nodes(
+                    changed_ids,
+                    nodes=final_nodes,
+                    transaction_id=transaction_id,
+                    actor_id=actor_id,
+                    occurred_at=occurred_at,
+                )
+        except CurrentObjectConflictError as error:
+            raise CurrentModelOperationError(
+                "model.state_revision_conflict",
+                str(error),
+            ) from error
+        return StateMutationResult(
+            nodes=saved_nodes,
+            affected_scheme_ids=affected,
+            diff=diff,
+        )
 
     def update_node(
         self,
@@ -1561,10 +2219,12 @@ class CurrentModelWorkspaceService:
 
 
 __all__ = [
+    "CptMutationResult",
     "CurrentActivationConflict",
     "CurrentDeactivationImpactConflict",
     "CurrentModelArchiveConflict",
     "CurrentModelMutationConflict",
+    "CurrentModelOperationError",
     "CurrentModelRevisionConflict",
     "CurrentModelServiceError",
     "CurrentModelWorkspaceService",
@@ -1573,4 +2233,5 @@ __all__ = [
     "NodeMutationResult",
     "NodeUsage",
     "SchemeMutationResult",
+    "StateMutationResult",
 ]
