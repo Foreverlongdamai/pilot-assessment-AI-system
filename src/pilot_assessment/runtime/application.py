@@ -26,6 +26,7 @@ from pilot_assessment.model_library.repository import (
 )
 from pilot_assessment.model_library.service import ModelLibraryService
 from pilot_assessment.model_library.sources import SourceCatalog
+from pilot_assessment.model_workspace.service import CurrentModelWorkspaceService
 from pilot_assessment.persistence.artifacts import (
     ArtifactRecoveryReport,
     ManagedArtifactStore,
@@ -37,6 +38,9 @@ from pilot_assessment.persistence.draft_repository import (
     SqliteWorkspaceUnitOfWork,
 )
 from pilot_assessment.persistence.model_repository import SqliteComponentLibraryRepository
+from pilot_assessment.persistence.model_workspace_repository import (
+    SqliteModelWorkspaceRepository,
+)
 from pilot_assessment.persistence.project import ProjectStore
 from pilot_assessment.persistence.sessions import (
     SessionImportService,
@@ -108,6 +112,7 @@ class ProjectApplication:
     unit_of_work: SqliteWorkspaceUnitOfWork
     model_library: ModelLibraryService
     schemes: SchemeWorkspaceService
+    current_model: CurrentModelWorkspaceService
     operator_registry: OperatorRegistry
     source_provider_registry: RuntimeSourceProviderRegistry
     source_catalog: SourceCatalog
@@ -218,6 +223,12 @@ class ProjectApplication:
             clock=service_clock,
             ids=ids,
         )
+        current_model = CurrentModelWorkspaceService(
+            SqliteModelWorkspaceRepository(database),
+            operator_registry=operator_registry,
+            source_catalog=source_catalog,
+            clock=clock,
+        )
         runs = RunRepository(database)
         run_recovery = runs.recover_interrupted(occurred_at=clock())
         preflight = RunPreflightService(
@@ -245,6 +256,7 @@ class ProjectApplication:
             unit_of_work=unit_of_work,
             model_library=model_library,
             schemes=schemes,
+            current_model=current_model,
             operator_registry=operator_registry,
             source_provider_registry=source_provider_registry,
             source_catalog=source_catalog,

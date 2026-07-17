@@ -6,6 +6,7 @@ from pathlib import Path
 from pilot_assessment.contracts.model_components import ComponentKind
 from pilot_assessment.model_library.profile import load_hover_starter_package
 from pilot_assessment.model_library.repository import LibraryQuery
+from pilot_assessment.model_workspace.service import CurrentModelWorkspaceService
 from pilot_assessment.runtime import ProjectApplication
 
 NOW = datetime(2026, 7, 16, 12, 0, tzinfo=UTC)
@@ -38,6 +39,8 @@ def test_application_composes_services_seeds_once_and_reopens_after_project_move
         assert application.runs.list_runs() == ()
         assert application.preflight.operator_registry is application.operator_registry
         assert application.pipeline.results is application.results
+        assert isinstance(application.current_model, CurrentModelWorkspaceService)
+        assert application.current_model.repository.database is application.project.database
 
         repeated = application.initialize_starter()
         assert repeated.applied is False
@@ -78,6 +81,8 @@ def test_application_composes_services_seeds_once_and_reopens_after_project_move
             == profile.scheme
         )
         assert reopened.seed_result.applied is False
+        assert isinstance(reopened.current_model, CurrentModelWorkspaceService)
+        assert reopened.current_model.list_nodes() == ()
         assert reopened.initialize_starter().applied is False
         assert len(reopened.components.list_records()) == expected_count
         assert (

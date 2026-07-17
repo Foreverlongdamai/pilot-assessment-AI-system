@@ -19,6 +19,15 @@ from pilot_assessment.model_workspace.hashing import (
     task_scheme_layout_hash,
     task_scheme_semantic_hash,
 )
+from pilot_assessment.model_workspace.service import (
+    CurrentModelArchiveConflict,
+    CurrentModelMutationConflict,
+    CurrentModelRevisionConflict,
+    CurrentModelServiceError,
+    CurrentModelWorkspaceService,
+    NodeMutationResult,
+    NodeUsage,
+)
 from pilot_assessment.model_workspace.validation import (
     ModelValidationOutcome,
     validate_model_graph,
@@ -26,8 +35,15 @@ from pilot_assessment.model_workspace.validation import (
 
 __all__ = [
     "EdgeActivation",
+    "CurrentModelArchiveConflict",
+    "CurrentModelMutationConflict",
+    "CurrentModelRevisionConflict",
+    "CurrentModelServiceError",
+    "CurrentModelWorkspaceService",
     "ModelGraphError",
     "ModelValidationOutcome",
+    "NodeMutationResult",
+    "NodeUsage",
     "activation_closure",
     "ancestors",
     "descendants",

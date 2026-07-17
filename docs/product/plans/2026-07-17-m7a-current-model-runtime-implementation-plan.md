@@ -206,14 +206,14 @@ git commit -m "feat: persist M7 current model workspace"
 - Modify: `src/pilot_assessment/runtime/application.py`
 - Modify: `tests/runtime/test_application.py`
 
-- [ ] Compose one `CurrentModelWorkspaceService` per open managed project using the v2 repository, graph validator, operator registry and source catalog.
-- [ ] Implement node list/get/create/update/archive/usage-list/history/undo/redo.
-- [ ] Require transaction ID, actor and expected semantic revision for semantic writes; require expected layout revision for global-layout-only writes.
-- [ ] Return the canonical saved node, affected scheme IDs, new revisions, technical status and canonical diff from every mutation.
-- [ ] Allow saving structurally incomplete inactive nodes with explicit diagnostics. Prevent a physically archived node from remaining in any current active closure.
-- [ ] Updating a shared node must recompute technical status for every scheme that uses it, without cloning or silently forking the node.
-- [ ] Keep scientific warnings non-blocking and do not run scientific pytest/goldens per edit.
-- [ ] Run:
+- [x] Compose one `CurrentModelWorkspaceService` per open managed project using the v2 repository, graph validator, operator registry and source catalog.
+- [x] Implement node list/get/create/update/archive/usage-list/history/undo/redo.
+- [x] Require transaction ID, actor and expected semantic revision for semantic writes; require expected layout revision for global-layout-only writes.
+- [x] Return the canonical saved node, affected scheme IDs, new revisions, technical status and canonical diff from every mutation.
+- [x] Allow saving structurally incomplete inactive nodes with explicit diagnostics. Prevent a physically archived node from remaining in any current active closure.
+- [x] Updating a shared node must recompute technical status for every scheme that uses it, without cloning or silently forking the node.
+- [x] Keep scientific warnings non-blocking and do not run scientific pytest/goldens per edit.
+- [x] Run:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest tests/model_workspace/test_node_service.py tests/runtime/test_application.py -q
@@ -221,7 +221,7 @@ git commit -m "feat: persist M7 current model workspace"
 
 Expected: node state persists across project reopen and revision conflicts return typed current state.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/pilot_assessment/model_workspace/service.py src/pilot_assessment/runtime/application.py tests/model_workspace/test_node_service.py tests/runtime/test_application.py
@@ -521,7 +521,7 @@ git commit -m "test: close M7A current model runtime"
 | 1 | `feat: add M7 current model contracts` | Executed; exact hash backfilled at Task 12 |
 | 2 | `feat: add current model graph rules` | Executed; exact hash backfilled at Task 12 |
 | 3 | `feat: persist M7 current model workspace` | Executed; exact hash backfilled at Task 12 |
-| 4 | `feat: add current model node service` | Not executed |
+| 4 | `feat: add current model node service` | Executed; exact hash backfilled at Task 12 |
 | 5 | `feat: add current task scheme service` | Not executed |
 | 6 | `feat: add task activation and cascade semantics` | Not executed |
 | 7 | `feat: add current node and graph copy operations` | Not executed |
