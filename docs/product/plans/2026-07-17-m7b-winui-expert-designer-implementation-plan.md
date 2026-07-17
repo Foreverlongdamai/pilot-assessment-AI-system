@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7B |
 | Date | 2026-07-17 |
-| Status | Tasks 1–6 complete; Task 7 active/dim model graph is next |
+| Status | Tasks 1–7 complete; Task 8 graph editing and activation is next |
 | Parent roadmap | [M7 Implementation Roadmap](2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) |
 | Backend dependency | [M7A Current Model Runtime Plan](2026-07-17-m7a-current-model-runtime-implementation-plan.md) |
 | Authoritative design | [M7 Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
@@ -365,15 +365,15 @@ git commit -m "feat: add task scheme navigation"
 - Create: `src/PilotAssessment.Desktop.Core/State/GraphProjection.cs`
 - Create: `tests/PilotAssessment.Desktop.UnitTests/State/GraphProjectionTests.cs`
 
-- [ ] Consume one backend `ModelGraphSnapshot`; do not reconstruct parents from display edges or old component versions.
-- [ ] Use `ScrollViewer` for pan/zoom and an `ItemsRepeater` with position-aware `VirtualizingLayout` for node realization. Render edges in a separate lightweight layer clipped to the visible viewport.
-- [ ] Draw normal nodes as circles with clear two/three-line short names. Distinguish Raw Input, Evidence, BN sub-skill and aggregate competency through theme resources; do not rely on color alone.
-- [ ] Active nodes/edges use normal contrast; inactive global nodes/edges remain real but dim. Provide Active only, Active + Inactive and All Global Nodes views.
-- [ ] Distinguish extraction and probabilistic edges by line/arrow pattern and legend. Keep inference influence as a separate read-only overlay.
-- [ ] Add search/filter by bilingual name, node kind, group, tags and scheme usage; include Fit, zoom controls and minimap.
-- [ ] Make nodes keyboard-focusable buttons with automation name, kind, active state and status. Support selection/multi-selection and context menu.
-- [ ] Test projection/filter/active-edge logic on a 7-node DTO; do not snapshot-test pixels.
-- [ ] Run:
+- [x] Consume one backend `ModelGraphSnapshot`; do not reconstruct parents from display edges or old component versions.
+- [x] Use `ScrollViewer` for pan/zoom and an `ItemsRepeater` with position-aware `VirtualizingLayout` for node realization. Render edges in a separate lightweight layer clipped to the visible viewport.
+- [x] Draw normal nodes as circles with clear two/three-line short names. Distinguish Raw Input, Evidence, BN sub-skill and aggregate competency through graph theme resources, label and icon; do not rely on color alone.
+- [x] Active nodes/edges use normal contrast; inactive global nodes/edges remain real but dim. Provide Active only, Active + Inactive and All Global Nodes views.
+- [x] Distinguish extraction and probabilistic edges by line/arrow pattern and legend. The editable canvas renders canonical edges only, so inference influence remains a separate read-only result concern.
+- [x] Add search/filter by bilingual name, node kind, group, tags and scheme usage; include Fit, zoom controls and minimap.
+- [x] Make nodes keyboard-focusable buttons with automation name, kind, active state and status. Support selection/multi-selection and context menu.
+- [x] Test projection/filter/active-edge logic on a 7-node DTO; do not snapshot-test pixels.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~GraphProjectionTests
@@ -382,7 +382,9 @@ dotnet build src/PilotAssessment.Desktop/PilotAssessment.Desktop.slnx -p:Platfor
 
 Expected: graph view builds and deterministic projection tests pass.
 
-- [ ] Commit:
+- [x] Verification: focused `GraphProjectionTests` `3/3`; full desktop Unit `39/39`; Contract `2/2`; x64 Debug build `0 warning / 0 error`. A real M7A sidecar project loaded `53` global nodes, `67` canonical edges and `52` active nodes; the visible WinUI window realized `39` viewport-buffer node buttons, displayed extraction/probabilistic edges, selected `Trajectory tracking`, and contained no temporary layout diagnostics. App and sidecar were then stopped with no residual process.
+
+- [x] Commit:
 
 ```powershell
 git add src/PilotAssessment.Desktop/Views/Pages/ModelStudioPage.xaml src/PilotAssessment.Desktop/ViewModels/ModelStudioViewModel.cs src/PilotAssessment.Desktop/Controls/Graph src/PilotAssessment.Desktop.Core/State/GraphProjection.cs tests/PilotAssessment.Desktop.UnitTests/State/GraphProjectionTests.cs
@@ -670,7 +672,7 @@ git commit -m "test: close M7 WinUI expert designer"
 | 4 | `feat: add the WinUI application shell` | `6e1974e` (`fd15c2b` removes the generated Core placeholder) |
 | 5 | `feat: add managed project and session workspace` | `296622f` |
 | 6 | `feat: add task scheme navigation` | `5761b63` |
-| 7 | `feat: add the active task model graph` | Not executed |
+| 7 | `feat: add the active task model graph` | `974e8c1` |
 | 8 | `feat: edit task activation from the model graph` | Not executed |
 | 9 | `feat: add independent node editor windows` | Not executed |
 | 10 | `feat: add raw input and Evidence node editors` | Not executed |
