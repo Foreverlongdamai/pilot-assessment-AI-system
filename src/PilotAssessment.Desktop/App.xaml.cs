@@ -1,57 +1,96 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using PilotAssessment.Desktop.Core.State;
+using PilotAssessment.Desktop.Services.Backend;
+using PilotAssessment.Desktop.Services.Navigation;
+using PilotAssessment.Desktop.Services.Preferences;
+using PilotAssessment.Desktop.ViewModels;
+using PilotAssessment.Desktop.Views;
 
 namespace PilotAssessment.Desktop;
 
-/// <summary>
-/// Provides application-specific behavior to supplement the default Application class.
-/// </summary>
 public partial class App : Application
 {
-    /// <summary>
-    /// The main application window. Use <c>App.Window</c> from any class that needs
-    /// the window reference (for dialogs, pickers, interop, etc.).
-    /// </summary>
+    private IHost? _applicationHost;
+    private int _shutdownStarted;
+
     public static Window Window { get; private set; } = null!;
 
-    /// <summary>
-    /// The UI thread dispatcher. Use <c>App.DispatcherQueue</c> to marshal calls
-    /// to the UI thread. Fully qualified to avoid CS0104 ambiguity with
-    /// <see cref="Windows.System.DispatcherQueue"/>.
-    /// </summary>
+    public static IServiceProvider Services =>
+        ((App)Current)._applicationHost?.Services
+        ?? throw new InvalidOperationException("Application services are not ready.");
+
     public static Microsoft.UI.Dispatching.DispatcherQueue DispatcherQueue { get; private set; } = null!;
 
-    /// <summary>
-    /// The native window handle (HWND). Use for file pickers,
-    /// <c>DataTransferManager</c>, and any WinRT interop that requires
-    /// <c>InitializeWithWindow</c>.
-    /// </summary>
     public static nint WindowHandle =>
         WinRT.Interop.WindowNative.GetWindowHandle(Window);
 
-    /// <summary>
-    /// Initializes the singleton application object.
-    /// </summary>
     public App()
     {
         InitializeComponent();
     }
 
-    /// <summary>
-    /// Invoked when the application is launched.
-    /// </summary>
-    /// <param name="args">Details about the launch request and process.</param>
-    protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+    protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
-        Window = new MainWindow();
         DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-        Window.Activate();
+        var builder = Host.CreateApplicationBuilder();
+        builder.Services.AddSingleton<ApplicationShellState>();
+        builder.Services.AddSingleton<BackendConnectionService>();
+        builder.Services.AddSingleton<LocalPreferencesStore>();
+        builder.Services.AddSingleton<NavigationService>();
+        builder.Services.AddSingleton<ShellViewModel>();
+        builder.Services.AddSingleton<MainWindow>();
+        _applicationHost = builder.Build();
+        await _applicationHost.StartAsync();
+
+        var shell = _applicationHost.Services.GetRequiredService<ShellViewModel>();
+        var window = _applicationHost.Services.GetRequiredService<MainWindow>();
+        Window = window;
+        window.Activate();
+
+        try
+        {
+            await shell.InitializeAsync();
+            window.NavigateTo(shell.CurrentDestination);
+            var backend = _applicationHost.Services.GetRequiredService<BackendConnectionService>();
+            if (!await backend.ConnectAsync())
+            {
+                window.NavigateToDiagnostics();
+            }
+        }
+        catch (Exception error)
+        {
+            _applicationHost.Services
+                .GetRequiredService<ApplicationShellState>()
+                .FailBackendConnection(error.Message);
+            window.NavigateToDiagnostics();
+        }
+    }
+
+    public async Task ShutdownAsync()
+    {
+        if (Interlocked.Exchange(ref _shutdownStarted, 1) != 0)
+        {
+            return;
+        }
+
+        if (_applicationHost is null)
+        {
+            return;
+        }
+
+        await _applicationHost.StopAsync();
+        if (_applicationHost is IAsyncDisposable asyncHost)
+        {
+            await asyncHost.DisposeAsync();
+        }
+        else
+        {
+            _applicationHost.Dispose();
+        }
+
+        _applicationHost = null;
     }
 }
