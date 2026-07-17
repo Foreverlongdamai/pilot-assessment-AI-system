@@ -15,6 +15,7 @@ from uuid import uuid4
 
 from pilot_assessment.contracts.model_workspace import (
     CanonicalModelDiff,
+    DeactivationImpact,
     ModelChangeEvent,
     ModelDiagnostic,
     ModelDiagnosticSeverity,
@@ -27,6 +28,11 @@ from pilot_assessment.contracts.model_workspace import (
 )
 from pilot_assessment.evidence.registry import OperatorRegistry
 from pilot_assessment.model_library.sources import SourceCatalog
+from pilot_assessment.model_workspace.activation import (
+    ActivationPlanningError,
+    plan_activation,
+    plan_deactivation,
+)
 from pilot_assessment.model_workspace.graph import (
     ModelGraphError,
     activation_closure,
@@ -108,6 +114,22 @@ class CurrentSchemeRevisionConflict(CurrentModelMutationConflict):
     def __init__(self, message: str, *, current_scheme: TaskScheme) -> None:
         super().__init__(message)
         self.current_scheme = current_scheme
+
+
+class CurrentActivationConflict(CurrentModelMutationConflict):
+    """Raised when an activation intent cannot be represented safely."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+
+
+class CurrentDeactivationImpactConflict(CurrentModelMutationConflict):
+    """Raised when a confirmation was computed from an older semantic graph."""
+
+    def __init__(self, *, current_impact: DeactivationImpact) -> None:
+        super().__init__("deactivation impact changed; preview and confirm again")
+        self.current_impact = current_impact
 
 
 @dataclass(frozen=True, slots=True)
@@ -850,6 +872,200 @@ class CurrentModelWorkspaceService:
             copied_from_scheme_id=source.scheme_id,
         )
 
+    @staticmethod
+    def _require_scheme_semantic_revision(
+        scheme: TaskScheme,
+        expected_semantic_revision: int,
+    ) -> None:
+        if (
+            type(expected_semantic_revision) is not int
+            or expected_semantic_revision < 0
+            or scheme.semantic_revision != expected_semantic_revision
+        ):
+            raise CurrentSchemeRevisionConflict(
+                "task scheme semantic revision conflict",
+                current_scheme=scheme,
+            )
+
+    def activate_node(
+        self,
+        scheme_id: str,
+        node_id: str,
+        *,
+        expected_semantic_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> SchemeMutationResult:
+        occurred_at = self._clock()
+        try:
+            with self.repository.database.transaction():
+                scheme = self.repository.get_scheme(scheme_id)
+                self._require_scheme_semantic_revision(
+                    scheme,
+                    expected_semantic_revision,
+                )
+                nodes = self.repository.list_nodes()
+                edges = _all_resolvable_edges(nodes)
+                try:
+                    activation = plan_activation(scheme, nodes, edges, node_id)
+                except ActivationPlanningError as error:
+                    raise CurrentActivationConflict(error.code, str(error)) from error
+                node_index = {node.node_id: node for node in nodes}
+                archived = tuple(
+                    closure_node_id
+                    for closure_node_id in activation.computed_closure
+                    if node_index[closure_node_id].lifecycle is ModelObjectLifecycle.ARCHIVED
+                )
+                if archived:
+                    raise CurrentActivationConflict(
+                        "model.activation_archived_node",
+                        "activation closure contains archived nodes: " + ", ".join(archived),
+                    )
+                normalized = rehash_task_scheme(
+                    self._normalize_scheme(
+                        scheme.model_copy(
+                            update={
+                                "explicit_active_node_ids": activation.explicit_node_ids,
+                                "computed_active_closure": activation.computed_closure,
+                            }
+                        ),
+                        nodes,
+                    )
+                )
+                diff = CanonicalModelDiff(
+                    changed_paths=(
+                        "/explicit_active_node_ids",
+                        "/computed_active_closure",
+                    ),
+                    added_node_ids=activation.added_node_ids,
+                    removed_node_ids=(),
+                    added_edge_ids=activation.added_edge_ids,
+                    removed_edge_ids=(),
+                    metadata={
+                        "mutation": "activate_node",
+                        "requested_node_id": node_id,
+                        "auto_enabled_parent_ids": list(activation.auto_enabled_parent_ids),
+                    },
+                )
+                saved = self.repository.update_scheme(
+                    normalized,
+                    expected_semantic_revision=expected_semantic_revision,
+                    expected_layout_revision=None,
+                    event_id=self._event_id(),
+                    actor_id=actor_id,
+                    transaction_id=transaction_id,
+                    occurred_at=occurred_at,
+                    diff=diff,
+                    join_existing=True,
+                )
+        except CurrentObjectConflictError as error:
+            canonical = self.repository.get_scheme(scheme_id)
+            raise CurrentSchemeRevisionConflict(
+                str(error),
+                current_scheme=canonical,
+            ) from error
+        return self._scheme_result(saved, diff)
+
+    def preview_deactivation(
+        self,
+        scheme_id: str,
+        node_id: str,
+    ) -> DeactivationImpact:
+        with self.repository.database.transaction(immediate=False):
+            scheme = self.repository.get_scheme(scheme_id)
+            nodes = self.repository.list_nodes()
+            try:
+                return plan_deactivation(
+                    scheme,
+                    nodes,
+                    _all_resolvable_edges(nodes),
+                    node_id,
+                ).impact
+            except ActivationPlanningError as error:
+                raise CurrentActivationConflict(error.code, str(error)) from error
+
+    def deactivate_node(
+        self,
+        scheme_id: str,
+        node_id: str,
+        *,
+        expected_semantic_revision: int,
+        impact_hash: str,
+        transaction_id: str,
+        actor_id: str,
+    ) -> SchemeMutationResult:
+        occurred_at = self._clock()
+        try:
+            with self.repository.database.transaction():
+                scheme = self.repository.get_scheme(scheme_id)
+                self._require_scheme_semantic_revision(
+                    scheme,
+                    expected_semantic_revision,
+                )
+                nodes = self.repository.list_nodes()
+                edges = _all_resolvable_edges(nodes)
+                try:
+                    deactivation = plan_deactivation(
+                        scheme,
+                        nodes,
+                        edges,
+                        node_id,
+                    )
+                except ActivationPlanningError as error:
+                    raise CurrentActivationConflict(error.code, str(error)) from error
+                if deactivation.impact.impact_hash != impact_hash:
+                    raise CurrentDeactivationImpactConflict(current_impact=deactivation.impact)
+                normalized = rehash_task_scheme(
+                    self._normalize_scheme(
+                        scheme.model_copy(
+                            update={
+                                "explicit_active_node_ids": (
+                                    deactivation.remaining_explicit_node_ids
+                                ),
+                                "computed_active_closure": deactivation.computed_closure,
+                                "output_node_ids": deactivation.remaining_output_node_ids,
+                            }
+                        ),
+                        nodes,
+                    )
+                )
+                changed_paths = [
+                    "/explicit_active_node_ids",
+                    "/computed_active_closure",
+                ]
+                if normalized.output_node_ids != scheme.output_node_ids:
+                    changed_paths.append("/output_node_ids")
+                diff = CanonicalModelDiff(
+                    changed_paths=tuple(changed_paths),
+                    added_node_ids=(),
+                    removed_node_ids=deactivation.impact.impacted_node_ids,
+                    added_edge_ids=(),
+                    removed_edge_ids=deactivation.impact.impacted_edge_ids,
+                    metadata={
+                        "mutation": "deactivate_node",
+                        "requested_node_id": node_id,
+                        "confirmed_impact_hash": impact_hash,
+                    },
+                )
+                saved = self.repository.update_scheme(
+                    normalized,
+                    expected_semantic_revision=expected_semantic_revision,
+                    expected_layout_revision=None,
+                    event_id=self._event_id(),
+                    actor_id=actor_id,
+                    transaction_id=transaction_id,
+                    occurred_at=occurred_at,
+                    diff=diff,
+                    join_existing=True,
+                )
+        except CurrentObjectConflictError as error:
+            canonical = self.repository.get_scheme(scheme_id)
+            raise CurrentSchemeRevisionConflict(
+                str(error),
+                current_scheme=canonical,
+            ) from error
+        return self._scheme_result(saved, diff)
+
     def update_scheme(
         self,
         scheme: TaskScheme,
@@ -1015,6 +1231,8 @@ class CurrentModelWorkspaceService:
 
 
 __all__ = [
+    "CurrentActivationConflict",
+    "CurrentDeactivationImpactConflict",
     "CurrentModelArchiveConflict",
     "CurrentModelMutationConflict",
     "CurrentModelRevisionConflict",

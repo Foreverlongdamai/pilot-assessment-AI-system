@@ -264,14 +264,14 @@ git commit -m "feat: add current task scheme service"
 - Modify: `src/pilot_assessment/model_workspace/service.py`
 - Create: `tests/model_workspace/test_activation.py`
 
-- [ ] Implement child activation by adding the target to `explicit_active_node_ids`, recursively computing all data/probabilistic ancestors, validating the closure and saving one scheme event.
-- [ ] Return auto-enabled parent IDs and active edges in the canonical diff; do not require or expose a confirmation step.
-- [ ] Implement deactivation preview returning recursively impacted active downstream nodes/edges plus an `impact_hash` bound to the scheme revision and graph hashes.
-- [ ] Implement confirmed deactivation requiring expected scheme revision and exact `impact_hash`. In one transaction, remove the target and affected descendants from explicit activation, recompute closure and either save everything or nothing.
-- [ ] Treat Cancel as a client action that sends no mutation.
-- [ ] Recompute closure after child deactivation and retain ancestors still explicit or required by another active child.
-- [ ] Prove operations affect the current scheme only, even when another scheme uses the same nodes.
-- [ ] Run:
+- [x] Implement child activation by adding the target to `explicit_active_node_ids`, recursively computing all data/probabilistic ancestors, validating the closure and saving one scheme event.
+- [x] Return auto-enabled parent IDs and active edges in the canonical diff; do not require or expose a confirmation step.
+- [x] Implement deactivation preview returning recursively impacted active downstream nodes/edges plus an `impact_hash` bound to the scheme revision and graph hashes.
+- [x] Implement confirmed deactivation requiring expected scheme revision and exact `impact_hash`. In one transaction, remove the target and affected descendants from explicit activation, recompute closure and either save everything or nothing.
+- [x] Treat Cancel as a client action that sends no mutation.
+- [x] Recompute closure after child deactivation and retain ancestors still explicit or required by another active child.
+- [x] Prove operations affect the current scheme only, even when another scheme uses the same nodes.
+- [x] Run:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest tests/model_workspace/test_activation.py -q
@@ -279,7 +279,7 @@ git commit -m "feat: add current task scheme service"
 
 Expected: the 7-node fixture proves silent enable closure, impact-hash stale protection, atomic cascade and task isolation.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/pilot_assessment/model_workspace/activation.py src/pilot_assessment/model_workspace/service.py tests/model_workspace/test_activation.py
@@ -523,7 +523,7 @@ git commit -m "test: close M7A current model runtime"
 | 3 | `feat: persist M7 current model workspace` | Executed; exact hash backfilled at Task 12 |
 | 4 | `feat: add current model node service` | Executed; exact hash backfilled at Task 12 |
 | 5 | `feat: add current task scheme service` | Executed; exact hash backfilled at Task 12 |
-| 6 | `feat: add task activation and cascade semantics` | Not executed |
+| 6 | `feat: add task activation and cascade semantics` | Executed; exact hash backfilled at Task 12 |
 | 7 | `feat: add current node and graph copy operations` | Not executed |
 | 8 | `feat: make current node edges and CPT atomic` | Not executed |
 | 9 | `feat: migrate Hover starter to current model nodes` | Not executed |

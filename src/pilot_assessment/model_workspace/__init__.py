@@ -1,5 +1,12 @@
 """Current complete-node graph, hashing and technical-validation services."""
 
+from pilot_assessment.model_workspace.activation import (
+    ActivationPlan,
+    ActivationPlanningError,
+    DeactivationPlan,
+    plan_activation,
+    plan_deactivation,
+)
 from pilot_assessment.model_workspace.graph import (
     EdgeActivation,
     ModelGraphError,
@@ -20,6 +27,8 @@ from pilot_assessment.model_workspace.hashing import (
     task_scheme_semantic_hash,
 )
 from pilot_assessment.model_workspace.service import (
+    CurrentActivationConflict,
+    CurrentDeactivationImpactConflict,
     CurrentModelArchiveConflict,
     CurrentModelMutationConflict,
     CurrentModelRevisionConflict,
@@ -36,7 +45,12 @@ from pilot_assessment.model_workspace.validation import (
 )
 
 __all__ = [
+    "ActivationPlan",
+    "ActivationPlanningError",
+    "CurrentActivationConflict",
+    "CurrentDeactivationImpactConflict",
     "EdgeActivation",
+    "DeactivationPlan",
     "CurrentModelArchiveConflict",
     "CurrentModelMutationConflict",
     "CurrentModelRevisionConflict",
@@ -57,6 +71,8 @@ __all__ = [
     "model_node_layout_hash",
     "model_node_semantic_hash",
     "project_model_edges",
+    "plan_activation",
+    "plan_deactivation",
     "rehash_model_node",
     "rehash_task_scheme",
     "task_scheme_layout_hash",
