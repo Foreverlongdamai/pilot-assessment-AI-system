@@ -38,27 +38,42 @@ from pilot_assessment.model_workspace.operations import (
     effective_scheme_layout,
     merge_scheme_layouts,
 )
-from pilot_assessment.model_workspace.service import (
-    CptMutationResult,
-    CurrentActivationConflict,
-    CurrentDeactivationImpactConflict,
-    CurrentModelArchiveConflict,
-    CurrentModelMutationConflict,
-    CurrentModelOperationError,
-    CurrentModelRevisionConflict,
-    CurrentModelServiceError,
-    CurrentModelWorkspaceService,
-    CurrentSchemeRevisionConflict,
-    GraphBatchResult,
-    NodeMutationResult,
-    NodeUsage,
-    SchemeMutationResult,
-    StateMutationResult,
-)
 from pilot_assessment.model_workspace.validation import (
     ModelValidationOutcome,
     validate_model_graph,
 )
+
+_SERVICE_EXPORTS = frozenset(
+    {
+        "CptMutationResult",
+        "CurrentActivationConflict",
+        "CurrentDeactivationImpactConflict",
+        "CurrentModelArchiveConflict",
+        "CurrentModelMutationConflict",
+        "CurrentModelOperationError",
+        "CurrentModelRevisionConflict",
+        "CurrentModelServiceError",
+        "CurrentModelWorkspaceService",
+        "CurrentSchemeRevisionConflict",
+        "GraphBatchResult",
+        "NodeMutationResult",
+        "NodeUsage",
+        "SchemeMutationResult",
+        "StateMutationResult",
+    }
+)
+
+
+def __getattr__(name: str) -> object:
+    """Load persistence-dependent service exports without package import cycles."""
+
+    if name not in _SERVICE_EXPORTS:
+        raise AttributeError(name)
+    from importlib import import_module
+
+    service = import_module("pilot_assessment.model_workspace.service")
+    return getattr(service, name)
+
 
 __all__ = [
     "ActivationPlan",

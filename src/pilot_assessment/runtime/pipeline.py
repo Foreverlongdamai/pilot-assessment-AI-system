@@ -35,6 +35,7 @@ from pilot_assessment.contracts.project import (
     ArtifactOwnerKind,
 )
 from pilot_assessment.contracts.run import (
+    CurrentModelRunSnapshot,
     RunResultEnvelope,
     RunScientificStatus,
     RunSnapshot,
@@ -128,12 +129,18 @@ class RunResultRepository:
         try:
             with self.database.transaction() as connection:
                 run = connection.execute(
-                    "SELECT snapshot_hash FROM runs WHERE run_id = ?",
+                    """
+                    SELECT COALESCE(link.current_snapshot_hash, runs.snapshot_hash)
+                           AS effective_snapshot_hash
+                    FROM runs
+                    LEFT JOIN model_run_links AS link ON link.run_id = runs.run_id
+                    WHERE runs.run_id = ?
+                    """,
                     (envelope.run_id,),
                 ).fetchone()
                 if run is None:
                     raise RunResultIntegrityError(f"owning run {envelope.run_id!r} does not exist")
-                if run["snapshot_hash"] != envelope.snapshot_hash:
+                if run["effective_snapshot_hash"] != envelope.snapshot_hash:
                     raise RunResultIntegrityError(
                         "run result snapshot hash differs from its owning run"
                     )
@@ -440,7 +447,7 @@ class AssessmentPipeline:
 
     def execute(
         self,
-        snapshot: RunSnapshot,
+        snapshot: RunSnapshot | CurrentModelRunSnapshot,
         *,
         cancellation: CancellationProbe | None = None,
         progress: ProgressSink | None = None,
@@ -453,7 +460,19 @@ class AssessmentPipeline:
         report = progress or (lambda _stage, _completed, _total, _message: None)
         total = run_total_units(snapshot)
         cancel()
-        self._validate_snapshot(snapshot)
+        execution_snapshot = (
+            snapshot.execution_snapshot
+            if isinstance(snapshot, CurrentModelRunSnapshot)
+            else snapshot
+        )
+        if isinstance(snapshot, CurrentModelRunSnapshot) and (
+            run_snapshot_hash(snapshot) != snapshot.snapshot_hash
+        ):
+            raise AssessmentPipelineError(
+                "pipeline.current_snapshot_hash_mismatch",
+                "current run snapshot hash does not match canonical content",
+            )
+        self._validate_snapshot(execution_snapshot)
         report(
             RunStage.SNAPSHOT_VALIDATION,
             1,
@@ -461,9 +480,9 @@ class AssessmentPipeline:
             "Validated frozen run snapshot",
         )
         cancel()
-        scheme = self._load_scheme(snapshot.scheme_ref)
-        prepared = self.preflight.get(preflight_id_from_hash(snapshot.preflight_hash))
-        if prepared.report.preflight_hash != snapshot.preflight_hash:
+        scheme = self._load_scheme(execution_snapshot.scheme_ref)
+        prepared = self.preflight.get(preflight_id_from_hash(execution_snapshot.preflight_hash))
+        if prepared.report.preflight_hash != execution_snapshot.preflight_hash:
             raise AssessmentPipelineError(
                 "pipeline.preflight_mismatch",
                 "snapshot preflight identity does not exist exactly",
@@ -497,8 +516,8 @@ class AssessmentPipeline:
             reference for reference in pins if reference.kind is ComponentKind.SOURCE_DESCRIPTOR
         )
         if (
-            snapshot.locked_component_refs != expected_components
-            or snapshot.locked_source_refs != expected_sources
+            execution_snapshot.locked_component_refs != expected_components
+            or execution_snapshot.locked_source_refs != expected_sources
         ):
             raise AssessmentPipelineError(
                 "pipeline.scheme_closure_mismatch",

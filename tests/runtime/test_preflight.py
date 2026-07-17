@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import platform
 import shutil
 from datetime import UTC, datetime
@@ -71,7 +70,10 @@ def test_preflight_locks_dynamic_closure_allows_bad_performance_and_blocks_forma
         payload = encode_canonical_json(snapshot.model_dump(mode="json"))
         assert str(application.project.root).encode() not in payload
         assert platform.node().encode() not in payload
-        assert str(os.getpid()).encode() not in payload
+        # Check process-specific field names rather than the decimal PID text: a short
+        # PID can occur by chance inside one of the snapshot's hexadecimal hashes.
+        assert b'"pid"' not in payload
+        assert b'"process_id"' not in payload
 
         synchronized = service.synchronization_outcome(ready.report.preflight_id)
         assert synchronized.aligned_session is not None

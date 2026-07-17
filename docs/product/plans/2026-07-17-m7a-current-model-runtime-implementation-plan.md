@@ -397,24 +397,31 @@ git commit -m "feat: migrate Hover starter to current model nodes"
 
 - Create: `src/pilot_assessment/model_workspace/execution.py`
 - Create: `src/pilot_assessment/runtime/current_preflight.py`
+- Modify: `src/pilot_assessment/model_workspace/__init__.py`
+- Modify: `src/pilot_assessment/runtime/__init__.py`
 - Modify: `src/pilot_assessment/runtime/repository.py`
 - Modify: `src/pilot_assessment/runtime/pipeline.py`
+- Modify: `src/pilot_assessment/runtime/coordinator.py`
 - Modify: `src/pilot_assessment/runtime/application.py`
 - Create: `tests/runtime/test_current_preflight.py`
 - Create: `tests/runtime/test_current_run_snapshot.py`
-- Modify: `tests/runtime/test_pipeline.py`
-- Modify: `tests/runtime/test_run_repository.py`
+- Modify: `tests/runtime/test_application.py`
+- Modify: `tests/runtime/test_preflight.py`
+- Verify unchanged compatibility coverage: `tests/runtime/test_pipeline.py`
+- Verify unchanged compatibility coverage: `tests/runtime/test_run_repository.py`
 
-- [ ] Deterministically materialize a technically executable current active closure into hidden immutable legacy component/scheme records keyed by current graph content hash.
-- [ ] Tag/store the materialization as an internal execution compatibility asset; do not expose it as a task-specific version picker to M7.
-- [ ] Reuse existing EvidenceRecipe/operator/source/CPT/BN logic and produce the legacy `RunPreflightReport`/`RunSnapshot` required by the current pipeline.
-- [ ] Build `CurrentModelRunPreflightReport` from exact session revision, scheme revision, active nodes/hashes, technical diagnostics and execution preflight reference.
-- [ ] Build `CurrentModelRunSnapshot` with complete frozen current scheme/node JSON, exact operators/runtime identities, current-model hash and embedded legacy execution snapshot.
-- [ ] In run start, use one idempotent transaction to verify expected scheme/node revisions, freeze the snapshot, persist the current preflight link and create the queued run before enqueueing work.
-- [ ] Adapt repository/pipeline parsing so legacy v0.1 runs and current v0.2 runs coexist; the pipeline unwraps the immutable execution snapshot without consulting later current state.
-- [ ] Add read-only node/scheme preview that freezes an ephemeral current snapshot and never mutates model state.
-- [ ] Prove editing a shared node after one completed run changes a future snapshot but does not change the first snapshot/result replay.
-- [ ] Run:
+- [x] Deterministically materialize a technically executable current active closure into hidden immutable legacy component/scheme records keyed by an exact semantic-graph/revision lock hash.
+- [x] Tag/store the materialization under `compat.current.*` identities and `model_execution_materializations`; do not expose it as a task-specific version picker to M7.
+- [x] Reuse existing EvidenceRecipe/operator/source/CPT/BN logic and produce the legacy `RunPreflightReport`/`RunSnapshot` required by the current pipeline.
+- [x] Build `CurrentModelRunPreflightReport` from exact session revision, scheme revision, active nodes/hashes, technical diagnostics and execution preflight reference.
+- [x] Build `CurrentModelRunSnapshot` with complete frozen current scheme/node JSON, exact operators/runtime identities, current-model hash and embedded legacy execution snapshot.
+- [x] In run start, use one idempotent transaction to verify expected scheme/node revisions, freeze the snapshot, persist the current preflight link and create the queued run before enqueueing work. Exact retries return the existing run even after it progresses.
+- [x] Adapt repository/coordinator/pipeline parsing so legacy v0.1 runs and current v0.2 runs coexist; the pipeline unwraps the immutable execution snapshot without consulting later current state.
+- [x] Add read-only node-in-scheme and scheme preview that freezes an ephemeral current snapshot, creates no run row and never mutates model state.
+- [x] Prove editing a shared node after one completed run changes a future snapshot but does not change the first snapshot/result replay, including after project reopen.
+- [x] Preserve technical-only gating: starter scientific warnings remain visible but do not block `software_test` execution.
+- [x] Make the legacy portability assertion check forbidden process-metadata keys rather than searching for the short decimal PID inside unrelated content hashes.
+- [x] Run:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest tests/runtime/test_current_preflight.py tests/runtime/test_current_run_snapshot.py tests/runtime/test_pipeline.py tests/runtime/test_run_repository.py tests/runtime/test_preflight.py -q
@@ -422,10 +429,10 @@ git commit -m "feat: migrate Hover starter to current model nodes"
 
 Expected: current and legacy runs both execute/reopen; old snapshots retain exact hashes.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
-git add src/pilot_assessment/model_workspace/execution.py src/pilot_assessment/runtime src/pilot_assessment/contracts/run.py tests/runtime
+git add src/pilot_assessment/model_workspace/execution.py src/pilot_assessment/model_workspace/__init__.py src/pilot_assessment/runtime tests/runtime/test_current_preflight.py tests/runtime/test_current_run_snapshot.py tests/runtime/test_application.py tests/runtime/test_preflight.py docs/product/plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md
 git commit -m "feat: run immutable snapshots from current schemes"
 ```
 

@@ -6,8 +6,9 @@ from pathlib import Path
 from pilot_assessment.contracts.model_components import ComponentKind
 from pilot_assessment.model_library.profile import load_hover_starter_package
 from pilot_assessment.model_library.repository import LibraryQuery
+from pilot_assessment.model_workspace.execution import CurrentModelExecutionMaterializer
 from pilot_assessment.model_workspace.service import CurrentModelWorkspaceService
-from pilot_assessment.runtime import ProjectApplication
+from pilot_assessment.runtime import CurrentRunPreflightService, ProjectApplication
 
 NOW = datetime(2026, 7, 16, 12, 0, tzinfo=UTC)
 
@@ -41,6 +42,11 @@ def test_application_composes_services_seeds_once_and_reopens_after_project_move
         assert application.preflight.operator_registry is application.operator_registry
         assert application.pipeline.results is application.results
         assert isinstance(application.current_model, CurrentModelWorkspaceService)
+        assert isinstance(
+            application.execution_materializer,
+            CurrentModelExecutionMaterializer,
+        )
+        assert isinstance(application.current_preflight, CurrentRunPreflightService)
         assert application.current_model.repository.database is application.project.database
         assert len(application.current_model.list_nodes()) == 53
         assert len(application.current_model.list_schemes()) == 1

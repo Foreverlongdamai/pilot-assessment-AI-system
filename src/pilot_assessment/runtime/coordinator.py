@@ -12,15 +12,18 @@ from pydantic import JsonValue
 
 from pilot_assessment.contracts.model_components import ComponentKind
 from pilot_assessment.contracts.run import (
-    AssessmentRun,
+    CurrentModelRunSnapshot,
     RunEvent,
     RunResultEnvelope,
-    RunSnapshot,
     RunStage,
     RunState,
 )
 from pilot_assessment.persistence.database import Clock
-from pilot_assessment.runtime.repository import RunRepository
+from pilot_assessment.runtime.repository import (
+    AssessmentRunRecord,
+    RunRepository,
+    RunSnapshotRecord,
+)
 
 _LOGGER = logging.getLogger(__name__)
 _TERMINAL_STATES = frozenset(
@@ -41,7 +44,7 @@ class AssessmentRunExecutor(Protocol):
 
     def execute(
         self,
-        snapshot: RunSnapshot,
+        snapshot: RunSnapshotRecord,
         *,
         cancellation: Callable[[], None],
         progress: Callable[[RunStage, int, int, str], None],
@@ -64,12 +67,15 @@ class RunCancelledError(RuntimeError):
     """Internal cooperative cancellation signal raised only at safe boundaries."""
 
 
-def run_total_units(snapshot: RunSnapshot) -> int:
+def run_total_units(snapshot: RunSnapshotRecord) -> int:
     """Derive display progress total from the frozen dynamic execution closure."""
 
+    execution = (
+        snapshot.execution_snapshot if isinstance(snapshot, CurrentModelRunSnapshot) else snapshot
+    )
     evidence_count = sum(
         reference.kind is ComponentKind.EVIDENCE_VERSION
-        for reference in snapshot.locked_component_refs
+        for reference in execution.locked_component_refs
     )
     return evidence_count + _FIXED_STAGE_UNITS
 
@@ -120,7 +126,7 @@ class RunCoordinator:
         with self._lock:
             return self._closed
 
-    def enqueue(self, run_id: str) -> AssessmentRun:
+    def enqueue(self, run_id: str) -> AssessmentRunRecord:
         """Schedule one already-persisted queued run exactly once."""
 
         with self._lock:
@@ -139,7 +145,7 @@ class RunCoordinator:
             self._queue.put(run_id)
             return current
 
-    def cancel(self, run_id: str) -> AssessmentRun:
+    def cancel(self, run_id: str) -> AssessmentRunRecord:
         """Persist a cancellation request and return the current durable state."""
 
         with self._lock:
@@ -176,7 +182,7 @@ class RunCoordinator:
                 done.set()
             return current
 
-    def wait(self, run_id: str, *, timeout: float | None = None) -> AssessmentRun:
+    def wait(self, run_id: str, *, timeout: float | None = None) -> AssessmentRunRecord:
         """Wait for one scheduled run to reach a durable terminal state."""
 
         with self._lock:
@@ -348,7 +354,7 @@ class RunCoordinator:
                 )
             )
 
-    def _persist_and_notify(self, updated: AssessmentRun) -> AssessmentRun:
+    def _persist_and_notify(self, updated: AssessmentRunRecord) -> AssessmentRunRecord:
         events = self.runs.list_events(
             updated.run_id,
             after_sequence=updated.progress_sequence - 1,

@@ -20,6 +20,16 @@ from pilot_assessment.runtime.coordinator import (
     RunNotScheduledError,
     run_total_units,
 )
+from pilot_assessment.runtime.current_preflight import (
+    CurrentRunPreflightBlockedError,
+    CurrentRunPreflightError,
+    CurrentRunPreflightIntegrityError,
+    CurrentRunPreflightNotFoundError,
+    CurrentRunPreflightService,
+    CurrentRunPreflightStaleError,
+    current_preflight_hash,
+    current_preflight_id_from_hash,
+)
 from pilot_assessment.runtime.pipeline import (
     AssessmentPipeline,
     AssessmentPipelineError,
@@ -40,11 +50,13 @@ from pilot_assessment.runtime.preflight import (
     RunPreflightStaleError,
 )
 from pilot_assessment.runtime.repository import (
+    AssessmentRunRecord,
     RunAlreadyExistsError,
     RunIntegrityError,
     RunNotFoundError,
     RunRepository,
     RunRepositoryError,
+    RunSnapshotRecord,
     RunTransitionError,
     run_snapshot_hash,
 )
@@ -69,6 +81,7 @@ __all__ = [
     "AssessmentPipeline",
     "AssessmentPipelineError",
     "AssessmentRunExecutor",
+    "AssessmentRunRecord",
     "FunctionSourceProvider",
     "PreflightExecutionLock",
     "PreparedRunPreflight",
@@ -78,6 +91,12 @@ __all__ = [
     "StarterSeedError",
     "StarterSeedResult",
     "CurrentStarterSeedResult",
+    "CurrentRunPreflightBlockedError",
+    "CurrentRunPreflightError",
+    "CurrentRunPreflightIntegrityError",
+    "CurrentRunPreflightNotFoundError",
+    "CurrentRunPreflightService",
+    "CurrentRunPreflightStaleError",
     "UuidComponentIdFactory",
     "RunAlreadyExistsError",
     "RunCancelledError",
@@ -101,6 +120,7 @@ __all__ = [
     "RunResultRepository",
     "RunResultRepositoryError",
     "RunTransitionError",
+    "RunSnapshotRecord",
     "RuntimeSourceDiagnostic",
     "RuntimeSourceProvider",
     "RuntimeSourceProviderRegistry",
@@ -112,6 +132,8 @@ __all__ = [
     "SourceUnavailableError",
     "register_hover_source_providers",
     "result_envelope_hash",
+    "current_preflight_hash",
+    "current_preflight_id_from_hash",
     "run_snapshot_hash",
     "run_total_units",
 ]

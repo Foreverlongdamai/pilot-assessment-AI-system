@@ -12,7 +12,6 @@ from pilot_assessment.contracts.model_components import (
     ComponentKind,
     SourceDescriptor,
 )
-from pilot_assessment.contracts.run import AssessmentRun
 from pilot_assessment.evidence.builtins import register_builtin_operators
 from pilot_assessment.evidence.registry import OperatorRegistry
 from pilot_assessment.model_library.profile import (
@@ -26,6 +25,7 @@ from pilot_assessment.model_library.repository import (
 )
 from pilot_assessment.model_library.service import ModelLibraryService
 from pilot_assessment.model_library.sources import SourceCatalog
+from pilot_assessment.model_workspace.execution import CurrentModelExecutionMaterializer
 from pilot_assessment.model_workspace.migration import (
     CURRENT_HOVER_STARTER_SEED_ID,
     CurrentStarterSeedResult,
@@ -53,9 +53,10 @@ from pilot_assessment.persistence.sessions import (
 )
 from pilot_assessment.persistence.transactions import IdempotencyStore
 from pilot_assessment.runtime.coordinator import RunCoordinator
+from pilot_assessment.runtime.current_preflight import CurrentRunPreflightService
 from pilot_assessment.runtime.pipeline import AssessmentPipeline, RunResultRepository
 from pilot_assessment.runtime.preflight import RunPreflightService
-from pilot_assessment.runtime.repository import RunRepository
+from pilot_assessment.runtime.repository import AssessmentRunRecord, RunRepository
 from pilot_assessment.runtime.sources import (
     RuntimeSourceProviderRegistry,
     register_hover_source_providers,
@@ -118,6 +119,7 @@ class ProjectApplication:
     model_library: ModelLibraryService
     schemes: SchemeWorkspaceService
     current_model: CurrentModelWorkspaceService
+    execution_materializer: CurrentModelExecutionMaterializer
     operator_registry: OperatorRegistry
     source_provider_registry: RuntimeSourceProviderRegistry
     source_catalog: SourceCatalog
@@ -125,6 +127,7 @@ class ProjectApplication:
     sessions: SessionImportService
     runs: RunRepository
     preflight: RunPreflightService
+    current_preflight: CurrentRunPreflightService
     results: RunResultRepository
     pipeline: AssessmentPipeline
     coordinator: RunCoordinator
@@ -136,7 +139,7 @@ class ProjectApplication:
     current_seed_result: CurrentStarterSeedResult
     artifact_recovery: ArtifactRecoveryReport
     session_recovery: SessionRecoveryReport
-    run_recovery: tuple[AssessmentRun, ...]
+    run_recovery: tuple[AssessmentRunRecord, ...]
     _starter_profile: LoadedModelProfile = field(repr=False)
     _clock: Clock = field(repr=False)
     _closed: bool = field(default=False, init=False, repr=False)
@@ -243,6 +246,12 @@ class ProjectApplication:
             recorded_at=clock(),
             seed_id=CURRENT_HOVER_STARTER_SEED_ID,
         )
+        execution_materializer = CurrentModelExecutionMaterializer(
+            database,
+            components,
+            current_model,
+            clock=clock,
+        )
         runs = RunRepository(database)
         run_recovery = runs.recover_interrupted(occurred_at=clock())
         preflight = RunPreflightService(
@@ -251,6 +260,14 @@ class ProjectApplication:
             sessions,
             source_catalog=source_catalog,
             operator_registry=operator_registry,
+            clock=clock,
+        )
+        current_preflight = CurrentRunPreflightService(
+            database,
+            current_model,
+            execution_materializer,
+            preflight,
+            runs,
             clock=clock,
         )
         results = RunResultRepository(database)
@@ -271,6 +288,7 @@ class ProjectApplication:
             model_library=model_library,
             schemes=schemes,
             current_model=current_model,
+            execution_materializer=execution_materializer,
             operator_registry=operator_registry,
             source_provider_registry=source_provider_registry,
             source_catalog=source_catalog,
@@ -278,6 +296,7 @@ class ProjectApplication:
             sessions=sessions,
             runs=runs,
             preflight=preflight,
+            current_preflight=current_preflight,
             results=results,
             pipeline=pipeline,
             coordinator=coordinator,

@@ -11,6 +11,9 @@ from pydantic import JsonValue, ValidationError
 
 from pilot_assessment.contracts.run import (
     AssessmentRun,
+    AssessmentRunV2,
+    CurrentModelRunPreflightReport,
+    CurrentModelRunSnapshot,
     RunEvent,
     RunSnapshot,
     RunStage,
@@ -69,7 +72,11 @@ def _utc_text(value: datetime) -> str:
     return value.astimezone(UTC).isoformat().replace("+00:00", "Z")
 
 
-def run_snapshot_hash(snapshot: RunSnapshot) -> str:
+RunSnapshotRecord = RunSnapshot | CurrentModelRunSnapshot
+AssessmentRunRecord = AssessmentRun | AssessmentRunV2
+
+
+def run_snapshot_hash(snapshot: RunSnapshotRecord) -> str:
     """Hash only the portable frozen snapshot fields, excluding its hash claim."""
 
     payload = snapshot.model_dump(mode="json")
@@ -139,13 +146,177 @@ class RunRepository:
             ) from error
         return run
 
-    def get(self, run_id: str) -> AssessmentRun:
+    def create_current(
+        self,
+        snapshot: CurrentModelRunSnapshot,
+        *,
+        current_preflight_id: str,
+        requested_at: datetime,
+    ) -> AssessmentRunV2:
+        """Atomically lock current revisions while retaining the legacy execution row."""
+
+        if run_snapshot_hash(snapshot) != snapshot.snapshot_hash:
+            raise RunIntegrityError("current run snapshot hash does not match canonical content")
+        execution = snapshot.execution_snapshot
+        if run_snapshot_hash(execution) != execution.snapshot_hash:
+            raise RunIntegrityError("embedded execution snapshot hash is invalid")
+        current_run = AssessmentRunV2(
+            run_id=snapshot.run_id,
+            snapshot=snapshot,
+            state=RunState.QUEUED,
+            stage=RunStage.QUEUED,
+            progress_sequence=0,
+            requested_at=requested_at,
+            started_at=None,
+            finished_at=None,
+            cancellation_requested_at=None,
+        )
+        try:
+            with self.database.transaction(join_existing=True) as connection:
+                existing = connection.execute(
+                    "SELECT * FROM runs WHERE run_id = ?",
+                    (snapshot.run_id,),
+                ).fetchone()
+                if existing is not None:
+                    restored = self._run_from_row(existing)
+                    if not isinstance(restored, AssessmentRunV2) or (
+                        restored.snapshot != snapshot or restored.requested_at != requested_at
+                    ):
+                        raise RunAlreadyExistsError(
+                            f"run {snapshot.run_id!r} already owns another snapshot"
+                        )
+                    return restored
+
+                preflight = connection.execute(
+                    "SELECT * FROM model_run_preflights WHERE current_preflight_id = ?",
+                    (current_preflight_id,),
+                ).fetchone()
+                if preflight is None:
+                    raise RunIntegrityError(
+                        f"current run preflight {current_preflight_id!r} does not exist"
+                    )
+                if preflight["current_preflight_hash"] != snapshot.preflight_hash:
+                    raise RunIntegrityError(
+                        "current snapshot preflight hash differs from the durable preflight"
+                    )
+                try:
+                    report = CurrentModelRunPreflightReport.model_validate(
+                        decode_canonical_json(preflight["report_json"])
+                    )
+                except (ValueError, ValidationError) as error:
+                    raise RunIntegrityError("stored current preflight JSON is invalid") from error
+                expected_refs = tuple(
+                    (
+                        node.node_id,
+                        node.node_kind,
+                        node.semantic_revision,
+                        node.content_hash,
+                    )
+                    for node in snapshot.active_nodes
+                )
+                locked_refs = tuple(
+                    (
+                        item.node_id,
+                        item.node_kind,
+                        item.semantic_revision,
+                        item.content_hash,
+                    )
+                    for item in report.active_node_refs
+                )
+                if (
+                    report.preflight_id != current_preflight_id
+                    or report.scheme_id != snapshot.scheme.scheme_id
+                    or report.scheme_semantic_revision != snapshot.scheme.semantic_revision
+                    or report.scheme_content_hash != snapshot.scheme.content_hash
+                    or locked_refs != expected_refs
+                ):
+                    raise RunIntegrityError(
+                        "current snapshot differs from the exact prepared scheme/node lock"
+                    )
+                scheme_row = connection.execute(
+                    """
+                    SELECT semantic_revision, content_hash FROM task_schemes
+                    WHERE scheme_id = ?
+                    """,
+                    (snapshot.scheme.scheme_id,),
+                ).fetchone()
+                if scheme_row is None or (
+                    int(scheme_row["semantic_revision"]) != snapshot.scheme.semantic_revision
+                    or scheme_row["content_hash"] != snapshot.scheme.content_hash
+                ):
+                    raise RunIntegrityError("current scheme changed before run creation")
+                for node in snapshot.active_nodes:
+                    node_row = connection.execute(
+                        """
+                        SELECT semantic_revision, content_hash FROM model_nodes
+                        WHERE node_id = ?
+                        """,
+                        (node.node_id,),
+                    ).fetchone()
+                    if node_row is None or (
+                        int(node_row["semantic_revision"]) != node.semantic_revision
+                        or node_row["content_hash"] != node.content_hash
+                    ):
+                        raise RunIntegrityError(
+                            f"current node {node.node_id!r} changed before run creation"
+                        )
+                legacy = connection.execute(
+                    "SELECT preflight_hash FROM run_preflights WHERE preflight_id = ?",
+                    (preflight["legacy_preflight_id"],),
+                ).fetchone()
+                if legacy is None or (
+                    legacy["preflight_hash"] != execution.preflight_hash
+                    or preflight["legacy_preflight_hash"] != execution.preflight_hash
+                ):
+                    raise RunIntegrityError(
+                        "embedded execution snapshot differs from the legacy preflight link"
+                    )
+                connection.execute(
+                    """
+                    INSERT INTO runs(
+                        run_id, preflight_id, snapshot_hash, snapshot_json,
+                        state, stage, progress_sequence, requested_at,
+                        started_at, finished_at, cancellation_requested_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, 0, ?, NULL, NULL, NULL)
+                    """,
+                    (
+                        snapshot.run_id,
+                        preflight["legacy_preflight_id"],
+                        execution.snapshot_hash,
+                        encode_canonical_json(execution.model_dump(mode="json")),
+                        current_run.state.value,
+                        current_run.stage.value,
+                        _utc_text(requested_at),
+                    ),
+                )
+                connection.execute(
+                    """
+                    INSERT INTO model_run_links(
+                        run_id, current_preflight_id, current_snapshot_hash,
+                        current_snapshot_json, created_at
+                    ) VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (
+                        snapshot.run_id,
+                        current_preflight_id,
+                        snapshot.snapshot_hash,
+                        encode_canonical_json(snapshot.model_dump(mode="json")),
+                        _utc_text(requested_at),
+                    ),
+                )
+        except sqlite3.IntegrityError as error:
+            raise RunAlreadyExistsError(
+                f"run or snapshot {snapshot.run_id!r} already exists"
+            ) from error
+        return current_run
+
+    def get(self, run_id: str) -> AssessmentRunRecord:
         row = self.database.fetchone("SELECT * FROM runs WHERE run_id = ?", (run_id,))
         if row is None:
             raise RunNotFoundError(run_id)
         return self._run_from_row(row)
 
-    def list_runs(self) -> tuple[AssessmentRun, ...]:
+    def list_runs(self) -> tuple[AssessmentRunRecord, ...]:
         rows = self.database.fetchall("SELECT * FROM runs ORDER BY requested_at, rowid")
         return tuple(self._run_from_row(row) for row in rows)
 
@@ -173,7 +344,7 @@ class RunRepository:
         *,
         total_units: int,
         occurred_at: datetime,
-    ) -> AssessmentRun:
+    ) -> AssessmentRunRecord:
         return self._apply(
             run_id,
             allowed_states=(RunState.QUEUED,),
@@ -196,7 +367,7 @@ class RunRepository:
         message: str,
         occurred_at: datetime,
         details: Mapping[str, JsonValue] | None = None,
-    ) -> AssessmentRun:
+    ) -> AssessmentRunRecord:
         if stage in {RunStage.QUEUED, RunStage.COMPLETED}:
             raise RunTransitionError("running progress requires a non-terminal execution stage")
         return self._apply(
@@ -211,7 +382,7 @@ class RunRepository:
             details=details,
         )
 
-    def request_cancel(self, run_id: str, *, occurred_at: datetime) -> AssessmentRun:
+    def request_cancel(self, run_id: str, *, occurred_at: datetime) -> AssessmentRunRecord:
         current = self.get(run_id)
         if current.state in _TERMINAL_STATES or current.state is RunState.CANCELLING:
             return current
@@ -235,7 +406,7 @@ class RunRepository:
         total_units: int,
         message: str,
         occurred_at: datetime,
-    ) -> AssessmentRun:
+    ) -> AssessmentRunRecord:
         return self._apply(
             run_id,
             allowed_states=(RunState.RUNNING, RunState.CANCELLING),
@@ -255,7 +426,7 @@ class RunRepository:
         message: str,
         occurred_at: datetime,
         details: Mapping[str, JsonValue] | None = None,
-    ) -> AssessmentRun:
+    ) -> AssessmentRunRecord:
         current = self.get(run_id)
         completed_units, total_units = self._last_progress(current)
         return self._apply(
@@ -277,7 +448,7 @@ class RunRepository:
         *,
         message: str,
         occurred_at: datetime,
-    ) -> AssessmentRun:
+    ) -> AssessmentRunRecord:
         current = self.get(run_id)
         completed_units, total_units = self._last_progress(current)
         return self._apply(
@@ -292,7 +463,7 @@ class RunRepository:
             set_finished=True,
         )
 
-    def interrupt(self, run_id: str, *, occurred_at: datetime) -> AssessmentRun:
+    def interrupt(self, run_id: str, *, occurred_at: datetime) -> AssessmentRunRecord:
         current = self.get(run_id)
         completed_units, total_units = self._last_progress(current)
         return self._apply(
@@ -308,7 +479,7 @@ class RunRepository:
             set_finished=True,
         )
 
-    def recover_interrupted(self, *, occurred_at: datetime) -> tuple[AssessmentRun, ...]:
+    def recover_interrupted(self, *, occurred_at: datetime) -> tuple[AssessmentRunRecord, ...]:
         rows = self.database.fetchall(
             """
             SELECT run_id FROM runs
@@ -318,7 +489,7 @@ class RunRepository:
         )
         return tuple(self.interrupt(row["run_id"], occurred_at=occurred_at) for row in rows)
 
-    def _last_progress(self, current: AssessmentRun) -> tuple[int, int]:
+    def _last_progress(self, current: AssessmentRunRecord) -> tuple[int, int]:
         if current.progress_sequence == 0:
             return (0, 0)
         events = self.list_events(
@@ -348,7 +519,7 @@ class RunRepository:
         set_started: bool = False,
         set_finished: bool = False,
         set_cancel: bool = False,
-    ) -> AssessmentRun:
+    ) -> AssessmentRunRecord:
         occurred_text = _utc_text(occurred_at)
         with self.database.transaction(join_existing=True) as connection:
             row = connection.execute("SELECT * FROM runs WHERE run_id = ?", (run_id,)).fetchone()
@@ -369,17 +540,30 @@ class RunRepository:
             started_at = occurred_at if set_started else current.started_at
             finished_at = occurred_at if set_finished else current.finished_at
             cancellation_at = occurred_at if set_cancel else current.cancellation_requested_at
-            updated = AssessmentRun(
-                run_id=current.run_id,
-                snapshot=current.snapshot,
-                state=state,
-                stage=stage,
-                progress_sequence=sequence,
-                requested_at=current.requested_at,
-                started_at=started_at,
-                finished_at=finished_at,
-                cancellation_requested_at=cancellation_at,
-            )
+            if isinstance(current, AssessmentRunV2):
+                updated: AssessmentRunRecord = AssessmentRunV2(
+                    run_id=current.run_id,
+                    snapshot=current.snapshot,
+                    state=state,
+                    stage=stage,
+                    progress_sequence=sequence,
+                    requested_at=current.requested_at,
+                    started_at=started_at,
+                    finished_at=finished_at,
+                    cancellation_requested_at=cancellation_at,
+                )
+            else:
+                updated = AssessmentRun(
+                    run_id=current.run_id,
+                    snapshot=current.snapshot,
+                    state=state,
+                    stage=stage,
+                    progress_sequence=sequence,
+                    requested_at=current.requested_at,
+                    started_at=started_at,
+                    finished_at=finished_at,
+                    cancellation_requested_at=cancellation_at,
+                )
             event = RunEvent(
                 event_id=(
                     "run-event."
@@ -428,7 +612,7 @@ class RunRepository:
             )
         return updated
 
-    def _run_from_row(self, row: sqlite3.Row) -> AssessmentRun:
+    def _run_from_row(self, row: sqlite3.Row) -> AssessmentRunRecord:
         try:
             snapshot = RunSnapshot.model_validate(decode_canonical_json(row["snapshot_json"]))
         except (ValueError, ValidationError) as error:
@@ -445,10 +629,41 @@ class RunRepository:
             or run_snapshot_hash(snapshot) != snapshot.snapshot_hash
         ):
             raise RunIntegrityError("stored run snapshot identity columns disagree")
+        link = self.database.fetchone(
+            "SELECT * FROM model_run_links WHERE run_id = ?",
+            (row["run_id"],),
+        )
+        run_model: type[AssessmentRun] | type[AssessmentRunV2] = AssessmentRun
+        resolved_snapshot: RunSnapshotRecord = snapshot
+        if link is not None:
+            try:
+                current = CurrentModelRunSnapshot.model_validate(
+                    decode_canonical_json(link["current_snapshot_json"])
+                )
+            except (ValueError, ValidationError) as error:
+                raise RunIntegrityError("stored current run snapshot JSON is invalid") from error
+            current_preflight = self.database.fetchone(
+                """
+                SELECT current_preflight_hash FROM model_run_preflights
+                WHERE current_preflight_id = ?
+                """,
+                (link["current_preflight_id"],),
+            )
+            if (
+                current_preflight is None
+                or current.run_id != row["run_id"]
+                or current.execution_snapshot != snapshot
+                or current.snapshot_hash != link["current_snapshot_hash"]
+                or current.preflight_hash != current_preflight["current_preflight_hash"]
+                or run_snapshot_hash(current) != current.snapshot_hash
+            ):
+                raise RunIntegrityError("stored current run snapshot identity columns disagree")
+            run_model = AssessmentRunV2
+            resolved_snapshot = current
         try:
-            return AssessmentRun(
+            return run_model(
                 run_id=row["run_id"],
-                snapshot=snapshot,
+                snapshot=resolved_snapshot,
                 state=row["state"],
                 stage=row["stage"],
                 progress_sequence=int(row["progress_sequence"]),
@@ -476,11 +691,13 @@ class RunRepository:
 
 
 __all__ = [
+    "AssessmentRunRecord",
     "RunAlreadyExistsError",
     "RunIntegrityError",
     "RunNotFoundError",
     "RunRepository",
     "RunRepositoryError",
     "RunTransitionError",
+    "RunSnapshotRecord",
     "run_snapshot_hash",
 ]
