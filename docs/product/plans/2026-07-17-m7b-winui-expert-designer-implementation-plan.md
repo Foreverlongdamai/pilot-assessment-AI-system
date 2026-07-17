@@ -284,20 +284,23 @@ git commit -m "feat: add the WinUI application shell"
 **Files:**
 
 - Create: `src/PilotAssessment.Desktop/Views/Pages/ProjectLauncherPage.xaml`
-- Create: `src/PilotAssessment.Desktop/ViewModels/ProjectLauncherViewModel.cs`
+- Create: `src/PilotAssessment.Desktop.Core/ViewModels/ProjectLauncherViewModel.cs`
 - Create: `src/PilotAssessment.Desktop/Views/Pages/SessionExplorerPage.xaml`
-- Create: `src/PilotAssessment.Desktop/ViewModels/SessionExplorerViewModel.cs`
+- Create: `src/PilotAssessment.Desktop.Core/ViewModels/SessionExplorerViewModel.cs`
 - Create: `src/PilotAssessment.Desktop/Services/Backend/ProjectSessionClient.cs`
+- Create: `src/PilotAssessment.Desktop/Services/Preferences/FolderPickerService.cs`
+- Create: `src/PilotAssessment.Desktop/Services/Preferences/RecentProjectStore.cs`
+- Modify: `src/pilot_assessment/sidecar/methods.py`
 - Create: `tests/PilotAssessment.Desktop.UnitTests/ViewModels/ProjectSessionViewModelTests.cs`
 
-- [ ] Support Create Project and Open Project using folder pickers and backend canonical descriptors.
-- [ ] Maintain a local recent-project list as convenience only; do not copy or move projects outside explicit backend operations.
-- [ ] Support Inspect then Import Session. Explain that import copies the session bundle into managed project storage; display source path and managed revision separately.
-- [ ] List sessions/revisions, modality availability, ingestion/synchronization reports and artifact references without loading large image/timeseries payloads into UI memory.
-- [ ] Show visual/gaze/EEG/ECG as first-class input families even when the selected session marks them missing/export pending.
-- [ ] Do not provide a Generate Synthetic Data product action.
-- [ ] Test picker cancellation, inspect diagnostics, import response reconciliation and reopen state.
-- [ ] Run:
+- [x] Support Create Project and Open Project using folder pickers and backend canonical descriptors.
+- [x] Maintain a local recent-project list as convenience only; do not copy or move projects outside explicit backend operations.
+- [x] Support Inspect then Import Session. Explain that import copies the session bundle into managed project storage; display source path and managed revision separately.
+- [x] List sessions/revisions, modality availability, ingestion/synchronization reports and artifact references without loading large image/timeseries payloads into UI memory.
+- [x] Show visual/gaze/EEG/ECG as first-class input families even when the selected session marks them missing/export pending.
+- [x] Do not provide a Generate Synthetic Data product action.
+- [x] Test picker cancellation, inspect diagnostics, import response reconciliation and reopen state.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~ProjectSessionViewModelTests
@@ -305,10 +308,12 @@ dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.Unit
 
 Expected: project/session view models use IDs and artifact references, not raw data arrays.
 
-- [ ] Commit:
+Recorded: the pure Core view models were placed under the §1 testable-Core boundary rather than the original Desktop file-list draft. Focused project/session tests passed `4/4`; the canonical Python ingestion fixture raised contract serialization coverage to `10/10`; the full desktop suite passed Unit `30/30` and Contract `2/2`; x64 Debug built with `0` warnings and `0` errors. A single existing real-sidecar vertical test passed with the new bounded `session.report.get` checks in `28.71s`; it added no new dataset. The final executable opened a visible Project Launcher with backend `Ready`, create/open/recent controls, a non-zero window handle, and no residual application or sidecar process after normal close.
+
+- [x] Commit:
 
 ```powershell
-git add src/PilotAssessment.Desktop/Views/Pages/ProjectLauncherPage.xaml src/PilotAssessment.Desktop/Views/Pages/SessionExplorerPage.xaml src/PilotAssessment.Desktop/ViewModels/ProjectLauncherViewModel.cs src/PilotAssessment.Desktop/ViewModels/SessionExplorerViewModel.cs src/PilotAssessment.Desktop/Services/Backend/ProjectSessionClient.cs tests/PilotAssessment.Desktop.UnitTests/ViewModels/ProjectSessionViewModelTests.cs
+git add src/PilotAssessment.Desktop.Core/ViewModels src/PilotAssessment.Desktop/Views/Pages/ProjectLauncherPage.xaml src/PilotAssessment.Desktop/Views/Pages/SessionExplorerPage.xaml src/PilotAssessment.Desktop/Services/Backend/ProjectSessionClient.cs src/PilotAssessment.Desktop/Services/Preferences src/pilot_assessment/sidecar/methods.py tests/PilotAssessment.Desktop.UnitTests/ViewModels/ProjectSessionViewModelTests.cs
 git commit -m "feat: add managed project and session workspace"
 ```
 
@@ -661,7 +666,7 @@ git commit -m "test: close M7 WinUI expert designer"
 | 2 | `feat: add typed M7 desktop contracts` | `5f64ca3` |
 | 3 | `feat: supervise the local assessment sidecar` | `b039d46` |
 | 4 | `feat: add the WinUI application shell` | `6e1974e` (`fd15c2b` removes the generated Core placeholder) |
-| 5 | `feat: add managed project and session workspace` | Not executed |
+| 5 | `feat: add managed project and session workspace` | `296622f` |
 | 6 | `feat: add task scheme navigation` | Not executed |
 | 7 | `feat: add the active task model graph` | Not executed |
 | 8 | `feat: edit task activation from the model graph` | Not executed |

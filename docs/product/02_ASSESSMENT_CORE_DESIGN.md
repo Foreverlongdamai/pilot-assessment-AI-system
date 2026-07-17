@@ -332,8 +332,8 @@ Runtime adapter 的唯一 canonical 方法注册表和 DTO 以 [07_RUNTIME_PROTO
 
 - `runtime.hello`、`runtime.status`、`runtime.shutdown`
 - `capabilities.list`、`schema.get`
-- `project.create`、`project.open`、`project.export`
-- `session.inspect`、`session.import`、`session.validate`、`session.get`、`session.artifact.get`
+- `project.create`、`project.open`、`project.get`、`project.close`
+- `session.inspect`、`session.import`、`session.list`、`session.get`、`session.report.get`、`session.artifact.get`
 - `component.concept.list/get/create`、`component.version.list/get`
 - `scheme.version.list/get/diff`、`scheme.create_from_version`
 - `scheme.draft.create/get/discard/apply`
