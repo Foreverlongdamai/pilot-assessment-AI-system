@@ -114,6 +114,8 @@ public sealed partial class ModelStudioViewModel : ObservableObject
 
     public event EventHandler<ModelNodeOpenRequestedEventArgs>? NodeEditorRequested;
 
+    public event EventHandler<CanonicalModelGraphChangedEventArgs>? CanonicalGraphChanged;
+
     public async Task ActivateAsync(CancellationToken cancellationToken = default)
     {
         var selected = _schemes.SelectedScheme;
@@ -771,6 +773,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         OnPropertyChanged(nameof(CurrentSchemeId));
         OnPropertyChanged(nameof(CanPaste));
         NotifySelectionChanged();
+        CanonicalGraphChanged?.Invoke(this, new CanonicalModelGraphChangedEventArgs(graph));
     }
 
     private void NotifySelectionChanged()
@@ -1027,4 +1030,9 @@ public sealed class ModelNodeOpenRequestedEventArgs(
 {
     public ModelNode Node { get; } = node;
     public string SchemeId { get; } = schemeId;
+}
+
+public sealed class CanonicalModelGraphChangedEventArgs(ModelGraphSnapshot graph) : EventArgs
+{
+    public ModelGraphSnapshot Graph { get; } = graph;
 }

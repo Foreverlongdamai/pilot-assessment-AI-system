@@ -139,6 +139,22 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         SelectedScheme is { IsArchived: false } &&
         !string.IsNullOrWhiteSpace(_projectId);
 
+    public TaskScheme? FindScheme(string schemeId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(schemeId);
+        return _allSchemes
+            .FirstOrDefault(item => item.SchemeId == schemeId)
+            ?.Scheme;
+    }
+
+    public int CountCurrentSchemesUsingNode(string nodeId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(nodeId);
+        return _allSchemes.Count(item =>
+            !item.IsArchived &&
+            item.Scheme.ComputedActiveClosure.Contains(nodeId, StringComparer.Ordinal));
+    }
+
     public async Task LoadAsync(
         string projectId,
         CancellationToken cancellationToken = default)

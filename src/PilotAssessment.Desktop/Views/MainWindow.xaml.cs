@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 using PilotAssessment.Desktop.Services.Navigation;
+using PilotAssessment.Desktop.Services.Windowing;
 using PilotAssessment.Desktop.ViewModels;
 
 namespace PilotAssessment.Desktop.Views;
@@ -10,13 +11,18 @@ namespace PilotAssessment.Desktop.Views;
 public sealed partial class MainWindow : Window
 {
     private readonly NavigationService _navigation;
+    private readonly NodeWindowRegistry _nodeWindows;
     private bool _closeApproved;
     private bool _shutdownInProgress;
 
-    public MainWindow(ShellViewModel viewModel, NavigationService navigation)
+    public MainWindow(
+        ShellViewModel viewModel,
+        NavigationService navigation,
+        NodeWindowRegistry nodeWindows)
     {
         ViewModel = viewModel;
         _navigation = navigation;
+        _nodeWindows = nodeWindows;
         InitializeComponent();
 
         ExtendsContentIntoTitleBar = true;
@@ -83,6 +89,7 @@ public sealed partial class MainWindow : Window
         }
 
         _shutdownInProgress = true;
+        await _nodeWindows.CloseAllAsync();
         await ((App)Application.Current).ShutdownAsync();
         _closeApproved = true;
         Close();

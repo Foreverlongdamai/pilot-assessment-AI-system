@@ -7,6 +7,7 @@ using PilotAssessment.Desktop.Core.ViewModels;
 using PilotAssessment.Desktop.Services.Backend;
 using PilotAssessment.Desktop.Services.Navigation;
 using PilotAssessment.Desktop.Services.Preferences;
+using PilotAssessment.Desktop.Services.Windowing;
 using PilotAssessment.Desktop.ViewModels;
 using PilotAssessment.Desktop.Views;
 
@@ -41,6 +42,7 @@ public partial class App : Application
         builder.Services.AddSingleton<ModelClipboard>();
         builder.Services.AddSingleton<BackendConnectionService>();
         builder.Services.AddSingleton<LocalPreferencesStore>();
+        builder.Services.AddSingleton<WindowPlacementStore>();
         builder.Services.AddSingleton<IRecentProjectStore, RecentProjectStore>();
         builder.Services.AddSingleton<IProjectFolderPicker, FolderPickerService>();
         builder.Services.AddSingleton<ProjectSessionClient>();
@@ -58,9 +60,14 @@ public partial class App : Application
         builder.Services.AddSingleton<TaskSchemeListViewModel>();
         builder.Services.AddSingleton<ProjectLauncherViewModel>();
         builder.Services.AddSingleton<ModelStudioViewModel>();
+        builder.Services.AddSingleton<NodeWindowRegistry>();
         builder.Services.AddSingleton<MainWindow>();
         _applicationHost = builder.Build();
         await _applicationHost.StartAsync();
+
+        await _applicationHost.Services
+            .GetRequiredService<WindowPlacementStore>()
+            .InitializeAsync();
 
         var shell = _applicationHost.Services.GetRequiredService<ShellViewModel>();
         var window = _applicationHost.Services.GetRequiredService<MainWindow>();

@@ -3,17 +3,29 @@ using System.Text.Json.Serialization;
 
 namespace PilotAssessment.Desktop.Services.Preferences;
 
+public sealed record NodeWindowPlacementPreference(
+    string ProjectId,
+    string SchemeId,
+    string NodeId,
+    int X,
+    int Y,
+    int Width,
+    int Height,
+    bool IsMaximized);
+
 public sealed record LocalPreferences(
     string Language,
     string Theme,
-    string LastDestination)
+    string LastDestination,
+    NodeWindowPlacementPreference[] NodeWindows)
 {
-    public static LocalPreferences Default { get; } = new("en-GB", "System", "project");
+    public static LocalPreferences Default { get; } = new("en-GB", "System", "project", []);
 }
 
 public sealed class LocalPreferencesStore
 {
     private readonly string _filePath;
+    private readonly SemaphoreSlim _gate = new(1, 1);
 
     public LocalPreferencesStore()
         : this(Path.Combine(
@@ -30,22 +42,14 @@ public sealed class LocalPreferencesStore
 
     public async Task<LocalPreferences> LoadAsync(CancellationToken cancellationToken = default)
     {
-        if (!File.Exists(_filePath))
-        {
-            return LocalPreferences.Default;
-        }
-
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            var json = await File.ReadAllTextAsync(_filePath, cancellationToken).ConfigureAwait(false);
-            return JsonSerializer.Deserialize(
-                    json,
-                    LocalPreferencesJsonContext.Default.LocalPreferences)
-                ?? LocalPreferences.Default;
+            return await LoadCoreAsync(cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException)
+        finally
         {
-            return LocalPreferences.Default;
+            _gate.Release();
         }
     }
 
@@ -54,6 +58,63 @@ public sealed class LocalPreferencesStore
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(preferences);
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await SaveCoreAsync(preferences, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task<LocalPreferences> UpdateAsync(
+        Func<LocalPreferences, LocalPreferences> update,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(update);
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var current = await LoadCoreAsync(cancellationToken).ConfigureAwait(false);
+            var updated = update(current) ??
+                throw new InvalidOperationException("The UI preference update returned null.");
+            await SaveCoreAsync(updated, cancellationToken).ConfigureAwait(false);
+            return updated;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    private async Task<LocalPreferences> LoadCoreAsync(CancellationToken cancellationToken)
+    {
+        if (!File.Exists(_filePath))
+        {
+            return LocalPreferences.Default;
+        }
+
+        try
+        {
+            var json = await File.ReadAllTextAsync(_filePath, cancellationToken).ConfigureAwait(false);
+            var loaded = JsonSerializer.Deserialize(
+                    json,
+                    LocalPreferencesJsonContext.Default.LocalPreferences)
+                ?? LocalPreferences.Default;
+            return loaded.NodeWindows is null ? loaded with { NodeWindows = [] } : loaded;
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException)
+        {
+            return LocalPreferences.Default;
+        }
+    }
+
+    private async Task SaveCoreAsync(
+        LocalPreferences preferences,
+        CancellationToken cancellationToken)
+    {
         var directory = Path.GetDirectoryName(_filePath)
             ?? throw new InvalidOperationException("UI preference path has no parent directory.");
         Directory.CreateDirectory(directory);

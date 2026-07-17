@@ -138,8 +138,12 @@ public partial class ShellViewModel : ObservableObject
     }
 
     private Task SavePreferencesAsync() =>
-        _preferences.SaveAsync(
-            new LocalPreferences(SelectedLanguage, SelectedTheme, CurrentDestination));
+        _preferences.UpdateAsync(current => current with
+        {
+            Language = SelectedLanguage,
+            Theme = SelectedTheme,
+            LastDestination = CurrentDestination,
+        });
 
     private void OnShellStateChanged(object? sender, EventArgs args)
     {
