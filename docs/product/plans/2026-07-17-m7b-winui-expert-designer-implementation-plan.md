@@ -178,13 +178,13 @@ git commit -m "build: scaffold M7 WinUI expert designer"
 - Create: `tests/PilotAssessment.Desktop.UnitTests/Contracts/ContractSerializationTests.cs`
 - Create: `tests/PilotAssessment.Desktop.ContractTests/Fixtures/`
 
-- [ ] Export representative canonical fixtures from the M7A Pydantic models into the ContractTests fixture directory; fixtures are small DTOs, not session payloads.
-- [ ] Implement immutable C# records/enums for project/session, `ModelNode`, discriminated node definitions, `TaskScheme`, graph snapshot/diff, impact, diagnostics, current preflight/snapshot/run and result summaries.
-- [ ] Map snake_case JSON explicitly and preserve opaque IDs/hashes as strings; never normalize or infer them client-side.
-- [ ] Use `JsonDerivedType`/discriminators or custom converters only where source generation needs them. Keep `JsonNode` confined to Evidence operator parameter values and diagnostic details.
-- [ ] Add a source-generated `JsonSerializerContext` containing every request/response/notification DTO used by the client.
-- [ ] Test Python fixture → typed record → JSON round trip and strict enum/required-field behavior.
-- [ ] Run:
+- [x] Export representative canonical fixtures from the M7A Pydantic models into the ContractTests fixture directory; fixtures are small DTOs, not session payloads.
+- [x] Implement immutable C# records/enums for project/session, `ModelNode`, discriminated node definitions, `TaskScheme`, graph snapshot/diff, impact, diagnostics, current preflight/snapshot/run and result summaries.
+- [x] Map snake_case JSON explicitly and preserve opaque IDs/hashes as strings; never normalize or infer them client-side.
+- [x] Use `JsonDerivedType`/discriminators or custom converters only where source generation needs them. Keep `JsonNode` confined to Evidence operator parameter values and diagnostic details.
+- [x] Add a source-generated `JsonSerializerContext` containing every request/response/notification DTO used by the client.
+- [x] Test Python fixture → typed record → JSON round trip and strict enum/required-field behavior.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~ContractSerializationTests
@@ -192,7 +192,9 @@ dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.Unit
 
 Expected: canonical fixtures deserialize without changing IDs, ordering or hashes.
 
-- [ ] Commit:
+Recorded: all 10 canonical fixture files were accepted again by their originating M7A Pydantic models; focused C# contract tests passed `9/9`; the full desktop solution tests passed `10/10`; the x64 Debug solution build completed with `0` warnings and `0` errors. The first build attempt was blocked only because the Task 1 inspection process still held the executable open; after closing that exact process, the unchanged source built cleanly.
+
+- [x] Commit:
 
 ```powershell
 git add src/PilotAssessment.Desktop.Core/Contracts tests/PilotAssessment.Desktop.UnitTests/Contracts tests/PilotAssessment.Desktop.ContractTests/Fixtures
@@ -652,7 +654,7 @@ git commit -m "test: close M7 WinUI expert designer"
 | Task | Planned commit | Actual commit |
 |---:|---|---|
 | 1 | `build: scaffold M7 WinUI expert designer` | `6809bcc` |
-| 2 | `feat: add typed M7 desktop contracts` | Not executed |
+| 2 | `feat: add typed M7 desktop contracts` | `5f64ca3` |
 | 3 | `feat: supervise the local assessment sidecar` | Not executed |
 | 4 | `feat: add the WinUI application shell` | Not executed |
 | 5 | `feat: add managed project and session workspace` | Not executed |
