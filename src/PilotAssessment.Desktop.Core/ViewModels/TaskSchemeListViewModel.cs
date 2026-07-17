@@ -15,7 +15,7 @@ public sealed partial class TaskSchemeListItemViewModel : ObservableObject
         Scheme = scheme;
     }
 
-    public TaskScheme Scheme { get; }
+    public TaskScheme Scheme { get; private set; }
 
     public string SchemeId => Scheme.SchemeId;
 
@@ -52,6 +52,23 @@ public sealed partial class TaskSchemeListItemViewModel : ObservableObject
     }
 
     public bool IsArchived => Scheme.Lifecycle is ModelObjectLifecycle.Archived;
+
+    public void Reconcile(TaskScheme canonical)
+    {
+        ArgumentNullException.ThrowIfNull(canonical);
+        if (!string.Equals(SchemeId, canonical.SchemeId, StringComparison.Ordinal))
+        {
+            throw new ArgumentException("Canonical scheme identity cannot change.", nameof(canonical));
+        }
+
+        Scheme = canonical;
+        OnPropertyChanged(nameof(Scheme));
+        OnPropertyChanged(nameof(DisplayName));
+        OnPropertyChanged(nameof(LocalizedNames));
+        OnPropertyChanged(nameof(StatusLine));
+        OnPropertyChanged(nameof(ClassificationLine));
+        OnPropertyChanged(nameof(IsArchived));
+    }
 }
 
 public sealed partial class TaskSchemeListViewModel : ObservableObject
@@ -181,6 +198,15 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         {
             SelectedScheme = scheme;
         }
+    }
+
+    public void ApplyCanonical(TaskScheme canonical)
+    {
+        ArgumentNullException.ThrowIfNull(canonical);
+        var selectedId = SelectedScheme?.SchemeId;
+        Reconcile(canonical);
+        RefreshFilterOptions();
+        RefreshFiltered(selectedId);
     }
 
     public async Task<TaskScheme?> CreateAsync(
@@ -403,14 +429,13 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
     private void Reconcile(TaskScheme canonical)
     {
         var index = _allSchemes.FindIndex(item => item.SchemeId == canonical.SchemeId);
-        var replacement = new TaskSchemeListItemViewModel(canonical);
         if (index < 0)
         {
-            _allSchemes.Add(replacement);
+            _allSchemes.Add(new TaskSchemeListItemViewModel(canonical));
         }
         else
         {
-            _allSchemes[index] = replacement;
+            _allSchemes[index].Reconcile(canonical);
         }
     }
 
@@ -602,7 +627,4 @@ public interface IModelWorkspaceGateway
         string actor,
         CancellationToken cancellationToken = default);
 
-    Task<ModelGraphSnapshot> GetGraphAsync(
-        string schemeId,
-        CancellationToken cancellationToken = default);
 }

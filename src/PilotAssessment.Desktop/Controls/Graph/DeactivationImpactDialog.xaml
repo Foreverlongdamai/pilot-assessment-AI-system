@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentDialog
+    x:Class="PilotAssessment.Desktop.Controls.Graph.DeactivationImpactDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    CloseButtonText="Cancel"
+    DefaultButton="Close"
+    PrimaryButtonText="Continue"
+    Title="Deactivate from this task?">
+    <StackPanel Width="460" Spacing="10">
+        <TextBlock
+            x:Name="SummaryText"
+            TextWrapping="Wrap" />
+        <Border
+            MaxHeight="260"
+            Padding="10"
+            Background="{ThemeResource LayerFillColorAltBrush}"
+            CornerRadius="8">
+            <ListView
+                x:Name="ImpactedNodesList"
+                IsItemClickEnabled="False"
+                SelectionMode="None" />
+        </Border>
+        <TextBlock
+            Opacity="0.64"
+            Text="Continue sends the exact preview hash to the backend. Cancel sends no write. This never archives a global node."
+            TextWrapping="Wrap" />
+    </StackPanel>
+</ContentDialog>

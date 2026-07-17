@@ -13,7 +13,11 @@
         Background="Transparent"
         BorderThickness="0"
         Click="OnNodeClick"
-        CornerRadius="58">
+        CornerRadius="58"
+        PointerCanceled="OnPointerCanceled"
+        PointerMoved="OnPointerMoved"
+        PointerPressed="OnPointerPressed"
+        PointerReleased="OnPointerReleased">
         <Button.ContextFlyout>
             <MenuFlyout>
                 <MenuFlyoutItem Click="OnSelectClick" Text="Select node">
@@ -27,11 +31,29 @@
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
                 <MenuFlyoutSeparator />
-                <MenuFlyoutItem IsEnabled="False" Text="Open node details">
+                <MenuFlyoutItem Click="OnOpenDetailsClick" Text="Open node details">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xE8A7;" />
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
+                <MenuFlyoutItem
+                    x:Name="ActivateItem"
+                    Click="OnActivateClick"
+                    Text="Activate in this task" />
+                <MenuFlyoutItem
+                    x:Name="DeactivateItem"
+                    Click="OnDeactivateClick"
+                    Text="Deactivate from this task (Delete)" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Click="OnCopyClick" Text="Copy complete node" />
+                <MenuFlyoutItem Click="OnPasteClick" Text="Paste into current task" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem
+                    Click="OnConnectParentClick"
+                    Text="Connect selected parent to this node" />
+                <MenuFlyoutItem
+                    Click="OnRemoveParentClick"
+                    Text="Remove selected parent from this node" />
             </MenuFlyout>
         </Button.ContextFlyout>
         <Grid>

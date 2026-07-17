@@ -38,6 +38,7 @@ public partial class App : Application
         DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         var builder = Host.CreateApplicationBuilder();
         builder.Services.AddSingleton<ApplicationShellState>();
+        builder.Services.AddSingleton<ModelClipboard>();
         builder.Services.AddSingleton<BackendConnectionService>();
         builder.Services.AddSingleton<LocalPreferencesStore>();
         builder.Services.AddSingleton<IRecentProjectStore, RecentProjectStore>();
@@ -48,6 +49,9 @@ public partial class App : Application
         builder.Services.AddSingleton<ModelWorkspaceClient>();
         builder.Services.AddSingleton<IModelWorkspaceGateway>(services =>
             services.GetRequiredService<ModelWorkspaceClient>());
+        builder.Services.AddSingleton<IModelGraphGateway>(services =>
+            services.GetRequiredService<ModelWorkspaceClient>());
+        builder.Services.AddSingleton<ModelGraphCommandCoordinator>();
         builder.Services.AddSingleton<NavigationService>();
         builder.Services.AddSingleton<ShellViewModel>();
         builder.Services.AddSingleton<SessionExplorerViewModel>();

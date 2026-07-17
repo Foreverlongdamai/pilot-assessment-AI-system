@@ -33,7 +33,11 @@
                     Layout="{x:Bind NodeLayout}">
                     <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="state:GraphNodeProjection">
-                            <graph:GraphNodeButton Node="{Binding}" NodeInvoked="OnNodeInvoked" />
+                            <graph:GraphNodeButton
+                                Node="{Binding}"
+                                NodeCommandRequested="OnNodeCommandRequested"
+                                NodeDragCompleted="OnNodeDragCompleted"
+                                NodeInvoked="OnNodeInvoked" />
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>
                 </ItemsRepeater>

@@ -1,0 +1,87 @@
+using PilotAssessment.Desktop.Core.Contracts;
+
+namespace PilotAssessment.Desktop.Core.ViewModels;
+
+public interface IModelGraphGateway
+{
+    Task<ModelGraphSnapshot> GetGraphAsync(
+        string schemeId,
+        CancellationToken cancellationToken = default);
+
+    Task<ModelNodeMutationResponse> CreateNodeAsync(
+        ModelNode node,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<TaskSchemeMutationResponse> ActivateNodeAsync(
+        string schemeId,
+        string nodeId,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<DeactivationImpact> PreviewDeactivationAsync(
+        string schemeId,
+        string nodeId,
+        CancellationToken cancellationToken = default);
+
+    Task<TaskSchemeMutationResponse> DeactivateNodeAsync(
+        string schemeId,
+        string nodeId,
+        int expectedSemanticRevision,
+        string impactHash,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<GraphBatchMutationResponse> ApplyGraphBatchAsync(
+        string schemeId,
+        IReadOnlyList<string> copyNodeIds,
+        IReadOnlyList<string> activateNodeIds,
+        IReadOnlyList<NodeLayout> layoutUpdates,
+        int expectedSemanticRevision,
+        int expectedLayoutRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<GraphBatchMutationResponse> UpdateLayoutAsync(
+        string schemeId,
+        IReadOnlyList<NodeLayout> positions,
+        int expectedSemanticRevision,
+        int expectedLayoutRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<CptMutationResponse> AddProbabilisticEdgeAsync(
+        string childNodeId,
+        string parentNodeId,
+        string strategy,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<CptMutationResponse> RemoveProbabilisticEdgeAsync(
+        string childNodeId,
+        string parentNodeId,
+        string strategy,
+        double[]? marginalWeights,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<ModelNodeMutationResponse> AddExtractionEdgeAsync(
+        string childNodeId,
+        string parentNodeId,
+        string recipeInputBindingId,
+        EvidenceRecipe updatedRecipe,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<ModelNodeMutationResponse> RemoveExtractionEdgeAsync(
+        string childNodeId,
+        string recipeInputBindingId,
+        EvidenceRecipe updatedRecipe,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+}

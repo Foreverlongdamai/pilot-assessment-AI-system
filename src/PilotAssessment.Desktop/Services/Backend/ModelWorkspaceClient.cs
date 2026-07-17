@@ -7,7 +7,7 @@ using PilotAssessment.Desktop.Core.ViewModels;
 
 namespace PilotAssessment.Desktop.Services.Backend;
 
-public sealed class ModelWorkspaceClient : IModelWorkspaceGateway
+public sealed class ModelWorkspaceClient : IModelWorkspaceGateway, IModelGraphGateway
 {
     private readonly BackendConnectionService _backend;
 
@@ -116,6 +116,238 @@ public sealed class ModelWorkspaceClient : IModelWorkspaceGateway
         return response.Graph;
     }
 
+    public Task<ModelNodeMutationResponse> CreateNodeAsync(
+        ModelNode node,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("node-create");
+        return MutateAsync(
+            "model.node.create",
+            transactionId,
+            new ModelNodeCreateRequest(node, actor, transactionId),
+            PilotAssessmentJsonContext.Default.ModelNodeCreateRequest,
+            PilotAssessmentJsonContext.Default.ModelNodeMutationResponse,
+            cancellationToken);
+    }
+
+    public Task<TaskSchemeMutationResponse> ActivateNodeAsync(
+        string schemeId,
+        string nodeId,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("scheme-activate");
+        return MutateAsync(
+            "model.scheme.activate",
+            transactionId,
+            new SchemeNodeActivationRequest(
+                schemeId,
+                nodeId,
+                expectedSemanticRevision,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.SchemeNodeActivationRequest,
+            PilotAssessmentJsonContext.Default.TaskSchemeMutationResponse,
+            cancellationToken);
+    }
+
+    public async Task<DeactivationImpact> PreviewDeactivationAsync(
+        string schemeId,
+        string nodeId,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await InvokeAsync(
+            "model.scheme.deactivation.preview",
+            new SchemeDeactivationPreviewRequest(schemeId, nodeId),
+            PilotAssessmentJsonContext.Default.SchemeDeactivationPreviewRequest,
+            PilotAssessmentJsonContext.Default.SchemeDeactivationPreviewResponse,
+            cancellationToken);
+        return response.Impact;
+    }
+
+    public Task<TaskSchemeMutationResponse> DeactivateNodeAsync(
+        string schemeId,
+        string nodeId,
+        int expectedSemanticRevision,
+        string impactHash,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("scheme-deactivate");
+        return MutateAsync(
+            "model.scheme.deactivate",
+            transactionId,
+            new SchemeNodeDeactivationRequest(
+                schemeId,
+                nodeId,
+                expectedSemanticRevision,
+                impactHash,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.SchemeNodeDeactivationRequest,
+            PilotAssessmentJsonContext.Default.TaskSchemeMutationResponse,
+            cancellationToken);
+    }
+
+    public Task<GraphBatchMutationResponse> ApplyGraphBatchAsync(
+        string schemeId,
+        IReadOnlyList<string> copyNodeIds,
+        IReadOnlyList<string> activateNodeIds,
+        IReadOnlyList<NodeLayout> layoutUpdates,
+        int expectedSemanticRevision,
+        int expectedLayoutRevision,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("graph-batch");
+        return MutateAsync(
+            "model.graph.batch.apply",
+            transactionId,
+            new GraphBatchApplyRequest(
+                schemeId,
+                copyNodeIds.ToArray(),
+                activateNodeIds.ToArray(),
+                layoutUpdates.ToArray(),
+                expectedSemanticRevision,
+                expectedLayoutRevision,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.GraphBatchApplyRequest,
+            PilotAssessmentJsonContext.Default.GraphBatchMutationResponse,
+            cancellationToken);
+    }
+
+    public Task<GraphBatchMutationResponse> UpdateLayoutAsync(
+        string schemeId,
+        IReadOnlyList<NodeLayout> positions,
+        int expectedSemanticRevision,
+        int expectedLayoutRevision,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("layout-update");
+        return MutateAsync(
+            "model.layout.update",
+            transactionId,
+            new LayoutUpdateRequest(
+                schemeId,
+                positions.ToArray(),
+                expectedSemanticRevision,
+                expectedLayoutRevision,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.LayoutUpdateRequest,
+            PilotAssessmentJsonContext.Default.GraphBatchMutationResponse,
+            cancellationToken);
+    }
+
+    public Task<CptMutationResponse> AddProbabilisticEdgeAsync(
+        string childNodeId,
+        string parentNodeId,
+        string strategy,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("edge-add-probabilistic");
+        return MutateAsync(
+            "model.edge.add",
+            transactionId,
+            new ProbabilisticEdgeAddRequest(
+                "probabilistic",
+                childNodeId,
+                parentNodeId,
+                strategy,
+                expectedSemanticRevision,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.ProbabilisticEdgeAddRequest,
+            PilotAssessmentJsonContext.Default.CptMutationResponse,
+            cancellationToken);
+    }
+
+    public Task<CptMutationResponse> RemoveProbabilisticEdgeAsync(
+        string childNodeId,
+        string parentNodeId,
+        string strategy,
+        double[]? marginalWeights,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("edge-remove-probabilistic");
+        return MutateAsync(
+            "model.edge.remove",
+            transactionId,
+            new ProbabilisticEdgeRemoveRequest(
+                "probabilistic",
+                childNodeId,
+                parentNodeId,
+                strategy,
+                marginalWeights,
+                expectedSemanticRevision,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.ProbabilisticEdgeRemoveRequest,
+            PilotAssessmentJsonContext.Default.CptMutationResponse,
+            cancellationToken);
+    }
+
+    public Task<ModelNodeMutationResponse> AddExtractionEdgeAsync(
+        string childNodeId,
+        string parentNodeId,
+        string recipeInputBindingId,
+        EvidenceRecipe updatedRecipe,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("edge-add-extraction");
+        return MutateAsync(
+            "model.edge.add",
+            transactionId,
+            new ExtractionEdgeAddRequest(
+                "extraction",
+                childNodeId,
+                parentNodeId,
+                recipeInputBindingId,
+                updatedRecipe,
+                expectedSemanticRevision,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.ExtractionEdgeAddRequest,
+            PilotAssessmentJsonContext.Default.ModelNodeMutationResponse,
+            cancellationToken);
+    }
+
+    public Task<ModelNodeMutationResponse> RemoveExtractionEdgeAsync(
+        string childNodeId,
+        string recipeInputBindingId,
+        EvidenceRecipe updatedRecipe,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("edge-remove-extraction");
+        return MutateAsync(
+            "model.edge.remove",
+            transactionId,
+            new ExtractionEdgeRemoveRequest(
+                "extraction",
+                childNodeId,
+                null,
+                recipeInputBindingId,
+                updatedRecipe,
+                expectedSemanticRevision,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.ExtractionEdgeRemoveRequest,
+            PilotAssessmentJsonContext.Default.ModelNodeMutationResponse,
+            cancellationToken);
+    }
+
     private JsonRpcClient Client => _backend.Client
         ?? throw new InvalidOperationException("The local assessment backend is not connected.");
 
@@ -133,6 +365,18 @@ public sealed class ModelWorkspaceClient : IModelWorkspaceGateway
                 requestType,
                 PilotAssessmentJsonContext.Default.TaskSchemeMutationResponse,
                 token),
+            cancellationToken: cancellationToken);
+
+    private Task<TResponse> MutateAsync<TRequest, TResponse>(
+        string method,
+        string transactionId,
+        TRequest request,
+        JsonTypeInfo<TRequest> requestType,
+        JsonTypeInfo<TResponse> responseType,
+        CancellationToken cancellationToken) =>
+        IdempotentRequestRetry.ExecuteAsync(
+            transactionId,
+            (_, token) => InvokeAsync(method, request, requestType, responseType, token),
             cancellationToken: cancellationToken);
 
     private async Task<TResponse> InvokeAsync<TRequest, TResponse>(

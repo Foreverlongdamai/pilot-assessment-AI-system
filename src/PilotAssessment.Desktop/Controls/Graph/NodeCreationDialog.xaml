@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentDialog
+    x:Class="PilotAssessment.Desktop.Controls.Graph.NodeCreationDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary"
+    PrimaryButtonClick="OnPrimaryButtonClick"
+    PrimaryButtonText="Create node"
+    Title="New complete model node">
+    <StackPanel Width="430" Spacing="12">
+        <TextBlock
+            Opacity="0.72"
+            Text="The backend stores one complete node definition. Evidence and BN nodes begin incomplete so experts can configure them without generated Python code."
+            TextWrapping="Wrap" />
+        <InfoBar
+            x:Name="ValidationInfo"
+            IsClosable="False"
+            IsOpen="False"
+            Severity="Error" />
+        <ComboBox
+            x:Name="KindCombo"
+            Header="Node kind"
+            SelectionChanged="OnKindChanged">
+            <ComboBoxItem Content="Raw Input" Tag="raw_input" />
+            <ComboBoxItem Content="Evidence" Tag="evidence" />
+            <ComboBoxItem Content="BN" Tag="bn" />
+        </ComboBox>
+        <TextBox x:Name="EnglishNameBox" Header="English name" PlaceholderText="e.g. Disturbance instrument scan" />
+        <TextBox x:Name="ChineseNameBox" Header="中文名称" PlaceholderText="例如：扰动仪表扫描" />
+        <ComboBox x:Name="RawModalityCombo" Header="Raw modality">
+            <ComboBoxItem Content="X — flight state" Tag="X" />
+            <ComboBoxItem Content="U — control input" Tag="U" />
+            <ComboBoxItem Content="I — visual scene" Tag="I" />
+            <ComboBoxItem Content="G — gaze" Tag="G" />
+            <ComboBoxItem Content="EEG" Tag="EEG" />
+            <ComboBoxItem Content="ECG" Tag="ECG" />
+            <ComboBoxItem Content="Pilot camera" Tag="pilot_camera" />
+        </ComboBox>
+    </StackPanel>
+</ContentDialog>

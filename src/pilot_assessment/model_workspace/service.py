@@ -697,6 +697,7 @@ class CurrentModelWorkspaceService:
         candidate: ModelNode,
         *,
         allow_incomplete_cpt: bool,
+        allow_incomplete_recipe: bool,
     ) -> None:
         normalized, _ = self._normalize_node(candidate, self.repository.list_nodes())
         errors = tuple(
@@ -710,8 +711,10 @@ class CurrentModelWorkspaceService:
         )
         if not errors:
             return
-        if allow_incomplete_cpt and all(
-            diagnostic.code == "model.cpt_incomplete" for diagnostic in errors
+        if all(
+            (allow_incomplete_cpt and diagnostic.code == "model.cpt_incomplete")
+            or (allow_incomplete_recipe and diagnostic.code.startswith("model.recipe."))
+            for diagnostic in errors
         ):
             return
         first = errors[0]
@@ -725,6 +728,7 @@ class CurrentModelWorkspaceService:
         transaction_id: str,
         actor_id: str,
         allow_incomplete_cpt: bool = False,
+        allow_incomplete_recipe: bool = False,
     ) -> NodeMutationResult:
         try:
             canonical_candidate = ModelNode.model_validate(candidate.model_dump(mode="json"))
@@ -736,6 +740,7 @@ class CurrentModelWorkspaceService:
         self._validate_operation_candidate(
             canonical_candidate,
             allow_incomplete_cpt=allow_incomplete_cpt,
+            allow_incomplete_recipe=allow_incomplete_recipe,
         )
         return self.update_node(
             canonical_candidate,
@@ -1085,6 +1090,8 @@ class CurrentModelWorkspaceService:
             expected_semantic_revision=expected_semantic_revision,
             transaction_id=transaction_id,
             actor_id=actor_id,
+            allow_incomplete_cpt=definition.cpt.mode is CptMode.INCOMPLETE,
+            allow_incomplete_recipe=True,
         )
 
     def remove_extraction_edge(
@@ -1141,6 +1148,8 @@ class CurrentModelWorkspaceService:
             expected_semantic_revision=expected_semantic_revision,
             transaction_id=transaction_id,
             actor_id=actor_id,
+            allow_incomplete_cpt=definition.cpt.mode is CptMode.INCOMPLETE,
+            allow_incomplete_recipe=True,
         )
 
     def replace_node_states(

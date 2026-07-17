@@ -481,6 +481,16 @@ public sealed record NodeCpt(
     IReadOnlyDictionary<string, JsonElement> GeneratorMetadata,
     ComponentSource Source);
 
+public sealed record CptEditorState(
+    ModelNodeRef ChildNode,
+    ModelNodeRef[] OrderedParentNodes,
+    string[] ChildStateIds,
+    string[][] OrderedParentStateIds,
+    double[][] MaterializedProbabilities,
+    CptMode Mode,
+    int RequiredRowCount,
+    int RequiredCellCount);
+
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "definition_kind")]
 [JsonDerivedType(typeof(RawInputNodeDefinition), "raw_input")]
 [JsonDerivedType(typeof(EvidenceNodeDefinition), "evidence")]

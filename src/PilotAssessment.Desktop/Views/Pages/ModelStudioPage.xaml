@@ -6,6 +6,11 @@
     xmlns:controls="using:PilotAssessment.Desktop.Controls"
     xmlns:graph="using:PilotAssessment.Desktop.Controls.Graph"
     Loaded="OnPageLoaded">
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Key="C" Modifiers="Control" Invoked="OnCopyAccelerator" />
+        <KeyboardAccelerator Key="V" Modifiers="Control" Invoked="OnPasteAccelerator" />
+        <KeyboardAccelerator Key="Delete" Invoked="OnDeleteAccelerator" />
+    </Page.KeyboardAccelerators>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="318" />
@@ -75,13 +80,31 @@
                             SelectedItem="{x:Bind ViewModel.SelectedTag, Mode=TwoWay}" />
                     </StackPanel>
                 </ScrollViewer>
-                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
-                    <ToggleButton
+                <CommandBar
+                    Grid.Column="2"
+                    Background="Transparent"
+                    DefaultLabelPosition="Collapsed"
+                    IsDynamicOverflowEnabled="True">
+                    <AppBarButton Icon="Add" Label="New node">
+                        <AppBarButton.Flyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Click="OnCreateRawInputClick" Text="New Raw Input" />
+                                <MenuFlyoutItem Click="OnCreateEvidenceClick" Text="New Evidence" />
+                                <MenuFlyoutItem Click="OnCreateBnClick" Text="New BN node" />
+                            </MenuFlyout>
+                        </AppBarButton.Flyout>
+                    </AppBarButton>
+                    <AppBarButton Click="OnActivateSelectionClick" Icon="Accept" Label="Activate" />
+                    <AppBarButton Click="OnDeactivateSelectionClick" Icon="Remove" Label="Deactivate" />
+                    <AppBarButton Click="OnCopySelectionClick" Icon="Copy" Label="Copy" />
+                    <AppBarButton Click="OnPasteClick" Icon="Paste" Label="Paste" />
+                    <AppBarToggleButton
                         AutomationProperties.Name="Toggle multi-select"
-                        Content="Multi-select"
-                        IsChecked="{x:Bind ViewModel.IsMultiSelect, Mode=TwoWay}" />
-                    <Button Click="OnClearSelectionClick" Content="Clear" />
-                </StackPanel>
+                        Icon="SelectAll"
+                        IsChecked="{x:Bind ViewModel.IsMultiSelect, Mode=TwoWay}"
+                        Label="Multi-select" />
+                    <AppBarButton Click="OnClearSelectionClick" Icon="Clear" Label="Clear selection" />
+                </CommandBar>
             </Grid>
 
             <Grid Grid.Row="1" Padding="18,0,18,10" ColumnSpacing="10">
@@ -120,7 +143,7 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="10">
-                <graph:ModelGraphControl />
+                <graph:ModelGraphControl NodeCommandRequested="OnGraphNodeCommandRequested" />
             </Border>
         </Grid>
     </Grid>

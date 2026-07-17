@@ -32,6 +32,8 @@ public sealed partial class ModelGraphControl : UserControl
 
     public GraphVirtualizingLayout NodeLayout { get; }
 
+    public event EventHandler<GraphNodeCommandEventArgs>? NodeCommandRequested;
+
     private void OnLoaded(object sender, RoutedEventArgs args)
     {
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
@@ -57,6 +59,15 @@ public sealed partial class ModelGraphControl : UserControl
 
     private void OnNodeInvoked(object sender, GraphNodeInvokedEventArgs args) =>
         ViewModel.SelectNode(args.Node, args.ForceAdditive);
+
+    private void OnNodeCommandRequested(object sender, GraphNodeCommandEventArgs args) =>
+        NodeCommandRequested?.Invoke(this, args);
+
+    private void OnNodeDragCompleted(object sender, GraphNodeDragCompletedEventArgs args) =>
+        ViewModel.QueueLayoutUpdate(
+            args.Node,
+            args.Node.X + args.DeltaX,
+            args.Node.Y + args.DeltaY);
 
     private void OnZoomOutClick(object sender, RoutedEventArgs args) =>
         SetZoom(GraphScrollViewer.ZoomFactor - 0.15f);
