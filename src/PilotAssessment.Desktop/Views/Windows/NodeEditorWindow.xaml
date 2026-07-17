@@ -133,12 +133,14 @@
                     </Grid>
                 </StackPanel>
 
-                <InfoBar
-                    IsClosable="False"
-                    IsOpen="True"
-                    Message="Common metadata, Raw Input, EvidenceRecipe and BN/CPT editing sections will use this same canonical window and revision state."
-                    Severity="Informational"
-                    Title="Editor surface ready" />
+                <ContentControl x:Name="EditorHost">
+                    <InfoBar
+                        IsClosable="False"
+                        IsOpen="True"
+                        Message="This node type does not yet have its complete editor surface."
+                        Severity="Informational"
+                        Title="Editor surface" />
+                </ContentControl>
             </StackPanel>
         </ScrollViewer>
     </Grid>

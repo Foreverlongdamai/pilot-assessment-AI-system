@@ -1,8 +1,12 @@
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
+using PilotAssessment.Desktop.Controls.Editors;
 using PilotAssessment.Desktop.Core.Contracts;
 using PilotAssessment.Desktop.Core.State;
+using PilotAssessment.Desktop.Core.ViewModels;
+using PilotAssessment.Desktop.ViewModels;
 
 using Windows.Graphics;
 
@@ -18,12 +22,22 @@ public sealed partial class NodeEditorWindow : Window
     private NodeWindowPlacement _restoredPlacement;
     private string _schemeDisplayName;
     private int _sharedSchemeCount;
+    private readonly IModelNodeEditorGateway _editorGateway;
+    private readonly ModalityStatusItem[] _sessionAvailability;
+    private readonly string? _sessionRevisionId;
+    private RawInputEditorViewModel? _rawInputViewModel;
+    private RawInputEditor? _rawInputEditor;
+    private EvidenceEditorViewModel? _evidenceViewModel;
+    private EvidenceEditor? _evidenceEditor;
 
     public NodeEditorWindow(
         NodeWindowKey key,
         ModelNode node,
         string schemeDisplayName,
         int sharedSchemeCount,
+        IModelNodeEditorGateway editorGateway,
+        IEnumerable<ModalityStatusItem> sessionAvailability,
+        string? sessionRevisionId,
         NodeWindowPlacement? savedPlacement,
         int cascadeIndex)
     {
@@ -31,12 +45,17 @@ public sealed partial class NodeEditorWindow : Window
         _canonicalNode = node;
         _schemeDisplayName = schemeDisplayName;
         _sharedSchemeCount = sharedSchemeCount;
+        _editorGateway = editorGateway;
+        _sessionAvailability = sessionAvailability.ToArray();
+        _sessionRevisionId = sessionRevisionId;
         InitializeComponent();
 
         AppWindow.SetIcon("Assets/AppIcon.ico");
         AppWindow.Changed += OnAppWindowChanged;
         _restoredPlacement = RestorePlacement(savedPlacement, cascadeIndex);
         RenderCanonicalNode();
+        CreateEditorSurface();
+        Closed += OnClosed;
     }
 
     public NodeWindowKey Key => _key;
@@ -86,6 +105,7 @@ public sealed partial class NodeEditorWindow : Window
             _conflictAcknowledged = false;
             CanonicalConflictPanel.Visibility = Visibility.Collapsed;
             RenderCanonicalNode();
+            ApplyCanonicalEditor();
             return;
         }
 
@@ -123,6 +143,7 @@ public sealed partial class NodeEditorWindow : Window
         _conflictAcknowledged = false;
         CanonicalConflictPanel.Visibility = Visibility.Collapsed;
         RenderCanonicalNode();
+        ApplyCanonicalEditor();
     }
 
     private NodeWindowPlacement RestorePlacement(
@@ -186,6 +207,7 @@ public sealed partial class NodeEditorWindow : Window
         _conflictAcknowledged = false;
         CanonicalConflictPanel.Visibility = Visibility.Collapsed;
         RenderCanonicalNode();
+        ApplyCanonicalEditor();
     }
 
     private void OnKeepEditingClick(object sender, RoutedEventArgs args)
@@ -228,6 +250,91 @@ public sealed partial class NodeEditorWindow : Window
             : _hasUnsavedChanges
                 ? "Unsaved local changes"
                 : $"Canonical · rev {_canonicalNode.SemanticRevision}";
+    }
+
+    private void CreateEditorSurface()
+    {
+        switch (_canonicalNode.Definition)
+        {
+            case RawInputNodeDefinition:
+                _rawInputViewModel = new RawInputEditorViewModel(
+                    _canonicalNode,
+                    _sessionAvailability);
+                _rawInputEditor = new RawInputEditor();
+                _rawInputEditor.SetViewModel(_rawInputViewModel);
+                _rawInputEditor.LocalEditChanged += OnLocalEditChanged;
+                EditorHost.Content = _rawInputEditor;
+                break;
+            case EvidenceNodeDefinition:
+                _evidenceViewModel = new EvidenceEditorViewModel(
+                    _canonicalNode,
+                    _key.SchemeId,
+                    _sessionRevisionId,
+                    _editorGateway);
+                _evidenceEditor = new EvidenceEditor();
+                _evidenceEditor.SetViewModel(_evidenceViewModel);
+                _evidenceEditor.LocalEditChanged += OnLocalEditChanged;
+                EditorHost.Content = _evidenceEditor;
+                _ = InitializeEvidenceEditorAsync();
+                break;
+            default:
+                EditorHost.Content = new InfoBar
+                {
+                    IsClosable = false,
+                    IsOpen = true,
+                    Severity = InfoBarSeverity.Informational,
+                    Title = "BN/CPT editor is Task 11",
+                    Message = "This same independent window will host states, fixed parents and the atomic CPT grid without creating another frontend copy of the node.",
+                };
+                break;
+        }
+    }
+
+    private void ApplyCanonicalEditor()
+    {
+        if (_rawInputViewModel is not null)
+        {
+            _rawInputViewModel.ApplyCanonical(_canonicalNode);
+            _rawInputEditor?.ResetDirtyBoundary();
+        }
+        if (_evidenceViewModel is not null)
+        {
+            _evidenceViewModel.ApplyCanonical(
+                _canonicalNode,
+                _key.SchemeId,
+                _sessionRevisionId);
+            _evidenceEditor?.RefreshCanonical();
+        }
+    }
+
+    private async Task InitializeEvidenceEditorAsync()
+    {
+        try
+        {
+            if (_evidenceEditor is not null)
+            {
+                await _evidenceEditor.InitializeAsync();
+            }
+        }
+        catch (Exception error)
+        {
+            SaveStateText.Text = $"Editor metadata error · {error.Message}";
+        }
+    }
+
+    private void OnLocalEditChanged(object? sender, EventArgs args) => SetUnsavedChanges(true);
+
+    private void OnClosed(object sender, WindowEventArgs args)
+    {
+        if (_rawInputEditor is not null)
+        {
+            _rawInputEditor.LocalEditChanged -= OnLocalEditChanged;
+        }
+        if (_evidenceEditor is not null)
+        {
+            _evidenceEditor.LocalEditChanged -= OnLocalEditChanged;
+        }
+        _evidenceViewModel?.Dispose();
     }
 
     private static IReadOnlyList<DisplayWorkArea> GetDisplayWorkAreas()

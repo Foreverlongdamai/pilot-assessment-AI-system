@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="PilotAssessment.Desktop.Controls.Editors.OperatorGraphEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid RowSpacing="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid ColumnSpacing="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ComboBox
+                x:Name="OperatorPicker"
+                AutomationProperties.Name="Trusted operator catalog"
+                DisplayMemberPath="DisplayName"
+                ItemsSource="{Binding OperatorOptions}"
+                PlaceholderText="Choose an installed operator"
+                SelectedItem="{Binding SelectedOperator, Mode=TwoWay}" />
+            <Button
+                Grid.Column="1"
+                AutomationProperties.Name="Add selected operator to recipe"
+                Click="OnAddOperatorClick"
+                Content="Add operator" />
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnSpacing="14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Spacing="6">
+                <TextBlock FontWeight="SemiBold" Text="Operator nodes" />
+                <ListView
+                    x:Name="NodeList"
+                    AutomationProperties.Name="Evidence recipe operator nodes"
+                    ItemsSource="{Binding RecipeNodes}"
+                    SelectionChanged="OnNodeSelectionChanged">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Padding="4" Spacing="2">
+                                <TextBlock FontWeight="SemiBold" Text="{Binding DisplayName}" />
+                                <TextBlock Opacity="0.68" Text="{Binding NodeId}" TextWrapping="Wrap" />
+                                <TextBlock Opacity="0.68" Text="{Binding ParametersSummary}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Button
+                    AutomationProperties.Name="Remove selected operator from recipe"
+                    Click="OnRemoveOperatorClick"
+                    Content="Remove selected operator" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Spacing="6">
+                <TextBlock FontWeight="SemiBold" Text="Typed recipe edges" />
+                <ListView
+                    x:Name="EdgeList"
+                    AutomationProperties.Name="Evidence recipe typed edges"
+                    ItemsSource="{Binding RecipeEdges}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Padding="4" Spacing="2">
+                                <TextBlock Text="{Binding DisplayName}" TextWrapping="Wrap" />
+                                <TextBlock Opacity="0.62" Text="{Binding EdgeId}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Button
+                    AutomationProperties.Name="Remove selected Evidence recipe edge"
+                    Click="OnRemoveEdgeClick"
+                    Content="Remove selected edge" />
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="2" Spacing="8">
+            <TextBlock FontWeight="SemiBold" Text="Connect declared operator ports" />
+            <Grid ColumnSpacing="8" RowSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="SourceNodeText" Header="Source node ID" />
+                <TextBox x:Name="SourcePortText" Grid.Column="1" Header="Output port ID" />
+                <TextBox x:Name="TargetNodeText" Grid.Column="2" Header="Target node ID" />
+                <TextBox x:Name="TargetPortText" Grid.Column="3" Header="Input port ID" />
+                <TextBox x:Name="TargetSlotText" Grid.Column="4" Header="Optional slot ID" />
+                <Button
+                    Grid.Column="5"
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.Name="Connect declared Evidence recipe ports"
+                    Click="OnAddEdgeClick"
+                    Content="Connect" />
+            </Grid>
+        </StackPanel>
+
+        <TextBlock
+            x:Name="GraphErrorText"
+            Grid.Row="3"
+            Foreground="IndianRed"
+            TextWrapping="Wrap"
+            Visibility="Collapsed" />
+    </Grid>
+</UserControl>

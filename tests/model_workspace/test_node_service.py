@@ -14,8 +14,13 @@ from pilot_assessment.contracts.model_workspace import (
     ModelNodeRef,
     ModelObjectLifecycle,
     ModelTechnicalStatus,
+    RawInputNodeDefinition,
 )
-from pilot_assessment.model_library.sources import SourceCatalog, create_source_descriptor
+from pilot_assessment.model_library.sources import (
+    SourceCatalog,
+    create_source_descriptor,
+    source_descriptor_content_hash,
+)
 from pilot_assessment.model_workspace.service import (
     CurrentModelArchiveConflict,
     CurrentModelRevisionConflict,
@@ -213,6 +218,50 @@ def test_semantic_layout_conflict_history_undo_and_redo_return_canonical_state(
             "undo",
             "redo",
         ]
+    finally:
+        database.close()
+
+
+def test_raw_input_update_rehashes_nested_source_descriptor(
+    tmp_path: Path,
+) -> None:
+    nodes, _ = seven_node_graph()
+    database, _, service = _service(tmp_path / "project.sqlite3")
+    try:
+        created = _create(service, _node(nodes, "raw.x"), "raw-x")
+        definition = created.definition
+        assert isinstance(definition, RawInputNodeDefinition)
+        changed_descriptor = definition.source_descriptor.model_copy(
+            update={
+                "description": "Expert-edited source description.",
+                "content_hash": "0" * 64,
+            }
+        )
+        proposed = created.model_copy(
+            update={
+                "definition": definition.model_copy(
+                    update={"source_descriptor": changed_descriptor}
+                )
+            }
+        )
+
+        updated = service.update_node(
+            proposed,
+            expected_semantic_revision=created.semantic_revision,
+            expected_layout_revision=created.layout_revision,
+            transaction_id="tx.raw-source-edit",
+            actor_id="expert.one",
+        ).node
+
+        updated_definition = updated.definition
+        assert isinstance(updated_definition, RawInputNodeDefinition)
+        assert updated_definition.source_descriptor.description == (
+            "Expert-edited source description."
+        )
+        assert updated_definition.source_descriptor.content_hash == (
+            source_descriptor_content_hash(updated_definition.source_descriptor)
+        )
+        assert updated_definition.source_descriptor.content_hash != "0" * 64
     finally:
         database.close()
 

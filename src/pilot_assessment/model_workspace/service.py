@@ -37,7 +37,7 @@ from pilot_assessment.contracts.model_workspace import (
     TaskScheme,
 )
 from pilot_assessment.evidence.registry import OperatorRegistry
-from pilot_assessment.model_library.sources import SourceCatalog
+from pilot_assessment.model_library.sources import SourceCatalog, source_descriptor_content_hash
 from pilot_assessment.model_workspace.activation import (
     ActivationPlanningError,
     plan_activation,
@@ -428,6 +428,18 @@ class CurrentModelWorkspaceService:
         proposed: ModelNode,
         nodes: tuple[ModelNode, ...],
     ) -> tuple[ModelNode, tuple[ModelNode, ...]]:
+        if isinstance(proposed.definition, RawInputNodeDefinition):
+            descriptor = proposed.definition.source_descriptor
+            descriptor = descriptor.model_copy(
+                update={"content_hash": source_descriptor_content_hash(descriptor)}
+            )
+            proposed = proposed.model_copy(
+                update={
+                    "definition": proposed.definition.model_copy(
+                        update={"source_descriptor": descriptor}
+                    )
+                }
+            )
         candidate = rehash_model_node(proposed)
         candidates = _replace_node(nodes, candidate)
         try:

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="PilotAssessment.Desktop.Controls.Editors.SchemaParameterForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel x:Name="FieldsPanel" Spacing="14">
+        <TextBlock
+            x:Name="EmptyText"
+            Opacity="0.68"
+            Text="Select an installed operator node to edit its schema-driven parameters."
+            TextWrapping="Wrap" />
+    </StackPanel>
+</UserControl>

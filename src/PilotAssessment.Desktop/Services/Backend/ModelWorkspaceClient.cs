@@ -7,7 +7,10 @@ using PilotAssessment.Desktop.Core.ViewModels;
 
 namespace PilotAssessment.Desktop.Services.Backend;
 
-public sealed class ModelWorkspaceClient : IModelWorkspaceGateway, IModelGraphGateway
+public sealed class ModelWorkspaceClient :
+    IModelWorkspaceGateway,
+    IModelGraphGateway,
+    IModelNodeEditorGateway
 {
     private readonly BackendConnectionService _backend;
 
@@ -129,6 +132,86 @@ public sealed class ModelWorkspaceClient : IModelWorkspaceGateway, IModelGraphGa
             PilotAssessmentJsonContext.Default.ModelNodeCreateRequest,
             PilotAssessmentJsonContext.Default.ModelNodeMutationResponse,
             cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<OperatorDefinition>> ListOperatorsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var response = await InvokeAsync(
+            "operator.catalog.list",
+            PilotAssessmentJsonContext.Default.OperatorCatalogListResponse,
+            cancellationToken);
+        return response.Operators;
+    }
+
+    public Task<ModelNodeMutationResponse> UpdateNodeAsync(
+        ModelNode node,
+        int expectedSemanticRevision,
+        int expectedLayoutRevision,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("node-update");
+        return MutateAsync(
+            "model.node.update",
+            transactionId,
+            new ModelNodeUpdateRequest(
+                node,
+                expectedSemanticRevision,
+                expectedLayoutRevision,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.ModelNodeUpdateRequest,
+            PilotAssessmentJsonContext.Default.ModelNodeMutationResponse,
+            cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<ModelNodeUsage>> ListNodeUsagesAsync(
+        string nodeId,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await InvokeAsync(
+            "model.node.usage.list",
+            new ModelNodeUsageListRequest(nodeId),
+            PilotAssessmentJsonContext.Default.ModelNodeUsageListRequest,
+            PilotAssessmentJsonContext.Default.ModelNodeUsageListResponse,
+            cancellationToken);
+        return response.Usages;
+    }
+
+    public async Task<IReadOnlyList<ModelChangeEvent>> ListNodeHistoryAsync(
+        string nodeId,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await InvokeAsync(
+            "model.node.history.list",
+            new ModelNodeHistoryListRequest(nodeId),
+            PilotAssessmentJsonContext.Default.ModelNodeHistoryListRequest,
+            PilotAssessmentJsonContext.Default.ModelNodeHistoryListResponse,
+            cancellationToken);
+        return response.Events;
+    }
+
+    public async Task<CurrentModelRunSnapshot> PreviewNodeAsync(
+        string sessionRevisionId,
+        string schemeId,
+        string nodeId,
+        IReadOnlyDictionary<string, JsonElement> runtimeParameters,
+        CancellationToken cancellationToken = default)
+    {
+        var previewId = $"preview.desktop.{Guid.NewGuid():N}";
+        var response = await InvokeAsync(
+            "model.preview.node",
+            new ModelNodePreviewRequest(
+                sessionRevisionId,
+                schemeId,
+                nodeId,
+                runtimeParameters,
+                previewId),
+            PilotAssessmentJsonContext.Default.ModelNodePreviewRequest,
+            PilotAssessmentJsonContext.Default.ModelNodePreviewResponse,
+            cancellationToken);
+        return response.Preview;
     }
 
     public Task<TaskSchemeMutationResponse> ActivateNodeAsync(

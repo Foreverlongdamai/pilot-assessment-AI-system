@@ -85,3 +85,31 @@ public interface IModelGraphGateway
         string actor,
         CancellationToken cancellationToken = default);
 }
+
+public interface IModelNodeEditorGateway
+{
+    Task<IReadOnlyList<OperatorDefinition>> ListOperatorsAsync(
+        CancellationToken cancellationToken = default);
+
+    Task<ModelNodeMutationResponse> UpdateNodeAsync(
+        ModelNode node,
+        int expectedSemanticRevision,
+        int expectedLayoutRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<ModelNodeUsage>> ListNodeUsagesAsync(
+        string nodeId,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<ModelChangeEvent>> ListNodeHistoryAsync(
+        string nodeId,
+        CancellationToken cancellationToken = default);
+
+    Task<CurrentModelRunSnapshot> PreviewNodeAsync(
+        string sessionRevisionId,
+        string schemeId,
+        string nodeId,
+        IReadOnlyDictionary<string, System.Text.Json.JsonElement> runtimeParameters,
+        CancellationToken cancellationToken = default);
+}

@@ -53,6 +53,13 @@ public sealed record ModelNodeCreateRequest(
     string Actor,
     string TransactionId);
 
+public sealed record ModelNodeUpdateRequest(
+    ModelNode Node,
+    int? ExpectedSemanticRevision,
+    int? ExpectedLayoutRevision,
+    string Actor,
+    string TransactionId);
+
 public sealed record ModelNodeMutationResponse(
     ModelNode Node,
     string[] AffectedSchemeIds,
@@ -63,6 +70,40 @@ public sealed record ModelNodeMutationResponse(
     string TransactionId,
     string AuditEventId,
     bool Replayed,
+    string TraceId);
+
+public sealed record ModelNodeUsage(
+    string SchemeId,
+    ModelObjectLifecycle SchemeLifecycle,
+    bool ExplicitlyActive,
+    bool ActiveInClosure,
+    bool SelectedAsOutput);
+
+public sealed record ModelNodeUsageListRequest(string NodeId);
+
+public sealed record ModelNodeUsageListResponse(
+    ModelNodeUsage[] Usages,
+    string TraceId);
+
+public sealed record ModelNodeHistoryListRequest(string NodeId);
+
+public sealed record ModelNodeHistoryListResponse(
+    ModelChangeEvent[] Events,
+    string TraceId);
+
+public sealed record OperatorCatalogListResponse(
+    OperatorDefinition[] Operators,
+    string TraceId);
+
+public sealed record ModelNodePreviewRequest(
+    string SessionRevisionId,
+    string SchemeId,
+    string NodeId,
+    IReadOnlyDictionary<string, System.Text.Json.JsonElement> RuntimeParameters,
+    string PreviewId);
+
+public sealed record ModelNodePreviewResponse(
+    CurrentModelRunSnapshot Preview,
     string TraceId);
 
 public sealed record SchemeNodeActivationRequest(

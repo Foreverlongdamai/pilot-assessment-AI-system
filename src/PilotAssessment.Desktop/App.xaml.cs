@@ -53,6 +53,8 @@ public partial class App : Application
             services.GetRequiredService<ModelWorkspaceClient>());
         builder.Services.AddSingleton<IModelGraphGateway>(services =>
             services.GetRequiredService<ModelWorkspaceClient>());
+        builder.Services.AddSingleton<IModelNodeEditorGateway>(services =>
+            services.GetRequiredService<ModelWorkspaceClient>());
         builder.Services.AddSingleton<ModelGraphCommandCoordinator>();
         builder.Services.AddSingleton<NavigationService>();
         builder.Services.AddSingleton<ShellViewModel>();

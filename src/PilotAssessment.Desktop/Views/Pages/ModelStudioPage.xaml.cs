@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 
 using PilotAssessment.Desktop.Controls.Graph;
 using PilotAssessment.Desktop.Core.Contracts;
@@ -76,6 +77,12 @@ public sealed partial class ModelStudioPage : Page
 
     private async void OnCopyAccelerator(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
+        if (IsTextEditingFocused())
+        {
+            args.Handled = false;
+            return;
+        }
+
         args.Handled = true;
         try
         {
@@ -89,12 +96,24 @@ public sealed partial class ModelStudioPage : Page
 
     private async void OnPasteAccelerator(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
+        if (IsTextEditingFocused())
+        {
+            args.Handled = false;
+            return;
+        }
+
         args.Handled = true;
         await ViewModel.PasteAsync();
     }
 
     private async void OnDeleteAccelerator(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
+        if (IsTextEditingFocused())
+        {
+            args.Handled = false;
+            return;
+        }
+
         args.Handled = true;
         if (await RequireSelectedNodeAsync() is { } node)
         {
@@ -250,5 +269,22 @@ public sealed partial class ModelStudioPage : Page
             CloseButtonText = "Close",
         };
         await dialog.ShowAsync();
+    }
+
+    private bool IsTextEditingFocused()
+    {
+        var focused = FocusManager.GetFocusedElement(XamlRoot) as DependencyObject;
+        while (focused is not null)
+        {
+            if (focused is TextBox or RichEditBox or PasswordBox or NumberBox or AutoSuggestBox ||
+                focused is ComboBox { IsEditable: true })
+            {
+                return true;
+            }
+
+            focused = VisualTreeHelper.GetParent(focused);
+        }
+
+        return false;
     }
 }

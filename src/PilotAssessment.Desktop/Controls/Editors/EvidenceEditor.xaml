@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="PilotAssessment.Desktop.Controls.Editors.EvidenceEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:editors="using:PilotAssessment.Desktop.Controls.Editors">
+    <StackPanel Spacing="12">
+        <InfoBar
+            IsClosable="False"
+            IsOpen="True"
+            Message="{Binding StatusMessage}"
+            Severity="Informational"
+            Title="Canonical Evidence editor" />
+        <InfoBar
+            IsClosable="False"
+            IsOpen="{Binding HasMissingOperators}"
+            Message="{Binding MissingOperatorsText}"
+            Severity="Error"
+            Title="Operator unavailable" />
+
+        <TabView MinHeight="600">
+            <TabViewItem Header="General">
+                <ScrollViewer Padding="4,12">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnSpacing="12" RowSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBox Header="English name" Text="{Binding NameEn, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Column="1" Header="中文名称" Text="{Binding NameZh, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="1" Header="English description" Text="{Binding DescriptionEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Header="中文说明" Text="{Binding DescriptionZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Row="2" Header="Group" Text="{Binding Group, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="2" Grid.Column="1" Header="Tags (comma/newline separated)" Text="{Binding TagsText, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                        </Grid>
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Header="Anchor/evidence name" Text="{Binding AnchorName, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Column="1" Header="Anchor/evidence description" Text="{Binding AnchorDescription, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        </Grid>
+                        <TextBox AcceptsReturn="True" Header="Recipe documentation summary" MinHeight="100" Text="{Binding RecipeSummary, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox AcceptsReturn="True" Header="English help" MinHeight="120" Text="{Binding HelpTextEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Column="1" AcceptsReturn="True" Header="中文帮助" MinHeight="120" Text="{Binding HelpTextZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabViewItem>
+
+            <TabViewItem Header="Raw Input bindings">
+                <Grid Padding="4,12" ColumnSpacing="14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Spacing="8">
+                        <TextBlock FontWeight="SemiBold" Text="Fixed canonical bindings" />
+                        <TextBlock Opacity="0.68" Text="Add/remove Raw Input extraction edges on the main graph. The backend migrates the complete recipe binding atomically." TextWrapping="Wrap" />
+                        <ListView ItemsSource="{Binding RawBindings}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="8">
+                        <TextBlock FontWeight="SemiBold" Text="Recipe outputs" />
+                        <ListView ItemsSource="{Binding OutputBindings}" />
+                    </StackPanel>
+                </Grid>
+            </TabViewItem>
+
+            <TabViewItem Header="EvidenceRecipe graph">
+                <ScrollViewer Padding="4,12" HorizontalScrollBarVisibility="Auto">
+                    <editors:OperatorGraphEditor x:Name="OperatorGraph" />
+                </ScrollViewer>
+            </TabViewItem>
+
+            <TabViewItem Header="Parameters">
+                <ScrollViewer Padding="4,12">
+                    <StackPanel Spacing="10">
+                        <TextBlock FontWeight="SemiBold" Text="Schema-driven operator parameters" />
+                        <TextBlock Opacity="0.68" Text="Select a recipe node in the EvidenceRecipe graph tab. Controls are generated from the backend OperatorDefinition schema and UI hints; unknown JSON is preserved read-only." TextWrapping="Wrap" />
+                        <editors:SchemaParameterForm x:Name="ParameterEditor" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabViewItem>
+
+            <TabViewItem Header="Windows / Aggregation / Scoring / D-A-U">
+                <ScrollViewer Padding="4,12">
+                    <StackPanel Spacing="12">
+                        <TextBlock Opacity="0.68" Text="Windowing and aggregation are ordinary operator nodes in the typed recipe graph. Scoring and D-A-U mapping remain explicit typed JSON contracts." TextWrapping="Wrap" />
+                        <TextBox AcceptsReturn="True" Header="Scoring contract JSON (blank means no scoring)" MinHeight="180" Text="{Binding ScoringJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        <TextBox AcceptsReturn="True" Header="Observation mapping JSON" MinHeight="180" Text="{Binding ObservationMappingJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        <TextBox AcceptsReturn="True" Header="Modality attribution weights JSON" MinHeight="120" Text="{Binding ModalityWeightsJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabViewItem>
+
+            <TabViewItem Header="Observation states">
+                <StackPanel Padding="4,12" Spacing="10">
+                    <Grid ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ComboBox Header="Observation policy" ItemsSource="{Binding ObservationPolicies}" SelectedItem="{Binding ObservationPolicy, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
+                        <Button Grid.Column="1" VerticalAlignment="Bottom" Click="OnAddStateClick" Content="Add state" />
+                        <Button Grid.Column="2" VerticalAlignment="Bottom" Click="OnRemoveStateClick" Content="Remove selected" />
+                    </Grid>
+                    <ListView x:Name="StateList" ItemsSource="{Binding ObservationStates}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Padding="4" ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="160" />
+                                        <ColumnDefinition Width="180" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Header="State ID" Text="{Binding StateId, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                                    <TextBox Grid.Column="1" Header="Label" Text="{Binding Label, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                                    <TextBox Grid.Column="2" Header="Description" Text="{Binding Description, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackPanel>
+            </TabViewItem>
+
+            <TabViewItem Header="Probabilistic parents / CPT">
+                <StackPanel Padding="4,12" Spacing="12">
+                    <InfoBar IsClosable="False" IsOpen="True" Message="Evidence probabilistic parents and CPT are part of this same complete node. Task 11 supplies the atomic parent/state/CPT grid editor; this view already exposes the canonical relationship without creating a second state copy." Severity="Informational" Title="Canonical BN relationship" />
+                    <TextBlock FontWeight="SemiBold" Text="Parents" />
+                    <TextBlock Text="{Binding ProbabilisticParentsText}" TextWrapping="Wrap" />
+                    <TextBlock FontWeight="SemiBold" Text="CPT" />
+                    <TextBlock Text="{Binding CptSummary}" TextWrapping="Wrap" />
+                </StackPanel>
+            </TabViewItem>
+
+            <TabViewItem Header="Preview / Trace">
+                <StackPanel Padding="4,12" Spacing="12">
+                    <TextBlock Opacity="0.68" Text="Preview is requested from the Python backend for the selected managed session and current task. C# does not evaluate operators." TextWrapping="Wrap" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Click="OnPreviewClick" Content="Request backend preview" />
+                        <Button Click="OnCancelPreviewClick" Content="Cancel" />
+                    </StackPanel>
+                    <TextBlock FontFamily="Consolas" Text="{Binding PreviewSummary}" TextWrapping="Wrap" />
+                </StackPanel>
+            </TabViewItem>
+
+            <TabViewItem Header="Used by schemes">
+                <StackPanel Padding="4,12" Spacing="8">
+                    <InfoBar IsClosable="False" IsOpen="True" Message="This is one shared complete node. A canonical edit affects future runs in every listed task scheme; historical RunSnapshots remain immutable." Severity="Warning" Title="Shared node impact" />
+                    <ListView ItemsSource="{Binding UsedBySchemes}" />
+                </StackPanel>
+            </TabViewItem>
+
+            <TabViewItem Header="History">
+                <StackPanel Padding="4,12" Spacing="8">
+                    <TextBlock Opacity="0.68" Text="Canonical change events are read from the backend audit/history journal." TextWrapping="Wrap" />
+                    <ListView ItemsSource="{Binding HistoryItems}" />
+                </StackPanel>
+            </TabViewItem>
+        </TabView>
+    </StackPanel>
+</UserControl>

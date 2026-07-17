@@ -101,6 +101,12 @@ public sealed partial class GraphNodeButton : UserControl
         RaiseInvoked(false);
     }
 
+    private void OnNodeDoubleTapped(object sender, DoubleTappedRoutedEventArgs args)
+    {
+        args.Handled = true;
+        RaiseCommand(GraphNodeCommand.OpenDetails);
+    }
+
     private void OnSelectClick(object sender, RoutedEventArgs args) => RaiseInvoked(false);
 
     private void OnToggleSelectionClick(object sender, RoutedEventArgs args) => RaiseInvoked(true);

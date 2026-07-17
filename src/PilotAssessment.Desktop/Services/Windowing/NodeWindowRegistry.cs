@@ -14,6 +14,8 @@ public sealed class NodeWindowRegistry : IDisposable
     private readonly TaskSchemeListViewModel _schemes;
     private readonly ModelStudioViewModel _modelStudio;
     private readonly ShellViewModel _shell;
+    private readonly IModelNodeEditorGateway _editorGateway;
+    private readonly SessionExplorerViewModel _sessions;
     private string? _projectId;
     private bool _disposed;
 
@@ -22,13 +24,17 @@ public sealed class NodeWindowRegistry : IDisposable
         ApplicationShellState shellState,
         TaskSchemeListViewModel schemes,
         ModelStudioViewModel modelStudio,
-        ShellViewModel shell)
+        ShellViewModel shell,
+        IModelNodeEditorGateway editorGateway,
+        SessionExplorerViewModel sessions)
     {
         _placements = placements;
         _shellState = shellState;
         _schemes = schemes;
         _modelStudio = modelStudio;
         _shell = shell;
+        _editorGateway = editorGateway;
+        _sessions = sessions;
         _projectId = shellState.Snapshot.ProjectId;
         _modelStudio.NodeEditorRequested += OnNodeEditorRequested;
         _modelStudio.CanonicalGraphChanged += OnCanonicalGraphChanged;
@@ -99,6 +105,9 @@ public sealed class NodeWindowRegistry : IDisposable
             node,
             schemeDisplayName,
             sharedSchemeCount,
+            _editorGateway,
+            _sessions.Modalities,
+            _sessions.SelectedRevision?.SessionRevisionId,
             _placements.Get(key),
             _windows.Count);
         window.Closed += (_, _) => OnWindowClosed(key, window);
