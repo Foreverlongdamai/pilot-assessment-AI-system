@@ -294,13 +294,13 @@ git commit -m "feat: add task activation and cascade semantics"
 - Modify: `src/pilot_assessment/model_workspace/service.py`
 - Create: `tests/model_workspace/test_copy_and_batch.py`
 
-- [ ] Implement node copy with a new opaque `node_id`, `copied_from_node_id`, copied bilingual metadata/recipe/states/CPT/help/global layout and unchanged fixed parent node IDs.
-- [ ] For an Evidence copy, keep recipe-local operator and port IDs scoped to the copied recipe; update only project-global child/node identity fields.
-- [ ] Update an embedded child CPT identity to the new node while preserving parent references and probabilities.
-- [ ] Implement paste-to-current-scheme as one transaction: create copied node, explicitly activate it, compute parent closure and add a scheme layout override offset from the source node.
-- [ ] Leave the source node active until the expert explicitly deactivates it; do not retarget old downstream children.
-- [ ] Add `model.graph.batch.apply` for multi-select copy/layout/activation using one expected revision set and one canonical diff.
-- [ ] Run:
+- [x] Implement node copy with a new opaque `node_id`, `copied_from_node_id`, copied bilingual metadata/recipe/states/CPT/help/global layout and unchanged fixed parent node IDs.
+- [x] For an Evidence copy, keep recipe-local operator and port IDs scoped to the copied recipe; update only project-global child/node identity fields.
+- [x] Update an embedded child CPT identity to the new node while preserving parent references and probabilities.
+- [x] Implement paste-to-current-scheme as one transaction: create copied node, explicitly activate it, compute parent closure and add a scheme layout override offset from the source node.
+- [x] Leave the source node active until the expert explicitly deactivates it; do not retarget old downstream children.
+- [x] Add `model.graph.batch.apply` for multi-select copy/layout/activation using one expected revision set and one canonical diff.
+- [x] Run:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest tests/model_workspace/test_copy_and_batch.py -q
@@ -308,7 +308,7 @@ git commit -m "feat: add task activation and cascade semantics"
 
 Expected: node-only copy creates one new node, zero parent copies and one atomic current-scheme update.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/pilot_assessment/model_workspace/operations.py src/pilot_assessment/model_workspace/service.py tests/model_workspace/test_copy_and_batch.py
@@ -524,7 +524,7 @@ git commit -m "test: close M7A current model runtime"
 | 4 | `feat: add current model node service` | Executed; exact hash backfilled at Task 12 |
 | 5 | `feat: add current task scheme service` | Executed; exact hash backfilled at Task 12 |
 | 6 | `feat: add task activation and cascade semantics` | Executed; exact hash backfilled at Task 12 |
-| 7 | `feat: add current node and graph copy operations` | Not executed |
+| 7 | `feat: add current node and graph copy operations` | Executed; exact hash backfilled at Task 12 |
 | 8 | `feat: make current node edges and CPT atomic` | Not executed |
 | 9 | `feat: migrate Hover starter to current model nodes` | Not executed |
 | 10 | `feat: run immutable snapshots from current schemes` | Not executed |

@@ -22,8 +22,10 @@ from pilot_assessment.contracts.model_workspace import (
     ModelGraphEdge,
     ModelGraphSnapshot,
     ModelNode,
+    ModelNodeKind,
     ModelObjectLifecycle,
     ModelTechnicalStatus,
+    NodeLayout,
     TaskScheme,
 )
 from pilot_assessment.evidence.registry import OperatorRegistry
@@ -36,12 +38,18 @@ from pilot_assessment.model_workspace.activation import (
 from pilot_assessment.model_workspace.graph import (
     ModelGraphError,
     activation_closure,
+    edge_activation,
     project_model_edges,
 )
 from pilot_assessment.model_workspace.hashing import (
     model_graph_semantic_hash,
     rehash_model_node,
     rehash_task_scheme,
+)
+from pilot_assessment.model_workspace.operations import (
+    copy_complete_node,
+    effective_scheme_layout,
+    merge_scheme_layouts,
 )
 from pilot_assessment.model_workspace.validation import validate_model_graph
 from pilot_assessment.persistence.database import Clock
@@ -167,6 +175,16 @@ class SchemeMutationResult:
     diff: CanonicalModelDiff
 
 
+@dataclass(frozen=True, slots=True)
+class GraphBatchResult:
+    """One atomic current-scheme graph intent and its canonical reconciliation state."""
+
+    copied_nodes: tuple[ModelNode, ...]
+    scheme: TaskScheme
+    graph: ModelGraphSnapshot
+    diff: CanonicalModelDiff
+
+
 def _graph_error_diagnostic(error: ModelGraphError) -> ModelDiagnostic:
     return ModelDiagnostic(
         code=error.code,
@@ -273,6 +291,7 @@ class CurrentModelWorkspaceService:
         source_catalog: SourceCatalog,
         clock: Clock = _utc_now,
         event_id_factory: Callable[[], str] | None = None,
+        node_id_factory: Callable[[ModelNodeKind], str] | None = None,
     ) -> None:
         self.repository = repository
         self.project_id = project_id
@@ -280,6 +299,9 @@ class CurrentModelWorkspaceService:
         self.source_catalog = source_catalog
         self._clock = clock
         self._event_id_factory = event_id_factory or (lambda: f"model-event.{uuid4().hex}")
+        self._node_id_factory = node_id_factory or (
+            lambda kind: f"model-node.{kind.value}.{uuid4().hex}"
+        )
 
     @property
     def available_source_ids(self) -> frozenset[str]:
@@ -287,6 +309,9 @@ class CurrentModelWorkspaceService:
 
     def _event_id(self) -> str:
         return self._event_id_factory()
+
+    def _new_node_id(self, node_kind: ModelNodeKind) -> str:
+        return self._node_id_factory(node_kind)
 
     def list_nodes(
         self,
@@ -541,6 +566,57 @@ class CurrentModelWorkspaceService:
                 str(error),
                 current_node=current,
             ) from error
+        return self._result(saved, (), diff)
+
+    def copy_node(
+        self,
+        source_node_id: str,
+        *,
+        transaction_id: str,
+        actor_id: str,
+        offset_x: float = 40.0,
+        offset_y: float = 40.0,
+    ) -> NodeMutationResult:
+        source = self.repository.get_node(source_node_id)
+        occurred_at = self._clock()
+        copied = copy_complete_node(
+            source,
+            new_node_id=self._new_node_id(source.node_kind),
+            offset_x=offset_x,
+            offset_y=offset_y,
+        ).model_copy(
+            update={
+                "created_at": occurred_at,
+                "updated_at": occurred_at,
+            }
+        )
+        before_nodes = self.repository.list_nodes()
+        normalized, after_nodes = self._normalize_node(copied, before_nodes)
+        diff = _node_diff(
+            None,
+            normalized,
+            before_nodes=before_nodes,
+            after_nodes=after_nodes,
+            mutation="copy_node",
+        ).model_copy(
+            update={
+                "metadata": {
+                    "mutation": "copy_node",
+                    "copied_from_node_id": source_node_id,
+                }
+            }
+        )
+        try:
+            saved = self.repository.create_node(
+                normalized,
+                event_id=self._event_id(),
+                actor_id=actor_id,
+                transaction_id=transaction_id,
+                occurred_at=occurred_at,
+                diff=diff,
+            )
+        except CurrentObjectConflictError as error:
+            raise CurrentModelMutationConflict(str(error)) from error
         return self._result(saved, (), diff)
 
     def update_node(
@@ -886,6 +962,260 @@ class CurrentModelWorkspaceService:
                 "task scheme semantic revision conflict",
                 current_scheme=scheme,
             )
+
+    @staticmethod
+    def _require_scheme_layout_revision(
+        scheme: TaskScheme,
+        expected_layout_revision: int,
+    ) -> None:
+        if (
+            type(expected_layout_revision) is not int
+            or expected_layout_revision < 0
+            or scheme.layout_revision != expected_layout_revision
+        ):
+            raise CurrentSchemeRevisionConflict(
+                "task scheme layout revision conflict",
+                current_scheme=scheme,
+            )
+
+    def apply_graph_batch(
+        self,
+        scheme_id: str,
+        *,
+        copy_node_ids: tuple[str, ...] = (),
+        activate_node_ids: tuple[str, ...] = (),
+        layout_updates: tuple[NodeLayout, ...] = (),
+        expected_semantic_revision: int,
+        expected_layout_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> GraphBatchResult:
+        if len(copy_node_ids) != len(set(copy_node_ids)):
+            raise CurrentModelMutationConflict("batch copy node IDs must be unique")
+        if len(activate_node_ids) != len(set(activate_node_ids)):
+            raise CurrentModelMutationConflict("batch activation node IDs must be unique")
+        layout_ids = tuple(layout.node_id for layout in layout_updates)
+        if len(layout_ids) != len(set(layout_ids)):
+            raise CurrentModelMutationConflict("batch layout node IDs must be unique")
+        if not copy_node_ids and not activate_node_ids and not layout_updates:
+            raise CurrentModelMutationConflict("graph batch must contain at least one intent")
+
+        occurred_at = self._clock()
+        try:
+            with self.repository.database.transaction():
+                scheme = self.repository.get_scheme(scheme_id)
+                if scheme.lifecycle is ModelObjectLifecycle.ARCHIVED:
+                    raise CurrentModelMutationConflict("archived task schemes cannot be edited")
+                self._require_scheme_semantic_revision(
+                    scheme,
+                    expected_semantic_revision,
+                )
+                self._require_scheme_layout_revision(
+                    scheme,
+                    expected_layout_revision,
+                )
+                before_nodes = self.repository.list_nodes()
+                before_index = {node.node_id: node for node in before_nodes}
+                for node_id in (*copy_node_ids, *activate_node_ids, *layout_ids):
+                    if node_id not in before_index:
+                        raise CurrentActivationConflict(
+                            "model.batch_node_missing",
+                            f"batch node {node_id!r} does not resolve",
+                        )
+
+                candidates = before_nodes
+                prepared_copies: list[tuple[str, ModelNode]] = []
+                generated_ids: set[str] = set()
+                for index, source_node_id in enumerate(copy_node_ids, start=1):
+                    source = before_index[source_node_id]
+                    new_node_id = self._new_node_id(source.node_kind)
+                    if new_node_id in before_index or new_node_id in generated_ids:
+                        raise CurrentModelMutationConflict(
+                            f"generated node ID {new_node_id!r} already exists"
+                        )
+                    generated_ids.add(new_node_id)
+                    copied = copy_complete_node(
+                        source,
+                        new_node_id=new_node_id,
+                        offset_x=40.0 * index,
+                        offset_y=40.0 * index,
+                    ).model_copy(
+                        update={
+                            "created_at": occurred_at,
+                            "updated_at": occurred_at,
+                        }
+                    )
+                    normalized, candidates = self._normalize_node(copied, candidates)
+                    prepared_copies.append((source_node_id, normalized))
+
+                copied_ids = tuple(node.node_id for _, node in prepared_copies)
+                explicit = tuple(
+                    sorted(
+                        set(scheme.explicit_active_node_ids)
+                        | set(activate_node_ids)
+                        | set(copied_ids)
+                    )
+                )
+                try:
+                    closure = activation_closure(candidates, explicit)
+                except ModelGraphError as error:
+                    raise CurrentActivationConflict(error.code, str(error)) from error
+                candidate_index = {node.node_id: node for node in candidates}
+                archived = tuple(
+                    node_id
+                    for node_id in closure
+                    if candidate_index[node_id].lifecycle is ModelObjectLifecycle.ARCHIVED
+                )
+                if archived:
+                    raise CurrentActivationConflict(
+                        "model.activation_archived_node",
+                        "activation closure contains archived nodes: " + ", ".join(archived),
+                    )
+
+                copy_layouts: list[NodeLayout] = []
+                for index, (source_node_id, copied) in enumerate(
+                    prepared_copies,
+                    start=1,
+                ):
+                    source_layout = effective_scheme_layout(
+                        scheme,
+                        before_index[source_node_id],
+                    )
+                    copy_layouts.append(
+                        NodeLayout(
+                            node_id=copied.node_id,
+                            x=source_layout.x + 40.0 * index,
+                            y=source_layout.y + 40.0 * index,
+                        )
+                    )
+                layouts = merge_scheme_layouts(
+                    scheme,
+                    (*copy_layouts, *layout_updates),
+                )
+                semantic_changed = (
+                    explicit != scheme.explicit_active_node_ids
+                    or closure != scheme.computed_active_closure
+                )
+                layout_changed = layouts != scheme.layout_overrides
+                if not semantic_changed and not layout_changed:
+                    raise CurrentModelMutationConflict("graph batch does not change state")
+
+                normalized_scheme = rehash_task_scheme(
+                    self._normalize_scheme(
+                        scheme.model_copy(
+                            update={
+                                "explicit_active_node_ids": explicit,
+                                "computed_active_closure": closure,
+                                "layout_overrides": layouts,
+                            }
+                        ),
+                        candidates,
+                    )
+                )
+                before_active_edge_ids = {
+                    edge.edge_id
+                    for edge in edge_activation(
+                        _all_resolvable_edges(before_nodes),
+                        scheme.computed_active_closure,
+                    ).active_edges
+                }
+                after_active_edge_ids = {
+                    edge.edge_id
+                    for edge in edge_activation(
+                        _all_resolvable_edges(candidates),
+                        closure,
+                    ).active_edges
+                }
+                added_node_ids = tuple(
+                    sorted(set(copied_ids) | (set(closure) - set(scheme.computed_active_closure)))
+                )
+                changed_paths = [
+                    *(f"/nodes/{node_id}" for node_id in copied_ids),
+                ]
+                if semantic_changed:
+                    changed_paths.extend(
+                        (
+                            "/explicit_active_node_ids",
+                            "/computed_active_closure",
+                        )
+                    )
+                if layout_changed:
+                    changed_paths.append("/layout_overrides")
+                diff = CanonicalModelDiff(
+                    changed_paths=tuple(changed_paths),
+                    added_node_ids=added_node_ids,
+                    removed_node_ids=(),
+                    added_edge_ids=tuple(sorted(after_active_edge_ids - before_active_edge_ids)),
+                    removed_edge_ids=tuple(sorted(before_active_edge_ids - after_active_edge_ids)),
+                    metadata={
+                        "mutation": "graph_batch_apply",
+                        "copied_nodes": [
+                            {
+                                "source_node_id": source_node_id,
+                                "new_node_id": copied.node_id,
+                            }
+                            for source_node_id, copied in prepared_copies
+                        ],
+                        "requested_activation_node_ids": list(activate_node_ids),
+                    },
+                )
+
+                saved_copies = tuple(
+                    self.repository.create_node(
+                        copied,
+                        event_id=self._event_id(),
+                        actor_id=actor_id,
+                        transaction_id=transaction_id,
+                        occurred_at=occurred_at,
+                        diff=diff,
+                        join_existing=True,
+                    )
+                    for _, copied in prepared_copies
+                )
+                saved_scheme = self.repository.update_scheme(
+                    normalized_scheme,
+                    expected_semantic_revision=(
+                        expected_semantic_revision if semantic_changed else None
+                    ),
+                    expected_layout_revision=(expected_layout_revision if layout_changed else None),
+                    event_id=self._event_id(),
+                    actor_id=actor_id,
+                    transaction_id=transaction_id,
+                    occurred_at=occurred_at,
+                    diff=diff,
+                    join_existing=True,
+                )
+        except CurrentObjectConflictError as error:
+            canonical = self.repository.get_scheme(scheme_id)
+            raise CurrentSchemeRevisionConflict(
+                str(error),
+                current_scheme=canonical,
+            ) from error
+        return GraphBatchResult(
+            copied_nodes=saved_copies,
+            scheme=saved_scheme,
+            graph=self._graph_snapshot(saved_scheme),
+            diff=diff,
+        )
+
+    def copy_node_to_scheme(
+        self,
+        source_node_id: str,
+        scheme_id: str,
+        *,
+        expected_semantic_revision: int,
+        expected_layout_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> GraphBatchResult:
+        return self.apply_graph_batch(
+            scheme_id,
+            copy_node_ids=(source_node_id,),
+            expected_semantic_revision=expected_semantic_revision,
+            expected_layout_revision=expected_layout_revision,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+        )
 
     def activate_node(
         self,
@@ -1239,6 +1569,7 @@ __all__ = [
     "CurrentModelServiceError",
     "CurrentModelWorkspaceService",
     "CurrentSchemeRevisionConflict",
+    "GraphBatchResult",
     "NodeMutationResult",
     "NodeUsage",
     "SchemeMutationResult",

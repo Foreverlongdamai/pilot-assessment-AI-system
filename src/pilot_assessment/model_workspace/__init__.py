@@ -26,6 +26,11 @@ from pilot_assessment.model_workspace.hashing import (
     task_scheme_layout_hash,
     task_scheme_semantic_hash,
 )
+from pilot_assessment.model_workspace.operations import (
+    copy_complete_node,
+    effective_scheme_layout,
+    merge_scheme_layouts,
+)
 from pilot_assessment.model_workspace.service import (
     CurrentActivationConflict,
     CurrentDeactivationImpactConflict,
@@ -35,6 +40,7 @@ from pilot_assessment.model_workspace.service import (
     CurrentModelServiceError,
     CurrentModelWorkspaceService,
     CurrentSchemeRevisionConflict,
+    GraphBatchResult,
     NodeMutationResult,
     NodeUsage,
     SchemeMutationResult,
@@ -57,6 +63,7 @@ __all__ = [
     "CurrentModelServiceError",
     "CurrentModelWorkspaceService",
     "CurrentSchemeRevisionConflict",
+    "GraphBatchResult",
     "ModelGraphError",
     "ModelValidationOutcome",
     "NodeMutationResult",
@@ -65,11 +72,14 @@ __all__ = [
     "activation_closure",
     "ancestors",
     "descendants",
+    "copy_complete_node",
     "edge_activation",
+    "effective_scheme_layout",
     "ensure_probabilistic_acyclic",
     "model_graph_semantic_hash",
     "model_node_layout_hash",
     "model_node_semantic_hash",
+    "merge_scheme_layouts",
     "project_model_edges",
     "plan_activation",
     "plan_deactivation",
