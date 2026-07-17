@@ -53,6 +53,7 @@ public partial class App : Application
         builder.Services.AddSingleton<SessionExplorerViewModel>();
         builder.Services.AddSingleton<TaskSchemeListViewModel>();
         builder.Services.AddSingleton<ProjectLauncherViewModel>();
+        builder.Services.AddSingleton<ModelStudioViewModel>();
         builder.Services.AddSingleton<MainWindow>();
         _applicationHost = builder.Build();
         await _applicationHost.StartAsync();

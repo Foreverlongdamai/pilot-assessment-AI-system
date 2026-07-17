@@ -314,6 +314,11 @@ public sealed class TaskSchemeListViewModelTests
             return Task.FromResult(Mutation(archived));
         }
 
+        public Task<ModelGraphSnapshot> GetGraphAsync(
+            string schemeId,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(Mutation(Current(schemeId)).Graph);
+
         private TaskScheme Current(string schemeId)
         {
             if (_canonical.TryGetValue(schemeId, out var scheme))

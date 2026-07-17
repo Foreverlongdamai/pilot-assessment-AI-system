@@ -41,3 +41,9 @@ public sealed record TaskSchemeMutationResponse(
     string AuditEventId,
     bool Replayed,
     string TraceId);
+
+public sealed record ModelGraphGetRequest(string SchemeId);
+
+public sealed record ModelGraphGetResponse(
+    ModelGraphSnapshot Graph,
+    string TraceId);

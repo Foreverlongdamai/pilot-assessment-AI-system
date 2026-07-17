@@ -8,6 +8,14 @@
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="GraphRawInputNodeBrush" Color="#2563EB" />
+            <SolidColorBrush x:Key="GraphEvidenceNodeBrush" Color="#0D9488" />
+            <SolidColorBrush x:Key="GraphBnNodeBrush" Color="#7C3AED" />
+            <SolidColorBrush x:Key="GraphExtractionEdgeBrush" Color="#0D9488" />
+            <SolidColorBrush x:Key="GraphProbabilisticEdgeBrush" Color="#7C3AED" />
+            <SolidColorBrush x:Key="GraphInactiveEdgeBrush" Color="#6B7280" />
+            <SolidColorBrush x:Key="GraphBlockedStatusBrush" Color="#DC2626" />
+            <SolidColorBrush x:Key="GraphIncompleteStatusBrush" Color="#F59E0B" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

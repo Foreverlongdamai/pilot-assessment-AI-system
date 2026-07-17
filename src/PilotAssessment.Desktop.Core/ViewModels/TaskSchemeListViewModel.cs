@@ -601,4 +601,8 @@ public interface IModelWorkspaceGateway
         int expectedSemanticRevision,
         string actor,
         CancellationToken cancellationToken = default);
+
+    Task<ModelGraphSnapshot> GetGraphAsync(
+        string schemeId,
+        CancellationToken cancellationToken = default);
 }

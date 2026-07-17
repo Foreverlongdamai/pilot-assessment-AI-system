@@ -54,4 +54,6 @@ namespace PilotAssessment.Desktop.Core.Contracts;
 [JsonSerializable(typeof(TaskSchemeUpdateRequest))]
 [JsonSerializable(typeof(TaskSchemeArchiveRequest))]
 [JsonSerializable(typeof(TaskSchemeMutationResponse))]
+[JsonSerializable(typeof(ModelGraphGetRequest))]
+[JsonSerializable(typeof(ModelGraphGetResponse))]
 public sealed partial class PilotAssessmentJsonContext : JsonSerializerContext;

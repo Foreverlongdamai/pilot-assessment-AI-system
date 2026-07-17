@@ -103,6 +103,19 @@ public sealed class ModelWorkspaceClient : IModelWorkspaceGateway
             cancellationToken);
     }
 
+    public async Task<ModelGraphSnapshot> GetGraphAsync(
+        string schemeId,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await InvokeAsync(
+            "model.graph.get",
+            new ModelGraphGetRequest(schemeId),
+            PilotAssessmentJsonContext.Default.ModelGraphGetRequest,
+            PilotAssessmentJsonContext.Default.ModelGraphGetResponse,
+            cancellationToken);
+        return response.Graph;
+    }
+
     private JsonRpcClient Client => _backend.Client
         ?? throw new InvalidOperationException("The local assessment backend is not connected.");
 

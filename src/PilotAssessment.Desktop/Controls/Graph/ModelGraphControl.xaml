@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="PilotAssessment.Desktop.Controls.Graph.ModelGraphControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:graph="using:PilotAssessment.Desktop.Controls.Graph"
+    xmlns:state="using:PilotAssessment.Desktop.Core.State"
+    Loaded="OnLoaded"
+    Unloaded="OnUnloaded">
+    <Grid Background="{ThemeResource LayerFillColorAltBrush}">
+        <ScrollViewer
+            x:Name="GraphScrollViewer"
+            HorizontalScrollBarVisibility="Auto"
+            HorizontalScrollMode="Enabled"
+            MaxZoomFactor="2.5"
+            MinZoomFactor="0.25"
+            VerticalScrollBarVisibility="Auto"
+            VerticalScrollMode="Enabled"
+            ViewChanged="OnViewChanged"
+            ZoomMode="Enabled">
+            <Grid
+                x:Name="GraphSurface"
+                Width="{x:Bind ViewModel.ExtentWidth, Mode=OneWay}"
+                Height="{x:Bind ViewModel.ExtentHeight, Mode=OneWay}">
+                <Canvas
+                    x:Name="EdgeLayer"
+                    Width="{x:Bind ViewModel.ExtentWidth, Mode=OneWay}"
+                    Height="{x:Bind ViewModel.ExtentHeight, Mode=OneWay}"
+                    IsHitTestVisible="False" />
+                <ItemsRepeater
+                    x:Name="NodeRepeater"
+                    ItemsSource="{x:Bind ViewModel.Nodes}"
+                    Layout="{x:Bind NodeLayout}">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="state:GraphNodeProjection">
+                            <graph:GraphNodeButton Node="{Binding}" NodeInvoked="OnNodeInvoked" />
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </Grid>
+        </ScrollViewer>
+
+        <Border
+            Margin="14"
+            Padding="6"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            CornerRadius="8">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button
+                    AutomationProperties.Name="Zoom out"
+                    Click="OnZoomOutClick"
+                    Content="&#xE71F;"
+                    FontFamily="Segoe Fluent Icons" />
+                <TextBlock
+                    x:Name="ZoomText"
+                    MinWidth="48"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Text="100%"
+                    TextAlignment="Center" />
+                <Button
+                    AutomationProperties.Name="Zoom in"
+                    Click="OnZoomInClick"
+                    Content="&#xE8A3;"
+                    FontFamily="Segoe Fluent Icons" />
+                <Button Click="OnFitClick" Content="Fit" />
+            </StackPanel>
+        </Border>
+
+        <Border
+            Margin="14"
+            Padding="10,8"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            CornerRadius="8">
+            <StackPanel Spacing="5">
+                <TextBlock FontSize="11" FontWeight="SemiBold" Text="EDGE LEGEND" />
+                <StackPanel Orientation="Horizontal" Spacing="7">
+                    <Rectangle
+                        Width="28"
+                        Height="2"
+                        Fill="#0D9488"
+                        StrokeDashArray="3,2" />
+                    <TextBlock FontSize="11" Text="Raw data / extraction" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="7">
+                    <Rectangle Width="28" Height="2" Fill="#7C3AED" />
+                    <TextBlock FontSize="11" Text="Probabilistic BN" />
+                </StackPanel>
+                <TextBlock FontSize="10" Opacity="0.62" Text="Dim = not active in this task" />
+            </StackPanel>
+        </Border>
+
+        <Border
+            Margin="14"
+            Padding="7"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            CornerRadius="8">
+            <StackPanel Spacing="4">
+                <TextBlock FontSize="10" FontWeight="SemiBold" Text="MINIMAP" />
+                <Canvas
+                    x:Name="MinimapCanvas"
+                    Width="180"
+                    Height="110"
+                    Background="{ThemeResource LayerFillColorAltBrush}" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
