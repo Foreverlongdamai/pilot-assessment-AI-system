@@ -534,8 +534,8 @@ Fresh Task 12 evidence: current-workspace/sidecar/integration focused gate `42 p
 The vertical slice also exposed and closed one compatibility-materialization defect: unchanged child definitions can compile to different legacy bytes after an upstream parent changes because remapped parent/version IDs change. Hidden compatibility IDs are now scoped to the full execution graph hash, so later graph edits create distinct immutable records while completed runs retain their original snapshots and results.
 
 - [x] Update status documents with exact commands/counts and explicitly state: M7A engineering verified; M7B WinUI and M8 packaging not implemented; scientific validity not established.
-- [ ] Record the Task 12 closing commit hash in this plan after the commit exists; Tasks 1–11 are recorded below.
-- [ ] Commit:
+- [x] Record the Task 12 closing commit hash in this plan after the commit exists; Tasks 1–11 are recorded below.
+- [x] Commit:
 
 ```powershell
 git add src/pilot_assessment/model_workspace/execution.py tests/integration/test_m7a_current_model_workflow.py docs/product
@@ -557,7 +557,7 @@ git commit -m "test: close M7A current model runtime"
 | 9 | `feat: migrate Hover starter to current model nodes` | `11a4d95` |
 | 10 | `feat: run immutable snapshots from current schemes` | `09fa211` |
 | 11 | `feat: expose M7 current model sidecar API` | `4da1d77` |
-| 12 | `test: close M7A current model runtime` | Pending this closing commit |
+| 12 | `test: close M7A current model runtime` | `08e07a5` |
 
 ## 3. M7A completion definition
 
