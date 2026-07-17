@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7A |
 | Date | 2026-07-17 |
-| Status | Ready for INLINE execution |
+| Status | Engineering verified; M7B WinUI remains pending |
 | Parent roadmap | [M7 Implementation Roadmap](2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) |
 | Authoritative design | [M7 Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
 | Decisions | D-047–D-053 |
@@ -330,7 +330,7 @@ git commit -m "feat: add current node and graph copy operations"
 - [x] Implement extraction edge add/remove by changing the EvidenceRecipe source binding and validating required operator input ports; never save a standalone edge row.
 - [x] Implement CPT cell/batch update with strict finite values, exact shape/order and row-sum validation.
 - [x] At the domain boundary, roll back node, scheme technical status and history events together when migration, validation or persistence fails.
-- [ ] When Task 11 exposes these domain mutations, include their idempotency result and audit event in the same existing outer transaction; this protocol concern is deliberately not duplicated in Task 8.
+- [x] When Task 11 exposes these domain mutations, include their idempotency result and audit event in the same existing outer transaction; this protocol concern is deliberately not duplicated in Task 8.
 - [x] Return regenerated editor axes/rows and canonical child definition for immediate UI reconciliation.
 - [x] Run:
 
@@ -499,23 +499,23 @@ git commit -m "feat: expose M7 current model sidecar API"
 - Modify: `docs/product/plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md`
 - Modify: `docs/product/plans/2026-07-17-m7-winui-expert-designer-implementation-roadmap.md`
 
-The integration fixture must remain small: one managed micro session, at most two Evidence nodes, two BN nodes, two schemes and no generated image sequence beyond what the existing smallest fixture already requires.
+The deterministic Base migration necessarily creates the complete 53-node starter graph. The integration fixture nevertheless remains lightweight: it edits/copies one Evidence node, reduces the copied scheme's active execution closure to one Evidence plus two BN nodes, uses one managed micro session and two schemes, and creates no extra image sequence.
 
-- [ ] Create/open a project and verify deterministic Base Scheme migration.
-- [ ] Copy the Base Scheme; copy one node into the new scheme; rename/edit it; keep original fixed parents.
-- [ ] Enable a child and verify silent closure. Preview then confirm parent deactivation and verify only the copied scheme cascades.
-- [ ] Save an Evidence parameter and one CPT edit through the sidecar; close/reopen the project and verify canonical state.
-- [ ] Run current preflight/start; wait for completion; read Evidence/posterior/trace artifacts.
-- [ ] Modify the shared node after completion and prove the old run snapshot/result is unchanged while a new preflight hash changes.
-- [ ] Reopen one legacy published-scheme run fixture and prove v0.1 replay still works.
-- [ ] Run the focused regression set:
+- [x] Create/open a project and verify deterministic Base Scheme migration.
+- [x] Copy the Base Scheme; copy one node into the new scheme; rename/edit it; keep original fixed parents.
+- [x] Enable a child and verify silent closure. Preview then confirm parent deactivation and verify only the copied scheme cascades.
+- [x] Save an Evidence parameter and one CPT edit through the sidecar; close/reopen the project and verify canonical state.
+- [x] Run current preflight/start; wait for completion; read Evidence/posterior/trace artifacts.
+- [x] Modify the shared node after completion and prove the old run snapshot/result is unchanged while a new preflight hash changes.
+- [x] Reopen one legacy published-scheme run fixture and prove v0.1 replay still works.
+- [x] Run the focused regression set:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest tests/model_workspace tests/persistence/test_model_workspace_repository.py tests/runtime/test_current_preflight.py tests/runtime/test_current_run_snapshot.py tests/sidecar tests/integration/test_m7a_current_model_workflow.py -q
 & .\.tools\uv\uv.exe run pytest tests/evidence tests/model_library tests/schemes tests/bayesian tests/integration/test_m5_lightweight_workflow.py tests/integration/test_m6_managed_assessment.py -q
 ```
 
-- [ ] Run the repository completion gate:
+- [x] Run the repository completion gate:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest -q
@@ -529,12 +529,16 @@ git diff --exit-code -- schemas src/pilot_assessment/schema_resources
 
 Expected: all gates pass. Then install the new wheel in a repository-external temporary directory and run import, schema-resource read, project create/open, sidecar hello, current graph read and clean shutdown smoke.
 
-- [ ] Update status documents with exact commands/counts and explicitly state: M7A engineering verified; M7B WinUI and M8 packaging not implemented; scientific validity not established.
-- [ ] Record actual task commit hashes in this plan.
+Fresh Task 12 evidence: current-workspace/sidecar/integration focused gate `42 passed`; M4R/M5/M6 compatibility gate `151 passed`; full repository `1684 passed, 3 skipped`; 51 exported schemas showed zero drift; Ruff check and format check, `ty check src`, source/wheel build and repository-external wheel smoke all passed. The two symlink skips are host capability skips and the remaining skip is the optional repository-external captured-format sample. The wheel smoke imported the installed package, read a packaged M7 schema, negotiated the current-model capability, created/opened a project, read the 53-node graph and shut down cleanly.
+
+The vertical slice also exposed and closed one compatibility-materialization defect: unchanged child definitions can compile to different legacy bytes after an upstream parent changes because remapped parent/version IDs change. Hidden compatibility IDs are now scoped to the full execution graph hash, so later graph edits create distinct immutable records while completed runs retain their original snapshots and results.
+
+- [x] Update status documents with exact commands/counts and explicitly state: M7A engineering verified; M7B WinUI and M8 packaging not implemented; scientific validity not established.
+- [ ] Record the Task 12 closing commit hash in this plan after the commit exists; Tasks 1–11 are recorded below.
 - [ ] Commit:
 
 ```powershell
-git add tests/integration/test_m7a_current_model_workflow.py docs/product
+git add src/pilot_assessment/model_workspace/execution.py tests/integration/test_m7a_current_model_workflow.py docs/product
 git commit -m "test: close M7A current model runtime"
 ```
 
@@ -542,26 +546,28 @@ git commit -m "test: close M7A current model runtime"
 
 | Task | Planned commit | Actual commit |
 |---:|---|---|
-| 1 | `feat: add M7 current model contracts` | Executed; exact hash backfilled at Task 12 |
-| 2 | `feat: add current model graph rules` | Executed; exact hash backfilled at Task 12 |
-| 3 | `feat: persist M7 current model workspace` | Executed; exact hash backfilled at Task 12 |
-| 4 | `feat: add current model node service` | Executed; exact hash backfilled at Task 12 |
-| 5 | `feat: add current task scheme service` | Executed; exact hash backfilled at Task 12 |
-| 6 | `feat: add task activation and cascade semantics` | Executed; exact hash backfilled at Task 12 |
-| 7 | `feat: add current node and graph copy operations` | Executed; exact hash backfilled at Task 12 |
-| 8 | `feat: make current node edges and CPT atomic` | Not executed |
-| 9 | `feat: migrate Hover starter to current model nodes` | Not executed |
-| 10 | `feat: run immutable snapshots from current schemes` | Not executed |
-| 11 | `feat: expose M7 current model sidecar API` | Not executed |
-| 12 | `test: close M7A current model runtime` | Not executed |
+| 1 | `feat: add M7 current model contracts` | `8022e9c` |
+| 2 | `feat: add current model graph rules` | `1a05e80` |
+| 3 | `feat: persist M7 current model workspace` | `bca6495` |
+| 4 | `feat: add current model node service` | `d4b6e44` |
+| 5 | `feat: add current task scheme service` | `f907614` |
+| 6 | `feat: add task activation and cascade semantics` | `32e6244` |
+| 7 | `feat: add current node and graph copy operations` | `765ff4d` |
+| 8 | `feat: make current node edges and CPT atomic` | `643489c` |
+| 9 | `feat: migrate Hover starter to current model nodes` | `11a4d95` |
+| 10 | `feat: run immutable snapshots from current schemes` | `09fa211` |
+| 11 | `feat: expose M7 current model sidecar API` | `4da1d77` |
+| 12 | `test: close M7A current model runtime` | Pending this closing commit |
 
 ## 3. M7A completion definition
 
-M7A is complete only after Task 12 records fresh evidence. Creating these plan files, adding contracts without persistence, or passing only focused tests does not complete M7A. Until then the accurate project status remains:
+Task 12 has recorded fresh completion evidence. The accurate project status is:
 
-- M1–M3, M4R, M5 and M6: engineering verified;
-- M7 design and plan: written;
-- M7A current-model runtime: not yet implemented or partially implemented according to the ledger;
+- M1–M3, M4R, M5, M6 and M7A: engineering verified;
+- M7 design and both executable plans: written;
+- M7A current-model runtime and additive sidecar surface: implemented and verified;
 - M7B WinUI: not implemented;
+- M8 packaging: not implemented;
+- starter algorithms, thresholds and CPTs: not scientifically validated.
 - M8 packaging/handoff: not implemented;
 - starter scientific validity: not established.

@@ -108,11 +108,15 @@ def _compat_id(label: str, digest: str) -> str:
     return f"compat.current.{label}.{digest[:32]}"
 
 
-def _node_digest(node: ModelNode) -> str:
+def _node_digest(node: ModelNode, *, graph_hash: str) -> str:
     return typed_content_sha256(
         "current-execution-node",
         MATERIALIZATION_VERSION,
         {
+            # Compiled legacy records contain remapped parent/version IDs.  A parent
+            # edit can therefore change this record even when the current node's own
+            # semantic bytes do not.  Scope every internal ID to the full graph lock.
+            "graph_hash": graph_hash,
             "node_id": node.node_id,
             "node_kind": node.node_kind.value,
             "content_hash": node.content_hash,
@@ -207,7 +211,7 @@ def _materialized_records(
     cpt_ids: dict[str, str] = {}
     concept_ids: dict[str, str] = {}
     for node in active_nodes:
-        digest = _node_digest(node)
+        digest = _node_digest(node, graph_hash=graph_hash)
         if node.node_kind is ModelNodeKind.EVIDENCE:
             concept_ids[node.node_id] = _compat_id("evidence.concept", digest)
             evidence_version_ids[node.node_id] = _compat_id("evidence.version", digest)

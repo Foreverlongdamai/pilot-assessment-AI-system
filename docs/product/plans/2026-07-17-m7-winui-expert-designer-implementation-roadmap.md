@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7 |
 | Date | 2026-07-17 |
-| Status | Ready for INLINE execution |
+| Status | M7A engineering verified; M7B WinUI pending |
 | Authoritative design | [M7 WinUI Expert Designer and Task Activation Workspace Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
 | Decisions | D-047–D-053 |
 | Upstream | M1–M3, M4R, M5 and M6 engineering verified |
@@ -50,6 +50,8 @@ M7A must close its compatibility and run-snapshot gate before M7B makes the new 
 ## 2. M7A deliverable — Current Model Runtime
 
 Executable plan: [M7A Current Model Runtime Implementation Plan](2026-07-17-m7a-current-model-runtime-implementation-plan.md).
+
+**Completion status (2026-07-17):** M7A Tasks 1–12 are implemented and the exit gate is closed. Fresh evidence is `42 passed` for current-model/sidecar/integration, `151 passed` for compatibility, `1684 passed, 3 skipped` for the full repository, 51-schema zero drift, successful Ruff/format/ty/build checks and a repository-external installed-wheel smoke. This closes only the backend/current-model gate; it does not mean a WinUI window exists.
 
 M7A delivers:
 
@@ -147,9 +149,9 @@ M7B is complete only when all of the following are true:
 
 | Order | Plan | Commit groups | Blocking gate |
 |---:|---|---|---|
-| 1 | M7A Tasks 1–3 | contracts, graph rules, SQLite v2 | schemas and migration reopen cleanly |
-| 2 | M7A Tasks 4–8 | node/scheme services, activation, CPT, starter migration | current workspace is fully editable and durable |
-| 3 | M7A Tasks 9–12 | preview/run bridge, sidecar, vertical slice, completion gate | M7A exit gate closed |
+| 1 | M7A Tasks 1–3 — completed | contracts, graph rules, SQLite v2 | schemas and migration reopen cleanly |
+| 2 | M7A Tasks 4–8 — completed | node/scheme services, activation, CPT, starter migration | current workspace is fully editable and durable |
+| 3 | M7A Tasks 9–12 — completed | preview/run bridge, sidecar, vertical slice, completion gate | M7A exit gate closed |
 | 4 | M7B Task 1 | toolchain audit/install/scaffold | explicit authorization before machine mutation |
 | 5 | M7B Tasks 2–5 | contracts, process client, host, project/session shell | sidecar contract smoke passes |
 | 6 | M7B Tasks 6–11 | task sidebar, graph, commands, windows, editors, autosave | model editing vertical slice persists |
