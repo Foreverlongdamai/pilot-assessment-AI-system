@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7B |
 | Date | 2026-07-17 |
-| Status | Tasks 1–7 complete; Task 8 graph editing and activation is next |
+| Status | Tasks 1–8 complete; Task 9 independent node windows is next |
 | Parent roadmap | [M7 Implementation Roadmap](2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) |
 | Backend dependency | [M7A Current Model Runtime Plan](2026-07-17-m7a-current-model-runtime-implementation-plan.md) |
 | Authoritative design | [M7 Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
@@ -402,16 +402,16 @@ git commit -m "feat: add the active task model graph"
 - Create: `src/PilotAssessment.Desktop.Core/State/ModelClipboard.cs`
 - Create: `tests/PilotAssessment.Desktop.UnitTests/ViewModels/GraphCommandTests.cs`
 
-- [ ] Add New Node actions for Raw Input, Evidence and BN. Create a minimally valid/incomplete backend node then open its editor; never generate Python code.
-- [ ] Enable a node by calling `model.scheme.activate` and immediately apply the returned closure/diff. Do not show a parent confirmation.
-- [ ] For deactivation, call preview. If there are impacted downstream nodes, show their recursive list and Continue/Cancel. Continue sends expected revision plus `impact_hash`; Cancel sends no write.
-- [ ] Map Delete on the task canvas to current-scheme deactivation. Put global archive only in Library/node usage UI with a distinct label.
-- [ ] Implement Ctrl+C/Ctrl+V and context-menu copy using an in-app typed clipboard containing project ID/source node IDs. Paste calls backend node copy/batch operation; it never locally duplicates definitions.
-- [ ] Default paste copies only selected nodes and retains original fixed parents; source nodes remain active until explicitly deactivated.
-- [ ] Implement drag layout with transient local movement and a debounced `model.layout.update`; canonical layout response wins.
-- [ ] Implement typed connect/remove-edge gestures that open the CPT/recipe migration choice and submit one backend atomic operation.
-- [ ] Test Continue/Cancel, stale impact hash, scheme isolation, copy parent retention and Delete semantics.
-- [ ] Run:
+- [x] Add New Node actions for Raw Input, Evidence and BN. Create a minimally valid/incomplete backend node then open its editor; never generate Python code. Task 8 raises the editor-window request boundary; Task 9 supplies the actual independent window.
+- [x] Enable a node by calling `model.scheme.activate` and immediately apply the returned closure/diff. Do not show a parent confirmation.
+- [x] For deactivation, call preview. If another node is impacted, show the full canonical inactive-set list and Continue/Cancel. Continue sends expected revision plus `impact_hash`; Cancel sends no write. A single-node change proceeds without an unnecessary cascade prompt.
+- [x] Map Delete on the task canvas to current-scheme deactivation. Put global archive only in Library/node usage UI with a distinct label.
+- [x] Implement Ctrl+C/Ctrl+V and context-menu copy using an in-app typed clipboard containing project ID/source node IDs. Paste calls backend node copy/batch operation; it never locally duplicates definitions.
+- [x] Default paste copies only selected nodes and retains original fixed parents; source nodes remain active until explicitly deactivated.
+- [x] Implement drag layout with transient local movement and a debounced `model.layout.update`; canonical layout response wins.
+- [x] Implement typed connect/remove-edge gestures that open the CPT or EvidenceRecipe-binding migration choice and submit one backend atomic operation.
+- [x] Test Continue/Cancel, stale impact hash, scheme isolation, copy parent retention and Delete semantics.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~GraphCommandTests
@@ -419,12 +419,16 @@ dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.Unit
 
 Expected: tests assert backend requests and canonical response reconciliation, not local fake mutations.
 
-- [ ] Commit:
+Verification: focused `GraphCommandTests` passed `7/7`; full desktop Unit passed `46/46`; Contract passed `3/3`; focused Python current-edge regression passed `4/4`; x64 Debug build completed with `0` warnings and `0` errors. One temporary real-sidecar contract created all three node kinds, kept an incrementally edited Evidence technically incomplete, added its exact Raw Input extraction binding, activated the backend parent closure, copied a starter Evidence while retaining its fixed parents, then previewed and applied deactivation using the exact impact hash. A visible WinUI check loaded the existing `53`-node/`67`-edge/`52`-active project, opened the creation form and node menu, mapped Delete to a 14-node canonical impact dialog, and proved Cancel retained `52` active with no pending write. App, sidecar and temporary project were cleaned up. Extraction operations were corrected to permit recipe/CPT-incomplete expert work-in-progress while preserving diagnostics and run blocking.
+
+- [x] Commit:
 
 ```powershell
-git add src/PilotAssessment.Desktop/ViewModels/ModelStudioViewModel.cs src/PilotAssessment.Desktop/Controls/Graph src/PilotAssessment.Desktop.Core/State/ModelClipboard.cs tests/PilotAssessment.Desktop.UnitTests/ViewModels/GraphCommandTests.cs
+git add src/PilotAssessment.Desktop src/PilotAssessment.Desktop.Core src/pilot_assessment/model_workspace/service.py tests/PilotAssessment.Desktop.UnitTests tests/PilotAssessment.Desktop.ContractTests/SidecarContractTests.cs
 git commit -m "feat: edit task activation from the model graph"
 ```
+
+Recorded commit: `ab7b9d5`.
 
 ## Task 9: Implement multiple independent node windows
 
