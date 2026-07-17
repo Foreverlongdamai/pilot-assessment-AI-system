@@ -651,7 +651,7 @@ git commit -m "test: close M7 WinUI expert designer"
 
 | Task | Planned commit | Actual commit |
 |---:|---|---|
-| 1 | `build: scaffold M7 WinUI expert designer` | Not executed |
+| 1 | `build: scaffold M7 WinUI expert designer` | `6809bcc` |
 | 2 | `feat: add typed M7 desktop contracts` | Not executed |
 | 3 | `feat: supervise the local assessment sidecar` | Not executed |
 | 4 | `feat: add the WinUI application shell` | Not executed |
