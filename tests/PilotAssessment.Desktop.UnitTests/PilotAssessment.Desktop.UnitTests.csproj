@@ -26,6 +26,9 @@
     <None Include="..\PilotAssessment.Desktop.ContractTests\Fixtures\*.json"
           Link="Fixtures\%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\fixtures\ingestion_readiness_ready.json"
+          Link="Fixtures\ingestion_readiness_ready.json"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

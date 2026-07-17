@@ -9,8 +9,8 @@ public sealed class NavigationService
     private static readonly IReadOnlyDictionary<string, Type> Routes =
         new Dictionary<string, Type>(StringComparer.Ordinal)
         {
-            ["project"] = typeof(WorkspacePlaceholderPage),
-            ["session"] = typeof(WorkspacePlaceholderPage),
+            ["project"] = typeof(ProjectLauncherPage),
+            ["session"] = typeof(SessionExplorerPage),
             ["model"] = typeof(WorkspacePlaceholderPage),
             ["runs"] = typeof(WorkspacePlaceholderPage),
             ["results"] = typeof(WorkspacePlaceholderPage),

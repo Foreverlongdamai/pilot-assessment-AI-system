@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 
 using PilotAssessment.Desktop.Core.State;
+using PilotAssessment.Desktop.Core.ViewModels;
 using PilotAssessment.Desktop.Services.Backend;
 using PilotAssessment.Desktop.Services.Navigation;
 using PilotAssessment.Desktop.Services.Preferences;
@@ -39,8 +40,15 @@ public partial class App : Application
         builder.Services.AddSingleton<ApplicationShellState>();
         builder.Services.AddSingleton<BackendConnectionService>();
         builder.Services.AddSingleton<LocalPreferencesStore>();
+        builder.Services.AddSingleton<IRecentProjectStore, RecentProjectStore>();
+        builder.Services.AddSingleton<IProjectFolderPicker, FolderPickerService>();
+        builder.Services.AddSingleton<ProjectSessionClient>();
+        builder.Services.AddSingleton<IProjectSessionGateway>(services =>
+            services.GetRequiredService<ProjectSessionClient>());
         builder.Services.AddSingleton<NavigationService>();
         builder.Services.AddSingleton<ShellViewModel>();
+        builder.Services.AddSingleton<SessionExplorerViewModel>();
+        builder.Services.AddSingleton<ProjectLauncherViewModel>();
         builder.Services.AddSingleton<MainWindow>();
         _applicationHost = builder.Build();
         await _applicationHost.StartAsync();
@@ -58,6 +66,14 @@ public partial class App : Application
             if (!await backend.ConnectAsync())
             {
                 window.NavigateToDiagnostics();
+                return;
+            }
+
+            var projects = _applicationHost.Services.GetRequiredService<ProjectLauncherViewModel>();
+            var restored = await projects.InitializeAsync(restoreLastProject: true);
+            if (!restored && shell.CurrentDestination is not ("project" or "diagnostics"))
+            {
+                window.NavigateTo("project");
             }
         }
         catch (Exception error)

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="PilotAssessment.Desktop.Views.Pages.SessionExplorerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:contracts="using:PilotAssessment.Desktop.Core.Contracts"
+    xmlns:vm="using:PilotAssessment.Desktop.Core.ViewModels"
+    Loaded="OnPageLoaded"
+    Unloaded="OnPageUnloaded"
+    mc:Ignorable="d">
+    <ScrollViewer>
+        <StackPanel Padding="28,24,28,48" Spacing="18">
+            <StackPanel Spacing="6">
+                <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="Sessions" />
+                <TextBlock
+                    MaxWidth="920"
+                    Opacity="0.72"
+                    Text="Inspect an external Session Bundle without changing it, then import an exact copy into the current managed project. Large images and time-series stay in managed storage."
+                    TextWrapping="Wrap" />
+            </StackPanel>
+
+            <InfoBar
+                IsClosable="False"
+                IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}"
+                Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
+                Severity="Error"
+                Title="Session operation failed" />
+            <InfoBar
+                IsClosable="False"
+                IsOpen="True"
+                Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                Severity="Informational"
+                Title="Session status" />
+
+            <Border
+                Padding="18"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                CornerRadius="10">
+                <StackPanel Spacing="12">
+                    <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="1. Inspect external source · 2. Import managed copy" />
+                    <TextBox
+                        Header="External source folder (never moved or modified)"
+                        IsReadOnly="True"
+                        PlaceholderText="Choose a Session Bundle folder"
+                        Text="{x:Bind ViewModel.SourceBundlePath, Mode=OneWay}" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button
+                            Command="{x:Bind ViewModel.ChooseSessionBundleCommand}"
+                            Content="Choose Session Bundle" />
+                        <Button Command="{x:Bind ViewModel.InspectSessionCommand}" Content="Inspect" />
+                        <Button
+                            Command="{x:Bind ViewModel.ImportSessionCommand}"
+                            Content="Import exact managed copy"
+                            Style="{StaticResource AccentButtonStyle}" />
+                        <Button Command="{x:Bind ViewModel.RefreshSessionsCommand}" Content="Refresh" />
+                        <ProgressRing
+                            Width="26"
+                            Height="26"
+                            IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                    </StackPanel>
+                    <TextBlock FontWeight="SemiBold" Text="{x:Bind ViewModel.InspectionSummary, Mode=OneWay}" />
+                    <TextBlock
+                        Opacity="0.72"
+                        Text="{x:Bind ViewModel.InspectionIssues, Mode=OneWay}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Grid ColumnSpacing="18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="340" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border
+                    Padding="14"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="10">
+                    <StackPanel Spacing="10">
+                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="Managed sessions" />
+                        <ListView
+                            x:Name="SessionList"
+                            MaxHeight="420"
+                            ItemsSource="{x:Bind ViewModel.Sessions}"
+                            SelectionChanged="OnSessionSelectionChanged"
+                            SelectionMode="Single">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="contracts:SessionCollectionItem">
+                                    <StackPanel Padding="4">
+                                        <TextBlock FontWeight="SemiBold" Text="{x:Bind Session.SessionId}" />
+                                        <TextBlock Opacity="0.65" Text="{x:Bind Session.ParticipantId}" />
+                                        <TextBlock Opacity="0.65" Text="{x:Bind Session.CurrentSessionRevisionId}" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Grid.Column="1"
+                    Padding="18"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="10">
+                    <StackPanel Spacing="10">
+                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="Selected managed revision" />
+                        <ComboBox
+                            x:Name="RevisionSelector"
+                            Header="Revision"
+                            ItemsSource="{x:Bind ViewModel.Revisions}"
+                            SelectionChanged="OnRevisionSelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="contracts:SessionRevision">
+                                    <TextBlock Text="{x:Bind SessionRevisionId}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock FontWeight="SemiBold" Text="Managed bundle path" />
+                        <TextBlock Text="{x:Bind ViewModel.ManagedBundlePathText, Mode=OneWay}" TextWrapping="Wrap" />
+                        <TextBlock FontWeight="SemiBold" Text="Ingestion readiness artifact" />
+                        <TextBlock Text="{x:Bind ViewModel.ReadinessArtifactText, Mode=OneWay}" TextWrapping="Wrap" />
+                        <TextBlock FontWeight="SemiBold" Text="Synchronization report artifact" />
+                        <TextBlock Text="{x:Bind ViewModel.SynchronizationArtifactText, Mode=OneWay}" TextWrapping="Wrap" />
+                        <TextBlock
+                            Margin="0,4,0,0"
+                            Opacity="0.68"
+                            Text="The external source path above and this managed path are intentionally distinct. Product installation files never contain user Session data."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <StackPanel Spacing="10">
+                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="Canonical input families" />
+                <TextBlock
+                    Opacity="0.68"
+                    Text="Visual scene, gaze, pilot camera, EEG and ECG remain first-class even when this Session declares them missing or export pending."
+                    TextWrapping="Wrap" />
+                <GridView
+                    IsItemClickEnabled="False"
+                    ItemsSource="{x:Bind ViewModel.Modalities}"
+                    SelectionMode="None">
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ModalityStatusItem">
+                            <Border
+                                Width="245"
+                                MinHeight="142"
+                                Padding="14"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                CornerRadius="8">
+                                <StackPanel Spacing="5">
+                                    <TextBlock FontWeight="SemiBold" Text="{x:Bind DisplayName}" />
+                                    <TextBlock Opacity="0.65" Text="{x:Bind Family}" />
+                                    <TextBlock Text="{x:Bind Modality}" />
+                                    <TextBlock Text="{x:Bind DeclaredStatus}" />
+                                    <TextBlock Text="{x:Bind Readiness}" />
+                                    <TextBlock Opacity="0.68" Text="{x:Bind Detail}" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

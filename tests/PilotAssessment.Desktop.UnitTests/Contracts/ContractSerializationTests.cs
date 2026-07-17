@@ -94,6 +94,27 @@ public sealed class ContractSerializationTests
     }
 
     [Fact]
+    public void IngestionReadinessFixture_RoundTripsSevenCanonicalModalities()
+    {
+        var report = ReadFixture(
+            "ingestion_readiness_ready.json",
+            PilotAssessmentJsonContext.Default.IngestionReadinessReport);
+
+        Assert.Equal(ReadinessDisposition.Ready, report.Disposition);
+        Assert.Equal(7, report.StreamResults.Count);
+        Assert.Contains("I", report.StreamResults.Keys);
+        Assert.Contains("G", report.StreamResults.Keys);
+        Assert.Contains("EEG", report.StreamResults.Keys);
+        Assert.Contains("ECG", report.StreamResults.Keys);
+        Assert.False(report.FormalRunAuthorized);
+
+        AssertRoundTripEquivalent(
+            "ingestion_readiness_ready.json",
+            report,
+            PilotAssessmentJsonContext.Default.IngestionReadinessReport);
+    }
+
+    [Fact]
     public void CurrentRunFixtures_RoundTripFrozenSnapshotAndArtifactReferences()
     {
         var preflight = ReadFixture(

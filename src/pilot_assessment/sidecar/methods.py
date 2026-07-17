@@ -151,6 +151,7 @@ from pilot_assessment.sidecar.errors import (
 RpcResult: TypeAlias = dict[str, JsonValue]
 RunNotificationSink: TypeAlias = Callable[[JsonRpcMessage], None]
 Mutation = Callable[[], Mapping[str, JsonValue]]
+_MAX_INLINE_SESSION_REPORT_BYTES = 1024 * 1024
 
 _CONCEPT_KINDS = frozenset({ComponentKind.EVIDENCE_CONCEPT, ComponentKind.BN_NODE_CONCEPT})
 _BASE_METHOD_NAMES = (
@@ -166,6 +167,7 @@ _BASE_METHOD_NAMES = (
     "session.import",
     "session.list",
     "session.get",
+    "session.report.get",
     "session.artifact.get",
     "component.concept.list",
     "component.concept.get",
@@ -1129,6 +1131,70 @@ class SidecarMethods:
             "revisions": [
                 _jsonable(revision) for revision in app.sessions.list_revisions(session.session_id)
             ],
+        }
+
+    def _session_report_get(self, params, _context) -> RpcResult:
+        app = self._app()
+        revision = app.sessions.get_revision(_required_str(params, "session_revision_id"))
+        report_kind = _required_str(params, "report_kind")
+        if report_kind == "ingestion_readiness":
+            artifact_id = revision.ingestion_readiness_ref
+            expected_schema_id = "ingestion-readiness-report-0.1.0"
+        elif report_kind == "synchronization":
+            artifact_id = revision.synchronization_ref
+            expected_schema_id = "synchronization-report-0.1.0"
+        else:
+            raise InvalidParamsFault(
+                "report_kind must be ingestion_readiness or synchronization",
+                path="/report_kind",
+            )
+
+        if artifact_id is None:
+            return {
+                "session_revision_id": revision.session_revision_id,
+                "report_kind": report_kind,
+                "artifact": None,
+                "inline_available": False,
+                "report": None,
+            }
+
+        reference = app.project.database.fetchone(
+            """
+            SELECT 1 FROM artifact_references
+            WHERE owner_kind = 'session_revision' AND owner_id = ? AND artifact_id = ?
+            """,
+            (revision.session_revision_id, artifact_id),
+        )
+        if reference is None:
+            raise ArtifactNotFoundError(artifact_id)
+
+        artifact = app.artifacts.get(artifact_id)
+        if artifact.schema_id != expected_schema_id or artifact.media_type != "application/json":
+            raise ArtifactIntegrityError("session report artifact metadata is inconsistent")
+        if artifact.byte_size > _MAX_INLINE_SESSION_REPORT_BYTES:
+            return {
+                "session_revision_id": revision.session_revision_id,
+                "report_kind": report_kind,
+                "artifact": _jsonable(artifact),
+                "inline_available": False,
+                "report": None,
+            }
+
+        with app.artifacts.open_verified(artifact_id) as stream:
+            try:
+                report = json.loads(stream.read().decode("utf-8"))
+            except (UnicodeDecodeError, json.JSONDecodeError) as error:
+                raise ArtifactIntegrityError(
+                    "session report artifact is not valid UTF-8 JSON"
+                ) from error
+        if not isinstance(report, dict):
+            raise ArtifactIntegrityError("session report artifact root must be an object")
+        return {
+            "session_revision_id": revision.session_revision_id,
+            "report_kind": report_kind,
+            "artifact": _jsonable(artifact),
+            "inline_available": True,
+            "report": report,
         }
 
     def _session_artifact_get(self, params, _context) -> RpcResult:

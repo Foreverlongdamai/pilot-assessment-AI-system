@@ -248,6 +248,36 @@ def test_stdio_sidecar_supports_the_managed_edit_and_assessment_loop(
             ),
             timeout=60,
         )
+        stored_readiness = sidecar.call(
+            "session.report.get",
+            {
+                "session_revision_id": imported["revision"]["session_revision_id"],
+                "report_kind": "ingestion_readiness",
+            },
+        )
+        assert stored_readiness["inline_available"] is True
+        assert (
+            stored_readiness["artifact"]["artifact_id"]
+            == imported["revision"]["ingestion_readiness_ref"]
+        )
+        assert set(stored_readiness["report"]["stream_results"]) == {
+            "X",
+            "U",
+            "I",
+            "G",
+            "EEG",
+            "ECG",
+            "pilot_camera",
+        }
+        missing_synchronization = sidecar.call(
+            "session.report.get",
+            {
+                "session_revision_id": imported["revision"]["session_revision_id"],
+                "report_kind": "synchronization",
+            },
+        )
+        assert missing_synchronization["artifact"] is None
+        assert missing_synchronization["report"] is None
         current_preflight = sidecar.call(
             "model.run.preflight",
             {
