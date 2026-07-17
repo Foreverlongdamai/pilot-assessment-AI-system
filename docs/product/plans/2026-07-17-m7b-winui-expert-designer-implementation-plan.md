@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7B |
 | Date | 2026-07-17 |
-| Status | Tasks 1–8 complete; Task 9 independent node windows is next |
+| Status | Tasks 1–9 complete; Task 10 Raw Input and Evidence editors is next |
 | Parent roadmap | [M7 Implementation Roadmap](2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) |
 | Backend dependency | [M7A Current Model Runtime Plan](2026-07-17-m7a-current-model-runtime-implementation-plan.md) |
 | Authoritative design | [M7 Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
@@ -441,14 +441,14 @@ Recorded commit: `ab7b9d5`.
 - Create: `src/PilotAssessment.Desktop.Core/State/NodeWindowKey.cs`
 - Create: `tests/PilotAssessment.Desktop.UnitTests/State/NodeWindowRegistryTests.cs`
 
-- [ ] Key windows by `(project_id, scheme_id, node_id)`. Opening the same key focuses the existing window; other nodes/task contexts may open concurrently.
-- [ ] Use top-level `Window` and `AppWindow` for Move, Resize, presenter/maximize state and Changed events.
-- [ ] Keep the main graph interactive while node windows are open; windows are non-modal.
-- [ ] Persist bounds/maximized state in `%LOCALAPPDATA%\PilotAssessmentSystem\ui-state.json`, validate restored bounds against current displays and recover off-screen windows.
-- [ ] Title each window with bilingual node name, node kind, current task context, shared-scheme count, revision and save/conflict state.
-- [ ] Route canonical node change notifications to all windows displaying the same node. A window with unsaved text shows a conflict action instead of being silently overwritten.
-- [ ] Unit-test key uniqueness, focus-existing, independent contexts, close cleanup and placement normalization without creating a real window.
-- [ ] Run:
+- [x] Key windows by `(project_id, scheme_id, node_id)`. Opening the same key focuses the existing window; other nodes/task contexts may open concurrently.
+- [x] Use top-level `Window` and `AppWindow` for Move, Resize, presenter/maximize state and Changed events.
+- [x] Keep the main graph interactive while node windows are open; windows are non-modal.
+- [x] Persist bounds/maximized state in `%LOCALAPPDATA%\PilotAssessmentSystem\ui-state.json`, validate restored bounds against current displays and recover off-screen windows.
+- [x] Title each window with bilingual node name, node kind, current task context, shared-scheme count, revision and save/conflict state.
+- [x] Route canonical node change notifications to all windows displaying the same node. A window with unsaved text shows a conflict action instead of being silently overwritten.
+- [x] Unit-test key uniqueness, focus-existing, independent contexts, close cleanup and placement normalization without creating a real window.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~NodeWindowRegistryTests
@@ -457,12 +457,14 @@ dotnet build src/PilotAssessment.Desktop/PilotAssessment.Desktop.slnx -p:Platfor
 
 Expected: registry tests pass and WinUI window code builds.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/PilotAssessment.Desktop/Views/Windows src/PilotAssessment.Desktop/Services/Windowing src/PilotAssessment.Desktop.Core/State/NodeWindowKey.cs tests/PilotAssessment.Desktop.UnitTests/State/NodeWindowRegistryTests.cs
 git commit -m "feat: add independent node editor windows"
 ```
+
+Recorded commit: `fdd7772`. Fresh verification: desktop Unit `52/52`, Contract `3/3`, x64 Debug build `0 warning / 0 error`, and `git diff --check` clean. Visible WinUI verification kept the main graph interactive while two node windows were open, reused the existing window for an identical key, and restored both ordinary bounds and maximized state after close/reopen. The implementation also works around a Windows App SDK 2.3 projection issue by indexing `DisplayArea.FindAll()` rather than enumerating it through LINQ.
 
 ## Task 10: Build Raw Input and Evidence node editors
 
@@ -677,8 +679,8 @@ git commit -m "test: close M7 WinUI expert designer"
 | 5 | `feat: add managed project and session workspace` | `296622f` |
 | 6 | `feat: add task scheme navigation` | `5761b63` |
 | 7 | `feat: add the active task model graph` | `974e8c1` |
-| 8 | `feat: edit task activation from the model graph` | Not executed |
-| 9 | `feat: add independent node editor windows` | Not executed |
+| 8 | `feat: edit task activation from the model graph` | `ab7b9d5` |
+| 9 | `feat: add independent node editor windows` | `fdd7772` |
 | 10 | `feat: add raw input and Evidence node editors` | Not executed |
 | 11 | `feat: add BN and CPT node editors` | Not executed |
 | 12 | `feat: autosave canonical model edits` | Not executed |
