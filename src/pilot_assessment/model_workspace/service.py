@@ -627,6 +627,7 @@ class CurrentModelWorkspaceService:
                 transaction_id=transaction_id,
                 occurred_at=occurred_at,
                 diff=diff,
+                join_existing=True,
             )
         except CurrentObjectConflictError as error:
             try:
@@ -685,6 +686,7 @@ class CurrentModelWorkspaceService:
                 transaction_id=transaction_id,
                 occurred_at=occurred_at,
                 diff=diff,
+                join_existing=True,
             )
         except CurrentObjectConflictError as error:
             raise CurrentModelMutationConflict(str(error)) from error
@@ -1243,7 +1245,7 @@ class CurrentModelWorkspaceService:
         )
         occurred_at = self._clock()
         try:
-            with self.repository.database.transaction():
+            with self.repository.database.transaction(join_existing=True):
                 saved_nodes = tuple(
                     self.repository.update_node(
                         normalized_by_id[changed_id],
@@ -1316,7 +1318,7 @@ class CurrentModelWorkspaceService:
         )
         occurred_at = self._clock()
         try:
-            with self.repository.database.transaction():
+            with self.repository.database.transaction(join_existing=True):
                 saved = self.repository.update_node(
                     normalized,
                     expected_semantic_revision=expected_semantic_revision,
@@ -1383,6 +1385,7 @@ class CurrentModelWorkspaceService:
                 transaction_id=transaction_id,
                 occurred_at=self._clock(),
                 diff=diff,
+                join_existing=True,
             )
         except CurrentObjectConflictError as error:
             canonical = self.repository.get_node(node_id)
@@ -1404,7 +1407,7 @@ class CurrentModelWorkspaceService:
     ) -> NodeMutationResult:
         occurred_at = self._clock()
         try:
-            with self.repository.database.transaction():
+            with self.repository.database.transaction(join_existing=True):
                 if direction == "undo":
                     saved = self.repository.undo_node(
                         node_id,
@@ -1552,6 +1555,7 @@ class CurrentModelWorkspaceService:
                 transaction_id=transaction_id,
                 occurred_at=occurred_at,
                 diff=diff,
+                join_existing=True,
             )
         except CurrentObjectConflictError as error:
             try:
@@ -1660,7 +1664,7 @@ class CurrentModelWorkspaceService:
 
         occurred_at = self._clock()
         try:
-            with self.repository.database.transaction():
+            with self.repository.database.transaction(join_existing=True):
                 scheme = self.repository.get_scheme(scheme_id)
                 if scheme.lifecycle is ModelObjectLifecycle.ARCHIVED:
                     raise CurrentModelMutationConflict("archived task schemes cannot be edited")
@@ -1886,7 +1890,7 @@ class CurrentModelWorkspaceService:
     ) -> SchemeMutationResult:
         occurred_at = self._clock()
         try:
-            with self.repository.database.transaction():
+            with self.repository.database.transaction(join_existing=True):
                 scheme = self.repository.get_scheme(scheme_id)
                 self._require_scheme_semantic_revision(
                     scheme,
@@ -1984,7 +1988,7 @@ class CurrentModelWorkspaceService:
     ) -> SchemeMutationResult:
         occurred_at = self._clock()
         try:
-            with self.repository.database.transaction():
+            with self.repository.database.transaction(join_existing=True):
                 scheme = self.repository.get_scheme(scheme_id)
                 self._require_scheme_semantic_revision(
                     scheme,
@@ -2096,6 +2100,7 @@ class CurrentModelWorkspaceService:
                 transaction_id=transaction_id,
                 occurred_at=self._clock(),
                 diff=diff,
+                join_existing=True,
             )
         except CurrentObjectConflictError as error:
             canonical = self.repository.get_scheme(scheme.scheme_id)
@@ -2131,6 +2136,7 @@ class CurrentModelWorkspaceService:
                 transaction_id=transaction_id,
                 occurred_at=self._clock(),
                 diff=diff,
+                join_existing=True,
             )
         except CurrentObjectConflictError as error:
             canonical = self.repository.get_scheme(scheme_id)
@@ -2161,6 +2167,7 @@ class CurrentModelWorkspaceService:
                     actor_id=actor_id,
                     transaction_id=transaction_id,
                     occurred_at=occurred_at,
+                    join_existing=True,
                 )
             else:
                 saved = self.repository.redo_scheme(
@@ -2171,6 +2178,7 @@ class CurrentModelWorkspaceService:
                     actor_id=actor_id,
                     transaction_id=transaction_id,
                     occurred_at=occurred_at,
+                    join_existing=True,
                 )
             diff = self.repository.scheme_history(scheme_id)[-1].diff
         except CurrentObjectConflictError as error:

@@ -78,6 +78,8 @@ def test_dispatcher_requires_hello_and_negotiates_a_common_protocol() -> None:
     assert hello["result"]["runtime_id"] == "runtime.test"
     assert hello["result"]["state"] == "ready"
     assert "runtime.protocol.v1" in hello["result"]["capabilities"]
+    assert "model.current-workspace.v1" in hello["result"]["capabilities"]
+    assert "compatibility.published-scheme-workspace.v1" in hello["result"]["capabilities"]
 
     response = dispatcher.dispatch(
         _request(

@@ -36,6 +36,12 @@ from pilot_assessment.contracts.model_components import (
     PinnedComponentRef,
     VariableState,
 )
+from pilot_assessment.contracts.model_workspace import (
+    ModelNode,
+    ModelObjectLifecycle,
+    NodeLayout,
+    TaskScheme,
+)
 from pilot_assessment.contracts.project import AuditEvent
 from pilot_assessment.contracts.run import RunPurpose, RunState
 from pilot_assessment.evidence.registry import OperatorRegistryError
@@ -45,12 +51,26 @@ from pilot_assessment.model_library.repository import (
     LibraryItemNotFoundError,
     LibraryQuery,
 )
+from pilot_assessment.model_workspace.execution import CurrentExecutionMaterializationError
+from pilot_assessment.model_workspace.service import (
+    CurrentActivationConflict,
+    CurrentDeactivationImpactConflict,
+    CurrentModelArchiveConflict,
+    CurrentModelMutationConflict,
+    CurrentModelOperationError,
+    CurrentModelRevisionConflict,
+    CurrentSchemeRevisionConflict,
+)
 from pilot_assessment.persistence.artifacts import (
     ArtifactIntegrityError,
     ArtifactNotFoundError,
     ArtifactStoreError,
 )
 from pilot_assessment.persistence.audit import AuditQuery
+from pilot_assessment.persistence.model_workspace_repository import (
+    CurrentObjectNotFoundError,
+    UndoRedoUnavailableError,
+)
 from pilot_assessment.persistence.project import (
     ProjectAlreadyExistsError,
     ProjectError,
@@ -69,6 +89,12 @@ from pilot_assessment.persistence.transactions import (
 )
 from pilot_assessment.runtime.application import ProjectApplication
 from pilot_assessment.runtime.coordinator import RunCoordinatorError
+from pilot_assessment.runtime.current_preflight import (
+    CurrentRunPreflightBlockedError,
+    CurrentRunPreflightError,
+    CurrentRunPreflightNotFoundError,
+    CurrentRunPreflightStaleError,
+)
 from pilot_assessment.runtime.pipeline import RunResultNotFoundError
 from pilot_assessment.runtime.preflight import (
     RunPreflightBlockedError,
@@ -127,7 +153,7 @@ RunNotificationSink: TypeAlias = Callable[[JsonRpcMessage], None]
 Mutation = Callable[[], Mapping[str, JsonValue]]
 
 _CONCEPT_KINDS = frozenset({ComponentKind.EVIDENCE_CONCEPT, ComponentKind.BN_NODE_CONCEPT})
-_METHOD_NAMES = (
+_BASE_METHOD_NAMES = (
     "runtime.status",
     "runtime.shutdown",
     "capabilities.list",
@@ -171,6 +197,53 @@ _METHOD_NAMES = (
     "result.artifact.get",
     "audit.events.list",
 )
+
+_CURRENT_MODEL_METHOD_NAMES = (
+    "model.node.list",
+    "model.node.get",
+    "model.node.create",
+    "model.node.copy",
+    "model.node.update",
+    "model.node.archive",
+    "model.node.usage.list",
+    "model.node.history.list",
+    "model.node.undo",
+    "model.node.redo",
+    "model.node.states.replace",
+    "model.scheme.list",
+    "model.scheme.get",
+    "model.scheme.create",
+    "model.scheme.copy",
+    "model.scheme.update",
+    "model.scheme.archive",
+    "model.scheme.activate",
+    "model.scheme.deactivation.preview",
+    "model.scheme.deactivate",
+    "model.scheme.history.list",
+    "model.scheme.undo",
+    "model.scheme.redo",
+    "model.graph.get",
+    "model.graph.batch.apply",
+    "model.edge.add",
+    "model.edge.remove",
+    "model.edge.reorder",
+    "model.layout.update",
+    "model.cpt.validate",
+    "model.cpt.materialize",
+    "model.cpt.update",
+    "model.preview.node",
+    "model.preview.scheme",
+    "model.run.preflight",
+    "model.run.start",
+)
+
+_COMPATIBILITY_MODEL_METHOD_NAMES = tuple(
+    method
+    for method in _BASE_METHOD_NAMES
+    if method.startswith(("component.", "scheme.version.", "scheme.draft."))
+    or method in {"graph.snapshot.get", "graph.operations.apply", "run.preflight", "run.start"}
+)
+_METHOD_NAMES = (*_BASE_METHOD_NAMES, *_CURRENT_MODEL_METHOD_NAMES)
 
 
 def _utc_now() -> datetime:
@@ -252,6 +325,12 @@ def _optional_int(
     return _required_int(params, field)
 
 
+def _optional_revision(params: Mapping[str, JsonValue], field: str) -> int | None:
+    if field not in params or params[field] is None:
+        return None
+    return _required_int(params, field)
+
+
 def _optional_bool(
     params: Mapping[str, JsonValue],
     field: str,
@@ -278,6 +357,32 @@ def _list(value: JsonValue | None, field: str) -> list[JsonValue]:
     return value
 
 
+def _string_tuple(
+    value: JsonValue | None,
+    field: str,
+    *,
+    default: tuple[str, ...] = (),
+) -> tuple[str, ...]:
+    if value is None:
+        return default
+    values = _list(value, field)
+    result: list[str] = []
+    for index, item in enumerate(values):
+        if type(item) is not str or not item:
+            raise InvalidParamsFault(
+                f"{field} items must be non-empty strings",
+                path=f"/{field}/{index}",
+            )
+        result.append(item)
+    return tuple(result)
+
+
+def _number_tuple(value: JsonValue | None, field: str) -> tuple[float, ...] | None:
+    if value is None:
+        return None
+    return tuple(_number(item, f"{field}[]") for item in _list(value, field))
+
+
 def _number(value: JsonValue | None, field: str) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise InvalidParamsFault(f"{field} must be a finite number", path=f"/{field}")
@@ -293,6 +398,21 @@ def _component_kind(params: Mapping[str, JsonValue], field: str = "kind") -> Com
         return ComponentKind(value)
     except ValueError as error:
         raise InvalidParamsFault(f"unknown component kind {value!r}", path=f"/{field}") from error
+
+
+def _model_lifecycle(params: Mapping[str, JsonValue]) -> ModelObjectLifecycle | None:
+    value = params.get("lifecycle")
+    if value is None:
+        return None
+    if type(value) is not str:
+        raise InvalidParamsFault("lifecycle must be a string", path="/lifecycle")
+    try:
+        return ModelObjectLifecycle(value)
+    except ValueError as error:
+        raise InvalidParamsFault(
+            f"unknown model lifecycle {value!r}",
+            path="/lifecycle",
+        ) from error
 
 
 def _operation(payload: JsonValue) -> SchemeOperation:
@@ -495,6 +615,110 @@ class SidecarMethods:
                 DomainErrorCode.TRANSACTION_REUSE_MISMATCH,
                 str(error),
                 recoverable=False,
+                transaction_id=transaction_id,
+            )
+        if isinstance(error, CurrentObjectNotFoundError):
+            missing = str(error)
+            code = (
+                DomainErrorCode.MODEL_SCHEME_NOT_FOUND
+                if missing.startswith("scheme:")
+                else DomainErrorCode.MODEL_NODE_NOT_FOUND
+            )
+            return DomainRpcError(code, missing, recoverable=True)
+        if isinstance(error, CurrentModelRevisionConflict):
+            return DomainRpcError(
+                DomainErrorCode.MODEL_REVISION_CONFLICT,
+                str(error),
+                recoverable=True,
+                transaction_id=transaction_id,
+                current_revision=error.current_node.semantic_revision,
+                diagnostics={"current_node": _jsonable(error.current_node)},
+            )
+        if isinstance(error, CurrentSchemeRevisionConflict):
+            return DomainRpcError(
+                DomainErrorCode.MODEL_REVISION_CONFLICT,
+                str(error),
+                recoverable=True,
+                transaction_id=transaction_id,
+                current_revision=error.current_scheme.semantic_revision,
+                diagnostics={"current_scheme": _jsonable(error.current_scheme)},
+            )
+        if isinstance(error, CurrentDeactivationImpactConflict):
+            return DomainRpcError(
+                DomainErrorCode.MODEL_DEACTIVATION_STALE,
+                str(error),
+                recoverable=True,
+                transaction_id=transaction_id,
+                diagnostics={"current_impact": _jsonable(error.current_impact)},
+            )
+        if isinstance(error, CurrentModelArchiveConflict):
+            return DomainRpcError(
+                DomainErrorCode.MODEL_DEPENDENCY_INVALID,
+                str(error),
+                recoverable=True,
+                transaction_id=transaction_id,
+                diagnostics={"active_scheme_ids": list(error.active_scheme_ids)},
+            )
+        if isinstance(error, CurrentActivationConflict):
+            code = (
+                DomainErrorCode.MODEL_ACTIVE_CLOSURE_INCOMPLETE
+                if "closure" in error.code
+                else DomainErrorCode.MODEL_DEPENDENCY_INVALID
+            )
+            return DomainRpcError(
+                code,
+                str(error),
+                recoverable=True,
+                transaction_id=transaction_id,
+                diagnostics={"model_error_code": error.code},
+            )
+        if isinstance(error, CurrentModelOperationError):
+            if "cpt" in error.code:
+                code = DomainErrorCode.MODEL_CPT_INVALID
+            elif "operator" in error.code or "recipe.operator" in error.code:
+                code = DomainErrorCode.MODEL_OPERATOR_UNSUPPORTED
+            elif "closure" in error.code:
+                code = DomainErrorCode.MODEL_ACTIVE_CLOSURE_INCOMPLETE
+            else:
+                code = DomainErrorCode.MODEL_DEPENDENCY_INVALID
+            return DomainRpcError(
+                code,
+                str(error),
+                recoverable=True,
+                transaction_id=transaction_id,
+                diagnostics={"model_error_code": error.code},
+            )
+        if isinstance(error, (CurrentModelMutationConflict, UndoRedoUnavailableError)):
+            return DomainRpcError(
+                DomainErrorCode.MODEL_REVISION_CONFLICT,
+                str(error),
+                recoverable=True,
+                transaction_id=transaction_id,
+            )
+        if isinstance(error, CurrentExecutionMaterializationError):
+            return DomainRpcError(
+                DomainErrorCode.MODEL_ACTIVE_CLOSURE_INCOMPLETE,
+                str(error),
+                recoverable=True,
+            )
+        if isinstance(error, CurrentRunPreflightNotFoundError):
+            return DomainRpcError(
+                DomainErrorCode.RUN_PREFLIGHT_FAILED,
+                str(error),
+                recoverable=True,
+            )
+        if isinstance(
+            error,
+            (
+                CurrentRunPreflightBlockedError,
+                CurrentRunPreflightStaleError,
+                CurrentRunPreflightError,
+            ),
+        ):
+            return DomainRpcError(
+                DomainErrorCode.RUN_PREFLIGHT_FAILED,
+                str(error),
+                recoverable=True,
                 transaction_id=transaction_id,
             )
         if isinstance(error, (SessionNotFoundError, SessionRevisionNotFoundError)):
@@ -757,6 +981,10 @@ class SidecarMethods:
         return {
             "capabilities": list(DEFAULT_CAPABILITIES),
             "methods": ["runtime.hello", *_METHOD_NAMES],
+            "method_families": {
+                "current_model": list(_CURRENT_MODEL_METHOD_NAMES),
+                "compatibility_model": list(_COMPATIBILITY_MODEL_METHOD_NAMES),
+            },
             "max_parallel_assessment_runs": 1,
         }
 
@@ -1236,6 +1464,792 @@ class SidecarMethods:
             "validation_state": draft.validation_state.value,
             "diagnostics": _jsonable(draft.diagnostics),
         }
+
+    # M7 current-workspace methods.  These adapters expose canonical domain
+    # responses; they never duplicate Evidence, CPT or BN calculations.
+
+    def _model_node_list(self, params, _context) -> RpcResult:
+        nodes = self._app().current_model.list_nodes(lifecycle=_model_lifecycle(params))
+        return {"nodes": [_jsonable(node) for node in nodes]}
+
+    def _model_node_get(self, params, _context) -> RpcResult:
+        node = self._app().current_model.get_node(_required_str(params, "node_id"))
+        return {"node": _jsonable(node)}
+
+    def _model_node_create(self, params, context) -> RpcResult:
+        app = self._app()
+        node = ModelNode.model_validate(_mapping(params.get("node"), "node"))
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.node.create",
+            params,
+            context,
+            subject_kind="model_node",
+            subject_id=node.node_id,
+            audit_details={"node_kind": node.node_kind.value},
+            mutation=lambda: _json_object(
+                app.current_model.create_node(
+                    node,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "node mutation",
+            ),
+        )
+
+    def _model_node_copy(self, params, context) -> RpcResult:
+        app = self._app()
+        source_node_id = _required_str(params, "source_node_id")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.node.copy",
+            params,
+            context,
+            subject_kind="model_node",
+            subject_id=source_node_id,
+            audit_details={"source_node_id": source_node_id},
+            mutation=lambda: _json_object(
+                app.current_model.copy_node(
+                    source_node_id,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                    offset_x=_number(params.get("offset_x", 40.0), "offset_x"),
+                    offset_y=_number(params.get("offset_y", 40.0), "offset_y"),
+                ),
+                "node copy mutation",
+            ),
+        )
+
+    def _model_node_update(self, params, context) -> RpcResult:
+        app = self._app()
+        node = ModelNode.model_validate(_mapping(params.get("node"), "node"))
+        semantic_revision = _optional_revision(params, "expected_semantic_revision")
+        layout_revision = _optional_revision(params, "expected_layout_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.node.update",
+            params,
+            context,
+            subject_kind="model_node",
+            subject_id=node.node_id,
+            audit_details={
+                "expected_semantic_revision": semantic_revision,
+                "expected_layout_revision": layout_revision,
+            },
+            mutation=lambda: _json_object(
+                app.current_model.update_node(
+                    node,
+                    expected_semantic_revision=semantic_revision,
+                    expected_layout_revision=layout_revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "node mutation",
+            ),
+        )
+
+    def _model_node_archive(self, params, context) -> RpcResult:
+        app = self._app()
+        node_id = _required_str(params, "node_id")
+        revision = _required_int(params, "expected_semantic_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.node.archive",
+            params,
+            context,
+            subject_kind="model_node",
+            subject_id=node_id,
+            audit_details={"expected_semantic_revision": revision},
+            mutation=lambda: _json_object(
+                app.current_model.archive_node(
+                    node_id,
+                    expected_semantic_revision=revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "node archive mutation",
+            ),
+        )
+
+    def _model_node_usage_list(self, params, _context) -> RpcResult:
+        usages = self._app().current_model.node_usage_list(_required_str(params, "node_id"))
+        return {"usages": [_jsonable(usage) for usage in usages]}
+
+    def _model_node_history_list(self, params, _context) -> RpcResult:
+        events = self._app().current_model.node_history(_required_str(params, "node_id"))
+        return {"events": [_jsonable(event) for event in events]}
+
+    def _model_node_undo(self, params, context) -> RpcResult:
+        return self._model_node_history_travel(params, context, direction="undo")
+
+    def _model_node_redo(self, params, context) -> RpcResult:
+        return self._model_node_history_travel(params, context, direction="redo")
+
+    def _model_node_history_travel(
+        self,
+        params: dict[str, JsonValue],
+        context: RpcRequestContext,
+        *,
+        direction: str,
+    ) -> RpcResult:
+        app = self._app()
+        node_id = _required_str(params, "node_id")
+        semantic_revision = _required_int(params, "expected_semantic_revision")
+        layout_revision = _required_int(params, "expected_layout_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        operation = (
+            app.current_model.undo_node if direction == "undo" else app.current_model.redo_node
+        )
+        method = f"model.node.{direction}"
+        return self._mutate(
+            app,
+            method,
+            params,
+            context,
+            subject_kind="model_node",
+            subject_id=node_id,
+            audit_details={
+                "expected_semantic_revision": semantic_revision,
+                "expected_layout_revision": layout_revision,
+            },
+            mutation=lambda: _json_object(
+                operation(
+                    node_id,
+                    expected_semantic_revision=semantic_revision,
+                    expected_layout_revision=layout_revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "node history mutation",
+            ),
+        )
+
+    def _model_node_states_replace(self, params, context) -> RpcResult:
+        app = self._app()
+        node_id = _required_str(params, "node_id")
+        states = tuple(
+            VariableState.model_validate(_mapping(item, "states[]"))
+            for item in _list(params.get("states"), "states")
+        )
+        raw_revisions = _mapping(
+            params.get("expected_semantic_revisions"),
+            "expected_semantic_revisions",
+        )
+        revisions: dict[str, int] = {}
+        for key, value in raw_revisions.items():
+            if type(value) is not int or value < 0:
+                raise InvalidParamsFault(
+                    "expected semantic revisions must be non-negative strict integers",
+                    path=f"/expected_semantic_revisions/{key}",
+                )
+            revisions[key] = value
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.node.states.replace",
+            params,
+            context,
+            subject_kind="model_node",
+            subject_id=node_id,
+            audit_details={"affected_node_ids": sorted(revisions)},
+            mutation=lambda: _json_object(
+                app.current_model.replace_node_states(
+                    node_id,
+                    states,
+                    outcome=_required_str(params, "outcome"),
+                    expected_semantic_revisions=revisions,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "node state mutation",
+            ),
+        )
+
+    def _model_scheme_list(self, params, _context) -> RpcResult:
+        schemes = self._app().current_model.list_schemes(lifecycle=_model_lifecycle(params))
+        return {"schemes": [_jsonable(scheme) for scheme in schemes]}
+
+    def _model_scheme_get(self, params, _context) -> RpcResult:
+        scheme = self._app().current_model.get_scheme(_required_str(params, "scheme_id"))
+        return {"scheme": _jsonable(scheme)}
+
+    def _model_scheme_create(self, params, context) -> RpcResult:
+        app = self._app()
+        scheme = TaskScheme.model_validate(_mapping(params.get("scheme"), "scheme"))
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.scheme.create",
+            params,
+            context,
+            subject_kind="task_scheme",
+            subject_id=scheme.scheme_id,
+            audit_details={},
+            mutation=lambda: _json_object(
+                app.current_model.create_scheme(
+                    scheme,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "scheme mutation",
+            ),
+        )
+
+    def _model_scheme_copy(self, params, context) -> RpcResult:
+        app = self._app()
+        source_scheme_id = _required_str(params, "source_scheme_id")
+        new_scheme_id = _required_str(params, "new_scheme_id")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.scheme.copy",
+            params,
+            context,
+            subject_kind="task_scheme",
+            subject_id=new_scheme_id,
+            audit_details={"source_scheme_id": source_scheme_id},
+            mutation=lambda: _json_object(
+                app.current_model.copy_scheme(
+                    source_scheme_id,
+                    new_scheme_id=new_scheme_id,
+                    name_zh=_optional_str(params, "name_zh"),
+                    name_en=_optional_str(params, "name_en"),
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "scheme copy mutation",
+            ),
+        )
+
+    def _model_scheme_update(self, params, context) -> RpcResult:
+        app = self._app()
+        scheme = TaskScheme.model_validate(_mapping(params.get("scheme"), "scheme"))
+        semantic_revision = _optional_revision(params, "expected_semantic_revision")
+        layout_revision = _optional_revision(params, "expected_layout_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.scheme.update",
+            params,
+            context,
+            subject_kind="task_scheme",
+            subject_id=scheme.scheme_id,
+            audit_details={
+                "expected_semantic_revision": semantic_revision,
+                "expected_layout_revision": layout_revision,
+            },
+            mutation=lambda: _json_object(
+                app.current_model.update_scheme(
+                    scheme,
+                    expected_semantic_revision=semantic_revision,
+                    expected_layout_revision=layout_revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "scheme mutation",
+            ),
+        )
+
+    def _model_scheme_archive(self, params, context) -> RpcResult:
+        app = self._app()
+        scheme_id = _required_str(params, "scheme_id")
+        revision = _required_int(params, "expected_semantic_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.scheme.archive",
+            params,
+            context,
+            subject_kind="task_scheme",
+            subject_id=scheme_id,
+            audit_details={"expected_semantic_revision": revision},
+            mutation=lambda: _json_object(
+                app.current_model.archive_scheme(
+                    scheme_id,
+                    expected_semantic_revision=revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "scheme archive mutation",
+            ),
+        )
+
+    def _model_scheme_activate(self, params, context) -> RpcResult:
+        app = self._app()
+        scheme_id = _required_str(params, "scheme_id")
+        node_id = _required_str(params, "node_id")
+        revision = _required_int(params, "expected_semantic_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.scheme.activate",
+            params,
+            context,
+            subject_kind="task_scheme",
+            subject_id=scheme_id,
+            audit_details={"requested_node_id": node_id},
+            mutation=lambda: _json_object(
+                app.current_model.activate_node(
+                    scheme_id,
+                    node_id,
+                    expected_semantic_revision=revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "scheme activation mutation",
+            ),
+        )
+
+    def _model_scheme_deactivation_preview(self, params, _context) -> RpcResult:
+        impact = self._app().current_model.preview_deactivation(
+            _required_str(params, "scheme_id"),
+            _required_str(params, "node_id"),
+        )
+        return {"impact": _jsonable(impact)}
+
+    def _model_scheme_deactivate(self, params, context) -> RpcResult:
+        app = self._app()
+        scheme_id = _required_str(params, "scheme_id")
+        node_id = _required_str(params, "node_id")
+        revision = _required_int(params, "expected_semantic_revision")
+        impact_hash = _required_str(params, "impact_hash")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.scheme.deactivate",
+            params,
+            context,
+            subject_kind="task_scheme",
+            subject_id=scheme_id,
+            audit_details={"requested_node_id": node_id, "impact_hash": impact_hash},
+            mutation=lambda: _json_object(
+                app.current_model.deactivate_node(
+                    scheme_id,
+                    node_id,
+                    expected_semantic_revision=revision,
+                    impact_hash=impact_hash,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "scheme deactivation mutation",
+            ),
+        )
+
+    def _model_scheme_history_list(self, params, _context) -> RpcResult:
+        events = self._app().current_model.scheme_history(_required_str(params, "scheme_id"))
+        return {"events": [_jsonable(event) for event in events]}
+
+    def _model_scheme_undo(self, params, context) -> RpcResult:
+        return self._model_scheme_history_travel(params, context, direction="undo")
+
+    def _model_scheme_redo(self, params, context) -> RpcResult:
+        return self._model_scheme_history_travel(params, context, direction="redo")
+
+    def _model_scheme_history_travel(
+        self,
+        params: dict[str, JsonValue],
+        context: RpcRequestContext,
+        *,
+        direction: str,
+    ) -> RpcResult:
+        app = self._app()
+        scheme_id = _required_str(params, "scheme_id")
+        semantic_revision = _required_int(params, "expected_semantic_revision")
+        layout_revision = _required_int(params, "expected_layout_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        operation = (
+            app.current_model.undo_scheme if direction == "undo" else app.current_model.redo_scheme
+        )
+        method = f"model.scheme.{direction}"
+        return self._mutate(
+            app,
+            method,
+            params,
+            context,
+            subject_kind="task_scheme",
+            subject_id=scheme_id,
+            audit_details={
+                "expected_semantic_revision": semantic_revision,
+                "expected_layout_revision": layout_revision,
+            },
+            mutation=lambda: _json_object(
+                operation(
+                    scheme_id,
+                    expected_semantic_revision=semantic_revision,
+                    expected_layout_revision=layout_revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "scheme history mutation",
+            ),
+        )
+
+    def _model_graph_get(self, params, _context) -> RpcResult:
+        graph = self._app().current_model.graph_snapshot(_required_str(params, "scheme_id"))
+        return {"graph": _jsonable(graph)}
+
+    def _model_graph_batch_apply(self, params, context) -> RpcResult:
+        return self._current_graph_batch_mutation(
+            params,
+            context,
+            method="model.graph.batch.apply",
+            copy_node_ids=_string_tuple(params.get("copy_node_ids"), "copy_node_ids"),
+            activate_node_ids=_string_tuple(
+                params.get("activate_node_ids"),
+                "activate_node_ids",
+            ),
+            layout_updates=tuple(
+                NodeLayout.model_validate(_mapping(item, "layout_updates[]"))
+                for item in _list(params.get("layout_updates", []), "layout_updates")
+            ),
+        )
+
+    def _model_layout_update(self, params, context) -> RpcResult:
+        layouts = tuple(
+            NodeLayout.model_validate(_mapping(item, "positions[]"))
+            for item in _list(params.get("positions"), "positions")
+        )
+        return self._current_graph_batch_mutation(
+            params,
+            context,
+            method="model.layout.update",
+            copy_node_ids=(),
+            activate_node_ids=(),
+            layout_updates=layouts,
+        )
+
+    def _current_graph_batch_mutation(
+        self,
+        params: dict[str, JsonValue],
+        context: RpcRequestContext,
+        *,
+        method: str,
+        copy_node_ids: tuple[str, ...],
+        activate_node_ids: tuple[str, ...],
+        layout_updates: tuple[NodeLayout, ...],
+    ) -> RpcResult:
+        app = self._app()
+        scheme_id = _required_str(params, "scheme_id")
+        semantic_revision = _required_int(params, "expected_semantic_revision")
+        layout_revision = _required_int(params, "expected_layout_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            method,
+            params,
+            context,
+            subject_kind="task_scheme",
+            subject_id=scheme_id,
+            audit_details={
+                "copy_node_count": len(copy_node_ids),
+                "activation_count": len(activate_node_ids),
+                "layout_count": len(layout_updates),
+            },
+            mutation=lambda: _json_object(
+                app.current_model.apply_graph_batch(
+                    scheme_id,
+                    copy_node_ids=copy_node_ids,
+                    activate_node_ids=activate_node_ids,
+                    layout_updates=layout_updates,
+                    expected_semantic_revision=semantic_revision,
+                    expected_layout_revision=layout_revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "graph batch mutation",
+            ),
+        )
+
+    def _model_edge_add(self, params, context) -> RpcResult:
+        app = self._app()
+        edge_kind = _required_str(params, "edge_kind")
+        child_node_id = _required_str(params, "child_node_id")
+        parent_node_id = _required_str(params, "parent_node_id")
+        revision = _required_int(params, "expected_semantic_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+
+        def mutate() -> Mapping[str, JsonValue]:
+            if edge_kind == "probabilistic":
+                result = app.current_model.add_probabilistic_edge(
+                    child_node_id,
+                    parent_node_id,
+                    strategy=_required_str(params, "strategy"),
+                    expected_semantic_revision=revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                )
+            elif edge_kind == "extraction":
+                result = app.current_model.add_extraction_edge(
+                    child_node_id,
+                    parent_node_id,
+                    _required_str(params, "recipe_input_binding_id"),
+                    EvidenceRecipe.model_validate(
+                        _mapping(params.get("updated_recipe"), "updated_recipe")
+                    ),
+                    expected_semantic_revision=revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                )
+            else:
+                raise InvalidParamsFault(
+                    "edge_kind must be 'extraction' or 'probabilistic'",
+                    path="/edge_kind",
+                )
+            return _json_object(result, "edge mutation")
+
+        return self._mutate(
+            app,
+            "model.edge.add",
+            params,
+            context,
+            subject_kind="model_node",
+            subject_id=child_node_id,
+            audit_details={"edge_kind": edge_kind, "parent_node_id": parent_node_id},
+            mutation=mutate,
+        )
+
+    def _model_edge_remove(self, params, context) -> RpcResult:
+        app = self._app()
+        edge_kind = _required_str(params, "edge_kind")
+        child_node_id = _required_str(params, "child_node_id")
+        parent_node_id = _optional_str(params, "parent_node_id")
+        revision = _required_int(params, "expected_semantic_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+
+        def mutate() -> Mapping[str, JsonValue]:
+            if edge_kind == "probabilistic":
+                if parent_node_id is None:
+                    raise InvalidParamsFault(
+                        "parent_node_id is required for a probabilistic edge",
+                        path="/parent_node_id",
+                    )
+                result = app.current_model.remove_probabilistic_edge(
+                    child_node_id,
+                    parent_node_id,
+                    strategy=_required_str(params, "strategy"),
+                    marginal_weights=_number_tuple(
+                        params.get("marginal_weights"),
+                        "marginal_weights",
+                    ),
+                    expected_semantic_revision=revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                )
+            elif edge_kind == "extraction":
+                result = app.current_model.remove_extraction_edge(
+                    child_node_id,
+                    _required_str(params, "recipe_input_binding_id"),
+                    EvidenceRecipe.model_validate(
+                        _mapping(params.get("updated_recipe"), "updated_recipe")
+                    ),
+                    expected_semantic_revision=revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                )
+            else:
+                raise InvalidParamsFault(
+                    "edge_kind must be 'extraction' or 'probabilistic'",
+                    path="/edge_kind",
+                )
+            return _json_object(result, "edge mutation")
+
+        return self._mutate(
+            app,
+            "model.edge.remove",
+            params,
+            context,
+            subject_kind="model_node",
+            subject_id=child_node_id,
+            audit_details={"edge_kind": edge_kind, "parent_node_id": parent_node_id},
+            mutation=mutate,
+        )
+
+    def _model_edge_reorder(self, params, context) -> RpcResult:
+        app = self._app()
+        child_node_id = _required_str(params, "child_node_id")
+        parent_ids = _string_tuple(
+            params.get("ordered_parent_node_ids"),
+            "ordered_parent_node_ids",
+        )
+        revision = _required_int(params, "expected_semantic_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.edge.reorder",
+            params,
+            context,
+            subject_kind="model_node",
+            subject_id=child_node_id,
+            audit_details={"ordered_parent_node_ids": list(parent_ids)},
+            mutation=lambda: _json_object(
+                app.current_model.reorder_probabilistic_parents(
+                    child_node_id,
+                    parent_ids,
+                    expected_semantic_revision=revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "edge reorder mutation",
+            ),
+        )
+
+    def _model_cpt_validate(self, params, _context) -> RpcResult:
+        app = self._app()
+        node_id = _required_str(params, "node_id")
+        return {
+            "validation": _jsonable(app.current_model.validate_current_cpt(node_id)),
+            "editor": _jsonable(app.current_model.current_cpt_editor(node_id)),
+        }
+
+    def _model_cpt_materialize(self, params, context) -> RpcResult:
+        app = self._app()
+        node_id = _required_str(params, "node_id")
+        revision = _required_int(params, "expected_semantic_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.cpt.materialize",
+            params,
+            context,
+            subject_kind="model_node",
+            subject_id=node_id,
+            audit_details={"strategy": _required_str(params, "strategy")},
+            mutation=lambda: _json_object(
+                app.current_model.materialize_current_cpt(
+                    node_id,
+                    strategy=_required_str(params, "strategy"),
+                    weights=_number_tuple(params.get("weights"), "weights"),
+                    weakest_link_strength=_number(
+                        params.get("weakest_link_strength", 0.0),
+                        "weakest_link_strength",
+                    ),
+                    sigma=_number(params.get("sigma", 0.8), "sigma"),
+                    expected_semantic_revision=revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "CPT materialization mutation",
+            ),
+        )
+
+    def _model_cpt_update(self, params, context) -> RpcResult:
+        app = self._app()
+        node_id = _required_str(params, "node_id")
+        rows = tuple(
+            tuple(_number(item, "rows[][]") for item in _list(row, "rows[]"))
+            for row in _list(params.get("rows"), "rows")
+        )
+        revision = _required_int(params, "expected_semantic_revision")
+        actor = _required_str(params, "actor")
+        transaction_id = _required_str(params, "transaction_id")
+        return self._mutate(
+            app,
+            "model.cpt.update",
+            params,
+            context,
+            subject_kind="model_node",
+            subject_id=node_id,
+            audit_details={"row_count": len(rows)},
+            mutation=lambda: _json_object(
+                app.current_model.update_cpt_rows(
+                    node_id,
+                    rows,
+                    expected_semantic_revision=revision,
+                    transaction_id=transaction_id,
+                    actor_id=actor,
+                ),
+                "CPT mutation",
+            ),
+        )
+
+    def _model_preview_node(self, params, context) -> RpcResult:
+        preview = self._app().current_preflight.preview_node(
+            session_revision_id=_required_str(params, "session_revision_id"),
+            scheme_id=_required_str(params, "scheme_id"),
+            node_id=_required_str(params, "node_id"),
+            runtime_parameters=_mapping(
+                params.get("runtime_parameters", {}),
+                "runtime_parameters",
+            ),
+            preview_id=_optional_str(params, "preview_id") or f"preview.{context.trace_id}",
+        )
+        return {"preview": _jsonable(preview)}
+
+    def _model_preview_scheme(self, params, context) -> RpcResult:
+        preview = self._app().current_preflight.preview(
+            session_revision_id=_required_str(params, "session_revision_id"),
+            scheme_id=_required_str(params, "scheme_id"),
+            runtime_parameters=_mapping(
+                params.get("runtime_parameters", {}),
+                "runtime_parameters",
+            ),
+            preview_id=_optional_str(params, "preview_id") or f"preview.{context.trace_id}",
+        )
+        return {"preview": _jsonable(preview)}
+
+    def _model_run_preflight(self, params, _context) -> RpcResult:
+        report = self._app().current_preflight.prepare(
+            session_revision_id=_required_str(params, "session_revision_id"),
+            scheme_id=_required_str(params, "scheme_id"),
+            purpose=RunPurpose(_required_str(params, "purpose")),
+            runtime_parameters=_mapping(
+                params.get("runtime_parameters", {}),
+                "runtime_parameters",
+            ),
+        )
+        return {"preflight": _jsonable(report)}
+
+    def _model_run_start(self, params, context) -> RpcResult:
+        app = self._app()
+        preflight_id = _required_str(params, "preflight_id")
+        run_id = _required_str(params, "run_id")
+        expected_revision = _required_int(params, "expected_scheme_revision")
+        response = self._mutate(
+            app,
+            "model.run.start",
+            params,
+            context,
+            subject_kind="run",
+            subject_id=run_id,
+            audit_details={
+                "preflight_id": preflight_id,
+                "expected_scheme_revision": expected_revision,
+            },
+            mutation=lambda: {
+                "run": _jsonable(
+                    app.current_preflight.create_run(
+                        preflight_id,
+                        run_id=run_id,
+                        expected_scheme_revision=expected_revision,
+                        requested_at=self.clock(),
+                    )
+                )
+            },
+        )
+        app.coordinator.enqueue(run_id)
+        return response
 
     def _run_preflight(self, params, _context) -> RpcResult:
         app = self._app()

@@ -139,6 +139,31 @@ def test_stdio_sidecar_supports_the_managed_edit_and_assessment_loop(
         assert all(value == 0 for value in recovery["artifacts"].values())
         assert all(value == 0 for value in recovery["sessions"].values())
 
+        current_schemes = sidecar.call("model.scheme.list")["schemes"]
+        assert len(current_schemes) == 1
+        current_scheme = current_schemes[0]
+        current_graph = sidecar.call(
+            "model.graph.get",
+            {"scheme_id": current_scheme["scheme_id"]},
+        )["graph"]
+        current_node = next(
+            node for node in current_graph["nodes"] if node["node_kind"] == "evidence"
+        )
+        current_edit = sidecar.call(
+            "model.node.update",
+            _mutation(
+                "tx.subprocess-current-edit",
+                node={
+                    **current_node,
+                    "description_en": (
+                        f"{current_node['description_en']} Edited by subprocess contract test."
+                    ),
+                },
+                expected_semantic_revision=current_node["semantic_revision"],
+            ),
+        )
+        assert current_edit["node"]["semantic_revision"] == 1
+
         operators = sidecar.call("operator.catalog.list")["operators"]
         assert operators
         listed_components = sidecar.call(
@@ -222,6 +247,48 @@ def test_stdio_sidecar_supports_the_managed_edit_and_assessment_loop(
                 external_bundle=str(m4_workflow_bundle),
             ),
             timeout=60,
+        )
+        current_preflight = sidecar.call(
+            "model.run.preflight",
+            {
+                "session_revision_id": imported["revision"]["session_revision_id"],
+                "scheme_id": current_scheme["scheme_id"],
+                "purpose": "software_test",
+                "runtime_parameters": {},
+            },
+            timeout=60,
+        )["preflight"]
+        assert current_preflight["technical_disposition"] == "ready"
+        assert current_preflight["scheme_id"] == current_scheme["scheme_id"]
+        current_run_id = "run.subprocess-current"
+        current_started = sidecar.call(
+            "model.run.start",
+            _mutation(
+                "tx.subprocess-current-run",
+                preflight_id=current_preflight["preflight_id"],
+                run_id=current_run_id,
+                expected_scheme_revision=current_preflight["scheme_semantic_revision"],
+            ),
+        )
+        assert current_started["run"]["contract_version"] == "0.2.0"
+        assert current_started["run"]["snapshot"]["contract_id"] == "current-model-run-snapshot"
+        current_terminal = None
+        for _ in range(100):
+            current_status = sidecar.call("run.status", {"run_id": current_run_id})
+            if current_status["run"]["state"] in {
+                "completed",
+                "failed",
+                "cancelled",
+                "interrupted",
+            }:
+                current_terminal = current_status
+                break
+            time.sleep(0.05)
+        assert current_terminal is not None
+        assert current_terminal["run"]["state"] == "completed"
+        assert (
+            sidecar.call("result.get", {"run_id": current_run_id})["result"]["snapshot_hash"]
+            == current_started["run"]["snapshot"]["snapshot_hash"]
         )
         preflight = sidecar.call(
             "run.preflight",

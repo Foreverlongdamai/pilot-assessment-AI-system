@@ -37,6 +37,10 @@ DEFAULT_CAPABILITIES = (
     "assessment.run.v1",
     "artifact.read.v1",
     "audit.read.v1",
+    "model.current-workspace.v1",
+    "compatibility.component-library.v1",
+    "compatibility.published-scheme-workspace.v1",
+    "compatibility.run-entrypoints.v1",
 )
 
 

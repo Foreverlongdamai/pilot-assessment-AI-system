@@ -440,6 +440,7 @@ git commit -m "feat: run immutable snapshots from current schemes"
 
 **Files:**
 
+- Modify: `src/pilot_assessment/model_workspace/service.py`
 - Modify: `src/pilot_assessment/sidecar/methods.py`
 - Modify: `src/pilot_assessment/sidecar/dispatcher.py`
 - Modify: `src/pilot_assessment/sidecar/errors.py`
@@ -452,25 +453,28 @@ Add the normal M7 method family:
 ```text
 model.node.list / get / create / copy / update / archive
 model.node.usage.list / history.list / undo / redo
+model.node.states.replace
 model.scheme.list / get / create / copy / update / archive
 model.scheme.activate / deactivation.preview / deactivate
 model.scheme.history.list / undo / redo
 model.graph.get / batch.apply
 model.edge.add / remove
+model.edge.reorder
 model.layout.update
 model.cpt.validate / materialize / update
 model.preview.node / scheme
 model.run.preflight / start
 ```
 
-- [ ] Add capability `model.current-workspace.v1`; keep JSON-RPC envelope/protocol version 1.0 because the methods are additive.
-- [ ] Classify `component.*`, `scheme.version.*`, `scheme.draft.*` and old publish/run entry points as compatibility/migration capabilities. Do not remove them.
-- [ ] Route every current write through the existing idempotency/audit wrapper using transaction ID, actor and expected revision.
-- [ ] Add stable error codes and structured data for node/scheme not found, revision conflict, stale deactivation impact, invalid dependency, CPT mismatch, incomplete active closure and unsupported operator.
-- [ ] Return canonical mutation responses, not a front-end echo of submitted parameters.
-- [ ] Keep stdout protocol-only and large artifacts/session arrays out of JSON; return IDs/references.
-- [ ] Prove same-transaction retry returns the same response, mismatched retry is rejected and an actual subprocess supports hello → project open → graph get → edit → current preflight.
-- [ ] Run:
+- [x] Add capability `model.current-workspace.v1`; keep JSON-RPC envelope/protocol version 1.0 because the methods are additive.
+- [x] Classify `component.*`, `scheme.version.*`, `scheme.draft.*` and old publish/run entry points as compatibility/migration capabilities. Do not remove them.
+- [x] Route every current write through the existing idempotency/audit wrapper using transaction ID, actor and expected revision; current model repositories can now safely join that outer transaction.
+- [x] Add stable error codes and structured data for node/scheme not found, revision conflict, stale deactivation impact, invalid dependency, CPT mismatch, incomplete active closure and unsupported operator.
+- [x] Return canonical mutation responses, not a front-end echo of submitted parameters.
+- [x] Keep stdout protocol-only and large artifacts/session arrays out of JSON; return IDs/references.
+- [x] Expose atomic state replacement and probabilistic-parent reordering in addition to the planned method family, so the future BN editor does not fall back to unsafe generic writes.
+- [x] Prove same-transaction retry returns the same response, mismatched retry is rejected and an actual subprocess supports hello → project open → graph get → edit → current preflight/start/result while the compatibility run still succeeds.
+- [x] Run:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest tests/sidecar/test_dispatcher.py tests/sidecar/test_methods.py tests/sidecar/test_server_subprocess.py -q
@@ -478,10 +482,10 @@ model.run.preflight / start
 
 Expected: current methods and compatibility methods coexist; subprocess stderr contains logs only and stdout frames parse as JSON-RPC.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
-git add src/pilot_assessment/sidecar tests/sidecar
+git add src/pilot_assessment/model_workspace/service.py src/pilot_assessment/sidecar tests/sidecar docs/product/plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md
 git commit -m "feat: expose M7 current model sidecar API"
 ```
 

@@ -207,3 +207,134 @@ def test_methods_expose_durable_expert_editing_with_idempotent_mutations(
         assert persisted["draft_record"]["draft"]["layout_version"] == 1
     finally:
         methods.close()
+
+
+def test_current_workspace_methods_return_canonical_state_and_idempotent_retries(
+    tmp_path: Path,
+) -> None:
+    methods = SidecarMethods(clock=lambda: NOW)
+    rpc = RpcHarness(methods)
+    try:
+        rpc.call(
+            "project.create",
+            _mutation(
+                "tx.current-project",
+                root=str(tmp_path / "current-project"),
+                project_id="project.current-methods",
+                name="Current methods",
+            ),
+        )
+        capabilities = rpc.call("capabilities.list")
+        assert "model.current-workspace.v1" in capabilities["capabilities"]
+        assert "model.graph.get" in capabilities["method_families"]["current_model"]
+        assert "scheme.draft.publish" in capabilities["method_families"]["compatibility_model"]
+
+        base = rpc.call("model.scheme.list")["schemes"][0]
+        graph = rpc.call("model.graph.get", {"scheme_id": base["scheme_id"]})["graph"]
+        assert len(graph["nodes"]) == 53
+        assert len(graph["scheme"]["computed_active_closure"]) == 52
+
+        copy_request = _mutation(
+            "tx.current-scheme-copy",
+            source_scheme_id=base["scheme_id"],
+            new_scheme_id="task-scheme.methods-copy",
+            name_en="Methods copy",
+        )
+        copied = rpc.call("model.scheme.copy", copy_request)
+        assert copied["scheme"]["copied_from_scheme_id"] == base["scheme_id"]
+        replayed = rpc.call("model.scheme.copy", copy_request)
+        assert replayed["scheme"] == copied["scheme"]
+        assert replayed["replayed"] is True
+        mismatch = rpc.call_error(
+            "model.scheme.copy",
+            {**copy_request, "name_en": "Different request"},
+        )
+        assert mismatch["data"]["error_code"] == "TRANSACTION_REUSE_MISMATCH"
+
+        source = next(node for node in graph["nodes"] if node["node_kind"] == "evidence")
+        copied_scheme = copied["scheme"]
+        batch_request = _mutation(
+            "tx.current-graph-copy",
+            scheme_id=copied_scheme["scheme_id"],
+            copy_node_ids=[source["node_id"]],
+            activate_node_ids=[],
+            layout_updates=[],
+            expected_semantic_revision=copied_scheme["semantic_revision"],
+            expected_layout_revision=copied_scheme["layout_revision"],
+        )
+        batch = rpc.call("model.graph.batch.apply", batch_request)
+        new_node = batch["copied_nodes"][0]
+        assert new_node["node_id"] in batch["scheme"]["computed_active_closure"]
+        assert rpc.call("model.graph.batch.apply", batch_request)["copied_nodes"] == [new_node]
+
+        update_request = _mutation(
+            "tx.current-node-update",
+            node={
+                **new_node,
+                "description_en": f"{new_node['description_en']} Edited through JSON-RPC.",
+            },
+            expected_semantic_revision=new_node["semantic_revision"],
+        )
+        updated = rpc.call("model.node.update", update_request)
+        assert updated["node"]["semantic_revision"] == new_node["semantic_revision"] + 1
+        assert rpc.call("model.node.update", update_request)["node"] == updated["node"]
+
+        stale = rpc.call_error(
+            "model.node.update",
+            _mutation(
+                "tx.current-node-stale",
+                node={**updated["node"], "description_en": "Stale write"},
+                expected_semantic_revision=new_node["semantic_revision"],
+            ),
+        )
+        assert stale["data"]["error_code"] == "MODEL_REVISION_CONFLICT"
+        assert stale["data"]["diagnostics"]["current_node"] == updated["node"]
+
+        cpt = rpc.call("model.cpt.validate", {"node_id": new_node["node_id"]})
+        assert cpt["validation"]["executable"] is True
+        rows = updated["node"]["definition"]["cpt"]["materialized_probabilities"]
+        cpt_update = rpc.call(
+            "model.cpt.update",
+            _mutation(
+                "tx.current-cpt-update",
+                node_id=new_node["node_id"],
+                rows=rows,
+                expected_semantic_revision=updated["node"]["semantic_revision"],
+            ),
+        )
+        assert cpt_update["editor"]["materialized_probabilities"] == rows
+
+        current_scheme = rpc.call(
+            "model.scheme.get",
+            {"scheme_id": copied_scheme["scheme_id"]},
+        )["scheme"]
+        impact = rpc.call(
+            "model.scheme.deactivation.preview",
+            {"scheme_id": current_scheme["scheme_id"], "node_id": new_node["node_id"]},
+        )["impact"]
+        stale_impact = rpc.call_error(
+            "model.scheme.deactivate",
+            _mutation(
+                "tx.current-deactivate-stale",
+                scheme_id=current_scheme["scheme_id"],
+                node_id=new_node["node_id"],
+                expected_semantic_revision=current_scheme["semantic_revision"],
+                impact_hash="0" * 64,
+            ),
+        )
+        assert stale_impact["data"]["error_code"] == "MODEL_DEACTIVATION_STALE"
+        assert stale_impact["data"]["diagnostics"]["current_impact"] == impact
+        deactivated = rpc.call(
+            "model.scheme.deactivate",
+            _mutation(
+                "tx.current-deactivate",
+                scheme_id=current_scheme["scheme_id"],
+                node_id=new_node["node_id"],
+                expected_semantic_revision=current_scheme["semantic_revision"],
+                impact_hash=impact["impact_hash"],
+            ),
+        )
+        assert new_node["node_id"] not in deactivated["scheme"]["computed_active_closure"]
+        assert rpc.call("model.node.history.list", {"node_id": new_node["node_id"]})["events"]
+    finally:
+        methods.close()
