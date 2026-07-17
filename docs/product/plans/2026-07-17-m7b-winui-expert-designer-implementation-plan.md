@@ -214,15 +214,15 @@ git commit -m "feat: add typed M7 desktop contracts"
 - Create: `tests/PilotAssessment.Desktop.UnitTests/Protocol/JsonRpcClientTests.cs`
 - Create: `tests/PilotAssessment.Desktop.ContractTests/SidecarContractTests.cs`
 
-- [ ] Implement UTF-8 JSONL framing with a 4 MiB maximum line, one JSON object per line, request-ID matching, notification dispatch and protocol-fault shutdown.
-- [ ] Implement a concurrency-safe pending-request map using `TaskCompletionSource`, cancellation tokens and exactly-once completion.
-- [ ] Start the process with `UseShellExecute=false`, redirected stdin/stdout/stderr and no visible console. Stdout goes only to the framer; stderr goes to a bounded diagnostic buffer/log sink.
-- [ ] For development, locate the repository root and use `.tools\uv\uv.exe` with separate arguments `run`, `python`, `-m`, `pilot_assessment.sidecar`. Allow explicit executable and argument-array configuration; never parse a shell command string.
-- [ ] Perform `hello`, protocol/capability validation and health check before enabling project commands. Send clean shutdown, then terminate only after a bounded timeout.
-- [ ] Retry an idempotent write with the same transaction ID only when the response was not received; never invent a new ID for the same logical autosave.
-- [ ] Unit-test split/coalesced lines, oversize frames, malformed JSON, out-of-order responses, notifications, cancellation and stderr isolation.
-- [ ] Contract-test a real Python subprocess: hello → capabilities → shutdown; assert every stdout line is valid JSON-RPC and no session payload is returned inline.
-- [ ] Run:
+- [x] Implement UTF-8 JSONL framing with a 4 MiB maximum line, one JSON object per line, request-ID matching, notification dispatch and protocol-fault shutdown.
+- [x] Implement a concurrency-safe pending-request map using `TaskCompletionSource`, cancellation tokens and exactly-once completion.
+- [x] Start the process with `UseShellExecute=false`, redirected stdin/stdout/stderr and no visible console. Stdout goes only to the framer; stderr goes to a bounded diagnostic buffer/log sink.
+- [x] For development, locate the repository root and use `.tools\uv\uv.exe` with separate arguments `run`, `python`, `-m`, `pilot_assessment.sidecar`. Allow explicit executable and argument-array configuration; never parse a shell command string.
+- [x] Perform `hello`, protocol/capability validation and health check before enabling project commands. Send clean shutdown, then terminate only after a bounded timeout.
+- [x] Retry an idempotent write with the same transaction ID only when the response was not received; never invent a new ID for the same logical autosave.
+- [x] Unit-test split/coalesced lines, oversize frames, malformed JSON, out-of-order responses, notifications, cancellation and stderr isolation.
+- [x] Contract-test a real Python subprocess: hello → capabilities → shutdown; assert every stdout line is valid JSON-RPC and no session payload is returned inline.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~Protocol
@@ -231,7 +231,9 @@ dotnet test tests/PilotAssessment.Desktop.ContractTests/PilotAssessment.Desktop.
 
 Expected: real sidecar lifecycle passes without a network port.
 
-- [ ] Commit:
+Recorded: focused protocol tests passed `12/12`; the real `.tools\uv\uv.exe run python -m pilot_assessment.sidecar` contract passed `1/1` in about two seconds using only hello, capabilities, health and shutdown; full desktop tests passed Unit `21/21` and Contract `2/2`; x64 Debug build completed with `0` warnings and `0` errors. The real lifecycle did not open a project, import a session or return payload/bytes inline.
+
+- [x] Commit:
 
 ```powershell
 git add src/PilotAssessment.Desktop.Core/Protocol src/PilotAssessment.Desktop/Services/Backend tests/PilotAssessment.Desktop.UnitTests/Protocol tests/PilotAssessment.Desktop.ContractTests/SidecarContractTests.cs
@@ -655,7 +657,7 @@ git commit -m "test: close M7 WinUI expert designer"
 |---:|---|---|
 | 1 | `build: scaffold M7 WinUI expert designer` | `6809bcc` |
 | 2 | `feat: add typed M7 desktop contracts` | `5f64ca3` |
-| 3 | `feat: supervise the local assessment sidecar` | Not executed |
+| 3 | `feat: supervise the local assessment sidecar` | `b039d46` |
 | 4 | `feat: add the WinUI application shell` | Not executed |
 | 5 | `feat: add managed project and session workspace` | Not executed |
 | 6 | `feat: add task scheme navigation` | Not executed |
