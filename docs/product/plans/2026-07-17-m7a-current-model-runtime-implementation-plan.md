@@ -176,13 +176,13 @@ SQLite migration v2 must add, without deleting v1 tables:
 - `model_run_preflights`: current-model preflight JSON and exact legacy execution preflight reference;
 - `model_run_links`: run ID to current preflight/snapshot identity.
 
-- [ ] Set `LATEST_SCHEMA_VERSION = 2` and write v2 DDL with foreign keys and query indexes.
-- [ ] Prove a fresh project applies v1 then v2 and an existing v1 project upgrades once without altering legacy rows.
-- [ ] Implement repository create/get/list/update/archive methods with `expected_semantic_revision` or `expected_layout_revision` and optional `join_existing=True` transactions.
-- [ ] On every successful mutation, append one immutable `model_change_events` row and advance the current head; revisions remain monotonic even when undo restores old content.
-- [ ] Implement undo/redo as head navigation with an auditable cursor event. A new edit after undo clears the redo pointer but leaves the old branch in the journal.
-- [ ] Ensure shared SQLite transactions can include repository updates, idempotency response and audit event.
-- [ ] Run:
+- [x] Set `LATEST_SCHEMA_VERSION = 2` and write v2 DDL with foreign keys and query indexes.
+- [x] Prove a fresh project applies v1 then v2 and an existing v1 project upgrades once without altering legacy rows.
+- [x] Implement repository create/get/list/update/archive methods with `expected_semantic_revision` or `expected_layout_revision` and optional `join_existing=True` transactions.
+- [x] On every successful mutation, append one immutable `model_change_events` row and advance the current head; revisions remain monotonic even when undo restores old content.
+- [x] Implement undo/redo as head navigation with an auditable cursor event. A new edit after undo clears the redo pointer but leaves the old branch in the journal.
+- [x] Ensure shared SQLite transactions can include repository updates, idempotency response and audit event.
+- [x] Run:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest tests/persistence/test_project_database.py tests/persistence/test_project_lifecycle.py tests/persistence/test_model_workspace_repository.py -q
@@ -190,7 +190,7 @@ SQLite migration v2 must add, without deleting v1 tables:
 
 Expected: fresh/open/upgrade/reopen tests pass and no v1 record changes.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/pilot_assessment/persistence tests/persistence
@@ -520,7 +520,7 @@ git commit -m "test: close M7A current model runtime"
 |---:|---|---|
 | 1 | `feat: add M7 current model contracts` | Executed; exact hash backfilled at Task 12 |
 | 2 | `feat: add current model graph rules` | Executed; exact hash backfilled at Task 12 |
-| 3 | `feat: persist M7 current model workspace` | Not executed |
+| 3 | `feat: persist M7 current model workspace` | Executed; exact hash backfilled at Task 12 |
 | 4 | `feat: add current model node service` | Not executed |
 | 5 | `feat: add current task scheme service` | Not executed |
 | 6 | `feat: add task activation and cascade semantics` | Not executed |

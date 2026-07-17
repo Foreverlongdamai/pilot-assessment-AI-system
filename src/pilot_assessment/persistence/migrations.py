@@ -5,7 +5,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 
-LATEST_SCHEMA_VERSION = 1
+LATEST_SCHEMA_VERSION = 2
 
 _BOOTSTRAP_SCHEMA = """
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -280,6 +280,179 @@ MIGRATIONS = (
                 applied_at TEXT NOT NULL
             )
             """,
+        ),
+    ),
+    Migration(
+        version=2,
+        name="m7_current_model_workspace_v2",
+        statements=(
+            """
+            CREATE TABLE model_change_events (
+                event_id TEXT PRIMARY KEY,
+                object_kind TEXT NOT NULL CHECK (object_kind IN ('node', 'scheme')),
+                object_id TEXT NOT NULL,
+                event_kind TEXT NOT NULL CHECK (
+                    event_kind IN ('create', 'update', 'archive', 'undo', 'redo', 'migrate')
+                ),
+                parent_event_id TEXT,
+                semantic_revision INTEGER NOT NULL CHECK (semantic_revision >= 0),
+                layout_revision INTEGER NOT NULL CHECK (layout_revision >= 0),
+                before_hash TEXT,
+                after_hash TEXT,
+                before_json BLOB,
+                after_json BLOB,
+                diff_json BLOB NOT NULL,
+                transaction_id TEXT NOT NULL,
+                actor_id TEXT NOT NULL,
+                occurred_at TEXT NOT NULL,
+                FOREIGN KEY (parent_event_id)
+                    REFERENCES model_change_events(event_id) ON DELETE RESTRICT
+            )
+            """,
+            (
+                "CREATE INDEX model_change_events_object_idx "
+                "ON model_change_events(object_kind, object_id, occurred_at, event_id)"
+            ),
+            (
+                "CREATE INDEX model_change_events_transaction_idx "
+                "ON model_change_events(transaction_id)"
+            ),
+            """
+            CREATE TRIGGER model_change_events_append_only_update
+            BEFORE UPDATE ON model_change_events
+            BEGIN
+                SELECT RAISE(ABORT, 'model_change_events is append-only');
+            END
+            """,
+            """
+            CREATE TRIGGER model_change_events_append_only_delete
+            BEFORE DELETE ON model_change_events
+            BEGIN
+                SELECT RAISE(ABORT, 'model_change_events is append-only');
+            END
+            """,
+            """
+            CREATE TABLE model_nodes (
+                node_id TEXT PRIMARY KEY,
+                canonical_json BLOB NOT NULL,
+                lifecycle TEXT NOT NULL CHECK (lifecycle IN ('active', 'archived')),
+                semantic_revision INTEGER NOT NULL CHECK (semantic_revision >= 0),
+                layout_revision INTEGER NOT NULL CHECK (layout_revision >= 0),
+                content_hash TEXT NOT NULL,
+                layout_hash TEXT NOT NULL,
+                technical_status TEXT NOT NULL CHECK (
+                    technical_status IN ('executable', 'incomplete', 'blocked')
+                ),
+                head_event_id TEXT,
+                redo_event_id TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (head_event_id)
+                    REFERENCES model_change_events(event_id) ON DELETE RESTRICT,
+                FOREIGN KEY (redo_event_id)
+                    REFERENCES model_change_events(event_id) ON DELETE RESTRICT
+            )
+            """,
+            "CREATE INDEX model_nodes_lifecycle_idx ON model_nodes(lifecycle, node_id)",
+            ("CREATE INDEX model_nodes_status_idx ON model_nodes(technical_status, node_id)"),
+            """
+            CREATE TABLE task_schemes (
+                scheme_id TEXT PRIMARY KEY,
+                canonical_json BLOB NOT NULL,
+                lifecycle TEXT NOT NULL CHECK (lifecycle IN ('active', 'archived')),
+                semantic_revision INTEGER NOT NULL CHECK (semantic_revision >= 0),
+                layout_revision INTEGER NOT NULL CHECK (layout_revision >= 0),
+                content_hash TEXT NOT NULL,
+                layout_hash TEXT NOT NULL,
+                technical_status TEXT NOT NULL CHECK (
+                    technical_status IN ('executable', 'incomplete', 'blocked')
+                ),
+                head_event_id TEXT,
+                redo_event_id TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (head_event_id)
+                    REFERENCES model_change_events(event_id) ON DELETE RESTRICT,
+                FOREIGN KEY (redo_event_id)
+                    REFERENCES model_change_events(event_id) ON DELETE RESTRICT
+            )
+            """,
+            "CREATE INDEX task_schemes_lifecycle_idx ON task_schemes(lifecycle, scheme_id)",
+            ("CREATE INDEX task_schemes_status_idx ON task_schemes(technical_status, scheme_id)"),
+            """
+            CREATE TABLE model_starter_mappings (
+                mapping_id TEXT PRIMARY KEY,
+                legacy_kind TEXT NOT NULL,
+                legacy_record_id TEXT NOT NULL,
+                current_object_kind TEXT NOT NULL CHECK (
+                    current_object_kind IN ('node', 'scheme')
+                ),
+                current_object_id TEXT NOT NULL,
+                seed_id TEXT NOT NULL,
+                seed_hash TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                UNIQUE (legacy_kind, legacy_record_id, seed_id),
+                UNIQUE (current_object_kind, current_object_id, seed_id)
+            )
+            """,
+            (
+                "CREATE INDEX model_starter_mappings_current_idx "
+                "ON model_starter_mappings(current_object_kind, current_object_id)"
+            ),
+            """
+            CREATE TABLE model_execution_materializations (
+                graph_hash TEXT PRIMARY KEY,
+                scheme_id TEXT NOT NULL,
+                scheme_semantic_revision INTEGER NOT NULL CHECK (
+                    scheme_semantic_revision >= 0
+                ),
+                scheme_content_hash TEXT NOT NULL,
+                legacy_scheme_version_id TEXT NOT NULL,
+                legacy_scheme_content_hash TEXT NOT NULL,
+                materialization_json BLOB NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (scheme_id) REFERENCES task_schemes(scheme_id) ON DELETE RESTRICT
+            )
+            """,
+            (
+                "CREATE INDEX model_execution_materializations_scheme_idx "
+                "ON model_execution_materializations(scheme_id, scheme_semantic_revision)"
+            ),
+            """
+            CREATE TABLE model_run_preflights (
+                current_preflight_id TEXT PRIMARY KEY,
+                current_preflight_hash TEXT NOT NULL UNIQUE,
+                scheme_id TEXT NOT NULL,
+                scheme_semantic_revision INTEGER NOT NULL CHECK (
+                    scheme_semantic_revision >= 0
+                ),
+                scheme_content_hash TEXT NOT NULL,
+                report_json BLOB NOT NULL,
+                legacy_preflight_id TEXT NOT NULL,
+                legacy_preflight_hash TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (scheme_id) REFERENCES task_schemes(scheme_id) ON DELETE RESTRICT,
+                FOREIGN KEY (legacy_preflight_id)
+                    REFERENCES run_preflights(preflight_id) ON DELETE RESTRICT
+            )
+            """,
+            (
+                "CREATE INDEX model_run_preflights_scheme_idx "
+                "ON model_run_preflights(scheme_id, scheme_semantic_revision)"
+            ),
+            """
+            CREATE TABLE model_run_links (
+                run_id TEXT PRIMARY KEY,
+                current_preflight_id TEXT NOT NULL,
+                current_snapshot_hash TEXT NOT NULL UNIQUE,
+                current_snapshot_json BLOB NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (run_id) REFERENCES runs(run_id) ON DELETE RESTRICT,
+                FOREIGN KEY (current_preflight_id)
+                    REFERENCES model_run_preflights(current_preflight_id) ON DELETE RESTRICT
+            )
+            """,
+            ("CREATE INDEX model_run_links_preflight_idx ON model_run_links(current_preflight_id)"),
         ),
     ),
 )

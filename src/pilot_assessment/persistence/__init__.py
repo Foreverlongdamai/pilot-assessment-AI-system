@@ -25,6 +25,14 @@ from pilot_assessment.persistence.draft_repository import (
     SqliteWorkspaceUnitOfWork,
 )
 from pilot_assessment.persistence.model_repository import SqliteComponentLibraryRepository
+from pilot_assessment.persistence.model_workspace_repository import (
+    CurrentObjectConflictError,
+    CurrentObjectIntegrityError,
+    CurrentObjectNotFoundError,
+    ModelWorkspaceRepositoryError,
+    SqliteModelWorkspaceRepository,
+    UndoRedoUnavailableError,
+)
 from pilot_assessment.persistence.project import (
     PROJECT_DATABASE_NAME,
     PROJECT_DIRECTORY_NAMES,
@@ -69,6 +77,9 @@ __all__ = [
     "DatabaseIntegrityError",
     "DatabaseMigrationError",
     "DatabaseTransactionError",
+    "CurrentObjectConflictError",
+    "CurrentObjectIntegrityError",
+    "CurrentObjectNotFoundError",
     "AuditQuery",
     "AuditRepository",
     "PROJECT_DATABASE_NAME",
@@ -84,7 +95,9 @@ __all__ = [
     "MutationResult",
     "ManagedArtifactStore",
     "ManagedSessionChangedError",
+    "ModelWorkspaceRepositoryError",
     "SqliteComponentLibraryRepository",
+    "SqliteModelWorkspaceRepository",
     "SqliteSchemeDraftRepository",
     "SqliteWorkspaceUnitOfWork",
     "SessionFileRecord",
@@ -100,6 +113,7 @@ __all__ = [
     "SessionRecoveryReport",
     "SessionRevisionNotFoundError",
     "TransactionReuseMismatchError",
+    "UndoRedoUnavailableError",
     "decode_canonical_json",
     "encode_canonical_json",
     "transaction_request_hash",
