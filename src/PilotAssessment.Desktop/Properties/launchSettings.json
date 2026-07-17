@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "PilotAssessment.Desktop (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "PilotAssessment.Desktop (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

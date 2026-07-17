@@ -36,6 +36,9 @@ Desktop.ini
 bin/
 obj/
 *.user
+TestResults/
+artifacts/
+.pilot-assessment-local/
 
 # --- Local session data (NEVER commit real session bundles) ---
 # Real bundles contain sensitive biometric data (gaze, EEG, ECG, pilot camera).

@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7B |
 | Date | 2026-07-17 |
-| Status | Ready after M7A exit gate and WinUI toolchain authorization |
+| Status | Task 1 complete: toolchain, scaffold, build, tests and visible launch verified |
 | Parent roadmap | [M7 Implementation Roadmap](2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) |
 | Backend dependency | [M7A Current Model Runtime Plan](2026-07-17-m7a-current-model-runtime-implementation-plan.md) |
 | Authoritative design | [M7 Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
@@ -80,6 +80,7 @@ Implementation choices must remain aligned with current Microsoft platform behav
 
 - multiple top-level windows and their position/size/presenter state use `Window`/`AppWindow`: [Manage app windows](https://learn.microsoft.com/en-us/windows/apps/develop/ui/manage-app-windows);
 - the graph's reusable/virtualized item layer uses `ItemsRepeater`, hosted in a `ScrollViewer`: [ItemsRepeater](https://learn.microsoft.com/en-us/windows/apps/develop/ui/controls/items-repeater);
+- the development executable is unpackaged by setting `WindowsPackageType=None`; the Windows App SDK auto-initializer then resolves the installed runtime: [Distribute an unpackaged WinUI 3 app](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/unpackage-winui-app);
 - unpackaged Windows App SDK localization uses MRT Core resources: [Localize strings](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/mrtcore/localize-strings);
 - `ApplicationLanguages.PrimaryLanguageOverride` may not refresh already loaded resources immediately, so runtime switching must explicitly reload the resource context and notify bindings: [ApplicationLanguages.PrimaryLanguageOverride](https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.windows.globalization.applicationlanguages.primarylanguageoverride).
 
@@ -94,15 +95,18 @@ Implementation choices must remain aligned with current Microsoft platform behav
 - Modify: `.gitignore`
 - Modify: `docs/product/plans/2026-07-17-m7b-winui-expert-designer-implementation-plan.md`
 
-Current non-mutating audit on 2026-07-17:
+Completed machine/toolchain audit on 2026-07-17:
 
-- Windows x64 is available;
-- Windows SDK `10.0.26100.0` is present;
-- `dotnet` is not on PATH;
-- Visual Studio/WinUI templates were not detected;
-- Developer Mode state was not confirmed.
+- Windows 11 Home Chinese, version `10.0.26200`, x64;
+- Visual Studio Community 2026 `18.8.0` is complete and launchable at `D:\visual_studio`;
+- .NET SDK `10.0.302` and runtime `10.0.10` are installed at `C:\Program Files\dotnet`;
+- the user-level `PATH` contains `C:\Program Files\dotnet` and `DOTNET_ROOT` points there (the already-running Codex host still requires the absolute executable path);
+- Windows SDK `10.0.26100.0` is installed in the Windows-managed SDK location under `C:\Program Files (x86)\Windows Kits\10`;
+- Developer Mode/sideloading registry flags are enabled;
+- Microsoft-reserved template package `Microsoft.WindowsAppSDK.WinUI.CSharp.Templates` `0.0.6-alpha` is installed;
+- Windows App Runtime `2.3.1.0` x64/x86 is registered for the unpackaged development executable.
 
-- [ ] Repeat and record the non-mutating checks:
+- [x] Repeat and record the non-mutating checks:
 
 ```powershell
 Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
@@ -112,14 +116,9 @@ Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\bin' -Directory -ErrorActi
 Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock' -ErrorAction SilentlyContinue
 ```
 
-- [ ] Stop and obtain explicit user authorization before the following machine mutation. The current `continue` instruction authorizes planning and repository work, not an unattended Visual Studio/Developer Mode installation.
-- [ ] After authorization, from `C:\Users\long\.codex\skills\winui-app` run:
-
-```powershell
-winget configure -f config.yaml --accept-configuration-agreements --disable-interactivity
-```
-
-- [ ] Verify:
+- [x] Stop and obtain explicit user authorization before machine mutation. The user explicitly authorized the Visual Studio/.NET/Windows SDK setup and selected the `D:` Visual Studio installation location.
+- [x] Install the prerequisites. The user installed Visual Studio through Visual Studio Installer, and the missing SDK/template/runtime pieces were then verified individually; the generic `winget configure` recipe was not run.
+- [x] Verify:
 
 ```powershell
 dotnet --info
@@ -127,15 +126,17 @@ dotnet --list-sdks
 dotnet new list winui
 ```
 
-Expected: a .NET 10 SDK and WinUI template are listed.
+Recorded: .NET SDK `10.0.302`; WinUI template package `0.0.6-alpha`; Windows App SDK NuGet/runtime `2.3.1`.
 
-- [ ] Scaffold an unpackaged solution:
+- [x] Scaffold an unpackaged solution. The current official Microsoft template exposes MVVM as `winui-mvvm` and does not support the older combined `-slnx -cpm -mvvm -imt -un` flags recorded in the pre-install draft. Use the supported template, create the solution separately, and apply Microsoft's documented unpackaged property:
 
 ```powershell
-dotnet new winui -n PilotAssessment.Desktop -o src/PilotAssessment.Desktop -f net10.0 -slnx -cpm -mvvm -imt -un
+dotnet new winui-mvvm -n PilotAssessment.Desktop -o src/PilotAssessment.Desktop -tfm net10.0 -tpmv 10.0.19041.0 -U false -w 2.3.1 -wi 10.0.26100.7705 -p:w 0.4.0
 dotnet new classlib -n PilotAssessment.Desktop.Core -o src/PilotAssessment.Desktop.Core -f net10.0
 dotnet new xunit -n PilotAssessment.Desktop.UnitTests -o tests/PilotAssessment.Desktop.UnitTests -f net10.0
 dotnet new xunit -n PilotAssessment.Desktop.ContractTests -o tests/PilotAssessment.Desktop.ContractTests -f net10.0
+dotnet new sln -n PilotAssessment.Desktop -o src/PilotAssessment.Desktop --format slnx
+dotnet sln src/PilotAssessment.Desktop/PilotAssessment.Desktop.slnx add src/PilotAssessment.Desktop/PilotAssessment.Desktop.csproj
 dotnet sln src/PilotAssessment.Desktop/PilotAssessment.Desktop.slnx add src/PilotAssessment.Desktop.Core/PilotAssessment.Desktop.Core.csproj
 dotnet sln src/PilotAssessment.Desktop/PilotAssessment.Desktop.slnx add tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj
 dotnet sln src/PilotAssessment.Desktop/PilotAssessment.Desktop.slnx add tests/PilotAssessment.Desktop.ContractTests/PilotAssessment.Desktop.ContractTests.csproj
@@ -144,9 +145,9 @@ dotnet add tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitT
 dotnet add tests/PilotAssessment.Desktop.ContractTests/PilotAssessment.Desktop.ContractTests.csproj reference src/PilotAssessment.Desktop.Core/PilotAssessment.Desktop.Core.csproj
 ```
 
-- [ ] Set the Windows target baseline to `net10.0-windows10.0.19041.0`, x64 for verification, nullable enabled and warnings treated consistently with the generated template.
-- [ ] Add `bin/`, `obj/`, `.vs/` and local UI-state artifacts to `.gitignore`; do not ignore source resources or generated contract fixtures.
-- [ ] Run:
+- [x] Set `TargetFramework` to `net10.0-windows10.0.26100.0`, `TargetPlatformMinVersion` to `10.0.19041.0`, `WindowsPackageType` to `None`, x64 for verification, nullable enabled and warnings treated consistently with the generated template. Target SDK and minimum supported Windows version are distinct properties.
+- [x] Add `bin/`, `obj/`, `.vs/`, test outputs and repository-local UI-state artifacts to `.gitignore`; do not ignore source resources or generated contract fixtures.
+- [x] Run:
 
 ```powershell
 dotnet restore src/PilotAssessment.Desktop/PilotAssessment.Desktop.slnx
@@ -154,9 +155,11 @@ dotnet build src/PilotAssessment.Desktop/PilotAssessment.Desktop.slnx -p:Platfor
 dotnet test src/PilotAssessment.Desktop/PilotAssessment.Desktop.slnx -p:Platform=x64
 ```
 
-Expected: empty scaffold builds/tests without packaging.
+Recorded: restore succeeded for all four projects; x64 Debug build completed with `0` warnings and `0` errors; the two template smoke tests passed (`2/2`). The `.slnx` explicitly maps solution x64 to WinUI x64 and Core/test Any CPU projects.
 
-- [ ] Commit:
+- [x] Launch the exact unpackaged x64 executable and verify a non-zero top-level window handle whose title is `PilotAssessment.Desktop`, not the Windows App Runtime error dialog. The formal repository executable opened successfully and was left running for user inspection.
+
+- [x] Commit:
 
 ```powershell
 git add .gitignore src/PilotAssessment.Desktop src/PilotAssessment.Desktop.Core tests/PilotAssessment.Desktop.UnitTests tests/PilotAssessment.Desktop.ContractTests docs/product/plans/2026-07-17-m7b-winui-expert-designer-implementation-plan.md
