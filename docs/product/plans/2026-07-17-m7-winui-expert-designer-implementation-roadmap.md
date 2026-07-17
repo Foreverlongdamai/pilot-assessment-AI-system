@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7 |
 | Date | 2026-07-17 |
-| Status | M7A engineering verified; M7B Tasks 1–9 complete, Task 10 next |
+| Status | M7A engineering verified; M7B Tasks 1–10 complete, Task 11 next |
 | Authoritative design | [M7 WinUI Expert Designer and Task Activation Workspace Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
 | Decisions | D-047–D-053 |
 | Upstream | M1–M3, M4R, M5 and M6 engineering verified |

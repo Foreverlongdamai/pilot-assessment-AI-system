@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7B |
 | Date | 2026-07-17 |
-| Status | Tasks 1–9 complete; Task 10 Raw Input and Evidence editors is next |
+| Status | Tasks 1–10 complete; Task 11 BN state, parent and CPT editors is next |
 | Parent roadmap | [M7 Implementation Roadmap](2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) |
 | Backend dependency | [M7A Current Model Runtime Plan](2026-07-17-m7a-current-model-runtime-implementation-plan.md) |
 | Authoritative design | [M7 Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
@@ -479,15 +479,15 @@ Recorded commit: `fdd7772`. Fresh verification: desktop Unit `52/52`, Contract `
 - Create: `src/PilotAssessment.Desktop.Core/State/JsonSchemaFormModel.cs`
 - Create: `tests/PilotAssessment.Desktop.UnitTests/ViewModels/EvidenceEditorTests.cs`
 
-- [ ] Raw Input editor: bilingual identity, X/U/I/G/P family, source/schema/adapter/profile, fields/units/clock binding, session availability and help text.
-- [ ] Evidence tabs: General; Raw Input bindings; EvidenceRecipe/operator graph; Parameters; Windows/Aggregation/Scoring/D-A-U; Observation states; Probabilistic parents/CPT; Preview/Trace; Used by schemes; History.
-- [ ] Generate parameter controls from backend `OperatorDefinition.parameter_schema` and `ui` hints: text, numeric, enum, boolean, list/object and unit/help metadata. Preserve unsupported JSON fields read-only instead of dropping them.
-- [ ] Operator graph edits use operator IDs/ports from the backend catalog and submit the complete typed recipe update. C# never evaluates formulas/operators.
-- [ ] Show missing operator as a technical run blocker while still allowing the node definition to be inspected/saved.
-- [ ] Preview calls `model.preview.node` with the selected managed session and renders returned measurements/trace/artifact references.
-- [ ] Used-by view lists every scheme sharing the node and explains that edits affect future runs for all of them.
-- [ ] Test schema-form generation, parameter preservation, recipe request mapping and preview cancellation with small fixtures.
-- [ ] Run:
+- [x] Raw Input editor: bilingual identity, X/U/I/G/P family, source/schema/adapter/profile, fields/units/clock binding, session availability and help text.
+- [x] Evidence tabs: General; Raw Input bindings; EvidenceRecipe/operator graph; Parameters; Windows/Aggregation/Scoring/D-A-U; Observation states; Probabilistic parents/CPT summary; Preview/Trace; Used by schemes; History.
+- [x] Generate parameter controls from backend `OperatorDefinition.parameter_schema` and `ui` hints: text, numeric, enum, boolean, list/object and unit/help metadata. Preserve unsupported JSON fields read-only instead of dropping them.
+- [x] Operator graph edits use operator IDs/ports from the backend catalog and submit the complete typed recipe update. C# never evaluates formulas/operators.
+- [x] Show missing operator as a technical run blocker while still allowing the node definition to be inspected/saved.
+- [x] Preview calls `model.preview.node` with the selected managed session and renders the backend's current frozen snapshot metadata, technical trace and artifact references. Actual executed Evidence measurements/results remain Task 14 run-workspace scope.
+- [x] Used-by view lists every scheme sharing the node and explains that edits affect future runs for all of them.
+- [x] Test schema-form generation, parameter preservation, recipe request mapping and preview cancellation with small fixtures.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~EvidenceEditorTests
@@ -495,12 +495,14 @@ dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.Unit
 
 Expected: form/view-model tests pass without implementing an Evidence calculation in C#.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/PilotAssessment.Desktop/Controls/Editors src/PilotAssessment.Desktop/ViewModels/RawInputEditorViewModel.cs src/PilotAssessment.Desktop/ViewModels/EvidenceEditorViewModel.cs src/PilotAssessment.Desktop.Core/State/JsonSchemaFormModel.cs tests/PilotAssessment.Desktop.UnitTests/ViewModels/EvidenceEditorTests.cs
 git commit -m "feat: add raw input and Evidence node editors"
 ```
+
+Recorded commit: `59396ee`. Fresh verification: desktop Unit `57/57`, Contract `3/3`, focused Python node-service regression `4/4`, x64 Debug build `0 warning / 0 error`, and `git diff --check` clean. Visible WinUI verification loaded the managed `53`-node/`67`-edge/`52`-active project, proved text input no longer triggers graph copy/paste accelerators, opened Raw Input through the new direct double-click entry, and showed a clean `Canonical · rev 0` editor rather than a false dirty state. Evidence metadata loading was visibly checked with `45` trusted operators, one task usage and one history event. Editors construct typed update intent and local dirty state; durable autosave/reconciliation is intentionally Task 12. `model.preview.node` remains a current frozen snapshot preview, not an executed-measurement claim; Task 14 owns run execution/results.
 
 ## Task 11: Build BN state, parent and CPT editors
 
