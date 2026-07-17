@@ -113,3 +113,62 @@ public interface IModelNodeEditorGateway
         IReadOnlyDictionary<string, System.Text.Json.JsonElement> runtimeParameters,
         CancellationToken cancellationToken = default);
 }
+
+public interface IBayesianNodeEditorGateway
+{
+    Task<ModelGraphSnapshot> GetGraphAsync(
+        string schemeId,
+        CancellationToken cancellationToken = default);
+
+    Task<CptInspectResponse> InspectCptAsync(
+        string nodeId,
+        CancellationToken cancellationToken = default);
+
+    Task<CptMutationResponse> UpdateCptRowsAsync(
+        string nodeId,
+        IReadOnlyList<IReadOnlyList<double>> rows,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<CptMutationResponse> MaterializeCptAsync(
+        string nodeId,
+        string strategy,
+        double[]? weights,
+        double weakestLinkStrength,
+        double sigma,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<CptMutationResponse> AddProbabilisticEdgeAsync(
+        string childNodeId,
+        string parentNodeId,
+        string strategy,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<CptMutationResponse> RemoveProbabilisticEdgeAsync(
+        string childNodeId,
+        string parentNodeId,
+        string strategy,
+        double[]? marginalWeights,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<CptMutationResponse> ReorderProbabilisticParentsAsync(
+        string childNodeId,
+        IReadOnlyList<string> orderedParentNodeIds,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
+    Task<ModelNodeStatesMutationResponse> ReplaceNodeStatesAsync(
+        string nodeId,
+        IReadOnlyList<VariableState> states,
+        IReadOnlyDictionary<string, int> expectedSemanticRevisions,
+        string actor,
+        CancellationToken cancellationToken = default);
+}

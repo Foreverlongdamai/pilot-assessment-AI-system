@@ -23,12 +23,15 @@ public sealed partial class NodeEditorWindow : Window
     private string _schemeDisplayName;
     private int _sharedSchemeCount;
     private readonly IModelNodeEditorGateway _editorGateway;
+    private readonly IBayesianNodeEditorGateway _bayesianEditorGateway;
     private readonly ModalityStatusItem[] _sessionAvailability;
     private readonly string? _sessionRevisionId;
     private RawInputEditorViewModel? _rawInputViewModel;
     private RawInputEditor? _rawInputEditor;
     private EvidenceEditorViewModel? _evidenceViewModel;
     private EvidenceEditor? _evidenceEditor;
+    private BnNodeEditorViewModel? _bnViewModel;
+    private BnNodeEditor? _bnEditor;
 
     public NodeEditorWindow(
         NodeWindowKey key,
@@ -36,6 +39,7 @@ public sealed partial class NodeEditorWindow : Window
         string schemeDisplayName,
         int sharedSchemeCount,
         IModelNodeEditorGateway editorGateway,
+        IBayesianNodeEditorGateway bayesianEditorGateway,
         IEnumerable<ModalityStatusItem> sessionAvailability,
         string? sessionRevisionId,
         NodeWindowPlacement? savedPlacement,
@@ -46,6 +50,7 @@ public sealed partial class NodeEditorWindow : Window
         _schemeDisplayName = schemeDisplayName;
         _sharedSchemeCount = sharedSchemeCount;
         _editorGateway = editorGateway;
+        _bayesianEditorGateway = bayesianEditorGateway;
         _sessionAvailability = sessionAvailability.ToArray();
         _sessionRevisionId = sessionRevisionId;
         InitializeComponent();
@@ -63,6 +68,8 @@ public sealed partial class NodeEditorWindow : Window
     public bool HasUnsavedChanges => _hasUnsavedChanges;
 
     public bool HasCanonicalConflict => _pendingCanonicalNode is not null;
+
+    public event EventHandler? CanonicalMutationCommitted;
 
     public NodeWindowPlacement CurrentPlacement => _restoredPlacement with
     {
@@ -270,22 +277,27 @@ public sealed partial class NodeEditorWindow : Window
                     _canonicalNode,
                     _key.SchemeId,
                     _sessionRevisionId,
-                    _editorGateway);
+                    _editorGateway,
+                    _bayesianEditorGateway);
                 _evidenceEditor = new EvidenceEditor();
                 _evidenceEditor.SetViewModel(_evidenceViewModel);
                 _evidenceEditor.LocalEditChanged += OnLocalEditChanged;
+                _evidenceViewModel.CanonicalNodeCommitted += OnCanonicalNodeCommitted;
                 EditorHost.Content = _evidenceEditor;
                 _ = InitializeEvidenceEditorAsync();
                 break;
-            default:
-                EditorHost.Content = new InfoBar
-                {
-                    IsClosable = false,
-                    IsOpen = true,
-                    Severity = InfoBarSeverity.Informational,
-                    Title = "BN/CPT editor is Task 11",
-                    Message = "This same independent window will host states, fixed parents and the atomic CPT grid without creating another frontend copy of the node.",
-                };
+            case BnNodeDefinition:
+                _bnViewModel = new BnNodeEditorViewModel(
+                    _canonicalNode,
+                    _key.SchemeId,
+                    _editorGateway,
+                    _bayesianEditorGateway);
+                _bnEditor = new BnNodeEditor();
+                _bnEditor.SetViewModel(_bnViewModel);
+                _bnEditor.LocalEditChanged += OnLocalEditChanged;
+                _bnEditor.CanonicalNodeCommitted += OnCanonicalNodeCommitted;
+                EditorHost.Content = _bnEditor;
+                _ = InitializeBnEditorAsync();
                 break;
         }
     }
@@ -305,6 +317,11 @@ public sealed partial class NodeEditorWindow : Window
                 _sessionRevisionId);
             _evidenceEditor?.RefreshCanonical();
         }
+        if (_bnViewModel is not null)
+        {
+            _bnViewModel.ApplyCanonical(_canonicalNode, _key.SchemeId);
+            _bnEditor?.RefreshCanonical();
+        }
     }
 
     private async Task InitializeEvidenceEditorAsync()
@@ -322,6 +339,32 @@ public sealed partial class NodeEditorWindow : Window
         }
     }
 
+    private async Task InitializeBnEditorAsync()
+    {
+        try
+        {
+            if (_bnEditor is not null)
+            {
+                await _bnEditor.InitializeAsync();
+            }
+        }
+        catch (Exception error)
+        {
+            SaveStateText.Text = $"BN editor metadata error · {error.Message}";
+        }
+    }
+
+    private void OnCanonicalNodeCommitted(object? sender, CanonicalNodeCommittedEventArgs args)
+    {
+        _canonicalNode = args.Node;
+        _pendingCanonicalNode = null;
+        _hasUnsavedChanges = false;
+        _conflictAcknowledged = false;
+        CanonicalConflictPanel.Visibility = Visibility.Collapsed;
+        RenderCanonicalNode();
+        CanonicalMutationCommitted?.Invoke(this, EventArgs.Empty);
+    }
+
     private void OnLocalEditChanged(object? sender, EventArgs args) => SetUnsavedChanges(true);
 
     private void OnClosed(object sender, WindowEventArgs args)
@@ -333,6 +376,15 @@ public sealed partial class NodeEditorWindow : Window
         if (_evidenceEditor is not null)
         {
             _evidenceEditor.LocalEditChanged -= OnLocalEditChanged;
+        }
+        if (_evidenceViewModel is not null)
+        {
+            _evidenceViewModel.CanonicalNodeCommitted -= OnCanonicalNodeCommitted;
+        }
+        if (_bnEditor is not null)
+        {
+            _bnEditor.LocalEditChanged -= OnLocalEditChanged;
+            _bnEditor.CanonicalNodeCommitted -= OnCanonicalNodeCommitted;
         }
         _evidenceViewModel?.Dispose();
     }

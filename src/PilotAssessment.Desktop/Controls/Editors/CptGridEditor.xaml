@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="PilotAssessment.Desktop.Controls.Editors.CptGridEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Spacing="12">
+        <InfoBar
+            IsClosable="False"
+            IsOpen="True"
+            Message="{Binding StatusMessage}"
+            Severity="Informational"
+            Title="Backend-owned CPT" />
+        <InfoBar
+            x:Name="ErrorBar"
+            IsClosable="True"
+            IsOpen="False"
+            Severity="Error"
+            Title="CPT operation blocked" />
+
+        <Grid ColumnSpacing="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Spacing="3">
+                <TextBlock FontWeight="SemiBold" Text="{Binding ModeSummary}" TextWrapping="Wrap" />
+                <TextBlock Opacity="0.72" Text="{Binding ValidationSummary}" TextWrapping="Wrap" />
+            </StackPanel>
+            <Button Grid.Column="1" Click="OnToggleExpandedClick" Content="Expand grid" />
+            <Button Grid.Column="2" Click="OnSaveRowsClick" Content="Save complete row batch" />
+        </Grid>
+
+        <Grid Padding="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="170" />
+            </Grid.ColumnDefinitions>
+            <TextBlock FontWeight="SemiBold" Text="Ordered parent assignment" />
+            <ItemsRepeater Grid.Column="1" ItemsSource="{Binding Columns}">
+                <ItemsRepeater.Layout>
+                    <StackLayout Orientation="Horizontal" Spacing="6" />
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Width="104" FontWeight="SemiBold" Text="{Binding StateId}" TextAlignment="Center" TextWrapping="Wrap" />
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+            <TextBlock Grid.Column="2" FontWeight="SemiBold" Text="Technical row check" />
+        </Grid>
+
+        <ListView
+            x:Name="CptRowsList"
+            MaxHeight="520"
+            ItemsSource="{Binding Rows}"
+            SelectionMode="None">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="6,4" ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding AssignmentLabel}" TextWrapping="Wrap" />
+                        <ItemsRepeater Grid.Column="1" ItemsSource="{Binding Cells}">
+                            <ItemsRepeater.Layout>
+                                <StackLayout Orientation="Horizontal" Spacing="6" />
+                            </ItemsRepeater.Layout>
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBox
+                                        Width="104"
+                                        AutomationProperties.Name="{Binding StateId}"
+                                        Text="{Binding ValueText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        TextChanged="OnCellTextChanged" />
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                        <TextBlock Grid.Column="2" VerticalAlignment="Center" Opacity="0.72" Text="{Binding RowStatus}" TextWrapping="Wrap" />
+                        <Button Grid.Column="3" Click="OnNormalizeRowClick" Content="Normalize" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Expander Header="Paste a rectangular probability block">
+            <StackPanel Padding="0,10,0,0" Spacing="8">
+                <TextBlock Opacity="0.72" Text="Paste tab-separated Excel cells or comma/space-separated rows. Indices are zero-based; invalid or non-rectangular blocks are rejected before any backend call." TextWrapping="Wrap" />
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="140" />
+                        <ColumnDefinition Width="140" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="PasteStartRowBox" Header="Start row" Text="0" />
+                    <TextBox x:Name="PasteStartColumnBox" Grid.Column="1" Header="Start column" Text="0" />
+                    <Button Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="OnApplyPasteClick" Content="Apply block locally" />
+                </Grid>
+                <TextBox x:Name="PasteTextBox" AcceptsReturn="True" Header="Probability block" MinHeight="100" FontFamily="Consolas" />
+            </StackPanel>
+        </Expander>
+
+        <Expander Header="Backend CPT generator">
+            <StackPanel Padding="0,10,0,0" Spacing="8">
+                <TextBlock Opacity="0.72" Text="Uniform and ranked are backend generators. This UI only sends typed parameters and replaces itself with the canonical returned table." TextWrapping="Wrap" />
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Header="Strategy" ItemsSource="{Binding MaterializationStrategies}" SelectedItem="{Binding MaterializationStrategy, Mode=TwoWay}" />
+                    <TextBox Grid.Column="1" Header="Ranked parent weights (optional)" Text="{Binding RankedWeightsText, Mode=TwoWay}" />
+                    <NumberBox Grid.Column="2" Header="Weakest link" Value="{Binding WeakestLinkStrength, Mode=TwoWay}" />
+                    <NumberBox Grid.Column="3" Header="Sigma" Value="{Binding Sigma, Mode=TwoWay}" />
+                    <Button Grid.Column="4" VerticalAlignment="Bottom" Click="OnMaterializeClick" Content="Materialize in backend" />
+                </Grid>
+            </StackPanel>
+        </Expander>
+    </StackPanel>
+</UserControl>

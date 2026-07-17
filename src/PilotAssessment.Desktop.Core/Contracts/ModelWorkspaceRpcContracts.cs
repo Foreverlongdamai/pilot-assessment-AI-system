@@ -206,3 +206,63 @@ public sealed record CptMutationResponse(
     string AuditEventId,
     bool Replayed,
     string TraceId);
+
+public sealed record CptValidationDiagnostic(
+    string Code,
+    ModelDiagnosticSeverity Severity,
+    string Location,
+    string Message);
+
+public sealed record CptValidationOutcome(
+    bool Executable,
+    int RequiredRowCount,
+    int RequiredCellCount,
+    CptValidationDiagnostic[] Diagnostics);
+
+public sealed record CptInspectRequest(string NodeId);
+
+public sealed record CptInspectResponse(
+    CptValidationOutcome Validation,
+    CptEditorState Editor,
+    string TraceId);
+
+public sealed record CptRowsUpdateRequest(
+    string NodeId,
+    double[][] Rows,
+    int ExpectedSemanticRevision,
+    string Actor,
+    string TransactionId);
+
+public sealed record CptMaterializeRequest(
+    string NodeId,
+    string Strategy,
+    double[]? Weights,
+    double WeakestLinkStrength,
+    double Sigma,
+    int ExpectedSemanticRevision,
+    string Actor,
+    string TransactionId);
+
+public sealed record ProbabilisticParentReorderRequest(
+    string ChildNodeId,
+    string[] OrderedParentNodeIds,
+    int ExpectedSemanticRevision,
+    string Actor,
+    string TransactionId);
+
+public sealed record ModelNodeStatesReplaceRequest(
+    string NodeId,
+    VariableState[] States,
+    string Outcome,
+    IReadOnlyDictionary<string, int> ExpectedSemanticRevisions,
+    string Actor,
+    string TransactionId);
+
+public sealed record ModelNodeStatesMutationResponse(
+    ModelNode[] Nodes,
+    string[] AffectedSchemeIds,
+    CanonicalModelDiff Diff,
+    string TransactionId,
+    string AuditEventId,
+    bool Replayed,
+    string TraceId);

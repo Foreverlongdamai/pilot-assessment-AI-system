@@ -35,6 +35,14 @@ public sealed partial class ModelStudioPage : Page
     private void OnClearSelectionClick(object sender, RoutedEventArgs args) =>
         ViewModel.ClearSelection();
 
+    private async void OnOpenSelectionClick(object sender, RoutedEventArgs args)
+    {
+        if (await RequireSelectedNodeAsync() is { } node)
+        {
+            ViewModel.RequestOpenNode(node);
+        }
+    }
+
     private async void OnCreateRawInputClick(object sender, RoutedEventArgs args) =>
         await ShowNodeCreationAsync(ModelNodeKind.RawInput);
 

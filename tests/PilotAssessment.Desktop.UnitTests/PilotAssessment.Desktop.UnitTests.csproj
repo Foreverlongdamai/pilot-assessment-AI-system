@@ -23,6 +23,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\src\PilotAssessment.Desktop\ViewModels\BnNodeEditorViewModel.cs"
+             Link="ProductViewModels\BnNodeEditorViewModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\PilotAssessment.Desktop.ContractTests\Fixtures\*.json"
           Link="Fixtures\%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" />

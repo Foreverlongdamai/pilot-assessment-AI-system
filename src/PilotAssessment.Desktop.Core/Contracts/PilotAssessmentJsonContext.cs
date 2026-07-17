@@ -78,4 +78,11 @@ namespace PilotAssessment.Desktop.Core.Contracts;
 [JsonSerializable(typeof(ExtractionEdgeAddRequest))]
 [JsonSerializable(typeof(ExtractionEdgeRemoveRequest))]
 [JsonSerializable(typeof(CptMutationResponse))]
+[JsonSerializable(typeof(CptInspectRequest))]
+[JsonSerializable(typeof(CptInspectResponse))]
+[JsonSerializable(typeof(CptRowsUpdateRequest))]
+[JsonSerializable(typeof(CptMaterializeRequest))]
+[JsonSerializable(typeof(ProbabilisticParentReorderRequest))]
+[JsonSerializable(typeof(ModelNodeStatesReplaceRequest))]
+[JsonSerializable(typeof(ModelNodeStatesMutationResponse))]
 public sealed partial class PilotAssessmentJsonContext : JsonSerializerContext;

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="PilotAssessment.Desktop.Controls.Editors.BnNodeEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:editors="using:PilotAssessment.Desktop.Controls.Editors">
+    <StackPanel Spacing="12">
+        <InfoBar
+            IsClosable="False"
+            IsOpen="True"
+            Message="{Binding StatusMessage}"
+            Severity="Informational"
+            Title="Canonical BN node editor" />
+        <InfoBar
+            x:Name="ErrorBar"
+            IsClosable="True"
+            IsOpen="False"
+            Severity="Error"
+            Title="BN operation blocked" />
+
+        <TabView MinHeight="640">
+            <TabViewItem Header="General">
+                <ScrollViewer Padding="4,12">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnSpacing="12" RowSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBox Header="English name" Text="{Binding NameEn, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Column="1" Header="中文名称" Text="{Binding NameZh, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="1" Header="English description" Text="{Binding DescriptionEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Header="中文说明" Text="{Binding DescriptionZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Row="2" Header="Group" Text="{Binding Group, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="2" Grid.Column="1" Header="Tags (comma/newline separated)" Text="{Binding TagsText, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <ComboBox Grid.Row="3" Header="BN node role" ItemsSource="{Binding NodeRoles}" SelectedItem="{Binding NodeRole, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
+                            <ComboBox Grid.Row="3" Grid.Column="1" Header="Scientific status" ItemsSource="{Binding ScientificStatuses}" SelectedItem="{Binding ScientificStatus, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
+                        </Grid>
+                        <TextBox AcceptsReturn="True" Header="Documentation" MinHeight="110" Text="{Binding Documentation, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        <TextBox AcceptsReturn="True" Header="Reporting metadata JSON" MinHeight="130" FontFamily="Consolas" Text="{Binding ReportingMetadataJson, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox AcceptsReturn="True" Header="English help" MinHeight="110" Text="{Binding HelpTextEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Column="1" AcceptsReturn="True" Header="中文帮助" MinHeight="110" Text="{Binding HelpTextZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        </Grid>
+                        <InfoBar IsClosable="False" IsOpen="True" Message="General text/metadata is held as typed local intent here; Task 12 adds automatic durable save and conflict reconciliation. State, parent and CPT buttons below already use atomic backend operations." Severity="Informational" Title="Save boundary" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabViewItem>
+
+            <TabViewItem Header="Fixed parents / children">
+                <ScrollViewer Padding="4,12">
+                    <StackPanel Spacing="14">
+                        <InfoBar IsClosable="False" IsOpen="True" Message="Every visible BN node owns one fixed ordered parent list. Adding, removing or reordering a parent sends one backend operation that migrates the CPT axes atomically." Severity="Informational" Title="Canonical direction: parent → child" />
+                        <Grid ColumnSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="210" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox Header="New parent" DisplayMemberPath="Label" ItemsSource="{Binding ParentCandidates}" SelectedItem="{Binding SelectedParentCandidate, Mode=TwoWay}" />
+                            <ComboBox Grid.Column="1" Header="CPT migration" ItemsSource="{Binding AddParentStrategies}" SelectedItem="{Binding AddParentStrategy, Mode=TwoWay}" />
+                            <Button Grid.Column="2" VerticalAlignment="Bottom" Click="OnAddParentClick" Content="Add parent atomically" />
+                        </Grid>
+                        <Grid ColumnSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox Header="Ordered fixed parent" DisplayMemberPath="Label" ItemsSource="{Binding Parents}" SelectedItem="{Binding SelectedParent, Mode=TwoWay}" />
+                            <ComboBox Grid.Column="1" Header="Removal migration" ItemsSource="{Binding RemoveParentStrategies}" SelectedItem="{Binding RemoveParentStrategy, Mode=TwoWay}" />
+                            <TextBox Grid.Column="2" Header="Marginal weights (optional)" Text="{Binding MarginalWeightsText, Mode=TwoWay}" />
+                            <Button Grid.Column="3" VerticalAlignment="Bottom" Click="OnMoveParentUpClick" Content="Move up" />
+                            <Button Grid.Column="4" VerticalAlignment="Bottom" Click="OnMoveParentDownClick" Content="Move down" />
+                            <Button Grid.Column="5" VerticalAlignment="Bottom" Click="OnRemoveParentClick" Content="Remove" />
+                        </Grid>
+                        <TextBlock FontWeight="SemiBold" Text="Children / downstream consumers" />
+                        <ListView MaxHeight="260" ItemsSource="{Binding Children}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabViewItem>
+
+            <TabViewItem Header="States">
+                <StackPanel Padding="4,12" Spacing="10">
+                    <InfoBar IsClosable="False" IsOpen="True" Message="Changing state IDs changes this node's own CPT axis and every direct child's parent axis. The commit is one backend transaction and explicitly marks all affected CPTs incomplete for expert repair." Severity="Warning" Title="Atomic state migration" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Click="OnAddStateClick" Content="Add state" />
+                        <Button Click="OnRemoveStateClick" Content="Remove selected" />
+                        <Button Click="OnCommitStatesClick" Content="Commit states + mark affected CPTs incomplete" />
+                    </StackPanel>
+                    <ListView x:Name="StateList" ItemsSource="{Binding States}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Padding="4" ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="180" />
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Header="State ID" Text="{Binding StateId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnFieldChanged" />
+                                    <TextBox Grid.Column="1" Header="Label" Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnFieldChanged" />
+                                    <TextBox Grid.Column="2" Header="Description" Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackPanel>
+            </TabViewItem>
+
+            <TabViewItem Header="CPT / generator">
+                <ScrollViewer Padding="4,12" HorizontalScrollBarVisibility="Auto">
+                    <editors:CptGridEditor x:Name="CptGrid" />
+                </ScrollViewer>
+            </TabViewItem>
+
+            <TabViewItem Header="Posterior / influence">
+                <StackPanel Padding="4,12" Spacing="10">
+                    <InfoBar IsClosable="False" IsOpen="True" Message="{Binding PosteriorSummary}" Severity="Informational" Title="Read-only inference overlay" />
+                    <TextBlock Text="No executed run result is attached to this editor window yet." />
+                </StackPanel>
+            </TabViewItem>
+
+            <TabViewItem Header="Used by schemes">
+                <StackPanel Padding="4,12" Spacing="8">
+                    <InfoBar IsClosable="False" IsOpen="True" Message="This is one shared complete node. Canonical changes affect future runs in every listed task scheme; historical RunSnapshots remain immutable." Severity="Warning" Title="Shared node impact" />
+                    <ListView ItemsSource="{Binding UsedBySchemes}" />
+                </StackPanel>
+            </TabViewItem>
+
+            <TabViewItem Header="History">
+                <StackPanel Padding="4,12" Spacing="8">
+                    <TextBlock Opacity="0.72" Text="Canonical change events are read from the backend history journal." />
+                    <ListView ItemsSource="{Binding HistoryItems}" />
+                </StackPanel>
+            </TabViewItem>
+        </TabView>
+    </StackPanel>
+</UserControl>

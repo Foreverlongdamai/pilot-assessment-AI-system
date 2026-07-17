@@ -16,6 +16,7 @@ public sealed partial class EvidenceEditor : UserControl
         Loaded += OnLoaded;
         OperatorGraph.RecipeNodeSelected += OnRecipeNodeSelected;
         ParameterEditor.ParameterChanged += OnParameterChanged;
+        EvidenceCptGrid.LocalEditChanged += (_, _) => LocalEditChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public EvidenceEditorViewModel? ViewModel { get; private set; }
@@ -29,6 +30,7 @@ public sealed partial class EvidenceEditor : UserControl
         DataContext = viewModel;
         OperatorGraph.SetViewModel(viewModel);
         ParameterEditor.SetModel(viewModel.ParameterForm);
+        EvidenceCptGrid.SetViewModel(viewModel.Cpt);
         ArmDirtyTracking();
     }
 
@@ -83,6 +85,22 @@ public sealed partial class EvidenceEditor : UserControl
         {
             ViewModel?.RemoveObservationState(state);
             NotifyLocalEdit();
+        }
+    }
+
+    private async void OnCommitStatesClick(object sender, RoutedEventArgs args)
+    {
+        if (ViewModel is null)
+        {
+            return;
+        }
+        try
+        {
+            await ViewModel.CommitObservationStatesAsync();
+        }
+        catch (Exception error)
+        {
+            ViewModel.SetOperationError(error.Message);
         }
     }
 

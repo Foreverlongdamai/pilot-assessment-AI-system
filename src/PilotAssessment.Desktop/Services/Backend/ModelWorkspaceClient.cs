@@ -10,7 +10,8 @@ namespace PilotAssessment.Desktop.Services.Backend;
 public sealed class ModelWorkspaceClient :
     IModelWorkspaceGateway,
     IModelGraphGateway,
-    IModelNodeEditorGateway
+    IModelNodeEditorGateway,
+    IBayesianNodeEditorGateway
 {
     private readonly BackendConnectionService _backend;
 
@@ -375,6 +376,111 @@ public sealed class ModelWorkspaceClient :
                 transactionId),
             PilotAssessmentJsonContext.Default.ProbabilisticEdgeRemoveRequest,
             PilotAssessmentJsonContext.Default.CptMutationResponse,
+            cancellationToken);
+    }
+
+    public async Task<CptInspectResponse> InspectCptAsync(
+        string nodeId,
+        CancellationToken cancellationToken = default) =>
+        await InvokeAsync(
+            "model.cpt.validate",
+            new CptInspectRequest(nodeId),
+            PilotAssessmentJsonContext.Default.CptInspectRequest,
+            PilotAssessmentJsonContext.Default.CptInspectResponse,
+            cancellationToken);
+
+    public Task<CptMutationResponse> UpdateCptRowsAsync(
+        string nodeId,
+        IReadOnlyList<IReadOnlyList<double>> rows,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("cpt-update");
+        return MutateAsync(
+            "model.cpt.update",
+            transactionId,
+            new CptRowsUpdateRequest(
+                nodeId,
+                rows.Select(row => row.ToArray()).ToArray(),
+                expectedSemanticRevision,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.CptRowsUpdateRequest,
+            PilotAssessmentJsonContext.Default.CptMutationResponse,
+            cancellationToken);
+    }
+
+    public Task<CptMutationResponse> MaterializeCptAsync(
+        string nodeId,
+        string strategy,
+        double[]? weights,
+        double weakestLinkStrength,
+        double sigma,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("cpt-materialize");
+        return MutateAsync(
+            "model.cpt.materialize",
+            transactionId,
+            new CptMaterializeRequest(
+                nodeId,
+                strategy,
+                weights,
+                weakestLinkStrength,
+                sigma,
+                expectedSemanticRevision,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.CptMaterializeRequest,
+            PilotAssessmentJsonContext.Default.CptMutationResponse,
+            cancellationToken);
+    }
+
+    public Task<CptMutationResponse> ReorderProbabilisticParentsAsync(
+        string childNodeId,
+        IReadOnlyList<string> orderedParentNodeIds,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("edge-reorder-probabilistic");
+        return MutateAsync(
+            "model.edge.reorder",
+            transactionId,
+            new ProbabilisticParentReorderRequest(
+                childNodeId,
+                orderedParentNodeIds.ToArray(),
+                expectedSemanticRevision,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.ProbabilisticParentReorderRequest,
+            PilotAssessmentJsonContext.Default.CptMutationResponse,
+            cancellationToken);
+    }
+
+    public Task<ModelNodeStatesMutationResponse> ReplaceNodeStatesAsync(
+        string nodeId,
+        IReadOnlyList<VariableState> states,
+        IReadOnlyDictionary<string, int> expectedSemanticRevisions,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("node-states-replace");
+        return MutateAsync(
+            "model.node.states.replace",
+            transactionId,
+            new ModelNodeStatesReplaceRequest(
+                nodeId,
+                states.ToArray(),
+                "mark_incomplete",
+                expectedSemanticRevisions,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.ModelNodeStatesReplaceRequest,
+            PilotAssessmentJsonContext.Default.ModelNodeStatesMutationResponse,
             cancellationToken);
     }
 

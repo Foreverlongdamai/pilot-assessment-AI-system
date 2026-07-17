@@ -117,6 +117,10 @@
                         <Button Grid.Column="1" VerticalAlignment="Bottom" Click="OnAddStateClick" Content="Add state" />
                         <Button Grid.Column="2" VerticalAlignment="Bottom" Click="OnRemoveStateClick" Content="Remove selected" />
                     </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Click="OnCommitStatesClick" Content="Commit states + mark affected CPTs incomplete" />
+                        <TextBlock VerticalAlignment="Center" Opacity="0.68" Text="One backend transaction updates this axis and every dependent CPT axis." />
+                    </StackPanel>
                     <ListView x:Name="StateList" ItemsSource="{Binding ObservationStates}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
@@ -137,13 +141,14 @@
             </TabViewItem>
 
             <TabViewItem Header="Probabilistic parents / CPT">
-                <StackPanel Padding="4,12" Spacing="12">
-                    <InfoBar IsClosable="False" IsOpen="True" Message="Evidence probabilistic parents and CPT are part of this same complete node. Task 11 supplies the atomic parent/state/CPT grid editor; this view already exposes the canonical relationship without creating a second state copy." Severity="Informational" Title="Canonical BN relationship" />
-                    <TextBlock FontWeight="SemiBold" Text="Parents" />
-                    <TextBlock Text="{Binding ProbabilisticParentsText}" TextWrapping="Wrap" />
-                    <TextBlock FontWeight="SemiBold" Text="CPT" />
-                    <TextBlock Text="{Binding CptSummary}" TextWrapping="Wrap" />
-                </StackPanel>
+                <ScrollViewer Padding="4,12" HorizontalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="12">
+                        <InfoBar IsClosable="False" IsOpen="True" Message="Evidence probabilistic parents are BN nodes. Add/remove/reorder those fixed edges on the main graph; its atomic migration dialog updates this same canonical CPT. The complete row grid below is shared with BN nodes." Severity="Informational" Title="Canonical BN relationship" />
+                        <TextBlock FontWeight="SemiBold" Text="Fixed parents" />
+                        <TextBlock Text="{Binding ProbabilisticParentsText}" TextWrapping="Wrap" />
+                        <editors:CptGridEditor x:Name="EvidenceCptGrid" />
+                    </StackPanel>
+                </ScrollViewer>
             </TabViewItem>
 
             <TabViewItem Header="Preview / Trace">

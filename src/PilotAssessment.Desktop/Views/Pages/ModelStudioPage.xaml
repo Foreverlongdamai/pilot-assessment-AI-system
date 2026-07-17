@@ -94,6 +94,11 @@
                             </MenuFlyout>
                         </AppBarButton.Flyout>
                     </AppBarButton>
+                    <AppBarButton
+                        AutomationProperties.Name="Open selected node details"
+                        Click="OnOpenSelectionClick"
+                        Icon="OpenFile"
+                        Label="Open details" />
                     <AppBarButton Click="OnActivateSelectionClick" Icon="Accept" Label="Activate" />
                     <AppBarButton Click="OnDeactivateSelectionClick" Icon="Remove" Label="Deactivate" />
                     <AppBarButton Click="OnCopySelectionClick" Icon="Copy" Label="Copy" />

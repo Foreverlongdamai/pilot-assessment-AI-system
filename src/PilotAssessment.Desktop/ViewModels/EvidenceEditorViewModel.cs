@@ -73,8 +73,10 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
     };
 
     private readonly EvidenceEditorCoordinator _coordinator;
+    private readonly IBayesianNodeEditorGateway _bayesianGateway;
     private ModelNode _canonicalNode;
     private EvidenceRecipeEditorModel _recipeModel;
+    private ModelGraphSnapshot? _graph;
     private string? _sessionRevisionId;
     private string _schemeId;
 
@@ -154,15 +156,20 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         ModelNode node,
         string schemeId,
         string? sessionRevisionId,
-        IModelNodeEditorGateway gateway)
+        IModelNodeEditorGateway gateway,
+        IBayesianNodeEditorGateway bayesianGateway)
     {
         _canonicalNode = node;
         _schemeId = schemeId;
         _sessionRevisionId = sessionRevisionId;
         _coordinator = new EvidenceEditorCoordinator(gateway);
+        _bayesianGateway = bayesianGateway;
         var definition = node.Definition as EvidenceNodeDefinition
             ?? throw new ArgumentException("Evidence editor requires an Evidence node.");
         _recipeModel = new EvidenceRecipeEditorModel(definition.Recipe, []);
+        Cpt = new CptGridViewModel(node, EditorFrom(definition.Cpt), bayesianGateway);
+        Cpt.LocalEditChanged += (_, _) => MarkLocalEdit();
+        Cpt.CanonicalNodeCommitted += OnCptCanonicalNodeCommitted;
         ApplyCanonical(node, schemeId, sessionRevisionId);
     }
 
@@ -181,6 +188,8 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
     public ObservableCollection<string> UsedBySchemes { get; } = [];
 
     public ObservableCollection<string> HistoryItems { get; } = [];
+
+    public CptGridViewModel Cpt { get; }
 
     public IReadOnlyList<ObservationPolicy> ObservationPolicies { get; } =
         Enum.GetValues<ObservationPolicy>();
@@ -209,6 +218,8 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
 
     public event EventHandler? LocalEditChanged;
 
+    public event EventHandler<CanonicalNodeCommittedEventArgs>? CanonicalNodeCommitted;
+
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
         if (IsBusy)
@@ -222,7 +233,9 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
             var operatorsTask = _coordinator.ListOperatorsAsync(cancellationToken);
             var usagesTask = _coordinator.ListUsagesAsync(_canonicalNode.NodeId, cancellationToken);
             var historyTask = _coordinator.ListHistoryAsync(_canonicalNode.NodeId, cancellationToken);
-            await Task.WhenAll(operatorsTask, usagesTask, historyTask);
+            var graphTask = _bayesianGateway.GetGraphAsync(_schemeId, cancellationToken);
+            var cptTask = _bayesianGateway.InspectCptAsync(_canonicalNode.NodeId, cancellationToken);
+            await Task.WhenAll(operatorsTask, usagesTask, historyTask, graphTask, cptTask);
 
             var operators = await operatorsTask;
             _recipeModel = new EvidenceRecipeEditorModel(
@@ -249,6 +262,8 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
                         $"{item.OccurredAt:yyyy-MM-dd HH:mm:ss} · {item.EventKind} · " +
                         $"semantic {item.SemanticRevision}, layout {item.LayoutRevision}"));
             RefreshRecipeCollections();
+            _graph = await graphTask;
+            Cpt.ApplyCanonical(_canonicalNode, (await cptTask).Editor);
             StatusMessage =
                 $"Loaded {OperatorOptions.Count} trusted operators, {UsedBySchemes.Count} task usages and {HistoryItems.Count} history events.";
         }
@@ -306,12 +321,16 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
             $"{binding.RecipeInputBindingId} ← {binding.RawInputNode.NodeId}"));
         Replace(OutputBindings, definition.Recipe.Outputs.Select(output =>
             $"{output.Role}: {output.Name} ← {output.Source.NodeId}.{output.Source.PortId}"));
+        Cpt.ApplyCanonical(node, EditorFrom(definition.Cpt));
         RefreshRecipeCollections();
         OnPropertyChanged(nameof(ProbabilisticParentsText));
         OnPropertyChanged(nameof(CptSummary));
     }
 
     public void MarkLocalEdit() => LocalEditChanged?.Invoke(this, EventArgs.Empty);
+
+    public void SetOperationError(string message) =>
+        StatusMessage = $"Evidence operation blocked: {message}";
 
     public void SelectRecipeNodeForEditing(RecipeNodeDisplayItem? item)
     {
@@ -401,6 +420,33 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         MarkLocalEdit();
     }
 
+    public async Task CommitObservationStatesAsync(CancellationToken cancellationToken = default)
+    {
+        var states = ObservationStates.Select(item => item.Build()).ToArray();
+        if (states.Length < 2 || states.Any(state => string.IsNullOrWhiteSpace(state.StateId)) ||
+            states.Select(state => state.StateId).Distinct(StringComparer.Ordinal).Count() != states.Length)
+        {
+            throw new InvalidOperationException("Evidence observation states require at least two unique, non-empty state IDs.");
+        }
+        var graph = _graph ?? await _bayesianGateway.GetGraphAsync(_schemeId, cancellationToken);
+        var response = await _bayesianGateway.ReplaceNodeStatesAsync(
+            _canonicalNode.NodeId,
+            states,
+            BnNodeEditorViewModel.StateChangeRevisionPlan(graph, _canonicalNode.NodeId),
+            "expert.desktop",
+            cancellationToken);
+        var canonical = response.Nodes.Single(node => node.NodeId == _canonicalNode.NodeId);
+        _graph = graph with
+        {
+            Nodes = graph.Nodes.Select(node =>
+                response.Nodes.FirstOrDefault(changed => changed.NodeId == node.NodeId) ?? node).ToArray(),
+        };
+        ApplyCanonical(canonical, _schemeId, _sessionRevisionId);
+        StatusMessage =
+            $"Canonical observation states saved; {response.Nodes.Length} affected CPT definition(s) are explicitly incomplete and repairable.";
+        CanonicalNodeCommitted?.Invoke(this, new CanonicalNodeCommittedEventArgs(canonical));
+    }
+
     public ModelNode BuildUpdatedNode()
     {
         var definition = (EvidenceNodeDefinition)_canonicalNode.Definition;
@@ -487,6 +533,14 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
 
     public void Dispose() => _coordinator.Dispose();
 
+    private void OnCptCanonicalNodeCommitted(object? sender, CanonicalNodeCommittedEventArgs args)
+    {
+        _canonicalNode = args.Node;
+        OnPropertyChanged(nameof(ProbabilisticParentsText));
+        OnPropertyChanged(nameof(CptSummary));
+        CanonicalNodeCommitted?.Invoke(this, args);
+    }
+
     private void RefreshRecipeCollections(string? preferredNodeId = null)
     {
         var operators = _recipeModel.Operators.ToDictionary(
@@ -543,6 +597,22 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
 
     private static string? Normalize(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static CptEditorState EditorFrom(NodeCpt cpt)
+    {
+        var rows = cpt.OrderedParentStateIds.Length == 0
+            ? 1
+            : cpt.OrderedParentStateIds.Aggregate(1, (count, states) => checked(count * states.Length));
+        return new CptEditorState(
+            cpt.ChildNode,
+            cpt.OrderedParentNodes,
+            cpt.ChildStateIds,
+            cpt.OrderedParentStateIds,
+            cpt.MaterializedProbabilities,
+            cpt.Mode,
+            rows,
+            checked(rows * cpt.ChildStateIds.Length));
+    }
 
     private static void Replace<T>(ObservableCollection<T> target, IEnumerable<T> values)
     {

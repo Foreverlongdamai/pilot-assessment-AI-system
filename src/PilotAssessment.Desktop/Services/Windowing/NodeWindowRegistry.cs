@@ -15,6 +15,7 @@ public sealed class NodeWindowRegistry : IDisposable
     private readonly ModelStudioViewModel _modelStudio;
     private readonly ShellViewModel _shell;
     private readonly IModelNodeEditorGateway _editorGateway;
+    private readonly IBayesianNodeEditorGateway _bayesianEditorGateway;
     private readonly SessionExplorerViewModel _sessions;
     private string? _projectId;
     private bool _disposed;
@@ -26,6 +27,7 @@ public sealed class NodeWindowRegistry : IDisposable
         ModelStudioViewModel modelStudio,
         ShellViewModel shell,
         IModelNodeEditorGateway editorGateway,
+        IBayesianNodeEditorGateway bayesianEditorGateway,
         SessionExplorerViewModel sessions)
     {
         _placements = placements;
@@ -34,6 +36,7 @@ public sealed class NodeWindowRegistry : IDisposable
         _modelStudio = modelStudio;
         _shell = shell;
         _editorGateway = editorGateway;
+        _bayesianEditorGateway = bayesianEditorGateway;
         _sessions = sessions;
         _projectId = shellState.Snapshot.ProjectId;
         _modelStudio.NodeEditorRequested += OnNodeEditorRequested;
@@ -106,10 +109,13 @@ public sealed class NodeWindowRegistry : IDisposable
             schemeDisplayName,
             sharedSchemeCount,
             _editorGateway,
+            _bayesianEditorGateway,
             _sessions.Modalities,
             _sessions.SelectedRevision?.SessionRevisionId,
             _placements.Get(key),
             _windows.Count);
+        window.CanonicalMutationCommitted += (_, _) =>
+            _ = ReloadGraphSafelyAsync(key.SchemeId);
         window.Closed += (_, _) => OnWindowClosed(key, window);
         return window;
     }
@@ -181,6 +187,19 @@ public sealed class NodeWindowRegistry : IDisposable
         catch (Exception error) when (error is IOException or UnauthorizedAccessException)
         {
             _shellState.AppendDiagnostic($"Node-window placement was not saved: {error.Message}");
+        }
+    }
+
+    private async Task ReloadGraphSafelyAsync(string schemeId)
+    {
+        try
+        {
+            await _modelStudio.LoadGraphAsync(schemeId);
+        }
+        catch (Exception error)
+        {
+            _shellState.AppendDiagnostic(
+                $"The graph could not reconcile a committed node mutation: {error.Message}");
         }
     }
 }
