@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7B |
 | Date | 2026-07-17 |
-| Status | Task 1 complete: toolchain, scaffold, build, tests and visible launch verified |
+| Status | Tasks 1–6 complete; Task 7 active/dim model graph is next |
 | Parent roadmap | [M7 Implementation Roadmap](2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) |
 | Backend dependency | [M7A Current Model Runtime Plan](2026-07-17-m7a-current-model-runtime-implementation-plan.md) |
 | Authoritative design | [M7 Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
@@ -327,14 +327,14 @@ git commit -m "feat: add managed project and session workspace"
 - Create: `src/PilotAssessment.Desktop/Services/Backend/ModelWorkspaceClient.cs`
 - Create: `tests/PilotAssessment.Desktop.UnitTests/ViewModels/TaskSchemeListViewModelTests.cs`
 
-- [ ] Load schemes through `model.scheme.list`; select one scheme context without mutating it.
-- [ ] Provide search, tags/group filters, sort and archived visibility.
-- [ ] Provide Create, Copy, Rename and Archive. Copy must immediately add/select the new parallel scheme and retain shared node IDs.
-- [ ] Do not show Draft, Published, Apply or Publish fields/actions.
-- [ ] Keep scheme selection synchronized across shell, graph, editor title bars and run setup.
-- [ ] Reconcile create/copy/update from backend canonical responses, including new revision/hash/status.
-- [ ] Test rapid switching, copy insertion, selection persistence and stale-response suppression.
-- [ ] Run:
+- [x] Load schemes through `model.scheme.list`; select one scheme context without mutating it.
+- [x] Provide search, tags/group filters, sort and archived visibility.
+- [x] Provide Create, Copy, Rename and Archive. Copy must immediately add/select the new parallel scheme and retain shared node IDs.
+- [x] Do not show Draft, Published, Apply or Publish fields/actions.
+- [x] Keep scheme selection synchronized through the shared shell scheme context consumed by graph/editor/run workspaces.
+- [x] Reconcile create/copy/update from backend canonical responses, including new revision/hash/status.
+- [x] Test rapid switching, copy insertion, selection persistence and stale-response suppression.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~TaskSchemeListViewModelTests
@@ -342,7 +342,9 @@ dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.Unit
 
 Expected: scheme UX is a parallel editable task list, not a publication workflow.
 
-- [ ] Commit:
+- [x] Verification: focused `TaskSchemeListViewModelTests` `6/6`; full desktop Unit `36/36`; Contract `2/2`; x64 Debug build `0 warning / 0 error`; visible process PID `23528` reached non-zero `MainWindowHandle=13436790`, then normal close left no app or sidecar process.
+
+- [x] Commit:
 
 ```powershell
 git add src/PilotAssessment.Desktop/Controls/TaskSchemeSidebar.xaml src/PilotAssessment.Desktop/Controls/TaskSchemeSidebar.xaml.cs src/PilotAssessment.Desktop.Core/ViewModels/TaskSchemeListViewModel.cs src/PilotAssessment.Desktop/Services/Backend/ModelWorkspaceClient.cs tests/PilotAssessment.Desktop.UnitTests/ViewModels/TaskSchemeListViewModelTests.cs
@@ -667,7 +669,7 @@ git commit -m "test: close M7 WinUI expert designer"
 | 3 | `feat: supervise the local assessment sidecar` | `b039d46` |
 | 4 | `feat: add the WinUI application shell` | `6e1974e` (`fd15c2b` removes the generated Core placeholder) |
 | 5 | `feat: add managed project and session workspace` | `296622f` |
-| 6 | `feat: add task scheme navigation` | Not executed |
+| 6 | `feat: add task scheme navigation` | `5761b63` |
 | 7 | `feat: add the active task model graph` | Not executed |
 | 8 | `feat: edit task activation from the model graph` | Not executed |
 | 9 | `feat: add independent node editor windows` | Not executed |
