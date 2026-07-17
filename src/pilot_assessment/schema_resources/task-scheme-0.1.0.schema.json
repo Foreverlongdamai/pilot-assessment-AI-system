@@ -1,0 +1,339 @@
+{
+  "$defs": {
+    "JsonValue": {},
+    "ModelDiagnostic": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "details": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Details",
+          "type": "object"
+        },
+        "location": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "pattern": "^/",
+          "title": "Location",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/ModelDiagnosticSeverity"
+        }
+      },
+      "required": [
+        "code",
+        "severity",
+        "location",
+        "message",
+        "details"
+      ],
+      "title": "ModelDiagnostic",
+      "type": "object"
+    },
+    "ModelDiagnosticSeverity": {
+      "enum": [
+        "info",
+        "warning",
+        "error"
+      ],
+      "title": "ModelDiagnosticSeverity",
+      "type": "string"
+    },
+    "ModelObjectLifecycle": {
+      "enum": [
+        "active",
+        "archived"
+      ],
+      "title": "ModelObjectLifecycle",
+      "type": "string"
+    },
+    "ModelTechnicalStatus": {
+      "enum": [
+        "executable",
+        "incomplete",
+        "blocked"
+      ],
+      "title": "ModelTechnicalStatus",
+      "type": "string"
+    },
+    "NodeLayout": {
+      "additionalProperties": false,
+      "properties": {
+        "node_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "node_id",
+        "x",
+        "y"
+      ],
+      "title": "NodeLayout",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:task-scheme:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "computed_active_closure": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Computed Active Closure",
+      "type": "array"
+    },
+    "content_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "contract_id": {
+      "const": "task-scheme",
+      "default": "task-scheme",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "copied_from_scheme_id": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Copied From Scheme Id"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "description_en": {
+      "anyOf": [
+        {
+          "maxLength": 8000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Description En"
+    },
+    "description_zh": {
+      "anyOf": [
+        {
+          "maxLength": 8000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Description Zh"
+    },
+    "diagnostics": {
+      "items": {
+        "$ref": "#/$defs/ModelDiagnostic"
+      },
+      "title": "Diagnostics",
+      "type": "array"
+    },
+    "explicit_active_node_ids": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Explicit Active Node Ids",
+      "type": "array"
+    },
+    "group": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Group"
+    },
+    "layout_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Layout Hash",
+      "type": "string"
+    },
+    "layout_overrides": {
+      "items": {
+        "$ref": "#/$defs/NodeLayout"
+      },
+      "title": "Layout Overrides",
+      "type": "array"
+    },
+    "layout_revision": {
+      "minimum": 0,
+      "title": "Layout Revision",
+      "type": "integer"
+    },
+    "lifecycle": {
+      "$ref": "#/$defs/ModelObjectLifecycle"
+    },
+    "name_en": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Name En"
+    },
+    "name_zh": {
+      "anyOf": [
+        {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Name Zh"
+    },
+    "output_node_ids": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Output Node Ids",
+      "type": "array"
+    },
+    "scheme_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Scheme Id",
+      "type": "string"
+    },
+    "semantic_revision": {
+      "minimum": 0,
+      "title": "Semantic Revision",
+      "type": "integer"
+    },
+    "tags": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+    },
+    "task_bindings": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Task Bindings",
+      "type": "object"
+    },
+    "technical_status": {
+      "$ref": "#/$defs/ModelTechnicalStatus"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "title": "Updated At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "scheme_id",
+    "name_zh",
+    "name_en",
+    "description_zh",
+    "description_en",
+    "tags",
+    "group",
+    "lifecycle",
+    "copied_from_scheme_id",
+    "explicit_active_node_ids",
+    "computed_active_closure",
+    "output_node_ids",
+    "task_bindings",
+    "layout_overrides",
+    "semantic_revision",
+    "layout_revision",
+    "technical_status",
+    "diagnostics",
+    "content_hash",
+    "layout_hash",
+    "created_at",
+    "updated_at"
+  ],
+  "title": "Pilot Assessment Current Task Scheme 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "explicit activation is a subset of the canonical active closure",
+    "run outputs are active BN nodes",
+    "scheme layout overrides do not change shared node semantics"
+  ]
+}

@@ -95,15 +95,16 @@ The existing pipeline unwraps the immutable `execution_snapshot`; the full curre
 - Generate: `schemas/model-change-event-0.1.0.schema.json`
 - Generate: `schemas/current-model-run-preflight-report-0.1.0.schema.json`
 - Generate: `schemas/current-model-run-snapshot-0.1.0.schema.json`
+- Generate: `schemas/assessment-run-0.2.0.schema.json`
 - Generate: matching files under `src/pilot_assessment/schema_resources/`
 
-- [ ] Write strict contract tests for node-kind/definition discrimination, unique parent/state IDs, frozen mappings, bilingual non-empty fallback, UTC timestamps, finite CPT values, stable IDs and SHA-256 fields.
-- [ ] Test that an Evidence node cannot use Evidence or BN as a data source and cannot use Raw Input as a probabilistic parent.
-- [ ] Test that a BN node cannot contain an EvidenceRecipe and a Raw Input node cannot contain a CPT.
-- [ ] Test `TaskScheme` explicit/closure/output invariants, separate semantic/layout revisions and canonical ordering.
-- [ ] Add current preflight/snapshot/run contracts without changing the behavior of legacy v0.1 models.
-- [ ] Add `_M7_SCHEMA_MODELS` to the schema exporter and generate byte-identical root/package schemas.
-- [ ] Run:
+- [x] Write strict contract tests for node-kind/definition discrimination, unique parent/state IDs, frozen mappings, bilingual non-empty fallback, UTC timestamps, finite CPT values, stable IDs and SHA-256 fields.
+- [x] Test that an Evidence node cannot use Evidence or BN as a data source and cannot use Raw Input as a probabilistic parent.
+- [x] Test that a BN node cannot contain an EvidenceRecipe and a Raw Input node cannot contain a CPT.
+- [x] Test `TaskScheme` explicit/closure/output invariants, separate semantic/layout revisions and canonical ordering.
+- [x] Add current preflight/snapshot/run contracts without changing the behavior of legacy v0.1 models.
+- [x] Add `_M7_SCHEMA_MODELS` to the schema exporter and generate byte-identical root/package schemas.
+- [x] Run:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest tests/contracts/test_model_workspace.py tests/contracts/test_run_contracts.py tests/schemas/test_schema_export.py -q
@@ -113,7 +114,7 @@ git diff --exit-code -- schemas src/pilot_assessment/schema_resources
 
 Expected: focused tests pass; schema regeneration leaves no tracked drift after generated files are staged.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/pilot_assessment/contracts src/pilot_assessment/schemas/export.py schemas src/pilot_assessment/schema_resources tests/contracts tests/schemas/test_schema_export.py
@@ -517,7 +518,7 @@ git commit -m "test: close M7A current model runtime"
 
 | Task | Planned commit | Actual commit |
 |---:|---|---|
-| 1 | `feat: add M7 current model contracts` | Not executed |
+| 1 | `feat: add M7 current model contracts` | Executed; exact hash backfilled at Task 12 |
 | 2 | `feat: add current model graph rules` | Not executed |
 | 3 | `feat: persist M7 current model workspace` | Not executed |
 | 4 | `feat: add current model node service` | Not executed |

@@ -1,0 +1,229 @@
+{
+  "$defs": {
+    "CanonicalModelDiff": {
+      "additionalProperties": false,
+      "properties": {
+        "added_edge_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Added Edge Ids",
+          "type": "array"
+        },
+        "added_node_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Added Node Ids",
+          "type": "array"
+        },
+        "changed_paths": {
+          "items": {
+            "maxLength": 2048,
+            "minLength": 1,
+            "pattern": "^/",
+            "type": "string"
+          },
+          "title": "Changed Paths",
+          "type": "array"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Metadata",
+          "type": "object"
+        },
+        "removed_edge_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Removed Edge Ids",
+          "type": "array"
+        },
+        "removed_node_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Removed Node Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "changed_paths",
+        "added_node_ids",
+        "removed_node_ids",
+        "added_edge_ids",
+        "removed_edge_ids",
+        "metadata"
+      ],
+      "title": "CanonicalModelDiff",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "ModelChangeKind": {
+      "enum": [
+        "create",
+        "update",
+        "archive",
+        "undo",
+        "redo",
+        "migrate"
+      ],
+      "title": "ModelChangeKind",
+      "type": "string"
+    },
+    "ModelObjectKind": {
+      "enum": [
+        "node",
+        "scheme"
+      ],
+      "title": "ModelObjectKind",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:model-change-event:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actor_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Actor Id",
+      "type": "string"
+    },
+    "after_hash": {
+      "anyOf": [
+        {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "After Hash"
+    },
+    "before_hash": {
+      "anyOf": [
+        {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Before Hash"
+    },
+    "contract_id": {
+      "const": "model-change-event",
+      "default": "model-change-event",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "diff": {
+      "$ref": "#/$defs/CanonicalModelDiff"
+    },
+    "event_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "event_kind": {
+      "$ref": "#/$defs/ModelChangeKind"
+    },
+    "layout_revision": {
+      "minimum": 0,
+      "title": "Layout Revision",
+      "type": "integer"
+    },
+    "object_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Object Id",
+      "type": "string"
+    },
+    "object_kind": {
+      "$ref": "#/$defs/ModelObjectKind"
+    },
+    "occurred_at": {
+      "format": "date-time",
+      "title": "Occurred At",
+      "type": "string"
+    },
+    "parent_event_id": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Parent Event Id"
+    },
+    "semantic_revision": {
+      "minimum": 0,
+      "title": "Semantic Revision",
+      "type": "integer"
+    },
+    "transaction_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Transaction Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "object_kind",
+    "object_id",
+    "event_kind",
+    "parent_event_id",
+    "semantic_revision",
+    "layout_revision",
+    "before_hash",
+    "after_hash",
+    "diff",
+    "transaction_id",
+    "actor_id",
+    "occurred_at"
+  ],
+  "title": "Pilot Assessment Current Model Change Event 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "change events record before and after revisions and hashes without creating versions"
+  ]
+}

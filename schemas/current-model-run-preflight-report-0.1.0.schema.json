@@ -1,0 +1,376 @@
+{
+  "$defs": {
+    "ComponentKind": {
+      "enum": [
+        "evidence_concept",
+        "evidence_version",
+        "bn_node_concept",
+        "bn_node_version",
+        "evidence_binding_version",
+        "cpt_version",
+        "task_profile_version",
+        "coverage_reporting_policy_version",
+        "layout_version",
+        "assessment_scheme_version",
+        "source_descriptor"
+      ],
+      "title": "ComponentKind",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "ModelNodeKind": {
+      "enum": [
+        "raw_input",
+        "evidence",
+        "bn"
+      ],
+      "title": "ModelNodeKind",
+      "type": "string"
+    },
+    "ModelNodeSnapshotRef": {
+      "additionalProperties": false,
+      "description": "Exact current-node identity used by current-model preflight.",
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "node_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_kind": {
+          "$ref": "#/$defs/ModelNodeKind"
+        },
+        "semantic_revision": {
+          "minimum": 0,
+          "title": "Semantic Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "node_id",
+        "node_kind",
+        "semantic_revision",
+        "content_hash"
+      ],
+      "title": "ModelNodeSnapshotRef",
+      "type": "object"
+    },
+    "PinnedComponentRef": {
+      "additionalProperties": false,
+      "description": "An external replay pin binding an exact ID to its canonical content.",
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id",
+        "content_hash"
+      ],
+      "title": "PinnedComponentRef",
+      "type": "object"
+    },
+    "RunDiagnostic": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "details": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Details",
+          "type": "object"
+        },
+        "location": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "pattern": "^/",
+          "title": "Location",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/RunDiagnosticSeverity"
+        }
+      },
+      "required": [
+        "code",
+        "severity",
+        "location",
+        "message",
+        "details"
+      ],
+      "title": "RunDiagnostic",
+      "type": "object"
+    },
+    "RunDiagnosticSeverity": {
+      "enum": [
+        "info",
+        "warning",
+        "error"
+      ],
+      "title": "RunDiagnosticSeverity",
+      "type": "string"
+    },
+    "RunPreflightReport": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_id": {
+          "const": "run-preflight-report",
+          "default": "run-preflight-report",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "contract_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "diagnostics": {
+          "items": {
+            "$ref": "#/$defs/RunDiagnostic"
+          },
+          "title": "Diagnostics",
+          "type": "array"
+        },
+        "formal_run_authorized": {
+          "title": "Formal Run Authorized",
+          "type": "boolean"
+        },
+        "locked_component_refs": {
+          "items": {
+            "$ref": "#/$defs/PinnedComponentRef"
+          },
+          "title": "Locked Component Refs",
+          "type": "array"
+        },
+        "preflight_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Preflight Hash",
+          "type": "string"
+        },
+        "preflight_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Preflight Id",
+          "type": "string"
+        },
+        "scheme_ref": {
+          "$ref": "#/$defs/PinnedComponentRef"
+        },
+        "session_revision_ref": {
+          "$ref": "#/$defs/SessionRevisionRef"
+        },
+        "synthetic_data": {
+          "title": "Synthetic Data",
+          "type": "boolean"
+        },
+        "technical_disposition": {
+          "$ref": "#/$defs/TechnicalDisposition"
+        }
+      },
+      "required": [
+        "preflight_id",
+        "session_revision_ref",
+        "scheme_ref",
+        "technical_disposition",
+        "formal_run_authorized",
+        "synthetic_data",
+        "locked_component_refs",
+        "diagnostics",
+        "preflight_hash"
+      ],
+      "title": "RunPreflightReport",
+      "type": "object"
+    },
+    "SessionRevisionRef": {
+      "additionalProperties": false,
+      "properties": {
+        "bundle_root_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Bundle Root Hash",
+          "type": "string"
+        },
+        "session_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "session_revision_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Session Revision Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id",
+        "session_revision_id",
+        "bundle_root_hash"
+      ],
+      "title": "SessionRevisionRef",
+      "type": "object"
+    },
+    "TechnicalDisposition": {
+      "enum": [
+        "ready",
+        "blocked"
+      ],
+      "title": "TechnicalDisposition",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:current-model-run-preflight-report:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Technical preflight for one autosaved current TaskScheme revision.",
+  "properties": {
+    "active_node_refs": {
+      "items": {
+        "$ref": "#/$defs/ModelNodeSnapshotRef"
+      },
+      "title": "Active Node Refs",
+      "type": "array"
+    },
+    "contract_id": {
+      "const": "current-model-run-preflight-report",
+      "default": "current-model-run-preflight-report",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "diagnostics": {
+      "items": {
+        "$ref": "#/$defs/RunDiagnostic"
+      },
+      "title": "Diagnostics",
+      "type": "array"
+    },
+    "execution_preflight": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RunPreflightReport"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "formal_run_authorized": {
+      "title": "Formal Run Authorized",
+      "type": "boolean"
+    },
+    "preflight_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Preflight Hash",
+      "type": "string"
+    },
+    "preflight_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Preflight Id",
+      "type": "string"
+    },
+    "scheme_content_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Scheme Content Hash",
+      "type": "string"
+    },
+    "scheme_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Scheme Id",
+      "type": "string"
+    },
+    "scheme_semantic_revision": {
+      "minimum": 0,
+      "title": "Scheme Semantic Revision",
+      "type": "integer"
+    },
+    "session_revision_ref": {
+      "$ref": "#/$defs/SessionRevisionRef"
+    },
+    "synthetic_data": {
+      "title": "Synthetic Data",
+      "type": "boolean"
+    },
+    "technical_disposition": {
+      "$ref": "#/$defs/TechnicalDisposition"
+    }
+  },
+  "required": [
+    "preflight_id",
+    "session_revision_ref",
+    "scheme_id",
+    "scheme_semantic_revision",
+    "scheme_content_hash",
+    "active_node_refs",
+    "technical_disposition",
+    "formal_run_authorized",
+    "synthetic_data",
+    "diagnostics",
+    "execution_preflight",
+    "preflight_hash"
+  ],
+  "title": "Pilot Assessment Current Model Run Preflight Report 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "technical readiness binds one current scheme and its exact active node closure",
+    "scientific calibration is reported separately from executable readiness"
+  ]
+}

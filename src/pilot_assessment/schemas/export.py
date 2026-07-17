@@ -48,6 +48,12 @@ from pilot_assessment.contracts.model_components import (
     EvidenceVersion,
     SourceDescriptor,
 )
+from pilot_assessment.contracts.model_workspace import (
+    ModelChangeEvent,
+    ModelGraphSnapshot,
+    ModelNode,
+    TaskScheme,
+)
 from pilot_assessment.contracts.project import (
     ArtifactReference,
     AuditEvent,
@@ -59,6 +65,9 @@ from pilot_assessment.contracts.project import (
 )
 from pilot_assessment.contracts.run import (
     AssessmentRun,
+    AssessmentRunV2,
+    CurrentModelRunPreflightReport,
+    CurrentModelRunSnapshot,
     RunEvent,
     RunPreflightReport,
     RunResultEnvelope,
@@ -450,6 +459,91 @@ _M6_SCHEMA_MODELS: tuple[
         "Pilot Assessment Run Result Envelope 0.1.0",
         "0.1.0",
         ["result artifacts are exact SHA-256 references and use unique semantic roles"],
+    ),
+)
+
+_M7_SCHEMA_MODELS: tuple[
+    tuple[str, type[BaseModel], str, str, str, list[str]],
+    ...,
+] = (
+    (
+        "model-node-0.1.0.schema.json",
+        ModelNode,
+        "urn:cranfield:pilot-assessment:schema:model-node:0.1.0",
+        "Pilot Assessment Current Model Node 0.1.0",
+        "0.1.0",
+        [
+            "node kind determines the discriminated definition shape",
+            "semantic and layout revisions are independent current-object revisions",
+            "evidence definitions bind raw inputs and BN definitions bind probabilistic parents",
+        ],
+    ),
+    (
+        "task-scheme-0.1.0.schema.json",
+        TaskScheme,
+        "urn:cranfield:pilot-assessment:schema:task-scheme:0.1.0",
+        "Pilot Assessment Current Task Scheme 0.1.0",
+        "0.1.0",
+        [
+            "explicit activation is a subset of the canonical active closure",
+            "run outputs are active BN nodes",
+            "scheme layout overrides do not change shared node semantics",
+        ],
+    ),
+    (
+        "model-graph-snapshot-0.1.0.schema.json",
+        ModelGraphSnapshot,
+        "urn:cranfield:pilot-assessment:schema:model-graph-snapshot:0.1.0",
+        "Pilot Assessment Current Model Graph Snapshot 0.1.0",
+        "0.1.0",
+        [
+            "nodes and derived typed edges use canonical order",
+            "graph revision and content hash identify one current projection",
+        ],
+    ),
+    (
+        "model-change-event-0.1.0.schema.json",
+        ModelChangeEvent,
+        "urn:cranfield:pilot-assessment:schema:model-change-event:0.1.0",
+        "Pilot Assessment Current Model Change Event 0.1.0",
+        "0.1.0",
+        [
+            "change events record before and after revisions and hashes without creating versions",
+        ],
+    ),
+    (
+        "current-model-run-preflight-report-0.1.0.schema.json",
+        CurrentModelRunPreflightReport,
+        "urn:cranfield:pilot-assessment:schema:current-model-run-preflight-report:0.1.0",
+        "Pilot Assessment Current Model Run Preflight Report 0.1.0",
+        "0.1.0",
+        [
+            "technical readiness binds one current scheme and its exact active node closure",
+            "scientific calibration is reported separately from executable readiness",
+        ],
+    ),
+    (
+        "current-model-run-snapshot-0.1.0.schema.json",
+        CurrentModelRunSnapshot,
+        "urn:cranfield:pilot-assessment:schema:current-model-run-snapshot:0.1.0",
+        "Pilot Assessment Current Model Run Snapshot 0.1.0",
+        "0.1.0",
+        [
+            "a run freezes the full current scheme, exact active nodes, "
+            "operator identities and runtime identity",
+            "the embedded legacy execution snapshot remains a compatibility replay detail",
+        ],
+    ),
+    (
+        "assessment-run-0.2.0.schema.json",
+        AssessmentRunV2,
+        "urn:cranfield:pilot-assessment:schema:assessment-run:0.2.0",
+        "Pilot Assessment Current Model Run 0.2.0",
+        "0.2.0",
+        [
+            "run lifecycle timestamps and stages use one consistent shape",
+            "the current-model snapshot is immutable after run creation",
+        ],
     ),
 )
 
@@ -1616,7 +1710,12 @@ def render_schemas() -> dict[str, bytes]:
                 title,
                 contract_version,
                 runtime_invariants,
-            ) in (*_M4_SCHEMA_MODELS, *_M5_SCHEMA_MODELS, *_M6_SCHEMA_MODELS)
+            ) in (
+                *_M4_SCHEMA_MODELS,
+                *_M5_SCHEMA_MODELS,
+                *_M6_SCHEMA_MODELS,
+                *_M7_SCHEMA_MODELS,
+            )
         }
     )
     return schemas
