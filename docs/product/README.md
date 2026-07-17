@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | 产品 v0.5 complete-node/task-activation expert designer；D-031–D-053 已获用户确认 |
 | 基线日期 | 2026-07-17 |
-| 产品阶段 | M1/M2/M3、M4R、M5 与 M6 Local Runtime/Persistence/Sidecar 已工程验证；M7 WinUI 与 M8 packaging 尚未实现；starter/synthetic `formal_run_authorized=false` |
+| 产品阶段 | M1/M2/M3、M4R、M5 与 M6 Local Runtime/Persistence/Sidecar 已工程验证；M7 规格与 M7A/M7B 计划已完成、代码尚未实现；M8 packaging 尚未设计；starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -27,6 +27,9 @@
 |---:|---|---|---|
 | 1 | [01_PRODUCT_OVERVIEW.md](01_PRODUCT_OVERVIEW.md) | 所有人 | 产品边界、角色、工作流和总架构 |
 | 2 | [M7 WinUI Expert Designer and Task Activation Workspace Design](specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) | 专家、产品、前后端 | 当前产品权威：完整节点、任务激活、复制/停用、多浮窗、autosave 与 RunSnapshot |
+| 2.1 | [M7 Implementation Roadmap](plans/2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) | 开发、审查者 | 当前实施顺序：M7A 后端 current-model 迁移后再做 M7B WinUI；定义跨阶段门与轻量验证边界 |
+| 2.2 | [M7A Current Model Runtime Implementation Plan](plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md) | 后端开发、审查者 | 12 个 INLINE 任务：完整节点、任务激活、SQLite v2、自动快照、sidecar 与 legacy replay |
+| 2.3 | [M7B WinUI Expert Designer Implementation Plan](plans/2026-07-17-m7b-winui-expert-designer-implementation-plan.md) | Windows 前端、审查者 | 15 个 INLINE 任务：sidecar client、active/dim 画布、多浮窗、编辑器、双语与 run/results |
 | 3 | [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) | 专家、产品、前后端 | 已实现的后端基础与历史 identity/publish 语义；冲突处由 M7 规格取代 |
 | 4 | [M5 Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) | 开发、审查者 | 已完成：inline 任务、合同冻结、O8 迁移、轻量验证与完成门 |
 | 5 | [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) | 前后端、交付、审查者 | 已实现：受管项目、SQLite、artifact、run lifecycle 与 JSON-RPC sidecar |
@@ -106,7 +109,7 @@
 
 M6 completion gate 也已关闭：受管 project/session/artifact、SQLite component/draft/run persistence、idempotency/audit、exact technical preflight、dynamic Evidence→Observation→BN pipeline、single-worker progress/cancel/recovery，以及无网络端口的 JSON-RPC/JSONL stdio sidecar 均已实现。轻量纵向闭环证明 external bundle 删除后仍可从受管副本运行，整个 project 换目录重开后 exact scheme/result/artifact 仍可回放。下一里程碑是 M7 WinUI Expert Designer；M8 最终打包与科学验证仍未完成，starter/synthetic `formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
-2026-07-17 用户确认 D-047–D-053：M7 改用完整独立节点、全局节点库、任务激活集合、默认只复制节点且复用 fixed parents、启用 parent closure、停用 parent 前级联确认、多浮动节点窗口、双语模型元数据，以及“autosave current scheme + automatic immutable RunSnapshot”。这套语义尚未实现；当前 M5/M6 代码仍使用 immutable component versions、scheme draft/publish 与 published-scheme run lock。M7 实施必须先完成兼容迁移，不能把文档批准写成代码完成。
+2026-07-17 用户确认 D-047–D-053：M7 改用完整独立节点、全局节点库、任务激活集合、默认只复制节点且复用 fixed parents、启用 parent closure、停用 parent 前级联确认、多浮动节点窗口、双语模型元数据，以及“autosave current scheme + automatic immutable RunSnapshot”。权威规格、总路线、M7A 后端计划与 M7B WinUI 计划均已写入文档；代码尚未实现，当前 M5/M6 代码仍使用 immutable component versions、scheme draft/publish 与 published-scheme run lock。实施必须按 M7A → M7B 完成兼容迁移，不能把规格/计划完成写成代码完成。
 
 2026-07-16 另以 repository-external 的 2,902-row 格式样例 X/U 和工程合成 I/G/EEG/ECG/pilot-camera 跑通一次完整 M6 software-test：ingestion/preflight ready、18/18 Evidence computed、exact BN inference completed、39 个结果/追踪工件成功回读且 sidecar stderr 为空。该运行继续标记 `scientific_status=not_supported`；它验证真实产品接口与计算流水线，不验证样例飞行、starter algorithms、阈值或 CPT 的科学正确性。详见 [Captured-Format Multimodal Software Demo](specs/2026-07-16-external-multimodal-session-demo-design.md)。
 

@@ -4,10 +4,10 @@
 |---|---|
 | 设计基线 | M7 v0.1 |
 | 日期 | 2026-07-17 |
-| 状态 | Review candidate；讨论口径已确认，书面汇总待用户复核 |
+| 状态 | Approved；2026-07-17 用户确认并授权进入 M7 实施规划 |
 | 上游实现 | M1–M3、M4R、M5、M6 engineering verified |
 | 决策 | D-047–D-053 |
-| 下游 | M7 implementation plan；M8 packaging/handoff |
+| 下游 | M7A current-model runtime；M7B WinUI expert designer；M8 packaging/handoff |
 | 科学状态 | Starter algorithms/thresholds/CPTs 未经领域专家校准，`formal_run_authorized=false` |
 
 ## 1. 文档权威与目的
@@ -486,6 +486,12 @@ M7 不负责：
 13. 只有新增 operator 能力需要 Python plugin；普通节点/参数/CPT/recipe 修改不需要；
 14. M7 状态必须明确为“设计中/未实现”，直到代码与轻量工程验收完成。
 
-## 19. 书面复核后的下一步
+## 19. 已批准实施路径
 
-本规格经用户复核后，使用 `writing-plans` 工作流编写 M7 implementation plan。计划应保持 INLINE、轻量 test-first：先实现 §17 的 backend compatibility slice，再做 .NET sidecar client 与 WinUI shell，最后实现 Model Studio、floating node windows、Run/Results 和 bilingual polish；不得提前进入 M8 packaging。
+2026-07-17 用户确认本规格并要求持续推进。M7 已按 `writing-plans` 工作流拆为以下连续、INLINE、轻量平台验证计划：
+
+1. [M7 Implementation Roadmap](../plans/2026-07-17-m7-winui-expert-designer-implementation-roadmap.md)：冻结总顺序、跨阶段门槛与验证边界；
+2. [M7A Current Model Runtime Implementation Plan](../plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md)：先实现 §17 的 current complete-node/task-activation backend compatibility、persistence、sidecar 与 automatic RunSnapshot；
+3. [M7B WinUI Expert Designer Implementation Plan](../plans/2026-07-17-m7b-winui-expert-designer-implementation-plan.md)：再实现 .NET sidecar client、WinUI shell、Model Studio、floating node windows、Run/Results 与 bilingual polish。
+
+计划保持现有项目的 INLINE 执行策略，不使用大量 subagents；只验证平台不变量和轻量纵向闭环，不扩展 starter 科学 goldens。M8 packaging 仍必须等待 M7 可见 Windows 应用完成验收。

@@ -1,4 +1,4 @@
-# Implementation Status — M1/M2/M3/M4R/M5/M6 Engineering Verified
+# Implementation Status — M1/M2/M3/M4R/M5/M6 Engineering Verified; M7 Planned
 
 | 字段 | 当前值 |
 |---|---|
@@ -6,7 +6,7 @@
 | 产品设计基线 | v0.5 complete-node/task-activation expert designer（D-031–D-053） |
 | 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization + M4R Editable Evidence Computation Foundation + M5 Shared Model Library and Bayesian Workspace + M6 Local Runtime, Durable Persistence and Sidecar |
 | M4 当前状态 | M4R 已完成 canonical EvidenceRecipe/OperatorDefinition schema、trusted registry、only-technical validation、generic compiler/executor、built-in operator library、backend-only draft/preview/apply/replay、18 个 editable starter resources 和轻量 E2E。旧 Task 0–28 的 15 个 whole-Anchor plugins 与三个 providers 保留为 legacy/reference；旧 Task 29–36 已停止。**M4R engineering verified；`formal_run_authorized=false`。** |
-| 下一里程碑 | M7 WinUI Expert Designer：先迁移为 current complete nodes + task activation + autosave + automatic RunSnapshot，再构建 WinUI；M8 packaging 仍放在最后阶段 |
+| 下一里程碑 | 执行 M7A Current Model Runtime 12-task INLINE plan，关闭 current complete nodes + task activation + automatic RunSnapshot 后端门；随后执行 M7B WinUI 15-task plan；M8 packaging 仍放在最后阶段 |
 | 软件状态 | `in_progress`（M1/M2/M3/M4R/M5/M6 engineering verified；M7 WinUI 与 M8 packaging 尚未完成，starter/synthetic `formal_run_authorized=false`） |
 | 科学状态 | synthetic 数据为 `not_supported`；评估模型仍待领域专家校准与验证 |
 | Python package | `pilot-assessment-system 0.1.0` |
@@ -51,7 +51,7 @@ M4 书面设计明确采用 no-quality-gate 边界：进入 M4 的 aligned input
 
 2026-07-16 M6 Task 1–14 随后按 INLINE 计划实现 strict project/run DTO 与 12 类新 schema、portable project/SQLite migration、durable component/draft/history/publication、idempotency/audit、content-addressed artifacts、managed Session Bundle import、project application composition、exact preflight/run snapshot、source-provider resolution、Evidence→Observation→BN pipeline、single-worker progress/cancel/recovery，以及完整 JSON-RPC/JSONL stdio sidecar。Task 15 的 lightweight managed vertical slice 在删除 external bundle 后完成 O1 dynamic scheme 评估，并在整个 project 换目录后成功 reopen/replay session、published scheme、component hashes、result 与 artifacts。fresh completion gate 为 `151` 项 focused、全仓 `1632 passed, 3 skipped`、44 种 schema 在 root/package 双目录间零漂移、Ruff/format/type/build 与仓库外 wheel smoke 全通过。当前权威状态是 **M6 engineering verified；下一里程碑为 M7 WinUI Expert Designer，M8 packaging 留在最后阶段**。
 
-2026-07-17 用户进一步确认 D-047–D-053：每个可见节点是一个完整、独立、只有一个 current definition 的 `ModelNode`；任务差异通过复制/新建不同节点表达；`TaskScheme` 只保存 active selection 与 parent closure；切换任务以 active/dim 展示；copy/paste 默认只复制节点并引用原 fixed parents；启用 child 自动补齐 parents，停用有 downstream 的 parent 需继续/取消确认；多节点独立浮动窗口与中英文属于 M7；正常交互取消 Draft/Published/Apply/Publish，每个 run 自动冻结 immutable `RunSnapshot`。该规格已写入 [M7 WinUI Expert Designer and Task Activation Workspace Design](specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)，**代码尚未实施**；当前 M5/M6 draft/publish APIs 继续是 migration/replay 基础。
+2026-07-17 用户进一步确认 D-047–D-053：每个可见节点是一个完整、独立、只有一个 current definition 的 `ModelNode`；任务差异通过复制/新建不同节点表达；`TaskScheme` 只保存 active selection 与 parent closure；切换任务以 active/dim 展示；copy/paste 默认只复制节点并引用原 fixed parents；启用 child 自动补齐 parents，停用有 downstream 的 parent 需继续/取消确认；多节点独立浮动窗口与中英文属于 M7；正常交互取消 Draft/Published/Apply/Publish，每个 run 自动冻结 immutable `RunSnapshot`。该规格已获确认；[M7 roadmap](plans/2026-07-17-m7-winui-expert-designer-implementation-roadmap.md)、[M7A backend plan](plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md) 与 [M7B WinUI plan](plans/2026-07-17-m7b-winui-expert-designer-implementation-plan.md) 已编写，**代码尚未实施**；当前 M5/M6 draft/publish APIs 继续是 migration/replay 基础。
 
 ## 2. 已实现能力
 
@@ -391,7 +391,7 @@ M6 收尾另行核对并关闭：project locator 不保存绝对根路径；mana
 
 ## 6. 下一里程碑
 
-M6 已按正式规格和 15-task INLINE plan 完成。下一步是 M7 WinUI Expert Designer，而不是把它重新编号为 M6、回到旧 fixed-plugin Task 29，或提前做 M8 installer。由于 D-047–D-053 修订了 M5/M6 的编辑表面，M7 不能只消费旧 draft/publish DTO；应先完成 backend compatibility slice，再构建 WinUI：
+M6 已按正式规格和 15-task INLINE plan 完成。M7 规格与实施计划也已完成，代码执行顺序由 [M7 roadmap](plans/2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) 冻结为：先执行 [M7A Current Model Runtime 12-task plan](plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md)，关闭后端 current-model/automatic-snapshot gate；再执行 [M7B WinUI Expert Designer 15-task plan](plans/2026-07-17-m7b-winui-expert-designer-implementation-plan.md)。不能把它重新编号为 M6、回到旧 fixed-plugin Task 29，或提前做 M8 installer。由于 D-047–D-053 修订了 M5/M6 的编辑表面，M7 不能只消费旧 draft/publish DTO：
 
 1. 由前端 host 隐藏启动 `python -m pilot_assessment.sidecar` 等价的 bundled runtime，完成 hello/health/shutdown 与 stderr diagnostics；
 2. 实现 project/session 选择和受管导入，但不把用户本机 session 打进产品安装包；
@@ -403,7 +403,10 @@ M6 已按正式规格和 15-task INLINE plan 完成。下一步是 M7 WinUI Expe
 
 当前权威与历史材料见：
 
-- [M7 WinUI Expert Designer and Task Activation Workspace Design](specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)（当前产品语义；书面复核候选，尚未实施）
+- [M7 WinUI Expert Designer and Task Activation Workspace Design](specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)（当前产品语义；已批准，尚未实施）
+- [M7 Implementation Roadmap](plans/2026-07-17-m7-winui-expert-designer-implementation-roadmap.md)（M7A → M7B 顺序与完成门）
+- [M7A Current Model Runtime Implementation Plan](plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md)（待执行的 12 个 INLINE 后端任务）
+- [M7B WinUI Expert Designer Implementation Plan](plans/2026-07-17-m7b-winui-expert-designer-implementation-plan.md)（待 M7A 门关闭及 WinUI 工具链授权后执行的 15 个 INLINE 前端任务）
 - [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)（已实现的 M5 后端基础与历史 identity/publish 语义）
 - [M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md)（已完成的 inline 实施与验收记录）
 - [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md)（已实现的 M6 规格）

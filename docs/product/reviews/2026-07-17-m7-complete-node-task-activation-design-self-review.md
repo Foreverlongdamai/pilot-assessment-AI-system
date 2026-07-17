@@ -5,7 +5,7 @@
 | 日期 | 2026-07-17 |
 | 审查对象 | M7 WinUI Expert Designer and Task Activation Workspace Design |
 | 审查类型 | 跨文档语义、可实现性、历史兼容与用户讨论逐项核对 |
-| 结论 | 书面设计可提交用户复核；M7 implementation plan 尚未编写，代码尚未实现 |
+| 结论 | 书面设计已获用户确认；M7 roadmap、M7A 与 M7B implementation plans 已编写，代码尚未实现 |
 
 ## 1. 已核对的用户口径
 
@@ -81,7 +81,7 @@
 - 新 sidecar methods；
 - .NET client、WinUI shell、Model Studio、floating windows 和 bilingual UI。
 
-因此文档统一标记 M7 为 design/review candidate，没有把新设计描述为已实现。M7 plan 必须先做 backend compatibility slice，再进入 WinUI。
+因此文档明确区分“规格已批准、计划已编写”和“代码尚未实现”。M7A plan 先做 backend compatibility/current-model slice，关闭其运行快照与 sidecar 门后，M7B plan 才进入 WinUI。
 
 ## 5. 轻量工程验证建议
 
@@ -107,4 +107,4 @@
 
 ## 7. 自审结论
 
-设计内部一致，已明确覆盖用户本轮全部决定，并保留 M1–M6 的可重放工程资产。当前唯一正确的下一步是：用户复核书面 M7 规格后，编写 M7 implementation plan；不能继续沿旧 Draft/Publish UI 实施，也不能提前开始 M8 packaging。
+设计内部一致，已明确覆盖用户本轮全部决定，并保留 M1–M6 的可重放工程资产。用户已完成书面规格复核；对应 [M7 roadmap](../plans/2026-07-17-m7-winui-expert-designer-implementation-roadmap.md)、[M7A plan](../plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md) 与 [M7B plan](../plans/2026-07-17-m7b-winui-expert-designer-implementation-plan.md) 已形成。下一步按 M7A → M7B INLINE 执行；不能沿旧 Draft/Publish UI 实施，也不能提前开始 M8 packaging。

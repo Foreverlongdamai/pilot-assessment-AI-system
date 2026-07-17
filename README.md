@@ -128,7 +128,7 @@ Evidence 节点的独立浮动窗口必须同时让专家看到两件事：
 | M4R Editable Evidence Computation Foundation | 已工程验证；canonical `EvidenceRecipe`、typed operators、compiler/executor、draft/preview/apply/replay 与 18 个 starter recipes 已实现 |
 | M5 Shared Model Library and Bayesian Workspace | 已工程验证；global immutable component library、exact-pinned scheme、draft/undo/redo、copy-on-write atomic publish、通用 CPT、finite-discrete exact inference、M4R migration、Hover starter package 与 lightweight preview/publish/replay workflow 已完成 |
 | M6 Local Runtime / Persistence / Protocol | 已工程验证；受管 project/session/artifact、SQLite 持久化、exact run、Evidence→BN pipeline、progress/cancel/recovery 与 stdio JSON-RPC sidecar 已实现 |
-| M7 WinUI Expert Designer | 正式设计候选已保存；current complete nodes、task activation、autosave/RunSnapshot backend migration 与 WinUI 均尚未实施 |
+| M7 WinUI Expert Designer | 正式规格已批准，M7 roadmap、M7A backend plan 与 M7B WinUI plan 已保存；代码尚未实施 |
 | M8 Packaging / Handoff | 尚未实施 |
 
 当前 18 个 Evidence、11 个 sub-skills、4 个 competencies 和 Hover BN 都只是 `starter_template` / `engineering_default`。通用代码、schema、API、UI 和测试不得依赖这些数量、名称或连接。完整产品仍是 `in_progress`，`formal_run_authorized=false`。
@@ -136,14 +136,15 @@ Evidence 节点的独立浮动窗口必须同时让专家看到两件事：
 ## 从这里开始阅读
 
 1. [M7 WinUI Expert Designer and Task Activation Workspace Design](docs/product/specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) — 当前完整节点、任务激活、autosave、浮动窗口与 RunSnapshot 权威设计。
-2. [产品设计文档中心](docs/product/README.md) — 全部正式文档、阅读顺序与权威规则。
-3. [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md) — 真实代码状态、迁移缺口、验证证据和下一步。
-4. [M5 Shared Versioned Model Library and Bayesian Workspace Design](docs/product/specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) — 已实现后端基础与历史 identity/publish 语义。
-5. [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](docs/product/specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) — 已实现的持久化、运行生命周期与本地协议规格。
-6. [产品总览](docs/product/01_PRODUCT_OVERVIEW.md) — 用户、工作流和总体架构；冲突处以 M7 规格为准。
-7. [Expert-Editable Evidence and Assessment Model Design](docs/product/specs/2026-07-15-expert-editable-evidence-and-model-design.md) — M4R–M8 expert-designer 重基线。
-8. [M5 Implementation Plan](docs/product/plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) 与 [M6 Implementation Plan](docs/product/plans/2026-07-16-m6-local-runtime-persistence-and-sidecar-implementation-plan.md) — 已完成的 inline 实施、验证与交接记录。
-9. [Decisions](docs/product/DECISIONS.md) 与 [Glossary](docs/product/GLOSSARY.md) — 已锁定口径和术语。
+2. [M7 Implementation Roadmap](docs/product/plans/2026-07-17-m7-winui-expert-designer-implementation-roadmap.md)、[M7A Backend Plan](docs/product/plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md) 与 [M7B WinUI Plan](docs/product/plans/2026-07-17-m7b-winui-expert-designer-implementation-plan.md) — 当前 INLINE 执行顺序、任务、验证门与提交边界。
+3. [产品设计文档中心](docs/product/README.md) — 全部正式文档、阅读顺序与权威规则。
+4. [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md) — 真实代码状态、迁移缺口、验证证据和下一步。
+5. [M5 Shared Versioned Model Library and Bayesian Workspace Design](docs/product/specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) — 已实现后端基础与历史 identity/publish 语义。
+6. [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](docs/product/specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) — 已实现的持久化、运行生命周期与本地协议规格。
+7. [产品总览](docs/product/01_PRODUCT_OVERVIEW.md) — 用户、工作流和总体架构；冲突处以 M7 规格为准。
+8. [Expert-Editable Evidence and Assessment Model Design](docs/product/specs/2026-07-15-expert-editable-evidence-and-model-design.md) — M4R–M8 expert-designer 重基线。
+9. [M5 Implementation Plan](docs/product/plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) 与 [M6 Implementation Plan](docs/product/plans/2026-07-16-m6-local-runtime-persistence-and-sidecar-implementation-plan.md) — 已完成的 inline 实施、验证与交接记录。
+10. [Decisions](docs/product/DECISIONS.md) 与 [Glossary](docs/product/GLOSSARY.md) — 已锁定口径和术语。
 
 ## 目录
 
