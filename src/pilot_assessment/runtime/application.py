@@ -26,6 +26,11 @@ from pilot_assessment.model_library.repository import (
 )
 from pilot_assessment.model_library.service import ModelLibraryService
 from pilot_assessment.model_library.sources import SourceCatalog
+from pilot_assessment.model_workspace.migration import (
+    CURRENT_HOVER_STARTER_SEED_ID,
+    CurrentStarterSeedResult,
+    seed_current_starter,
+)
 from pilot_assessment.model_workspace.service import CurrentModelWorkspaceService
 from pilot_assessment.persistence.artifacts import (
     ArtifactRecoveryReport,
@@ -126,7 +131,9 @@ class ProjectApplication:
     audit: AuditRepository
     idempotency: IdempotencyStore
     starter_scheme_id: str
+    current_starter_scheme_id: str
     seed_result: StarterSeedResult
+    current_seed_result: CurrentStarterSeedResult
     artifact_recovery: ArtifactRecoveryReport
     session_recovery: SessionRecoveryReport
     run_recovery: tuple[AssessmentRun, ...]
@@ -230,6 +237,12 @@ class ProjectApplication:
             source_catalog=source_catalog,
             clock=clock,
         )
+        current_seed_result = seed_current_starter(
+            profile,
+            current_model,
+            recorded_at=clock(),
+            seed_id=CURRENT_HOVER_STARTER_SEED_ID,
+        )
         runs = RunRepository(database)
         run_recovery = runs.recover_interrupted(occurred_at=clock())
         preflight = RunPreflightService(
@@ -271,7 +284,9 @@ class ProjectApplication:
             audit=audit,
             idempotency=idempotency,
             starter_scheme_id=profile.scheme.scheme_version_id,
+            current_starter_scheme_id=current_seed_result.scheme_id,
             seed_result=seed_result,
+            current_seed_result=current_seed_result,
             artifact_recovery=artifact_recovery,
             session_recovery=session_recovery,
             run_recovery=run_recovery,
@@ -294,7 +309,15 @@ class ProjectApplication:
             self._starter_profile,
             recorded_at=self._clock(),
         )
+        current_result = seed_current_starter(
+            self._starter_profile,
+            self.current_model,
+            recorded_at=self._clock(),
+            seed_id=CURRENT_HOVER_STARTER_SEED_ID,
+        )
         self.seed_result = result
+        self.current_seed_result = current_result
+        self.current_starter_scheme_id = current_result.scheme_id
         return result
 
     def close(self) -> None:
@@ -390,6 +413,8 @@ def _source_catalog_from_repository(
 
 __all__ = [
     "HOVER_STARTER_SEED_ID",
+    "CURRENT_HOVER_STARTER_SEED_ID",
+    "CurrentStarterSeedResult",
     "ProjectApplication",
     "RuntimeCompositionError",
     "StarterSeedError",

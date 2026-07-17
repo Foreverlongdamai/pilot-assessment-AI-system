@@ -1,7 +1,9 @@
 """Durable local runtime composition and execution services."""
 
 from pilot_assessment.runtime.application import (
+    CURRENT_HOVER_STARTER_SEED_ID,
     HOVER_STARTER_SEED_ID,
+    CurrentStarterSeedResult,
     ProjectApplication,
     RuntimeCompositionError,
     StarterSeedError,
@@ -62,6 +64,7 @@ from pilot_assessment.runtime.sources import (
 )
 
 __all__ = [
+    "CURRENT_HOVER_STARTER_SEED_ID",
     "HOVER_STARTER_SEED_ID",
     "AssessmentPipeline",
     "AssessmentPipelineError",
@@ -74,6 +77,7 @@ __all__ = [
     "RuntimeCompositionError",
     "StarterSeedError",
     "StarterSeedResult",
+    "CurrentStarterSeedResult",
     "UuidComponentIdFactory",
     "RunAlreadyExistsError",
     "RunCancelledError",

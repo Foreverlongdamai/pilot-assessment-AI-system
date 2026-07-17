@@ -16,14 +16,14 @@ from pilot_assessment.persistence.migrations import MIGRATIONS
 NOW = datetime(2026, 7, 16, 12, 0, tzinfo=UTC)
 
 
-def test_database_applies_v1_then_v2_migrations_and_required_pragmas(tmp_path) -> None:
+def test_database_applies_all_migrations_and_required_pragmas(tmp_path) -> None:
     database = ProjectDatabase.connect(tmp_path / "project.sqlite3", clock=lambda: NOW)
     try:
         assert database.fetchone("PRAGMA foreign_keys")[0] == 1
         assert database.fetchone("PRAGMA journal_mode")[0] == "wal"
         assert database.fetchone("PRAGMA synchronous")[0] == 2
         versions = database.fetchall("SELECT version FROM schema_migrations")
-        assert [row["version"] for row in versions] == [1, 2]
+        assert [row["version"] for row in versions] == [1, 2, 3]
 
         tables = {
             row["name"]
@@ -105,7 +105,7 @@ def test_existing_v1_database_upgrades_once_without_changing_legacy_rows(tmp_pat
         assert [
             row["version"]
             for row in database.fetchall("SELECT version FROM schema_migrations ORDER BY version")
-        ] == [1, 2]
+        ] == [1, 2, 3]
         assert (
             tuple(
                 database.fetchone(
@@ -123,9 +123,42 @@ def test_existing_v1_database_upgrades_once_without_changing_legacy_rows(tmp_pat
 
     reopened = ProjectDatabase.connect(path, clock=lambda: NOW)
     try:
-        assert reopened.fetchone("SELECT COUNT(*) FROM schema_migrations WHERE version = 2")[0] == 1
+        assert reopened.fetchone("SELECT COUNT(*) FROM schema_migrations WHERE version = 3")[0] == 1
     finally:
         reopened.close()
+
+
+def test_starter_mapping_table_is_a_many_to_many_migration_relation(tmp_path) -> None:
+    database = ProjectDatabase.connect(tmp_path / "project.sqlite3", clock=lambda: NOW)
+    try:
+        rows = (
+            ("map.1", "evidence_concept", "legacy.shared", "node", "node.one"),
+            ("map.2", "evidence_concept", "legacy.shared", "node", "node.two"),
+            ("map.3", "evidence_version", "legacy.version", "node", "node.one"),
+        )
+        with database.transaction() as connection:
+            for mapping_id, legacy_kind, legacy_id, current_kind, current_id in rows:
+                connection.execute(
+                    """
+                    INSERT INTO model_starter_mappings(
+                        mapping_id, legacy_kind, legacy_record_id,
+                        current_object_kind, current_object_id,
+                        seed_id, seed_hash, created_at
+                    ) VALUES (?, ?, ?, ?, ?, 'seed.test', ?, ?)
+                    """,
+                    (
+                        mapping_id,
+                        legacy_kind,
+                        legacy_id,
+                        current_kind,
+                        current_id,
+                        "a" * 64,
+                        "2026-07-17T15:00:00Z",
+                    ),
+                )
+        assert database.fetchone("SELECT COUNT(*) FROM model_starter_mappings")[0] == 3
+    finally:
+        database.close()
 
 
 def test_canonical_json_codec_rejects_noncanonical_or_non_json_payloads() -> None:

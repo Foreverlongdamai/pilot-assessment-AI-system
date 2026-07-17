@@ -352,19 +352,31 @@ git commit -m "feat: make current node edges and CPT atomic"
 **Files:**
 
 - Create: `src/pilot_assessment/model_workspace/migration.py`
+- Modify: `src/pilot_assessment/contracts/model_workspace.py`
+- Modify: `src/pilot_assessment/persistence/migrations.py`
 - Modify: `src/pilot_assessment/runtime/application.py`
+- Modify: `src/pilot_assessment/runtime/__init__.py`
+- Modify: `schemas/model-node-0.1.0.schema.json`
+- Modify: `schemas/model-graph-snapshot-0.1.0.schema.json`
+- Modify: `schemas/current-model-run-snapshot-0.1.0.schema.json`
+- Modify: `schemas/assessment-run-0.2.0.schema.json`
+- Modify: matching packaged copies under `src/pilot_assessment/schema_resources/`
 - Create: `tests/model_workspace/test_hover_migration.py`
 - Modify: `tests/runtime/test_application.py`
+- Modify: `tests/persistence/test_project_database.py`
+- Modify: `tests/persistence/test_project_lifecycle.py`
 
-- [ ] Convert every exact starter `SourceDescriptor` into a Raw Input node and classify it under X/U/I/G/P plus typed task/reference resources.
-- [ ] Combine each starter Evidence concept/version/binding/CPT/recipe into one complete Evidence node.
-- [ ] Combine each starter BN concept/version/CPT into one complete BN node.
-- [ ] Create one Base Scheme from the existing Hover scheme activation/output/task/reference/layout data.
-- [ ] Use deterministic IDs derived from canonical source content, such as `model-node.{kind}.{hash_prefix}` and `task-scheme.{hash_prefix}`; never derive generic behavior from Hover names.
-- [ ] Persist exact old-record-to-current-node mappings and a seed marker. Reopening the project must not duplicate or mutate the current starter.
-- [ ] If old records contain functionally different parallel versions, materialize separate node IDs; retain revision-only historical variants in the legacy archive/replay layer.
-- [ ] Assert migrated counts from the package as observed facts while keeping the generic service count-free.
-- [ ] Run:
+- [x] Convert every exact starter `SourceDescriptor` into a Raw Input node and classify physical streams under X/U/I/G/P/pilot-camera while keeping typed task/reference/session resources outside those physical families.
+- [x] Combine each starter Evidence concept/version/binding/CPT/recipe into one complete Evidence node.
+- [x] Combine each starter BN concept/version/CPT into one complete BN node.
+- [x] Create one Base Scheme from the existing Hover scheme activation/output/task/reference/layout data.
+- [x] Use deterministic IDs derived from canonical source content, such as `model-node.{kind}.{hash_prefix}` and `task-scheme.{hash_prefix}`; never derive generic behavior from Hover names.
+- [x] Persist exact old-record-to-current-node mappings and a seed marker. Reopening the project verifies the mapping/object set without duplicating nodes or overwriting later expert edits.
+- [x] Correct the mapping table to a many-to-many relation so one complete current node may combine several legacy records and one legacy concept may map to parallel current nodes.
+- [x] If old records contain functionally different parallel versions, materialize separate node IDs; retain revision-only historical variants in the legacy archive/replay layer.
+- [x] Assert migrated counts only as observed starter facts: 20 Raw Input + 18 Evidence + 15 BN = 53 nodes, one Base Scheme, 141 legacy mappings, 37 explicitly active nodes, 52 nodes in dependency closure and four outputs. The generic service remains count-free.
+- [x] Keep pilot camera present as an independent Raw Input node but inactive/dim in the starter because the legacy starter scheme did not select it.
+- [x] Run:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest tests/model_workspace/test_hover_migration.py tests/runtime/test_application.py tests/model_library/test_hover_starter_package.py -q
@@ -372,10 +384,10 @@ git commit -m "feat: make current node edges and CPT atomic"
 
 Expected: migration is deterministic/idempotent and old starter hashes remain unchanged.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
-git add src/pilot_assessment/model_workspace/migration.py src/pilot_assessment/runtime/application.py tests/model_workspace/test_hover_migration.py tests/runtime/test_application.py
+git add src/pilot_assessment/model_workspace/migration.py src/pilot_assessment/contracts/model_workspace.py src/pilot_assessment/persistence/migrations.py src/pilot_assessment/runtime/application.py src/pilot_assessment/runtime/__init__.py schemas src/pilot_assessment/schema_resources tests/model_workspace/test_hover_migration.py tests/runtime/test_application.py tests/persistence/test_project_database.py tests/persistence/test_project_lifecycle.py docs/product/plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md
 git commit -m "feat: migrate Hover starter to current model nodes"
 ```
 

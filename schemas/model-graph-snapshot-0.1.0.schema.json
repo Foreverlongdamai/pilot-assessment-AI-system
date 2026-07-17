@@ -964,7 +964,8 @@
         "U",
         "I",
         "G",
-        "P"
+        "P",
+        "pilot_camera"
       ],
       "title": "RawInputFamily",
       "type": "string"
@@ -979,7 +980,14 @@
           "type": "string"
         },
         "family": {
-          "$ref": "#/$defs/RawInputFamily"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RawInputFamily"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "help_text_en": {
           "anyOf": [

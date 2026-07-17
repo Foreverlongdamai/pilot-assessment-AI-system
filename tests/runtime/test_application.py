@@ -27,6 +27,7 @@ def test_application_composes_services_seeds_once_and_reopens_after_project_move
     try:
         expected_count = len(profile.library_items)
         assert application.seed_result.applied is True
+        assert application.current_seed_result.applied is True
         assert application.seed_result.manifest_hash == profile.manifest_hash
         assert len(application.components.list_records()) == expected_count
         assert len(application.operator_registry.catalog()) > 0
@@ -41,13 +42,15 @@ def test_application_composes_services_seeds_once_and_reopens_after_project_move
         assert application.pipeline.results is application.results
         assert isinstance(application.current_model, CurrentModelWorkspaceService)
         assert application.current_model.repository.database is application.project.database
+        assert len(application.current_model.list_nodes()) == 53
+        assert len(application.current_model.list_schemes()) == 1
 
         repeated = application.initialize_starter()
         assert repeated.applied is False
         assert len(application.components.list_records()) == expected_count
         assert (
             application.project.database.fetchone("SELECT COUNT(*) FROM project_seed_markers")[0]
-            == 1
+            == 2
         )
 
         draft = application.schemes.create_draft_from_scheme(
@@ -81,12 +84,14 @@ def test_application_composes_services_seeds_once_and_reopens_after_project_move
             == profile.scheme
         )
         assert reopened.seed_result.applied is False
+        assert reopened.current_seed_result.applied is False
         assert isinstance(reopened.current_model, CurrentModelWorkspaceService)
-        assert reopened.current_model.list_nodes() == ()
+        assert len(reopened.current_model.list_nodes()) == 53
+        assert len(reopened.current_model.list_schemes()) == 1
         assert reopened.initialize_starter().applied is False
         assert len(reopened.components.list_records()) == expected_count
         assert (
-            reopened.project.database.fetchone("SELECT COUNT(*) FROM project_seed_markers")[0] == 1
+            reopened.project.database.fetchone("SELECT COUNT(*) FROM project_seed_markers")[0] == 2
         )
     finally:
         reopened.close()

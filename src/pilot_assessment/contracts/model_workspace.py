@@ -34,6 +34,7 @@ from pilot_assessment.contracts.model_components import (
     ObservationPolicy,
     RawModality,
     SourceDescriptor,
+    SourceKind,
     VariableState,
 )
 
@@ -111,6 +112,7 @@ class RawInputFamily(StrEnum):
     I = "I"  # noqa: E741 - canonical raw-input family identifier
     G = "G"
     P = "P"
+    PILOT_CAMERA = "pilot_camera"
 
 
 class RawResourceRole(StrEnum):
@@ -228,7 +230,7 @@ class NodeCpt(StrictContractModel):
 
 class RawInputNodeDefinition(StrictContractModel):
     definition_kind: Literal["raw_input"] = "raw_input"
-    family: RawInputFamily
+    family: RawInputFamily | None
     resource_role: RawResourceRole
     source_descriptor: SourceDescriptor
     metadata: dict[str, JsonValue]
@@ -239,6 +241,34 @@ class RawInputNodeDefinition(StrictContractModel):
     @classmethod
     def freeze_metadata(cls, value: dict[str, JsonValue]) -> dict[str, JsonValue]:
         return _freeze_json_object(value)
+
+    @model_validator(mode="after")
+    def validate_family_and_role(self) -> Self:
+        descriptor = self.source_descriptor
+        if descriptor.kind is not SourceKind.RAW_STREAM:
+            if self.family is not None:
+                raise ValueError("typed session/task resources must not claim a raw-input family")
+            if self.resource_role is RawResourceRole.STREAM:
+                raise ValueError("only raw-stream descriptors may use the stream resource role")
+            return self
+
+        modality = descriptor.raw_modality
+        if modality is None:
+            raise ValueError("raw-stream descriptors must declare a physical modality")
+        expected_family = {
+            RawModality.X: RawInputFamily.X,
+            RawModality.U: RawInputFamily.U,
+            RawModality.I: RawInputFamily.I,
+            RawModality.G: RawInputFamily.G,
+            RawModality.EEG: RawInputFamily.P,
+            RawModality.ECG: RawInputFamily.P,
+            RawModality.PILOT_CAMERA: RawInputFamily.PILOT_CAMERA,
+        }[modality]
+        if self.resource_role is not RawResourceRole.STREAM:
+            raise ValueError("raw-stream descriptors must use the stream resource role")
+        if self.family is not expected_family:
+            raise ValueError("raw-input family must match the exact physical modality")
+        return self
 
 
 class EvidenceNodeDefinition(StrictContractModel):

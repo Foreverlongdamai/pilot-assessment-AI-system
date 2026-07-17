@@ -34,7 +34,7 @@ def test_project_create_close_move_and_reopen_uses_only_relative_storage(tmp_pat
         for row in project.database.fetchall(
             "SELECT version FROM schema_migrations ORDER BY version"
         )
-    ] == [1, 2]
+    ] == [1, 2, 3]
     assert project.root == original_root.resolve()
     assert {path.name for path in original_root.iterdir() if path.is_dir()} == set(
         PROJECT_DIRECTORY_NAMES

@@ -5,7 +5,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 
-LATEST_SCHEMA_VERSION = 2
+LATEST_SCHEMA_VERSION = 3
 
 _BOOTSTRAP_SCHEMA = """
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -453,6 +453,49 @@ MIGRATIONS = (
             )
             """,
             ("CREATE INDEX model_run_links_preflight_idx ON model_run_links(current_preflight_id)"),
+        ),
+    ),
+    Migration(
+        version=3,
+        name="m7_starter_mapping_relation_v3",
+        statements=(
+            "DROP INDEX model_starter_mappings_current_idx",
+            "ALTER TABLE model_starter_mappings RENAME TO model_starter_mappings_v2",
+            """
+            CREATE TABLE model_starter_mappings (
+                mapping_id TEXT PRIMARY KEY,
+                legacy_kind TEXT NOT NULL,
+                legacy_record_id TEXT NOT NULL,
+                current_object_kind TEXT NOT NULL CHECK (
+                    current_object_kind IN ('node', 'scheme')
+                ),
+                current_object_id TEXT NOT NULL,
+                seed_id TEXT NOT NULL,
+                seed_hash TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                UNIQUE (
+                    legacy_kind, legacy_record_id,
+                    current_object_kind, current_object_id,
+                    seed_id
+                )
+            )
+            """,
+            """
+            INSERT INTO model_starter_mappings(
+                mapping_id, legacy_kind, legacy_record_id,
+                current_object_kind, current_object_id,
+                seed_id, seed_hash, created_at
+            )
+            SELECT mapping_id, legacy_kind, legacy_record_id,
+                   current_object_kind, current_object_id,
+                   seed_id, seed_hash, created_at
+            FROM model_starter_mappings_v2
+            """,
+            "DROP TABLE model_starter_mappings_v2",
+            (
+                "CREATE INDEX model_starter_mappings_current_idx "
+                "ON model_starter_mappings(current_object_kind, current_object_id)"
+            ),
         ),
     ),
 )
