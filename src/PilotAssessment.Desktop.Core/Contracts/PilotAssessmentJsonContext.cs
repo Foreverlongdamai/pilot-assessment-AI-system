@@ -48,4 +48,10 @@ namespace PilotAssessment.Desktop.Core.Contracts;
 [JsonSerializable(typeof(SessionReportResponse))]
 [JsonSerializable(typeof(SessionArtifactRequest))]
 [JsonSerializable(typeof(SessionArtifactLocation))]
+[JsonSerializable(typeof(TaskSchemeListResponse))]
+[JsonSerializable(typeof(TaskSchemeCreateRequest))]
+[JsonSerializable(typeof(TaskSchemeCopyRequest))]
+[JsonSerializable(typeof(TaskSchemeUpdateRequest))]
+[JsonSerializable(typeof(TaskSchemeArchiveRequest))]
+[JsonSerializable(typeof(TaskSchemeMutationResponse))]
 public sealed partial class PilotAssessmentJsonContext : JsonSerializerContext;

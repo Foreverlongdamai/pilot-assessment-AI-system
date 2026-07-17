@@ -45,9 +45,13 @@ public partial class App : Application
         builder.Services.AddSingleton<ProjectSessionClient>();
         builder.Services.AddSingleton<IProjectSessionGateway>(services =>
             services.GetRequiredService<ProjectSessionClient>());
+        builder.Services.AddSingleton<ModelWorkspaceClient>();
+        builder.Services.AddSingleton<IModelWorkspaceGateway>(services =>
+            services.GetRequiredService<ModelWorkspaceClient>());
         builder.Services.AddSingleton<NavigationService>();
         builder.Services.AddSingleton<ShellViewModel>();
         builder.Services.AddSingleton<SessionExplorerViewModel>();
+        builder.Services.AddSingleton<TaskSchemeListViewModel>();
         builder.Services.AddSingleton<ProjectLauncherViewModel>();
         builder.Services.AddSingleton<MainWindow>();
         _applicationHost = builder.Build();

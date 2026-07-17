@@ -16,6 +16,7 @@ public partial class ProjectLauncherViewModel : ObservableObject
     private readonly IRecentProjectStore _recentStore;
     private readonly ApplicationShellState _shellState;
     private readonly SessionExplorerViewModel _sessions;
+    private readonly TaskSchemeListViewModel? _schemes;
 
     [ObservableProperty]
     public partial string ProjectName { get; set; } = "Pilot Assessment Project";
@@ -66,13 +67,15 @@ public partial class ProjectLauncherViewModel : ObservableObject
         IProjectFolderPicker folderPicker,
         IRecentProjectStore recentStore,
         ApplicationShellState shellState,
-        SessionExplorerViewModel sessions)
+        SessionExplorerViewModel sessions,
+        TaskSchemeListViewModel? schemes = null)
     {
         _gateway = gateway;
         _folderPicker = folderPicker;
         _recentStore = recentStore;
         _shellState = shellState;
         _sessions = sessions;
+        _schemes = schemes;
     }
 
     public async Task<bool> InitializeAsync(
@@ -194,6 +197,10 @@ public partial class ProjectLauncherViewModel : ObservableObject
         CloseProjectCommand.NotifyCanExecuteChanged();
         await TouchRecentAsync(project, root, cancellationToken);
         await _sessions.LoadAsync(project.ProjectId, cancellationToken: cancellationToken);
+        if (_schemes is not null)
+        {
+            await _schemes.LoadAsync(project.ProjectId, cancellationToken);
+        }
     }
 
     private void ClearCurrentProject()
@@ -202,6 +209,7 @@ public partial class ProjectLauncherViewModel : ObservableObject
         CurrentProjectRoot = null;
         _shellState.SetProjectContext(null);
         _sessions.Reset();
+        _schemes?.Reset();
         OnPropertyChanged(nameof(HasOpenProject));
         OnPropertyChanged(nameof(CurrentProjectText));
         OnPropertyChanged(nameof(CurrentProjectRootText));
