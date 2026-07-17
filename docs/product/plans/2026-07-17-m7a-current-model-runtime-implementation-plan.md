@@ -134,14 +134,14 @@ git commit -m "feat: add M7 current model contracts"
 - Create: `tests/model_workspace/test_graph.py`
 - Create: `tests/model_workspace/test_validation.py`
 
-- [ ] Build tiny reusable Raw/Evidence/BN fixtures with no O/H-specific branching.
-- [ ] Project typed extraction/probabilistic edges from node definitions and reject dangling IDs, wrong edge kinds, duplicate axes and probabilistic cycles.
-- [ ] Compute deterministic ancestors, descendants, explicit activation closure and active edge sets using canonical node-ID ordering.
-- [ ] Keep Evidence extraction dependencies separate from probabilistic dependencies in DTOs and diagnostics.
-- [ ] Compute a semantic hash that excludes layout, timestamps, revision counters and transient technical status; compute a separate layout hash.
-- [ ] Return technical diagnostics as errors or warnings. Provisional descriptions, thresholds and CPT provenance produce warnings at most; missing operators, impossible CPT shapes, cycles and unavailable required source providers block run.
-- [ ] Test a 7-node graph for closure, descendants, active/inactive edge projection and stable hashes.
-- [ ] Run:
+- [x] Build tiny reusable Raw/Evidence/BN fixtures with no O/H-specific branching.
+- [x] Project typed extraction/probabilistic edges from node definitions and reject dangling IDs, wrong edge kinds, duplicate axes and probabilistic cycles.
+- [x] Compute deterministic ancestors, descendants, explicit activation closure and active edge sets using canonical node-ID ordering.
+- [x] Keep Evidence extraction dependencies separate from probabilistic dependencies in DTOs and diagnostics.
+- [x] Compute a semantic hash that excludes layout, timestamps, revision counters and transient technical status; compute a separate layout hash.
+- [x] Return technical diagnostics as errors or warnings. Provisional descriptions, thresholds and CPT provenance produce warnings at most; missing operators, impossible CPT shapes, cycles and unavailable required source providers block run.
+- [x] Test a 7-node graph for closure, descendants, active/inactive edge projection and stable hashes.
+- [x] Run:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest tests/model_workspace/test_graph.py tests/model_workspace/test_validation.py -q
@@ -149,7 +149,7 @@ git commit -m "feat: add M7 current model contracts"
 
 Expected: graph rules pass without loading the Hover starter or a session dataset.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/pilot_assessment/model_workspace tests/model_workspace
@@ -519,7 +519,7 @@ git commit -m "test: close M7A current model runtime"
 | Task | Planned commit | Actual commit |
 |---:|---|---|
 | 1 | `feat: add M7 current model contracts` | Executed; exact hash backfilled at Task 12 |
-| 2 | `feat: add current model graph rules` | Not executed |
+| 2 | `feat: add current model graph rules` | Executed; exact hash backfilled at Task 12 |
 | 3 | `feat: persist M7 current model workspace` | Not executed |
 | 4 | `feat: add current model node service` | Not executed |
 | 5 | `feat: add current task scheme service` | Not executed |
