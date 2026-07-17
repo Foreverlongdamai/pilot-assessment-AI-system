@@ -235,13 +235,13 @@ git commit -m "feat: add current model node service"
 - Modify: `src/pilot_assessment/model_workspace/service.py`
 - Create: `tests/model_workspace/test_scheme_service.py`
 
-- [ ] Implement scheme list/get/create/update metadata/archive/history/undo/redo.
-- [ ] Implement scheme copy as a new parallel `scheme_id` that shares node IDs and copies explicit activation, outputs, task/reference bindings, layout overrides, filters/group metadata and lineage.
-- [ ] Make the copied scheme immediately editable and runnable; do not create Draft/Published status fields.
-- [ ] Keep `semantic_revision` separate from `layout_revision`; switching the current front-end context is not a backend model mutation.
-- [ ] Return a complete canonical graph snapshot after operations that affect the visible task graph.
-- [ ] Verify copying one scheme does not copy any node and editing only its activation/layout does not affect the source scheme.
-- [ ] Run:
+- [x] Implement scheme list/get/create/update metadata/archive/history/undo/redo.
+- [x] Implement scheme copy as a new parallel `scheme_id` that shares node IDs and copies explicit activation, outputs, task/reference bindings, layout overrides, filters/group metadata and lineage.
+- [x] Make the copied scheme immediately editable and runnable; do not create Draft/Published status fields.
+- [x] Keep `semantic_revision` separate from `layout_revision`; switching the current front-end context is not a backend model mutation.
+- [x] Return a complete canonical graph snapshot after operations that affect the visible task graph.
+- [x] Verify copying one scheme does not copy any node and editing only its activation/layout does not affect the source scheme.
+- [x] Run:
 
 ```powershell
 & .\.tools\uv\uv.exe run pytest tests/model_workspace/test_scheme_service.py -q
@@ -249,7 +249,7 @@ git commit -m "feat: add current model node service"
 
 Expected: parallel schemes persist and share exact nodes until an expert explicitly copies a node.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/pilot_assessment/model_workspace/service.py tests/model_workspace/test_scheme_service.py
@@ -522,7 +522,7 @@ git commit -m "test: close M7A current model runtime"
 | 2 | `feat: add current model graph rules` | Executed; exact hash backfilled at Task 12 |
 | 3 | `feat: persist M7 current model workspace` | Executed; exact hash backfilled at Task 12 |
 | 4 | `feat: add current model node service` | Executed; exact hash backfilled at Task 12 |
-| 5 | `feat: add current task scheme service` | Not executed |
+| 5 | `feat: add current task scheme service` | Executed; exact hash backfilled at Task 12 |
 | 6 | `feat: add task activation and cascade semantics` | Not executed |
 | 7 | `feat: add current node and graph copy operations` | Not executed |
 | 8 | `feat: make current node edges and CPT atomic` | Not executed |

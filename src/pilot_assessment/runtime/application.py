@@ -225,6 +225,7 @@ class ProjectApplication:
         )
         current_model = CurrentModelWorkspaceService(
             SqliteModelWorkspaceRepository(database),
+            project_id=project.descriptor.project_id,
             operator_registry=operator_registry,
             source_catalog=source_catalog,
             clock=clock,

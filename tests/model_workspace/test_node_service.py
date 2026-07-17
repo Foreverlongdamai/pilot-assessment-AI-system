@@ -64,6 +64,7 @@ def _service(
         repository,
         CurrentModelWorkspaceService(
             repository,
+            project_id="project.test",
             operator_registry=operator_registry(),
             source_catalog=_source_catalog(nodes),
             clock=lambda: NOW,

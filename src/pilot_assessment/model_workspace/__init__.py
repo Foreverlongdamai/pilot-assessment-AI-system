@@ -25,8 +25,10 @@ from pilot_assessment.model_workspace.service import (
     CurrentModelRevisionConflict,
     CurrentModelServiceError,
     CurrentModelWorkspaceService,
+    CurrentSchemeRevisionConflict,
     NodeMutationResult,
     NodeUsage,
+    SchemeMutationResult,
 )
 from pilot_assessment.model_workspace.validation import (
     ModelValidationOutcome,
@@ -40,10 +42,12 @@ __all__ = [
     "CurrentModelRevisionConflict",
     "CurrentModelServiceError",
     "CurrentModelWorkspaceService",
+    "CurrentSchemeRevisionConflict",
     "ModelGraphError",
     "ModelValidationOutcome",
     "NodeMutationResult",
     "NodeUsage",
+    "SchemeMutationResult",
     "activation_closure",
     "ancestors",
     "descendants",

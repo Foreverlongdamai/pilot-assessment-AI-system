@@ -19,6 +19,7 @@ from pilot_assessment.contracts.model_workspace import (
     ModelDiagnostic,
     ModelDiagnosticSeverity,
     ModelGraphEdge,
+    ModelGraphSnapshot,
     ModelNode,
     ModelObjectLifecycle,
     ModelTechnicalStatus,
@@ -31,7 +32,11 @@ from pilot_assessment.model_workspace.graph import (
     activation_closure,
     project_model_edges,
 )
-from pilot_assessment.model_workspace.hashing import rehash_model_node
+from pilot_assessment.model_workspace.hashing import (
+    model_graph_semantic_hash,
+    rehash_model_node,
+    rehash_task_scheme,
+)
 from pilot_assessment.model_workspace.validation import validate_model_graph
 from pilot_assessment.persistence.database import Clock
 from pilot_assessment.persistence.model_workspace_repository import (
@@ -41,6 +46,18 @@ from pilot_assessment.persistence.model_workspace_repository import (
 )
 
 _NODE_BOOKKEEPING_FIELDS: Final[frozenset[str]] = frozenset(
+    {
+        "semantic_revision",
+        "layout_revision",
+        "technical_status",
+        "diagnostics",
+        "content_hash",
+        "layout_hash",
+        "created_at",
+        "updated_at",
+    }
+)
+_SCHEME_BOOKKEEPING_FIELDS: Final[frozenset[str]] = frozenset(
     {
         "semantic_revision",
         "layout_revision",
@@ -85,6 +102,14 @@ class CurrentModelArchiveConflict(CurrentModelMutationConflict):
         self.active_scheme_ids = active_scheme_ids
 
 
+class CurrentSchemeRevisionConflict(CurrentModelMutationConflict):
+    """Optimistic conflict carrying the canonical scheme for UI reconciliation."""
+
+    def __init__(self, message: str, *, current_scheme: TaskScheme) -> None:
+        super().__init__(message)
+        self.current_scheme = current_scheme
+
+
 @dataclass(frozen=True, slots=True)
 class NodeUsage:
     """One task-scheme relationship shown by node usage inspection."""
@@ -102,6 +127,18 @@ class NodeMutationResult:
 
     node: ModelNode
     affected_scheme_ids: tuple[str, ...]
+    semantic_revision: int
+    layout_revision: int
+    technical_status: ModelTechnicalStatus
+    diff: CanonicalModelDiff
+
+
+@dataclass(frozen=True, slots=True)
+class SchemeMutationResult:
+    """Canonical task-scheme mutation plus the regenerated visible graph."""
+
+    scheme: TaskScheme
+    graph: ModelGraphSnapshot
     semantic_revision: int
     layout_revision: int
     technical_status: ModelTechnicalStatus
@@ -139,6 +176,19 @@ def _canonical_changed_paths(before: ModelNode, after: ModelNode) -> tuple[str, 
     )
 
 
+def _canonical_scheme_changed_paths(
+    before: TaskScheme,
+    after: TaskScheme,
+) -> tuple[str, ...]:
+    before_payload = before.model_dump(mode="json")
+    after_payload = after.model_dump(mode="json")
+    return tuple(
+        f"/{key}"
+        for key in sorted(before_payload)
+        if key not in _SCHEME_BOOKKEEPING_FIELDS and before_payload[key] != after_payload[key]
+    )
+
+
 def _replace_node(nodes: Iterable[ModelNode], candidate: ModelNode) -> tuple[ModelNode, ...]:
     index = {node.node_id: node for node in nodes}
     index[candidate.node_id] = candidate
@@ -154,6 +204,13 @@ def _child_edges(nodes: tuple[ModelNode, ...], node_id: str) -> tuple[ModelGraph
     except ModelGraphError:
         return ()
     return tuple(edge for edge in edges if edge.child.node_id == node_id)
+
+
+def _all_resolvable_edges(nodes: tuple[ModelNode, ...]) -> tuple[ModelGraphEdge, ...]:
+    """Project every currently resolvable edge while preserving incomplete experiments."""
+
+    edges = {edge.edge_id: edge for node in nodes for edge in _child_edges(nodes, node.node_id)}
+    return tuple(edges[edge_id] for edge_id in sorted(edges))
 
 
 def _node_diff(
@@ -189,12 +246,14 @@ class CurrentModelWorkspaceService:
         self,
         repository: SqliteModelWorkspaceRepository,
         *,
+        project_id: str,
         operator_registry: OperatorRegistry,
         source_catalog: SourceCatalog,
         clock: Clock = _utc_now,
         event_id_factory: Callable[[], str] | None = None,
     ) -> None:
         self.repository = repository
+        self.project_id = project_id
         self.operator_registry = operator_registry
         self.source_catalog = source_catalog
         self._clock = clock
@@ -236,6 +295,39 @@ class CurrentModelWorkspaceService:
             or node_id in scheme.output_node_ids
         )
         return tuple(sorted(usages, key=lambda item: item.scheme_id))
+
+    def list_schemes(
+        self,
+        *,
+        lifecycle: ModelObjectLifecycle | None = None,
+    ) -> tuple[TaskScheme, ...]:
+        return self.repository.list_schemes(lifecycle=lifecycle)
+
+    def get_scheme(self, scheme_id: str) -> TaskScheme:
+        return self.repository.get_scheme(scheme_id)
+
+    def scheme_history(self, scheme_id: str) -> tuple[ModelChangeEvent, ...]:
+        return self.repository.scheme_history(scheme_id)
+
+    def graph_snapshot(self, scheme_id: str) -> ModelGraphSnapshot:
+        return self._graph_snapshot(self.repository.get_scheme(scheme_id))
+
+    def _graph_snapshot(self, scheme: TaskScheme) -> ModelGraphSnapshot:
+        nodes = tuple(sorted(self.repository.list_nodes(), key=lambda item: item.node_id))
+        edges = _all_resolvable_edges(nodes)
+        return ModelGraphSnapshot(
+            project_id=self.project_id,
+            scheme=scheme,
+            nodes=nodes,
+            edges=edges,
+            generated_at=self._clock(),
+            graph_hash=model_graph_semantic_hash(
+                self.project_id,
+                scheme,
+                nodes,
+                edges,
+            ),
+        )
 
     def _normalize_node(
         self,
@@ -631,6 +723,296 @@ class CurrentModelWorkspaceService:
             actor_id=actor_id,
         )
 
+    def _scheme_diff(
+        self,
+        before: TaskScheme | None,
+        after: TaskScheme,
+        *,
+        mutation: str,
+        copied_from_scheme_id: str | None = None,
+    ) -> CanonicalModelDiff:
+        metadata: dict[str, str] = {"mutation": mutation}
+        if copied_from_scheme_id is not None:
+            metadata["copied_from_scheme_id"] = copied_from_scheme_id
+        return CanonicalModelDiff(
+            changed_paths=(
+                (f"/schemes/{after.scheme_id}",)
+                if before is None
+                else _canonical_scheme_changed_paths(before, after)
+            ),
+            added_node_ids=(),
+            removed_node_ids=(),
+            added_edge_ids=(),
+            removed_edge_ids=(),
+            metadata=metadata,
+        )
+
+    def _scheme_result(
+        self,
+        scheme: TaskScheme,
+        diff: CanonicalModelDiff,
+    ) -> SchemeMutationResult:
+        return SchemeMutationResult(
+            scheme=scheme,
+            graph=self._graph_snapshot(scheme),
+            semantic_revision=scheme.semantic_revision,
+            layout_revision=scheme.layout_revision,
+            technical_status=scheme.technical_status,
+            diff=diff,
+        )
+
+    def _create_scheme(
+        self,
+        scheme: TaskScheme,
+        *,
+        transaction_id: str,
+        actor_id: str,
+        mutation: str,
+        copied_from_scheme_id: str | None = None,
+    ) -> SchemeMutationResult:
+        occurred_at = self._clock()
+        proposed = scheme.model_copy(
+            update={
+                "semantic_revision": 0,
+                "layout_revision": 0,
+                "created_at": occurred_at,
+                "updated_at": occurred_at,
+            }
+        )
+        normalized = rehash_task_scheme(
+            self._normalize_scheme(proposed, self.repository.list_nodes())
+        )
+        diff = self._scheme_diff(
+            None,
+            normalized,
+            mutation=mutation,
+            copied_from_scheme_id=copied_from_scheme_id,
+        )
+        try:
+            saved = self.repository.create_scheme(
+                normalized,
+                event_id=self._event_id(),
+                actor_id=actor_id,
+                transaction_id=transaction_id,
+                occurred_at=occurred_at,
+                diff=diff,
+            )
+        except CurrentObjectConflictError as error:
+            try:
+                current = self.repository.get_scheme(scheme.scheme_id)
+            except CurrentObjectNotFoundError:
+                raise CurrentModelMutationConflict(str(error)) from error
+            raise CurrentSchemeRevisionConflict(
+                str(error),
+                current_scheme=current,
+            ) from error
+        return self._scheme_result(saved, diff)
+
+    def create_scheme(
+        self,
+        scheme: TaskScheme,
+        *,
+        transaction_id: str,
+        actor_id: str,
+    ) -> SchemeMutationResult:
+        return self._create_scheme(
+            scheme,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+            mutation="create_scheme",
+        )
+
+    def copy_scheme(
+        self,
+        source_scheme_id: str,
+        *,
+        new_scheme_id: str,
+        name_zh: str | None,
+        name_en: str | None,
+        transaction_id: str,
+        actor_id: str,
+    ) -> SchemeMutationResult:
+        source = self.repository.get_scheme(source_scheme_id)
+        copy = source.model_copy(
+            update={
+                "scheme_id": new_scheme_id,
+                "name_zh": source.name_zh if name_zh is None else name_zh,
+                "name_en": source.name_en if name_en is None else name_en,
+                "lifecycle": ModelObjectLifecycle.ACTIVE,
+                "copied_from_scheme_id": source.scheme_id,
+            }
+        )
+        return self._create_scheme(
+            copy,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+            mutation="copy_scheme",
+            copied_from_scheme_id=source.scheme_id,
+        )
+
+    def update_scheme(
+        self,
+        scheme: TaskScheme,
+        *,
+        expected_semantic_revision: int | None,
+        expected_layout_revision: int | None,
+        transaction_id: str,
+        actor_id: str,
+    ) -> SchemeMutationResult:
+        current = self.repository.get_scheme(scheme.scheme_id)
+        if current.lifecycle is ModelObjectLifecycle.ARCHIVED:
+            raise CurrentModelMutationConflict("archived task schemes cannot be edited")
+        if expected_semantic_revision is None and expected_layout_revision is None:
+            raise CurrentModelMutationConflict("a scheme update requires an expected revision")
+        if expected_semantic_revision is None:
+            channel_proposal = current.model_copy(
+                update={"layout_overrides": scheme.layout_overrides}
+            )
+        elif expected_layout_revision is None:
+            channel_proposal = scheme.model_copy(
+                update={"layout_overrides": current.layout_overrides}
+            )
+        else:
+            channel_proposal = scheme
+        normalized = (
+            rehash_task_scheme(channel_proposal)
+            if expected_semantic_revision is None
+            else rehash_task_scheme(
+                self._normalize_scheme(channel_proposal, self.repository.list_nodes())
+            )
+        )
+        diff = self._scheme_diff(current, normalized, mutation="update_scheme")
+        try:
+            saved = self.repository.update_scheme(
+                normalized,
+                expected_semantic_revision=expected_semantic_revision,
+                expected_layout_revision=expected_layout_revision,
+                event_id=self._event_id(),
+                actor_id=actor_id,
+                transaction_id=transaction_id,
+                occurred_at=self._clock(),
+                diff=diff,
+            )
+        except CurrentObjectConflictError as error:
+            canonical = self.repository.get_scheme(scheme.scheme_id)
+            raise CurrentSchemeRevisionConflict(
+                str(error),
+                current_scheme=canonical,
+            ) from error
+        return self._scheme_result(saved, diff)
+
+    def archive_scheme(
+        self,
+        scheme_id: str,
+        *,
+        expected_semantic_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> SchemeMutationResult:
+        self.repository.get_scheme(scheme_id)
+        diff = CanonicalModelDiff(
+            changed_paths=("/lifecycle",),
+            added_node_ids=(),
+            removed_node_ids=(),
+            added_edge_ids=(),
+            removed_edge_ids=(),
+            metadata={"mutation": "archive_scheme"},
+        )
+        try:
+            saved = self.repository.archive_scheme(
+                scheme_id,
+                expected_semantic_revision=expected_semantic_revision,
+                event_id=self._event_id(),
+                actor_id=actor_id,
+                transaction_id=transaction_id,
+                occurred_at=self._clock(),
+                diff=diff,
+            )
+        except CurrentObjectConflictError as error:
+            canonical = self.repository.get_scheme(scheme_id)
+            raise CurrentSchemeRevisionConflict(
+                str(error),
+                current_scheme=canonical,
+            ) from error
+        return self._scheme_result(saved, diff)
+
+    def _travel_scheme(
+        self,
+        scheme_id: str,
+        *,
+        direction: str,
+        expected_semantic_revision: int,
+        expected_layout_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> SchemeMutationResult:
+        occurred_at = self._clock()
+        try:
+            if direction == "undo":
+                saved = self.repository.undo_scheme(
+                    scheme_id,
+                    expected_semantic_revision=expected_semantic_revision,
+                    expected_layout_revision=expected_layout_revision,
+                    event_id=self._event_id(),
+                    actor_id=actor_id,
+                    transaction_id=transaction_id,
+                    occurred_at=occurred_at,
+                )
+            else:
+                saved = self.repository.redo_scheme(
+                    scheme_id,
+                    expected_semantic_revision=expected_semantic_revision,
+                    expected_layout_revision=expected_layout_revision,
+                    event_id=self._event_id(),
+                    actor_id=actor_id,
+                    transaction_id=transaction_id,
+                    occurred_at=occurred_at,
+                )
+            diff = self.repository.scheme_history(scheme_id)[-1].diff
+        except CurrentObjectConflictError as error:
+            canonical = self.repository.get_scheme(scheme_id)
+            raise CurrentSchemeRevisionConflict(
+                str(error),
+                current_scheme=canonical,
+            ) from error
+        return self._scheme_result(saved, diff)
+
+    def undo_scheme(
+        self,
+        scheme_id: str,
+        *,
+        expected_semantic_revision: int,
+        expected_layout_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> SchemeMutationResult:
+        return self._travel_scheme(
+            scheme_id,
+            direction="undo",
+            expected_semantic_revision=expected_semantic_revision,
+            expected_layout_revision=expected_layout_revision,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+        )
+
+    def redo_scheme(
+        self,
+        scheme_id: str,
+        *,
+        expected_semantic_revision: int,
+        expected_layout_revision: int,
+        transaction_id: str,
+        actor_id: str,
+    ) -> SchemeMutationResult:
+        return self._travel_scheme(
+            scheme_id,
+            direction="redo",
+            expected_semantic_revision=expected_semantic_revision,
+            expected_layout_revision=expected_layout_revision,
+            transaction_id=transaction_id,
+            actor_id=actor_id,
+        )
+
 
 __all__ = [
     "CurrentModelArchiveConflict",
@@ -638,6 +1020,8 @@ __all__ = [
     "CurrentModelRevisionConflict",
     "CurrentModelServiceError",
     "CurrentModelWorkspaceService",
+    "CurrentSchemeRevisionConflict",
     "NodeMutationResult",
     "NodeUsage",
+    "SchemeMutationResult",
 ]
