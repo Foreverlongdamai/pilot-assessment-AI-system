@@ -1,0 +1,15 @@
+{
+  "contract_id": "session-revision",
+  "contract_version": "0.1.0",
+  "session_revision_id": "session.alpha.rev1",
+  "session_id": "session.alpha",
+  "managed_bundle_path": "sessions/session.alpha/revisions/session.alpha.rev1/bundle",
+  "manifest_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "bundle_root_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "file_inventory_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "source_kind": "managed_import",
+  "imported_at": "2026-07-17T10:06:00Z",
+  "imported_by": "expert.fixture",
+  "ingestion_readiness_ref": "artifact.readiness",
+  "synchronization_ref": "artifact.sync"
+}

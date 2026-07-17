@@ -22,4 +22,10 @@
     <ProjectReference Include="..\..\src\PilotAssessment.Desktop.Core\PilotAssessment.Desktop.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\PilotAssessment.Desktop.ContractTests\Fixtures\*.json"
+          Link="Fixtures\%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,53 @@
+{
+  "contract_id": "current-model-run-preflight-report",
+  "contract_version": "0.1.0",
+  "preflight_id": "preflight.current",
+  "session_revision_ref": {
+    "session_id": "session.alpha",
+    "session_revision_id": "session.alpha.rev1",
+    "bundle_root_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "scheme_id": "scheme.current",
+  "scheme_semantic_revision": 3,
+  "scheme_content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "active_node_refs": [
+    {
+      "node_id": "raw.x",
+      "node_kind": "raw_input",
+      "semantic_revision": 2,
+      "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+  ],
+  "technical_disposition": "ready",
+  "formal_run_authorized": false,
+  "synthetic_data": true,
+  "diagnostics": [],
+  "execution_preflight": {
+    "contract_id": "run-preflight-report",
+    "contract_version": "0.1.0",
+    "preflight_id": "preflight.legacy",
+    "session_revision_ref": {
+      "session_id": "session.alpha",
+      "session_revision_id": "session.alpha.rev1",
+      "bundle_root_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "scheme_ref": {
+      "kind": "assessment_scheme_version",
+      "version_id": "scheme.alpha.v1",
+      "content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "technical_disposition": "ready",
+    "formal_run_authorized": false,
+    "synthetic_data": true,
+    "locked_component_refs": [
+      {
+        "kind": "assessment_scheme_version",
+        "version_id": "scheme.alpha.v1",
+        "content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ],
+    "diagnostics": [],
+    "preflight_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "preflight_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+}

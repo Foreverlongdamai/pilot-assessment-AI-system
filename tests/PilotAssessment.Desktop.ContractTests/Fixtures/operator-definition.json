@@ -1,0 +1,33 @@
+{
+  "contract_id": "operator-definition",
+  "contract_version": "0.1.0",
+  "operator_id": "input.binding",
+  "implementation_version": "0.1.0",
+  "family": "input",
+  "name": "Recipe input binding",
+  "description": "Returns the execution value of the binding selected by the node.",
+  "pseudocode": "value = execution_bindings[node.input_binding_id]",
+  "input_ports": [],
+  "output_ports": [
+    {
+      "port_id": "value",
+      "name": "Value",
+      "description": "Built-in value port.",
+      "port_type": {
+        "value_type": "any",
+        "cardinality": "one",
+        "temporal_semantics": "mixed",
+        "unit": null
+      }
+    }
+  ],
+  "parameter_schema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  },
+  "parameter_ui": [],
+  "trace_capability": "summary",
+  "implementation_source": "built_in",
+  "implementation_ref": "builtin.input.binding"
+}

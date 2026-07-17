@@ -1,0 +1,35 @@
+{
+  "contract_id": "run-result-envelope",
+  "contract_version": "0.1.0",
+  "result_id": "result.alpha",
+  "run_id": "run.alpha",
+  "snapshot_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "evidence_result_refs": [
+    {
+      "artifact_id": "artifact.evidence",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ],
+  "evidence_trace_refs": [
+    {
+      "artifact_id": "artifact.evidence-trace",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ],
+  "observation_set_ref": {
+    "artifact_id": "artifact.observations",
+    "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "posterior_ref": {
+    "artifact_id": "artifact.posterior",
+    "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+  },
+  "inference_trace_ref": {
+    "artifact_id": "artifact.inference-trace",
+    "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "reporting_refs": [],
+  "coverage_refs": [],
+  "scientific_status": "not_supported",
+  "result_hash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+}

@@ -1,0 +1,28 @@
+{
+  "contract_id": "model-change-event",
+  "contract_version": "0.1.0",
+  "event_id": "event.node.rename",
+  "object_kind": "node",
+  "object_id": "raw.x",
+  "event_kind": "update",
+  "parent_event_id": "event.node.create",
+  "semantic_revision": 3,
+  "layout_revision": 1,
+  "before_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "after_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "diff": {
+    "changed_paths": [
+      "/name_en"
+    ],
+    "added_node_ids": [],
+    "removed_node_ids": [],
+    "added_edge_ids": [],
+    "removed_edge_ids": [],
+    "metadata": {
+      "fixture": true
+    }
+  },
+  "transaction_id": "tx.node.rename",
+  "actor_id": "expert.fixture",
+  "occurred_at": "2026-07-17T12:01:00Z"
+}

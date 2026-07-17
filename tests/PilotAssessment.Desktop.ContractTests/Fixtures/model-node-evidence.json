@@ -1,0 +1,239 @@
+{
+  "contract_id": "model-node",
+  "contract_version": "0.1.0",
+  "node_id": "evidence.precision",
+  "node_kind": "evidence",
+  "name_zh": null,
+  "name_en": "evidence.precision",
+  "short_name_zh": null,
+  "short_name_en": "evidence.precision",
+  "description_zh": null,
+  "description_en": "Task-neutral evidence fixture.",
+  "tags": [
+    "fixture"
+  ],
+  "group": "fixture",
+  "lifecycle": "active",
+  "copied_from_node_id": null,
+  "definition": {
+    "definition_kind": "evidence",
+    "recipe": {
+      "contract_id": "evidence-recipe",
+      "contract_version": "0.1.0",
+      "recipe_id": "recipe.evidence.precision",
+      "recipe_version": 1,
+      "anchor": {
+        "anchor_id": "recipe.evidence.precision",
+        "name": "recipe.evidence.precision",
+        "description": "Task-neutral engineering fixture.",
+        "lifecycle": "active",
+        "scientific_status": "starter_template"
+      },
+      "inputs": [
+        {
+          "binding_id": "flight-x",
+          "kind": "stream",
+          "source_id": "source.X",
+          "name": "flight-x",
+          "declared_type": {
+            "value_type": "number",
+            "cardinality": "one",
+            "temporal_semantics": "sampled",
+            "unit": null
+          },
+          "selector": {}
+        },
+        {
+          "binding_id": "control-u",
+          "kind": "stream",
+          "source_id": "source.U",
+          "name": "control-u",
+          "declared_type": {
+            "value_type": "number",
+            "cardinality": "one",
+            "temporal_semantics": "sampled",
+            "unit": null
+          },
+          "selector": {}
+        }
+      ],
+      "graph": {
+        "nodes": [
+          {
+            "node_id": "input-flight-x",
+            "operator_id": "input.binding",
+            "operator_version": "0.1.0",
+            "input_binding_id": "flight-x",
+            "parameters": {}
+          },
+          {
+            "node_id": "input-control-u",
+            "operator_id": "input.binding",
+            "operator_version": "0.1.0",
+            "input_binding_id": "control-u",
+            "parameters": {}
+          }
+        ],
+        "edges": []
+      },
+      "outputs": [
+        {
+          "output_id": "primary",
+          "role": "primary_value",
+          "name": "Primary",
+          "source": {
+            "node_id": "input-flight-x",
+            "port_id": "value"
+          },
+          "unit": null
+        }
+      ],
+      "scoring": {
+        "mode": "ordered_dau",
+        "input": {
+          "node_id": "input-flight-x",
+          "port_id": "value"
+        },
+        "parameters": {
+          "direction": "lower_is_better",
+          "desired_boundary": 0.5,
+          "adequate_boundary": 1.0,
+          "likelihood_strength": 0.9
+        },
+        "custom_operator_id": null,
+        "custom_operator_version": null
+      },
+      "documentation": {
+        "summary": "Fixture recipe; not a scientific claim.",
+        "assumptions": [],
+        "parameter_notes": {},
+        "references": []
+      },
+      "ui": {
+        "groups": [],
+        "preferred_layout": {}
+      }
+    },
+    "data_bindings": [
+      {
+        "recipe_input_binding_id": "flight-x",
+        "raw_input_node": {
+          "node_id": "raw.x",
+          "node_kind": "raw_input"
+        }
+      },
+      {
+        "recipe_input_binding_id": "control-u",
+        "raw_input_node": {
+          "node_id": "raw.u",
+          "node_kind": "raw_input"
+        }
+      }
+    ],
+    "ordered_observation_states": [
+      {
+        "state_id": "unacceptable",
+        "label": "Unacceptable",
+        "description": "Unacceptable fixture state."
+      },
+      {
+        "state_id": "adequate",
+        "label": "Adequate",
+        "description": "Adequate fixture state."
+      },
+      {
+        "state_id": "desired",
+        "label": "Desired",
+        "description": "Desired fixture state."
+      }
+    ],
+    "observation_mapping": {
+      "unacceptable": {
+        "state_id": "unacceptable"
+      },
+      "adequate": {
+        "state_id": "adequate"
+      },
+      "desired": {
+        "state_id": "desired"
+      }
+    },
+    "ordered_probabilistic_parent_nodes": [
+      {
+        "node_id": "bn.skill",
+        "node_kind": "bn"
+      }
+    ],
+    "cpt": {
+      "cpt_id": "cpt.evidence.precision",
+      "child_node": {
+        "node_id": "evidence.precision",
+        "node_kind": "evidence"
+      },
+      "ordered_parent_nodes": [
+        {
+          "node_id": "bn.skill",
+          "node_kind": "bn"
+        }
+      ],
+      "child_state_ids": [
+        "unacceptable",
+        "adequate",
+        "desired"
+      ],
+      "ordered_parent_state_ids": [
+        [
+          "low",
+          "medium",
+          "high"
+        ]
+      ],
+      "materialized_probabilities": [
+        [
+          0.7,
+          0.2,
+          0.1
+        ],
+        [
+          0.2,
+          0.6,
+          0.2
+        ],
+        [
+          0.1,
+          0.2,
+          0.7
+        ]
+      ],
+      "mode": "manual",
+      "generator_metadata": {
+        "fixture": true
+      },
+      "source": "engineering_default"
+    },
+    "observation_policy": "hard_or_virtual",
+    "modality_attribution_weights": {
+      "X": 0.5,
+      "U": 0.5
+    },
+    "scientific_status": "starter_template",
+    "provenance": {
+      "fixture": true
+    },
+    "help_text_zh": null,
+    "help_text_en": "Fixture Evidence node."
+  },
+  "global_layout": {
+    "node_id": "evidence.precision",
+    "x": 100.0,
+    "y": 300.0
+  },
+  "semantic_revision": 0,
+  "layout_revision": 0,
+  "technical_status": "executable",
+  "diagnostics": [],
+  "content_hash": "2571b524bd380b263416c98bcede0a7aac11bdb4f28ed0110a799ff0fd895f2f",
+  "layout_hash": "a481891a93c4a9df1a11ffced4addde6557d62559f4f2d43e22112b74e7cd8b1",
+  "created_at": "2026-07-17T12:00:00Z",
+  "updated_at": "2026-07-17T12:00:00Z"
+}
