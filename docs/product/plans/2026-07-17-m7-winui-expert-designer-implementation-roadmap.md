@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7 |
 | Date | 2026-07-17 |
-| Status | M7A engineering verified; M7B Tasks 1–11 complete, Task 12 next |
+| Status | M7A engineering verified; M7B Tasks 1–12 complete, Task 13 next |
 | Authoritative design | [M7 WinUI Expert Designer and Task Activation Workspace Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
 | Decisions | D-047–D-053 |
 | Upstream | M1–M3, M4R, M5 and M6 engineering verified |
@@ -94,7 +94,7 @@ M7A is complete only when all of the following are true:
 
 Executable plan: [M7B WinUI Expert Designer Implementation Plan](2026-07-17-m7b-winui-expert-designer-implementation-plan.md).
 
-**Progress status (2026-07-17):** M7B Tasks 1–11 are implemented. The visible Windows application now includes the managed project/session workspace, parallel task-scheme navigation, the backend-projected active/dim global graph, atomic graph editing, independent node windows, complete Raw Input/Evidence editors, and BN state/fixed-parent/CPT editors. Task 12 is the next gate and owns durable autosave, ordered canonical reconciliation and revision-conflict recovery for ordinary form edits. Task 14 still owns actual run execution and posterior/result presentation; M8 packaging remains deferred.
+**Progress status (2026-07-17):** M7B Tasks 1–12 are implemented. The visible Windows application now includes the managed project/session workspace, parallel task-scheme navigation, the backend-projected active/dim global graph, atomic graph editing, independent node windows, complete Raw Input/Evidence editors, BN state/fixed-parent/CPT editors, and durable 350 ms form autosave with per-object ordering, idempotent retry, canonical rebase and explicit Reload/Reapply conflict recovery. Task 13 is the next gate and owns live Chinese/English switching. Task 14 still owns actual run execution and posterior/result presentation; M8 packaging remains deferred.
 
 M7B delivers:
 
@@ -156,8 +156,8 @@ M7B is complete only when all of the following are true:
 | 3 | M7A Tasks 9–12 — completed | preview/run bridge, sidecar, vertical slice, completion gate | M7A exit gate closed |
 | 4 | M7B Task 1 | toolchain audit/install/scaffold | explicit authorization before machine mutation |
 | 5 | M7B Tasks 2–5 | contracts, process client, host, project/session shell | sidecar contract smoke passes |
-| 6 | M7B Tasks 6–11 | task sidebar, graph, commands, windows, editors, autosave | model editing vertical slice persists |
-| 7 | M7B Tasks 12–15 | language, run/results, accessibility/performance, completion gate | visible window and M7 exit gate closed |
+| 6 | M7B Tasks 6–12 | task sidebar, graph, commands, windows, editors, autosave | model editing vertical slice persists |
+| 7 | M7B Tasks 13–15 | language, run/results, accessibility/performance, completion gate | visible window and M7 exit gate closed |
 
 Each task uses its own focused test and commit. Small corrective changes may share the task commit when they are directly required by that task. Do not batch the entire milestone into one unreviewable commit.
 

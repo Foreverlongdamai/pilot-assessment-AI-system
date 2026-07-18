@@ -128,7 +128,7 @@ Evidence 节点的独立浮动窗口必须同时让专家看到两件事：
 | M4R Editable Evidence Computation Foundation | 已工程验证；canonical `EvidenceRecipe`、typed operators、compiler/executor、draft/preview/apply/replay 与 18 个 starter recipes 已实现 |
 | M5 Shared Model Library and Bayesian Workspace | 已工程验证；global immutable component library、exact-pinned scheme、draft/undo/redo、copy-on-write atomic publish、通用 CPT、finite-discrete exact inference、M4R migration、Hover starter package 与 lightweight preview/publish/replay workflow 已完成 |
 | M6 Local Runtime / Persistence / Protocol | 已工程验证；受管 project/session/artifact、SQLite 持久化、exact run、Evidence→BN pipeline、progress/cancel/recovery 与 stdio JSON-RPC sidecar 已实现 |
-| M7 WinUI Expert Designer | M7A 后端已工程验证；M7B Task 1–11 已完成正式 WinUI scaffold、强类型合同层、受监督 sidecar、受管 project/session、canonical task-scheme、global active/dim 模型图、图上编辑、多独立节点窗口、schema/operator 驱动的 Raw Input/Evidence 编辑器，以及 BN state/fixed-parent/CPT 编辑器；Task 12 起继续实现持久 autosave/reconciliation、双语和运行结果工作区 |
+| M7 WinUI Expert Designer | M7A 后端已工程验证；M7B Task 1–12 已完成正式 WinUI scaffold、强类型合同层、受监督 sidecar、受管 project/session、canonical task-scheme、global active/dim 模型图、图上编辑、多独立节点窗口、Raw Input/Evidence/BN/CPT 编辑器，以及写回 Python canonical state 的持久 autosave/reconciliation；Task 13 起继续实现即时中英文切换和运行结果工作区 |
 | M8 Packaging / Handoff | 尚未实施 |
 
 当前 18 个 Evidence、11 个 sub-skills、4 个 competencies 和 Hover BN 都只是 `starter_template` / `engineering_default`。通用代码、schema、API、UI 和测试不得依赖这些数量、名称或连接。完整产品仍是 `in_progress`，`formal_run_authorized=false`。

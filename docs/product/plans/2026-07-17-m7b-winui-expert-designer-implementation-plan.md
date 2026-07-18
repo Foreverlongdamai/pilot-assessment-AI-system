@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7B |
 | Date | 2026-07-17 |
-| Status | Tasks 1–11 complete; Task 12 autosave, canonical reconciliation and conflict recovery is next |
+| Status | Tasks 1–12 complete; Task 13 live Chinese/English switching is next |
 | Parent roadmap | [M7 Implementation Roadmap](2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) |
 | Backend dependency | [M7A Current Model Runtime Plan](2026-07-17-m7a-current-model-runtime-implementation-plan.md) |
 | Authoritative design | [M7 Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
@@ -550,28 +550,32 @@ C# performs only presentation-side technical checks, row editing/normalization a
 - Modify: node/scheme editor view models
 - Create: `tests/PilotAssessment.Desktop.UnitTests/State/AutosaveCoordinatorTests.cs`
 
-- [ ] Serialize writes per canonical node/scheme with an async queue or `SemaphoreSlim`; allow independent objects to save concurrently.
-- [ ] Debounce text/continuous numeric edits for 350 ms. Save discrete activation, edge, CPT batch, copy and archive commands immediately.
-- [ ] Assign one transaction ID per logical save and reuse it for safe retry. Include expected semantic/layout revision.
-- [ ] On success, replace local canonical state with the backend response, then reapply only edits typed after that request began.
-- [ ] On revision conflict, retain pending user input and show Reload or Reapply. Reapply creates a new request against the returned current revision; never silently overwrite.
-- [ ] Show Saving, Saved, Offline/Retry, Conflict and Blocked status in each editor and the shell.
-- [ ] Keep scientific warnings visible but non-blocking. Prevent Preview/Run only for backend technical blockers.
-- [ ] Test debounce collapse, ordered saves, same-ID retry, late response, conflict/reapply and shutdown flush/cancel.
-- [ ] Run:
+- [x] Serialize writes per canonical node/scheme with an async queue or `SemaphoreSlim`; allow independent objects to save concurrently.
+- [x] Debounce text/continuous numeric edits for 350 ms. Save discrete activation, edge, CPT batch, copy and archive commands immediately.
+- [x] Assign one transaction ID per logical save and reuse it for safe retry. Include expected semantic/layout revision.
+- [x] On success, replace local canonical state with the backend response, then reapply only edits typed after that request began.
+- [x] On revision conflict, retain pending user input and show Reload or Reapply. Reapply creates a new request against the returned current revision; never silently overwrite.
+- [x] Show Saving, Saved, Offline/Retry, Conflict and Blocked status in each editor and the shell.
+- [x] Keep scientific warnings visible but non-blocking. Prevent Preview/Run only for backend technical blockers.
+- [x] Test debounce collapse, ordered saves, same-ID retry, late response, conflict/reapply and shutdown flush/cancel.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~AutosaveCoordinatorTests
 ```
 
-Expected: deterministic concurrency tests pass without timing sleeps longer than a few milliseconds through a fake clock/scheduler.
+Expected: deterministic concurrency tests pass with an injected short debounce and no long-running sleeps or large workflow fixture.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/PilotAssessment.Desktop.Core/State src/PilotAssessment.Desktop/Controls/SaveConflictBanner.xaml src/PilotAssessment.Desktop/ViewModels tests/PilotAssessment.Desktop.UnitTests/State/AutosaveCoordinatorTests.cs
 git commit -m "feat: autosave canonical model edits"
 ```
+
+Recorded commit: `b9376ea`. The shared canonical store serializes writes for one object while preserving concurrency across independent objects; ordinary text/form intent uses a 350 ms debounce, and existing activation, edge, copy/archive, parent/state and CPT commands remain immediate typed backend transactions. Each logical save carries a caller-owned transaction ID, retries reuse that ID, late canonical responses rebase only newer local intent, and revision conflicts retain input behind explicit **Reload** / **Reapply** actions. Editor and shell surfaces expose Pending/Saving/Saved, Offline/Retry, Conflict and Blocked states; node-window shutdown flushes queued intent.
+
+Fresh verification: desktop Unit `67/67`, Contract `3/3`, x64 Debug build `0 warning / 0 error`, and `git diff --check` clean apart from Git's existing line-ending notice. Visible WinUI verification edited the `Task Control Proficiency` English description, observed canonical revision `0 → 1`, restored the original text at revision `2`, closed the independent editor, and reopened it with revision `2` and the restored backend value. This proves the normal form path writes Python-owned canonical state rather than keeping a C#-only copy. No Evidence/BN scientific algorithm, CPT value or task activation was changed. Task 14 remains the owner of actual run/posterior/result execution.
 
 ## Task 13: Add immediate Chinese/English switching
 
@@ -689,7 +693,7 @@ git commit -m "test: close M7 WinUI expert designer"
 | 9 | `feat: add independent node editor windows` | `fdd7772` |
 | 10 | `feat: add raw input and Evidence node editors` | `59396ee` |
 | 11 | `feat: add BN and CPT node editors` | `d034442` |
-| 12 | `feat: autosave canonical model edits` | Not executed |
+| 12 | `feat: autosave canonical model edits` | `b9376ea` |
 | 13 | `feat: add live Chinese and English UI` | Not executed |
 | 14 | `feat: add assessment runs and results workspace` | Not executed |
 | 15 | `test: close M7 WinUI expert designer` | Not executed |
