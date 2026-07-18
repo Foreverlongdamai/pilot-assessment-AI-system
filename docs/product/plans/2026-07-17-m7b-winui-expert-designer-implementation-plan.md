@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7B |
 | Date | 2026-07-17 |
-| Status | Tasks 1–10 complete; Task 11 BN state, parent and CPT editors is next |
+| Status | Tasks 1–11 complete; Task 12 autosave, canonical reconciliation and conflict recovery is next |
 | Parent roadmap | [M7 Implementation Roadmap](2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) |
 | Backend dependency | [M7A Current Model Runtime Plan](2026-07-17-m7a-current-model-runtime-implementation-plan.md) |
 | Authoritative design | [M7 Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
@@ -514,14 +514,14 @@ Recorded commit: `59396ee`. Fresh verification: desktop Unit `57/57`, Contract `
 - Create: `src/PilotAssessment.Desktop.Core/State/CptGridModel.cs`
 - Create: `tests/PilotAssessment.Desktop.UnitTests/ViewModels/BnNodeEditorTests.cs`
 
-- [ ] BN tabs: General; fixed parents/children; states; CPT/generator; current posterior/influence; Used by schemes; History.
-- [ ] Render CPT axes from the backend materialized grid, virtualize rows, support keyboard cell navigation, paste rectangular numeric blocks and display row-sum/finite/shape diagnostics.
-- [ ] Make CPT maximizable within the node window while retaining one canonical editor state.
-- [ ] Parent/state changes first request backend migration/materialization choices, then send one atomic operation. Never locally save an edge while leaving CPT axes stale.
-- [ ] Display canonical BN direction and a separate read-only inference influence overlay; do not offer a command that converts influence arrows into edges.
-- [ ] Reconcile submitted cells with backend canonical probabilities and revision.
-- [ ] Test axes/order mapping, rectangular paste validation, atomic request composition and canonical response replacement.
-- [ ] Run:
+- [x] BN tabs: General; fixed parents/children; states; CPT/generator; current posterior/influence; Used by schemes; History.
+- [x] Render CPT axes from the backend materialized grid, virtualize rows, support keyboard cell navigation, paste rectangular numeric blocks and display row-sum/finite/shape diagnostics.
+- [x] Make CPT maximizable within the node window while retaining one canonical editor state.
+- [x] Parent/state changes first request backend migration/materialization choices, then send one atomic operation. Never locally save an edge while leaving CPT axes stale.
+- [x] Display canonical BN direction and a separate read-only inference influence overlay; do not offer a command that converts influence arrows into edges.
+- [x] Reconcile submitted cells with backend canonical probabilities and revision.
+- [x] Test axes/order mapping, rectangular paste validation, atomic request composition and canonical response replacement.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~BnNodeEditorTests
@@ -529,12 +529,16 @@ dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.Unit
 
 Expected: CPT/state/parent view-model tests pass and no probability calculation is duplicated.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/PilotAssessment.Desktop/Controls/Editors/BnNodeEditor.xaml src/PilotAssessment.Desktop/Controls/Editors/CptGridEditor.xaml src/PilotAssessment.Desktop/ViewModels/BnNodeEditorViewModel.cs src/PilotAssessment.Desktop.Core/State/CptGridModel.cs tests/PilotAssessment.Desktop.UnitTests/ViewModels/BnNodeEditorTests.cs
 git commit -m "feat: add BN and CPT node editors"
 ```
+
+Recorded commit: `d034442`. Fresh verification: focused `BnNodeEditorTests` passed `4/4`; complete desktop Unit passed `61/61`; Contract passed `3/3`; x64 Debug build completed with `0` warnings and `0` errors; `git diff --check` was clean apart from Git's existing line-ending notice. Visible WinUI verification opened the selected `Task Control Proficiency` BN node in an independent top-level window, loaded canonical revision `0` with `0` fixed parents, `4` children, one task usage and one history event, and displayed the backend-owned `1`-row / `3`-state CPT with finite/shape/row-sum status, rectangular paste, normalization, complete-row save, expand/collapse and backend generator controls. The toolbar now also exposes a discoverable **Open details** command while double-click and the node menu remain available.
+
+C# performs only presentation-side technical checks, row editing/normalization and typed request composition. Python remains the sole implementation of CPT materialization, state/parent migration, canonical persistence and Bayesian inference. The posterior/influence tab explains this direction and exposes read-only result references; actual run execution and posterior/result rendering remain Task 14. Ordinary General-field autosave and durable conflict reconciliation remain Task 12, while discrete state/parent/CPT transactions already commit atomically and reload the canonical graph.
 
 ## Task 12: Implement autosave, canonical reconciliation and conflict recovery
 
@@ -683,8 +687,8 @@ git commit -m "test: close M7 WinUI expert designer"
 | 7 | `feat: add the active task model graph` | `974e8c1` |
 | 8 | `feat: edit task activation from the model graph` | `ab7b9d5` |
 | 9 | `feat: add independent node editor windows` | `fdd7772` |
-| 10 | `feat: add raw input and Evidence node editors` | Not executed |
-| 11 | `feat: add BN and CPT node editors` | Not executed |
+| 10 | `feat: add raw input and Evidence node editors` | `59396ee` |
+| 11 | `feat: add BN and CPT node editors` | `d034442` |
 | 12 | `feat: autosave canonical model edits` | Not executed |
 | 13 | `feat: add live Chinese and English UI` | Not executed |
 | 14 | `feat: add assessment runs and results workspace` | Not executed |
