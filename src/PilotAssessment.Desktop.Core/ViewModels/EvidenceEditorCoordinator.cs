@@ -29,12 +29,14 @@ public sealed class EvidenceEditorCoordinator : IDisposable
     public Task<ModelNodeMutationResponse> UpdateAsync(
         ModelNode node,
         string actor,
+        string transactionId,
         CancellationToken cancellationToken = default) =>
         _gateway.UpdateNodeAsync(
             node,
             node.SemanticRevision,
             node.LayoutRevision,
             actor,
+            transactionId,
             cancellationToken);
 
     public async Task<CurrentModelRunSnapshot?> PreviewAsync(

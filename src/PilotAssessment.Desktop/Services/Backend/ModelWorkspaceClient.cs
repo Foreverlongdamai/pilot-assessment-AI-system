@@ -150,9 +150,10 @@ public sealed class ModelWorkspaceClient :
         int expectedSemanticRevision,
         int expectedLayoutRevision,
         string actor,
+        string transactionId,
         CancellationToken cancellationToken = default)
     {
-        var transactionId = NewTransactionId("node-update");
+        ArgumentException.ThrowIfNullOrWhiteSpace(transactionId);
         return MutateAsync(
             "model.node.update",
             transactionId,

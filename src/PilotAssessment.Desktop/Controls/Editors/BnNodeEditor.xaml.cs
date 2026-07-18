@@ -18,7 +18,7 @@ public sealed partial class BnNodeEditor : UserControl
 
     public BnNodeEditorViewModel? ViewModel { get; private set; }
 
-    public event EventHandler? LocalEditChanged;
+    public event EventHandler<NodeEditorLocalEditEventArgs>? LocalEditChanged;
 
     public event EventHandler<CanonicalNodeCommittedEventArgs>? CanonicalNodeCommitted;
 
@@ -47,7 +47,12 @@ public sealed partial class BnNodeEditor : UserControl
         ArmDirtyTracking();
     }
 
-    private void OnFieldChanged(object sender, TextChangedEventArgs args) => NotifyLocalEdit(sender);
+    private void OnFieldChanged(object sender, TextChangedEventArgs args) =>
+        NotifyLocalEdit(
+            sender,
+            sender is FrameworkElement { DataContext: BnStateEditItem }
+                ? NodeEditorEditPersistence.ExplicitCommit
+                : NodeEditorEditPersistence.Autosave);
 
     private void OnSelectionChanged(object sender, SelectionChangedEventArgs args) => NotifyLocalEdit(sender);
 
@@ -76,19 +81,25 @@ public sealed partial class BnNodeEditor : UserControl
     private async void OnMoveParentDownClick(object sender, RoutedEventArgs args) =>
         await RunAsync(() => ViewModel?.MoveParentAsync(1) ?? Task.CompletedTask);
 
-    private void OnViewModelLocalEditChanged(object? sender, EventArgs args) =>
-        LocalEditChanged?.Invoke(this, EventArgs.Empty);
+    private void OnViewModelLocalEditChanged(object? sender, NodeEditorLocalEditEventArgs args) =>
+        LocalEditChanged?.Invoke(this, args);
 
     private void OnCanonicalNodeCommitted(object? sender, CanonicalNodeCommittedEventArgs args) =>
         CanonicalNodeCommitted?.Invoke(this, args);
 
-    private void NotifyLocalEdit(object sender)
+    private void NotifyLocalEdit(
+        object sender,
+        NodeEditorEditPersistence persistence = NodeEditorEditPersistence.Autosave)
     {
         if (!_ready || sender is Control { FocusState: FocusState.Unfocused })
         {
             return;
         }
-        ViewModel?.MarkLocalEdit();
+        if (sender is TextBox textBox)
+        {
+            textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+        }
+        ViewModel?.MarkLocalEdit(persistence);
     }
 
     private async Task RunAsync(Func<Task> action)

@@ -279,7 +279,7 @@ public sealed class BnNodeEditorTests
         public Task<IReadOnlyList<OperatorDefinition>> ListOperatorsAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult<IReadOnlyList<OperatorDefinition>>([]);
 
-        public Task<ModelNodeMutationResponse> UpdateNodeAsync(ModelNode node, int expectedSemanticRevision, int expectedLayoutRevision, string actor, CancellationToken cancellationToken = default) =>
+        public Task<ModelNodeMutationResponse> UpdateNodeAsync(ModelNode node, int expectedSemanticRevision, int expectedLayoutRevision, string actor, string transactionId, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 
         public Task<IReadOnlyList<ModelNodeUsage>> ListNodeUsagesAsync(string nodeId, CancellationToken cancellationToken = default) =>

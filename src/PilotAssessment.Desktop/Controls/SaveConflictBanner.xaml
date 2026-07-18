@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="PilotAssessment.Desktop.Controls.SaveConflictBanner"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border
+        x:Name="BannerRoot"
+        Padding="16"
+        Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+        CornerRadius="8"
+        Visibility="Collapsed">
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Spacing="3">
+                <TextBlock x:Name="TitleText" FontWeight="SemiBold" />
+                <TextBlock x:Name="MessageText" TextWrapping="Wrap" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <Button x:Name="ReloadButton" Click="OnReloadClick" Content="Reload" />
+                <Button x:Name="ReapplyButton" Click="OnReapplyClick" Content="Reapply" />
+                <Button x:Name="RetryButton" Click="OnRetryClick" Content="Retry" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

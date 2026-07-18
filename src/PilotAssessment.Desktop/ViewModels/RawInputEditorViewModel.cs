@@ -162,6 +162,20 @@ public sealed partial class RawInputEditorViewModel : ObservableObject
         HelpTextEn = definition.HelpTextEn ?? string.Empty;
     }
 
+    public void ApplyDraftIntent(ModelNode draft)
+    {
+        var canonical = _canonicalNode;
+        ApplyCanonical(draft);
+        _canonicalNode = canonical;
+    }
+
+    public void AcceptCanonicalBase(ModelNode canonical)
+    {
+        _ = canonical.Definition as RawInputNodeDefinition
+            ?? throw new ArgumentException("Raw Input editor requires a Raw Input node.");
+        _canonicalNode = canonical;
+    }
+
     public ModelNode BuildUpdatedNode()
     {
         var definition = (RawInputNodeDefinition)_canonicalNode.Definition;

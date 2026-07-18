@@ -25,6 +25,8 @@
   <ItemGroup>
     <Compile Include="..\..\src\PilotAssessment.Desktop\ViewModels\BnNodeEditorViewModel.cs"
              Link="ProductViewModels\BnNodeEditorViewModel.cs" />
+    <Compile Include="..\..\src\PilotAssessment.Desktop\ViewModels\NodeEditorEvents.cs"
+             Link="ProductViewModels\NodeEditorEvents.cs" />
   </ItemGroup>
 
   <ItemGroup>

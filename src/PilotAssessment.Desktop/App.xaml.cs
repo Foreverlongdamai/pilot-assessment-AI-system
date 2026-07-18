@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 
+using PilotAssessment.Desktop.Core.Contracts;
 using PilotAssessment.Desktop.Core.State;
 using PilotAssessment.Desktop.Core.ViewModels;
 using PilotAssessment.Desktop.Services.Backend;
@@ -39,6 +40,7 @@ public partial class App : Application
         DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         var builder = Host.CreateApplicationBuilder();
         builder.Services.AddSingleton<ApplicationShellState>();
+        builder.Services.AddSingleton<CanonicalObjectStore<ModelNode>>();
         builder.Services.AddSingleton<ModelClipboard>();
         builder.Services.AddSingleton<BackendConnectionService>();
         builder.Services.AddSingleton<LocalPreferencesStore>();

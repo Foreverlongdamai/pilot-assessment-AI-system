@@ -7,7 +7,7 @@
         <InfoBar
             IsClosable="False"
             IsOpen="True"
-            Message="This node declares how one managed Session Bundle resource is exposed to Evidence recipes. Editing it changes the canonical backend definition after Task 12 autosave reconciliation."
+            Message="This node declares how one managed Session Bundle resource is exposed to Evidence recipes. Ordinary fields autosave after 350 ms and reconcile with the canonical backend response."
             Severity="Informational"
             Title="Raw Input contract editor" />
         <TabView MinHeight="520">

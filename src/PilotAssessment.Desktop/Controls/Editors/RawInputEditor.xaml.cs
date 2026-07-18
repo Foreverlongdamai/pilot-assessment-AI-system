@@ -18,7 +18,7 @@ public sealed partial class RawInputEditor : UserControl
 
     public RawInputEditorViewModel? ViewModel { get; private set; }
 
-    public event EventHandler? LocalEditChanged;
+    public event EventHandler<NodeEditorLocalEditEventArgs>? LocalEditChanged;
 
     public void SetViewModel(RawInputEditorViewModel viewModel)
     {
@@ -44,7 +44,13 @@ public sealed partial class RawInputEditor : UserControl
     {
         if (_ready && sender is Control { FocusState: not FocusState.Unfocused })
         {
-            LocalEditChanged?.Invoke(this, EventArgs.Empty);
+            if (sender is TextBox textBox)
+            {
+                textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+            }
+            LocalEditChanged?.Invoke(
+                this,
+                new NodeEditorLocalEditEventArgs(NodeEditorEditPersistence.Autosave));
         }
     }
 

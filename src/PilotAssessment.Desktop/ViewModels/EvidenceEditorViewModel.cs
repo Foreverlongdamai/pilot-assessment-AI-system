@@ -168,7 +168,7 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
             ?? throw new ArgumentException("Evidence editor requires an Evidence node.");
         _recipeModel = new EvidenceRecipeEditorModel(definition.Recipe, []);
         Cpt = new CptGridViewModel(node, EditorFrom(definition.Cpt), bayesianGateway);
-        Cpt.LocalEditChanged += (_, _) => MarkLocalEdit();
+        Cpt.LocalEditChanged += (_, _) => MarkLocalEdit(NodeEditorEditPersistence.ExplicitCommit);
         Cpt.CanonicalNodeCommitted += OnCptCanonicalNodeCommitted;
         ApplyCanonical(node, schemeId, sessionRevisionId);
     }
@@ -216,7 +216,7 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         }
     }
 
-    public event EventHandler? LocalEditChanged;
+    public event EventHandler<NodeEditorLocalEditEventArgs>? LocalEditChanged;
 
     public event EventHandler<CanonicalNodeCommittedEventArgs>? CanonicalNodeCommitted;
 
@@ -327,7 +327,25 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         OnPropertyChanged(nameof(CptSummary));
     }
 
-    public void MarkLocalEdit() => LocalEditChanged?.Invoke(this, EventArgs.Empty);
+    public void ApplyDraftIntent(ModelNode draft)
+    {
+        var canonical = _canonicalNode;
+        ApplyCanonical(draft, _schemeId, _sessionRevisionId);
+        _canonicalNode = canonical;
+    }
+
+    public void AcceptCanonicalBase(ModelNode canonical)
+    {
+        _ = canonical.Definition as EvidenceNodeDefinition
+            ?? throw new ArgumentException("Evidence editor requires an Evidence node.");
+        _canonicalNode = canonical;
+        OnPropertyChanged(nameof(ProbabilisticParentsText));
+        OnPropertyChanged(nameof(CptSummary));
+    }
+
+    public void MarkLocalEdit(
+        NodeEditorEditPersistence persistence = NodeEditorEditPersistence.Autosave) =>
+        LocalEditChanged?.Invoke(this, new NodeEditorLocalEditEventArgs(persistence));
 
     public void SetOperationError(string message) =>
         StatusMessage = $"Evidence operation blocked: {message}";
@@ -348,7 +366,7 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         }
         _recipeModel.ApplyParameters(SelectedRecipeNode.NodeId, ParameterForm);
         RefreshRecipeCollections(SelectedRecipeNode.NodeId);
-        MarkLocalEdit();
+        MarkLocalEdit(NodeEditorEditPersistence.ExplicitCommit);
     }
 
     public void AddSelectedOperator()
@@ -361,7 +379,7 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
             SelectedOperator.OperatorId,
             SelectedOperator.ImplementationVersion);
         RefreshRecipeCollections(node.NodeId);
-        MarkLocalEdit();
+        MarkLocalEdit(NodeEditorEditPersistence.ExplicitCommit);
     }
 
     public void RemoveSelectedOperator()
@@ -422,6 +440,7 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
 
     public async Task CommitObservationStatesAsync(CancellationToken cancellationToken = default)
     {
+        var localIntent = BuildUpdatedNode();
         var states = ObservationStates.Select(item => item.Build()).ToArray();
         if (states.Length < 2 || states.Any(state => string.IsNullOrWhiteSpace(state.StateId)) ||
             states.Select(state => state.StateId).Distinct(StringComparer.Ordinal).Count() != states.Length)
@@ -442,6 +461,7 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
                 response.Nodes.FirstOrDefault(changed => changed.NodeId == node.NodeId) ?? node).ToArray(),
         };
         ApplyCanonical(canonical, _schemeId, _sessionRevisionId);
+        ApplyDraftIntent(ModelNodeDraftRebaser.Rebase(localIntent, canonical));
         StatusMessage =
             $"Canonical observation states saved; {response.Nodes.Length} affected CPT definition(s) are explicitly incomplete and repairable.";
         CanonicalNodeCommitted?.Invoke(this, new CanonicalNodeCommittedEventArgs(canonical));
@@ -480,7 +500,6 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
             Definition = definition with
             {
                 Recipe = recipe,
-                OrderedObservationStates = ObservationStates.Select(item => item.Build()).ToArray(),
                 ObservationMapping = ParseJsonElementDictionary(ObservationMappingJson),
                 ObservationPolicy = ObservationPolicy,
                 ModalityAttributionWeights = ParseDoubleDictionary(ModalityWeightsJson),

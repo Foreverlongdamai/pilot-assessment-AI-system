@@ -16,6 +16,7 @@ public sealed class NodeWindowRegistry : IDisposable
     private readonly ShellViewModel _shell;
     private readonly IModelNodeEditorGateway _editorGateway;
     private readonly IBayesianNodeEditorGateway _bayesianEditorGateway;
+    private readonly CanonicalObjectStore<ModelNode> _canonicalNodes;
     private readonly SessionExplorerViewModel _sessions;
     private string? _projectId;
     private bool _disposed;
@@ -28,6 +29,7 @@ public sealed class NodeWindowRegistry : IDisposable
         ShellViewModel shell,
         IModelNodeEditorGateway editorGateway,
         IBayesianNodeEditorGateway bayesianEditorGateway,
+        CanonicalObjectStore<ModelNode> canonicalNodes,
         SessionExplorerViewModel sessions)
     {
         _placements = placements;
@@ -37,6 +39,7 @@ public sealed class NodeWindowRegistry : IDisposable
         _shell = shell;
         _editorGateway = editorGateway;
         _bayesianEditorGateway = bayesianEditorGateway;
+        _canonicalNodes = canonicalNodes;
         _sessions = sessions;
         _projectId = shellState.Snapshot.ProjectId;
         _modelStudio.NodeEditorRequested += OnNodeEditorRequested;
@@ -49,7 +52,10 @@ public sealed class NodeWindowRegistry : IDisposable
 
     public async Task CloseAllAsync(CancellationToken cancellationToken = default)
     {
-        foreach (var entry in _windows.Snapshot())
+        var snapshot = _windows.Snapshot();
+        await Task.WhenAll(snapshot.Select(entry =>
+            entry.Value.FlushAutosaveAsync(cancellationToken)));
+        foreach (var entry in snapshot)
         {
             _placements.Remember(entry.Key, entry.Value.CurrentPlacement);
             entry.Value.Close();
@@ -110,6 +116,8 @@ public sealed class NodeWindowRegistry : IDisposable
             sharedSchemeCount,
             _editorGateway,
             _bayesianEditorGateway,
+            _canonicalNodes,
+            _shellState,
             _sessions.Modalities,
             _sessions.SelectedRevision?.SessionRevisionId,
             _placements.Get(key),

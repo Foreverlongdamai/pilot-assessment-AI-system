@@ -96,6 +96,7 @@ public interface IModelNodeEditorGateway
         int expectedSemanticRevision,
         int expectedLayoutRevision,
         string actor,
+        string transactionId,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<ModelNodeUsage>> ListNodeUsagesAsync(

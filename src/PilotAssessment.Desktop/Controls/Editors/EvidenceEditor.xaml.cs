@@ -16,18 +16,18 @@ public sealed partial class EvidenceEditor : UserControl
         Loaded += OnLoaded;
         OperatorGraph.RecipeNodeSelected += OnRecipeNodeSelected;
         ParameterEditor.ParameterChanged += OnParameterChanged;
-        EvidenceCptGrid.LocalEditChanged += (_, _) => LocalEditChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public EvidenceEditorViewModel? ViewModel { get; private set; }
 
-    public event EventHandler? LocalEditChanged;
+    public event EventHandler<NodeEditorLocalEditEventArgs>? LocalEditChanged;
 
     public void SetViewModel(EvidenceEditorViewModel viewModel)
     {
         _ready = false;
         ViewModel = viewModel;
         DataContext = viewModel;
+        viewModel.LocalEditChanged += OnViewModelLocalEditChanged;
         OperatorGraph.SetViewModel(viewModel);
         ParameterEditor.SetModel(viewModel.ParameterForm);
         EvidenceCptGrid.SetViewModel(viewModel.Cpt);
@@ -69,14 +69,19 @@ public sealed partial class EvidenceEditor : UserControl
         NotifyLocalEdit();
     }
 
-    private void OnFieldChanged(object sender, TextChangedEventArgs args) => NotifyLocalEdit(sender);
+    private void OnFieldChanged(object sender, TextChangedEventArgs args) =>
+        NotifyLocalEdit(
+            sender is FrameworkElement { DataContext: ObservationStateEditItem }
+                ? NodeEditorEditPersistence.ExplicitCommit
+                : NodeEditorEditPersistence.Autosave,
+            sender);
 
-    private void OnSelectionChanged(object sender, SelectionChangedEventArgs args) => NotifyLocalEdit(sender);
+    private void OnSelectionChanged(object sender, SelectionChangedEventArgs args) =>
+        NotifyLocalEdit(sender: sender);
 
     private void OnAddStateClick(object sender, RoutedEventArgs args)
     {
         ViewModel?.AddObservationState();
-        NotifyLocalEdit();
     }
 
     private void OnRemoveStateClick(object sender, RoutedEventArgs args)
@@ -84,7 +89,6 @@ public sealed partial class EvidenceEditor : UserControl
         if (StateList.SelectedItem is ObservationStateEditItem state)
         {
             ViewModel?.RemoveObservationState(state);
-            NotifyLocalEdit();
         }
     }
 
@@ -115,14 +119,24 @@ public sealed partial class EvidenceEditor : UserControl
     private void OnCancelPreviewClick(object sender, RoutedEventArgs args) =>
         ViewModel?.CancelPreview();
 
-    private void NotifyLocalEdit(object? sender = null)
+    private void OnViewModelLocalEditChanged(
+        object? sender,
+        NodeEditorLocalEditEventArgs args) =>
+        LocalEditChanged?.Invoke(this, args);
+
+    private void NotifyLocalEdit(
+        NodeEditorEditPersistence persistence = NodeEditorEditPersistence.Autosave,
+        object? sender = null)
     {
         if (!_ready || sender is Control { FocusState: FocusState.Unfocused })
         {
             return;
         }
-        ViewModel?.MarkLocalEdit();
-        LocalEditChanged?.Invoke(this, EventArgs.Empty);
+        if (sender is TextBox textBox)
+        {
+            textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+        }
+        ViewModel?.MarkLocalEdit(persistence);
     }
 
     private void ArmDirtyTracking() =>

@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 
 using PilotAssessment.Desktop.Controls.Editors;
 using PilotAssessment.Desktop.Core.Contracts;
+using PilotAssessment.Desktop.Core.Protocol;
 using PilotAssessment.Desktop.Core.State;
 using PilotAssessment.Desktop.Core.ViewModels;
 using PilotAssessment.Desktop.ViewModels;
@@ -18,12 +19,15 @@ public sealed partial class NodeEditorWindow : Window
     private ModelNode _canonicalNode;
     private ModelNode? _pendingCanonicalNode;
     private bool _hasUnsavedChanges;
-    private bool _conflictAcknowledged;
+    private bool _hasExplicitLocalChanges;
     private NodeWindowPlacement _restoredPlacement;
     private string _schemeDisplayName;
     private int _sharedSchemeCount;
     private readonly IModelNodeEditorGateway _editorGateway;
     private readonly IBayesianNodeEditorGateway _bayesianEditorGateway;
+    private readonly ApplicationShellState _shellState;
+    private readonly AutosaveCoordinator<ModelNode, ModelNode> _autosave;
+    private AutosaveState _autosaveState = new(AutosavePhase.Saved, "Saved");
     private readonly ModalityStatusItem[] _sessionAvailability;
     private readonly string? _sessionRevisionId;
     private RawInputEditorViewModel? _rawInputViewModel;
@@ -40,6 +44,8 @@ public sealed partial class NodeEditorWindow : Window
         int sharedSchemeCount,
         IModelNodeEditorGateway editorGateway,
         IBayesianNodeEditorGateway bayesianEditorGateway,
+        CanonicalObjectStore<ModelNode> canonicalStore,
+        ApplicationShellState shellState,
         IEnumerable<ModalityStatusItem> sessionAvailability,
         string? sessionRevisionId,
         NodeWindowPlacement? savedPlacement,
@@ -51,9 +57,28 @@ public sealed partial class NodeEditorWindow : Window
         _sharedSchemeCount = sharedSchemeCount;
         _editorGateway = editorGateway;
         _bayesianEditorGateway = bayesianEditorGateway;
+        _shellState = shellState;
         _sessionAvailability = sessionAvailability.ToArray();
         _sessionRevisionId = sessionRevisionId;
+        _autosave = new AutosaveCoordinator<ModelNode, ModelNode>(
+            $"{key.ProjectId}\u001f{node.NodeId}",
+            canonicalStore,
+            ModelNodeDraftRebaser.Rebase,
+            async (draft, transactionId, cancellationToken) =>
+                (await editorGateway.UpdateNodeAsync(
+                    draft,
+                    draft.SemanticRevision,
+                    draft.LayoutRevision,
+                    "expert.desktop",
+                    transactionId,
+                    cancellationToken)).Node,
+            ClassifyAutosaveFailure,
+            () => $"tx.desktop.node-autosave.{Guid.NewGuid():N}");
+        _autosave.SeedCanonical(node);
         InitializeComponent();
+
+        _autosave.StateChanged += OnAutosaveStateChanged;
+        _autosave.Committed += OnAutosaveCommitted;
 
         AppWindow.SetIcon("Assets/AppIcon.ico");
         AppWindow.Changed += OnAppWindowChanged;
@@ -102,22 +127,8 @@ public sealed partial class NodeEditorWindow : Window
         };
     }
 
-    public void SetUnsavedChanges(bool hasUnsavedChanges)
-    {
-        _hasUnsavedChanges = hasUnsavedChanges;
-        if (!hasUnsavedChanges && _pendingCanonicalNode is not null)
-        {
-            _canonicalNode = _pendingCanonicalNode;
-            _pendingCanonicalNode = null;
-            _conflictAcknowledged = false;
-            CanonicalConflictPanel.Visibility = Visibility.Collapsed;
-            RenderCanonicalNode();
-            ApplyCanonicalEditor();
-            return;
-        }
-
-        RenderSaveState();
-    }
+    public Task FlushAutosaveAsync(CancellationToken cancellationToken = default) =>
+        _autosave.FlushAsync(cancellationToken);
 
     public void ReconcileCanonicalNode(
         ModelNode node,
@@ -139,16 +150,18 @@ public sealed partial class NodeEditorWindow : Window
         if (changed && _hasUnsavedChanges)
         {
             _pendingCanonicalNode = node;
-            _conflictAcknowledged = false;
-            CanonicalConflictPanel.Visibility = Visibility.Visible;
+            _autosave.AcceptExternalCanonical(node);
+            SaveConflictBanner.ShowConflict(
+                "The backend has a newer node revision. Reload it or reapply the current editor intent against that revision.");
+            _shellState.SetAutosaveStatus("Conflict");
             RenderSaveState();
             return;
         }
 
         _canonicalNode = node;
         _pendingCanonicalNode = null;
-        _conflictAcknowledged = false;
-        CanonicalConflictPanel.Visibility = Visibility.Collapsed;
+        _autosave.AcceptExternalCanonical(node);
+        SaveConflictBanner.Hide();
         RenderCanonicalNode();
         ApplyCanonicalEditor();
     }
@@ -201,7 +214,7 @@ public sealed partial class NodeEditorWindow : Window
         }
     }
 
-    private void OnReloadCanonicalClick(object sender, RoutedEventArgs args)
+    private void OnReloadCanonicalRequested(object? sender, EventArgs args)
     {
         if (_pendingCanonicalNode is null)
         {
@@ -210,18 +223,51 @@ public sealed partial class NodeEditorWindow : Window
 
         _canonicalNode = _pendingCanonicalNode;
         _pendingCanonicalNode = null;
-        _hasUnsavedChanges = false;
-        _conflictAcknowledged = false;
-        CanonicalConflictPanel.Visibility = Visibility.Collapsed;
+        _hasExplicitLocalChanges = false;
+        _autosave.ReloadConflict(_canonicalNode);
+        SaveConflictBanner.Hide();
         RenderCanonicalNode();
         ApplyCanonicalEditor();
     }
 
-    private void OnKeepEditingClick(object sender, RoutedEventArgs args)
+    private async void OnReapplyCanonicalRequested(object? sender, EventArgs args)
     {
-        _conflictAcknowledged = true;
-        CanonicalConflictPanel.Visibility = Visibility.Collapsed;
-        RenderSaveState();
+        if (_pendingCanonicalNode is null)
+        {
+            return;
+        }
+
+        var canonical = _pendingCanonicalNode;
+        _pendingCanonicalNode = null;
+        _canonicalNode = canonical;
+        AcceptCanonicalEditorBase(canonical);
+        SaveConflictBanner.Hide();
+        try
+        {
+            await _autosave.ReapplyConflictAsync(canonical);
+        }
+        catch (InvalidOperationException) when (_hasExplicitLocalChanges)
+        {
+            _autosave.ReloadConflict(canonical);
+            RenderCanonicalNode();
+            RenderSaveState();
+        }
+        catch (Exception error)
+        {
+            SaveConflictBanner.ShowBlocked(error.Message);
+        }
+    }
+
+    private async void OnRetryAutosaveRequested(object? sender, EventArgs args)
+    {
+        try
+        {
+            await _autosave.RetryAsync();
+        }
+        catch (Exception error)
+        {
+            SaveConflictBanner.ShowBlocked(error.Message);
+        }
     }
 
     private void RenderCanonicalNode()
@@ -250,13 +296,24 @@ public sealed partial class NodeEditorWindow : Window
 
     private void RenderSaveState()
     {
-        SaveStateText.Text = _pendingCanonicalNode is not null
-            ? _conflictAcknowledged
-                ? "Unsaved · canonical conflict pending"
-                : "Conflict · choose reload or keep editing"
-            : _hasUnsavedChanges
-                ? "Unsaved local changes"
-                : $"Canonical · rev {_canonicalNode.SemanticRevision}";
+        _hasUnsavedChanges = _hasExplicitLocalChanges ||
+            _pendingCanonicalNode is not null ||
+            _autosaveState.Phase is AutosavePhase.Pending or AutosavePhase.Saving or
+                AutosavePhase.OfflineRetry or AutosavePhase.Conflict or AutosavePhase.Blocked;
+        var text = _pendingCanonicalNode is not null
+            ? "Conflict · choose Reload or Reapply"
+            : _autosaveState.Phase switch
+            {
+                AutosavePhase.Pending => "Pending · autosave scheduled",
+                AutosavePhase.Saving => "Saving…",
+                AutosavePhase.OfflineRetry => "Offline · Retry available",
+                AutosavePhase.Conflict => "Conflict · choose Reload or Reapply",
+                AutosavePhase.Blocked => _autosaveState.Message,
+                _ => $"Saved · rev {_canonicalNode.SemanticRevision}",
+            };
+        SaveStateText.Text = _hasExplicitLocalChanges
+            ? $"{text} · explicit state/CPT commit pending"
+            : text;
     }
 
     private void CreateEditorSurface()
@@ -324,6 +381,19 @@ public sealed partial class NodeEditorWindow : Window
         }
     }
 
+    private void AcceptCanonicalEditorBase(ModelNode canonical)
+    {
+        _rawInputViewModel?.AcceptCanonicalBase(canonical);
+        _evidenceViewModel?.AcceptCanonicalBase(canonical);
+        _bnViewModel?.AcceptCanonicalBase(canonical);
+    }
+
+    private ModelNode BuildEditorDraft() =>
+        _rawInputViewModel?.BuildUpdatedNode()
+        ?? _evidenceViewModel?.BuildUpdatedNode()
+        ?? _bnViewModel?.BuildUpdatedNode()
+        ?? throw new InvalidOperationException("This node type has no editable autosave intent.");
+
     private async Task InitializeEvidenceEditorAsync()
     {
         try
@@ -358,14 +428,97 @@ public sealed partial class NodeEditorWindow : Window
     {
         _canonicalNode = args.Node;
         _pendingCanonicalNode = null;
-        _hasUnsavedChanges = false;
-        _conflictAcknowledged = false;
-        CanonicalConflictPanel.Visibility = Visibility.Collapsed;
+        _hasExplicitLocalChanges = false;
+        _autosave.AcceptExternalCanonical(args.Node);
+        AcceptCanonicalEditorBase(args.Node);
+        SaveConflictBanner.Hide();
         RenderCanonicalNode();
         CanonicalMutationCommitted?.Invoke(this, EventArgs.Empty);
     }
 
-    private void OnLocalEditChanged(object? sender, EventArgs args) => SetUnsavedChanges(true);
+    private void OnLocalEditChanged(object? sender, NodeEditorLocalEditEventArgs args)
+    {
+        if (args.Persistence is NodeEditorEditPersistence.ExplicitCommit)
+        {
+            _hasExplicitLocalChanges = true;
+            RenderSaveState();
+            return;
+        }
+
+        try
+        {
+            _autosave.Queue(BuildEditorDraft());
+        }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException or System.Text.Json.JsonException)
+        {
+            _autosave.ReportBlocked(error);
+        }
+    }
+
+    private void OnAutosaveStateChanged(object? sender, AutosaveStateChangedEventArgs args)
+    {
+        _autosaveState = args.State;
+        _shellState.SetAutosaveStatus(ShellAutosaveStatus(args.State.Phase));
+        switch (args.State.Phase)
+        {
+            case AutosavePhase.OfflineRetry:
+                SaveConflictBanner.ShowOffline(args.State.Message);
+                break;
+            case AutosavePhase.Conflict:
+                SaveConflictBanner.ShowConflict(args.State.Message);
+                _ = LoadConflictCanonicalAsync();
+                break;
+            case AutosavePhase.Blocked:
+                SaveConflictBanner.ShowBlocked(args.State.Message);
+                break;
+            case AutosavePhase.Pending:
+            case AutosavePhase.Saving:
+            case AutosavePhase.Saved:
+                if (_pendingCanonicalNode is null)
+                {
+                    SaveConflictBanner.Hide();
+                }
+                break;
+        }
+        RenderSaveState();
+    }
+
+    private void OnAutosaveCommitted(
+        object? sender,
+        AutosaveCommittedEventArgs<ModelNode, ModelNode> args)
+    {
+        _canonicalNode = args.Canonical;
+        _pendingCanonicalNode = null;
+        if (args.PendingDraft is not null || _hasExplicitLocalChanges)
+        {
+            AcceptCanonicalEditorBase(args.Canonical);
+        }
+        else
+        {
+            ApplyCanonicalEditor();
+        }
+        RenderCanonicalNode();
+        CanonicalMutationCommitted?.Invoke(this, EventArgs.Empty);
+    }
+
+    private async Task LoadConflictCanonicalAsync()
+    {
+        try
+        {
+            var graph = await _bayesianEditorGateway.GetGraphAsync(_key.SchemeId);
+            var current = graph.Nodes.Single(node => node.NodeId == _key.NodeId);
+            _pendingCanonicalNode = current;
+            _autosave.AcceptExternalCanonical(current);
+            SaveConflictBanner.ShowConflict(
+                $"Canonical revision {current.SemanticRevision} is current. Reload it or reapply the editor intent.");
+            RenderSaveState();
+        }
+        catch (Exception error)
+        {
+            SaveConflictBanner.ShowBlocked(
+                $"The current canonical node could not be loaded: {error.Message}");
+        }
+    }
 
     private void OnClosed(object sender, WindowEventArgs args)
     {
@@ -387,7 +540,57 @@ public sealed partial class NodeEditorWindow : Window
             _bnEditor.CanonicalNodeCommitted -= OnCanonicalNodeCommitted;
         }
         _evidenceViewModel?.Dispose();
+        _autosave.StateChanged -= OnAutosaveStateChanged;
+        _autosave.Committed -= OnAutosaveCommitted;
+        _ = FlushAndDisposeAutosaveAsync();
     }
+
+    private async Task FlushAndDisposeAutosaveAsync()
+    {
+        try
+        {
+            await _autosave.FlushAsync();
+        }
+        catch (Exception error)
+        {
+            _shellState.AppendDiagnostic($"Node autosave did not flush during close: {error.Message}");
+        }
+        finally
+        {
+            await _autosave.DisposeAsync();
+        }
+    }
+
+    private static AutosaveFailureKind ClassifyAutosaveFailure(Exception error)
+    {
+        if (error is JsonRpcRemoteException remote &&
+            remote.DataElement is { ValueKind: System.Text.Json.JsonValueKind.Object } data &&
+            data.TryGetProperty("error_code", out var code) &&
+            string.Equals(
+                code.GetString(),
+                "MODEL_REVISION_CONFLICT",
+                StringComparison.Ordinal))
+        {
+            return AutosaveFailureKind.Conflict;
+        }
+        if (error is IOException ||
+            error is InvalidOperationException invalid &&
+            invalid.Message.Contains("not connected", StringComparison.OrdinalIgnoreCase))
+        {
+            return AutosaveFailureKind.Offline;
+        }
+        return AutosaveFailureKind.Blocked;
+    }
+
+    private static string ShellAutosaveStatus(AutosavePhase phase) => phase switch
+    {
+        AutosavePhase.Pending => "Pending changes",
+        AutosavePhase.Saving => "Saving",
+        AutosavePhase.OfflineRetry => "Offline / Retry",
+        AutosavePhase.Conflict => "Conflict",
+        AutosavePhase.Blocked => "Blocked",
+        _ => "Saved",
+    };
 
     private static IReadOnlyList<DisplayWorkArea> GetDisplayWorkAreas()
     {

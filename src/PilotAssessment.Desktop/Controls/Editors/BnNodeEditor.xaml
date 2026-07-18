@@ -52,7 +52,7 @@
                             <TextBox AcceptsReturn="True" Header="English help" MinHeight="110" Text="{Binding HelpTextEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                             <TextBox Grid.Column="1" AcceptsReturn="True" Header="中文帮助" MinHeight="110" Text="{Binding HelpTextZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                         </Grid>
-                        <InfoBar IsClosable="False" IsOpen="True" Message="General text/metadata is held as typed local intent here; Task 12 adds automatic durable save and conflict reconciliation. State, parent and CPT buttons below already use atomic backend operations." Severity="Informational" Title="Save boundary" />
+                        <InfoBar IsClosable="False" IsOpen="True" Message="General text and metadata autosave after 350 ms. State, parent and CPT changes remain explicit atomic backend operations because they also migrate dependent probability tables." Severity="Informational" Title="Save boundary" />
                     </StackPanel>
                 </ScrollViewer>
             </TabViewItem>

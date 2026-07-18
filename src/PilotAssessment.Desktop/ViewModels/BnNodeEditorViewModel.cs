@@ -11,11 +11,6 @@ using PilotAssessment.Desktop.Core.ViewModels;
 
 namespace PilotAssessment.Desktop.ViewModels;
 
-public sealed class CanonicalNodeCommittedEventArgs(ModelNode node) : EventArgs
-{
-    public ModelNode Node { get; } = node;
-}
-
 public sealed partial class BnStateEditItem : ObservableObject
 {
     public BnStateEditItem(VariableState state)
@@ -422,7 +417,7 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
     public string PosteriorSummary =>
         "The canonical arrows show P(child | fixed parents). Posterior/influence is a read-only run result overlay and does not reverse or rewrite these edges. Task 14 displays executed posterior and influence artifacts.";
 
-    public event EventHandler? LocalEditChanged;
+    public event EventHandler<NodeEditorLocalEditEventArgs>? LocalEditChanged;
 
     public event EventHandler<CanonicalNodeCommittedEventArgs>? CanonicalNodeCommitted;
 
@@ -487,6 +482,37 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
         }
     }
 
+    public void ApplyDraftIntent(ModelNode draft)
+    {
+        var canonical = _canonicalNode;
+        var graph = _graph;
+        ApplyCanonical(draft, _schemeId);
+        _canonicalNode = canonical;
+        if (graph is not null)
+        {
+            RefreshRelationships(graph with
+            {
+                Nodes = graph.Nodes.Select(node =>
+                    node.NodeId == canonical.NodeId ? canonical : node).ToArray(),
+            });
+        }
+    }
+
+    public void AcceptCanonicalBase(ModelNode canonical)
+    {
+        _ = canonical.Definition as BnNodeDefinition
+            ?? throw new ArgumentException("BN editor requires a BN node.");
+        _canonicalNode = canonical;
+        if (_graph is not null)
+        {
+            _graph = _graph with
+            {
+                Nodes = _graph.Nodes.Select(node =>
+                    node.NodeId == canonical.NodeId ? canonical : node).ToArray(),
+            };
+        }
+    }
+
     public ModelNode BuildUpdatedNode()
     {
         var definition = (BnNodeDefinition)_canonicalNode.Definition;
@@ -522,18 +548,23 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
             $"state_{index}",
             $"State {index}",
             "Expert-defined BN state.")));
-        LocalEditChanged?.Invoke(this, EventArgs.Empty);
+        LocalEditChanged?.Invoke(
+            this,
+            new NodeEditorLocalEditEventArgs(NodeEditorEditPersistence.ExplicitCommit));
     }
 
     public void RemoveState(BnStateEditItem state)
     {
         ArgumentNullException.ThrowIfNull(state);
         States.Remove(state);
-        LocalEditChanged?.Invoke(this, EventArgs.Empty);
+        LocalEditChanged?.Invoke(
+            this,
+            new NodeEditorLocalEditEventArgs(NodeEditorEditPersistence.ExplicitCommit));
     }
 
     public async Task CommitStatesAsync(CancellationToken cancellationToken = default)
     {
+        var localIntent = BuildUpdatedNode();
         var states = States.Select(item => item.Build()).ToArray();
         ValidateStates(states);
         var graph = _graph ?? await _bayesianGateway.GetGraphAsync(_schemeId, cancellationToken);
@@ -555,6 +586,7 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
                     response.Nodes.FirstOrDefault(changed => changed.NodeId == node.NodeId) ?? node).ToArray(),
             };
             ApplyCanonical(canonical, _schemeId);
+            ApplyDraftIntent(ModelNodeDraftRebaser.Rebase(localIntent, canonical));
             RefreshRelationships(_graph);
             StatusMessage =
                 $"Canonical states saved; {response.Nodes.Length} node CPT definition(s) are now explicitly incomplete and repairable.";
@@ -622,7 +654,9 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
             cancellationToken);
     }
 
-    public void MarkLocalEdit() => LocalEditChanged?.Invoke(this, EventArgs.Empty);
+    public void MarkLocalEdit(
+        NodeEditorEditPersistence persistence = NodeEditorEditPersistence.Autosave) =>
+        LocalEditChanged?.Invoke(this, new NodeEditorLocalEditEventArgs(persistence));
 
     public static IReadOnlyDictionary<string, int> StateChangeRevisionPlan(
         ModelGraphSnapshot graph,
@@ -689,7 +723,9 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
     }
 
     private void OnCptLocalEditChanged(object? sender, EventArgs args) =>
-        LocalEditChanged?.Invoke(this, EventArgs.Empty);
+        LocalEditChanged?.Invoke(
+            this,
+            new NodeEditorLocalEditEventArgs(NodeEditorEditPersistence.ExplicitCommit));
 
     private void OnCptCanonicalNodeCommitted(object? sender, CanonicalNodeCommittedEventArgs args)
     {

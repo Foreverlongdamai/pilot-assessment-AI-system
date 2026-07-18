@@ -135,7 +135,7 @@ public sealed class EvidenceEditorTests
         var gateway = new FakeEditorGateway();
         using var coordinator = new EvidenceEditorCoordinator(gateway);
 
-        await coordinator.UpdateAsync(updated, "expert.local");
+        await coordinator.UpdateAsync(updated, "expert.local", "tx.evidence.test");
 
         Assert.Same(updated, gateway.UpdatedNode);
         Assert.Equal(7, gateway.ExpectedSemanticRevision);
@@ -282,6 +282,7 @@ public sealed class EvidenceEditorTests
             int expectedSemanticRevision,
             int expectedLayoutRevision,
             string actor,
+            string transactionId,
             CancellationToken cancellationToken = default)
         {
             UpdatedNode = node;
@@ -296,7 +297,7 @@ public sealed class EvidenceEditorTests
                 new CanonicalModelDiff(
                     [], [], [], [], [],
                     new Dictionary<string, JsonElement>(StringComparer.Ordinal)),
-                "tx.test",
+                transactionId,
                 "audit.test",
                 false,
                 "trace.test"));
