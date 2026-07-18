@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7 |
 | Date | 2026-07-17 |
-| Status | M7A engineering verified; M7B Tasks 1–13 complete, Task 14 next |
+| Status | M7A engineering verified; M7B Tasks 1–14 complete, Task 15 next |
 | Authoritative design | [M7 WinUI Expert Designer and Task Activation Workspace Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
 | Decisions | D-047–D-053 |
 | Upstream | M1–M3, M4R, M5 and M6 engineering verified |
@@ -94,7 +94,7 @@ M7A is complete only when all of the following are true:
 
 Executable plan: [M7B WinUI Expert Designer Implementation Plan](2026-07-17-m7b-winui-expert-designer-implementation-plan.md).
 
-**Progress status (2026-07-17):** M7B Tasks 1–13 are implemented. The visible Windows application now includes the managed project/session workspace, parallel task-scheme navigation, the backend-projected active/dim global graph, atomic graph editing, independent node windows, complete Raw Input/Evidence editors, BN state/fixed-parent/CPT editors, durable 350 ms form autosave with per-object ordering/idempotent retry/canonical rebase/Reload-Reapply recovery, and immediate Chinese/English switching across the shell, graph and already-open node windows. Missing model translations are marked visibly and language remains local presentation state. Task 14 is the next gate and owns actual run execution and posterior/result presentation; M8 packaging remains deferred.
+**Progress status (2026-07-17):** M7B Tasks 1–14 are implemented. The visible Windows application now includes the managed project/session workspace, parallel task-scheme navigation, the backend-projected active/dim global graph, atomic graph editing, independent node windows, complete Raw Input/Evidence editors, BN state/fixed-parent/CPT editors, durable 350 ms form autosave with per-object ordering/idempotent retry/canonical rebase/Reload-Reapply recovery, immediate Chinese/English switching, and backend-owned current-model preflight/run/cancel/recovery/result/trace/diagnostics. A real visible vertical slice recovered the same immutable result after restart and displayed 18 Evidence observations, 4 posterior variables and 39 managed artifact references. Task 15 is the remaining accessibility/performance/contract/visible-launch completion gate; M8 packaging remains deferred.
 
 M7B delivers:
 

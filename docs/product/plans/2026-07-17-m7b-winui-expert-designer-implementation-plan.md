@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7B |
 | Date | 2026-07-17 |
-| Status | Tasks 1–13 complete; Task 14 run/result workspace is next |
+| Status | Tasks 1–14 complete; Task 15 completion gate is next |
 | Parent roadmap | [M7 Implementation Roadmap](2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) |
 | Backend dependency | [M7A Current Model Runtime Plan](2026-07-17-m7a-current-model-runtime-implementation-plan.md) |
 | Authoritative design | [M7 Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
@@ -624,15 +624,15 @@ Fresh verification: desktop Unit `75/75`, Contract `3/3`, focused localization `
 - Create: `src/PilotAssessment.Desktop/Services/Backend/RunClient.cs`
 - Create: `tests/PilotAssessment.Desktop.UnitTests/ViewModels/RunResultViewModelTests.cs`
 
-- [ ] Build run setup from selected managed session revision and current scheme; call `model.run.preflight` and show exact technical errors/warnings.
-- [ ] Start a run without Publish. Display the frozen scheme revision/node hashes and explicit scientific-status banner.
-- [ ] Consume progress notifications/events, allow cancellation and recover queued/running/interrupted state after app or sidecar restart.
-- [ ] Show Evidence D/A/U observations, competency/sub-skill posterior distributions, inference trace/influence, coverage/provenance and artifact links from result DTOs.
-- [ ] Keep canonical BN edges visually separate from inference influence in every result view.
-- [ ] Open large artifacts through backend artifact references/managed paths; do not deserialize video/images/timeseries into JSON-RPC.
-- [ ] Diagnostics page shows backend version/capabilities, stderr tail, project recovery, schema identities and audit events without exposing secrets.
-- [ ] Test preflight blocking, automatic snapshot identity, progress ordering, cancellation and result mapping.
-- [ ] Run:
+- [x] Build run setup from selected managed session revision and current scheme; call `model.run.preflight` and show exact technical errors/warnings.
+- [x] Start a run without Publish. Display the frozen scheme revision/node hashes and explicit scientific-status banner.
+- [x] Consume progress notifications/events, allow cancellation and recover queued/running/interrupted state after app or sidecar restart.
+- [x] Show Evidence D/A/U observations, competency/sub-skill posterior distributions, inference trace/influence, coverage/provenance and artifact links from result DTOs.
+- [x] Keep canonical BN edges visually separate from inference influence in every result view.
+- [x] Open large artifacts through backend artifact references/managed paths; do not deserialize video/images/timeseries into JSON-RPC.
+- [x] Diagnostics page shows backend version/capabilities, stderr tail, project recovery, schema identities and audit events without exposing secrets.
+- [x] Test preflight blocking, automatic snapshot identity, progress ordering, cancellation and result mapping.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~RunResultViewModelTests
@@ -640,12 +640,16 @@ dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.Unit
 
 Expected: run/result state tests pass and normal flow contains no publication step.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/PilotAssessment.Desktop/Views/Pages/RunsPage.xaml src/PilotAssessment.Desktop/Views/Pages/ResultsPage.xaml src/PilotAssessment.Desktop/ViewModels/RunsViewModel.cs src/PilotAssessment.Desktop/ViewModels/ResultsViewModel.cs src/PilotAssessment.Desktop/Services/Backend/RunClient.cs tests/PilotAssessment.Desktop.UnitTests/ViewModels/RunResultViewModelTests.cs
 git commit -m "feat: add assessment runs and results workspace"
 ```
+
+Recorded commit: `de185d5`. Task 14 adds typed current-model preflight/start/list/status/events/cancel/result/artifact clients, monotonic progress and restart reconciliation, managed-artifact path enforcement, immutable run/result presentation and expanded backend diagnostics. Python remains the only Evidence/BN/CPT/run engine. The C# layer projects backend DTOs and resolves exact component lineage; it neither recomputes Evidence nor treats inference influence as canonical BN edges. Normal execution contains no Draft, Publish, Apply or manual snapshot step.
+
+Fresh verification: focused run/result Unit `6/6`, complete desktop Unit `81/81`, Contract `3/3`, focused localization `8/8`, focused real-sidecar Python `2/2`, x64 Debug build `0 warning / 0 error`, and `git diff --check` clean. A visible managed-session vertical slice ran the current `52`-node scheme without Publish, froze snapshot hash `35374469fab20bce950dca6f36c11b261f4b61f9e3c920cab9406d6780f78496`, completed run `run.desktop.385160c7575e45e0a282e0a30218b77e`, and loaded backend-verified result `result.e9db4789408cb0ca9f027552761245d3` with `18` Evidence observations, `4` posterior variables and `39` artifact references. Restart recovered the same immutable identity and result; live Chinese/English switching changed presentation only. The scientific banner remains `not_supported / engineering workflow only` for this starter/synthetic case.
 
 ## Task 15: Close accessibility, performance, contract and visible-launch gates
 
@@ -698,8 +702,8 @@ git commit -m "test: close M7 WinUI expert designer"
 | 10 | `feat: add raw input and Evidence node editors` | `59396ee` |
 | 11 | `feat: add BN and CPT node editors` | `d034442` |
 | 12 | `feat: autosave canonical model edits` | `b9376ea` |
-| 13 | `feat: add live Chinese and English UI` | Not executed |
-| 14 | `feat: add assessment runs and results workspace` | Not executed |
+| 13 | `feat: add live Chinese and English UI` | `8ed9581` |
+| 14 | `feat: add assessment runs and results workspace` | `de185d5` |
 | 15 | `test: close M7 WinUI expert designer` | Not executed |
 
 ## 4. M7B completion definition
