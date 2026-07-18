@@ -128,10 +128,10 @@ Evidence 节点的独立浮动窗口必须同时让专家看到两件事：
 | M4R Editable Evidence Computation Foundation | 已工程验证；canonical `EvidenceRecipe`、typed operators、compiler/executor、draft/preview/apply/replay 与 18 个 starter recipes 已实现 |
 | M5 Shared Model Library and Bayesian Workspace | 已工程验证；global immutable component library、exact-pinned scheme、draft/undo/redo、copy-on-write atomic publish、通用 CPT、finite-discrete exact inference、M4R migration、Hover starter package 与 lightweight preview/publish/replay workflow 已完成 |
 | M6 Local Runtime / Persistence / Protocol | 已工程验证；受管 project/session/artifact、SQLite 持久化、exact run、Evidence→BN pipeline、progress/cancel/recovery 与 stdio JSON-RPC sidecar 已实现 |
-| M7 WinUI Expert Designer | M7A 后端已工程验证；M7B Task 1–13 已完成正式 WinUI scaffold、强类型合同层、受监督 sidecar、受管 project/session、canonical task-scheme、global active/dim 模型图、图上编辑、多独立节点窗口、Raw Input/Evidence/BN/CPT 编辑器、写回 Python canonical state 的持久 autosave/reconciliation，以及不改模型的即时中英文切换；Task 14 起实现实际运行与结果工作区 |
+| M7 WinUI Expert Designer | 已工程验证；M7A current-model/automatic-snapshot 后端与 M7B Tasks 1–15 可见 WinUI 工作区全部完成，覆盖受管 project/session、并列 task schemes、global active/dim graph、图上编辑、多个独立节点窗口、Raw Input/Evidence/BN/CPT、autosave/conflict、即时双语、preflight/run/cancel/recovery/result/trace/diagnostics、accessibility、viewport culling 与真实 sidecar contract |
 | M8 Packaging / Handoff | 尚未实施 |
 
-当前 18 个 Evidence、11 个 sub-skills、4 个 competencies 和 Hover BN 都只是 `starter_template` / `engineering_default`。通用代码、schema、API、UI 和测试不得依赖这些数量、名称或连接。完整产品仍是 `in_progress`，`formal_run_authorized=false`。
+M7 completion gate 的 fresh 证据为 desktop Unit `84/84`、real-sidecar Contract `4/4`、x64 Debug build `0 warning / 0 error`，并实际恢复一个包含 `18` Evidence、`4` posterior variables、`39` artifact references 的只读结果；这些数字只证明工程工作流。当前 18 个 Evidence、11 个 sub-skills、4 个 competencies 和 Hover BN 都只是 `starter_template` / `engineering_default`。通用代码、schema、API、UI 和测试不得依赖这些数量、名称或连接。完整产品仍因 M8 尚未打包而为 `in_progress`，`formal_run_authorized=false`。
 
 ## 从这里开始阅读
 

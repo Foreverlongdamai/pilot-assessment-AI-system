@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7B |
 | Date | 2026-07-17 |
-| Status | Tasks 1–14 complete; Task 15 completion gate is next |
+| Status | Tasks 1–15 complete; M7B engineering gate closed |
 | Parent roadmap | [M7 Implementation Roadmap](2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) |
 | Backend dependency | [M7A Current Model Runtime Plan](2026-07-17-m7a-current-model-runtime-implementation-plan.md) |
 | Authoritative design | [M7 Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
@@ -663,28 +663,36 @@ Fresh verification: focused run/result Unit `6/6`, complete desktop Unit `81/81`
 - Modify: `docs/product/README.md`
 - Modify: this plan and the M7 roadmap
 
-- [ ] Verify keyboard navigation, focus visibility, automation names, high contrast, light/dark themes, 100/150/200% scaling and screen-reader state text on the main workflow.
-- [ ] Verify graph virtualization/viewport culling with a generated in-memory DTO of 1,000 nodes; this is a UI projection benchmark, not a backend dataset or scientific test. Record realization count and interaction responsiveness without saving those fake nodes to a product project.
-- [ ] Run the complete .NET tests and build:
+- [x] Verify keyboard navigation, focus visibility, automation names, high contrast, light/dark themes, 100/150/200% scaling and screen-reader state text on the main workflow.
+- [x] Verify graph virtualization/viewport culling with a generated in-memory DTO of 1,000 nodes; this is a UI projection benchmark, not a backend dataset or scientific test. Record realization count and interaction responsiveness without saving those fake nodes to a product project.
+- [x] Run the complete .NET tests and build:
 
 ```powershell
 dotnet test src/PilotAssessment.Desktop/PilotAssessment.Desktop.slnx -p:Platform=x64
 dotnet build src/PilotAssessment.Desktop/PilotAssessment.Desktop.slnx -c Debug -p:Platform=x64
 ```
 
-- [ ] Run `CurrentModelWorkflowTests` against a real M7A subprocess: create/open project → list/copy scheme → copy/edit node → activation/deactivation → preflight/run → result → close/reopen. Use the smallest existing managed fixture.
-- [ ] Launch the unpackaged executable visibly. Locate the exact built executable, start it with a normal visible window and poll for a non-zero `MainWindowHandle` for at most 15 seconds. Do not count process existence alone as success.
-- [ ] Keep the successfully launched application open for user inspection at the end of the verification turn unless the user asks for headless completion.
-- [ ] Manually verify two simultaneous node windows, task switching active/dim state, copy/paste, cascade Continue/Cancel, autosave/conflict banner, Chinese/English switch and one result view.
-- [ ] Confirm no TCP listener is opened by the application/backend and stdout remains protocol-only.
-- [ ] Update status documents with exact SDK/template versions, test counts, build output, contract smoke and visible-window evidence. State M8 packaging and scientific validation remain undone.
-- [ ] Record actual task commit hashes in this plan.
-- [ ] Commit:
+- [x] Run `CurrentModelWorkflowTests` against a real M7A subprocess: create/open project → list/copy scheme → copy/edit node → activation/deactivation → preflight/run → result → close/reopen. Use the smallest existing managed fixture.
+- [x] Launch the unpackaged executable visibly. Locate the exact built executable, start it with a normal visible window and poll for a non-zero `MainWindowHandle` for at most 15 seconds. Do not count process existence alone as success.
+- [x] Keep the successfully launched application open for user inspection at the end of the verification turn unless the user asks for headless completion.
+- [x] Manually verify two simultaneous node windows, task switching active/dim state, copy/paste, cascade Continue/Cancel, autosave/conflict banner, Chinese/English switch and one result view.
+- [x] Confirm no TCP listener is opened by the application/backend and stdout remains protocol-only.
+- [x] Update status documents with exact SDK/template versions, test counts, build output, contract smoke and visible-window evidence. State M8 packaging and scientific validation remain undone.
+- [x] Record actual task commit hashes in this plan.
+- [x] Commit:
 
 ```powershell
 git add src/PilotAssessment.Desktop src/PilotAssessment.Desktop.Core tests/PilotAssessment.Desktop.UnitTests tests/PilotAssessment.Desktop.ContractTests docs/product
 git commit -m "test: close M7 WinUI expert designer"
 ```
+
+Recorded code/test commit: `d1dbdd2`. Task 15 adds a pure viewport-realization planner consumed by the WinUI virtualizing layout, a 1,000-node in-memory projection gate, accessibility/high-contrast resource audits, screen-reader headings/live regions, localized graph automation help, and startup-ready reconciliation for Runs/Results. The real-sidecar contract now covers project creation, task-scheme copy, node copy/edit, deactivate/activate, lightweight managed-session import, current-model preflight/run/result, project close/reopen, and exact node/result recovery without Publish.
+
+Fresh automated evidence: complete desktop Unit `84/84`, Contract `4/4` (the real workflow completed in approximately `29 s`), and x64 Debug build `0 warning / 0 error` in `9.61 s`. The 1,000-node projection realizes exactly `40` buffered-viewport nodes for a `1280 × 720` viewport and satisfies the `< 2 s` responsiveness gate; generated nodes remain in memory and are never saved to a product project. `git diff --check` is clean apart from Git's existing line-ending notice.
+
+Fresh visible evidence: the application automatically recovered result `result.e9db4789408cb0ca9f027552761245d3` after backend readiness, with `18` Evidence observations, `4` posterior variables and `39` artifact references and no transient disconnected error. Light, dark and system themes rendered; Tab exposed a visible focus rectangle; automation exposed named navigation, node help, headings and live status text. Layout remained usable at `1920`, `1279` and `959` logical-pixel widths—the effective working-width equivalents of 100/150/200% on a 1920-pixel display—without changing the user's Windows DPI setting; this verifies responsive XAML layout, not physical raster quality. The main graph and independent ECG/EEG editors were simultaneously present as three top-level windows, and the editor identified itself as non-modal while the main graph remained operable. Earlier Task 8/9/12/13 visible gates already recorded active/dim task switching, copy/paste, cascade Continue/Cancel, autosave/conflict recovery and live Chinese/English switching; Task 15 rechecked the multi-window, result, restart, focus and theme surfaces rather than mutating the managed demo again.
+
+The running desktop process and all descendants (`uv`, Python and console host) owned `0` TCP listeners. Contract tests consume stdout exclusively through the JSONL protocol framer, and the real workflow observed no traceback on stderr. Verified toolchain: .NET SDK `10.0.302`, .NET runtime `10.0.10`, Windows `10.0.26200`, Visual Studio Community 2026 `18.8.0` at `D:\visual_studio`, Windows App SDK `2.3.1`, Microsoft Windows SDK BuildTools `10.0.26100.7705`, and BuildTools.WinApp `0.4.0`. The development application remains unpackaged; M8 distribution packaging and all scientific calibration/validation remain undone, and starter/synthetic `formal_run_authorized=false`.
 
 ## 3. Planned commit ledger
 
@@ -704,13 +712,13 @@ git commit -m "test: close M7 WinUI expert designer"
 | 12 | `feat: autosave canonical model edits` | `b9376ea` |
 | 13 | `feat: add live Chinese and English UI` | `8ed9581` |
 | 14 | `feat: add assessment runs and results workspace` | `de185d5` |
-| 15 | `test: close M7 WinUI expert designer` | Not executed |
+| 15 | `test: close M7 WinUI expert designer` | `d1dbdd2` |
 
 ## 4. M7B completion definition
 
 M7B is complete only after Task 15 records fresh unit, real-sidecar, build and visible-window evidence. A XAML mock, a successfully compiled process with no window, or a client that still calls Draft/Publish does not complete M7B.
 
-Until then the status must distinguish:
+The completed status continues to distinguish:
 
 - M7A backend readiness;
 - M7B scaffold/feature progress;
@@ -718,4 +726,4 @@ Until then the status must distinguish:
 - M8 packaged distribution;
 - scientific calibration/validation.
 
-Only the first three belong to M7. M8 must later bundle the backend runtime, code and front end while excluding each user's local session data.
+The first three are now engineering-verified M7 deliverables. M8 must later bundle the backend runtime, code and front end while excluding each user's local session data; scientific calibration/validation remains a separate expert activity.

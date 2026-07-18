@@ -1,20 +1,20 @@
-# Implementation Status — M1/M2/M3/M4R/M5/M6/M7A Engineering Verified; M7B Task 1–14 Complete
+# Implementation Status — M1/M2/M3/M4R/M5/M6/M7 Engineering Verified
 
 | 字段 | 当前值 |
 |---|---|
 | 状态日期 | 2026-07-17 |
 | 产品设计基线 | v0.5 complete-node/task-activation expert designer（D-031–D-053） |
-| 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization + M4R Editable Evidence Computation Foundation + M5 Shared Model Library and Bayesian Workspace + M6 Local Runtime, Durable Persistence and Sidecar + M7A Current Model Runtime |
+| 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization + M4R Editable Evidence Computation Foundation + M5 Shared Model Library and Bayesian Workspace + M6 Local Runtime, Durable Persistence and Sidecar + M7 WinUI Expert Designer |
 | M4 当前状态 | M4R 已完成 canonical EvidenceRecipe/OperatorDefinition schema、trusted registry、only-technical validation、generic compiler/executor、built-in operator library、backend-only draft/preview/apply/replay、18 个 editable starter resources 和轻量 E2E。旧 Task 0–28 的 15 个 whole-Anchor plugins 与三个 providers 保留为 legacy/reference；旧 Task 29–36 已停止。**M4R engineering verified；`formal_run_authorized=false`。** |
-| 下一里程碑 | 执行 M7B Task 15 accessibility/performance/contract/visible-launch completion gate；M8 packaging 仍放在最后阶段 |
-| 软件状态 | `in_progress`（M1/M2/M3/M4R/M5/M6/M7A engineering verified；M7B Task 1–14 已完成，M7 completion gate 与 M8 packaging 尚未完成，starter/synthetic `formal_run_authorized=false`） |
+| 下一里程碑 | 设计 M8 integration/distribution packaging/handoff；尚未开始打包实现 |
+| 软件状态 | `in_progress`（M1/M2/M3/M4R/M5/M6/M7 engineering verified；M8 packaging 尚未实现，starter/synthetic `formal_run_authorized=false`） |
 | 科学状态 | synthetic 数据为 `not_supported`；评估模型仍待领域专家校准与验证 |
 | Python package | `pilot-assessment-system 0.1.0` |
 | 本地运行边界 | Windows、离线、目录形式 Session Bundle |
 
 ## 1. 本轮结论
 
-M1/M2/M3、M4R、M5、M6 与 M7A 已实现并关闭各自 engineering gate。系统现在可以：
+M1/M2/M3、M4R、M5、M6 与完整 M7 已实现并关闭各自 engineering gate。系统现在可以：
 
 1. 将当前 combined simulator CSV 作为一个通过格式与文件完整性检查的共享物理文件，分别形成 X 与 U 两个逻辑 view；这里的检查不包含任务或表现有效性；
 2. 保留 I、G、EEG、ECG、pilot_camera 与 bundle-local task reference 的版本化理想输入合同；
@@ -28,9 +28,10 @@ M1/M2/M3、M4R、M5、M6 与 M7A 已实现并关闭各自 engineering gate。系
 10. 通过无网络端口的 JSON-RPC/JSONL stdio sidecar 暴露 project/session/model/edit/run/result 能力、progress、cancel 与 recovery；
 11. 以全局 current `ModelNode` 库和 `TaskScheme` 激活集合保存完整 Raw Input/Evidence/BN 节点，并从节点定义投影两类边；
 12. 通过同一 sidecar 创建/复制/编辑/归档节点与方案，自动启用 parent closure，预览并原子级联停用 downstream，原子修改 states/parents/CPT，并保留 autosave history、undo/redo；
-13. 从 current scheme 直接 preflight/run，自动冻结完整 immutable current-model snapshot；后续共享节点修改只影响未来运行，旧 M5/M6 records、published-scheme run 与结果继续 replay。
+13. 从 current scheme 直接 preflight/run，自动冻结完整 immutable current-model snapshot；后续共享节点修改只影响未来运行，旧 M5/M6 records、published-scheme run 与结果继续 replay；
+14. 在可见 WinUI 3 专家工作区中完成 project/session、任务方案、active/dim 全局图、节点/边、Raw Input/Evidence/BN/CPT、多独立浮窗、autosave/conflict、双语、run/result/trace/diagnostics 的完整交互，并把所有 domain mutation 写回 Python canonical state。
 
-本结论证明 M1–M3 的合同、文件不变性与 native-rate 时间计算路径，M4R 对 editable recipe 的保存、技术校验、编译、执行、预览和 revision replay，M5 对历史 immutable versions/exact-pinned scheme/CPT/BN inference，M6 对 durable project/runtime/sidecar，以及 M7A 对 complete-node/task-activation/autosave-current-scheme/automatic snapshot 的**既有实现**均按各自规格运行。它不表示 M7B 可见 WinUI、M8 发布包或科学有效性已经完成。Synthetic scene、gaze、EEG、ECG、pilot-camera、annotation、commanded path、starter Evidence/BN/CPT 与轻量 fixtures 都不是航空、生理或训练评估有效性证据。M3 不执行插值、重采样或 analysis/window grid；M4R 只在 recipe 显式放置相应 operator 时执行变换或建立窗口。
+本结论证明 M1–M3 的合同、文件不变性与 native-rate 时间计算路径，M4R 对 editable recipe 的保存、技术校验、编译、执行、预览和 revision replay，M5 对历史 immutable versions/exact-pinned scheme/CPT/BN inference，M6 对 durable project/runtime/sidecar，以及 M7 对 complete-node/task-activation/autosave-current-scheme/automatic snapshot/可见 WinUI 专家工作区的**既有实现**均按各自规格运行。它不表示 M8 发布包或科学有效性已经完成。Synthetic scene、gaze、EEG、ECG、pilot-camera、annotation、commanded path、starter Evidence/BN/CPT 与轻量 fixtures 都不是航空、生理或训练评估有效性证据。M3 不执行插值、重采样或 analysis/window grid；M4R 只在 recipe 显式放置相应 operator 时执行变换或建立窗口。
 
 其中 repository-external simulator CSV 只是一次随意飞行产生的采集格式样例，没有标准轨迹、任务 ground truth 或能力标签。对它的 E2E 验证只证明 33-column/100 Hz 格式可以被读取、保留和转换；不证明该飞行符合任务要求，也不支持任何表现或能力结论。
 
@@ -61,6 +62,8 @@ M4 书面设计明确采用 no-quality-gate 边界：进入 M4 的 aligned input
 2026-07-17 M7B Task 13 已完成即时中英文 UI：`527` 对 MRT Core 资源键一一对应，显式 language-qualified `ResourceContext` 与 binding notification 会原地刷新 shell、页面、任务侧栏、模型图、对话框、Evidence/BN/CPT 动态状态和已经打开的独立节点窗口。模型 `name_zh/name_en` 只在 C# 显示投影中选择，缺失翻译显示 `[EN fallback]` / `[中文回退]` / `[ID fallback]`；语言只写 `%LOCALAPPDATA%\PilotAssessmentSystem\ui-state.json`。完整桌面 Unit `75/75`、Contract `3/3`、focused localization `8/8`、x64 Debug build `0 warning / 0 error`，资源 parity/引用审计均为零缺失。可见验证完成 English → 中文 → English 的当前窗口即时切换、已开 BN 窗口同步刷新和重启偏好恢复；代表节点仍为 semantic/layout revision `2`，未写 canonical 模型。下一项是 Task 14 actual run/results/trace/diagnostics。
 
 2026-07-17 M7B Task 14 已完成 backend-owned current-model run/result 工作区：typed client 覆盖 preflight/start/list/status/events/cancel/result/artifact，运行进度按单调事件归并，重启通过 `model.run.list` 恢复当前模型运行；RunSnapshot 自动冻结 scheme revision、node hashes 与 snapshot hash。Results 只读投影 Evidence D/A/U、Observation、BN posterior、inference influence、provenance 和受管 artifact references，并把 inference influence 与 canonical BN edges 明确分离。Diagnostics 展示 backend/protocol/runtime/capabilities/schema/audit/recovery，stderr 仍走独立诊断通道。Python 继续唯一负责 Evidence/BN/CPT/run 计算，C# 不复制算法。fresh gate 为 focused Unit `6/6`、完整桌面 Unit `81/81`、Contract `3/3`、localization `8/8`、real-sidecar Python `2/2`、x64 Debug build `0 warning / 0 error`。可见受管 session 无 Publish 完成 run `run.desktop.385160c7575e45e0a282e0a30218b77e`，结果 `result.e9db4789408cb0ca9f027552761245d3` 含 `18` Evidence、`4` posterior variables、`39` artifact references；应用重启后恢复相同 snapshot/result identity，中英文切换不改变 ID/hash。该 starter/synthetic 运行继续标记 `scientific_status=not_supported`；下一项仅为 Task 15 completion gate。
+
+2026-07-17 M7B Task 15 已关闭 M7 completion gate，代码/测试提交为 `d1dbdd2`。新增纯 C# viewport-realization planner 与 WinUI virtualizing layout 接线，1,000 节点内存投影在 `1280 × 720` buffered viewport 只 realization `40` 个节点且满足 `<2 s` 门；该 DTO 不写入产品项目。accessibility surface 具备命名主导航、Level-1 headings、live status、localized node help、键盘焦点和 HighContrast graph resources。Runs/Results 在 sidecar 尚未 ready 的启动竞态中等待并在 ready transition 自动刷新，重启无需人工 Refresh 即恢复相同 immutable result。fresh gate 为完整桌面 Unit `84/84`、真实 sidecar Contract `4/4`（约 `29 s`）、x64 Debug build `0 warning / 0 error`（`9.61 s`）。可见应用在 `1920`、`1279`、`959` logical-pixel 工作宽度保持可用，完成 light/dark/system theme、Tab focus、screen-reader state text、主窗口加 ECG/EEG 两个非模态编辑器三窗并存以及 result recovery；这些逻辑宽度等价验证 1920-pixel 工作区的 100/150/200% effective layout，但未修改用户的 Windows DPI。Task 8/9/12/13 已记录的 active/dim task switching、copy/paste、cascade Continue/Cancel、autosave/conflict 与中英文切换继续作为 completion gate 的累计可见证据。运行中 desktop、`uv`、Python 和 console-host 进程合计 TCP listener 为 `0`；stdout 只由 JSONL framer 消费，真实 contract stderr 无 traceback。M7 至此 engineering verified；M8 packaging 与科学校准/验证均未完成，starter/synthetic `formal_run_authorized=false`。
 
 ## 2. 已实现能力
 
@@ -154,7 +157,7 @@ uv run python -m pilot_assessment.synthetic `
 - package 中提供 O1–O13/H1–H5 共 18 个 `starter_template` JSON resources，全部可修改/替换；catalog 不固定数量，第 19 个任意 recipe 已实际通过注册、执行与应用；
 - O1–O12/H1–H3 的 15 个旧 Python plugins 保留为 legacy/reference/replay source；O13/H4/H5 仅引用旧参数资源并直接使用 operator composition。
 
-M4R 自身没有实现 BN、项目级 model workspace、持久化、JSON-RPC sidecar 或 WinUI；这些历史边界已分别由 M5/M6 部分关闭，WinUI 仍属于 M7。
+M4R 自身没有实现 BN、项目级 model workspace、持久化、JSON-RPC sidecar 或 WinUI；这些历史边界已分别由 M5、M6 与 M7 关闭。
 
 ### 2.8 M5 Shared Model Library and Bayesian Workspace
 
@@ -167,7 +170,7 @@ M4R 自身没有实现 BN、项目级 model workspace、持久化、JSON-RPC sid
 - checksummed Hover starter package 提供 4 competency、11 sub-skill、18 Evidence binding、33 CPT 的工程起步模板；这些数量只属于资源包，不限制 generic engine；
 - lightweight workflow 从 O2 clone 并修改 percentile/CPT，preview posterior/influence 后仅发布三个 changed components 与新 scheme；旧 scheme 不变且两者均可 exact replay，失败注入不消耗正式 ID。
 
-M5 自身只实现 transport-neutral、进程内建模工作区后端；其 durable persistence、managed artifacts、JSON-RPC sidecar、run orchestration、progress/cancel/recovery 边界现已由 M6 关闭。WinUI 仍属于 M7。
+M5 自身只实现 transport-neutral、进程内建模工作区后端；其 durable persistence、managed artifacts、JSON-RPC sidecar、run orchestration、progress/cancel/recovery 边界已由 M6 关闭，current complete-node WinUI 工作区已由 M7 关闭。
 
 ### 2.9 M6 Local Runtime, Durable Persistence and Sidecar
 
@@ -181,6 +184,15 @@ M5 自身只实现 transport-neutral、进程内建模工作区后端；其 dura
 - `python -m pilot_assessment.sidecar` 提供 4 MiB UTF-8 JSONL、mandatory hello、stable capabilities/errors、idempotent mutations、run notifications 与单 stdout writer，不监听网络端口；
 - 普通 Evidence/BN 编辑仍通过 typed recipe/scheme operations 自由修改；M6 没有增加科学审批、per-edit pytest 或 fixed-Anchor gate。
 
+### 2.10 M7 Current Model Runtime and WinUI Expert Designer
+
+- M7A 以 global complete `ModelNode` library、parallel `TaskScheme` activation、parent closure、cascade impact、node-only copy、atomic node/edge/state/CPT operations、autosave history 和 automatic immutable RunSnapshot 取代正常 UI 的旧 Draft/Publish 语义；
+- M7B 是 unpackaged WinUI 3 development application，隐藏监督同一 Python stdio sidecar，并提供受管 project/session、任务侧栏、global active/dim graph、Raw Input/Evidence/BN/CPT editors、copy/paste、多个非模态节点窗口、autosave/conflict recovery 和即时中英文；
+- C# 只负责 presentation、typed intent、transport、windowing 和 canonical reconciliation；EvidenceRecipe/operator/CPT/BN/run 计算继续只在 Python 后端；
+- 专家可创建/复制完整节点、修改参数与 CPT、连接/停用节点、复制并切换并列任务方案；正常工作流没有 Draft、Published、Apply 或 Publish，run start 自动冻结当前 exact state；
+- completion gate 包含真实 sidecar create/copy/edit/activate/deactivate/run/reopen contract、1,000-node in-memory viewport culling、accessibility/theme/focus、三窗并存、visible result recovery、protocol-only stdio 与 zero TCP listener；
+- M7 是开发态工程完成，不是最终可分发产品：bundled runtime/installer/portable handoff 属于 M8，真实专家校准与科学验证不属于 M7 engineering gate。
+
 ## 3. 验证证据
 
 ### 3.1 环境
@@ -191,6 +203,13 @@ M5 自身只实现 transport-neutral、进程内建模工作区后端；其 dura
 | Polars | 1.42.1 |
 | Pillow | 12.3.0 |
 | Pydantic | 2.13.4 |
+| .NET SDK | 10.0.302 (`C:\Program Files\dotnet`) |
+| .NET runtime | 10.0.10 |
+| Windows | 10.0.26200 |
+| Visual Studio Community 2026 | 18.8.0 (`D:\visual_studio`) |
+| Windows App SDK | 2.3.1 |
+| Microsoft Windows SDK BuildTools | 10.0.26100.7705 |
+| BuildTools.WinApp | 0.4.0 |
 
 ### 3.2 自动化完成门禁
 
@@ -391,30 +410,28 @@ M6 收尾另行核对并关闭：project locator 不保存绝对根路径；mana
 
 ## 5. 尚未实现
 
-- M7 WinUI：任务侧栏、active/dim 全局 Evidence/BN 画布、schema-driven 参数/CPT 表单、多节点独立浮动窗口、copy/paste、双语、preview/result/trace；
 - M8：安装包、示例项目、扩展算子指南、备份/恢复与完整交付验收；
-- .NET client/host 对 M7A `model.*` JSON-RPC 合同的集成、前端生命周期与 error-code 恢复动作；
 - 生产 I/G/EEG/ECG/camera exporter profile（例如 MP4/frame index、真实设备 sidecar）及真实采集适配；
 - 领域专家阈值、Anchor、sub-skill、拓扑、CPT 校准与科学有效性研究；这些是系统建成后的专家工作，不是平台实现完成门。
 
 ## 6. 下一里程碑
 
-M7A 已按 12-task INLINE plan 完成，current-model/automatic-snapshot 后端门已关闭。M7B Task 1–14 现已完成 WinUI 工程、强类型合同、受监督 sidecar、真实应用 shell、受管 project/session 工作区、canonical task-scheme navigation、backend-driven global active/dim graph、图上编辑、可并行打开并恢复位置的独立节点窗口、Raw Input/Evidence/BN/CPT 编辑器、持久 autosave/canonical reconciliation/conflict recovery、不触发后端写入的即时中英文切换，以及 actual run/results/trace/diagnostics。普通表单修改已写回 Python canonical state；离散 activation/edge/copy/archive 与 state/parent/CPT 操作继续走后端原子事务；实际运行直接消费 current scheme 并自动冻结 immutable RunSnapshot，无 Publish 步骤。下一步只执行 Task 15 completion gate。不能把它重新编号为 M6、回到旧 fixed-plugin Task 29，或提前做 M8 installer。M7B 必须消费 M7A current DTO，而不是把旧 draft/publish DTO 重新带回正常 UI：
+M7A 与 M7B 已按 INLINE plans 全部完成，current-model/automatic-snapshot 后端门和可见 WinUI completion gate 均已关闭。普通表单修改写回 Python canonical state；离散 activation/edge/copy/archive 与 state/parent/CPT 操作走后端原子事务；实际运行直接消费 current scheme 并自动冻结 immutable RunSnapshot，无 Publish 步骤。下一里程碑是先设计 M8 integration/distribution packaging/handoff，再按批准计划打包后端 runtime、代码和 WinUI，同时排除各用户本机 session 数据。不得回到旧 fixed-plugin Task 29 或把 legacy draft/publish DTO 带回正常 UI。M8 也不能把 starter template 的工程可运行误写为科学有效：
 
-1. 由前端 host 隐藏启动 `python -m pilot_assessment.sidecar` 等价的 bundled runtime，完成 hello/health/shutdown 与 stderr diagnostics；
-2. 实现 project/session 选择和受管导入，但不把用户本机 session 打进产品安装包；
-3. 消费已实现的 current `ModelNode` / `TaskScheme` contracts、activation closure、copy/disable semantics、change journal 与 run-start snapshot；旧 versions/published schemes 只作 migration/replay；
-4. 用 integrated Raw Input/Evidence/BN canvas 显示并提交 typed current-object operations，支持 active/dim、任务切换、新增、停用、连接、拖拽、copy/paste 和 undo/redo；
-5. 从 operator/schema/node DTO 生成 Evidence 参数、state、CPT 与 task/reference 表单，不在 C# 复制 Python 计算逻辑；
-6. 实现可并排打开的浮动节点窗口、bilingual resources/model metadata，并展示 preflight、progress、cancel、posterior、trace、artifact 与 audit；
-7. 保持 free-to-modify：普通修改直接 autosave current node/scheme，不增加 Publish、科学审批或 per-edit 工程测试；run 通过 automatic exact RunSnapshot 保持历史可重放。
+1. 冻结目标 Windows 版本、CPU 架构、runtime/bootstrap、更新与卸载边界，并选择可重复构建的最终分发形式；
+2. 把 Python runtime、locked dependencies、sidecar、schema/resources 与 WinUI 前端作为同一产品交付，用户解压/安装后无需另配开发环境；
+3. 首次启动创建本机 managed-project storage；安装包只包含系统和可选空白/starter 模板，不包含开发者或任何用户的 session/project/result 数据；
+4. 保留 M7 的 stdio-only/zero-listener 进程边界、全部 expert-editable Evidence/BN/task 能力、automatic RunSnapshot 和历史重放，不为打包引入第二套算法或只读限制；
+5. 设计 project 备份/恢复、跨机器移动、schema/database migration、诊断日志、扩展 operator 安装指南和故障回滚；
+6. 增加 clean-machine/offline launch、portable project move、runtime integrity、卸载不误删用户项目和完整 handoff 验收；
+7. M8 计划获确认前不直接选择 installer 技术或改动当前 M7 runtime；科学校准/验证继续作为独立后续工作。
 
 当前权威与历史材料见：
 
-- [M7 WinUI Expert Designer and Task Activation Workspace Design](specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)（当前产品语义；M7A 后端已实施，M7B Task 1–14 已完成）
+- [M7 WinUI Expert Designer and Task Activation Workspace Design](specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)（当前产品语义；M7A/M7B 已工程验证）
 - [M7 Implementation Roadmap](plans/2026-07-17-m7-winui-expert-designer-implementation-roadmap.md)（M7A → M7B 顺序与完成门）
 - [M7A Current Model Runtime Implementation Plan](plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md)（已完成并关闭工程门的 12 个 INLINE 后端任务）
-- [M7B WinUI Expert Designer Implementation Plan](plans/2026-07-17-m7b-winui-expert-designer-implementation-plan.md)（当前 15 个 INLINE 前端任务；Tasks 1–14 已完成，Task 15 next）
+- [M7B WinUI Expert Designer Implementation Plan](plans/2026-07-17-m7b-winui-expert-designer-implementation-plan.md)（15 个 INLINE 前端任务及已关闭 completion gate）
 - [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)（已实现的 M5 后端基础与历史 identity/publish 语义）
 - [M5 Shared Versioned Model Library and Bayesian Workspace Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md)（已完成的 inline 实施与验收记录）
 - [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md)（已实现的 M6 规格）

@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7 |
 | Date | 2026-07-17 |
-| Status | M7A engineering verified; M7B Tasks 1–14 complete, Task 15 next |
+| Status | M7A and M7B engineering verified; M7 exit gate closed |
 | Authoritative design | [M7 WinUI Expert Designer and Task Activation Workspace Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
 | Decisions | D-047–D-053 |
 | Upstream | M1–M3, M4R, M5 and M6 engineering verified |
@@ -94,7 +94,7 @@ M7A is complete only when all of the following are true:
 
 Executable plan: [M7B WinUI Expert Designer Implementation Plan](2026-07-17-m7b-winui-expert-designer-implementation-plan.md).
 
-**Progress status (2026-07-17):** M7B Tasks 1–14 are implemented. The visible Windows application now includes the managed project/session workspace, parallel task-scheme navigation, the backend-projected active/dim global graph, atomic graph editing, independent node windows, complete Raw Input/Evidence editors, BN state/fixed-parent/CPT editors, durable 350 ms form autosave with per-object ordering/idempotent retry/canonical rebase/Reload-Reapply recovery, immediate Chinese/English switching, and backend-owned current-model preflight/run/cancel/recovery/result/trace/diagnostics. A real visible vertical slice recovered the same immutable result after restart and displayed 18 Evidence observations, 4 posterior variables and 39 managed artifact references. Task 15 is the remaining accessibility/performance/contract/visible-launch completion gate; M8 packaging remains deferred.
+**Completion status (2026-07-17):** M7B Tasks 1–15 are implemented and the M7 engineering exit gate is closed. The visible Windows application includes the managed project/session workspace, parallel task-scheme navigation, the backend-projected active/dim global graph, atomic graph editing, independent node windows, complete Raw Input/Evidence editors, BN state/fixed-parent/CPT editors, durable 350 ms form autosave with per-object ordering/idempotent retry/canonical rebase/Reload-Reapply recovery, immediate Chinese/English switching, and backend-owned current-model preflight/run/cancel/recovery/result/trace/diagnostics. A real visible vertical slice recovered the same immutable result after restart and displayed 18 Evidence observations, 4 posterior variables and 39 managed artifact references. The completion gate passed desktop Unit `84/84`, real-sidecar Contract `4/4`, x64 Debug build `0 warning / 0 error`, a 1,000-node viewport-culling projection, responsive logical-width checks, accessibility/theme/focus checks, simultaneous node windows, protocol-only stdio and zero app/sidecar TCP listeners. M8 packaging remains deferred and scientific calibration remains undone.
 
 M7B delivers:
 
@@ -154,10 +154,12 @@ M7B is complete only when all of the following are true:
 | 1 | M7A Tasks 1–3 — completed | contracts, graph rules, SQLite v2 | schemas and migration reopen cleanly |
 | 2 | M7A Tasks 4–8 — completed | node/scheme services, activation, CPT, starter migration | current workspace is fully editable and durable |
 | 3 | M7A Tasks 9–12 — completed | preview/run bridge, sidecar, vertical slice, completion gate | M7A exit gate closed |
-| 4 | M7B Task 1 | toolchain audit/install/scaffold | explicit authorization before machine mutation |
-| 5 | M7B Tasks 2–5 | contracts, process client, host, project/session shell | sidecar contract smoke passes |
-| 6 | M7B Tasks 6–13 | task sidebar, graph, commands, windows, editors, autosave, live bilingual UI | model editing vertical slice persists and language remains presentation-only |
-| 7 | M7B Tasks 14–15 | run/results, accessibility/performance, completion gate | visible window and M7 exit gate closed |
+| 4 | M7B Task 1 — completed | toolchain audit/install/scaffold | explicit authorization obtained; scaffold builds |
+| 5 | M7B Tasks 2–5 — completed | contracts, process client, host, project/session shell | sidecar contract smoke passes |
+| 6 | M7B Tasks 6–13 — completed | task sidebar, graph, commands, windows, editors, autosave, live bilingual UI | model editing vertical slice persists and language remains presentation-only |
+| 7 | M7B Tasks 14–15 — completed | run/results, accessibility/performance, completion gate | visible window and M7 exit gate closed |
+
+All seven ordered groups are complete. Task 15 code/test commit is `d1dbdd2`; its documentation closeout follows as a separate documentation-only commit so the ledger can record the immutable code hash.
 
 Each task uses its own focused test and commit. Small corrective changes may share the task commit when they are directly required by that task. Do not batch the entire milestone into one unreviewable commit.
 
@@ -196,10 +198,10 @@ Explicitly excluded:
 
 ## 7. Completion handoff
 
-After M7A and M7B pass their gates:
+M7A and M7B have passed their gates. Completion handoff records:
 
 1. update `docs/product/11_IMPLEMENTATION_STATUS.md` with exact fresh test/build/launch evidence;
 2. update this roadmap and both executable plans with actual task commits;
 3. record any changed product semantics in `DECISIONS.md` before changing the specifications;
 4. keep starter/synthetic runs marked scientifically unsupported;
-5. open M8 planning only after the M7 application is demonstrably usable from a visible Windows window.
+5. M8 planning may now begin, but no M8 packaging implementation or scientific-validity claim is implied by M7 completion.

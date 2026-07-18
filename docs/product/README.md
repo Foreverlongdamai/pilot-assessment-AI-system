@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | 产品 v0.5 complete-node/task-activation expert designer；D-031–D-053 已获用户确认 |
 | 基线日期 | 2026-07-17 |
-| 产品阶段 | M1/M2/M3、M4R、M5、M6 与 M7A Current Model Runtime 已工程验证；M7B Task 1–14 已完成 WinUI scaffold、强类型合同层、受监督 sidecar、受管 project/session、canonical task-scheme、global active/dim 模型图、图上节点/任务激活编辑、多独立节点浮窗、Raw Input/Evidence/BN/CPT 编辑器、写回 Python canonical state 的持久 autosave/reconciliation、即时中英文切换，以及 backend-owned preflight/run/cancel/recovery/result/trace/diagnostics；Task 15 completion gate 尚未关闭；M8 packaging 尚未设计；starter/synthetic `formal_run_authorized=false` |
+| 产品阶段 | M1/M2/M3、M4R、M5、M6 与完整 M7 已工程验证；M7A current-model/automatic-snapshot 后端和 M7B Tasks 1–15 WinUI 专家工作区已完成，覆盖受管 project/session、并列 task schemes、global active/dim 模型图、节点/边与任务激活编辑、多独立节点浮窗、Raw Input/Evidence/BN/CPT、持久 autosave/reconciliation/conflict、即时双语、backend-owned preflight/run/cancel/recovery/result/trace/diagnostics、accessibility、viewport culling 与真实 sidecar completion gate；M8 packaging 尚未设计；starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -14,6 +14,8 @@
 2026-07-17 M7B Task 13 已完成即时中英文切换：shell、页面、任务侧栏、active/dim 图、对话框以及已打开的 Raw Input/Evidence/BN/CPT 节点窗口均原地刷新；模型翻译缺失时显示明确 fallback 标记。语言只保存为 `%LOCALAPPDATA%` UI preference，不发送模型写操作，也不改变 ID、revision、hash、参数或结果。fresh gate 为 desktop Unit `75/75`、Contract `3/3`、focused localization `8/8`、x64 Debug build `0 warning / 0 error`，`527` 对资源键与 `481` 个实际引用均零缺失。下一项是 Task 14 actual run/results/trace/diagnostics；`model.preview.node` 仍只是 frozen snapshot metadata，不代表已经执行评估。
 
 2026-07-17 M7B Task 14 已完成真实运行与结果工作区。专家从当前 managed session revision + current task scheme 执行技术预检后即可直接运行，不需要 Publish；Python 后端自动冻结 immutable RunSnapshot，并唯一负责 Evidence/BN/CPT/run 计算。WinUI 展示单调进度、取消/重启恢复、Evidence D/A/U、Observation、BN posterior、只读 inference influence、provenance、受管 artifact references 与 diagnostics；canonical BN edges 和 inference influence 不混淆。fresh gate 为 focused Unit `6/6`、desktop Unit `81/81`、Contract `3/3`、localization `8/8`、real-sidecar Python `2/2`、x64 Debug build `0 warning / 0 error`。可见受管案例得到 `18` Evidence、`4` posterior variables、`39` artifact references，并在应用重启后恢复同一 snapshot/result；科学状态仍明确为 `not_supported / engineering workflow only`。下一项是 Task 15 completion gate。
+
+2026-07-17 M7B Task 15 已关闭 M7 工程完成门，代码/测试提交为 `d1dbdd2`。fresh gate 为 desktop Unit `84/84`、real-sidecar Contract `4/4`、x64 Debug build `0 warning / 0 error`；1,000-node in-memory UI projection 在 `1280 × 720` buffered viewport realization `40` 个节点且满足 `<2 s`。可见应用自动恢复同一 immutable result，完成 light/dark/system、键盘焦点、screen-reader headings/live status、`1920/1279/959` logical-width responsive layout，以及主窗口和 ECG/EEG 两个非模态编辑器三窗并存；运行中的应用、`uv`、Python 与 console host 合计 TCP listener 为 `0`。M7 只宣告工程工作区完成；M8 最终分发、真实 exporter/device 适配和领域专家科学校准仍未完成。
 
 ## 1. 文档用途
 
@@ -115,7 +117,7 @@
 
 M6 completion gate 也已关闭：受管 project/session/artifact、SQLite component/draft/run persistence、idempotency/audit、exact technical preflight、dynamic Evidence→Observation→BN pipeline、single-worker progress/cancel/recovery，以及无网络端口的 JSON-RPC/JSONL stdio sidecar 均已实现。轻量纵向闭环证明 external bundle 删除后仍可从受管副本运行，整个 project 换目录重开后 exact scheme/result/artifact 仍可回放。
 
-2026-07-17 用户确认 D-047–D-053：M7 改用完整独立节点、全局节点库、任务激活集合、默认只复制节点且复用 fixed parents、启用 parent closure、停用 parent 前级联确认、多浮动节点窗口、双语模型元数据，以及“autosave current scheme + automatic immutable RunSnapshot”。M7A 现已实现 global current nodes、TaskScheme activation/copy/cascade、atomic edge/state/CPT edits、autosave history/undo/redo、current preflight/run snapshot、legacy replay 和完整 `model.*` sidecar surface。fresh gate 为 current focused `42 passed`、compatibility `151 passed`、full repository `1684 passed, 3 skipped`；51 类 schema 零漂移，Ruff/format/ty/build 与仓库外 wheel smoke 通过。M7B Task 1–14 已建立正式 WinUI 专家工作区：完整 managed project/session/task/model graph、三类 complete-node 编辑、任务激活、独立浮窗、Raw Input/Evidence/BN/CPT 编辑器、持久 autosave/canonical reconciliation、即时双语，以及无 Publish 的 current-model preflight/run/cancel/recovery/result/trace/diagnostics。C# 只构造 typed intent 和只读投影，Python 后端继续负责 canonical state 与全部 Evidence/BN/CPT/run 计算。Task 15 completion gate、M8 最终打包与科学验证仍未完成，starter/synthetic `formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+2026-07-17 用户确认 D-047–D-053：M7 改用完整独立节点、全局节点库、任务激活集合、默认只复制节点且复用 fixed parents、启用 parent closure、停用 parent 前级联确认、多浮动节点窗口、双语模型元数据，以及“autosave current scheme + automatic immutable RunSnapshot”。M7A 已实现 global current nodes、TaskScheme activation/copy/cascade、atomic edge/state/CPT edits、autosave history/undo/redo、current preflight/run snapshot、legacy replay 和完整 `model.*` sidecar surface；M7B Tasks 1–15 已建立并工程验证正式 WinUI 专家工作区。C# 只构造 typed intent 和只读投影，Python 后端继续负责 canonical state 与全部 Evidence/BN/CPT/run 计算。M8 最终打包与科学验证仍未完成，starter/synthetic `formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
 2026-07-16 另以 repository-external 的 2,902-row 格式样例 X/U 和工程合成 I/G/EEG/ECG/pilot-camera 跑通一次完整 M6 software-test：ingestion/preflight ready、18/18 Evidence computed、exact BN inference completed、39 个结果/追踪工件成功回读且 sidecar stderr 为空。该运行继续标记 `scientific_status=not_supported`；它验证真实产品接口与计算流水线，不验证样例飞行、starter algorithms、阈值或 CPT 的科学正确性。详见 [Captured-Format Multimodal Software Demo](specs/2026-07-16-external-multimodal-session-demo-design.md)。
 
