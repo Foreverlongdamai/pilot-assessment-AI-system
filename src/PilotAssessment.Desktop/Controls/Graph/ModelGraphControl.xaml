@@ -86,12 +86,12 @@
                     <Rectangle
                         Width="28"
                         Height="2"
-                        Fill="#0D9488"
+                        Fill="{ThemeResource GraphExtractionEdgeBrush}"
                         StrokeDashArray="3,2" />
                     <TextBlock FontSize="11" Text="{Binding [Graph_ExtractionEdge], Source={StaticResource Localization}}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="7">
-                    <Rectangle Width="28" Height="2" Fill="#7C3AED" />
+                    <Rectangle Width="28" Height="2" Fill="{ThemeResource GraphProbabilisticEdgeBrush}" />
                     <TextBlock FontSize="11" Text="{Binding [Graph_ProbabilisticEdge], Source={StaticResource Localization}}" />
                 </StackPanel>
                 <TextBlock FontSize="10" Opacity="0.62" Text="{Binding [Graph_DimMeaning], Source={StaticResource Localization}}" />

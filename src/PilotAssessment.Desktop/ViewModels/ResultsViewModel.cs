@@ -34,9 +34,11 @@ public partial class ResultsViewModel : ObservableObject
     private readonly IRunGateway _gateway;
     private readonly IManagedArtifactReader _artifactReader;
     private readonly ILocalizationLookup? _localization;
+    private readonly ApplicationShellState? _shellState;
     private readonly SynchronizationContext? _uiContext;
     private long _loadGeneration;
     private int _initialized;
+    private bool _wasDomainReady;
 
     [ObservableProperty]
     public partial ResultRunItemViewModel? SelectedRun { get; set; }
@@ -71,13 +73,20 @@ public partial class ResultsViewModel : ObservableObject
     public ResultsViewModel(
         IRunGateway gateway,
         IManagedArtifactReader artifactReader,
-        ILocalizationLookup? localization = null)
+        ILocalizationLookup? localization = null,
+        ApplicationShellState? shellState = null)
     {
         _gateway = gateway;
         _artifactReader = artifactReader;
         _localization = localization;
+        _shellState = shellState;
+        _wasDomainReady = _shellState?.Snapshot.CanUseDomainCommands ?? true;
         _uiContext = SynchronizationContext.Current;
         _localization?.LanguageChanged += OnLanguageChanged;
+        if (_shellState is not null)
+        {
+            _shellState.Changed += OnShellStateChanged;
+        }
         RefreshStaticPresentation();
     }
 
@@ -103,7 +112,10 @@ public partial class ResultsViewModel : ObservableObject
     {
         if (Interlocked.Exchange(ref _initialized, 1) == 0)
         {
-            await RefreshAsync(cancellationToken);
+            if (_shellState?.Snapshot.CanUseDomainCommands is not false)
+            {
+                await RefreshAsync(cancellationToken);
+            }
         }
     }
 
@@ -448,6 +460,17 @@ public partial class ResultsViewModel : ObservableObject
             _ = LoadSelectedCommand.ExecuteAsync(null);
         }
     });
+
+    private void OnShellStateChanged(object? sender, EventArgs args)
+    {
+        var ready = _shellState?.Snapshot.CanUseDomainCommands ?? true;
+        var becameReady = ready && !_wasDomainReady;
+        _wasDomainReady = ready;
+        if (becameReady && Volatile.Read(ref _initialized) != 0)
+        {
+            InvokeOnUi(() => _ = RefreshAsync());
+        }
+    }
 
     private async Task RunBusyAsync(Func<Task> operation)
     {

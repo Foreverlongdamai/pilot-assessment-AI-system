@@ -9,7 +9,7 @@
     <ScrollViewer>
         <StackPanel Padding="28,24,28,48" Spacing="18">
             <StackPanel Spacing="6">
-                <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{Binding [Runs_Title], Source={StaticResource Localization}}" />
+                <TextBlock AutomationProperties.HeadingLevel="Level1" Style="{ThemeResource TitleTextBlockStyle}" Text="{Binding [Runs_Title], Source={StaticResource Localization}}" />
                 <TextBlock
                     MaxWidth="980"
                     Opacity="0.72"
@@ -18,12 +18,14 @@
             </StackPanel>
 
             <InfoBar
+                AutomationProperties.LiveSetting="Assertive"
                 IsClosable="False"
                 IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}"
                 Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
                 Severity="Error"
                 Title="{Binding [Runs_OperationFailed], Source={StaticResource Localization}}" />
             <InfoBar
+                AutomationProperties.LiveSetting="Polite"
                 IsClosable="False"
                 IsOpen="True"
                 Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
@@ -77,6 +79,7 @@
                     <InfoBar
                         Grid.Row="2"
                         Grid.ColumnSpan="2"
+                        AutomationProperties.LiveSetting="Polite"
                         IsClosable="False"
                         IsOpen="True"
                         Message="{x:Bind ViewModel.ScientificBannerText, Mode=OneWay}"
@@ -111,9 +114,10 @@
                 </Grid.ColumnDefinitions>
                 <Border Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="10">
                     <StackPanel Spacing="10">
-                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Runs_History], Source={StaticResource Localization}}" />
+                        <TextBlock AutomationProperties.HeadingLevel="Level2" Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Runs_History], Source={StaticResource Localization}}" />
                         <ListView
                             MaxHeight="520"
+                            AutomationProperties.Name="{Binding [Runs_History], Source={StaticResource Localization}}"
                             ItemsSource="{x:Bind ViewModel.Runs}"
                             SelectedItem="{x:Bind ViewModel.SelectedRun, Mode=TwoWay}"
                             SelectionMode="Single">
@@ -132,15 +136,20 @@
 
                 <Border Grid.Column="1" Padding="18" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="10">
                     <StackPanel Spacing="12">
-                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Runs_FrozenSnapshot], Source={StaticResource Localization}}" />
+                        <TextBlock AutomationProperties.HeadingLevel="Level2" Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Runs_FrozenSnapshot], Source={StaticResource Localization}}" />
                         <TextBlock FontFamily="Consolas" Text="{x:Bind ViewModel.FrozenSnapshotText, Mode=OneWay}" TextWrapping="Wrap" />
                         <TextBlock FontWeight="SemiBold" Text="{x:Bind ViewModel.ProgressText, Mode=OneWay}" TextWrapping="Wrap" />
                         <ProgressBar
+                            AutomationProperties.LiveSetting="Polite"
+                            AutomationProperties.Name="{Binding [Common_Run], Source={StaticResource Localization}}"
                             IsIndeterminate="{x:Bind ViewModel.IsProgressIndeterminate, Mode=OneWay}"
                             Maximum="100"
                             Value="{x:Bind ViewModel.ProgressValue, Mode=OneWay}" />
                         <TextBlock Margin="0,6,0,0" FontWeight="SemiBold" Text="{Binding [Runs_FrozenNodes], Source={StaticResource Localization}}" />
-                        <ListView MaxHeight="360" ItemsSource="{x:Bind ViewModel.FrozenNodes}">
+                        <ListView
+                            MaxHeight="360"
+                            AutomationProperties.Name="{Binding [Runs_FrozenNodes], Source={StaticResource Localization}}"
+                            ItemsSource="{x:Bind ViewModel.FrozenNodes}">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="vm:FrozenNodeItemViewModel">
                                     <Grid Padding="4" ColumnSpacing="10">

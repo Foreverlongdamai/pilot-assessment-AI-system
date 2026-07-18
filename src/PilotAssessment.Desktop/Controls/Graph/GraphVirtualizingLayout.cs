@@ -9,8 +9,6 @@ namespace PilotAssessment.Desktop.Controls.Graph;
 
 public sealed class GraphVirtualizingLayout : VirtualizingLayout
 {
-    private const double RealizationBuffer = 180;
-
     protected override void InitializeForContextCore(VirtualizingLayoutContext context)
     {
         base.InitializeForContextCore(context);
@@ -29,39 +27,34 @@ public sealed class GraphVirtualizingLayout : VirtualizingLayout
     {
         var state = (GraphLayoutState?)context.LayoutState ?? new GraphLayoutState();
         context.LayoutState = state;
-        var realization = Inflate(context.RealizationRect, RealizationBuffer);
         state.Elements.Clear();
         state.Bounds.Clear();
-        var extentWidth = GraphProjection.MinimumExtentWidth;
-        var extentHeight = GraphProjection.MinimumExtentHeight;
-        var radius = GraphProjection.NodeDiameter / 2;
-
-        for (var index = 0; index < context.ItemCount; index++)
+        var nodes = new GraphNodeProjection[context.ItemCount];
+        for (var index = 0; index < nodes.Length; index++)
         {
-            if (context.GetItemAt(index) is not GraphNodeProjection node)
-            {
-                continue;
-            }
+            nodes[index] = context.GetItemAt(index) as GraphNodeProjection
+                ?? throw new InvalidOperationException(
+                    $"Graph layout item {index} is not a GraphNodeProjection.");
+        }
 
+        var viewport = context.RealizationRect;
+        var plan = GraphViewportRealization.Plan(
+            nodes,
+            new GraphViewportRect(viewport.X, viewport.Y, viewport.Width, viewport.Height));
+        foreach (var item in plan.RealizedNodes)
+        {
+            var element = context.GetOrCreateElementAt(item.Index);
             var bounds = new Rect(
-                node.X - radius,
-                node.Y - radius,
-                GraphProjection.NodeDiameter,
-                GraphProjection.NodeDiameter);
-            extentWidth = Math.Max(extentWidth, bounds.Right + GraphProjection.CanvasPadding);
-            extentHeight = Math.Max(extentHeight, bounds.Bottom + GraphProjection.CanvasPadding);
-            if (!Intersects(bounds, realization))
-            {
-                continue;
-            }
-
-            var element = context.GetOrCreateElementAt(index);
-            state.Elements[index] = element;
-            state.Bounds[index] = bounds;
+                item.Bounds.X,
+                item.Bounds.Y,
+                item.Bounds.Width,
+                item.Bounds.Height);
+            state.Elements[item.Index] = element;
+            state.Bounds[item.Index] = bounds;
             element.Measure(new Size(bounds.Width, bounds.Height));
         }
 
-        return new Size(extentWidth, extentHeight);
+        return new Size(plan.ExtentWidth, plan.ExtentHeight);
     }
 
     protected override Size ArrangeOverride(
@@ -83,18 +76,6 @@ public sealed class GraphVirtualizingLayout : VirtualizingLayout
 
         return finalSize;
     }
-
-    private static Rect Inflate(Rect value, double amount) => new(
-        value.X - amount,
-        value.Y - amount,
-        value.Width + (amount * 2),
-        value.Height + (amount * 2));
-
-    private static bool Intersects(Rect left, Rect right) =>
-        left.Left < right.Right &&
-        left.Right > right.Left &&
-        left.Top < right.Bottom &&
-        left.Bottom > right.Top;
 
     private sealed class GraphLayoutState
     {

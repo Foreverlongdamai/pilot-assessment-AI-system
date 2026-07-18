@@ -69,9 +69,6 @@ public sealed partial class GraphNodeButton : UserControl
         ActivateItem.IsEnabled = !node.IsActive && !node.IsArchived;
         DeactivateItem.IsEnabled = node.IsActive;
         AutomationProperties.SetName(NodeButton, node.AutomationName);
-        AutomationProperties.SetHelpText(
-            NodeButton,
-            "Press Enter to select. Use multi-select mode to compare several nodes.");
         ToolTipService.SetToolTip(
             NodeButton,
             $"{node.Node.NodeId}\n{node.AutomationName}");
@@ -86,7 +83,7 @@ public sealed partial class GraphNodeButton : UserControl
         {
             ModelTechnicalStatus.Blocked => ResolveBrush("GraphBlockedStatusBrush", 220, 38, 38),
             ModelTechnicalStatus.Incomplete => ResolveBrush("GraphIncompleteStatusBrush", 245, 158, 11),
-            _ => new SolidColorBrush(Colors.White),
+            _ => ResolveBrush("GraphNodeForegroundBrush", 255, 255, 255),
         };
     }
 

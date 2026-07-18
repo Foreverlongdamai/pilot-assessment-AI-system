@@ -44,6 +44,7 @@ public partial class RunsViewModel : ObservableObject
     private INotifyPropertyChanged? _selectedSchemeSubscription;
     private int _initialized;
     private bool _refreshingPurposeOptions;
+    private bool _wasDomainReady;
 
     [ObservableProperty]
     public partial RunPurposeOption? SelectedPurpose { get; set; }
@@ -95,6 +96,7 @@ public partial class RunsViewModel : ObservableObject
         _sessions = sessions;
         _schemes = schemes;
         _shellState = shellState;
+        _wasDomainReady = _shellState.Snapshot.CanUseDomainCommands;
         _localization = localization;
         _uiContext = SynchronizationContext.Current;
         _gateway.RunEventReceived += OnRunEventReceived;
@@ -136,7 +138,14 @@ public partial class RunsViewModel : ObservableObject
     {
         if (Interlocked.Exchange(ref _initialized, 1) == 0)
         {
-            await RefreshAsync(cancellationToken);
+            if (_shellState.Snapshot.CanUseDomainCommands)
+            {
+                await RefreshAsync(cancellationToken);
+            }
+            else
+            {
+                RefreshSelectionText();
+            }
             return;
         }
 
@@ -506,8 +515,20 @@ public partial class RunsViewModel : ObservableObject
         RefreshPreflightPresentation();
     }
 
-    private void OnShellStateChanged(object? sender, EventArgs args) =>
-        InvokeOnUi(NotifyCommandStates);
+    private void OnShellStateChanged(object? sender, EventArgs args)
+    {
+        var ready = _shellState.Snapshot.CanUseDomainCommands;
+        var becameReady = ready && !_wasDomainReady;
+        _wasDomainReady = ready;
+        InvokeOnUi(() =>
+        {
+            NotifyCommandStates();
+            if (becameReady && Volatile.Read(ref _initialized) != 0)
+            {
+                _ = RefreshAsync();
+            }
+        });
+    }
 
     private void OnLanguageChanged(object? sender, EventArgs args) => InvokeOnUi(() =>
     {

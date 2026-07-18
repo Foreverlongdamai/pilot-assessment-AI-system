@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 
 using PilotAssessment.Desktop.Core.Contracts;
@@ -81,6 +82,74 @@ public sealed class GraphProjectionTests
                 Active: false));
         Assert.Single(inactiveGaze.Nodes);
         Assert.Equal("evidence.gaze", inactiveGaze.Nodes[0].NodeId);
+    }
+
+    [Fact]
+    public void ThousandNodeProjectionRealizesOnlyBufferedViewportAndRemainsResponsive()
+    {
+        var nodes = Enumerable.Range(0, 1_000)
+            .Select(index => Node(
+                $"evidence.synthetic-{index:D4}",
+                ModelNodeKind.Evidence,
+                $"Synthetic evidence {index}",
+                $"合成证据 {index}",
+                100 + ((index % 40) * 180),
+                100 + ((index / 40) * 180),
+                ["projection-only"],
+                "ui-benchmark"))
+            .ToArray();
+        var active = nodes.Select(node => node.NodeId).ToArray();
+        var scheme = new TaskScheme(
+            "task-scheme",
+            "0.1.0",
+            "task-scheme.ui-benchmark",
+            null,
+            "In-memory UI projection benchmark",
+            null,
+            null,
+            [],
+            null,
+            ModelObjectLifecycle.Active,
+            null,
+            [nodes[0].NodeId],
+            active,
+            [nodes[0].NodeId],
+            new Dictionary<string, JsonElement>(StringComparer.Ordinal),
+            [],
+            0,
+            0,
+            ModelTechnicalStatus.Executable,
+            [],
+            new string('a', 64),
+            new string('b', 64),
+            Now,
+            Now);
+        var snapshot = new ModelGraphSnapshot(
+            "model-graph-snapshot",
+            "0.1.0",
+            "project.ui-benchmark",
+            scheme,
+            nodes,
+            [],
+            Now,
+            new string('c', 64));
+
+        var stopwatch = Stopwatch.StartNew();
+        var projection = GraphProjection.Project(
+            snapshot,
+            new GraphProjectionOptions(GraphViewMode.ActiveAndInactive));
+        var plan = GraphViewportRealization.Plan(
+            projection.Nodes,
+            new GraphViewportRect(0, 0, 1_280, 720));
+        stopwatch.Stop();
+
+        Assert.Equal(1_000, projection.Nodes.Count);
+        Assert.Equal(40, plan.RealizedNodes.Count);
+        Assert.True(plan.ExtentWidth > 7_000);
+        Assert.True(plan.ExtentHeight > 4_000);
+        Assert.True(
+            stopwatch.Elapsed < TimeSpan.FromSeconds(2),
+            $"1,000-node UI projection took {stopwatch.Elapsed.TotalMilliseconds:F1} ms.");
     }
 
     private static ModelGraphSnapshot SevenNodeGraph()

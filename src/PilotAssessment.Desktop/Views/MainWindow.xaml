@@ -95,6 +95,7 @@
         <NavigationView
             x:Name="ShellNavigation"
             Grid.Row="2"
+            AutomationProperties.Name="{Binding [A11y_MainNavigation], Source={StaticResource Localization}}"
             IsBackButtonVisible="Collapsed"
             IsSettingsVisible="False"
             PaneDisplayMode="LeftCompact"

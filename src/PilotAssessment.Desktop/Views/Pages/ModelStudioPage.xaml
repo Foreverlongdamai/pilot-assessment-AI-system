@@ -35,7 +35,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Spacing="2">
-                    <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{Binding [Model_Title], Source={StaticResource Localization}}" />
+                    <TextBlock AutomationProperties.HeadingLevel="Level1" Style="{ThemeResource TitleTextBlockStyle}" Text="{Binding [Model_Title], Source={StaticResource Localization}}" />
                     <TextBlock
                         Opacity="0.68"
                         Text="{Binding [Model_Subtitle], Source={StaticResource Localization}}"
@@ -125,6 +125,7 @@
                         Severity="Error"
                         Title="{Binding [Model_GraphLoadFailed], Source={StaticResource Localization}}" />
                     <TextBlock
+                        AutomationProperties.LiveSetting="Polite"
                         FontSize="12"
                         Opacity="0.72"
                         Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"

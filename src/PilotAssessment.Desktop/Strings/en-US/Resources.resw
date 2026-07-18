@@ -43,6 +43,7 @@
   <data name="A11y_ReconnectBackend" xml:space="preserve"><value>Reconnect backend</value></data>
   <data name="A11y_SwitchLanguage" xml:space="preserve"><value>Switch interface language</value></data>
   <data name="A11y_SwitchTheme" xml:space="preserve"><value>Switch application theme</value></data>
+  <data name="A11y_MainNavigation" xml:space="preserve"><value>Main expert workspace navigation</value></data>
   <data name="Nav_Project" xml:space="preserve"><value>Project</value></data>
   <data name="Nav_Sessions" xml:space="preserve"><value>Sessions</value></data>
   <data name="Nav_ModelStudio" xml:space="preserve"><value>Model Studio</value></data>
@@ -217,6 +218,7 @@
   <data name="Graph_ProbabilisticEdge" xml:space="preserve"><value>Probabilistic BN</value></data>
   <data name="Graph_DimMeaning" xml:space="preserve"><value>Dim = not active in this task</value></data>
   <data name="Graph_Minimap" xml:space="preserve"><value>MINIMAP</value></data>
+  <data name="Graph_NodeHelp" xml:space="preserve"><value>Press Enter to select this complete node. Open its context menu for task activation, copy, connection and editor commands.</value></data>
   <data name="Dialog_CreateNodeButton" xml:space="preserve"><value>Create node</value></data>
   <data name="Dialog_CreateNodeDescription" xml:space="preserve"><value>The backend stores one complete node definition. Evidence and BN nodes begin incomplete so experts can configure them without generated Python code.</value></data>
   <data name="Dialog_NodeKind" xml:space="preserve"><value>Node kind</value></data>

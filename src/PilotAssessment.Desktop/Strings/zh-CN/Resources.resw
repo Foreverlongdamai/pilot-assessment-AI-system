@@ -43,6 +43,7 @@
   <data name="A11y_ReconnectBackend" xml:space="preserve"><value>重新连接后端</value></data>
   <data name="A11y_SwitchLanguage" xml:space="preserve"><value>切换界面语言</value></data>
   <data name="A11y_SwitchTheme" xml:space="preserve"><value>切换应用主题</value></data>
+  <data name="A11y_MainNavigation" xml:space="preserve"><value>专家工作区主导航</value></data>
   <data name="Nav_Project" xml:space="preserve"><value>项目</value></data>
   <data name="Nav_Sessions" xml:space="preserve"><value>会话</value></data>
   <data name="Nav_ModelStudio" xml:space="preserve"><value>模型设计器</value></data>
@@ -217,6 +218,7 @@
   <data name="Graph_ProbabilisticEdge" xml:space="preserve"><value>概率 BN 关系</value></data>
   <data name="Graph_DimMeaning" xml:space="preserve"><value>暗色 = 当前任务未启用</value></data>
   <data name="Graph_Minimap" xml:space="preserve"><value>小地图</value></data>
+  <data name="Graph_NodeHelp" xml:space="preserve"><value>按 Enter 选择此完整节点；打开上下文菜单可执行任务激活、复制、连接和编辑器命令。</value></data>
   <data name="Dialog_CreateNodeButton" xml:space="preserve"><value>创建节点</value></data>
   <data name="Dialog_CreateNodeDescription" xml:space="preserve"><value>后端保存一个完整节点定义。Evidence 与 BN 节点最初标记为不完整，专家无需生成 Python 代码即可继续配置。</value></data>
   <data name="Dialog_NodeKind" xml:space="preserve"><value>节点类型</value></data>

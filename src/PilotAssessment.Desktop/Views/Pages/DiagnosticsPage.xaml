@@ -7,13 +7,14 @@
     Loaded="OnPageLoaded">
     <ScrollViewer>
         <StackPanel MaxWidth="960" Padding="28" Spacing="18">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="{Binding [Diagnostics_Title], Source={StaticResource Localization}}" />
+            <TextBlock AutomationProperties.HeadingLevel="Level1" Style="{StaticResource TitleTextBlockStyle}" Text="{Binding [Diagnostics_Title], Source={StaticResource Localization}}" />
             <TextBlock
                 MaxWidth="760"
                 Opacity="0.72"
                 Text="{Binding [Diagnostics_Description], Source={StaticResource Localization}}"
                 TextWrapping="Wrap" />
             <InfoBar
+                AutomationProperties.LiveSetting="Assertive"
                 IsClosable="False"
                 IsOpen="{x:Bind ViewModel.Shell.HasStartupError, Mode=OneWay}"
                 Message="{x:Bind ViewModel.Shell.StartupError, Mode=OneWay}"
@@ -53,6 +54,7 @@
                     TextWrapping="Wrap" />
             </Grid>
             <InfoBar
+                AutomationProperties.LiveSetting="Assertive"
                 IsClosable="False"
                 IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}"
                 Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"

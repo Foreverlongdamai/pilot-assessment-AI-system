@@ -15,6 +15,7 @@
         Click="OnNodeClick"
         CornerRadius="58"
         DoubleTapped="OnNodeDoubleTapped"
+        AutomationProperties.HelpText="{Binding [Graph_NodeHelp], Source={StaticResource Localization}}"
         PointerCanceled="OnPointerCanceled"
         PointerMoved="OnPointerMoved"
         PointerPressed="OnPointerPressed"
@@ -61,7 +62,7 @@
             <Ellipse
                 x:Name="NodeSurface"
                 Margin="4"
-                Stroke="White"
+                Stroke="{ThemeResource GraphNodeForegroundBrush}"
                 StrokeThickness="1.5" />
             <Ellipse
                 x:Name="SelectionRing"
@@ -77,14 +78,14 @@
                 <FontIcon
                     x:Name="KindGlyph"
                     FontSize="16"
-                    Foreground="White" />
+                    Foreground="{ThemeResource GraphNodeForegroundBrush}" />
                 <TextBlock
                     x:Name="NameText"
                     MaxHeight="42"
                     HorizontalAlignment="Center"
                     FontSize="13"
                     FontWeight="SemiBold"
-                    Foreground="White"
+                    Foreground="{ThemeResource GraphNodeForegroundBrush}"
                     TextAlignment="Center"
                     TextTrimming="CharacterEllipsis"
                     TextWrapping="Wrap" />
@@ -93,14 +94,14 @@
                     HorizontalAlignment="Center"
                     FontSize="9"
                     FontWeight="SemiBold"
-                    Foreground="White"
+                    Foreground="{ThemeResource GraphNodeForegroundBrush}"
                     Opacity="0.82"
                     TextAlignment="Center" />
                 <TextBlock
                     x:Name="StatusText"
                     HorizontalAlignment="Center"
                     FontSize="9"
-                    Foreground="White"
+                    Foreground="{ThemeResource GraphNodeForegroundBrush}"
                     Opacity="0.72"
                     TextAlignment="Center" />
             </StackPanel>
@@ -113,7 +114,11 @@
                 Background="{ThemeResource AccentFillColorDefaultBrush}"
                 CornerRadius="6"
                 Visibility="Collapsed">
-                <TextBlock FontSize="8" FontWeight="Bold" Foreground="White" Text="{Binding [Graph_OutputBadge], Source={StaticResource Localization}}" />
+                <TextBlock
+                    FontSize="8"
+                    FontWeight="Bold"
+                    Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                    Text="{Binding [Graph_OutputBadge], Source={StaticResource Localization}}" />
             </Border>
         </Grid>
     </Button>
