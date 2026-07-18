@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="PilotAssessment.Desktop"
+    Title="{Binding [App_Name], Source={StaticResource Localization}}"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
         <MicaBackdrop />
@@ -20,8 +20,8 @@
 
         <TitleBar
             x:Name="AppTitleBar"
-            Subtitle="Expert model workspace"
-            Title="Pilot Assessment System">
+            Subtitle="{Binding [App_ExpertWorkspace], Source={StaticResource Localization}}"
+            Title="{Binding [App_Name], Source={StaticResource Localization}}">
             <TitleBar.IconSource>
                 <ImageIconSource ImageSource="/Assets/AppIcon.ico" />
             </TitleBar.IconSource>
@@ -40,42 +40,42 @@
                     VerticalScrollMode="Disabled">
                     <StackPanel Margin="12,0,16,0" Orientation="Horizontal" Spacing="20">
                         <StackPanel>
-                            <TextBlock Opacity="0.65" Text="PROJECT" />
+                            <TextBlock Opacity="0.65" Text="{Binding [Common_Project], Source={StaticResource Localization}}" />
                             <TextBlock Text="{x:Bind ViewModel.ProjectText, Mode=OneWay}" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock Opacity="0.65" Text="SESSION" />
+                            <TextBlock Opacity="0.65" Text="{Binding [Common_Session], Source={StaticResource Localization}}" />
                             <TextBlock Text="{x:Bind ViewModel.SessionText, Mode=OneWay}" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock Opacity="0.65" Text="TASK SCHEME" />
+                            <TextBlock Opacity="0.65" Text="{Binding [Common_TaskScheme], Source={StaticResource Localization}}" />
                             <TextBlock Text="{x:Bind ViewModel.SchemeText, Mode=OneWay}" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock Opacity="0.65" Text="BACKEND" />
+                            <TextBlock Opacity="0.65" Text="{Binding [Common_Backend], Source={StaticResource Localization}}" />
                             <TextBlock Text="{x:Bind ViewModel.BackendStatusText, Mode=OneWay}" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock Opacity="0.65" Text="AUTOSAVE" />
+                            <TextBlock Opacity="0.65" Text="{Binding [Common_Autosave], Source={StaticResource Localization}}" />
                             <TextBlock Text="{x:Bind ViewModel.AutosaveStatusText, Mode=OneWay}" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock Opacity="0.65" Text="RUN" />
+                            <TextBlock Opacity="0.65" Text="{Binding [Common_Run], Source={StaticResource Localization}}" />
                             <TextBlock Text="{x:Bind ViewModel.RunStatusText, Mode=OneWay}" />
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </CommandBar.Content>
             <AppBarButton
-                AutomationProperties.Name="Reconnect backend"
+                AutomationProperties.Name="{Binding [A11y_ReconnectBackend], Source={StaticResource Localization}}"
                 Command="{x:Bind ViewModel.ReconnectCommand}"
-                Label="Reconnect">
+                Label="{Binding [Common_Reconnect], Source={StaticResource Localization}}">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE72C;" />
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton
-                AutomationProperties.Name="Switch interface language"
+                AutomationProperties.Name="{Binding [A11y_SwitchLanguage], Source={StaticResource Localization}}"
                 Command="{x:Bind ViewModel.CycleLanguageCommand}"
                 Label="{x:Bind ViewModel.LanguageText, Mode=OneWay}">
                 <AppBarButton.Icon>
@@ -83,7 +83,7 @@
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton
-                AutomationProperties.Name="Switch application theme"
+                AutomationProperties.Name="{Binding [A11y_SwitchTheme], Source={StaticResource Localization}}"
                 Command="{x:Bind ViewModel.CycleThemeCommand}"
                 Label="{x:Bind ViewModel.ThemeText, Mode=OneWay}">
                 <AppBarButton.Icon>
@@ -102,7 +102,7 @@
             <NavigationView.MenuItems>
                 <NavigationViewItem
                     x:Name="ProjectItem"
-                    Content="Project"
+                    Content="{Binding [Nav_Project], Source={StaticResource Localization}}"
                     IsEnabled="{x:Bind ViewModel.IsBackendReady, Mode=OneWay}"
                     Tag="project">
                     <NavigationViewItem.Icon>
@@ -110,7 +110,7 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem
-                    Content="Sessions"
+                    Content="{Binding [Nav_Sessions], Source={StaticResource Localization}}"
                     IsEnabled="{x:Bind ViewModel.CanUseDomainCommands, Mode=OneWay}"
                     Tag="session">
                     <NavigationViewItem.Icon>
@@ -118,7 +118,7 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem
-                    Content="Model Studio"
+                    Content="{Binding [Nav_ModelStudio], Source={StaticResource Localization}}"
                     IsEnabled="{x:Bind ViewModel.CanUseDomainCommands, Mode=OneWay}"
                     Tag="model">
                     <NavigationViewItem.Icon>
@@ -126,7 +126,7 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem
-                    Content="Runs"
+                    Content="{Binding [Nav_Runs], Source={StaticResource Localization}}"
                     IsEnabled="{x:Bind ViewModel.CanUseDomainCommands, Mode=OneWay}"
                     Tag="runs">
                     <NavigationViewItem.Icon>
@@ -134,7 +134,7 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem
-                    Content="Results"
+                    Content="{Binding [Nav_Results], Source={StaticResource Localization}}"
                     IsEnabled="{x:Bind ViewModel.CanUseDomainCommands, Mode=OneWay}"
                     Tag="results">
                     <NavigationViewItem.Icon>
@@ -142,7 +142,7 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem
-                    Content="Library"
+                    Content="{Binding [Nav_Library], Source={StaticResource Localization}}"
                     IsEnabled="{x:Bind ViewModel.CanUseDomainCommands, Mode=OneWay}"
                     Tag="library">
                     <NavigationViewItem.Icon>
@@ -151,7 +151,7 @@
                 </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem Content="Diagnostics" Tag="diagnostics">
+                <NavigationViewItem Content="{Binding [Nav_Diagnostics], Source={StaticResource Localization}}" Tag="diagnostics">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE9D9;" />
                     </NavigationViewItem.Icon>

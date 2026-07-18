@@ -21,18 +21,18 @@
         PointerReleased="OnPointerReleased">
         <Button.ContextFlyout>
             <MenuFlyout>
-                <MenuFlyoutItem Click="OnSelectClick" Text="Select node">
+                <MenuFlyoutItem Click="OnSelectClick" Text="{Binding [Graph_SelectNode], Source={StaticResource Localization}}">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xE73E;" />
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
-                <MenuFlyoutItem Click="OnToggleSelectionClick" Text="Add/remove from selection">
+                <MenuFlyoutItem Click="OnToggleSelectionClick" Text="{Binding [Graph_ToggleSelection], Source={StaticResource Localization}}">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xE762;" />
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
                 <MenuFlyoutSeparator />
-                <MenuFlyoutItem Click="OnOpenDetailsClick" Text="Open node details">
+                <MenuFlyoutItem Click="OnOpenDetailsClick" Text="{Binding [Graph_OpenNodeDetails], Source={StaticResource Localization}}">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xE8A7;" />
                     </MenuFlyoutItem.Icon>
@@ -40,21 +40,21 @@
                 <MenuFlyoutItem
                     x:Name="ActivateItem"
                     Click="OnActivateClick"
-                    Text="Activate in this task" />
+                    Text="{Binding [Graph_ActivateTask], Source={StaticResource Localization}}" />
                 <MenuFlyoutItem
                     x:Name="DeactivateItem"
                     Click="OnDeactivateClick"
-                    Text="Deactivate from this task (Delete)" />
+                    Text="{Binding [Graph_DeactivateTask], Source={StaticResource Localization}}" />
                 <MenuFlyoutSeparator />
-                <MenuFlyoutItem Click="OnCopyClick" Text="Copy complete node" />
-                <MenuFlyoutItem Click="OnPasteClick" Text="Paste into current task" />
+                <MenuFlyoutItem Click="OnCopyClick" Text="{Binding [Graph_CopyNode], Source={StaticResource Localization}}" />
+                <MenuFlyoutItem Click="OnPasteClick" Text="{Binding [Graph_PasteTask], Source={StaticResource Localization}}" />
                 <MenuFlyoutSeparator />
                 <MenuFlyoutItem
                     Click="OnConnectParentClick"
-                    Text="Connect selected parent to this node" />
+                    Text="{Binding [Graph_ConnectParent], Source={StaticResource Localization}}" />
                 <MenuFlyoutItem
                     Click="OnRemoveParentClick"
-                    Text="Remove selected parent from this node" />
+                    Text="{Binding [Graph_RemoveParent], Source={StaticResource Localization}}" />
             </MenuFlyout>
         </Button.ContextFlyout>
         <Grid>
@@ -113,7 +113,7 @@
                 Background="{ThemeResource AccentFillColorDefaultBrush}"
                 CornerRadius="6"
                 Visibility="Collapsed">
-                <TextBlock FontSize="8" FontWeight="Bold" Foreground="White" Text="OUT" />
+                <TextBlock FontSize="8" FontWeight="Bold" Foreground="White" Text="{Binding [Graph_OutputBadge], Source={StaticResource Localization}}" />
             </Border>
         </Grid>
     </Button>

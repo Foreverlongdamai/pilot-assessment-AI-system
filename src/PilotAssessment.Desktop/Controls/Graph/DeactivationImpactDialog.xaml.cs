@@ -1,6 +1,8 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 
 using PilotAssessment.Desktop.Core.Contracts;
+using PilotAssessment.Desktop.Core.State;
 
 namespace PilotAssessment.Desktop.Controls.Graph;
 
@@ -15,8 +17,9 @@ public sealed partial class DeactivationImpactDialog : ContentDialog
         InitializeComponent();
         var labels = impactedNodeLabels.ToArray();
         ImpactedNodesList.ItemsSource = labels;
+        var localization = App.Services.GetRequiredService<ILocalizationLookup>();
         SummaryText.Text = labels.Length == 0
-            ? "The backend found no active nodes to change."
-            : $"The backend found {labels.Length} node(s) in this task that will become inactive:";
+            ? localization["Dialog_DeactivateNoImpact"]
+            : localization.Format("Dialog_DeactivateImpactCount", labels.Length);
     }
 }

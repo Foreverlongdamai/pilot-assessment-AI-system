@@ -7,11 +7,11 @@
         <InfoBar
             IsClosable="False"
             IsOpen="True"
-            Message="This node declares how one managed Session Bundle resource is exposed to Evidence recipes. Ordinary fields autosave after 350 ms and reconcile with the canonical backend response."
+            Message="{Binding [Raw_ContractDescription], Source={StaticResource Localization}}"
             Severity="Informational"
-            Title="Raw Input contract editor" />
+            Title="{Binding [Raw_ContractTitle], Source={StaticResource Localization}}" />
         <TabView MinHeight="520">
-            <TabViewItem Header="General">
+            <TabViewItem Header="{Binding [Editor_General], Source={StaticResource Localization}}">
                 <ScrollViewer Padding="4,12">
                     <StackPanel Spacing="10">
                         <Grid ColumnSpacing="12" RowSpacing="10">
@@ -25,20 +25,20 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <TextBox Header="English name" Text="{Binding NameEn, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Column="1" Header="中文名称" Text="{Binding NameZh, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Row="1" Header="English description" Text="{Binding DescriptionEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Header="中文说明" Text="{Binding DescriptionZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                            <TextBox Grid.Row="2" Header="Group" Text="{Binding Group, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Row="2" Grid.Column="1" Header="Tags (comma/newline separated)" Text="{Binding TagsText, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <ComboBox Grid.Row="3" Header="Input family" ItemsSource="{Binding Families}" SelectedItem="{Binding Family, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
-                            <ComboBox Grid.Row="3" Grid.Column="1" Header="Resource role" ItemsSource="{Binding ResourceRoles}" SelectedItem="{Binding ResourceRole, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
+                            <TextBox Header="{Binding [Editor_EnglishName], Source={StaticResource Localization}}" Text="{Binding NameEn, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Column="1" Header="{Binding [Editor_ChineseName], Source={StaticResource Localization}}" Text="{Binding NameZh, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="1" Header="{Binding [Editor_EnglishDescription], Source={StaticResource Localization}}" Text="{Binding DescriptionEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Header="{Binding [Editor_ChineseDescription], Source={StaticResource Localization}}" Text="{Binding DescriptionZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Row="2" Header="{Binding [Common_Group], Source={StaticResource Localization}}" Text="{Binding Group, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="2" Grid.Column="1" Header="{Binding [Editor_TagsSeparated], Source={StaticResource Localization}}" Text="{Binding TagsText, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <ComboBox Grid.Row="3" Header="{Binding [Raw_InputFamily], Source={StaticResource Localization}}" ItemsSource="{Binding Families}" SelectedItem="{Binding Family, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
+                            <ComboBox Grid.Row="3" Grid.Column="1" Header="{Binding [Raw_ResourceRole], Source={StaticResource Localization}}" ItemsSource="{Binding ResourceRoles}" SelectedItem="{Binding ResourceRole, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>
             </TabViewItem>
 
-            <TabViewItem Header="Source &amp; schema">
+            <TabViewItem Header="{Binding [Raw_SourceSchema], Source={StaticResource Localization}}">
                 <ScrollViewer Padding="4,12">
                     <StackPanel Spacing="12">
                         <Grid ColumnSpacing="12" RowSpacing="10">
@@ -53,30 +53,30 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <TextBox Header="Source ID" Text="{Binding SourceId, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <ComboBox Grid.Column="1" Header="Source kind" ItemsSource="{Binding SourceKinds}" SelectedItem="{Binding SourceKind, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
-                            <TextBox Grid.Row="1" Header="Source name" Text="{Binding SourceName, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Header="Source description" Text="{Binding SourceDescription, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                            <TextBox Grid.Row="2" Header="Schema ID" Text="{Binding SchemaId, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Row="2" Grid.Column="1" Header="Adapter ID" Text="{Binding AdapterId, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Row="3" Header="Profile ID" Text="{Binding ProfileId, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Row="3" Grid.Column="1" Header="Clock binding" Text="{Binding ClockBinding, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Row="4" Grid.ColumnSpan="2" AcceptsReturn="True" Header="Source dependencies (one per line)" MinHeight="76" Text="{Binding SourceDependenciesText, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Header="{Binding [Raw_SourceId], Source={StaticResource Localization}}" Text="{Binding SourceId, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <ComboBox Grid.Column="1" Header="{Binding [Raw_SourceKind], Source={StaticResource Localization}}" ItemsSource="{Binding SourceKinds}" SelectedItem="{Binding SourceKind, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
+                            <TextBox Grid.Row="1" Header="{Binding [Raw_SourceName], Source={StaticResource Localization}}" Text="{Binding SourceName, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Header="{Binding [Raw_SourceDescription], Source={StaticResource Localization}}" Text="{Binding SourceDescription, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Row="2" Header="{Binding [Raw_SchemaId], Source={StaticResource Localization}}" Text="{Binding SchemaId, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="2" Grid.Column="1" Header="{Binding [Raw_AdapterId], Source={StaticResource Localization}}" Text="{Binding AdapterId, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="3" Header="{Binding [Raw_ProfileId], Source={StaticResource Localization}}" Text="{Binding ProfileId, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="3" Grid.Column="1" Header="{Binding [Raw_ClockBinding], Source={StaticResource Localization}}" Text="{Binding ClockBinding, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="4" Grid.ColumnSpan="2" AcceptsReturn="True" Header="{Binding [Raw_SourceDependencies], Source={StaticResource Localization}}" MinHeight="76" Text="{Binding SourceDependenciesText, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                         </Grid>
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBox AcceptsReturn="True" Header="Fields JSON array" MinHeight="130" Text="{Binding FieldsJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                            <TextBox Grid.Column="1" AcceptsReturn="True" Header="Units JSON object" MinHeight="130" Text="{Binding UnitsJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox AcceptsReturn="True" Header="{Binding [Raw_FieldsJson], Source={StaticResource Localization}}" MinHeight="130" Text="{Binding FieldsJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Column="1" AcceptsReturn="True" Header="{Binding [Raw_UnitsJson], Source={StaticResource Localization}}" MinHeight="130" Text="{Binding UnitsJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                         </Grid>
-                        <TextBox AcceptsReturn="True" Header="Complete metadata JSON (unknown fields are preserved)" MinHeight="180" Text="{Binding MetadataJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        <TextBox AcceptsReturn="True" Header="{Binding [Raw_MetadataJson], Source={StaticResource Localization}}" MinHeight="180" Text="{Binding MetadataJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                     </StackPanel>
                 </ScrollViewer>
             </TabViewItem>
 
-            <TabViewItem Header="Type &amp; clock">
+            <TabViewItem Header="{Binding [Raw_TypeClock], Source={StaticResource Localization}}">
                 <ScrollViewer Padding="4,12">
                     <Grid ColumnSpacing="12" RowSpacing="10">
                         <Grid.ColumnDefinitions>
@@ -88,16 +88,16 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <ComboBox Header="Raw modality" ItemsSource="{Binding Modalities}" SelectedItem="{Binding RawModality, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
-                        <TextBox Grid.Column="1" Header="Value type" Text="{Binding ValueType, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                        <ComboBox Grid.Row="1" Header="Cardinality" ItemsSource="{Binding Cardinalities}" SelectedItem="{Binding Cardinality, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
-                        <ComboBox Grid.Row="1" Grid.Column="1" Header="Temporal semantics" ItemsSource="{Binding TemporalOptions}" SelectedItem="{Binding TemporalSemantics, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
-                        <TextBox Grid.Row="2" Header="Unit" Text="{Binding Unit, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                        <ComboBox Header="{Binding [Dialog_RawModality], Source={StaticResource Localization}}" ItemsSource="{Binding Modalities}" SelectedItem="{Binding RawModality, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
+                        <TextBox Grid.Column="1" Header="{Binding [Raw_ValueType], Source={StaticResource Localization}}" Text="{Binding ValueType, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                        <ComboBox Grid.Row="1" Header="{Binding [Raw_Cardinality], Source={StaticResource Localization}}" ItemsSource="{Binding Cardinalities}" SelectedItem="{Binding Cardinality, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
+                        <ComboBox Grid.Row="1" Grid.Column="1" Header="{Binding [Raw_TemporalSemantics], Source={StaticResource Localization}}" ItemsSource="{Binding TemporalOptions}" SelectedItem="{Binding TemporalSemantics, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
+                        <TextBox Grid.Row="2" Header="{Binding [Raw_Unit], Source={StaticResource Localization}}" Text="{Binding Unit, Mode=TwoWay}" TextChanged="OnFieldChanged" />
                     </Grid>
                 </ScrollViewer>
             </TabViewItem>
 
-            <TabViewItem Header="Session availability">
+            <TabViewItem Header="{Binding [Raw_SessionAvailability], Source={StaticResource Localization}}">
                 <ListView Margin="4,12" ItemsSource="{Binding SessionAvailability}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -119,14 +119,14 @@
                 </ListView>
             </TabViewItem>
 
-            <TabViewItem Header="Help">
+            <TabViewItem Header="{Binding [Editor_Help], Source={StaticResource Localization}}">
                 <Grid Padding="4,12" ColumnSpacing="12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBox AcceptsReturn="True" Header="English help" MinHeight="220" Text="{Binding HelpTextEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                    <TextBox Grid.Column="1" AcceptsReturn="True" Header="中文帮助" MinHeight="220" Text="{Binding HelpTextZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                    <TextBox AcceptsReturn="True" Header="{Binding [Editor_EnglishHelp], Source={StaticResource Localization}}" MinHeight="220" Text="{Binding HelpTextEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                    <TextBox Grid.Column="1" AcceptsReturn="True" Header="{Binding [Editor_ChineseHelp], Source={StaticResource Localization}}" MinHeight="220" Text="{Binding HelpTextZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                 </Grid>
             </TabViewItem>
         </TabView>

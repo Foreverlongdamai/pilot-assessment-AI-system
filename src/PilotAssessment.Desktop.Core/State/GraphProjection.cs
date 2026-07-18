@@ -16,7 +16,40 @@ public sealed record GraphProjectionOptions(
     string? Group = null,
     string? Tag = null,
     bool? Active = null,
-    IReadOnlySet<string>? SelectedNodeIds = null);
+    IReadOnlySet<string>? SelectedNodeIds = null,
+    string Language = "en-US",
+    GraphProjectionLabels? Labels = null);
+
+public sealed record GraphProjectionLabels(
+    string RawInput,
+    string Evidence,
+    string BnNode,
+    string SubSkill,
+    string Competency,
+    string Active,
+    string Inactive,
+    string Archived,
+    string Executable,
+    string Incomplete,
+    string Blocked,
+    string OutputFormat,
+    string AutomationFormat)
+{
+    public static GraphProjectionLabels English { get; } = new(
+        "RAW INPUT",
+        "EVIDENCE",
+        "BN NODE",
+        "BN • SUB-SKILL",
+        "BN • COMPETENCY",
+        "active",
+        "inactive",
+        "archived",
+        "Executable",
+        "Incomplete",
+        "Blocked",
+        "{0} • output",
+        "{0}, {1}, {2}, {3}");
+}
 
 public sealed record GraphNodeProjection(
     ModelNode Node,
@@ -99,7 +132,9 @@ public static class GraphProjection
                 item.Layout.Y + offsetY,
                 activeIds.Contains(item.Node.NodeId),
                 outputIds.Contains(item.Node.NodeId),
-                selectedIds.Contains(item.Node.NodeId)))
+                selectedIds.Contains(item.Node.NodeId),
+                options.Language,
+                options.Labels ?? GraphProjectionLabels.English))
             .ToArray();
         var nodeIndex = projectedNodes.ToDictionary(node => node.NodeId, StringComparer.Ordinal);
         var projectedEdges = snapshot.Edges
@@ -187,34 +222,45 @@ public static class GraphProjection
         double y,
         bool active,
         bool output,
-        bool selected)
+        bool selected,
+        string language,
+        GraphProjectionLabels labels)
     {
         var archived = node.Lifecycle is ModelObjectLifecycle.Archived;
-        var displayName = FirstNonBlank(
-            node.ShortNameEn,
+        var displayName = BilingualTextSelector.SelectShortOrFull(
+            language,
             node.ShortNameZh,
-            node.NameEn,
+            node.ShortNameEn,
             node.NameZh,
+            node.NameEn,
             node.NodeId);
         var kindLabel = node.Definition switch
         {
-            BnNodeDefinition { NodeRole: BnNodeRole.AggregateCompetency } => "BN • COMPETENCY",
-            BnNodeDefinition { NodeRole: BnNodeRole.SubSkill } => "BN • SUB-SKILL",
-            BnNodeDefinition => "BN NODE",
-            EvidenceNodeDefinition => "EVIDENCE",
-            RawInputNodeDefinition => "RAW INPUT",
+            BnNodeDefinition { NodeRole: BnNodeRole.AggregateCompetency } => labels.Competency,
+            BnNodeDefinition { NodeRole: BnNodeRole.SubSkill } => labels.SubSkill,
+            BnNodeDefinition => labels.BnNode,
+            EvidenceNodeDefinition => labels.Evidence,
+            RawInputNodeDefinition => labels.RawInput,
             _ => node.NodeKind switch
             {
-                ModelNodeKind.RawInput => "RAW INPUT",
-                ModelNodeKind.Evidence => "EVIDENCE",
-                _ => "BN NODE",
+                ModelNodeKind.RawInput => labels.RawInput,
+                ModelNodeKind.Evidence => labels.Evidence,
+                _ => labels.BnNode,
             },
         };
-        var activationLabel = active ? "active" : "inactive";
-        var lifecycleLabel = archived ? ", archived" : string.Empty;
+        var activationLabel = active ? labels.Active : labels.Inactive;
+        var technicalStatus = node.TechnicalStatus switch
+        {
+            ModelTechnicalStatus.Executable => labels.Executable,
+            ModelTechnicalStatus.Incomplete => labels.Incomplete,
+            _ => labels.Blocked,
+        };
         var statusLabel = output
-            ? $"{node.TechnicalStatus} • output"
-            : node.TechnicalStatus.ToString();
+            ? string.Format(labels.OutputFormat, technicalStatus)
+            : technicalStatus;
+        var lifecycleAndStatus = archived
+            ? $"{activationLabel}, {labels.Archived}, {technicalStatus}"
+            : $"{activationLabel}, {technicalStatus}";
         return new GraphNodeProjection(
             node,
             x,
@@ -226,15 +272,12 @@ public static class GraphProjection
             displayName,
             kindLabel,
             statusLabel,
-            $"{displayName}, {kindLabel}, {activationLabel}{lifecycleLabel}, {node.TechnicalStatus}",
+            string.Format(labels.AutomationFormat, displayName, kindLabel, lifecycleAndStatus, node.NodeId),
             archived ? 0.24 : active ? 1.0 : 0.38);
     }
 
     private static bool Contains(string? value, string search) =>
         value?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false;
-
-    private static string FirstNonBlank(params string?[] values) =>
-        values.First(value => !string.IsNullOrWhiteSpace(value))!;
 
     private sealed record NodeWithLayout(ModelNode Node, NodeLayout Layout);
 }

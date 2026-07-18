@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="App_Name" xml:space="preserve"><value>飞行员评估系统</value></data>
+  <data name="App_ExpertWorkspace" xml:space="preserve"><value>专家模型工作区</value></data>
+  <data name="Common_Project" xml:space="preserve"><value>项目</value></data>
+  <data name="Common_Session" xml:space="preserve"><value>会话</value></data>
+  <data name="Common_TaskScheme" xml:space="preserve"><value>任务方案</value></data>
+  <data name="Common_Backend" xml:space="preserve"><value>后端</value></data>
+  <data name="Common_Autosave" xml:space="preserve"><value>自动保存</value></data>
+  <data name="Common_Run" xml:space="preserve"><value>运行</value></data>
+  <data name="Common_Reconnect" xml:space="preserve"><value>重新连接</value></data>
+  <data name="Common_New" xml:space="preserve"><value>新建</value></data>
+  <data name="Common_Copy" xml:space="preserve"><value>复制</value></data>
+  <data name="Common_Rename" xml:space="preserve"><value>重命名</value></data>
+  <data name="Common_Archive" xml:space="preserve"><value>归档</value></data>
+  <data name="Common_Find" xml:space="preserve"><value>查找</value></data>
+  <data name="Common_Group" xml:space="preserve"><value>分组</value></data>
+  <data name="Common_Tag" xml:space="preserve"><value>标签</value></data>
+  <data name="Common_Tags" xml:space="preserve"><value>标签</value></data>
+  <data name="Common_Sort" xml:space="preserve"><value>排序</value></data>
+  <data name="Common_Lifecycle" xml:space="preserve"><value>生命周期</value></data>
+  <data name="Common_Active" xml:space="preserve"><value>启用</value></data>
+  <data name="Common_Inactive" xml:space="preserve"><value>停用</value></data>
+  <data name="Common_IncludeArchived" xml:space="preserve"><value>包括已归档项</value></data>
+  <data name="Common_Open" xml:space="preserve"><value>打开</value></data>
+  <data name="Common_Refresh" xml:space="preserve"><value>刷新</value></data>
+  <data name="Common_Reload" xml:space="preserve"><value>重新载入</value></data>
+  <data name="Common_Reapply" xml:space="preserve"><value>重新应用</value></data>
+  <data name="Common_Retry" xml:space="preserve"><value>重试</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>取消</value></data>
+  <data name="Common_Continue" xml:space="preserve"><value>继续</value></data>
+  <data name="Common_Description" xml:space="preserve"><value>说明</value></data>
+  <data name="Common_Documentation" xml:space="preserve"><value>文档</value></data>
+  <data name="Common_Identifier" xml:space="preserve"><value>标识符</value></data>
+  <data name="Common_Status" xml:space="preserve"><value>状态</value></data>
+  <data name="Common_Revision" xml:space="preserve"><value>修订号</value></data>
+  <data name="Common_NoGroup" xml:space="preserve"><value>无分组</value></data>
+  <data name="Common_NoTags" xml:space="preserve"><value>无标签</value></data>
+  <data name="A11y_ReconnectBackend" xml:space="preserve"><value>重新连接后端</value></data>
+  <data name="A11y_SwitchLanguage" xml:space="preserve"><value>切换界面语言</value></data>
+  <data name="A11y_SwitchTheme" xml:space="preserve"><value>切换应用主题</value></data>
+  <data name="Nav_Project" xml:space="preserve"><value>项目</value></data>
+  <data name="Nav_Sessions" xml:space="preserve"><value>会话</value></data>
+  <data name="Nav_ModelStudio" xml:space="preserve"><value>模型设计器</value></data>
+  <data name="Nav_Runs" xml:space="preserve"><value>评估运行</value></data>
+  <data name="Nav_Results" xml:space="preserve"><value>评估结果</value></data>
+  <data name="Nav_Library" xml:space="preserve"><value>组件库</value></data>
+  <data name="Nav_Diagnostics" xml:space="preserve"><value>诊断</value></data>
+  <data name="Shell_NoProject" xml:space="preserve"><value>未打开项目</value></data>
+  <data name="Shell_NoSession" xml:space="preserve"><value>未选择会话</value></data>
+  <data name="Shell_NoTaskScheme" xml:space="preserve"><value>未选择任务方案</value></data>
+  <data name="Shell_Stopped" xml:space="preserve"><value>已停止</value></data>
+  <data name="Shell_Connecting" xml:space="preserve"><value>正在连接</value></data>
+  <data name="Shell_Ready" xml:space="preserve"><value>就绪</value></data>
+  <data name="Shell_Unavailable" xml:space="preserve"><value>不可用</value></data>
+  <data name="Shell_NoPendingChanges" xml:space="preserve"><value>没有待保存更改</value></data>
+  <data name="Shell_PendingChanges" xml:space="preserve"><value>有待保存更改</value></data>
+  <data name="Shell_Saving" xml:space="preserve"><value>正在保存</value></data>
+  <data name="Shell_Saved" xml:space="preserve"><value>已保存</value></data>
+  <data name="Shell_OfflineRetry" xml:space="preserve"><value>离线 / 可重试</value></data>
+  <data name="Shell_Conflict" xml:space="preserve"><value>发生冲突</value></data>
+  <data name="Shell_Blocked" xml:space="preserve"><value>操作受阻</value></data>
+  <data name="Shell_Idle" xml:space="preserve"><value>空闲</value></data>
+  <data name="Shell_NoBackendDiagnostics" xml:space="preserve"><value>暂无后端诊断信息。</value></data>
+  <data name="Theme_System" xml:space="preserve"><value>跟随系统</value></data>
+  <data name="Theme_Light" xml:space="preserve"><value>浅色</value></data>
+  <data name="Theme_Dark" xml:space="preserve"><value>深色</value></data>
+  <data name="Project_Title" xml:space="preserve"><value>项目</value></data>
+  <data name="Project_Description" xml:space="preserve"><value>受管项目包含可编辑模型库、任务方案、导入的 Session Bundle、评估运行与结果，可作为一个文件夹整体迁移。</value></data>
+  <data name="Project_OperationFailed" xml:space="preserve"><value>项目操作失败</value></data>
+  <data name="Project_Status" xml:space="preserve"><value>项目状态</value></data>
+  <data name="Project_Current" xml:space="preserve"><value>当前项目</value></data>
+  <data name="Project_Close" xml:space="preserve"><value>关闭项目</value></data>
+  <data name="Project_Create" xml:space="preserve"><value>创建受管项目</value></data>
+  <data name="Project_Name" xml:space="preserve"><value>项目名称</value></data>
+  <data name="Project_StableId" xml:space="preserve"><value>稳定项目 ID</value></data>
+  <data name="Project_Folder" xml:space="preserve"><value>项目文件夹</value></data>
+  <data name="Project_FolderPlaceholder" xml:space="preserve"><value>选择空文件夹或新的文件夹路径</value></data>
+  <data name="Project_ChooseFolder" xml:space="preserve"><value>选择文件夹</value></data>
+  <data name="Project_CreateAndOpen" xml:space="preserve"><value>创建并打开</value></data>
+  <data name="Project_OpenManaged" xml:space="preserve"><value>打开受管项目</value></data>
+  <data name="Project_OpenDescription" xml:space="preserve"><value>选择包含 project.json 和 project.sqlite3 的文件夹。打开操作不会复制或移动该项目。</value></data>
+  <data name="Project_ChooseProjectFolder" xml:space="preserve"><value>选择项目文件夹</value></data>
+  <data name="Project_Recent" xml:space="preserve"><value>最近项目</value></data>
+  <data name="Project_RecentDescription" xml:space="preserve"><value>这里只保存本地路径快捷方式，不会在此复制项目或 Session 数据。</value></data>
+  <data name="Session_Title" xml:space="preserve"><value>会话</value></data>
+  <data name="Session_Description" xml:space="preserve"><value>先在不改动外部 Session Bundle 的情况下检查它，再将完全相同的副本导入当前受管项目。大型图像和时序数据保留在受管存储中。</value></data>
+  <data name="Session_OperationFailed" xml:space="preserve"><value>会话操作失败</value></data>
+  <data name="Session_Status" xml:space="preserve"><value>会话状态</value></data>
+  <data name="Session_Workflow" xml:space="preserve"><value>1. 检查外部来源 · 2. 导入受管副本</value></data>
+  <data name="Session_ExternalFolder" xml:space="preserve"><value>外部来源文件夹（绝不移动或修改）</value></data>
+  <data name="Session_ChooseBundlePlaceholder" xml:space="preserve"><value>选择 Session Bundle 文件夹</value></data>
+  <data name="Session_ChooseBundle" xml:space="preserve"><value>选择 Session Bundle</value></data>
+  <data name="Session_Inspect" xml:space="preserve"><value>检查</value></data>
+  <data name="Session_ImportManaged" xml:space="preserve"><value>导入完全一致的受管副本</value></data>
+  <data name="Session_ManagedSessions" xml:space="preserve"><value>受管会话</value></data>
+  <data name="Session_SelectedRevision" xml:space="preserve"><value>选中的受管修订</value></data>
+  <data name="Session_ManagedPath" xml:space="preserve"><value>受管 Bundle 路径</value></data>
+  <data name="Session_IngestionArtifact" xml:space="preserve"><value>导入就绪性产物</value></data>
+  <data name="Session_SyncArtifact" xml:space="preserve"><value>时间同步报告产物</value></data>
+  <data name="Session_PathBoundary" xml:space="preserve"><value>上方外部来源路径与此受管路径有意保持分离。产品安装文件永远不会包含用户 Session 数据。</value></data>
+  <data name="Session_InputFamilies" xml:space="preserve"><value>规范输入族</value></data>
+  <data name="Session_InputFamiliesDescription" xml:space="preserve"><value>视觉场景、眼动、飞行员相机、EEG 与 ECG 始终是一等输入，即使当前 Session 声明它们缺失或等待导出。</value></data>
+  <data name="Model_Title" xml:space="preserve"><value>模型设计器</value></data>
+  <data name="Model_Subtitle" xml:space="preserve"><value>全局完整节点 · 当前任务启用关系</value></data>
+  <data name="Model_SearchA11y" xml:space="preserve"><value>搜索模型节点</value></data>
+  <data name="Model_SearchPlaceholder" xml:space="preserve"><value>搜索节点</value></data>
+  <data name="Model_ViewModeA11y" xml:space="preserve"><value>图可见性模式</value></data>
+  <data name="Model_KindFilterA11y" xml:space="preserve"><value>节点类型筛选</value></data>
+  <data name="Model_ActivationFilterA11y" xml:space="preserve"><value>启用状态筛选</value></data>
+  <data name="Model_GroupFilterA11y" xml:space="preserve"><value>节点分组筛选</value></data>
+  <data name="Model_TagFilterA11y" xml:space="preserve"><value>节点标签筛选</value></data>
+  <data name="Model_NewNode" xml:space="preserve"><value>新建节点</value></data>
+  <data name="Model_NewRawInput" xml:space="preserve"><value>新建原始输入</value></data>
+  <data name="Model_NewEvidence" xml:space="preserve"><value>新建 Evidence</value></data>
+  <data name="Model_NewBn" xml:space="preserve"><value>新建 BN 节点</value></data>
+  <data name="Model_OpenDetails" xml:space="preserve"><value>打开详情</value></data>
+  <data name="Model_OpenDetailsA11y" xml:space="preserve"><value>打开所选节点详情</value></data>
+  <data name="Model_Activate" xml:space="preserve"><value>启用</value></data>
+  <data name="Model_Deactivate" xml:space="preserve"><value>停用</value></data>
+  <data name="Model_Paste" xml:space="preserve"><value>粘贴</value></data>
+  <data name="Model_MultiSelect" xml:space="preserve"><value>多选</value></data>
+  <data name="Model_MultiSelectA11y" xml:space="preserve"><value>切换多选模式</value></data>
+  <data name="Model_ClearSelection" xml:space="preserve"><value>清除选择</value></data>
+  <data name="Model_GraphLoadFailed" xml:space="preserve"><value>模型图载入失败</value></data>
+  <data name="Model_ViewActiveOnly" xml:space="preserve"><value>仅显示启用节点</value></data>
+  <data name="Model_ViewActiveInactive" xml:space="preserve"><value>启用 + 停用节点</value></data>
+  <data name="Model_ViewAll" xml:space="preserve"><value>全部全局节点</value></data>
+  <data name="Model_KindAll" xml:space="preserve"><value>全部节点类型</value></data>
+  <data name="Model_KindRaw" xml:space="preserve"><value>原始输入</value></data>
+  <data name="Model_KindEvidence" xml:space="preserve"><value>Evidence</value></data>
+  <data name="Model_KindBn" xml:space="preserve"><value>BN</value></data>
+  <data name="Model_ActivationAll" xml:space="preserve"><value>全部启用状态</value></data>
+  <data name="Task_Title" xml:space="preserve"><value>任务方案</value></data>
+  <data name="Task_Subtitle" xml:space="preserve"><value>各任务配置并列存在；切换任务不会改写模型。</value></data>
+  <data name="Task_CreateA11y" xml:space="preserve"><value>创建任务方案</value></data>
+  <data name="Task_CopyA11y" xml:space="preserve"><value>复制所选任务方案</value></data>
+  <data name="Task_RenameA11y" xml:space="preserve"><value>重命名所选任务方案</value></data>
+  <data name="Task_ArchiveA11y" xml:space="preserve"><value>归档所选任务方案</value></data>
+  <data name="Task_SearchA11y" xml:space="preserve"><value>搜索任务方案</value></data>
+  <data name="Task_SearchPlaceholder" xml:space="preserve"><value>搜索名称、ID、标签或分组</value></data>
+  <data name="Task_ListA11y" xml:space="preserve"><value>任务方案列表</value></data>
+  <data name="Task_AllGroups" xml:space="preserve"><value>全部分组</value></data>
+  <data name="Task_AllTags" xml:space="preserve"><value>全部标签</value></data>
+  <data name="Task_SortName" xml:space="preserve"><value>名称</value></data>
+  <data name="Task_SortUpdated" xml:space="preserve"><value>最近更新</value></data>
+  <data name="Task_SortIdentifier" xml:space="preserve"><value>标识符</value></data>
+  <data name="Task_Archived" xml:space="preserve"><value>已归档</value></data>
+  <data name="Task_NoGroupTags" xml:space="preserve"><value>无分组或标签</value></data>
+  <data name="Task_StatusLine" xml:space="preserve"><value>{0} · 修订 {1} · {2} 个已启用</value></data>
+  <data name="Node_WindowTitle" xml:space="preserve"><value>{0} · 节点编辑器</value></data>
+  <data name="Node_DefaultTitle" xml:space="preserve"><value>节点编辑器</value></data>
+  <data name="Node_Header" xml:space="preserve"><value>节点</value></data>
+  <data name="Node_IndependentEditor" xml:space="preserve"><value>独立节点编辑器</value></data>
+  <data name="Node_Context" xml:space="preserve"><value>上下文</value></data>
+  <data name="Node_TaskScheme" xml:space="preserve"><value>任务方案</value></data>
+  <data name="Node_SharedUsage" xml:space="preserve"><value>共享使用情况</value></data>
+  <data name="Node_WindowKey" xml:space="preserve"><value>窗口键</value></data>
+  <data name="Node_CanonicalDefinition" xml:space="preserve"><value>后端规范定义</value></data>
+  <data name="Node_TechnicalStatus" xml:space="preserve"><value>技术状态</value></data>
+  <data name="Node_SemanticRevision" xml:space="preserve"><value>语义修订号</value></data>
+  <data name="Node_LayoutRevision" xml:space="preserve"><value>布局修订号</value></data>
+  <data name="Node_EditorSurface" xml:space="preserve"><value>节点编辑区</value></data>
+  <data name="Node_UsedByOne" xml:space="preserve"><value>当前被 1 个任务方案使用</value></data>
+  <data name="Node_UsedByMany" xml:space="preserve"><value>当前被 {0} 个任务方案使用</value></data>
+  <data name="Node_KindRaw" xml:space="preserve"><value>原始输入</value></data>
+  <data name="Node_KindEvidence" xml:space="preserve"><value>EVIDENCE</value></data>
+  <data name="Node_KindBn" xml:space="preserve"><value>BN 节点</value></data>
+  <data name="Node_KindSubskill" xml:space="preserve"><value>BN · 子技能</value></data>
+  <data name="Node_KindCompetency" xml:space="preserve"><value>BN · 综合能力</value></data>
+  <data name="Node_OutputSuffix" xml:space="preserve"><value>{0} · 输出节点</value></data>
+  <data name="Node_A11y" xml:space="preserve"><value>{0}，{1}，{2}，{3}</value></data>
+  <data name="Node_StatusActive" xml:space="preserve"><value>已启用</value></data>
+  <data name="Node_StatusInactive" xml:space="preserve"><value>已停用</value></data>
+  <data name="Node_StatusArchived" xml:space="preserve"><value>已归档</value></data>
+  <data name="Node_SavePending" xml:space="preserve"><value>待保存 · 已安排自动保存</value></data>
+  <data name="Node_SaveSaving" xml:space="preserve"><value>正在保存…</value></data>
+  <data name="Node_SaveOffline" xml:space="preserve"><value>离线 · 可以重试</value></data>
+  <data name="Node_SaveConflict" xml:space="preserve"><value>冲突 · 请选择重新载入或重新应用</value></data>
+  <data name="Node_SaveSaved" xml:space="preserve"><value>已保存 · 修订 {0}</value></data>
+  <data name="Node_ExplicitPending" xml:space="preserve"><value>{0} · 状态/CPT 显式提交待完成</value></data>
+  <data name="Dialog_DeactivateTitle" xml:space="preserve"><value>停用节点？</value></data>
+  <data name="Dialog_DeactivateDescription" xml:space="preserve"><value>停用父节点还可能停用当前任务方案中的下游节点。</value></data>
+  <data name="Dialog_CreateNodeTitle" xml:space="preserve"><value>创建完整节点</value></data>
+  <data name="Diagnostics_Title" xml:space="preserve"><value>诊断</value></data>
+  <data name="Diagnostics_Description" xml:space="preserve"><value>桌面端通过私有 stdin/stdout JSON-RPC 与一个本地 Python sidecar 通信，不监听任何网络端口。</value></data>
+  <data name="Diagnostics_StartupFailed" xml:space="preserve"><value>后端启动失败</value></data>
+  <data name="Diagnostics_BackendState" xml:space="preserve"><value>后端状态</value></data>
+  <data name="Diagnostics_Runtime" xml:space="preserve"><value>运行环境</value></data>
+  <data name="Diagnostics_Stderr" xml:space="preserve"><value>stderr 诊断信息</value></data>
+  <data name="Diagnostics_StderrA11y" xml:space="preserve"><value>后端 stderr 诊断信息</value></data>
+  <data name="Node_IndependentDescription" xml:space="preserve"><value>这是一个独立的非模态编辑窗口；主模型图仍可继续操作。</value></data>
+  <data name="Node_NoEditorDescription" xml:space="preserve"><value>此节点类型尚未提供完整编辑界面。</value></data>
+  <data name="Model_ChooseTaskScheme" xml:space="preserve"><value>请选择一个任务方案以载入全局模型图。</value></data>
+  <data name="Model_NoNodeSelected" xml:space="preserve"><value>未选择节点</value></data>
+  <data name="Model_NodesSelected" xml:space="preserve"><value>已选择 {0} 个节点</value></data>
+  <data name="Dialog_DeactivateSafety" xml:space="preserve"><value>继续操作会把当前预览哈希原样提交给后端；取消不会发送写操作；此操作绝不会归档全局节点。</value></data>
+  <data name="Graph_SelectNode" xml:space="preserve"><value>选择节点</value></data>
+  <data name="Graph_ToggleSelection" xml:space="preserve"><value>加入/移出当前选择</value></data>
+  <data name="Graph_OpenNodeDetails" xml:space="preserve"><value>打开节点详情</value></data>
+  <data name="Graph_ActivateTask" xml:space="preserve"><value>在当前任务中启用</value></data>
+  <data name="Graph_DeactivateTask" xml:space="preserve"><value>从当前任务停用（Delete）</value></data>
+  <data name="Graph_CopyNode" xml:space="preserve"><value>复制完整节点</value></data>
+  <data name="Graph_PasteTask" xml:space="preserve"><value>粘贴到当前任务</value></data>
+  <data name="Graph_ConnectParent" xml:space="preserve"><value>把所选父节点连接到此节点</value></data>
+  <data name="Graph_RemoveParent" xml:space="preserve"><value>从此节点移除所选父节点</value></data>
+  <data name="Graph_OutputBadge" xml:space="preserve"><value>输出</value></data>
+  <data name="Graph_ZoomOutA11y" xml:space="preserve"><value>缩小</value></data>
+  <data name="Graph_ZoomInA11y" xml:space="preserve"><value>放大</value></data>
+  <data name="Graph_Fit" xml:space="preserve"><value>适应窗口</value></data>
+  <data name="Graph_EdgeLegend" xml:space="preserve"><value>边图例</value></data>
+  <data name="Graph_ExtractionEdge" xml:space="preserve"><value>原始数据 / Evidence 提取</value></data>
+  <data name="Graph_ProbabilisticEdge" xml:space="preserve"><value>概率 BN 关系</value></data>
+  <data name="Graph_DimMeaning" xml:space="preserve"><value>暗色 = 当前任务未启用</value></data>
+  <data name="Graph_Minimap" xml:space="preserve"><value>小地图</value></data>
+  <data name="Dialog_CreateNodeButton" xml:space="preserve"><value>创建节点</value></data>
+  <data name="Dialog_CreateNodeDescription" xml:space="preserve"><value>后端保存一个完整节点定义。Evidence 与 BN 节点最初标记为不完整，专家无需生成 Python 代码即可继续配置。</value></data>
+  <data name="Dialog_NodeKind" xml:space="preserve"><value>节点类型</value></data>
+  <data name="Editor_EnglishName" xml:space="preserve"><value>英文名称</value></data>
+  <data name="Editor_ChineseName" xml:space="preserve"><value>中文名称</value></data>
+  <data name="Dialog_EnglishNameExample" xml:space="preserve"><value>例如 Disturbance instrument scan</value></data>
+  <data name="Dialog_ChineseNameExample" xml:space="preserve"><value>例如：扰动仪表扫描</value></data>
+  <data name="Dialog_RawModality" xml:space="preserve"><value>原始模态</value></data>
+  <data name="Dialog_ModalityX" xml:space="preserve"><value>X — 飞行状态</value></data>
+  <data name="Dialog_ModalityU" xml:space="preserve"><value>U — 控制输入</value></data>
+  <data name="Dialog_ModalityI" xml:space="preserve"><value>I — 视觉场景</value></data>
+  <data name="Dialog_ModalityG" xml:space="preserve"><value>G — 眼动注视</value></data>
+  <data name="Dialog_ModalityCamera" xml:space="preserve"><value>飞行员相机</value></data>
+  <data name="Editor_SelectOperatorParameters" xml:space="preserve"><value>选择一个已安装算子节点，以编辑由 schema 驱动的参数。</value></data>
+  <data name="Editor_General" xml:space="preserve"><value>常规</value></data>
+  <data name="Editor_EnglishDescription" xml:space="preserve"><value>英文说明</value></data>
+  <data name="Editor_ChineseDescription" xml:space="preserve"><value>中文说明</value></data>
+  <data name="Editor_TagsSeparated" xml:space="preserve"><value>标签（逗号或换行分隔）</value></data>
+  <data name="Editor_Help" xml:space="preserve"><value>帮助</value></data>
+  <data name="Editor_EnglishHelp" xml:space="preserve"><value>英文帮助</value></data>
+  <data name="Editor_ChineseHelp" xml:space="preserve"><value>中文帮助</value></data>
+  <data name="Raw_ContractDescription" xml:space="preserve"><value>此节点声明如何向 Evidence 配方暴露一项受管 Session Bundle 资源。常规字段会在 350 毫秒后自动保存，并与后端返回的规范对象对齐。</value></data>
+  <data name="Raw_ContractTitle" xml:space="preserve"><value>原始输入契约编辑器</value></data>
+  <data name="Raw_InputFamily" xml:space="preserve"><value>输入族</value></data>
+  <data name="Raw_ResourceRole" xml:space="preserve"><value>资源角色</value></data>
+  <data name="Raw_SourceSchema" xml:space="preserve"><value>来源与 Schema</value></data>
+  <data name="Raw_SourceId" xml:space="preserve"><value>来源 ID</value></data>
+  <data name="Raw_SourceKind" xml:space="preserve"><value>来源类型</value></data>
+  <data name="Raw_SourceName" xml:space="preserve"><value>来源名称</value></data>
+  <data name="Raw_SourceDescription" xml:space="preserve"><value>来源说明</value></data>
+  <data name="Raw_SchemaId" xml:space="preserve"><value>Schema ID</value></data>
+  <data name="Raw_AdapterId" xml:space="preserve"><value>适配器 ID</value></data>
+  <data name="Raw_ProfileId" xml:space="preserve"><value>配置档 ID</value></data>
+  <data name="Raw_ClockBinding" xml:space="preserve"><value>时钟绑定</value></data>
+  <data name="Raw_SourceDependencies" xml:space="preserve"><value>来源依赖（每行一个）</value></data>
+  <data name="Raw_FieldsJson" xml:space="preserve"><value>字段 JSON 数组</value></data>
+  <data name="Raw_UnitsJson" xml:space="preserve"><value>单位 JSON 对象</value></data>
+  <data name="Raw_MetadataJson" xml:space="preserve"><value>完整元数据 JSON（保留未知字段）</value></data>
+  <data name="Raw_TypeClock" xml:space="preserve"><value>类型与时钟</value></data>
+  <data name="Raw_ValueType" xml:space="preserve"><value>值类型</value></data>
+  <data name="Raw_Cardinality" xml:space="preserve"><value>基数</value></data>
+  <data name="Raw_TemporalSemantics" xml:space="preserve"><value>时间语义</value></data>
+  <data name="Raw_Unit" xml:space="preserve"><value>单位</value></data>
+  <data name="Raw_SessionAvailability" xml:space="preserve"><value>Session 可用性</value></data>
+  <data name="Operator_CatalogA11y" xml:space="preserve"><value>受信任算子目录</value></data>
+  <data name="Operator_ChooseInstalled" xml:space="preserve"><value>选择已安装算子</value></data>
+  <data name="Operator_AddA11y" xml:space="preserve"><value>把所选算子加入配方</value></data>
+  <data name="Operator_Add" xml:space="preserve"><value>添加算子</value></data>
+  <data name="Operator_Nodes" xml:space="preserve"><value>算子节点</value></data>
+  <data name="Operator_NodesA11y" xml:space="preserve"><value>Evidence 配方算子节点</value></data>
+  <data name="Operator_RemoveA11y" xml:space="preserve"><value>从配方移除所选算子</value></data>
+  <data name="Operator_Remove" xml:space="preserve"><value>移除所选算子</value></data>
+  <data name="Operator_TypedEdges" xml:space="preserve"><value>类型化配方边</value></data>
+  <data name="Operator_TypedEdgesA11y" xml:space="preserve"><value>Evidence 配方类型化边</value></data>
+  <data name="Operator_RemoveEdgeA11y" xml:space="preserve"><value>移除所选 Evidence 配方边</value></data>
+  <data name="Operator_RemoveEdge" xml:space="preserve"><value>移除所选边</value></data>
+  <data name="Operator_ConnectPorts" xml:space="preserve"><value>连接已声明的算子端口</value></data>
+  <data name="Operator_SourceNodeId" xml:space="preserve"><value>源节点 ID</value></data>
+  <data name="Operator_OutputPortId" xml:space="preserve"><value>输出端口 ID</value></data>
+  <data name="Operator_TargetNodeId" xml:space="preserve"><value>目标节点 ID</value></data>
+  <data name="Operator_InputPortId" xml:space="preserve"><value>输入端口 ID</value></data>
+  <data name="Operator_OptionalSlotId" xml:space="preserve"><value>可选插槽 ID</value></data>
+  <data name="Operator_ConnectA11y" xml:space="preserve"><value>连接已声明的 Evidence 配方端口</value></data>
+  <data name="Operator_Connect" xml:space="preserve"><value>连接</value></data>
+  <data name="Evidence_CanonicalEditor" xml:space="preserve"><value>规范 Evidence 编辑器</value></data>
+  <data name="Evidence_OperatorUnavailable" xml:space="preserve"><value>算子不可用</value></data>
+  <data name="Evidence_AnchorName" xml:space="preserve"><value>Anchor/Evidence 名称</value></data>
+  <data name="Evidence_AnchorDescription" xml:space="preserve"><value>Anchor/Evidence 说明</value></data>
+  <data name="Evidence_RecipeSummary" xml:space="preserve"><value>配方文档摘要</value></data>
+  <data name="Evidence_RawBindings" xml:space="preserve"><value>原始输入绑定</value></data>
+  <data name="Evidence_FixedBindings" xml:space="preserve"><value>固定规范绑定</value></data>
+  <data name="Evidence_FixedBindingsDescription" xml:space="preserve"><value>在主模型图上添加或移除原始输入提取边；后端会以原子事务迁移完整配方绑定。</value></data>
+  <data name="Evidence_RecipeOutputs" xml:space="preserve"><value>配方输出</value></data>
+  <data name="Evidence_RecipeGraph" xml:space="preserve"><value>EvidenceRecipe 图</value></data>
+  <data name="Evidence_Parameters" xml:space="preserve"><value>参数</value></data>
+  <data name="Evidence_SchemaParameters" xml:space="preserve"><value>Schema 驱动的算子参数</value></data>
+  <data name="Evidence_SchemaParametersDescription" xml:space="preserve"><value>请在 EvidenceRecipe 图标签页中选择配方节点。控件由后端 OperatorDefinition schema 与 UI 提示生成；未知 JSON 以只读方式保留。</value></data>
+  <data name="Evidence_ScoringTab" xml:space="preserve"><value>窗口 / 聚合 / 评分 / D-A-U</value></data>
+  <data name="Evidence_ScoringDescription" xml:space="preserve"><value>窗口与聚合是类型化配方图中的普通算子节点；评分和 D-A-U 映射仍是显式类型化 JSON 契约。</value></data>
+  <data name="Evidence_ScoringJson" xml:space="preserve"><value>评分契约 JSON（留空表示不评分）</value></data>
+  <data name="Evidence_ObservationMapping" xml:space="preserve"><value>观测映射 JSON</value></data>
+  <data name="Evidence_ModalityWeights" xml:space="preserve"><value>模态归因权重 JSON</value></data>
+  <data name="Evidence_ObservationStates" xml:space="preserve"><value>观测状态</value></data>
+  <data name="Evidence_ObservationPolicy" xml:space="preserve"><value>观测策略</value></data>
+  <data name="Editor_AddState" xml:space="preserve"><value>添加状态</value></data>
+  <data name="Editor_RemoveSelected" xml:space="preserve"><value>移除所选项</value></data>
+  <data name="Editor_CommitStates" xml:space="preserve"><value>提交状态并将受影响 CPT 标记为不完整</value></data>
+  <data name="Editor_StateTransactionDescription" xml:space="preserve"><value>一个后端事务会同时更新此轴和所有依赖 CPT 的对应轴。</value></data>
+  <data name="Editor_StateId" xml:space="preserve"><value>状态 ID</value></data>
+  <data name="Editor_Label" xml:space="preserve"><value>标签名称</value></data>
+  <data name="Evidence_ProbabilisticParents" xml:space="preserve"><value>概率父节点 / CPT</value></data>
+  <data name="Evidence_ProbabilisticDescription" xml:space="preserve"><value>Evidence 的概率父节点是 BN 节点。在主模型图上添加、移除或重排这些固定边；原子迁移对话框会更新同一个规范 CPT。下方完整行表格与 BN 节点共用。</value></data>
+  <data name="Evidence_CanonicalBnRelationship" xml:space="preserve"><value>规范 BN 关系</value></data>
+  <data name="Editor_FixedParents" xml:space="preserve"><value>固定父节点</value></data>
+  <data name="Evidence_PreviewTrace" xml:space="preserve"><value>预览 / 跟踪</value></data>
+  <data name="Evidence_PreviewDescription" xml:space="preserve"><value>预览由 Python 后端针对所选受管 Session 和当前任务计算；C# 不执行算子。</value></data>
+  <data name="Evidence_RequestPreview" xml:space="preserve"><value>请求后端预览</value></data>
+  <data name="Editor_UsedBySchemes" xml:space="preserve"><value>使用此节点的方案</value></data>
+  <data name="Editor_SharedImpact" xml:space="preserve"><value>共享节点影响</value></data>
+  <data name="Editor_SharedImpactDescription" xml:space="preserve"><value>这是一个共享的完整节点。规范编辑会影响列出的所有任务方案的未来运行；历史 RunSnapshot 保持不可变。</value></data>
+  <data name="Editor_History" xml:space="preserve"><value>历史</value></data>
+  <data name="Editor_HistoryDescription" xml:space="preserve"><value>规范更改事件从后端审计/历史日志读取。</value></data>
+  <data name="Bn_CanonicalEditor" xml:space="preserve"><value>规范 BN 节点编辑器</value></data>
+  <data name="Bn_OperationBlocked" xml:space="preserve"><value>BN 操作受阻</value></data>
+  <data name="Bn_NodeRole" xml:space="preserve"><value>BN 节点角色</value></data>
+  <data name="Bn_ScientificStatus" xml:space="preserve"><value>科学状态</value></data>
+  <data name="Bn_ReportingMetadata" xml:space="preserve"><value>报告元数据 JSON</value></data>
+  <data name="Bn_SaveBoundary" xml:space="preserve"><value>保存边界</value></data>
+  <data name="Bn_SaveBoundaryDescription" xml:space="preserve"><value>常规文本和元数据在 350 毫秒后自动保存。状态、父节点和 CPT 更改仍通过显式原子后端操作完成，因为它们还会迁移依赖概率表。</value></data>
+  <data name="Bn_ParentsChildren" xml:space="preserve"><value>固定父节点 / 子节点</value></data>
+  <data name="Bn_ParentDirection" xml:space="preserve"><value>规范方向：父节点 → 子节点</value></data>
+  <data name="Bn_ParentDirectionDescription" xml:space="preserve"><value>每个可见 BN 节点都拥有一个固定有序父节点列表。添加、移除或重排父节点会发送一次后端操作，原子迁移 CPT 各轴。</value></data>
+  <data name="Bn_NewParent" xml:space="preserve"><value>新父节点</value></data>
+  <data name="Bn_CptMigration" xml:space="preserve"><value>CPT 迁移</value></data>
+  <data name="Bn_AddParent" xml:space="preserve"><value>原子添加父节点</value></data>
+  <data name="Bn_OrderedParent" xml:space="preserve"><value>有序固定父节点</value></data>
+  <data name="Bn_RemovalMigration" xml:space="preserve"><value>移除迁移</value></data>
+  <data name="Bn_MarginalWeights" xml:space="preserve"><value>边缘化权重（可选）</value></data>
+  <data name="Bn_MoveUp" xml:space="preserve"><value>上移</value></data>
+  <data name="Bn_MoveDown" xml:space="preserve"><value>下移</value></data>
+  <data name="Bn_Remove" xml:space="preserve"><value>移除</value></data>
+  <data name="Bn_Children" xml:space="preserve"><value>子节点 / 下游使用者</value></data>
+  <data name="Bn_States" xml:space="preserve"><value>状态</value></data>
+  <data name="Bn_StateMigration" xml:space="preserve"><value>原子状态迁移</value></data>
+  <data name="Bn_StateMigrationDescription" xml:space="preserve"><value>更改状态 ID 会改变此节点自己的 CPT 轴以及每个直接子节点的父轴。提交由一个后端事务完成，并明确将所有受影响 CPT 标记为不完整，等待专家修复。</value></data>
+  <data name="Bn_CptGenerator" xml:space="preserve"><value>CPT / 生成器</value></data>
+  <data name="Bn_PosteriorInfluence" xml:space="preserve"><value>后验 / 影响</value></data>
+  <data name="Bn_ReadOnlyInference" xml:space="preserve"><value>只读推理叠加层</value></data>
+  <data name="Bn_NoRunResult" xml:space="preserve"><value>此编辑窗口尚未关联已执行的评估结果。</value></data>
+  <data name="Cpt_BackendOwned" xml:space="preserve"><value>后端持有的 CPT</value></data>
+  <data name="Cpt_OperationBlocked" xml:space="preserve"><value>CPT 操作受阻</value></data>
+  <data name="Cpt_ExpandGrid" xml:space="preserve"><value>展开表格</value></data>
+  <data name="Cpt_SaveRows" xml:space="preserve"><value>保存完整行批次</value></data>
+  <data name="Cpt_ParentAssignment" xml:space="preserve"><value>有序父节点赋值</value></data>
+  <data name="Cpt_RowCheck" xml:space="preserve"><value>技术行校验</value></data>
+  <data name="Cpt_Normalize" xml:space="preserve"><value>归一化</value></data>
+  <data name="Cpt_PasteBlock" xml:space="preserve"><value>粘贴矩形概率块</value></data>
+  <data name="Cpt_PasteDescription" xml:space="preserve"><value>可粘贴制表符分隔的 Excel 单元格，或逗号/空格分隔的行。索引从零开始；无效或非矩形数据会在任何后端调用前被拒绝。</value></data>
+  <data name="Cpt_StartRow" xml:space="preserve"><value>起始行</value></data>
+  <data name="Cpt_StartColumn" xml:space="preserve"><value>起始列</value></data>
+  <data name="Cpt_ApplyLocally" xml:space="preserve"><value>在本地应用数据块</value></data>
+  <data name="Cpt_ProbabilityBlock" xml:space="preserve"><value>概率数据块</value></data>
+  <data name="Cpt_BackendGenerator" xml:space="preserve"><value>后端 CPT 生成器</value></data>
+  <data name="Cpt_GeneratorDescription" xml:space="preserve"><value>uniform 和 ranked 是后端生成器。此界面只发送类型化参数，并用后端返回的规范表格替换当前内容。</value></data>
+  <data name="Cpt_Strategy" xml:space="preserve"><value>策略</value></data>
+  <data name="Cpt_RankedWeights" xml:space="preserve"><value>有序父节点权重（可选）</value></data>
+  <data name="Cpt_WeakestLink" xml:space="preserve"><value>最弱环节强度</value></data>
+  <data name="Cpt_Sigma" xml:space="preserve"><value>Sigma</value></data>
+  <data name="Cpt_Materialize" xml:space="preserve"><value>在后端生成</value></data>
+  <data name="Project_NoOpenProject" xml:space="preserve"><value>当前没有打开受管项目。</value></data>
+  <data name="Project_NoProjectFolder" xml:space="preserve"><value>没有项目文件夹</value></data>
+  <data name="Project_StatusStart" xml:space="preserve"><value>创建可迁移的受管项目，或打开现有项目。</value></data>
+  <data name="Project_StatusCreateCancelled" xml:space="preserve"><value>已取消项目文件夹选择；没有发生更改。</value></data>
+  <data name="Project_StatusCreated" xml:space="preserve"><value>受管项目已根据后端规范描述符创建并打开。</value></data>
+  <data name="Project_StatusOpenCancelled" xml:space="preserve"><value>已取消打开项目；当前项目未改变。</value></data>
+  <data name="Project_StatusClosed" xml:space="preserve"><value>项目已关闭。最近项目条目只是本地快捷方式。</value></data>
+  <data name="Project_StatusAlreadyOpen" xml:space="preserve"><value>该受管项目已经打开。</value></data>
+  <data name="Project_StatusOpened" xml:space="preserve"><value>受管项目已打开；规范 Session 已从 SQLite 重新载入。</value></data>
+  <data name="Project_StatusFailed" xml:space="preserve"><value>项目操作未完成。</value></data>
+  <data name="Session_StatusStart" xml:space="preserve"><value>请先打开受管项目，再检查并导入 Session Bundle。</value></data>
+  <data name="Session_NotInspected" xml:space="preserve"><value>尚未检查</value></data>
+  <data name="Session_NoInspectionReport" xml:space="preserve"><value>尚未载入检查报告。</value></data>
+  <data name="Session_NoReportLoaded" xml:space="preserve"><value>尚未载入报告</value></data>
+  <data name="Session_InspectBundle" xml:space="preserve"><value>检查 Session Bundle</value></data>
+  <data name="Session_StatusSelectionCancelled" xml:space="preserve"><value>已取消 Session 选择；没有发生更改。</value></data>
+  <data name="Session_InspectBeforeImport" xml:space="preserve"><value>请先检查此来源，再执行导入。</value></data>
+  <data name="Session_SourceNotInspected" xml:space="preserve"><value>来源尚未检查</value></data>
+  <data name="Session_StatusInspectionReadOnly" xml:space="preserve"><value>检查操作为只读；导入会把此 Bundle 的完全一致副本复制到项目受管存储。</value></data>
+  <data name="Session_StatusImportReplayed" xml:space="preserve"><value>已根据幂等导入回执对齐现有受管修订。</value></data>
+  <data name="Session_StatusImportComplete" xml:space="preserve"><value>导入完成。来源仍在外部；受管修订是项目中的完全一致副本。</value></data>
+  <data name="Session_NoManagedRevision" xml:space="preserve"><value>未选择受管修订</value></data>
+  <data name="Session_ArtifactBytes" xml:space="preserve"><value>{0} · {1:N0} 字节</value></data>
+  <data name="Session_StoredReportUnavailable" xml:space="preserve"><value>存储的报告不可用</value></data>
+  <data name="Session_StoredReportReferenceOnly" xml:space="preserve"><value>存储的报告仅有引用</value></data>
+  <data name="Session_ReferencePreserved" xml:space="preserve"><value>规范产物引用已保留；没有载入大型数据载荷。</value></data>
+  <data name="Session_ReportNotInline" xml:space="preserve"><value>报告未内联载入</value></data>
+  <data name="Session_StoredReportLoadFailed" xml:space="preserve"><value>无法载入已存储报告</value></data>
+  <data name="Session_ReportSummary" xml:space="preserve"><value>{0} · Session {1} · 正式运行授权：{2}</value></data>
+  <data name="Session_NoIngestionIssues" xml:space="preserve"><value>未报告导入问题。</value></data>
+  <data name="Session_NoCanonicalStream" xml:space="preserve"><value>没有规范数据流结果</value></data>
+  <data name="Session_Rows" xml:space="preserve"><value>{0:N0} 行</value></data>
+  <data name="Session_NoExportedContent" xml:space="preserve"><value>未检查到已导出内容</value></data>
+  <data name="Session_NotAvailable" xml:space="preserve"><value>不可用</value></data>
+  <data name="Session_NotGenerated" xml:space="preserve"><value>尚未生成</value></data>
+  <data name="Session_StatusNoManaged" xml:space="preserve"><value>此项目尚无受管 Session。</value></data>
+  <data name="Session_StatusLoaded" xml:space="preserve"><value>已载入 {0} 个受管 Session。</value></data>
+  <data name="Session_StatusFailed" xml:space="preserve"><value>项目/Session 操作未完成。</value></data>
+  <data name="Modality_X_Name" xml:space="preserve"><value>飞行状态</value></data>
+  <data name="Modality_X_Family" xml:space="preserve"><value>仿真器状态 X(t)</value></data>
+  <data name="Modality_U_Name" xml:space="preserve"><value>控制输入</value></data>
+  <data name="Modality_U_Family" xml:space="preserve"><value>飞行员操纵 U(t)</value></data>
+  <data name="Modality_I_Name" xml:space="preserve"><value>VR 视觉场景</value></data>
+  <data name="Modality_I_Family" xml:space="preserve"><value>飞行员视野 I(t)</value></data>
+  <data name="Modality_G_Name" xml:space="preserve"><value>注视与 AOI</value></data>
+  <data name="Modality_G_Family" xml:space="preserve"><value>眼动追踪 G(t)</value></data>
+  <data name="Modality_Camera_Name" xml:space="preserve"><value>飞行员相机</value></data>
+  <data name="Modality_Camera_Family" xml:space="preserve"><value>飞行员图像帧</value></data>
+  <data name="Modality_Physiology" xml:space="preserve"><value>生理信号 P(t)</value></data>
+  <data name="Task_StatusStart" xml:space="preserve"><value>请打开受管项目以载入并列任务方案。</value></data>
+  <data name="Task_StatusLoading" xml:space="preserve"><value>正在载入规范任务方案…</value></data>
+  <data name="Task_StatusLoaded" xml:space="preserve"><value>已载入 {0} 个规范任务方案。</value></data>
+  <data name="Task_StatusLoadFailed" xml:space="preserve"><value>无法载入任务方案。</value></data>
+  <data name="Task_StatusCreated" xml:space="preserve"><value>已创建新的并列任务方案。</value></data>
+  <data name="Task_StatusCopied" xml:space="preserve"><value>复制结果已成为独立可编辑任务。</value></data>
+  <data name="Task_StatusRenamed" xml:space="preserve"><value>任务方案名称已由后端自动保存。</value></data>
+  <data name="Task_StatusArchived" xml:space="preserve"><value>任务方案已归档；没有覆盖其他方案。</value></data>
+  <data name="Task_StatusSaving" xml:space="preserve"><value>正在通过规范后端保存…</value></data>
+  <data name="Task_StatusChangeFailed" xml:space="preserve"><value>任务方案更改未完成。</value></data>
+  <data name="Model_StatusLoading" xml:space="preserve"><value>正在载入 {0} 的规范模型图…</value></data>
+  <data name="Model_GraphSummary" xml:space="preserve"><value>{0} 个全局节点，{1} 条规范边；{3} 中启用 {2} 个节点。</value></data>
+  <data name="Model_StatusLoadFailed" xml:space="preserve"><value>无法载入模型图。</value></data>
+  <data name="Model_StatusCreatingNode" xml:space="preserve"><value>正在通过规范后端创建完整可编辑节点…</value></data>
+  <data name="Model_StatusNodeCreatedActive" xml:space="preserve"><value>新节点已在此任务中启用；后端已自动闭合固定父节点。</value></data>
+  <data name="Model_StatusNodeSavedInactive" xml:space="preserve"><value>节点已保存到全局库，但无法在当前任务中启用。</value></data>
+  <data name="Model_StatusNodeActivationRepair" xml:space="preserve"><value>节点已存在于全局库；请修正定义或重试任务启用操作。</value></data>
+  <data name="Model_StatusNodeCreateFailed" xml:space="preserve"><value>未能创建新节点。</value></data>
+  <data name="Model_StatusAlreadyActive" xml:space="preserve"><value>此节点已在当前任务中启用。</value></data>
+  <data name="Model_StatusActivating" xml:space="preserve"><value>正在启用节点及其固定父节点闭包…</value></data>
+  <data name="Model_StatusActivated" xml:space="preserve"><value>此节点及其所有固定父节点已在当前任务中启用。</value></data>
+  <data name="Model_StatusActivationFailed" xml:space="preserve"><value>任务启用操作未完成。</value></data>
+  <data name="Model_StatusAlreadyInactive" xml:space="preserve"><value>此节点已在当前任务中停用。</value></data>
+  <data name="Model_StatusImpactFailed" xml:space="preserve"><value>无法载入下游停用影响。</value></data>
+  <data name="Model_StatusDeactivationCancelled" xml:space="preserve"><value>已取消停用；没有向后端发送写操作。</value></data>
+  <data name="Model_StatusDeactivating" xml:space="preserve"><value>正在应用已确认的下游停用操作…</value></data>
+  <data name="Model_StatusDeactivated" xml:space="preserve"><value>该节点及受影响的下游节点仅在当前任务中停用。</value></data>
+  <data name="Model_StatusDeactivationFailed" xml:space="preserve"><value>未应用停用操作。如果方案已变化，请重新载入影响预览。</value></data>
+  <data name="Model_StatusCopiedCount" xml:space="preserve"><value>已复制 {0} 个完整节点。</value></data>
+  <data name="Model_StatusCopiedNode" xml:space="preserve"><value>已复制完整节点 {0}。</value></data>
+  <data name="Model_StatusNothingPasted" xml:space="preserve"><value>没有可粘贴内容。</value></data>
+  <data name="Model_StatusPasting" xml:space="preserve"><value>正在后端复制完整节点并保留其固定父节点…</value></data>
+  <data name="Model_StatusPasted" xml:space="preserve"><value>已粘贴并列完整节点；未覆盖原节点或固定父节点。</value></data>
+  <data name="Model_StatusPasteFailed" xml:space="preserve"><value>后端未能粘贴所复制节点。</value></data>
+  <data name="Model_StatusSavingLayout" xml:space="preserve"><value>正在自动保存模型图布局…</value></data>
+  <data name="Model_StatusLayoutSaved" xml:space="preserve"><value>模型图布局已保存。</value></data>
+  <data name="Model_StatusLayoutRestored" xml:space="preserve"><value>规范布局已恢复。</value></data>
+  <data name="Model_StatusLayoutConflict" xml:space="preserve"><value>布局编辑发生冲突，已从后端恢复。</value></data>
+  <data name="Model_StatusEdgeAdded" xml:space="preserve"><value>规范父边已添加。</value></data>
+  <data name="Model_StatusEdgeRemoved" xml:space="preserve"><value>规范父边已移除。</value></data>
+  <data name="Model_StatusSavingEdge" xml:space="preserve"><value>正在保存类型化边及其 CPT/配方迁移…</value></data>
+  <data name="Model_StatusEdgeFailed" xml:space="preserve"><value>未应用边编辑。</value></data>
+  <data name="Task_CreateDialog" xml:space="preserve"><value>创建任务方案</value></data>
+  <data name="Task_DefaultNewName" xml:space="preserve"><value>新任务方案</value></data>
+  <data name="Task_RenameDialog" xml:space="preserve"><value>重命名任务方案</value></data>
+  <data name="Task_ArchiveDialog" xml:space="preserve"><value>归档任务方案？</value></data>
+  <data name="Task_ArchiveDescription" xml:space="preserve"><value>{0} 将变为只读并从启用列表消失；其他任务方案不受影响。</value></data>
+  <data name="Task_OneLanguageRequired" xml:space="preserve"><value>至少填写一种语言</value></data>
+  <data name="Task_Save" xml:space="preserve"><value>保存</value></data>
+  <data name="Task_NotChanged" xml:space="preserve"><value>任务方案未更改</value></data>
+  <data name="Task_Close" xml:space="preserve"><value>关闭</value></data>
+  <data name="Dialog_DeactivateNoImpact" xml:space="preserve"><value>后端未发现需要更改的启用节点。</value></data>
+  <data name="Dialog_DeactivateImpactCount" xml:space="preserve"><value>后端发现当前任务中有 {0} 个节点将被停用：</value></data>
+  <data name="Dialog_NodeNameRequired" xml:space="preserve"><value>请输入英文或中文节点名称。</value></data>
+  <data name="Dialog_RemoveRawBinding" xml:space="preserve"><value>移除原始输入配方绑定？</value></data>
+  <data name="Dialog_AddRawBinding" xml:space="preserve"><value>添加原始输入配方绑定？</value></data>
+  <data name="Dialog_RemoveProbabilisticParent" xml:space="preserve"><value>移除概率父节点？</value></data>
+  <data name="Dialog_AddProbabilisticParent" xml:space="preserve"><value>添加概率父节点？</value></data>
+  <data name="Dialog_RemoveRawBindingDescription" xml:space="preserve"><value>后端会在一次操作中移除此提取边及其 EvidenceRecipe 输入绑定。</value></data>
+  <data name="Dialog_AddRawBindingDescription" xml:space="preserve"><value>后端会在一次操作中把此原始输入绑定加入 EvidenceRecipe；继续编辑期间配方可以保持不完整。</value></data>
+  <data name="Dialog_RemoveParentDescription" xml:space="preserve"><value>请选择移除此固定概率父节点时子节点 CPT 的迁移方式。</value></data>
+  <data name="Dialog_AddParentDescription" xml:space="preserve"><value>请选择添加此固定概率父节点时子节点 CPT 的扩展方式。</value></data>
+  <data name="Dialog_RemoveBinding" xml:space="preserve"><value>移除绑定</value></data>
+  <data name="Dialog_AddBinding" xml:space="preserve"><value>添加绑定</value></data>
+  <data name="Dialog_Marginalize" xml:space="preserve"><value>边缘化 / 迁移</value></data>
+  <data name="Dialog_Preserve" xml:space="preserve"><value>保留 / 迁移</value></data>
+  <data name="Dialog_MarkCptIncomplete" xml:space="preserve"><value>将 CPT 标记为不完整</value></data>
+  <data name="Dialog_SelectNodeFirst" xml:space="preserve"><value>请先选择一个模型节点。</value></data>
+  <data name="Dialog_ModelCommandFailed" xml:space="preserve"><value>未应用模型命令</value></data>
+  <data name="Editor_UsageExplicit" xml:space="preserve"><value>显式启用</value></data>
+  <data name="Editor_UsageParentClosure" xml:space="preserve"><value>父节点闭包</value></data>
+  <data name="Editor_UsageOutputSuffix" xml:space="preserve"><value> · 输出节点</value></data>
+  <data name="Editor_HistoryLine" xml:space="preserve"><value>{0:yyyy-MM-dd HH:mm:ss} · {1} · 语义修订 {2}，布局修订 {3}</value></data>
+  <data name="Evidence_StatusLoading" xml:space="preserve"><value>正在载入 Evidence 编辑器元数据…</value></data>
+  <data name="Evidence_PreviewNone" xml:space="preserve"><value>尚未请求预览。</value></data>
+  <data name="Evidence_NoProbabilisticParents" xml:space="preserve"><value>没有概率父节点</value></data>
+  <data name="Evidence_CptSummary" xml:space="preserve"><value>{0} · {1} 行 · {2} 个观测状态</value></data>
+  <data name="Evidence_StatusLoaded" xml:space="preserve"><value>已载入 {0} 个可信算子、{1} 个任务引用和 {2} 条历史事件。</value></data>
+  <data name="Evidence_StatusLoadFailed" xml:space="preserve"><value>无法载入编辑器元数据：{0}</value></data>
+  <data name="Evidence_StatusBlocked" xml:space="preserve"><value>Evidence 操作被阻止：{0}</value></data>
+  <data name="Evidence_StatusStatesSaved" xml:space="preserve"><value>规范观测状态已保存；{0} 个受影响的 CPT 定义已明确标记为不完整且可修复。</value></data>
+  <data name="Evidence_PreviewSelectSession" xml:space="preserve"><value>请求预览前，请先选择一个受管 Session 修订。</value></data>
+  <data name="Evidence_PreviewRequesting" xml:space="preserve"><value>正在请求由后端冻结的节点预览快照…</value></data>
+  <data name="Evidence_PreviewCancelled" xml:space="preserve"><value>预览已取消。</value></data>
+  <data name="Evidence_PreviewSnapshot" xml:space="preserve"><value>快照 {0}&#xA;哈希：{1}&#xA;锁定启用节点：{2}&#xA;锁定算子身份：{3}&#xA;当前后端方法仅冻结精确的预览输入；Task 14 负责实际执行并展示结果产物。</value></data>
+  <data name="Evidence_PreviewBlocked" xml:space="preserve"><value>预览被阻止：{0}</value></data>
+  <data name="Evidence_MissingOperator" xml:space="preserve"><value>缺少：{0}</value></data>
+  <data name="Evidence_NoParameters" xml:space="preserve"><value>无参数</value></data>
+  <data name="Evidence_AllOperatorsInstalled" xml:space="preserve"><value>配方所需算子均已安装。</value></data>
+  <data name="Evidence_MissingOperators" xml:space="preserve"><value>技术运行阻断项：{0}</value></data>
+  <data name="Cpt_StatusLoaded" xml:space="preserve"><value>CPT 已从规范后端节点载入。</value></data>
+  <data name="Cpt_StatusNormalized" xml:space="preserve"><value>第 {0} 行已归一化；请保存 CPT 行以提交更改。</value></data>
+  <data name="Cpt_StatusPasted" xml:space="preserve"><value>已粘贴 {0} × {1} 的概率块。</value></data>
+  <data name="Cpt_StatusSavingRows" xml:space="preserve"><value>正在通过 Python 后端保存完整 CPT 行批次…</value></data>
+  <data name="Cpt_StatusRowsSaved" xml:space="preserve"><value>规范 CPT 行已保存并完成对齐。</value></data>
+  <data name="Cpt_StatusRequestingMaterialization" xml:space="preserve"><value>正在请求 Python 进行 {0} CPT 实体化…</value></data>
+  <data name="Cpt_StatusMaterialized" xml:space="preserve"><value>规范 {0} CPT 已实体化并完成对齐。</value></data>
+  <data name="Cpt_ModeSummary" xml:space="preserve"><value>{0} · {1} 行 · {2} 个子状态 · 需要 {3} 个单元格</value></data>
+  <data name="Cpt_ValidationValid" xml:space="preserve"><value>本地表格技术上有效：{0} 行 / {1} 个单元格。</value></data>
+  <data name="Cpt_ValidationInvalid" xml:space="preserve"><value>本地表格存在 {0} 个技术问题：{1}</value></data>
+  <data name="Bn_StatusLoading" xml:space="preserve"><value>正在载入 BN 编辑器元数据…</value></data>
+  <data name="Bn_PosteriorSummary" xml:space="preserve"><value>规范箭头表示 P(子节点 | 固定父节点)。后验/影响仅作为只读运行结果叠加层，不会反转或重写这些边；Task 14 展示实际执行产生的后验与影响产物。</value></data>
+  <data name="Bn_StatusLoaded" xml:space="preserve"><value>已载入 {0} 个固定父节点、{1} 个子节点、{2} 个任务引用和 {3} 条历史事件。</value></data>
+  <data name="Bn_StatusReplacingStates" xml:space="preserve"><value>正在替换状态，并以原子方式将所有受影响 CPT 标记为不完整…</value></data>
+  <data name="Bn_StatusStatesSaved" xml:space="preserve"><value>规范状态已保存；{0} 个节点 CPT 定义现已明确标记为不完整且可修复。</value></data>
+  <data name="Bn_StatusParentAdded" xml:space="preserve"><value>规范父节点已添加，并完成原子 CPT 迁移。</value></data>
+  <data name="Bn_StatusParentRemoved" xml:space="preserve"><value>规范父节点已移除，并完成原子 CPT 迁移。</value></data>
+  <data name="Bn_StatusParentsReordered" xml:space="preserve"><value>规范父节点顺序与 CPT 轴已原子重排。</value></data>
+  <data name="Node_TechnicalExecutable" xml:space="preserve"><value>可执行</value></data>
+  <data name="Node_TechnicalIncomplete" xml:space="preserve"><value>不完整</value></data>
+  <data name="Node_TechnicalBlocked" xml:space="preserve"><value>已阻止</value></data>
+  <data name="Node_ConflictNewer" xml:space="preserve"><value>后端存在更新的节点修订。请重新载入，或基于该修订重新应用当前编辑意图。</value></data>
+  <data name="Node_ConflictRevision" xml:space="preserve"><value>当前规范修订为 {0}。请重新载入，或重新应用编辑意图。</value></data>
+  <data name="Node_ConflictLoadFailed" xml:space="preserve"><value>无法载入当前规范节点：{0}</value></data>
+  <data name="Node_EvidenceMetadataError" xml:space="preserve"><value>Evidence 编辑器元数据错误 · {0}</value></data>
+  <data name="Node_BnMetadataError" xml:space="preserve"><value>BN 编辑器元数据错误 · {0}</value></data>
+</root>

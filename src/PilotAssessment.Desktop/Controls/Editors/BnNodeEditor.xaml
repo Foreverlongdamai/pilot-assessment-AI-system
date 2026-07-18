@@ -10,16 +10,16 @@
             IsOpen="True"
             Message="{Binding StatusMessage}"
             Severity="Informational"
-            Title="Canonical BN node editor" />
+            Title="{Binding [Bn_CanonicalEditor], Source={StaticResource Localization}}" />
         <InfoBar
             x:Name="ErrorBar"
             IsClosable="True"
             IsOpen="False"
             Severity="Error"
-            Title="BN operation blocked" />
+            Title="{Binding [Bn_OperationBlocked], Source={StaticResource Localization}}" />
 
         <TabView MinHeight="640">
-            <TabViewItem Header="General">
+            <TabViewItem Header="{Binding [Editor_General], Source={StaticResource Localization}}">
                 <ScrollViewer Padding="4,12">
                     <StackPanel Spacing="12">
                         <Grid ColumnSpacing="12" RowSpacing="10">
@@ -33,43 +33,43 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <TextBox Header="English name" Text="{Binding NameEn, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Column="1" Header="中文名称" Text="{Binding NameZh, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Row="1" Header="English description" Text="{Binding DescriptionEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Header="中文说明" Text="{Binding DescriptionZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                            <TextBox Grid.Row="2" Header="Group" Text="{Binding Group, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Row="2" Grid.Column="1" Header="Tags (comma/newline separated)" Text="{Binding TagsText, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <ComboBox Grid.Row="3" Header="BN node role" ItemsSource="{Binding NodeRoles}" SelectedItem="{Binding NodeRole, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
-                            <ComboBox Grid.Row="3" Grid.Column="1" Header="Scientific status" ItemsSource="{Binding ScientificStatuses}" SelectedItem="{Binding ScientificStatus, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
+                            <TextBox Header="{Binding [Editor_EnglishName], Source={StaticResource Localization}}" Text="{Binding NameEn, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Column="1" Header="{Binding [Editor_ChineseName], Source={StaticResource Localization}}" Text="{Binding NameZh, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="1" Header="{Binding [Editor_EnglishDescription], Source={StaticResource Localization}}" Text="{Binding DescriptionEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Header="{Binding [Editor_ChineseDescription], Source={StaticResource Localization}}" Text="{Binding DescriptionZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Row="2" Header="{Binding [Common_Group], Source={StaticResource Localization}}" Text="{Binding Group, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="2" Grid.Column="1" Header="{Binding [Editor_TagsSeparated], Source={StaticResource Localization}}" Text="{Binding TagsText, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <ComboBox Grid.Row="3" Header="{Binding [Bn_NodeRole], Source={StaticResource Localization}}" ItemsSource="{Binding NodeRoles}" SelectedItem="{Binding NodeRole, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
+                            <ComboBox Grid.Row="3" Grid.Column="1" Header="{Binding [Bn_ScientificStatus], Source={StaticResource Localization}}" ItemsSource="{Binding ScientificStatuses}" SelectedItem="{Binding ScientificStatus, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
                         </Grid>
-                        <TextBox AcceptsReturn="True" Header="Documentation" MinHeight="110" Text="{Binding Documentation, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                        <TextBox AcceptsReturn="True" Header="Reporting metadata JSON" MinHeight="130" FontFamily="Consolas" Text="{Binding ReportingMetadataJson, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                        <TextBox AcceptsReturn="True" Header="{Binding [Common_Documentation], Source={StaticResource Localization}}" MinHeight="110" Text="{Binding Documentation, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        <TextBox AcceptsReturn="True" Header="{Binding [Bn_ReportingMetadata], Source={StaticResource Localization}}" MinHeight="130" FontFamily="Consolas" Text="{Binding ReportingMetadataJson, Mode=TwoWay}" TextChanged="OnFieldChanged" />
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBox AcceptsReturn="True" Header="English help" MinHeight="110" Text="{Binding HelpTextEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                            <TextBox Grid.Column="1" AcceptsReturn="True" Header="中文帮助" MinHeight="110" Text="{Binding HelpTextZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox AcceptsReturn="True" Header="{Binding [Editor_EnglishHelp], Source={StaticResource Localization}}" MinHeight="110" Text="{Binding HelpTextEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Column="1" AcceptsReturn="True" Header="{Binding [Editor_ChineseHelp], Source={StaticResource Localization}}" MinHeight="110" Text="{Binding HelpTextZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                         </Grid>
-                        <InfoBar IsClosable="False" IsOpen="True" Message="General text and metadata autosave after 350 ms. State, parent and CPT changes remain explicit atomic backend operations because they also migrate dependent probability tables." Severity="Informational" Title="Save boundary" />
+                        <InfoBar IsClosable="False" IsOpen="True" Message="{Binding [Bn_SaveBoundaryDescription], Source={StaticResource Localization}}" Severity="Informational" Title="{Binding [Bn_SaveBoundary], Source={StaticResource Localization}}" />
                     </StackPanel>
                 </ScrollViewer>
             </TabViewItem>
 
-            <TabViewItem Header="Fixed parents / children">
+            <TabViewItem Header="{Binding [Bn_ParentsChildren], Source={StaticResource Localization}}">
                 <ScrollViewer Padding="4,12">
                     <StackPanel Spacing="14">
-                        <InfoBar IsClosable="False" IsOpen="True" Message="Every visible BN node owns one fixed ordered parent list. Adding, removing or reordering a parent sends one backend operation that migrates the CPT axes atomically." Severity="Informational" Title="Canonical direction: parent → child" />
+                        <InfoBar IsClosable="False" IsOpen="True" Message="{Binding [Bn_ParentDirectionDescription], Source={StaticResource Localization}}" Severity="Informational" Title="{Binding [Bn_ParentDirection], Source={StaticResource Localization}}" />
                         <Grid ColumnSpacing="10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="210" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <ComboBox Header="New parent" DisplayMemberPath="Label" ItemsSource="{Binding ParentCandidates}" SelectedItem="{Binding SelectedParentCandidate, Mode=TwoWay}" />
-                            <ComboBox Grid.Column="1" Header="CPT migration" ItemsSource="{Binding AddParentStrategies}" SelectedItem="{Binding AddParentStrategy, Mode=TwoWay}" />
-                            <Button Grid.Column="2" VerticalAlignment="Bottom" Click="OnAddParentClick" Content="Add parent atomically" />
+                            <ComboBox Header="{Binding [Bn_NewParent], Source={StaticResource Localization}}" DisplayMemberPath="Label" ItemsSource="{Binding ParentCandidates}" SelectedItem="{Binding SelectedParentCandidate, Mode=TwoWay}" />
+                            <ComboBox Grid.Column="1" Header="{Binding [Bn_CptMigration], Source={StaticResource Localization}}" ItemsSource="{Binding AddParentStrategies}" SelectedItem="{Binding AddParentStrategy, Mode=TwoWay}" />
+                            <Button Grid.Column="2" VerticalAlignment="Bottom" Click="OnAddParentClick" Content="{Binding [Bn_AddParent], Source={StaticResource Localization}}" />
                         </Grid>
                         <Grid ColumnSpacing="10">
                             <Grid.ColumnDefinitions>
@@ -80,26 +80,26 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <ComboBox Header="Ordered fixed parent" DisplayMemberPath="Label" ItemsSource="{Binding Parents}" SelectedItem="{Binding SelectedParent, Mode=TwoWay}" />
-                            <ComboBox Grid.Column="1" Header="Removal migration" ItemsSource="{Binding RemoveParentStrategies}" SelectedItem="{Binding RemoveParentStrategy, Mode=TwoWay}" />
-                            <TextBox Grid.Column="2" Header="Marginal weights (optional)" Text="{Binding MarginalWeightsText, Mode=TwoWay}" />
-                            <Button Grid.Column="3" VerticalAlignment="Bottom" Click="OnMoveParentUpClick" Content="Move up" />
-                            <Button Grid.Column="4" VerticalAlignment="Bottom" Click="OnMoveParentDownClick" Content="Move down" />
-                            <Button Grid.Column="5" VerticalAlignment="Bottom" Click="OnRemoveParentClick" Content="Remove" />
+                            <ComboBox Header="{Binding [Bn_OrderedParent], Source={StaticResource Localization}}" DisplayMemberPath="Label" ItemsSource="{Binding Parents}" SelectedItem="{Binding SelectedParent, Mode=TwoWay}" />
+                            <ComboBox Grid.Column="1" Header="{Binding [Bn_RemovalMigration], Source={StaticResource Localization}}" ItemsSource="{Binding RemoveParentStrategies}" SelectedItem="{Binding RemoveParentStrategy, Mode=TwoWay}" />
+                            <TextBox Grid.Column="2" Header="{Binding [Bn_MarginalWeights], Source={StaticResource Localization}}" Text="{Binding MarginalWeightsText, Mode=TwoWay}" />
+                            <Button Grid.Column="3" VerticalAlignment="Bottom" Click="OnMoveParentUpClick" Content="{Binding [Bn_MoveUp], Source={StaticResource Localization}}" />
+                            <Button Grid.Column="4" VerticalAlignment="Bottom" Click="OnMoveParentDownClick" Content="{Binding [Bn_MoveDown], Source={StaticResource Localization}}" />
+                            <Button Grid.Column="5" VerticalAlignment="Bottom" Click="OnRemoveParentClick" Content="{Binding [Bn_Remove], Source={StaticResource Localization}}" />
                         </Grid>
-                        <TextBlock FontWeight="SemiBold" Text="Children / downstream consumers" />
+                        <TextBlock FontWeight="SemiBold" Text="{Binding [Bn_Children], Source={StaticResource Localization}}" />
                         <ListView MaxHeight="260" ItemsSource="{Binding Children}" />
                     </StackPanel>
                 </ScrollViewer>
             </TabViewItem>
 
-            <TabViewItem Header="States">
+            <TabViewItem Header="{Binding [Bn_States], Source={StaticResource Localization}}">
                 <StackPanel Padding="4,12" Spacing="10">
-                    <InfoBar IsClosable="False" IsOpen="True" Message="Changing state IDs changes this node's own CPT axis and every direct child's parent axis. The commit is one backend transaction and explicitly marks all affected CPTs incomplete for expert repair." Severity="Warning" Title="Atomic state migration" />
+                    <InfoBar IsClosable="False" IsOpen="True" Message="{Binding [Bn_StateMigrationDescription], Source={StaticResource Localization}}" Severity="Warning" Title="{Binding [Bn_StateMigration], Source={StaticResource Localization}}" />
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Click="OnAddStateClick" Content="Add state" />
-                        <Button Click="OnRemoveStateClick" Content="Remove selected" />
-                        <Button Click="OnCommitStatesClick" Content="Commit states + mark affected CPTs incomplete" />
+                        <Button Click="OnAddStateClick" Content="{Binding [Editor_AddState], Source={StaticResource Localization}}" />
+                        <Button Click="OnRemoveStateClick" Content="{Binding [Editor_RemoveSelected], Source={StaticResource Localization}}" />
+                        <Button Click="OnCommitStatesClick" Content="{Binding [Editor_CommitStates], Source={StaticResource Localization}}" />
                     </StackPanel>
                     <ListView x:Name="StateList" ItemsSource="{Binding States}">
                         <ListView.ItemTemplate>
@@ -110,9 +110,9 @@
                                         <ColumnDefinition Width="220" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBox Header="State ID" Text="{Binding StateId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnFieldChanged" />
-                                    <TextBox Grid.Column="1" Header="Label" Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnFieldChanged" />
-                                    <TextBox Grid.Column="2" Header="Description" Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                                    <TextBox Header="{Binding [Editor_StateId], Source={StaticResource Localization}}" Text="{Binding StateId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnFieldChanged" />
+                                    <TextBox Grid.Column="1" Header="{Binding [Editor_Label], Source={StaticResource Localization}}" Text="{Binding Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnFieldChanged" />
+                                    <TextBox Grid.Column="2" Header="{Binding [Common_Description], Source={StaticResource Localization}}" Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -120,29 +120,29 @@
                 </StackPanel>
             </TabViewItem>
 
-            <TabViewItem Header="CPT / generator">
+            <TabViewItem Header="{Binding [Bn_CptGenerator], Source={StaticResource Localization}}">
                 <ScrollViewer Padding="4,12" HorizontalScrollBarVisibility="Auto">
                     <editors:CptGridEditor x:Name="CptGrid" />
                 </ScrollViewer>
             </TabViewItem>
 
-            <TabViewItem Header="Posterior / influence">
+            <TabViewItem Header="{Binding [Bn_PosteriorInfluence], Source={StaticResource Localization}}">
                 <StackPanel Padding="4,12" Spacing="10">
-                    <InfoBar IsClosable="False" IsOpen="True" Message="{Binding PosteriorSummary}" Severity="Informational" Title="Read-only inference overlay" />
-                    <TextBlock Text="No executed run result is attached to this editor window yet." />
+                    <InfoBar IsClosable="False" IsOpen="True" Message="{Binding PosteriorSummary}" Severity="Informational" Title="{Binding [Bn_ReadOnlyInference], Source={StaticResource Localization}}" />
+                    <TextBlock Text="{Binding [Bn_NoRunResult], Source={StaticResource Localization}}" />
                 </StackPanel>
             </TabViewItem>
 
-            <TabViewItem Header="Used by schemes">
+            <TabViewItem Header="{Binding [Editor_UsedBySchemes], Source={StaticResource Localization}}">
                 <StackPanel Padding="4,12" Spacing="8">
-                    <InfoBar IsClosable="False" IsOpen="True" Message="This is one shared complete node. Canonical changes affect future runs in every listed task scheme; historical RunSnapshots remain immutable." Severity="Warning" Title="Shared node impact" />
+                    <InfoBar IsClosable="False" IsOpen="True" Message="{Binding [Editor_SharedImpactDescription], Source={StaticResource Localization}}" Severity="Warning" Title="{Binding [Editor_SharedImpact], Source={StaticResource Localization}}" />
                     <ListView ItemsSource="{Binding UsedBySchemes}" />
                 </StackPanel>
             </TabViewItem>
 
-            <TabViewItem Header="History">
+            <TabViewItem Header="{Binding [Editor_History], Source={StaticResource Localization}}">
                 <StackPanel Padding="4,12" Spacing="8">
-                    <TextBlock Opacity="0.72" Text="Canonical change events are read from the backend history journal." />
+                    <TextBlock Opacity="0.72" Text="{Binding [Editor_HistoryDescription], Source={StaticResource Localization}}" />
                     <ListView ItemsSource="{Binding HistoryItems}" />
                 </StackPanel>
             </TabViewItem>

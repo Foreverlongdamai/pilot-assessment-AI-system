@@ -35,10 +35,10 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Spacing="2">
-                    <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="Model Studio" />
+                    <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{Binding [Model_Title], Source={StaticResource Localization}}" />
                     <TextBlock
                         Opacity="0.68"
-                        Text="Global complete nodes • current task activation"
+                        Text="{Binding [Model_Subtitle], Source={StaticResource Localization}}"
                         TextWrapping="Wrap" />
                 </StackPanel>
                 <ScrollViewer
@@ -50,32 +50,32 @@
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBox
                             Width="210"
-                            AutomationProperties.Name="Search model nodes"
-                            PlaceholderText="Search nodes"
+                            AutomationProperties.Name="{Binding [Model_SearchA11y], Source={StaticResource Localization}}"
+                            PlaceholderText="{Binding [Model_SearchPlaceholder], Source={StaticResource Localization}}"
                             TextChanged="OnSearchTextChanged" />
                         <ComboBox
                             Width="150"
-                            AutomationProperties.Name="Graph visibility mode"
+                            AutomationProperties.Name="{Binding [Model_ViewModeA11y], Source={StaticResource Localization}}"
                             ItemsSource="{x:Bind ViewModel.ViewModes}"
                             SelectedItem="{x:Bind ViewModel.SelectedViewMode, Mode=TwoWay}" />
                         <ComboBox
                             Width="135"
-                            AutomationProperties.Name="Node kind filter"
+                            AutomationProperties.Name="{Binding [Model_KindFilterA11y], Source={StaticResource Localization}}"
                             ItemsSource="{x:Bind ViewModel.KindOptions}"
                             SelectedItem="{x:Bind ViewModel.SelectedKind, Mode=TwoWay}" />
                         <ComboBox
                             Width="155"
-                            AutomationProperties.Name="Activation filter"
+                            AutomationProperties.Name="{Binding [Model_ActivationFilterA11y], Source={StaticResource Localization}}"
                             ItemsSource="{x:Bind ViewModel.ActivationOptions}"
                             SelectedItem="{x:Bind ViewModel.SelectedActivation, Mode=TwoWay}" />
                         <ComboBox
                             Width="135"
-                            AutomationProperties.Name="Node group filter"
+                            AutomationProperties.Name="{Binding [Model_GroupFilterA11y], Source={StaticResource Localization}}"
                             ItemsSource="{x:Bind ViewModel.AvailableGroups}"
                             SelectedItem="{x:Bind ViewModel.SelectedGroup, Mode=TwoWay}" />
                         <ComboBox
                             Width="125"
-                            AutomationProperties.Name="Node tag filter"
+                            AutomationProperties.Name="{Binding [Model_TagFilterA11y], Source={StaticResource Localization}}"
                             ItemsSource="{x:Bind ViewModel.AvailableTags}"
                             SelectedItem="{x:Bind ViewModel.SelectedTag, Mode=TwoWay}" />
                     </StackPanel>
@@ -85,30 +85,30 @@
                     Background="Transparent"
                     DefaultLabelPosition="Collapsed"
                     IsDynamicOverflowEnabled="True">
-                    <AppBarButton Icon="Add" Label="New node">
+                    <AppBarButton Icon="Add" Label="{Binding [Model_NewNode], Source={StaticResource Localization}}">
                         <AppBarButton.Flyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Click="OnCreateRawInputClick" Text="New Raw Input" />
-                                <MenuFlyoutItem Click="OnCreateEvidenceClick" Text="New Evidence" />
-                                <MenuFlyoutItem Click="OnCreateBnClick" Text="New BN node" />
+                                <MenuFlyoutItem Click="OnCreateRawInputClick" Text="{Binding [Model_NewRawInput], Source={StaticResource Localization}}" />
+                                <MenuFlyoutItem Click="OnCreateEvidenceClick" Text="{Binding [Model_NewEvidence], Source={StaticResource Localization}}" />
+                                <MenuFlyoutItem Click="OnCreateBnClick" Text="{Binding [Model_NewBn], Source={StaticResource Localization}}" />
                             </MenuFlyout>
                         </AppBarButton.Flyout>
                     </AppBarButton>
                     <AppBarButton
-                        AutomationProperties.Name="Open selected node details"
+                        AutomationProperties.Name="{Binding [Model_OpenDetailsA11y], Source={StaticResource Localization}}"
                         Click="OnOpenSelectionClick"
                         Icon="OpenFile"
-                        Label="Open details" />
-                    <AppBarButton Click="OnActivateSelectionClick" Icon="Accept" Label="Activate" />
-                    <AppBarButton Click="OnDeactivateSelectionClick" Icon="Remove" Label="Deactivate" />
-                    <AppBarButton Click="OnCopySelectionClick" Icon="Copy" Label="Copy" />
-                    <AppBarButton Click="OnPasteClick" Icon="Paste" Label="Paste" />
+                        Label="{Binding [Model_OpenDetails], Source={StaticResource Localization}}" />
+                    <AppBarButton Click="OnActivateSelectionClick" Icon="Accept" Label="{Binding [Model_Activate], Source={StaticResource Localization}}" />
+                    <AppBarButton Click="OnDeactivateSelectionClick" Icon="Remove" Label="{Binding [Model_Deactivate], Source={StaticResource Localization}}" />
+                    <AppBarButton Click="OnCopySelectionClick" Icon="Copy" Label="{Binding [Common_Copy], Source={StaticResource Localization}}" />
+                    <AppBarButton Click="OnPasteClick" Icon="Paste" Label="{Binding [Model_Paste], Source={StaticResource Localization}}" />
                     <AppBarToggleButton
-                        AutomationProperties.Name="Toggle multi-select"
+                        AutomationProperties.Name="{Binding [Model_MultiSelectA11y], Source={StaticResource Localization}}"
                         Icon="SelectAll"
                         IsChecked="{x:Bind ViewModel.IsMultiSelect, Mode=TwoWay}"
-                        Label="Multi-select" />
-                    <AppBarButton Click="OnClearSelectionClick" Icon="Clear" Label="Clear selection" />
+                        Label="{Binding [Model_MultiSelect], Source={StaticResource Localization}}" />
+                    <AppBarButton Click="OnClearSelectionClick" Icon="Clear" Label="{Binding [Model_ClearSelection], Source={StaticResource Localization}}" />
                 </CommandBar>
             </Grid>
 
@@ -123,7 +123,7 @@
                         IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}"
                         Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
                         Severity="Error"
-                        Title="Graph load failed" />
+                        Title="{Binding [Model_GraphLoadFailed], Source={StaticResource Localization}}" />
                     <TextBlock
                         FontSize="12"
                         Opacity="0.72"

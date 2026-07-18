@@ -7,7 +7,7 @@
         <TextBlock
             x:Name="EmptyText"
             Opacity="0.68"
-            Text="Select an installed operator node to edit its schema-driven parameters."
+            Text="{Binding [Editor_SelectOperatorParameters], Source={StaticResource Localization}}"
             TextWrapping="Wrap" />
     </StackPanel>
 </UserControl>

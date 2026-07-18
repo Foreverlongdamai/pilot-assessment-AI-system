@@ -9,13 +9,13 @@
             IsOpen="True"
             Message="{Binding StatusMessage}"
             Severity="Informational"
-            Title="Backend-owned CPT" />
+            Title="{Binding [Cpt_BackendOwned], Source={StaticResource Localization}}" />
         <InfoBar
             x:Name="ErrorBar"
             IsClosable="True"
             IsOpen="False"
             Severity="Error"
-            Title="CPT operation blocked" />
+            Title="{Binding [Cpt_OperationBlocked], Source={StaticResource Localization}}" />
 
         <Grid ColumnSpacing="10">
             <Grid.ColumnDefinitions>
@@ -27,8 +27,8 @@
                 <TextBlock FontWeight="SemiBold" Text="{Binding ModeSummary}" TextWrapping="Wrap" />
                 <TextBlock Opacity="0.72" Text="{Binding ValidationSummary}" TextWrapping="Wrap" />
             </StackPanel>
-            <Button Grid.Column="1" Click="OnToggleExpandedClick" Content="Expand grid" />
-            <Button Grid.Column="2" Click="OnSaveRowsClick" Content="Save complete row batch" />
+            <Button Grid.Column="1" Click="OnToggleExpandedClick" Content="{Binding [Cpt_ExpandGrid], Source={StaticResource Localization}}" />
+            <Button Grid.Column="2" Click="OnSaveRowsClick" Content="{Binding [Cpt_SaveRows], Source={StaticResource Localization}}" />
         </Grid>
 
         <Grid Padding="8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" ColumnSpacing="8">
@@ -37,7 +37,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="170" />
             </Grid.ColumnDefinitions>
-            <TextBlock FontWeight="SemiBold" Text="Ordered parent assignment" />
+            <TextBlock FontWeight="SemiBold" Text="{Binding [Cpt_ParentAssignment], Source={StaticResource Localization}}" />
             <ItemsRepeater Grid.Column="1" ItemsSource="{Binding Columns}">
                 <ItemsRepeater.Layout>
                     <StackLayout Orientation="Horizontal" Spacing="6" />
@@ -48,7 +48,7 @@
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>
-            <TextBlock Grid.Column="2" FontWeight="SemiBold" Text="Technical row check" />
+            <TextBlock Grid.Column="2" FontWeight="SemiBold" Text="{Binding [Cpt_RowCheck], Source={StaticResource Localization}}" />
         </Grid>
 
         <ListView
@@ -86,32 +86,32 @@
                             </ItemsRepeater.ItemTemplate>
                         </ItemsRepeater>
                         <TextBlock Grid.Column="2" VerticalAlignment="Center" Opacity="0.72" Text="{Binding RowStatus}" TextWrapping="Wrap" />
-                        <Button Grid.Column="3" Click="OnNormalizeRowClick" Content="Normalize" />
+                        <Button Grid.Column="3" Click="OnNormalizeRowClick" Content="{Binding [Cpt_Normalize], Source={StaticResource Localization}}" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-        <Expander Header="Paste a rectangular probability block">
+        <Expander Header="{Binding [Cpt_PasteBlock], Source={StaticResource Localization}}">
             <StackPanel Padding="0,10,0,0" Spacing="8">
-                <TextBlock Opacity="0.72" Text="Paste tab-separated Excel cells or comma/space-separated rows. Indices are zero-based; invalid or non-rectangular blocks are rejected before any backend call." TextWrapping="Wrap" />
+                <TextBlock Opacity="0.72" Text="{Binding [Cpt_PasteDescription], Source={StaticResource Localization}}" TextWrapping="Wrap" />
                 <Grid ColumnSpacing="8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="140" />
                         <ColumnDefinition Width="140" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="PasteStartRowBox" Header="Start row" Text="0" />
-                    <TextBox x:Name="PasteStartColumnBox" Grid.Column="1" Header="Start column" Text="0" />
-                    <Button Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="OnApplyPasteClick" Content="Apply block locally" />
+                    <TextBox x:Name="PasteStartRowBox" Header="{Binding [Cpt_StartRow], Source={StaticResource Localization}}" Text="0" />
+                    <TextBox x:Name="PasteStartColumnBox" Grid.Column="1" Header="{Binding [Cpt_StartColumn], Source={StaticResource Localization}}" Text="0" />
+                    <Button Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="OnApplyPasteClick" Content="{Binding [Cpt_ApplyLocally], Source={StaticResource Localization}}" />
                 </Grid>
-                <TextBox x:Name="PasteTextBox" AcceptsReturn="True" Header="Probability block" MinHeight="100" FontFamily="Consolas" />
+                <TextBox x:Name="PasteTextBox" AcceptsReturn="True" Header="{Binding [Cpt_ProbabilityBlock], Source={StaticResource Localization}}" MinHeight="100" FontFamily="Consolas" />
             </StackPanel>
         </Expander>
 
-        <Expander Header="Backend CPT generator">
+        <Expander Header="{Binding [Cpt_BackendGenerator], Source={StaticResource Localization}}">
             <StackPanel Padding="0,10,0,0" Spacing="8">
-                <TextBlock Opacity="0.72" Text="Uniform and ranked are backend generators. This UI only sends typed parameters and replaces itself with the canonical returned table." TextWrapping="Wrap" />
+                <TextBlock Opacity="0.72" Text="{Binding [Cpt_GeneratorDescription], Source={StaticResource Localization}}" TextWrapping="Wrap" />
                 <Grid ColumnSpacing="8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="180" />
@@ -120,11 +120,11 @@
                         <ColumnDefinition Width="150" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <ComboBox Header="Strategy" ItemsSource="{Binding MaterializationStrategies}" SelectedItem="{Binding MaterializationStrategy, Mode=TwoWay}" />
-                    <TextBox Grid.Column="1" Header="Ranked parent weights (optional)" Text="{Binding RankedWeightsText, Mode=TwoWay}" />
-                    <NumberBox Grid.Column="2" Header="Weakest link" Value="{Binding WeakestLinkStrength, Mode=TwoWay}" />
-                    <NumberBox Grid.Column="3" Header="Sigma" Value="{Binding Sigma, Mode=TwoWay}" />
-                    <Button Grid.Column="4" VerticalAlignment="Bottom" Click="OnMaterializeClick" Content="Materialize in backend" />
+                    <ComboBox Header="{Binding [Cpt_Strategy], Source={StaticResource Localization}}" ItemsSource="{Binding MaterializationStrategies}" SelectedItem="{Binding MaterializationStrategy, Mode=TwoWay}" />
+                    <TextBox Grid.Column="1" Header="{Binding [Cpt_RankedWeights], Source={StaticResource Localization}}" Text="{Binding RankedWeightsText, Mode=TwoWay}" />
+                    <NumberBox Grid.Column="2" Header="{Binding [Cpt_WeakestLink], Source={StaticResource Localization}}" Value="{Binding WeakestLinkStrength, Mode=TwoWay}" />
+                    <NumberBox Grid.Column="3" Header="{Binding [Cpt_Sigma], Source={StaticResource Localization}}" Value="{Binding Sigma, Mode=TwoWay}" />
+                    <Button Grid.Column="4" VerticalAlignment="Bottom" Click="OnMaterializeClick" Content="{Binding [Cpt_Materialize], Source={StaticResource Localization}}" />
                 </Grid>
             </StackPanel>
         </Expander>

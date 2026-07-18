@@ -5,23 +5,23 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ScrollViewer>
         <StackPanel MaxWidth="960" Padding="28" Spacing="18">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Diagnostics" />
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="{Binding [Diagnostics_Title], Source={StaticResource Localization}}" />
             <TextBlock
                 MaxWidth="760"
                 Opacity="0.72"
-                Text="The desktop communicates with one local Python sidecar over private stdin/stdout JSON-RPC. No network port is used."
+                Text="{Binding [Diagnostics_Description], Source={StaticResource Localization}}"
                 TextWrapping="Wrap" />
             <InfoBar
                 IsClosable="False"
                 IsOpen="{x:Bind ViewModel.HasStartupError, Mode=OneWay}"
                 Message="{x:Bind ViewModel.StartupError, Mode=OneWay}"
                 Severity="Error"
-                Title="Backend startup failed" />
+                Title="{Binding [Diagnostics_StartupFailed], Source={StaticResource Localization}}" />
             <CommandBar DefaultLabelPosition="Right">
                 <AppBarButton
-                    AutomationProperties.Name="Reconnect local backend"
+                AutomationProperties.Name="{Binding [A11y_ReconnectBackend], Source={StaticResource Localization}}"
                     Command="{x:Bind ViewModel.ReconnectCommand}"
-                    Label="Reconnect">
+                Label="{Binding [Common_Reconnect], Source={StaticResource Localization}}">
                     <AppBarButton.Icon>
                         <FontIcon Glyph="&#xE72C;" />
                     </AppBarButton.Icon>
@@ -36,18 +36,18 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBlock FontWeight="SemiBold" Text="Backend state" />
+                    <TextBlock FontWeight="SemiBold" Text="{Binding [Diagnostics_BackendState], Source={StaticResource Localization}}" />
                 <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.BackendStatusText, Mode=OneWay}" />
-                <TextBlock Grid.Row="1" FontWeight="SemiBold" Text="Runtime" />
+                    <TextBlock Grid.Row="1" FontWeight="SemiBold" Text="{Binding [Diagnostics_Runtime], Source={StaticResource Localization}}" />
                 <TextBlock
                     Grid.Row="1"
                     Grid.Column="1"
                     Text="{x:Bind ViewModel.BackendDetails, Mode=OneWay}"
                     TextWrapping="Wrap" />
             </Grid>
-            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="stderr diagnostics" />
+            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding [Diagnostics_Stderr], Source={StaticResource Localization}}" />
             <TextBox
-                AutomationProperties.Name="Backend stderr diagnostics"
+                AutomationProperties.Name="{Binding [Diagnostics_StderrA11y], Source={StaticResource Localization}}"
                 FontFamily="Consolas"
                 IsReadOnly="True"
                 MinHeight="220"

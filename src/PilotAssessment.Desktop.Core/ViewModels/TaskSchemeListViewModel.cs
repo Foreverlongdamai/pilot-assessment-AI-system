@@ -10,26 +10,38 @@ namespace PilotAssessment.Desktop.Core.ViewModels;
 
 public sealed partial class TaskSchemeListItemViewModel : ObservableObject
 {
-    public TaskSchemeListItemViewModel(TaskScheme scheme)
+    private readonly ILocalizationLookup? _localization;
+
+    public TaskSchemeListItemViewModel(
+        TaskScheme scheme,
+        ILocalizationLookup? localization = null)
     {
         Scheme = scheme;
+        _localization = localization;
     }
 
     public TaskScheme Scheme { get; private set; }
 
     public string SchemeId => Scheme.SchemeId;
 
-    public string DisplayName =>
-        Scheme.NameEn ?? Scheme.NameZh ?? Scheme.SchemeId;
+    public string DisplayName => BilingualTextSelector.Select(
+        _localization?.CurrentLanguage,
+        Scheme.NameZh,
+        Scheme.NameEn,
+        Scheme.SchemeId);
 
     public string LocalizedNames => string.Join(
         " / ",
         new[] { Scheme.NameZh, Scheme.NameEn }
             .Where(value => !string.IsNullOrWhiteSpace(value)));
 
-    public string StatusLine =>
-        $"{Scheme.TechnicalStatus} • rev {Scheme.SemanticRevision} • " +
-        $"{Scheme.ComputedActiveClosure.Length} active";
+    public string StatusLine => _localization?.Format(
+            "Task_StatusLine",
+            Scheme.TechnicalStatus,
+            Scheme.SemanticRevision,
+            Scheme.ComputedActiveClosure.Length)
+        ?? $"{Scheme.TechnicalStatus} • rev {Scheme.SemanticRevision} • " +
+           $"{Scheme.ComputedActiveClosure.Length} active";
 
     public string ClassificationLine
     {
@@ -44,10 +56,12 @@ public sealed partial class TaskSchemeListItemViewModel : ObservableObject
             values.AddRange(Scheme.Tags);
             if (Scheme.Lifecycle is ModelObjectLifecycle.Archived)
             {
-                values.Add("Archived");
+                values.Add(_localization?["Task_Archived"] ?? "Archived");
             }
 
-            return values.Count == 0 ? "No group or tags" : string.Join(" • ", values);
+            return values.Count == 0
+                ? _localization?["Task_NoGroupTags"] ?? "No group or tags"
+                : string.Join(" • ", values);
         }
     }
 
@@ -69,6 +83,14 @@ public sealed partial class TaskSchemeListItemViewModel : ObservableObject
         OnPropertyChanged(nameof(ClassificationLine));
         OnPropertyChanged(nameof(IsArchived));
     }
+
+    public void RefreshPresentation()
+    {
+        OnPropertyChanged(nameof(DisplayName));
+        OnPropertyChanged(nameof(LocalizedNames));
+        OnPropertyChanged(nameof(StatusLine));
+        OnPropertyChanged(nameof(ClassificationLine));
+    }
 }
 
 public sealed partial class TaskSchemeListViewModel : ObservableObject
@@ -78,10 +100,18 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
 
     private readonly IModelWorkspaceGateway _gateway;
     private readonly ApplicationShellState _shellState;
+    private readonly ILocalizationLookup? _localization;
     private readonly List<TaskSchemeListItemViewModel> _allSchemes = [];
     private int _contextGeneration;
     private int _busyOperations;
     private string? _projectId;
+    private string _allTagsLabel = AllTags;
+    private string _allGroupsLabel = AllGroups;
+    private string _sortNameLabel = "Name";
+    private string _sortUpdatedLabel = "Recently updated";
+    private string _sortIdentifierLabel = "Identifier";
+    private string _statusKey = "Task_StatusStart";
+    private object?[] _statusArguments = [];
 
     [ObservableProperty]
     public partial string SearchText { get; set; } = string.Empty;
@@ -116,12 +146,20 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
 
     public TaskSchemeListViewModel(
         IModelWorkspaceGateway gateway,
-        ApplicationShellState shellState)
+        ApplicationShellState shellState,
+        ILocalizationLookup? localization = null)
     {
         _gateway = gateway;
         _shellState = shellState;
-        AvailableTags.Add(AllTags);
-        AvailableGroups.Add(AllGroups);
+        _localization = localization;
+        RefreshLocalizedLabels();
+        AvailableTags.Add(_allTagsLabel);
+        AvailableGroups.Add(_allGroupsLabel);
+        SelectedTagFilter = _allTagsLabel;
+        SelectedGroupFilter = _allGroupsLabel;
+        SelectedSort = _sortNameLabel;
+        _localization?.LanguageChanged += OnLanguageChanged;
+        SetStatus("Task_StatusStart", "Open a managed project to load its parallel task schemes.");
     }
 
     public ObservableCollection<TaskSchemeListItemViewModel> Schemes { get; } = [];
@@ -130,8 +168,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
 
     public ObservableCollection<string> AvailableGroups { get; } = [];
 
-    public IReadOnlyList<string> SortOptions { get; } =
-        ["Name", "Recently updated", "Identifier"];
+    public ObservableCollection<string> SortOptions { get; } = [];
 
     public bool HasSelection => SelectedScheme is not null;
 
@@ -166,7 +203,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         _projectId = projectId;
         BeginBusy();
         ClearError();
-        StatusMessage = "Loading canonical task schemes…";
+        SetStatus("Task_StatusLoading", "Loading canonical task schemes…");
         try
         {
             var schemes = await _gateway.ListSchemesAsync(cancellationToken);
@@ -177,7 +214,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
 
             ReplaceAll(schemes);
             RefreshFiltered(preferredSchemeId);
-            StatusMessage = $"Loaded {_allSchemes.Count} canonical task schemes.";
+            SetStatus("Task_StatusLoaded", "Loaded {0} canonical task schemes.", _allSchemes.Count);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -187,7 +224,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         {
             if (IsCurrentContext(generation, projectId))
             {
-                SetError(error, "Task schemes could not be loaded.");
+                SetError(error, "Task_StatusLoadFailed", "Task schemes could not be loaded.");
             }
         }
         finally
@@ -204,7 +241,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         Schemes.Clear();
         ResetFilterOptions();
         SelectedScheme = null;
-        StatusMessage = "Open a managed project to load its parallel task schemes.";
+        SetStatus("Task_StatusStart", "Open a managed project to load its parallel task schemes.");
         ClearError();
     }
 
@@ -268,7 +305,8 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         return await RunMutationAsync(
             token => _gateway.CreateSchemeAsync(provisional, "expert.local", token),
             selectCanonical: true,
-            successMessage: "A new parallel task scheme was created.",
+            successKey: "Task_StatusCreated",
+            successFallback: "A new parallel task scheme was created.",
             cancellationToken);
     }
 
@@ -294,7 +332,8 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
                 "expert.local",
                 token),
             selectCanonical: true,
-            successMessage: "The copied scheme is now a separate editable task.",
+            successKey: "Task_StatusCopied",
+            successFallback: "The copied scheme is now a separate editable task.",
             cancellationToken);
     }
 
@@ -324,7 +363,8 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
                 "expert.local",
                 token),
             selectCanonical: false,
-            successMessage: "The task scheme name was autosaved by the backend.",
+            successKey: "Task_StatusRenamed",
+            successFallback: "The task scheme name was autosaved by the backend.",
             cancellationToken);
     }
 
@@ -339,7 +379,8 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
                 "expert.local",
                 token),
             selectCanonical: false,
-            successMessage: "The task scheme was archived; no other scheme was overwritten.",
+            successKey: "Task_StatusArchived",
+            successFallback: "The task scheme was archived; no other scheme was overwritten.",
             cancellationToken,
             selectReplacementWhenHidden: true);
     }
@@ -370,7 +411,8 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
     private async Task<TaskScheme?> RunMutationAsync(
         Func<CancellationToken, Task<TaskSchemeMutationResponse>> operation,
         bool selectCanonical,
-        string successMessage,
+        string successKey,
+        string successFallback,
         CancellationToken cancellationToken,
         bool selectReplacementWhenHidden = false)
     {
@@ -381,7 +423,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         var previouslySelectedId = SelectedScheme?.SchemeId;
         BeginBusy();
         ClearError();
-        StatusMessage = "Saving through the canonical backend…";
+        SetStatus("Task_StatusSaving", "Saving through the canonical backend…");
         try
         {
             var response = await operation(cancellationToken);
@@ -410,7 +452,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
                     item => item.SchemeId == previouslySelectedId) ?? canonicalItem;
             }
 
-            StatusMessage = successMessage;
+            SetStatus(successKey, successFallback);
             return response.Scheme;
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -421,7 +463,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         {
             if (IsCurrentContext(generation, projectId))
             {
-                SetError(error, "The task-scheme change did not complete.");
+                SetError(error, "Task_StatusChangeFailed", "The task-scheme change did not complete.");
             }
 
             return null;
@@ -438,7 +480,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         _allSchemes.AddRange(
             schemes
                 .OrderBy(scheme => scheme.SchemeId, StringComparer.Ordinal)
-                .Select(scheme => new TaskSchemeListItemViewModel(scheme)));
+                .Select(scheme => new TaskSchemeListItemViewModel(scheme, _localization)));
         RefreshFilterOptions();
     }
 
@@ -447,7 +489,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         var index = _allSchemes.FindIndex(item => item.SchemeId == canonical.SchemeId);
         if (index < 0)
         {
-            _allSchemes.Add(new TaskSchemeListItemViewModel(canonical));
+            _allSchemes.Add(new TaskSchemeListItemViewModel(canonical, _localization));
         }
         else
         {
@@ -480,22 +522,23 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
                 (item.Scheme.Group?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
-        if (SelectedTagFilter != AllTags)
+        if (SelectedTagFilter != _allTagsLabel)
         {
             query = query.Where(item => item.Scheme.Tags.Contains(SelectedTagFilter));
         }
 
-        if (SelectedGroupFilter != AllGroups)
+        if (SelectedGroupFilter != _allGroupsLabel)
         {
             query = query.Where(item => item.Scheme.Group == SelectedGroupFilter);
         }
 
         query = SelectedSort switch
         {
-            "Recently updated" => query
+            var value when value == _sortUpdatedLabel => query
                 .OrderByDescending(item => item.Scheme.UpdatedAt)
                 .ThenBy(item => item.DisplayName, StringComparer.OrdinalIgnoreCase),
-            "Identifier" => query.OrderBy(item => item.SchemeId, StringComparer.Ordinal),
+            var value when value == _sortIdentifierLabel =>
+                query.OrderBy(item => item.SchemeId, StringComparer.Ordinal),
             _ => query
                 .OrderBy(item => item.DisplayName, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(item => item.SchemeId, StringComparer.Ordinal),
@@ -517,24 +560,63 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         var selectedGroup = SelectedGroupFilter;
         ReplaceOptions(
             AvailableTags,
-            AllTags,
+            _allTagsLabel,
             _allSchemes.SelectMany(item => item.Scheme.Tags));
         ReplaceOptions(
             AvailableGroups,
-            AllGroups,
+            _allGroupsLabel,
             _allSchemes.Select(item => item.Scheme.Group).OfType<string>());
-        SelectedTagFilter = AvailableTags.Contains(selectedTag) ? selectedTag : AllTags;
-        SelectedGroupFilter = AvailableGroups.Contains(selectedGroup) ? selectedGroup : AllGroups;
+        SelectedTagFilter = AvailableTags.Contains(selectedTag) ? selectedTag : _allTagsLabel;
+        SelectedGroupFilter = AvailableGroups.Contains(selectedGroup) ? selectedGroup : _allGroupsLabel;
     }
 
     private void ResetFilterOptions()
     {
         AvailableTags.Clear();
-        AvailableTags.Add(AllTags);
+        AvailableTags.Add(_allTagsLabel);
         AvailableGroups.Clear();
-        AvailableGroups.Add(AllGroups);
-        SelectedTagFilter = AllTags;
-        SelectedGroupFilter = AllGroups;
+        AvailableGroups.Add(_allGroupsLabel);
+        SelectedTagFilter = _allTagsLabel;
+        SelectedGroupFilter = _allGroupsLabel;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs args)
+    {
+        var tagWasAll = SelectedTagFilter == _allTagsLabel;
+        var groupWasAll = SelectedGroupFilter == _allGroupsLabel;
+        var sortWasUpdated = SelectedSort == _sortUpdatedLabel;
+        var sortWasIdentifier = SelectedSort == _sortIdentifierLabel;
+        var selectedId = SelectedScheme?.SchemeId;
+
+        RefreshLocalizedLabels();
+        SelectedTagFilter = tagWasAll ? _allTagsLabel : SelectedTagFilter;
+        SelectedGroupFilter = groupWasAll ? _allGroupsLabel : SelectedGroupFilter;
+        SelectedSort = sortWasUpdated
+            ? _sortUpdatedLabel
+            : sortWasIdentifier
+                ? _sortIdentifierLabel
+                : _sortNameLabel;
+        foreach (var scheme in _allSchemes)
+        {
+            scheme.RefreshPresentation();
+        }
+
+        RefreshFilterOptions();
+        RefreshFiltered(selectedId);
+        StatusMessage = _localization?.Format(_statusKey, _statusArguments) ?? StatusMessage;
+    }
+
+    private void RefreshLocalizedLabels()
+    {
+        _allTagsLabel = _localization?["Task_AllTags"] ?? AllTags;
+        _allGroupsLabel = _localization?["Task_AllGroups"] ?? AllGroups;
+        _sortNameLabel = _localization?["Task_SortName"] ?? "Name";
+        _sortUpdatedLabel = _localization?["Task_SortUpdated"] ?? "Recently updated";
+        _sortIdentifierLabel = _localization?["Task_SortIdentifier"] ?? "Identifier";
+        SortOptions.Clear();
+        SortOptions.Add(_sortNameLabel);
+        SortOptions.Add(_sortUpdatedLabel);
+        SortOptions.Add(_sortIdentifierLabel);
     }
 
     private static void ReplaceOptions(
@@ -596,11 +678,19 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         ErrorMessage = string.Empty;
     }
 
-    private void SetError(Exception error, string status)
+    private void SetError(Exception error, string statusKey, string statusFallback)
     {
         HasError = true;
         ErrorMessage = error.Message;
-        StatusMessage = status;
+        SetStatus(statusKey, statusFallback);
+    }
+
+    private void SetStatus(string key, string fallback, params object?[] arguments)
+    {
+        _statusKey = key;
+        _statusArguments = arguments;
+        StatusMessage = _localization?.Format(key, arguments) ??
+            string.Format(fallback, arguments);
     }
 
     private static string NewSchemeId() => $"task-scheme.user.{Guid.NewGuid():N}";

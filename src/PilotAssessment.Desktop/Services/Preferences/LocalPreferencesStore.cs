@@ -19,7 +19,7 @@ public sealed record LocalPreferences(
     string LastDestination,
     NodeWindowPlacementPreference[] NodeWindows)
 {
-    public static LocalPreferences Default { get; } = new("en-GB", "System", "project", []);
+    public static LocalPreferences Default { get; } = new("en-US", "System", "project", []);
 }
 
 public sealed class LocalPreferencesStore

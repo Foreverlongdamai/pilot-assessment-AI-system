@@ -3,10 +3,10 @@
     x:Class="PilotAssessment.Desktop.Controls.Graph.DeactivationImpactDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    CloseButtonText="Cancel"
+    CloseButtonText="{Binding [Common_Cancel], Source={StaticResource Localization}}"
     DefaultButton="Close"
-    PrimaryButtonText="Continue"
-    Title="Deactivate from this task?">
+    PrimaryButtonText="{Binding [Common_Continue], Source={StaticResource Localization}}"
+    Title="{Binding [Dialog_DeactivateTitle], Source={StaticResource Localization}}">
     <StackPanel Width="460" Spacing="10">
         <TextBlock
             x:Name="SummaryText"
@@ -23,7 +23,7 @@
         </Border>
         <TextBlock
             Opacity="0.64"
-            Text="Continue sends the exact preview hash to the backend. Cancel sends no write. This never archives a global node."
+            Text="{Binding [Dialog_DeactivateSafety], Source={StaticResource Localization}}"
             TextWrapping="Wrap" />
     </StackPanel>
 </ContentDialog>

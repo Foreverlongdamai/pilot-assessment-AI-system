@@ -17,6 +17,9 @@ public partial class ProjectLauncherViewModel : ObservableObject
     private readonly ApplicationShellState _shellState;
     private readonly SessionExplorerViewModel _sessions;
     private readonly TaskSchemeListViewModel? _schemes;
+    private readonly ILocalizationLookup? _localization;
+    private string _statusKey = "Project_StatusStart";
+    private object?[] _statusArguments = [];
 
     [ObservableProperty]
     public partial string ProjectName { get; set; } = "Pilot Assessment Project";
@@ -51,10 +54,11 @@ public partial class ProjectLauncherViewModel : ObservableObject
     public bool HasOpenProject => CurrentProject is not null;
 
     public string CurrentProjectText => CurrentProject is null
-        ? "No managed project is open."
+        ? L("Project_NoOpenProject", "No managed project is open.")
         : $"{CurrentProject.Name} · {CurrentProject.ProjectId}";
 
-    public string CurrentProjectRootText => CurrentProjectRoot ?? "No project folder";
+    public string CurrentProjectRootText => CurrentProjectRoot ??
+        L("Project_NoProjectFolder", "No project folder");
 
     public bool CanCreate =>
         !IsBusy &&
@@ -68,7 +72,8 @@ public partial class ProjectLauncherViewModel : ObservableObject
         IRecentProjectStore recentStore,
         ApplicationShellState shellState,
         SessionExplorerViewModel sessions,
-        TaskSchemeListViewModel? schemes = null)
+        TaskSchemeListViewModel? schemes = null,
+        ILocalizationLookup? localization = null)
     {
         _gateway = gateway;
         _folderPicker = folderPicker;
@@ -76,6 +81,9 @@ public partial class ProjectLauncherViewModel : ObservableObject
         _shellState = shellState;
         _sessions = sessions;
         _schemes = schemes;
+        _localization = localization;
+        _localization?.LanguageChanged += OnLanguageChanged;
+        SetStatus("Project_StatusStart", "Create a portable managed project or open an existing one.");
     }
 
     public async Task<bool> InitializeAsync(
@@ -95,10 +103,11 @@ public partial class ProjectLauncherViewModel : ObservableObject
     [RelayCommand]
     private async Task ChooseCreateFolderAsync()
     {
-        var selected = await _folderPicker.PickFolderAsync("Create managed project");
+        var selected = await _folderPicker.PickFolderAsync(
+            L("Project_Create", "Create managed project"));
         if (string.IsNullOrWhiteSpace(selected))
         {
-            StatusMessage = "Project folder selection cancelled; nothing changed.";
+            SetStatus("Project_StatusCreateCancelled", "Project folder selection cancelled; nothing changed.");
             return;
         }
 
@@ -116,16 +125,17 @@ public partial class ProjectLauncherViewModel : ObservableObject
             ProjectName,
             "expert.local");
         await ActivateProjectAsync(project, CreateRootPath);
-        StatusMessage = "Managed project created and opened from the backend canonical descriptor.";
+        SetStatus("Project_StatusCreated", "Managed project created and opened from the backend canonical descriptor.");
     });
 
     [RelayCommand]
     private async Task OpenProjectAsync()
     {
-        var selected = await _folderPicker.PickFolderAsync("Open managed project");
+        var selected = await _folderPicker.PickFolderAsync(
+            L("Project_OpenManaged", "Open managed project"));
         if (string.IsNullOrWhiteSpace(selected))
         {
-            StatusMessage = "Open project cancelled; the current project was not changed.";
+            SetStatus("Project_StatusOpenCancelled", "Open project cancelled; the current project was not changed.");
             return;
         }
 
@@ -142,7 +152,7 @@ public partial class ProjectLauncherViewModel : ObservableObject
     {
         await _gateway.CloseProjectAsync();
         ClearCurrentProject();
-        StatusMessage = "Project closed. Recent-project entries are only local shortcuts.";
+        SetStatus("Project_StatusClosed", "Project closed. Recent-project entries are only local shortcuts.");
     });
 
     partial void OnProjectNameChanged(string value) => CreateProjectCommand.NotifyCanExecuteChanged();
@@ -160,14 +170,14 @@ public partial class ProjectLauncherViewModel : ObservableObject
         {
             if (CurrentProject is not null && SamePath(CurrentProjectRoot, root))
             {
-                StatusMessage = "That managed project is already open.";
+                SetStatus("Project_StatusAlreadyOpen", "That managed project is already open.");
                 return;
             }
 
             await CloseForSwitchAsync(root, cancellationToken);
             var project = await _gateway.OpenProjectAsync(root, cancellationToken);
             await ActivateProjectAsync(project, root, cancellationToken);
-            StatusMessage = "Managed project opened; canonical sessions were reloaded from SQLite.";
+            SetStatus("Project_StatusOpened", "Managed project opened; canonical sessions were reloaded from SQLite.");
         });
 
     private async Task CloseForSwitchAsync(
@@ -262,7 +272,7 @@ public partial class ProjectLauncherViewModel : ObservableObject
         {
             HasError = true;
             ErrorMessage = error.Message;
-            StatusMessage = "The project operation did not complete.";
+            SetStatus("Project_StatusFailed", "The project operation did not complete.");
         }
         finally
         {
@@ -275,6 +285,23 @@ public partial class ProjectLauncherViewModel : ObservableObject
         HasError = false;
         ErrorMessage = string.Empty;
     }
+
+    private void OnLanguageChanged(object? sender, EventArgs args)
+    {
+        OnPropertyChanged(nameof(CurrentProjectText));
+        OnPropertyChanged(nameof(CurrentProjectRootText));
+        StatusMessage = _localization?.Format(_statusKey, _statusArguments) ?? StatusMessage;
+    }
+
+    private void SetStatus(string key, string fallback, params object?[] arguments)
+    {
+        _statusKey = key;
+        _statusArguments = arguments;
+        StatusMessage = _localization?.Format(key, arguments) ??
+            string.Format(fallback, arguments);
+    }
+
+    private string L(string key, string fallback) => _localization?[key] ?? fallback;
 
     private static bool SamePath(string? left, string right)
     {

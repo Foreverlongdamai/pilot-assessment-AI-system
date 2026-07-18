@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -37,7 +38,8 @@ public sealed partial class NodeCreationDialog : ContentDialog
         if (string.IsNullOrWhiteSpace(EnglishNameBox.Text) &&
             string.IsNullOrWhiteSpace(ChineseNameBox.Text))
         {
-            ValidationInfo.Message = "Enter an English or Chinese node name.";
+            ValidationInfo.Message = App.Services
+                .GetRequiredService<ILocalizationLookup>()["Dialog_NodeNameRequired"];
             ValidationInfo.IsOpen = true;
             args.Cancel = true;
         }

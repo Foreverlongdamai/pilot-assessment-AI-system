@@ -74,11 +74,20 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
 
     private readonly EvidenceEditorCoordinator _coordinator;
     private readonly IBayesianNodeEditorGateway _bayesianGateway;
+    private readonly ILocalizationLookup? _localization;
     private ModelNode _canonicalNode;
     private EvidenceRecipeEditorModel _recipeModel;
     private ModelGraphSnapshot? _graph;
     private string? _sessionRevisionId;
     private string _schemeId;
+    private IReadOnlyList<ModelNodeUsage> _usages = [];
+    private IReadOnlyList<ModelChangeEvent> _history = [];
+    private string _statusKey = "Evidence_StatusLoading";
+    private string _statusFallback = "Loading Evidence editor metadata…";
+    private object?[] _statusArguments = [];
+    private string _previewKey = "Evidence_PreviewNone";
+    private string _previewFallback = "No preview requested.";
+    private object?[] _previewArguments = [];
 
     [ObservableProperty]
     public partial string NameZh { get; set; } = string.Empty;
@@ -157,20 +166,23 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         string schemeId,
         string? sessionRevisionId,
         IModelNodeEditorGateway gateway,
-        IBayesianNodeEditorGateway bayesianGateway)
+        IBayesianNodeEditorGateway bayesianGateway,
+        ILocalizationLookup? localization = null)
     {
         _canonicalNode = node;
         _schemeId = schemeId;
         _sessionRevisionId = sessionRevisionId;
         _coordinator = new EvidenceEditorCoordinator(gateway);
         _bayesianGateway = bayesianGateway;
+        _localization = localization;
         var definition = node.Definition as EvidenceNodeDefinition
             ?? throw new ArgumentException("Evidence editor requires an Evidence node.");
         _recipeModel = new EvidenceRecipeEditorModel(definition.Recipe, []);
-        Cpt = new CptGridViewModel(node, EditorFrom(definition.Cpt), bayesianGateway);
+        Cpt = new CptGridViewModel(node, EditorFrom(definition.Cpt), bayesianGateway, localization);
         Cpt.LocalEditChanged += (_, _) => MarkLocalEdit(NodeEditorEditPersistence.ExplicitCommit);
         Cpt.CanonicalNodeCommitted += OnCptCanonicalNodeCommitted;
         ApplyCanonical(node, schemeId, sessionRevisionId);
+        RefreshLanguage();
     }
 
     public ObservableCollection<OperatorOptionItem> OperatorOptions { get; } = [];
@@ -200,7 +212,7 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         {
             var definition = (EvidenceNodeDefinition)_canonicalNode.Definition;
             return definition.OrderedProbabilisticParentNodes.Length == 0
-                ? "No probabilistic parents"
+                ? L("Evidence_NoProbabilisticParents", "No probabilistic parents")
                 : string.Join(Environment.NewLine, definition.OrderedProbabilisticParentNodes
                     .Select(parent => $"{parent.NodeKind}: {parent.NodeId}"));
         }
@@ -211,8 +223,12 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         get
         {
             var cpt = ((EvidenceNodeDefinition)_canonicalNode.Definition).Cpt;
-            return $"{cpt.Mode} · {cpt.MaterializedProbabilities.Length} rows · " +
-                $"{cpt.ChildStateIds.Length} observation states";
+            return F(
+                "Evidence_CptSummary",
+                "{0} · {1} rows · {2} observation states",
+                cpt.Mode,
+                cpt.MaterializedProbabilities.Length,
+                cpt.ChildStateIds.Length);
         }
     }
 
@@ -249,23 +265,18 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
                     definition.Name,
                     definition.Family)));
             SelectedOperator = OperatorOptions.FirstOrDefault();
-            Replace(
-                UsedBySchemes,
-                (await usagesTask).Select(usage =>
-                    $"{usage.SchemeId} · {(usage.ExplicitlyActive ? "explicit" : "parent closure")}" +
-                    (usage.SelectedAsOutput ? " · output" : string.Empty)));
-            Replace(
-                HistoryItems,
-                (await historyTask)
-                    .OrderByDescending(item => item.OccurredAt)
-                    .Select(item =>
-                        $"{item.OccurredAt:yyyy-MM-dd HH:mm:ss} · {item.EventKind} · " +
-                        $"semantic {item.SemanticRevision}, layout {item.LayoutRevision}"));
+            _usages = await usagesTask;
+            _history = await historyTask;
+            RefreshUsageAndHistory();
             RefreshRecipeCollections();
             _graph = await graphTask;
             Cpt.ApplyCanonical(_canonicalNode, (await cptTask).Editor);
-            StatusMessage =
-                $"Loaded {OperatorOptions.Count} trusted operators, {UsedBySchemes.Count} task usages and {HistoryItems.Count} history events.";
+            SetStatus(
+                "Evidence_StatusLoaded",
+                "Loaded {0} trusted operators, {1} task usages and {2} history events.",
+                OperatorOptions.Count,
+                UsedBySchemes.Count,
+                HistoryItems.Count);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -273,7 +284,10 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         }
         catch (Exception error)
         {
-            StatusMessage = $"Editor metadata could not be loaded: {error.Message}";
+            SetStatus(
+                "Evidence_StatusLoadFailed",
+                "Editor metadata could not be loaded: {0}",
+                error.Message);
         }
         finally
         {
@@ -348,7 +362,7 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         LocalEditChanged?.Invoke(this, new NodeEditorLocalEditEventArgs(persistence));
 
     public void SetOperationError(string message) =>
-        StatusMessage = $"Evidence operation blocked: {message}";
+        SetStatus("Evidence_StatusBlocked", "Evidence operation blocked: {0}", message);
 
     public void SelectRecipeNodeForEditing(RecipeNodeDisplayItem? item)
     {
@@ -462,8 +476,10 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         };
         ApplyCanonical(canonical, _schemeId, _sessionRevisionId);
         ApplyDraftIntent(ModelNodeDraftRebaser.Rebase(localIntent, canonical));
-        StatusMessage =
-            $"Canonical observation states saved; {response.Nodes.Length} affected CPT definition(s) are explicitly incomplete and repairable.";
+        SetStatus(
+            "Evidence_StatusStatesSaved",
+            "Canonical observation states saved; {0} affected CPT definition(s) are explicitly incomplete and repairable.",
+            response.Nodes.Length);
         CanonicalNodeCommitted?.Invoke(this, new CanonicalNodeCommittedEventArgs(canonical));
     }
 
@@ -513,12 +529,16 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
     {
         if (string.IsNullOrWhiteSpace(_sessionRevisionId))
         {
-            PreviewSummary = "Select a managed session revision before requesting a preview.";
+            SetPreview(
+                "Evidence_PreviewSelectSession",
+                "Select a managed session revision before requesting a preview.");
             return;
         }
 
         IsPreviewBusy = true;
-        PreviewSummary = "Requesting a backend-frozen node preview snapshot…";
+        SetPreview(
+            "Evidence_PreviewRequesting",
+            "Requesting a backend-frozen node preview snapshot…");
         try
         {
             var snapshot = await _coordinator.PreviewAsync(
@@ -526,13 +546,20 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
                 _schemeId,
                 _canonicalNode.NodeId,
                 cancellationToken);
-            PreviewSummary = snapshot is null
-                ? "Preview cancelled."
-                : $"Snapshot {snapshot.RunId}\n" +
-                  $"Hash: {snapshot.SnapshotHash}\n" +
-                  $"Locked active nodes: {snapshot.ActiveNodes.Length}\n" +
-                  $"Locked operator identities: {snapshot.LockedOperatorIdentities.Length}\n" +
-                  "The current backend method freezes the exact preview inputs; Task 14 executes and renders result artifacts.";
+            if (snapshot is null)
+            {
+                SetPreview("Evidence_PreviewCancelled", "Preview cancelled.");
+            }
+            else
+            {
+                SetPreview(
+                    "Evidence_PreviewSnapshot",
+                    "Snapshot {0}\nHash: {1}\nLocked active nodes: {2}\nLocked operator identities: {3}\nThe current backend method freezes the exact preview inputs; Task 14 executes and renders result artifacts.",
+                    snapshot.RunId,
+                    snapshot.SnapshotHash,
+                    snapshot.ActiveNodes.Length,
+                    snapshot.LockedOperatorIdentities.Length);
+            }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -540,7 +567,7 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         }
         catch (Exception error)
         {
-            PreviewSummary = $"Preview blocked: {error.Message}";
+            SetPreview("Evidence_PreviewBlocked", "Preview blocked: {0}", error.Message);
         }
         finally
         {
@@ -551,6 +578,17 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
     public void CancelPreview() => _coordinator.CancelPreview();
 
     public void Dispose() => _coordinator.Dispose();
+
+    public void RefreshLanguage()
+    {
+        StatusMessage = F(_statusKey, _statusFallback, _statusArguments);
+        PreviewSummary = F(_previewKey, _previewFallback, _previewArguments);
+        RefreshUsageAndHistory();
+        RefreshRecipeCollections(SelectedRecipeNode?.NodeId);
+        Cpt.RefreshLanguage();
+        OnPropertyChanged(nameof(ProbabilisticParentsText));
+        OnPropertyChanged(nameof(CptSummary));
+    }
 
     private void OnCptCanonicalNodeCommitted(object? sender, CanonicalNodeCommittedEventArgs args)
     {
@@ -574,10 +612,10 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
                 node.NodeId,
                 node.OperatorId,
                 node.OperatorVersion,
-                found ? definition!.Name : $"Missing: {node.OperatorId}",
+                found ? definition!.Name : F("Evidence_MissingOperator", "Missing: {0}", node.OperatorId),
                 !found,
                 node.Parameters.Count == 0
-                    ? "No parameters"
+                    ? L("Evidence_NoParameters", "No parameters")
                     : string.Join(", ", node.Parameters.Keys.OrderBy(item => item, StringComparer.Ordinal)));
         }));
         Replace(RecipeEdges, _recipeModel.Recipe.Graph.Edges.Select(edge =>
@@ -591,14 +629,56 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         var missing = _recipeModel.MissingOperators;
         HasMissingOperators = missing.Count > 0;
         MissingOperatorsText = missing.Count == 0
-            ? "All recipe operators are installed."
-            : "Technical run blocker: " + string.Join(
-                ", ",
-                missing.Select(item => $"{item.OperatorId}@{item.OperatorVersion}"));
+            ? L("Evidence_AllOperatorsInstalled", "All recipe operators are installed.")
+            : F(
+                "Evidence_MissingOperators",
+                "Technical run blocker: {0}",
+                string.Join(", ", missing.Select(item => $"{item.OperatorId}@{item.OperatorVersion}")));
         var selected = RecipeNodes.FirstOrDefault(item => item.NodeId == preferredNodeId)
             ?? RecipeNodes.FirstOrDefault(item => item.NodeId == SelectedRecipeNode?.NodeId);
         SelectRecipeNodeForEditing(selected);
     }
+
+    private void RefreshUsageAndHistory()
+    {
+        Replace(UsedBySchemes, _usages.Select(usage =>
+            $"{usage.SchemeId} · " +
+            (usage.ExplicitlyActive
+                ? L("Editor_UsageExplicit", "explicit")
+                : L("Editor_UsageParentClosure", "parent closure")) +
+            (usage.SelectedAsOutput ? L("Editor_UsageOutputSuffix", " · output") : string.Empty)));
+        Replace(HistoryItems, _history
+            .OrderByDescending(item => item.OccurredAt)
+            .Select(item => F(
+                "Editor_HistoryLine",
+                "{0:yyyy-MM-dd HH:mm:ss} · {1} · semantic {2}, layout {3}",
+                item.OccurredAt,
+                item.EventKind,
+                item.SemanticRevision,
+                item.LayoutRevision)));
+    }
+
+    private void SetStatus(string key, string fallback, params object?[] arguments)
+    {
+        _statusKey = key;
+        _statusFallback = fallback;
+        _statusArguments = arguments;
+        StatusMessage = F(key, fallback, arguments);
+    }
+
+    private void SetPreview(string key, string fallback, params object?[] arguments)
+    {
+        _previewKey = key;
+        _previewFallback = fallback;
+        _previewArguments = arguments;
+        PreviewSummary = F(key, fallback, arguments);
+    }
+
+    private string L(string key, string fallback) => _localization?[key] ?? fallback;
+
+    private string F(string key, string fallback, params object?[] arguments) =>
+        _localization?.Format(key, arguments)
+        ?? string.Format(System.Globalization.CultureInfo.CurrentCulture, fallback, arguments);
 
     private static IReadOnlyDictionary<string, JsonElement> ParseJsonElementDictionary(string json) =>
         JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json, ContractJsonOptions)

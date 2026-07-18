@@ -17,12 +17,25 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     private readonly ModelGraphCommandCoordinator _commands;
     private readonly TaskSchemeListViewModel _schemes;
     private readonly ApplicationShellState _shellState;
+    private readonly ILocalizationLookup _localization;
     private readonly HashSet<string> _selectedNodeIds = new(StringComparer.Ordinal);
     private readonly Dictionary<string, NodeLayout> _pendingLayouts = new(StringComparer.Ordinal);
     private int _loadGeneration;
     private int _busyOperations;
     private ModelGraphSnapshot? _snapshot;
     private CancellationTokenSource? _layoutDebounce;
+    private string _allGroupsLabel = AllGroups;
+    private string _allTagsLabel = AllTags;
+    private string _viewActiveOnlyLabel = "Active only";
+    private string _viewActiveInactiveLabel = "Active + inactive";
+    private string _viewAllLabel = "All global nodes";
+    private string _kindAllLabel = "All node kinds";
+    private string _kindRawLabel = "Raw Input";
+    private string _kindEvidenceLabel = "Evidence";
+    private string _kindBnLabel = "BN";
+    private string _activationAllLabel = "All activation states";
+    private string _activationActiveLabel = "Active";
+    private string _activationInactiveLabel = "Inactive";
 
     [ObservableProperty]
     public partial string SearchText { get; set; } = string.Empty;
@@ -73,14 +86,25 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     public ModelStudioViewModel(
         ModelGraphCommandCoordinator commands,
         TaskSchemeListViewModel schemes,
-        ApplicationShellState shellState)
+        ApplicationShellState shellState,
+        ILocalizationLookup localization)
     {
         _commands = commands;
         _schemes = schemes;
         _shellState = shellState;
-        AvailableGroups.Add(AllGroups);
-        AvailableTags.Add(AllTags);
+        _localization = localization;
+        RefreshLocalizedOptions();
+        AvailableGroups.Add(_allGroupsLabel);
+        AvailableTags.Add(_allTagsLabel);
+        SelectedGroup = _allGroupsLabel;
+        SelectedTag = _allTagsLabel;
+        SelectedViewMode = _viewActiveInactiveLabel;
+        SelectedKind = _kindAllLabel;
+        SelectedActivation = _activationAllLabel;
+        StatusMessage = L("Model_ChooseTaskScheme");
+        SelectedNodeSummary = L("Model_NoNodeSelected");
         _schemes.PropertyChanged += OnSchemePropertyChanged;
+        _localization.LanguageChanged += OnLanguageChanged;
     }
 
     public ObservableCollection<GraphNodeProjection> Nodes { get; } = [];
@@ -91,14 +115,11 @@ public sealed partial class ModelStudioViewModel : ObservableObject
 
     public ObservableCollection<string> AvailableTags { get; } = [];
 
-    public IReadOnlyList<string> ViewModes { get; } =
-        ["Active only", "Active + inactive", "All global nodes"];
+    public ObservableCollection<string> ViewModes { get; } = [];
 
-    public IReadOnlyList<string> KindOptions { get; } =
-        ["All node kinds", "Raw Input", "Evidence", "BN"];
+    public ObservableCollection<string> KindOptions { get; } = [];
 
-    public IReadOnlyList<string> ActivationOptions { get; } =
-        ["All activation states", "Active", "Inactive"];
+    public ObservableCollection<string> ActivationOptions { get; } = [];
 
     public string? CurrentSchemeId => _snapshot?.Scheme.SchemeId;
 
@@ -121,7 +142,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         var selected = _schemes.SelectedScheme;
         if (selected is null)
         {
-            ClearGraph("Choose a task scheme to load the global model graph.");
+            ClearGraph(L("Model_ChooseTaskScheme"));
             return;
         }
 
@@ -142,7 +163,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         var projectId = _shellState.Snapshot.ProjectId;
         BeginBusy();
         ClearError();
-        StatusMessage = $"Loading canonical graph for {schemeId}…";
+        StatusMessage = F("Model_StatusLoading", schemeId);
         try
         {
             var graph = await _commands.GetGraphAsync(schemeId, cancellationToken);
@@ -156,8 +177,12 @@ public sealed partial class ModelStudioViewModel : ObservableObject
             ApplyCanonicalGraph(
                 graph,
                 _selectedNodeIds,
-                $"{graph.Nodes.Length} global nodes, {graph.Edges.Length} canonical edges; " +
-                $"{graph.Scheme.ComputedActiveClosure.Length} active in {DisplaySchemeName(graph.Scheme)}.");
+                F(
+                    "Model_GraphSummary",
+                    graph.Nodes.Length,
+                    graph.Edges.Length,
+                    graph.Scheme.ComputedActiveClosure.Length,
+                    DisplaySchemeName(graph.Scheme)));
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -169,7 +194,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
             {
                 HasError = true;
                 ErrorMessage = error.Message;
-                StatusMessage = "The model graph could not be loaded.";
+                StatusMessage = L("Model_StatusLoadFailed");
             }
         }
         finally
@@ -216,7 +241,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         var schemeId = snapshot.Scheme.SchemeId;
         BeginBusy();
         ClearError();
-        StatusMessage = "Creating a complete editable node through the canonical backend...";
+        StatusMessage = L("Model_StatusCreatingNode");
         try
         {
             var created = await _commands.CreateNodeAsync(request, cancellationToken);
@@ -236,7 +261,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                     ApplyCanonicalGraph(
                         activated.Graph,
                         [created.Node.NodeId],
-                        "The new node is active in this task; fixed parents were closed by the backend.");
+                        L("Model_StatusNodeCreatedActive"));
                     NodeEditorRequested?.Invoke(
                         this,
                         new ModelNodeOpenRequestedEventArgs(created.Node, schemeId));
@@ -254,10 +279,10 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                     ApplyCanonicalGraph(
                         graph,
                         [created.Node.NodeId],
-                        "The node was saved globally but could not be activated in this task.");
+                        L("Model_StatusNodeSavedInactive"));
                     SetError(
                         activationError,
-                        "The node exists globally; correct its definition or retry task activation.");
+                        L("Model_StatusNodeActivationRepair"));
                     NodeEditorRequested?.Invoke(
                         this,
                         new ModelNodeOpenRequestedEventArgs(created.Node, schemeId));
@@ -274,7 +299,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         {
             if (IsCurrentContext(projectId, schemeId))
             {
-                SetError(error, "The new node was not created.");
+                SetError(error, L("Model_StatusNodeCreateFailed"));
             }
 
             return null;
@@ -292,7 +317,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         ArgumentNullException.ThrowIfNull(node);
         if (node.IsActive)
         {
-            StatusMessage = "This node is already active in the current task.";
+            StatusMessage = L("Model_StatusAlreadyActive");
             return true;
         }
 
@@ -301,7 +326,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         var schemeId = snapshot.Scheme.SchemeId;
         BeginBusy();
         ClearError();
-        StatusMessage = "Activating the node and its fixed parent closure...";
+        StatusMessage = L("Model_StatusActivating");
         try
         {
             var response = await _commands.ActivateNodeAsync(
@@ -313,7 +338,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                 ApplyCanonicalGraph(
                     response.Graph,
                     [node.NodeId],
-                    "The node and all fixed parents are active in this task.");
+                    L("Model_StatusActivated"));
             }
 
             return true;
@@ -326,7 +351,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         {
             if (IsCurrentContext(projectId, schemeId))
             {
-                SetError(error, "Task activation did not complete.");
+                SetError(error, L("Model_StatusActivationFailed"));
             }
 
             return false;
@@ -344,7 +369,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         ArgumentNullException.ThrowIfNull(node);
         if (!node.IsActive)
         {
-            StatusMessage = "This node is already inactive in the current task.";
+            StatusMessage = L("Model_StatusAlreadyInactive");
             return null;
         }
 
@@ -363,7 +388,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         }
         catch (Exception error)
         {
-            SetError(error, "The downstream deactivation impact could not be loaded.");
+            SetError(error, L("Model_StatusImpactFailed"));
             return null;
         }
     }
@@ -378,7 +403,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         ArgumentNullException.ThrowIfNull(impact);
         if (!continueRequested)
         {
-            StatusMessage = "Deactivation cancelled; no backend write was sent.";
+            StatusMessage = L("Model_StatusDeactivationCancelled");
             return false;
         }
 
@@ -392,7 +417,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
 
         BeginBusy();
         ClearError();
-        StatusMessage = "Applying the confirmed downstream deactivation...";
+        StatusMessage = L("Model_StatusDeactivating");
         try
         {
             var response = await _commands.CompleteDeactivationAsync(
@@ -403,7 +428,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                 cancellationToken);
             if (response is null)
             {
-                StatusMessage = "Deactivation cancelled; no backend write was sent.";
+                StatusMessage = L("Model_StatusDeactivationCancelled");
                 return false;
             }
 
@@ -412,7 +437,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                 ApplyCanonicalGraph(
                     response.Graph,
                     [],
-                    "The node and impacted downstream nodes are inactive in this task only.");
+                    L("Model_StatusDeactivated"));
             }
 
             return true;
@@ -427,7 +452,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
             {
                 SetError(
                     error,
-                    "Deactivation was not applied. Reload the impact if the scheme changed.");
+                    L("Model_StatusDeactivationFailed"));
             }
 
             return false;
@@ -447,7 +472,9 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                 ? []
                 : [fallbackNode.NodeId];
         _commands.Copy(projectId, ids);
-        StatusMessage = $"Copied {_selectedNodeIds.Count switch { 0 => 1, var count => count }} complete node(s).";
+        StatusMessage = F(
+            "Model_StatusCopiedCount",
+            _selectedNodeIds.Count switch { 0 => 1, var count => count });
         OnPropertyChanged(nameof(CanPaste));
     }
 
@@ -455,7 +482,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     {
         ArgumentNullException.ThrowIfNull(node);
         _commands.Copy(RequireProjectId(), [node.NodeId]);
-        StatusMessage = $"Copied complete node {node.DisplayName}.";
+        StatusMessage = F("Model_StatusCopiedNode", node.DisplayName);
         OnPropertyChanged(nameof(CanPaste));
     }
 
@@ -464,7 +491,13 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         ArgumentNullException.ThrowIfNull(nodeIds);
         var names = RequireSnapshot().Nodes.ToDictionary(
             node => node.NodeId,
-            node => node.ShortNameEn ?? node.NameEn ?? node.ShortNameZh ?? node.NameZh ?? node.NodeId,
+            node => BilingualTextSelector.SelectShortOrFull(
+                _localization.CurrentLanguage,
+                node.ShortNameZh,
+                node.ShortNameEn,
+                node.NameZh,
+                node.NameEn,
+                node.NodeId),
             StringComparer.Ordinal);
         return nodeIds
             .Select(nodeId => names.TryGetValue(nodeId, out var name)
@@ -483,13 +516,13 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         {
             SetError(
                 new InvalidOperationException("The in-app model clipboard is empty for this project."),
-                "Nothing was pasted.");
+                L("Model_StatusNothingPasted"));
             return [];
         }
 
         BeginBusy();
         ClearError();
-        StatusMessage = "Copying complete nodes in the backend and retaining their fixed parents...";
+        StatusMessage = L("Model_StatusPasting");
         try
         {
             var response = await _commands.PasteAsync(
@@ -501,7 +534,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                 ApplyCanonicalGraph(
                     response.Graph,
                     response.CopiedNodes.Select(node => node.NodeId),
-                    "Pasted complete parallel nodes; original nodes and fixed parents were not overwritten.");
+                    L("Model_StatusPasted"));
             }
 
             return response.CopiedNodes;
@@ -514,7 +547,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         {
             if (IsCurrentContext(projectId, schemeId))
             {
-                SetError(error, "The backend did not paste the copied nodes.");
+                SetError(error, L("Model_StatusPasteFailed"));
             }
 
             return [];
@@ -557,7 +590,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
             .ToArray();
         BeginBusy();
         ClearError();
-        StatusMessage = "Autosaving graph layout...";
+        StatusMessage = L("Model_StatusSavingLayout");
         try
         {
             var response = await _commands.UpdateLayoutAsync(
@@ -566,7 +599,10 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                 cancellationToken);
             if (IsCurrentContext(projectId, schemeId))
             {
-                ApplyCanonicalGraph(response.Graph, _selectedNodeIds, "Graph layout saved.");
+                ApplyCanonicalGraph(
+                    response.Graph,
+                    _selectedNodeIds,
+                    L("Model_StatusLayoutSaved"));
             }
 
             return true;
@@ -581,8 +617,11 @@ public sealed partial class ModelStudioViewModel : ObservableObject
             {
                 _pendingLayouts.Clear();
                 var graph = await _commands.GetGraphAsync(schemeId, cancellationToken);
-                ApplyCanonicalGraph(graph, _selectedNodeIds, "Canonical layout restored.");
-                SetError(error, "The layout edit conflicted and was restored from the backend.");
+                ApplyCanonicalGraph(
+                    graph,
+                    _selectedNodeIds,
+                    L("Model_StatusLayoutRestored"));
+                SetError(error, L("Model_StatusLayoutConflict"));
             }
 
             return false;
@@ -609,7 +648,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                 targetNode,
                 markCptIncomplete,
                 token),
-            "The canonical parent edge was added.",
+            L("Model_StatusEdgeAdded"),
             cancellationToken);
     }
 
@@ -662,7 +701,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                 targetNode,
                 markCptIncomplete,
                 token),
-            "The canonical parent edge was removed.",
+            L("Model_StatusEdgeRemoved"),
             cancellationToken);
     }
 
@@ -696,7 +735,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         var schemeId = snapshot.Scheme.SchemeId;
         BeginBusy();
         ClearError();
-        StatusMessage = "Saving the typed edge and its CPT/recipe migration...";
+        StatusMessage = L("Model_StatusSavingEdge");
         try
         {
             await mutation(cancellationToken);
@@ -716,7 +755,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         {
             if (IsCurrentContext(projectId, schemeId))
             {
-                SetError(error, "The edge edit was not applied.");
+                SetError(error, L("Model_StatusEdgeFailed"));
             }
 
             return false;
@@ -874,6 +913,91 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         await LoadGraphAsync(selected.SchemeId);
     }
 
+    private void OnLanguageChanged(object? sender, EventArgs args)
+    {
+        var viewMode = ParseViewMode(SelectedViewMode);
+        var nodeKind = ParseKind(SelectedKind);
+        var activation = ParseActivation(SelectedActivation);
+        var groupWasAll = SelectedGroup == _allGroupsLabel;
+        var tagWasAll = SelectedTag == _allTagsLabel;
+
+        RefreshLocalizedOptions();
+        SelectedViewMode = viewMode switch
+        {
+            GraphViewMode.ActiveOnly => _viewActiveOnlyLabel,
+            GraphViewMode.AllGlobalNodes => _viewAllLabel,
+            _ => _viewActiveInactiveLabel,
+        };
+        SelectedKind = nodeKind switch
+        {
+            ModelNodeKind.RawInput => _kindRawLabel,
+            ModelNodeKind.Evidence => _kindEvidenceLabel,
+            ModelNodeKind.Bn => _kindBnLabel,
+            _ => _kindAllLabel,
+        };
+        SelectedActivation = activation switch
+        {
+            true => _activationActiveLabel,
+            false => _activationInactiveLabel,
+            _ => _activationAllLabel,
+        };
+        SelectedGroup = groupWasAll ? _allGroupsLabel : SelectedGroup;
+        SelectedTag = tagWasAll ? _allTagsLabel : SelectedTag;
+        if (_snapshot is not null)
+        {
+            RefreshFilterOptions(_snapshot);
+            StatusMessage = F(
+                "Model_GraphSummary",
+                _snapshot.Nodes.Length,
+                _snapshot.Edges.Length,
+                _snapshot.Scheme.ComputedActiveClosure.Length,
+                DisplaySchemeName(_snapshot.Scheme));
+        }
+        else
+        {
+            ResetFilterOptions();
+            StatusMessage = _localization["Model_ChooseTaskScheme"];
+        }
+
+        UpdateSelectionSummary();
+        Reproject();
+    }
+
+    private void RefreshLocalizedOptions()
+    {
+        _allGroupsLabel = _localization["Task_AllGroups"];
+        _allTagsLabel = _localization["Task_AllTags"];
+        _viewActiveOnlyLabel = _localization["Model_ViewActiveOnly"];
+        _viewActiveInactiveLabel = _localization["Model_ViewActiveInactive"];
+        _viewAllLabel = _localization["Model_ViewAll"];
+        _kindAllLabel = _localization["Model_KindAll"];
+        _kindRawLabel = _localization["Model_KindRaw"];
+        _kindEvidenceLabel = _localization["Model_KindEvidence"];
+        _kindBnLabel = _localization["Model_KindBn"];
+        _activationAllLabel = _localization["Model_ActivationAll"];
+        _activationActiveLabel = _localization["Common_Active"];
+        _activationInactiveLabel = _localization["Common_Inactive"];
+
+        Replace(ViewModes, [_viewActiveOnlyLabel, _viewActiveInactiveLabel, _viewAllLabel]);
+        Replace(KindOptions, [_kindAllLabel, _kindRawLabel, _kindEvidenceLabel, _kindBnLabel]);
+        Replace(ActivationOptions, [_activationAllLabel, _activationActiveLabel, _activationInactiveLabel]);
+    }
+
+    private GraphProjectionLabels CreateGraphLabels() => new(
+        _localization["Node_KindRaw"],
+        _localization["Node_KindEvidence"],
+        _localization["Node_KindBn"],
+        _localization["Node_KindSubskill"],
+        _localization["Node_KindCompetency"],
+        _localization["Node_StatusActive"],
+        _localization["Node_StatusInactive"],
+        _localization["Node_StatusArchived"],
+        _localization["Node_TechnicalExecutable"],
+        _localization["Node_TechnicalIncomplete"],
+        _localization["Node_TechnicalBlocked"],
+        _localization["Node_OutputSuffix"],
+        _localization["Node_A11y"]);
+
     private void Reproject()
     {
         if (_snapshot is null)
@@ -888,10 +1012,12 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                     ParseViewMode(SelectedViewMode),
                     SearchText,
                     ParseKind(SelectedKind),
-                    SelectedGroup == AllGroups ? null : SelectedGroup,
-                    SelectedTag == AllTags ? null : SelectedTag,
+                    SelectedGroup == _allGroupsLabel ? null : SelectedGroup,
+                    SelectedTag == _allTagsLabel ? null : SelectedTag,
                     ParseActivation(SelectedActivation),
-                    _selectedNodeIds)));
+                    _selectedNodeIds,
+                    _localization.CurrentLanguage,
+                    CreateGraphLabels())));
         Replace(Nodes, result.Nodes);
         Replace(Edges, result.Edges);
         ExtentWidth = result.ExtentWidth;
@@ -905,14 +1031,14 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         var selectedTag = SelectedTag;
         ReplaceOptions(
             AvailableGroups,
-            AllGroups,
+            _allGroupsLabel,
             graph.Nodes.Select(node => node.Group).OfType<string>());
         ReplaceOptions(
             AvailableTags,
-            AllTags,
+            _allTagsLabel,
             graph.Nodes.SelectMany(node => node.Tags));
-        SelectedGroup = AvailableGroups.Contains(selectedGroup) ? selectedGroup : AllGroups;
-        SelectedTag = AvailableTags.Contains(selectedTag) ? selectedTag : AllTags;
+        SelectedGroup = AvailableGroups.Contains(selectedGroup) ? selectedGroup : _allGroupsLabel;
+        SelectedTag = AvailableTags.Contains(selectedTag) ? selectedTag : _allTagsLabel;
     }
 
     private void ClearGraph(string status)
@@ -940,7 +1066,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     {
         if (_selectedNodeIds.Count == 0)
         {
-            SelectedNodeSummary = "No node selected";
+            SelectedNodeSummary = _localization["Model_NoNodeSelected"];
             return;
         }
 
@@ -949,22 +1075,22 @@ public sealed partial class ModelStudioViewModel : ObservableObject
             var nodeId = _selectedNodeIds.Single();
             var node = _snapshot.Nodes.First(item => item.NodeId == nodeId);
             SelectedNodeSummary =
-                $"{node.ShortNameEn ?? node.NameEn ?? node.ShortNameZh ?? node.NameZh ?? node.NodeId} " +
-                $"• {node.NodeKind} • {node.TechnicalStatus}";
+                $"{BilingualTextSelector.SelectShortOrFull(_localization.CurrentLanguage, node.ShortNameZh, node.ShortNameEn, node.NameZh, node.NameEn, node.NodeId)} " +
+                $"• {DisplayNodeKind(node.NodeKind)} • {DisplayTechnicalStatus(node.TechnicalStatus)}";
             return;
         }
 
-        SelectedNodeSummary = $"{_selectedNodeIds.Count} nodes selected";
+        SelectedNodeSummary = _localization.Format("Model_NodesSelected", _selectedNodeIds.Count);
     }
 
     private void ResetFilterOptions()
     {
         AvailableGroups.Clear();
-        AvailableGroups.Add(AllGroups);
+        AvailableGroups.Add(_allGroupsLabel);
         AvailableTags.Clear();
-        AvailableTags.Add(AllTags);
-        SelectedGroup = AllGroups;
-        SelectedTag = AllTags;
+        AvailableTags.Add(_allTagsLabel);
+        SelectedGroup = _allGroupsLabel;
+        SelectedTag = _allTagsLabel;
     }
 
     private void ClearError()
@@ -973,30 +1099,52 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         ErrorMessage = string.Empty;
     }
 
-    private static GraphViewMode ParseViewMode(string value) => value switch
+    private string L(string key) => _localization[key];
+
+    private string F(string key, params object?[] arguments) =>
+        _localization.Format(key, arguments);
+
+    private string DisplayNodeKind(ModelNodeKind kind) => kind switch
     {
-        "Active only" => GraphViewMode.ActiveOnly,
-        "All global nodes" => GraphViewMode.AllGlobalNodes,
+        ModelNodeKind.RawInput => _localization["Node_KindRaw"],
+        ModelNodeKind.Evidence => _localization["Node_KindEvidence"],
+        _ => _localization["Node_KindBn"],
+    };
+
+    private string DisplayTechnicalStatus(ModelTechnicalStatus status) => status switch
+    {
+        ModelTechnicalStatus.Executable => _localization["Node_TechnicalExecutable"],
+        ModelTechnicalStatus.Incomplete => _localization["Node_TechnicalIncomplete"],
+        _ => _localization["Node_TechnicalBlocked"],
+    };
+
+    private GraphViewMode ParseViewMode(string value) => value switch
+    {
+        var item when item == _viewActiveOnlyLabel => GraphViewMode.ActiveOnly,
+        var item when item == _viewAllLabel => GraphViewMode.AllGlobalNodes,
         _ => GraphViewMode.ActiveAndInactive,
     };
 
-    private static ModelNodeKind? ParseKind(string value) => value switch
+    private ModelNodeKind? ParseKind(string value) => value switch
     {
-        "Raw Input" => ModelNodeKind.RawInput,
-        "Evidence" => ModelNodeKind.Evidence,
-        "BN" => ModelNodeKind.Bn,
+        var item when item == _kindRawLabel => ModelNodeKind.RawInput,
+        var item when item == _kindEvidenceLabel => ModelNodeKind.Evidence,
+        var item when item == _kindBnLabel => ModelNodeKind.Bn,
         _ => null,
     };
 
-    private static bool? ParseActivation(string value) => value switch
+    private bool? ParseActivation(string value) => value switch
     {
-        "Active" => true,
-        "Inactive" => false,
+        var item when item == _activationActiveLabel => true,
+        var item when item == _activationInactiveLabel => false,
         _ => null,
     };
 
-    private static string DisplaySchemeName(TaskScheme scheme) =>
-        scheme.NameEn ?? scheme.NameZh ?? scheme.SchemeId;
+    private string DisplaySchemeName(TaskScheme scheme) => BilingualTextSelector.Select(
+        _localization.CurrentLanguage,
+        scheme.NameZh,
+        scheme.NameEn,
+        scheme.SchemeId);
 
     private static void Replace<T>(ObservableCollection<T> target, IEnumerable<T> values)
     {

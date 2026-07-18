@@ -10,16 +10,16 @@
             IsOpen="True"
             Message="{Binding StatusMessage}"
             Severity="Informational"
-            Title="Canonical Evidence editor" />
+            Title="{Binding [Evidence_CanonicalEditor], Source={StaticResource Localization}}" />
         <InfoBar
             IsClosable="False"
             IsOpen="{Binding HasMissingOperators}"
             Message="{Binding MissingOperatorsText}"
             Severity="Error"
-            Title="Operator unavailable" />
+            Title="{Binding [Evidence_OperatorUnavailable], Source={StaticResource Localization}}" />
 
         <TabView MinHeight="600">
-            <TabViewItem Header="General">
+            <TabViewItem Header="{Binding [Editor_General], Source={StaticResource Localization}}">
                 <ScrollViewer Padding="4,12">
                     <StackPanel Spacing="12">
                         <Grid ColumnSpacing="12" RowSpacing="10">
@@ -32,80 +32,80 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <TextBox Header="English name" Text="{Binding NameEn, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Column="1" Header="中文名称" Text="{Binding NameZh, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Row="1" Header="English description" Text="{Binding DescriptionEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Header="中文说明" Text="{Binding DescriptionZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                            <TextBox Grid.Row="2" Header="Group" Text="{Binding Group, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Row="2" Grid.Column="1" Header="Tags (comma/newline separated)" Text="{Binding TagsText, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Header="{Binding [Editor_EnglishName], Source={StaticResource Localization}}" Text="{Binding NameEn, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Column="1" Header="{Binding [Editor_ChineseName], Source={StaticResource Localization}}" Text="{Binding NameZh, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="1" Header="{Binding [Editor_EnglishDescription], Source={StaticResource Localization}}" Text="{Binding DescriptionEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Header="{Binding [Editor_ChineseDescription], Source={StaticResource Localization}}" Text="{Binding DescriptionZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Row="2" Header="{Binding [Common_Group], Source={StaticResource Localization}}" Text="{Binding Group, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Row="2" Grid.Column="1" Header="{Binding [Editor_TagsSeparated], Source={StaticResource Localization}}" Text="{Binding TagsText, Mode=TwoWay}" TextChanged="OnFieldChanged" />
                         </Grid>
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBox Header="Anchor/evidence name" Text="{Binding AnchorName, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Column="1" Header="Anchor/evidence description" Text="{Binding AnchorDescription, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Header="{Binding [Evidence_AnchorName], Source={StaticResource Localization}}" Text="{Binding AnchorName, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Column="1" Header="{Binding [Evidence_AnchorDescription], Source={StaticResource Localization}}" Text="{Binding AnchorDescription, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                         </Grid>
-                        <TextBox AcceptsReturn="True" Header="Recipe documentation summary" MinHeight="100" Text="{Binding RecipeSummary, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        <TextBox AcceptsReturn="True" Header="{Binding [Evidence_RecipeSummary], Source={StaticResource Localization}}" MinHeight="100" Text="{Binding RecipeSummary, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBox AcceptsReturn="True" Header="English help" MinHeight="120" Text="{Binding HelpTextEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                            <TextBox Grid.Column="1" AcceptsReturn="True" Header="中文帮助" MinHeight="120" Text="{Binding HelpTextZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox AcceptsReturn="True" Header="{Binding [Editor_EnglishHelp], Source={StaticResource Localization}}" MinHeight="120" Text="{Binding HelpTextEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Grid.Column="1" AcceptsReturn="True" Header="{Binding [Editor_ChineseHelp], Source={StaticResource Localization}}" MinHeight="120" Text="{Binding HelpTextZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>
             </TabViewItem>
 
-            <TabViewItem Header="Raw Input bindings">
+            <TabViewItem Header="{Binding [Evidence_RawBindings], Source={StaticResource Localization}}">
                 <Grid Padding="4,12" ColumnSpacing="14">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Spacing="8">
-                        <TextBlock FontWeight="SemiBold" Text="Fixed canonical bindings" />
-                        <TextBlock Opacity="0.68" Text="Add/remove Raw Input extraction edges on the main graph. The backend migrates the complete recipe binding atomically." TextWrapping="Wrap" />
+                        <TextBlock FontWeight="SemiBold" Text="{Binding [Evidence_FixedBindings], Source={StaticResource Localization}}" />
+                        <TextBlock Opacity="0.68" Text="{Binding [Evidence_FixedBindingsDescription], Source={StaticResource Localization}}" TextWrapping="Wrap" />
                         <ListView ItemsSource="{Binding RawBindings}" />
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="8">
-                        <TextBlock FontWeight="SemiBold" Text="Recipe outputs" />
+                        <TextBlock FontWeight="SemiBold" Text="{Binding [Evidence_RecipeOutputs], Source={StaticResource Localization}}" />
                         <ListView ItemsSource="{Binding OutputBindings}" />
                     </StackPanel>
                 </Grid>
             </TabViewItem>
 
-            <TabViewItem Header="EvidenceRecipe graph">
+            <TabViewItem Header="{Binding [Evidence_RecipeGraph], Source={StaticResource Localization}}">
                 <ScrollViewer Padding="4,12" HorizontalScrollBarVisibility="Auto">
                     <editors:OperatorGraphEditor x:Name="OperatorGraph" />
                 </ScrollViewer>
             </TabViewItem>
 
-            <TabViewItem Header="Parameters">
+            <TabViewItem Header="{Binding [Evidence_Parameters], Source={StaticResource Localization}}">
                 <ScrollViewer Padding="4,12">
                     <StackPanel Spacing="10">
-                        <TextBlock FontWeight="SemiBold" Text="Schema-driven operator parameters" />
-                        <TextBlock Opacity="0.68" Text="Select a recipe node in the EvidenceRecipe graph tab. Controls are generated from the backend OperatorDefinition schema and UI hints; unknown JSON is preserved read-only." TextWrapping="Wrap" />
+                        <TextBlock FontWeight="SemiBold" Text="{Binding [Evidence_SchemaParameters], Source={StaticResource Localization}}" />
+                        <TextBlock Opacity="0.68" Text="{Binding [Evidence_SchemaParametersDescription], Source={StaticResource Localization}}" TextWrapping="Wrap" />
                         <editors:SchemaParameterForm x:Name="ParameterEditor" />
                     </StackPanel>
                 </ScrollViewer>
             </TabViewItem>
 
-            <TabViewItem Header="Windows / Aggregation / Scoring / D-A-U">
+            <TabViewItem Header="{Binding [Evidence_ScoringTab], Source={StaticResource Localization}}">
                 <ScrollViewer Padding="4,12">
                     <StackPanel Spacing="12">
-                        <TextBlock Opacity="0.68" Text="Windowing and aggregation are ordinary operator nodes in the typed recipe graph. Scoring and D-A-U mapping remain explicit typed JSON contracts." TextWrapping="Wrap" />
-                        <TextBox AcceptsReturn="True" Header="Scoring contract JSON (blank means no scoring)" MinHeight="180" Text="{Binding ScoringJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                        <TextBox AcceptsReturn="True" Header="Observation mapping JSON" MinHeight="180" Text="{Binding ObservationMappingJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                        <TextBox AcceptsReturn="True" Header="Modality attribution weights JSON" MinHeight="120" Text="{Binding ModalityWeightsJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        <TextBlock Opacity="0.68" Text="{Binding [Evidence_ScoringDescription], Source={StaticResource Localization}}" TextWrapping="Wrap" />
+                        <TextBox AcceptsReturn="True" Header="{Binding [Evidence_ScoringJson], Source={StaticResource Localization}}" MinHeight="180" Text="{Binding ScoringJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        <TextBox AcceptsReturn="True" Header="{Binding [Evidence_ObservationMapping], Source={StaticResource Localization}}" MinHeight="180" Text="{Binding ObservationMappingJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        <TextBox AcceptsReturn="True" Header="{Binding [Evidence_ModalityWeights], Source={StaticResource Localization}}" MinHeight="120" Text="{Binding ModalityWeightsJson, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                     </StackPanel>
                 </ScrollViewer>
             </TabViewItem>
 
-            <TabViewItem Header="Observation states">
+            <TabViewItem Header="{Binding [Evidence_ObservationStates], Source={StaticResource Localization}}">
                 <StackPanel Padding="4,12" Spacing="10">
                     <Grid ColumnSpacing="10">
                         <Grid.ColumnDefinitions>
@@ -113,13 +113,13 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <ComboBox Header="Observation policy" ItemsSource="{Binding ObservationPolicies}" SelectedItem="{Binding ObservationPolicy, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
-                        <Button Grid.Column="1" VerticalAlignment="Bottom" Click="OnAddStateClick" Content="Add state" />
-                        <Button Grid.Column="2" VerticalAlignment="Bottom" Click="OnRemoveStateClick" Content="Remove selected" />
+                        <ComboBox Header="{Binding [Evidence_ObservationPolicy], Source={StaticResource Localization}}" ItemsSource="{Binding ObservationPolicies}" SelectedItem="{Binding ObservationPolicy, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
+                        <Button Grid.Column="1" VerticalAlignment="Bottom" Click="OnAddStateClick" Content="{Binding [Editor_AddState], Source={StaticResource Localization}}" />
+                        <Button Grid.Column="2" VerticalAlignment="Bottom" Click="OnRemoveStateClick" Content="{Binding [Editor_RemoveSelected], Source={StaticResource Localization}}" />
                     </Grid>
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Click="OnCommitStatesClick" Content="Commit states + mark affected CPTs incomplete" />
-                        <TextBlock VerticalAlignment="Center" Opacity="0.68" Text="One backend transaction updates this axis and every dependent CPT axis." />
+                        <Button Click="OnCommitStatesClick" Content="{Binding [Editor_CommitStates], Source={StaticResource Localization}}" />
+                        <TextBlock VerticalAlignment="Center" Opacity="0.68" Text="{Binding [Editor_StateTransactionDescription], Source={StaticResource Localization}}" />
                     </StackPanel>
                     <ListView x:Name="StateList" ItemsSource="{Binding ObservationStates}">
                         <ListView.ItemTemplate>
@@ -130,9 +130,9 @@
                                         <ColumnDefinition Width="180" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBox Header="State ID" Text="{Binding StateId, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                                    <TextBox Grid.Column="1" Header="Label" Text="{Binding Label, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                                    <TextBox Grid.Column="2" Header="Description" Text="{Binding Description, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                                    <TextBox Header="{Binding [Editor_StateId], Source={StaticResource Localization}}" Text="{Binding StateId, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                                    <TextBox Grid.Column="1" Header="{Binding [Editor_Label], Source={StaticResource Localization}}" Text="{Binding Label, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                                    <TextBox Grid.Column="2" Header="{Binding [Common_Description], Source={StaticResource Localization}}" Text="{Binding Description, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -140,38 +140,38 @@
                 </StackPanel>
             </TabViewItem>
 
-            <TabViewItem Header="Probabilistic parents / CPT">
+            <TabViewItem Header="{Binding [Evidence_ProbabilisticParents], Source={StaticResource Localization}}">
                 <ScrollViewer Padding="4,12" HorizontalScrollBarVisibility="Auto">
                     <StackPanel Spacing="12">
-                        <InfoBar IsClosable="False" IsOpen="True" Message="Evidence probabilistic parents are BN nodes. Add/remove/reorder those fixed edges on the main graph; its atomic migration dialog updates this same canonical CPT. The complete row grid below is shared with BN nodes." Severity="Informational" Title="Canonical BN relationship" />
-                        <TextBlock FontWeight="SemiBold" Text="Fixed parents" />
+                        <InfoBar IsClosable="False" IsOpen="True" Message="{Binding [Evidence_ProbabilisticDescription], Source={StaticResource Localization}}" Severity="Informational" Title="{Binding [Evidence_CanonicalBnRelationship], Source={StaticResource Localization}}" />
+                        <TextBlock FontWeight="SemiBold" Text="{Binding [Editor_FixedParents], Source={StaticResource Localization}}" />
                         <TextBlock Text="{Binding ProbabilisticParentsText}" TextWrapping="Wrap" />
                         <editors:CptGridEditor x:Name="EvidenceCptGrid" />
                     </StackPanel>
                 </ScrollViewer>
             </TabViewItem>
 
-            <TabViewItem Header="Preview / Trace">
+            <TabViewItem Header="{Binding [Evidence_PreviewTrace], Source={StaticResource Localization}}">
                 <StackPanel Padding="4,12" Spacing="12">
-                    <TextBlock Opacity="0.68" Text="Preview is requested from the Python backend for the selected managed session and current task. C# does not evaluate operators." TextWrapping="Wrap" />
+                    <TextBlock Opacity="0.68" Text="{Binding [Evidence_PreviewDescription], Source={StaticResource Localization}}" TextWrapping="Wrap" />
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Click="OnPreviewClick" Content="Request backend preview" />
-                        <Button Click="OnCancelPreviewClick" Content="Cancel" />
+                        <Button Click="OnPreviewClick" Content="{Binding [Evidence_RequestPreview], Source={StaticResource Localization}}" />
+                        <Button Click="OnCancelPreviewClick" Content="{Binding [Common_Cancel], Source={StaticResource Localization}}" />
                     </StackPanel>
                     <TextBlock FontFamily="Consolas" Text="{Binding PreviewSummary}" TextWrapping="Wrap" />
                 </StackPanel>
             </TabViewItem>
 
-            <TabViewItem Header="Used by schemes">
+            <TabViewItem Header="{Binding [Editor_UsedBySchemes], Source={StaticResource Localization}}">
                 <StackPanel Padding="4,12" Spacing="8">
-                    <InfoBar IsClosable="False" IsOpen="True" Message="This is one shared complete node. A canonical edit affects future runs in every listed task scheme; historical RunSnapshots remain immutable." Severity="Warning" Title="Shared node impact" />
+                    <InfoBar IsClosable="False" IsOpen="True" Message="{Binding [Editor_SharedImpactDescription], Source={StaticResource Localization}}" Severity="Warning" Title="{Binding [Editor_SharedImpact], Source={StaticResource Localization}}" />
                     <ListView ItemsSource="{Binding UsedBySchemes}" />
                 </StackPanel>
             </TabViewItem>
 
-            <TabViewItem Header="History">
+            <TabViewItem Header="{Binding [Editor_History], Source={StaticResource Localization}}">
                 <StackPanel Padding="4,12" Spacing="8">
-                    <TextBlock Opacity="0.68" Text="Canonical change events are read from the backend audit/history journal." TextWrapping="Wrap" />
+                    <TextBlock Opacity="0.68" Text="{Binding [Editor_HistoryDescription], Source={StaticResource Localization}}" TextWrapping="Wrap" />
                     <ListView ItemsSource="{Binding HistoryItems}" />
                 </StackPanel>
             </TabViewItem>

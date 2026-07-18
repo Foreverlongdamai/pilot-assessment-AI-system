@@ -19,22 +19,15 @@ public sealed record ModalityStatusItem(
 
 public partial class SessionExplorerViewModel : ObservableObject
 {
-    private static readonly (string Id, string Name, string Family)[] ModalityDefinitions =
-    [
-        ("X", "Flight state", "Simulator state X(t)"),
-        ("U", "Control input", "Pilot control U(t)"),
-        ("I", "VR visual scene", "Pilot field of view I(t)"),
-        ("G", "Gaze and AOI", "Eye tracking G(t)"),
-        ("pilot_camera", "Pilot camera", "Pilot image frames"),
-        ("EEG", "EEG", "Physiology P(t)"),
-        ("ECG", "ECG", "Physiology P(t)"),
-    ];
-
     private readonly IProjectSessionGateway _gateway;
     private readonly IProjectFolderPicker _folderPicker;
     private readonly ApplicationShellState _shellState;
+    private readonly ILocalizationLookup? _localization;
     private string? _inspectedSourcePath;
     private long _selectionSequence;
+    private string _statusKey = "Session_StatusStart";
+    private object?[] _statusArguments = [];
+    private (string Key, string Fallback)? _unknownModalityDetail;
 
     [ObservableProperty]
     public partial string? ProjectId { get; private set; }
@@ -97,12 +90,16 @@ public partial class SessionExplorerViewModel : ObservableObject
     public SessionExplorerViewModel(
         IProjectSessionGateway gateway,
         IProjectFolderPicker folderPicker,
-        ApplicationShellState shellState)
+        ApplicationShellState shellState,
+        ILocalizationLookup? localization = null)
     {
         _gateway = gateway;
         _folderPicker = folderPicker;
         _shellState = shellState;
-        ShowUnknownModalities("No report loaded");
+        _localization = localization;
+        _localization?.LanguageChanged += OnLanguageChanged;
+        SetStatus("Session_StatusStart", "Open a managed project to inspect and import a Session Bundle.");
+        ShowUnknownModalities("Session_NoReportLoaded", "No report loaded");
     }
 
     public async Task LoadAsync(
@@ -130,10 +127,10 @@ public partial class SessionExplorerViewModel : ObservableObject
         InspectionReport = null;
         ClearSelection();
         ClearError();
-        InspectionSummary = "Not inspected";
-        InspectionIssues = "No inspection report loaded.";
-        StatusMessage = "Open a managed project to inspect and import a Session Bundle.";
-        ShowUnknownModalities("No report loaded");
+        InspectionSummary = L("Session_NotInspected", "Not inspected");
+        InspectionIssues = L("Session_NoInspectionReport", "No inspection report loaded.");
+        SetStatus("Session_StatusStart", "Open a managed project to inspect and import a Session Bundle.");
+        ShowUnknownModalities("Session_NoReportLoaded", "No report loaded");
         OnPropertyChanged(nameof(HasProject));
         NotifyCommandStates();
     }
@@ -172,10 +169,11 @@ public partial class SessionExplorerViewModel : ObservableObject
     [RelayCommand]
     private async Task ChooseSessionBundleAsync()
     {
-        var selected = await _folderPicker.PickFolderAsync("Inspect Session Bundle");
+        var selected = await _folderPicker.PickFolderAsync(
+            L("Session_InspectBundle", "Inspect Session Bundle"));
         if (string.IsNullOrWhiteSpace(selected))
         {
-            StatusMessage = "Session selection cancelled; nothing changed.";
+            SetStatus("Session_StatusSelectionCancelled", "Session selection cancelled; nothing changed.");
             return;
         }
 
@@ -184,9 +182,9 @@ public partial class SessionExplorerViewModel : ObservableObject
         {
             InspectionReport = null;
             _inspectedSourcePath = null;
-            InspectionSummary = "Not inspected";
-            InspectionIssues = "Inspect this source before importing it.";
-            ShowUnknownModalities("Source not inspected");
+            InspectionSummary = L("Session_NotInspected", "Not inspected");
+            InspectionIssues = L("Session_InspectBeforeImport", "Inspect this source before importing it.");
+            ShowUnknownModalities("Session_SourceNotInspected", "Source not inspected");
         }
         NotifyCommandStates();
     }
@@ -198,8 +196,9 @@ public partial class SessionExplorerViewModel : ObservableObject
         var report = await _gateway.InspectSessionAsync(source);
         _inspectedSourcePath = source;
         ApplyReport(report);
-        StatusMessage =
-            "Inspection is read-only. Import will copy this exact bundle into managed project storage.";
+        SetStatus(
+            "Session_StatusInspectionReadOnly",
+            "Inspection is read-only. Import will copy this exact bundle into managed project storage.");
     });
 
     [RelayCommand(CanExecute = nameof(CanImport))]
@@ -225,9 +224,11 @@ public partial class SessionExplorerViewModel : ObservableObject
 
         _inspectedSourcePath = source;
         ApplyReport(inspected);
-        StatusMessage = imported.Replayed
-            ? "The existing managed revision was reconciled from the idempotent import receipt."
-            : "Import complete. The source remains external; the managed revision is an exact project copy.";
+        SetStatus(
+            imported.Replayed ? "Session_StatusImportReplayed" : "Session_StatusImportComplete",
+            imported.Replayed
+                ? "The existing managed revision was reconciled from the idempotent import receipt."
+                : "Import complete. The source remains external; the managed revision is an exact project copy.");
     });
 
     [RelayCommand(CanExecute = nameof(HasProject))]
@@ -255,7 +256,7 @@ public partial class SessionExplorerViewModel : ObservableObject
         _shellState.SetProjectContext(ProjectId, session.Session.SessionId);
         if (revision is null)
         {
-            ShowUnknownModalities("No managed revision selected");
+            ShowUnknownModalities("Session_NoManagedRevision", "No managed revision selected");
             return;
         }
 
@@ -272,7 +273,11 @@ public partial class SessionExplorerViewModel : ObservableObject
 
             ReadinessArtifactText = stored.Artifact is null
                 ? revision.IngestionReadinessRef
-                : $"{stored.Artifact.ArtifactId} · {stored.Artifact.ByteSize:N0} bytes";
+                : F(
+                    "Session_ArtifactBytes",
+                    "{0} · {1:N0} bytes",
+                    stored.Artifact.ArtifactId,
+                    stored.Artifact.ByteSize);
             if (stored.Report is not null)
             {
                 ApplyReport(stored.Report);
@@ -280,10 +285,12 @@ public partial class SessionExplorerViewModel : ObservableObject
             else
             {
                 InspectionSummary = stored.InlineAvailable
-                    ? "Stored report unavailable"
-                    : "Stored report is reference-only";
-                InspectionIssues = "The canonical artifact reference is preserved; no large payload was loaded.";
-                ShowUnknownModalities("Report not loaded inline");
+                    ? L("Session_StoredReportUnavailable", "Stored report unavailable")
+                    : L("Session_StoredReportReferenceOnly", "Stored report is reference-only");
+                InspectionIssues = L(
+                    "Session_ReferencePreserved",
+                    "The canonical artifact reference is preserved; no large payload was loaded.");
+                ShowUnknownModalities("Session_ReportNotInline", "Report not loaded inline");
             }
         }
         catch (Exception error)
@@ -291,7 +298,9 @@ public partial class SessionExplorerViewModel : ObservableObject
             if (sequence == Volatile.Read(ref _selectionSequence))
             {
                 SetError(error);
-                ShowUnknownModalities("Stored report could not be loaded");
+                ShowUnknownModalities(
+                    "Session_StoredReportLoadFailed",
+                    "Stored report could not be loaded");
             }
         }
     }
@@ -299,31 +308,45 @@ public partial class SessionExplorerViewModel : ObservableObject
     private void ApplyReport(IngestionReadinessReport report)
     {
         InspectionReport = report;
-        InspectionSummary =
-            $"{report.Disposition} · session {report.SessionId} · " +
-            $"formal run authorized: {report.FormalRunAuthorized}";
+        _unknownModalityDetail = null;
+        InspectionSummary = F(
+            "Session_ReportSummary",
+            "{0} · session {1} · formal run authorized: {2}",
+            report.Disposition,
+            report.SessionId,
+            report.FormalRunAuthorized);
         var issues = report.GlobalIssues
             .Concat(report.StreamResults.Values.SelectMany(result => result.Issues))
             .Select(issue => $"{issue.Severity}: {issue.Message} — {issue.Remediation}")
             .ToArray();
         InspectionIssues = issues.Length == 0
-            ? "No ingestion issues reported."
+            ? L("Session_NoIngestionIssues", "No ingestion issues reported.")
             : string.Join(Environment.NewLine, issues);
 
         Modalities.Clear();
-        foreach (var (id, name, family) in ModalityDefinitions)
+        foreach (var (id, name, family) in ModalityDefinitions())
         {
             if (!report.StreamResults.TryGetValue(id, out var result))
             {
                 Modalities.Add(new ModalityStatusItem(
-                    id, name, family, "undeclared", "unknown", "No canonical stream result", false));
+                    id,
+                    name,
+                    family,
+                    "undeclared",
+                    "unknown",
+                    L("Session_NoCanonicalStream", "No canonical stream result"),
+                    false));
                 continue;
             }
 
             var detail = result.Readiness is StreamReadiness.Ready
-                ? $"{result.RowCount.GetValueOrDefault():N0} rows" +
+                ? F(
+                    "Session_Rows",
+                    "{0:N0} rows",
+                    result.RowCount.GetValueOrDefault()) +
                     (result.ObservedSampleRateHz is double rate ? $" · {rate:G6} Hz" : string.Empty)
-                : result.Issues.FirstOrDefault()?.Message ?? "No exported content inspected";
+                : result.Issues.FirstOrDefault()?.Message ??
+                  L("Session_NoExportedContent", "No exported content inspected");
             Modalities.Add(new ModalityStatusItem(
                 id,
                 name,
@@ -341,9 +364,9 @@ public partial class SessionExplorerViewModel : ObservableObject
         SelectedSession = null;
         SelectedRevision = null;
         Revisions.Clear();
-        ManagedBundlePathText = "No managed revision selected";
-        ReadinessArtifactText = "Not available";
-        SynchronizationArtifactText = "Not generated";
+        ManagedBundlePathText = L("Session_NoManagedRevision", "No managed revision selected");
+        ReadinessArtifactText = L("Session_NotAvailable", "Not available");
+        SynchronizationArtifactText = L("Session_NotGenerated", "Not generated");
         if (ProjectId is not null)
         {
             _shellState.SetProjectContext(ProjectId);
@@ -353,16 +376,20 @@ public partial class SessionExplorerViewModel : ObservableObject
     private void UpdateRevisionText(SessionRevision? revision)
     {
         ManagedBundlePathText = revision is null
-            ? "No managed revision selected"
+            ? L("Session_NoManagedRevision", "No managed revision selected")
             : revision.ManagedBundlePath;
-        ReadinessArtifactText = revision?.IngestionReadinessRef ?? "Not available";
-        SynchronizationArtifactText = revision?.SynchronizationRef ?? "Not generated";
+        ReadinessArtifactText = revision?.IngestionReadinessRef ??
+            L("Session_NotAvailable", "Not available");
+        SynchronizationArtifactText = revision?.SynchronizationRef ??
+            L("Session_NotGenerated", "Not generated");
     }
 
-    private void ShowUnknownModalities(string detail)
+    private void ShowUnknownModalities(string detailKey, string fallback)
     {
+        _unknownModalityDetail = (detailKey, fallback);
+        var detail = L(detailKey, fallback);
         Modalities.Clear();
-        foreach (var (id, name, family) in ModalityDefinitions)
+        foreach (var (id, name, family) in ModalityDefinitions())
         {
             Modalities.Add(new ModalityStatusItem(
                 id, name, family, "unknown", "not loaded", detail, false));
@@ -415,7 +442,7 @@ public partial class SessionExplorerViewModel : ObservableObject
         if (selected is null)
         {
             ClearSelection();
-            StatusMessage = "This project has no managed sessions yet.";
+            SetStatus("Session_StatusNoManaged", "This project has no managed sessions yet.");
             return;
         }
 
@@ -424,14 +451,14 @@ public partial class SessionExplorerViewModel : ObservableObject
                 string.Equals(item.SessionRevisionId, revisionId, StringComparison.Ordinal))
             ?? selected.Revisions.FirstOrDefault();
         await SelectCoreAsync(selected, revision, cancellationToken);
-        StatusMessage = $"Loaded {Sessions.Count} managed session(s).";
+        SetStatus("Session_StatusLoaded", "Loaded {0} managed session(s).", Sessions.Count);
     }
 
     private void SetError(Exception error)
     {
         HasError = true;
         ErrorMessage = error.Message;
-        StatusMessage = "The project/session operation did not complete.";
+        SetStatus("Session_StatusFailed", "The project/session operation did not complete.");
     }
 
     private void ClearError()
@@ -439,6 +466,49 @@ public partial class SessionExplorerViewModel : ObservableObject
         HasError = false;
         ErrorMessage = string.Empty;
     }
+
+    private void OnLanguageChanged(object? sender, EventArgs args)
+    {
+        StatusMessage = _localization?.Format(_statusKey, _statusArguments) ?? StatusMessage;
+        UpdateRevisionText(SelectedRevision);
+        if (InspectionReport is not null)
+        {
+            ApplyReport(InspectionReport);
+            return;
+        }
+
+        InspectionSummary = L("Session_NotInspected", "Not inspected");
+        InspectionIssues = string.IsNullOrWhiteSpace(SourceBundlePath)
+            ? L("Session_NoInspectionReport", "No inspection report loaded.")
+            : L("Session_InspectBeforeImport", "Inspect this source before importing it.");
+        if (_unknownModalityDetail is { } unknown)
+        {
+            ShowUnknownModalities(unknown.Key, unknown.Fallback);
+        }
+    }
+
+    private (string Id, string Name, string Family)[] ModalityDefinitions() =>
+    [
+        ("X", L("Modality_X_Name", "Flight state"), L("Modality_X_Family", "Simulator state X(t)")),
+        ("U", L("Modality_U_Name", "Control input"), L("Modality_U_Family", "Pilot control U(t)")),
+        ("I", L("Modality_I_Name", "VR visual scene"), L("Modality_I_Family", "Pilot field of view I(t)")),
+        ("G", L("Modality_G_Name", "Gaze and AOI"), L("Modality_G_Family", "Eye tracking G(t)")),
+        ("pilot_camera", L("Modality_Camera_Name", "Pilot camera"), L("Modality_Camera_Family", "Pilot image frames")),
+        ("EEG", "EEG", L("Modality_Physiology", "Physiology P(t)")),
+        ("ECG", "ECG", L("Modality_Physiology", "Physiology P(t)")),
+    ];
+
+    private void SetStatus(string key, string fallback, params object?[] arguments)
+    {
+        _statusKey = key;
+        _statusArguments = arguments;
+        StatusMessage = F(key, fallback, arguments);
+    }
+
+    private string L(string key, string fallback) => _localization?[key] ?? fallback;
+
+    private string F(string key, string fallback, params object?[] arguments) =>
+        _localization?.Format(key, arguments) ?? string.Format(fallback, arguments);
 
     private void NotifyCommandStates()
     {

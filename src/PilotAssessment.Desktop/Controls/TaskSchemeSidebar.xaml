@@ -15,10 +15,10 @@
         </Grid.RowDefinitions>
 
         <StackPanel Spacing="4">
-            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Task schemes" />
+            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding [Task_Title], Source={StaticResource Localization}}" />
             <TextBlock
                 Opacity="0.68"
-                Text="Parallel task configurations; switching does not mutate the model."
+                Text="{Binding [Task_Subtitle], Source={StaticResource Localization}}"
                 TextWrapping="Wrap" />
         </StackPanel>
 
@@ -29,36 +29,36 @@
             DefaultLabelPosition="Collapsed"
             IsDynamicOverflowEnabled="True">
             <AppBarButton
-                AutomationProperties.Name="Create task scheme"
+                AutomationProperties.Name="{Binding [Task_CreateA11y], Source={StaticResource Localization}}"
                 Click="OnCreateClick"
-                Label="New">
+                Label="{Binding [Common_New], Source={StaticResource Localization}}">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE710;" />
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton
-                AutomationProperties.Name="Copy selected task scheme"
+                AutomationProperties.Name="{Binding [Task_CopyA11y], Source={StaticResource Localization}}"
                 Click="OnCopyClick"
                 IsEnabled="{x:Bind ViewModel.CanMutate, Mode=OneWay}"
-                Label="Copy">
+                Label="{Binding [Common_Copy], Source={StaticResource Localization}}">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE8C8;" />
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton
-                AutomationProperties.Name="Rename selected task scheme"
+                AutomationProperties.Name="{Binding [Task_RenameA11y], Source={StaticResource Localization}}"
                 Click="OnRenameClick"
                 IsEnabled="{x:Bind ViewModel.CanMutate, Mode=OneWay}"
-                Label="Rename">
+                Label="{Binding [Common_Rename], Source={StaticResource Localization}}">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE8AC;" />
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton
-                AutomationProperties.Name="Archive selected task scheme"
+                AutomationProperties.Name="{Binding [Task_ArchiveA11y], Source={StaticResource Localization}}"
                 Click="OnArchiveClick"
                 IsEnabled="{x:Bind ViewModel.CanMutate, Mode=OneWay}"
-                Label="Archive">
+                Label="{Binding [Common_Archive], Source={StaticResource Localization}}">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE7B8;" />
                 </AppBarButton.Icon>
@@ -68,11 +68,11 @@
         <TextBox
             Grid.Row="2"
             Margin="0,0,0,10"
-            AutomationProperties.Name="Search task schemes"
-            PlaceholderText="Search name, ID, tag or group"
+            AutomationProperties.Name="{Binding [Task_SearchA11y], Source={StaticResource Localization}}"
+            PlaceholderText="{Binding [Task_SearchPlaceholder], Source={StaticResource Localization}}"
             TextChanged="OnSearchTextChanged">
             <TextBox.Header>
-                <TextBlock Text="Find" />
+                <TextBlock Text="{Binding [Common_Find], Source={StaticResource Localization}}" />
             </TextBox.Header>
         </TextBox>
 
@@ -86,32 +86,32 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <ComboBox
-                Header="Group"
+                Header="{Binding [Common_Group], Source={StaticResource Localization}}"
                 ItemsSource="{x:Bind ViewModel.AvailableGroups}"
                 SelectedItem="{x:Bind ViewModel.SelectedGroupFilter, Mode=TwoWay}" />
             <ComboBox
                 Grid.Column="1"
-                Header="Tag"
+                Header="{Binding [Common_Tag], Source={StaticResource Localization}}"
                 ItemsSource="{x:Bind ViewModel.AvailableTags}"
                 SelectedItem="{x:Bind ViewModel.SelectedTagFilter, Mode=TwoWay}" />
             <ComboBox
                 Grid.Row="1"
-                Header="Sort"
+                Header="{Binding [Common_Sort], Source={StaticResource Localization}}"
                 ItemsSource="{x:Bind ViewModel.SortOptions}"
                 SelectedItem="{x:Bind ViewModel.SelectedSort, Mode=TwoWay}" />
             <ToggleSwitch
                 Grid.Row="1"
                 Grid.Column="1"
-                Header="Lifecycle"
+                Header="{Binding [Common_Lifecycle], Source={StaticResource Localization}}"
                 IsOn="{x:Bind ViewModel.ShowArchived, Mode=TwoWay}"
-                OffContent="Active"
-                OnContent="Include archived" />
+                OffContent="{Binding [Common_Active], Source={StaticResource Localization}}"
+                OnContent="{Binding [Common_IncludeArchived], Source={StaticResource Localization}}" />
         </Grid>
 
         <ListView
             x:Name="SchemeList"
             Grid.Row="4"
-            AutomationProperties.Name="Task scheme list"
+            AutomationProperties.Name="{Binding [Task_ListA11y], Source={StaticResource Localization}}"
             IsItemClickEnabled="True"
             ItemsSource="{x:Bind ViewModel.Schemes}"
             SelectedItem="{x:Bind ViewModel.SelectedScheme, Mode=OneWay}"

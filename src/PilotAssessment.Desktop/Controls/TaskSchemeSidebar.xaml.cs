@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
+using PilotAssessment.Desktop.Core.State;
 using PilotAssessment.Desktop.Core.ViewModels;
 
 namespace PilotAssessment.Desktop.Controls;
@@ -16,9 +17,15 @@ public sealed partial class TaskSchemeSidebar : UserControl
 
     public TaskSchemeListViewModel ViewModel { get; }
 
+    private ILocalizationLookup Localization =>
+        App.Services.GetRequiredService<ILocalizationLookup>();
+
     private async void OnCreateClick(object sender, RoutedEventArgs args)
     {
-        var names = await ShowNameDialogAsync("Create task scheme", "New task scheme", null);
+        var names = await ShowNameDialogAsync(
+            Localization["Task_CreateDialog"],
+            Localization["Task_DefaultNewName"],
+            null);
         if (names is not null)
         {
             await RunUiActionAsync(() => ViewModel.CreateAsync(names.NameEn, names.NameZh));
@@ -37,7 +44,7 @@ public sealed partial class TaskSchemeSidebar : UserControl
         }
 
         var names = await ShowNameDialogAsync(
-            "Rename task scheme",
+            Localization["Task_RenameDialog"],
             selected.NameEn,
             selected.NameZh);
         if (names is not null)
@@ -57,10 +64,10 @@ public sealed partial class TaskSchemeSidebar : UserControl
         var confirmation = new ContentDialog
         {
             XamlRoot = XamlRoot,
-            Title = "Archive task scheme?",
-            Content = $"{selected.DisplayName} will become read-only and disappear from the active list. Other task schemes are unchanged.",
-            PrimaryButtonText = "Archive",
-            CloseButtonText = "Cancel",
+            Title = Localization["Task_ArchiveDialog"],
+            Content = Localization.Format("Task_ArchiveDescription", selected.DisplayName),
+            PrimaryButtonText = Localization["Common_Archive"],
+            CloseButtonText = Localization["Common_Cancel"],
             DefaultButton = ContentDialogButton.Close,
         };
         if (await confirmation.ShowAsync() is ContentDialogResult.Primary)
@@ -87,15 +94,15 @@ public sealed partial class TaskSchemeSidebar : UserControl
     {
         var english = new TextBox
         {
-            Header = "English name",
+            Header = Localization["Editor_EnglishName"],
             Text = nameEn ?? string.Empty,
-            PlaceholderText = "At least one language is required",
+            PlaceholderText = Localization["Task_OneLanguageRequired"],
         };
         var chinese = new TextBox
         {
-            Header = "Chinese name",
+            Header = Localization["Editor_ChineseName"],
             Text = nameZh ?? string.Empty,
-            PlaceholderText = "至少填写一种语言",
+            PlaceholderText = Localization["Task_OneLanguageRequired"],
         };
         var fields = new StackPanel { Spacing = 12 };
         fields.Children.Add(english);
@@ -105,8 +112,8 @@ public sealed partial class TaskSchemeSidebar : UserControl
             XamlRoot = XamlRoot,
             Title = title,
             Content = fields,
-            PrimaryButtonText = "Save",
-            CloseButtonText = "Cancel",
+            PrimaryButtonText = Localization["Task_Save"],
+            CloseButtonText = Localization["Common_Cancel"],
             DefaultButton = ContentDialogButton.Primary,
         };
         return await dialog.ShowAsync() is ContentDialogResult.Primary
@@ -125,9 +132,9 @@ public sealed partial class TaskSchemeSidebar : UserControl
             var dialog = new ContentDialog
             {
                 XamlRoot = XamlRoot,
-                Title = "Task scheme was not changed",
+                Title = Localization["Task_NotChanged"],
                 Content = error.Message,
-                CloseButtonText = "Close",
+                CloseButtonText = Localization["Task_Close"],
             };
             await dialog.ShowAsync();
         }

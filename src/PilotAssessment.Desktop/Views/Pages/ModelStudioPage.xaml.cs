@@ -21,6 +21,9 @@ public sealed partial class ModelStudioPage : Page
 
     public ModelStudioViewModel ViewModel { get; }
 
+    private ILocalizationLookup Localization =>
+        App.Services.GetRequiredService<ILocalizationLookup>();
+
     private async void OnPageLoaded(object sender, RoutedEventArgs args) =>
         await ViewModel.ActivateAsync();
 
@@ -229,23 +232,29 @@ public sealed partial class ModelStudioPage : Page
             XamlRoot = XamlRoot,
             Title = extraction
                 ? removing
-                    ? "Remove Raw Input recipe binding?"
-                    : "Add Raw Input recipe binding?"
+                    ? Localization["Dialog_RemoveRawBinding"]
+                    : Localization["Dialog_AddRawBinding"]
                 : removing
-                    ? "Remove probabilistic parent?"
-                    : "Add probabilistic parent?",
+                    ? Localization["Dialog_RemoveProbabilisticParent"]
+                    : Localization["Dialog_AddProbabilisticParent"],
             Content = extraction
                 ? removing
-                    ? "The backend will remove this exact extraction edge and its EvidenceRecipe input binding in one operation."
-                    : "The backend will add this exact Raw Input binding to the EvidenceRecipe in one operation. The recipe may remain incomplete while you continue editing it."
+                    ? Localization["Dialog_RemoveRawBindingDescription"]
+                    : Localization["Dialog_AddRawBindingDescription"]
                 : removing
-                    ? "Choose how the child CPT is migrated when this fixed probabilistic parent is removed."
-                    : "Choose how the child CPT is expanded when this fixed probabilistic parent is added.",
+                    ? Localization["Dialog_RemoveParentDescription"]
+                    : Localization["Dialog_AddParentDescription"],
             PrimaryButtonText = extraction
-                ? removing ? "Remove binding" : "Add binding"
-                : removing ? "Marginalize / migrate" : "Preserve / migrate",
-            SecondaryButtonText = extraction ? string.Empty : "Mark CPT incomplete",
-            CloseButtonText = "Cancel",
+                ? removing
+                    ? Localization["Dialog_RemoveBinding"]
+                    : Localization["Dialog_AddBinding"]
+                : removing
+                    ? Localization["Dialog_Marginalize"]
+                    : Localization["Dialog_Preserve"],
+            SecondaryButtonText = extraction
+                ? string.Empty
+                : Localization["Dialog_MarkCptIncomplete"],
+            CloseButtonText = Localization["Common_Cancel"],
             DefaultButton = ContentDialogButton.Close,
         };
         return await dialog.ShowAsync() switch
@@ -263,7 +272,8 @@ public sealed partial class ModelStudioPage : Page
             return node;
         }
 
-        await ShowCommandErrorAsync(new InvalidOperationException("Select one model node first."));
+        await ShowCommandErrorAsync(new InvalidOperationException(
+            Localization["Dialog_SelectNodeFirst"]));
         return null;
     }
 
@@ -272,9 +282,9 @@ public sealed partial class ModelStudioPage : Page
         var dialog = new ContentDialog
         {
             XamlRoot = XamlRoot,
-            Title = "Model command not applied",
+            Title = Localization["Dialog_ModelCommandFailed"],
             Content = error.Message,
-            CloseButtonText = "Close",
+            CloseButtonText = Localization["Task_Close"],
         };
         await dialog.ShowAsync();
     }

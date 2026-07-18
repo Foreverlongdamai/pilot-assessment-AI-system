@@ -19,9 +19,9 @@
                 <TextBlock x:Name="MessageText" TextWrapping="Wrap" />
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                <Button x:Name="ReloadButton" Click="OnReloadClick" Content="Reload" />
-                <Button x:Name="ReapplyButton" Click="OnReapplyClick" Content="Reapply" />
-                <Button x:Name="RetryButton" Click="OnRetryClick" Content="Retry" />
+                <Button x:Name="ReloadButton" Click="OnReloadClick" Content="{Binding [Common_Reload], Source={StaticResource Localization}}" />
+                <Button x:Name="ReapplyButton" Click="OnReapplyClick" Content="{Binding [Common_Reapply], Source={StaticResource Localization}}" />
+                <Button x:Name="RetryButton" Click="OnRetryClick" Content="{Binding [Common_Retry], Source={StaticResource Localization}}" />
             </StackPanel>
         </Grid>
     </Border>

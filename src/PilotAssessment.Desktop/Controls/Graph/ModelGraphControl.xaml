@@ -53,7 +53,7 @@
             CornerRadius="8">
             <StackPanel Orientation="Horizontal" Spacing="4">
                 <Button
-                    AutomationProperties.Name="Zoom out"
+                    AutomationProperties.Name="{Binding [Graph_ZoomOutA11y], Source={StaticResource Localization}}"
                     Click="OnZoomOutClick"
                     Content="&#xE71F;"
                     FontFamily="Segoe Fluent Icons" />
@@ -65,11 +65,11 @@
                     Text="100%"
                     TextAlignment="Center" />
                 <Button
-                    AutomationProperties.Name="Zoom in"
+                    AutomationProperties.Name="{Binding [Graph_ZoomInA11y], Source={StaticResource Localization}}"
                     Click="OnZoomInClick"
                     Content="&#xE8A3;"
                     FontFamily="Segoe Fluent Icons" />
-                <Button Click="OnFitClick" Content="Fit" />
+                <Button Click="OnFitClick" Content="{Binding [Graph_Fit], Source={StaticResource Localization}}" />
             </StackPanel>
         </Border>
 
@@ -81,20 +81,20 @@
             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
             CornerRadius="8">
             <StackPanel Spacing="5">
-                <TextBlock FontSize="11" FontWeight="SemiBold" Text="EDGE LEGEND" />
+                <TextBlock FontSize="11" FontWeight="SemiBold" Text="{Binding [Graph_EdgeLegend], Source={StaticResource Localization}}" />
                 <StackPanel Orientation="Horizontal" Spacing="7">
                     <Rectangle
                         Width="28"
                         Height="2"
                         Fill="#0D9488"
                         StrokeDashArray="3,2" />
-                    <TextBlock FontSize="11" Text="Raw data / extraction" />
+                    <TextBlock FontSize="11" Text="{Binding [Graph_ExtractionEdge], Source={StaticResource Localization}}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="7">
                     <Rectangle Width="28" Height="2" Fill="#7C3AED" />
-                    <TextBlock FontSize="11" Text="Probabilistic BN" />
+                    <TextBlock FontSize="11" Text="{Binding [Graph_ProbabilisticEdge], Source={StaticResource Localization}}" />
                 </StackPanel>
-                <TextBlock FontSize="10" Opacity="0.62" Text="Dim = not active in this task" />
+                <TextBlock FontSize="10" Opacity="0.62" Text="{Binding [Graph_DimMeaning], Source={StaticResource Localization}}" />
             </StackPanel>
         </Border>
 
@@ -106,7 +106,7 @@
             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
             CornerRadius="8">
             <StackPanel Spacing="4">
-                <TextBlock FontSize="10" FontWeight="SemiBold" Text="MINIMAP" />
+                <TextBlock FontSize="10" FontWeight="SemiBold" Text="{Binding [Graph_Minimap], Source={StaticResource Localization}}" />
                 <Canvas
                     x:Name="MinimapCanvas"
                     Width="180"

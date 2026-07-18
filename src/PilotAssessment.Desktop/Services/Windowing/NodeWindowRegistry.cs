@@ -18,6 +18,7 @@ public sealed class NodeWindowRegistry : IDisposable
     private readonly IBayesianNodeEditorGateway _bayesianEditorGateway;
     private readonly CanonicalObjectStore<ModelNode> _canonicalNodes;
     private readonly SessionExplorerViewModel _sessions;
+    private readonly ILocalizationLookup _localization;
     private string? _projectId;
     private bool _disposed;
 
@@ -30,7 +31,8 @@ public sealed class NodeWindowRegistry : IDisposable
         IModelNodeEditorGateway editorGateway,
         IBayesianNodeEditorGateway bayesianEditorGateway,
         CanonicalObjectStore<ModelNode> canonicalNodes,
-        SessionExplorerViewModel sessions)
+        SessionExplorerViewModel sessions,
+        ILocalizationLookup localization)
     {
         _placements = placements;
         _shellState = shellState;
@@ -41,11 +43,13 @@ public sealed class NodeWindowRegistry : IDisposable
         _bayesianEditorGateway = bayesianEditorGateway;
         _canonicalNodes = canonicalNodes;
         _sessions = sessions;
+        _localization = localization;
         _projectId = shellState.Snapshot.ProjectId;
         _modelStudio.NodeEditorRequested += OnNodeEditorRequested;
         _modelStudio.CanonicalGraphChanged += OnCanonicalGraphChanged;
         _shellState.Changed += OnShellStateChanged;
         _shell.ThemeChanged += OnThemeChanged;
+        _localization.LanguageChanged += OnLanguageChanged;
     }
 
     public int OpenWindowCount => _windows.Count;
@@ -76,6 +80,7 @@ public sealed class NodeWindowRegistry : IDisposable
         _modelStudio.CanonicalGraphChanged -= OnCanonicalGraphChanged;
         _shellState.Changed -= OnShellStateChanged;
         _shell.ThemeChanged -= OnThemeChanged;
+        _localization.LanguageChanged -= OnLanguageChanged;
     }
 
     private void OnNodeEditorRequested(object? sender, ModelNodeOpenRequestedEventArgs args)
@@ -121,7 +126,8 @@ public sealed class NodeWindowRegistry : IDisposable
             _sessions.Modalities,
             _sessions.SelectedRevision?.SessionRevisionId,
             _placements.Get(key),
-            _windows.Count);
+            _windows.Count,
+            _localization);
         window.CanonicalMutationCommitted += (_, _) =>
             _ = ReloadGraphSafelyAsync(key.SchemeId);
         window.Closed += (_, _) => OnWindowClosed(key, window);
@@ -180,10 +186,24 @@ public sealed class NodeWindowRegistry : IDisposable
         }
     }
 
+    private void OnLanguageChanged(object? sender, EventArgs args)
+    {
+        foreach (var entry in _windows.Snapshot())
+        {
+            entry.Value.RefreshLanguage(DisplayScheme(entry.Key.SchemeId));
+        }
+    }
+
     private string DisplayScheme(string schemeId)
     {
         var scheme = _schemes.FindScheme(schemeId);
-        return scheme?.NameEn ?? scheme?.NameZh ?? schemeId;
+        return scheme is null
+            ? schemeId
+            : BilingualTextSelector.Select(
+                _localization.CurrentLanguage,
+                scheme.NameZh,
+                scheme.NameEn,
+                schemeId);
     }
 
     private async Task FlushPlacementSafelyAsync()

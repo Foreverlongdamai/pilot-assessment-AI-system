@@ -6,6 +6,7 @@ using PilotAssessment.Desktop.Core.Contracts;
 using PilotAssessment.Desktop.Core.State;
 using PilotAssessment.Desktop.Core.ViewModels;
 using PilotAssessment.Desktop.Services.Backend;
+using PilotAssessment.Desktop.Services.Localization;
 using PilotAssessment.Desktop.Services.Navigation;
 using PilotAssessment.Desktop.Services.Preferences;
 using PilotAssessment.Desktop.Services.Windowing;
@@ -38,12 +39,19 @@ public partial class App : Application
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
         DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        var preferencesStore = new LocalPreferencesStore();
+        var localPreferences = await preferencesStore.LoadAsync();
+        var localization = new LocalizationService(localPreferences.Language);
+        Resources["Localization"] = localization;
+
         var builder = Host.CreateApplicationBuilder();
         builder.Services.AddSingleton<ApplicationShellState>();
         builder.Services.AddSingleton<CanonicalObjectStore<ModelNode>>();
         builder.Services.AddSingleton<ModelClipboard>();
         builder.Services.AddSingleton<BackendConnectionService>();
-        builder.Services.AddSingleton<LocalPreferencesStore>();
+        builder.Services.AddSingleton(preferencesStore);
+        builder.Services.AddSingleton(localization);
+        builder.Services.AddSingleton<ILocalizationLookup>(localization);
         builder.Services.AddSingleton<WindowPlacementStore>();
         builder.Services.AddSingleton<IRecentProjectStore, RecentProjectStore>();
         builder.Services.AddSingleton<IProjectFolderPicker, FolderPickerService>();

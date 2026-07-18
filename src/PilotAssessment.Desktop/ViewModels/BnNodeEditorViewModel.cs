@@ -87,8 +87,12 @@ public sealed partial class CptRowEditItem : ObservableObject
 public sealed partial class CptGridViewModel : ObservableObject
 {
     private readonly IBayesianNodeEditorGateway _gateway;
+    private readonly ILocalizationLookup? _localization;
     private ModelNode _canonicalNode;
     private CptGridModel _grid;
+    private string _statusKey = "Cpt_StatusLoaded";
+    private string _statusFallback = "CPT loaded from the canonical backend node.";
+    private object?[] _statusArguments = [];
 
     [ObservableProperty]
     public partial string StatusMessage { get; private set; } = "CPT loaded from the canonical backend node.";
@@ -123,12 +127,15 @@ public sealed partial class CptGridViewModel : ObservableObject
     public CptGridViewModel(
         ModelNode node,
         CptEditorState editor,
-        IBayesianNodeEditorGateway gateway)
+        IBayesianNodeEditorGateway gateway,
+        ILocalizationLookup? localization = null)
     {
         _canonicalNode = node;
         _grid = new CptGridModel(editor);
         _gateway = gateway;
+        _localization = localization;
         RefreshRows();
+        RefreshLanguage();
     }
 
     public ObservableCollection<CptColumnHeaderItem> Columns { get; } = [];
@@ -154,7 +161,10 @@ public sealed partial class CptGridViewModel : ObservableObject
         PullCellsIntoGrid();
         _grid.NormalizeRow(row.RowIndex);
         RefreshRows();
-        StatusMessage = $"Normalized row {row.RowIndex}. Save the CPT rows to commit this change.";
+        SetStatus(
+            "Cpt_StatusNormalized",
+            "Normalized row {0}. Save the CPT rows to commit this change.",
+            row.RowIndex);
         LocalEditChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -163,7 +173,11 @@ public sealed partial class CptGridViewModel : ObservableObject
         PullCellsIntoGrid();
         var result = _grid.ApplyRectangularText(PasteStartRow, PasteStartColumn, text);
         RefreshRows();
-        StatusMessage = $"Pasted a {result.RowCount} × {result.ColumnCount} probability block.";
+        SetStatus(
+            "Cpt_StatusPasted",
+            "Pasted a {0} × {1} probability block.",
+            result.RowCount,
+            result.ColumnCount);
         LocalEditChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -172,7 +186,9 @@ public sealed partial class CptGridViewModel : ObservableObject
         PullCellsIntoGrid();
         var rows = _grid.BuildBackendRows();
         IsBusy = true;
-        StatusMessage = "Saving the complete CPT row batch through the Python backend…";
+        SetStatus(
+            "Cpt_StatusSavingRows",
+            "Saving the complete CPT row batch through the Python backend…");
         try
         {
             var response = await _gateway.UpdateCptRowsAsync(
@@ -182,7 +198,7 @@ public sealed partial class CptGridViewModel : ObservableObject
                 "expert.desktop",
                 cancellationToken);
             ApplyCanonical(response.Node, response.Editor);
-            StatusMessage = "Canonical CPT rows saved and reconciled.";
+            SetStatus("Cpt_StatusRowsSaved", "Canonical CPT rows saved and reconciled.");
             CanonicalNodeCommitted?.Invoke(this, new CanonicalNodeCommittedEventArgs(response.Node));
         }
         finally
@@ -195,7 +211,10 @@ public sealed partial class CptGridViewModel : ObservableObject
     {
         var weights = ParseOptionalWeights(RankedWeightsText);
         IsBusy = true;
-        StatusMessage = $"Requesting {MaterializationStrategy} CPT materialization from Python…";
+        SetStatus(
+            "Cpt_StatusRequestingMaterialization",
+            "Requesting {0} CPT materialization from Python…",
+            MaterializationStrategy);
         try
         {
             var response = await _gateway.MaterializeCptAsync(
@@ -208,7 +227,10 @@ public sealed partial class CptGridViewModel : ObservableObject
                 "expert.desktop",
                 cancellationToken);
             ApplyCanonical(response.Node, response.Editor);
-            StatusMessage = $"Canonical {response.Editor.Mode} CPT materialized and reconciled.";
+            SetStatus(
+                "Cpt_StatusMaterialized",
+                "Canonical {0} CPT materialized and reconciled.",
+                response.Editor.Mode);
             CanonicalNodeCommitted?.Invoke(this, new CanonicalNodeCommittedEventArgs(response.Node));
         }
         finally
@@ -222,6 +244,12 @@ public sealed partial class CptGridViewModel : ObservableObject
         _canonicalNode = node;
         _grid.ReplaceCanonical(editor);
         RefreshRows();
+    }
+
+    public void RefreshLanguage()
+    {
+        StatusMessage = F(_statusKey, _statusFallback, _statusArguments);
+        RefreshSummaries();
     }
 
     private void PullCellsIntoGrid()
@@ -265,8 +293,18 @@ public sealed partial class CptGridViewModel : ObservableObject
                         _grid.ChildStateIds[column],
                         _grid.GetCell(row, column)))));
         }
-        ModeSummary = $"{_grid.Editor.Mode} · {_grid.RowCount} rows · {_grid.ColumnCount} child states · " +
-            $"{_grid.Editor.RequiredCellCount} required cells";
+        RefreshSummaries();
+    }
+
+    private void RefreshSummaries()
+    {
+        ModeSummary = F(
+            "Cpt_ModeSummary",
+            "{0} · {1} rows · {2} child states · {3} required cells",
+            _grid.Editor.Mode,
+            _grid.RowCount,
+            _grid.ColumnCount,
+            _grid.Editor.RequiredCellCount);
         RefreshValidation();
     }
 
@@ -282,9 +320,29 @@ public sealed partial class CptGridViewModel : ObservableObject
             row.RowStatus = byRow.GetValueOrDefault(row.RowIndex, "Σ = 1");
         }
         ValidationSummary = validation.IsValid
-            ? $"Local grid is technically valid: {validation.RowCount} rows / {validation.CellCount} cells."
-            : $"Local grid has {validation.Diagnostics.Count} technical issue(s): {validation.Diagnostics[0].Message}";
+            ? F(
+                "Cpt_ValidationValid",
+                "Local grid is technically valid: {0} rows / {1} cells.",
+                validation.RowCount,
+                validation.CellCount)
+            : F(
+                "Cpt_ValidationInvalid",
+                "Local grid has {0} technical issue(s): {1}",
+                validation.Diagnostics.Count,
+                validation.Diagnostics[0].Message);
     }
+
+    private void SetStatus(string key, string fallback, params object?[] arguments)
+    {
+        _statusKey = key;
+        _statusFallback = fallback;
+        _statusArguments = arguments;
+        StatusMessage = F(key, fallback, arguments);
+    }
+
+    private string F(string key, string fallback, params object?[] arguments) =>
+        _localization?.Format(key, arguments)
+        ?? string.Format(CultureInfo.CurrentCulture, fallback, arguments);
 
     private static double[]? ParseOptionalWeights(string text)
     {
@@ -311,9 +369,15 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
 
     private readonly IModelNodeEditorGateway _nodeGateway;
     private readonly IBayesianNodeEditorGateway _bayesianGateway;
+    private readonly ILocalizationLookup? _localization;
     private ModelNode _canonicalNode;
     private ModelGraphSnapshot? _graph;
     private string _schemeId;
+    private IReadOnlyList<ModelNodeUsage> _usages = [];
+    private IReadOnlyList<ModelChangeEvent> _history = [];
+    private string _statusKey = "Bn_StatusLoading";
+    private string _statusFallback = "Loading BN editor metadata…";
+    private object?[] _statusArguments = [];
 
     [ObservableProperty]
     public partial string NameZh { get; set; } = string.Empty;
@@ -376,18 +440,21 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
         ModelNode node,
         string schemeId,
         IModelNodeEditorGateway nodeGateway,
-        IBayesianNodeEditorGateway bayesianGateway)
+        IBayesianNodeEditorGateway bayesianGateway,
+        ILocalizationLookup? localization = null)
     {
         _canonicalNode = node;
         _schemeId = schemeId;
         _nodeGateway = nodeGateway;
         _bayesianGateway = bayesianGateway;
+        _localization = localization;
         var definition = node.Definition as BnNodeDefinition
             ?? throw new ArgumentException("BN editor requires a BN node.");
-        Cpt = new CptGridViewModel(node, EditorFrom(definition.Cpt), bayesianGateway);
+        Cpt = new CptGridViewModel(node, EditorFrom(definition.Cpt), bayesianGateway, localization);
         Cpt.LocalEditChanged += OnCptLocalEditChanged;
         Cpt.CanonicalNodeCommitted += OnCptCanonicalNodeCommitted;
         ApplyCanonical(node, schemeId);
+        RefreshLanguage();
     }
 
     public CptGridViewModel Cpt { get; }
@@ -414,8 +481,9 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
 
     public IReadOnlyList<string> RemoveParentStrategies { get; } = ["marginalize", "incomplete"];
 
-    public string PosteriorSummary =>
-        "The canonical arrows show P(child | fixed parents). Posterior/influence is a read-only run result overlay and does not reverse or rewrite these edges. Task 14 displays executed posterior and influence artifacts.";
+    public string PosteriorSummary => L(
+        "Bn_PosteriorSummary",
+        "The canonical arrows show P(child | fixed parents). Posterior/influence is a read-only run result overlay and does not reverse or rewrite these edges. Task 14 displays executed posterior and influence artifacts.");
 
     public event EventHandler<NodeEditorLocalEditEventArgs>? LocalEditChanged;
 
@@ -436,14 +504,16 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
             RefreshRelationships(_graph);
             var inspection = await cptTask;
             Cpt.ApplyCanonical(_canonicalNode, inspection.Editor);
-            Replace(UsedBySchemes, (await usagesTask).Select(usage =>
-                $"{usage.SchemeId} · {(usage.ExplicitlyActive ? "explicit" : "parent closure")}" +
-                (usage.SelectedAsOutput ? " · output" : string.Empty)));
-            Replace(HistoryItems, (await historyTask)
-                .OrderByDescending(item => item.OccurredAt)
-                .Select(item => $"{item.OccurredAt:yyyy-MM-dd HH:mm:ss} · {item.EventKind} · semantic {item.SemanticRevision}"));
-            StatusMessage =
-                $"Loaded {Parents.Count} fixed parents, {Children.Count} children, {UsedBySchemes.Count} task usages and {HistoryItems.Count} history events.";
+            _usages = await usagesTask;
+            _history = await historyTask;
+            RefreshUsageAndHistory();
+            SetStatus(
+                "Bn_StatusLoaded",
+                "Loaded {0} fixed parents, {1} children, {2} task usages and {3} history events.",
+                Parents.Count,
+                Children.Count,
+                UsedBySchemes.Count,
+                HistoryItems.Count);
         }
         finally
         {
@@ -570,7 +640,9 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
         var graph = _graph ?? await _bayesianGateway.GetGraphAsync(_schemeId, cancellationToken);
         var revisions = StateChangeRevisionPlan(graph, _canonicalNode.NodeId);
         IsBusy = true;
-        StatusMessage = "Replacing states and atomically marking every affected CPT incomplete…";
+        SetStatus(
+            "Bn_StatusReplacingStates",
+            "Replacing states and atomically marking every affected CPT incomplete…");
         try
         {
             var response = await _bayesianGateway.ReplaceNodeStatesAsync(
@@ -588,8 +660,10 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
             ApplyCanonical(canonical, _schemeId);
             ApplyDraftIntent(ModelNodeDraftRebaser.Rebase(localIntent, canonical));
             RefreshRelationships(_graph);
-            StatusMessage =
-                $"Canonical states saved; {response.Nodes.Length} node CPT definition(s) are now explicitly incomplete and repairable.";
+            SetStatus(
+                "Bn_StatusStatesSaved",
+                "Canonical states saved; {0} node CPT definition(s) are now explicitly incomplete and repairable.",
+                response.Nodes.Length);
             CanonicalNodeCommitted?.Invoke(this, new CanonicalNodeCommittedEventArgs(canonical));
         }
         finally
@@ -610,6 +684,7 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
                 _canonicalNode.SemanticRevision,
                 "expert.desktop",
                 cancellationToken),
+            "Bn_StatusParentAdded",
             "Canonical parent added with atomic CPT migration.",
             cancellationToken);
     }
@@ -627,6 +702,7 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
                 _canonicalNode.SemanticRevision,
                 "expert.desktop",
                 cancellationToken),
+            "Bn_StatusParentRemoved",
             "Canonical parent removed with atomic CPT migration.",
             cancellationToken);
     }
@@ -650,6 +726,7 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
                 _canonicalNode.SemanticRevision,
                 "expert.desktop",
                 cancellationToken),
+            "Bn_StatusParentsReordered",
             "Canonical parent order and CPT axes reordered atomically.",
             cancellationToken);
     }
@@ -680,7 +757,8 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
 
     private async Task ApplyCptMutationAsync(
         Task<CptMutationResponse> mutation,
-        string successMessage,
+        string successKey,
+        string successFallback,
         CancellationToken cancellationToken)
     {
         IsBusy = true;
@@ -691,7 +769,7 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
             Cpt.ApplyCanonical(response.Node, response.Editor);
             _graph = await _bayesianGateway.GetGraphAsync(_schemeId, cancellationToken);
             RefreshRelationships(_graph);
-            StatusMessage = successMessage;
+            SetStatus(successKey, successFallback);
             CanonicalNodeCommitted?.Invoke(this, new CanonicalNodeCommittedEventArgs(response.Node));
         }
         finally
@@ -720,6 +798,18 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
                 : edge.Child.NodeId));
         SelectedParent = Parents.FirstOrDefault();
         SelectedParentCandidate = ParentCandidates.FirstOrDefault();
+    }
+
+    public void RefreshLanguage()
+    {
+        StatusMessage = F(_statusKey, _statusFallback, _statusArguments);
+        Cpt.RefreshLanguage();
+        RefreshUsageAndHistory();
+        OnPropertyChanged(nameof(PosteriorSummary));
+        if (_graph is not null)
+        {
+            RefreshRelationships(_graph);
+        }
     }
 
     private void OnCptLocalEditChanged(object? sender, EventArgs args) =>
@@ -765,11 +855,49 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
         }
     }
 
-    private static BnNodeOptionItem Option(ModelNode? node, ModelNodeRef reference) =>
+    private BnNodeOptionItem Option(ModelNode? node, ModelNodeRef reference) =>
         new(reference.NodeId, reference.NodeKind, node is null ? reference.NodeId : DisplayName(node));
 
-    private static string DisplayName(ModelNode node) =>
-        node.NameEn ?? node.NameZh ?? node.ShortNameEn ?? node.ShortNameZh ?? node.NodeId;
+    private string DisplayName(ModelNode node) => BilingualTextSelector.SelectShortOrFull(
+        _localization?.CurrentLanguage,
+        node.ShortNameZh,
+        node.ShortNameEn,
+        node.NameZh,
+        node.NameEn,
+        node.NodeId);
+
+    private void RefreshUsageAndHistory()
+    {
+        Replace(UsedBySchemes, _usages.Select(usage =>
+            $"{usage.SchemeId} · " +
+            (usage.ExplicitlyActive
+                ? L("Editor_UsageExplicit", "explicit")
+                : L("Editor_UsageParentClosure", "parent closure")) +
+            (usage.SelectedAsOutput ? L("Editor_UsageOutputSuffix", " · output") : string.Empty)));
+        Replace(HistoryItems, _history
+            .OrderByDescending(item => item.OccurredAt)
+            .Select(item => F(
+                "Editor_HistoryLine",
+                "{0:yyyy-MM-dd HH:mm:ss} · {1} · semantic {2}, layout {3}",
+                item.OccurredAt,
+                item.EventKind,
+                item.SemanticRevision,
+                item.LayoutRevision)));
+    }
+
+    private void SetStatus(string key, string fallback, params object?[] arguments)
+    {
+        _statusKey = key;
+        _statusFallback = fallback;
+        _statusArguments = arguments;
+        StatusMessage = F(key, fallback, arguments);
+    }
+
+    private string L(string key, string fallback) => _localization?[key] ?? fallback;
+
+    private string F(string key, string fallback, params object?[] arguments) =>
+        _localization?.Format(key, arguments)
+        ?? string.Format(CultureInfo.CurrentCulture, fallback, arguments);
 
     private static IReadOnlyDictionary<string, JsonElement> ParseJsonDictionary(string json) =>
         JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json, ContractJsonOptions)

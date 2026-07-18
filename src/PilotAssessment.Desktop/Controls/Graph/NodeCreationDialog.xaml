@@ -3,15 +3,15 @@
     x:Class="PilotAssessment.Desktop.Controls.Graph.NodeCreationDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    CloseButtonText="Cancel"
+    CloseButtonText="{Binding [Common_Cancel], Source={StaticResource Localization}}"
     DefaultButton="Primary"
     PrimaryButtonClick="OnPrimaryButtonClick"
-    PrimaryButtonText="Create node"
-    Title="New complete model node">
+    PrimaryButtonText="{Binding [Dialog_CreateNodeButton], Source={StaticResource Localization}}"
+    Title="{Binding [Dialog_CreateNodeTitle], Source={StaticResource Localization}}">
     <StackPanel Width="430" Spacing="12">
         <TextBlock
             Opacity="0.72"
-            Text="The backend stores one complete node definition. Evidence and BN nodes begin incomplete so experts can configure them without generated Python code."
+            Text="{Binding [Dialog_CreateNodeDescription], Source={StaticResource Localization}}"
             TextWrapping="Wrap" />
         <InfoBar
             x:Name="ValidationInfo"
@@ -20,22 +20,22 @@
             Severity="Error" />
         <ComboBox
             x:Name="KindCombo"
-            Header="Node kind"
+            Header="{Binding [Dialog_NodeKind], Source={StaticResource Localization}}"
             SelectionChanged="OnKindChanged">
-            <ComboBoxItem Content="Raw Input" Tag="raw_input" />
-            <ComboBoxItem Content="Evidence" Tag="evidence" />
+            <ComboBoxItem Content="{Binding [Model_KindRaw], Source={StaticResource Localization}}" Tag="raw_input" />
+            <ComboBoxItem Content="{Binding [Model_KindEvidence], Source={StaticResource Localization}}" Tag="evidence" />
             <ComboBoxItem Content="BN" Tag="bn" />
         </ComboBox>
-        <TextBox x:Name="EnglishNameBox" Header="English name" PlaceholderText="e.g. Disturbance instrument scan" />
-        <TextBox x:Name="ChineseNameBox" Header="中文名称" PlaceholderText="例如：扰动仪表扫描" />
-        <ComboBox x:Name="RawModalityCombo" Header="Raw modality">
-            <ComboBoxItem Content="X — flight state" Tag="X" />
-            <ComboBoxItem Content="U — control input" Tag="U" />
-            <ComboBoxItem Content="I — visual scene" Tag="I" />
-            <ComboBoxItem Content="G — gaze" Tag="G" />
+        <TextBox x:Name="EnglishNameBox" Header="{Binding [Editor_EnglishName], Source={StaticResource Localization}}" PlaceholderText="{Binding [Dialog_EnglishNameExample], Source={StaticResource Localization}}" />
+        <TextBox x:Name="ChineseNameBox" Header="{Binding [Editor_ChineseName], Source={StaticResource Localization}}" PlaceholderText="{Binding [Dialog_ChineseNameExample], Source={StaticResource Localization}}" />
+        <ComboBox x:Name="RawModalityCombo" Header="{Binding [Dialog_RawModality], Source={StaticResource Localization}}">
+            <ComboBoxItem Content="{Binding [Dialog_ModalityX], Source={StaticResource Localization}}" Tag="X" />
+            <ComboBoxItem Content="{Binding [Dialog_ModalityU], Source={StaticResource Localization}}" Tag="U" />
+            <ComboBoxItem Content="{Binding [Dialog_ModalityI], Source={StaticResource Localization}}" Tag="I" />
+            <ComboBoxItem Content="{Binding [Dialog_ModalityG], Source={StaticResource Localization}}" Tag="G" />
             <ComboBoxItem Content="EEG" Tag="EEG" />
             <ComboBoxItem Content="ECG" Tag="ECG" />
-            <ComboBoxItem Content="Pilot camera" Tag="pilot_camera" />
+            <ComboBoxItem Content="{Binding [Dialog_ModalityCamera], Source={StaticResource Localization}}" Tag="pilot_camera" />
         </ComboBox>
     </StackPanel>
 </ContentDialog>

@@ -30,6 +30,7 @@ public sealed partial class NodeEditorWindow : Window
     private AutosaveState _autosaveState = new(AutosavePhase.Saved, "Saved");
     private readonly ModalityStatusItem[] _sessionAvailability;
     private readonly string? _sessionRevisionId;
+    private readonly ILocalizationLookup _localization;
     private RawInputEditorViewModel? _rawInputViewModel;
     private RawInputEditor? _rawInputEditor;
     private EvidenceEditorViewModel? _evidenceViewModel;
@@ -49,7 +50,8 @@ public sealed partial class NodeEditorWindow : Window
         IEnumerable<ModalityStatusItem> sessionAvailability,
         string? sessionRevisionId,
         NodeWindowPlacement? savedPlacement,
-        int cascadeIndex)
+        int cascadeIndex,
+        ILocalizationLookup localization)
     {
         _key = key;
         _canonicalNode = node;
@@ -60,6 +62,7 @@ public sealed partial class NodeEditorWindow : Window
         _shellState = shellState;
         _sessionAvailability = sessionAvailability.ToArray();
         _sessionRevisionId = sessionRevisionId;
+        _localization = localization;
         _autosave = new AutosaveCoordinator<ModelNode, ModelNode>(
             $"{key.ProjectId}\u001f{node.NodeId}",
             canonicalStore,
@@ -79,6 +82,7 @@ public sealed partial class NodeEditorWindow : Window
 
         _autosave.StateChanged += OnAutosaveStateChanged;
         _autosave.Committed += OnAutosaveCommitted;
+        _localization.LanguageChanged += OnLanguageChanged;
 
         AppWindow.SetIcon("Assets/AppIcon.ico");
         AppWindow.Changed += OnAppWindowChanged;
@@ -130,6 +134,12 @@ public sealed partial class NodeEditorWindow : Window
     public Task FlushAutosaveAsync(CancellationToken cancellationToken = default) =>
         _autosave.FlushAsync(cancellationToken);
 
+    public void RefreshLanguage(string schemeDisplayName)
+    {
+        _schemeDisplayName = schemeDisplayName;
+        RenderCanonicalNode();
+    }
+
     public void ReconcileCanonicalNode(
         ModelNode node,
         string schemeDisplayName,
@@ -151,8 +161,7 @@ public sealed partial class NodeEditorWindow : Window
         {
             _pendingCanonicalNode = node;
             _autosave.AcceptExternalCanonical(node);
-            SaveConflictBanner.ShowConflict(
-                "The backend has a newer node revision. Reload it or reapply the current editor intent against that revision.");
+            SaveConflictBanner.ShowConflict(_localization["Node_ConflictNewer"]);
             _shellState.SetAutosaveStatus("Conflict");
             RenderSaveState();
             return;
@@ -272,24 +281,24 @@ public sealed partial class NodeEditorWindow : Window
 
     private void RenderCanonicalNode()
     {
-        var bilingualName = BilingualName(_canonicalNode);
-        Title = $"{PrimaryName(_canonicalNode)} — Node Editor";
-        NodeNameText.Text = bilingualName;
+        var displayName = PrimaryName(_canonicalNode);
+        Title = _localization.Format("Node_WindowTitle", displayName);
+        NodeNameText.Text = displayName;
         NodeIdentityText.Text = _canonicalNode.NodeId;
         NodeKindText.Text = DisplayKind(_canonicalNode.NodeKind);
         TaskSchemeText.Text = $"{_schemeDisplayName} ({_key.SchemeId})";
         SharedUsageText.Text = _sharedSchemeCount == 1
-            ? "Used by 1 current task scheme"
-            : $"Used by {_sharedSchemeCount} current task schemes";
+            ? _localization["Node_UsedByOne"]
+            : _localization.Format("Node_UsedByMany", _sharedSchemeCount);
         WindowKeyText.Text = $"{_key.ProjectId} / {_key.SchemeId} / {_key.NodeId}";
-        TechnicalStatusText.Text = _canonicalNode.TechnicalStatus.ToString();
+        TechnicalStatusText.Text = DisplayTechnicalStatus(_canonicalNode.TechnicalStatus);
         SemanticRevisionText.Text = _canonicalNode.SemanticRevision.ToString();
         LayoutRevisionText.Text = _canonicalNode.LayoutRevision.ToString();
         GroupText.Text = string.IsNullOrWhiteSpace(_canonicalNode.Group)
-            ? "No group"
+            ? _localization["Common_NoGroup"]
             : _canonicalNode.Group;
         TagsText.Text = _canonicalNode.Tags.Length == 0
-            ? "No tags"
+            ? _localization["Common_NoTags"]
             : string.Join(", ", _canonicalNode.Tags);
         RenderSaveState();
     }
@@ -301,19 +310,26 @@ public sealed partial class NodeEditorWindow : Window
             _autosaveState.Phase is AutosavePhase.Pending or AutosavePhase.Saving or
                 AutosavePhase.OfflineRetry or AutosavePhase.Conflict or AutosavePhase.Blocked;
         var text = _pendingCanonicalNode is not null
-            ? "Conflict · choose Reload or Reapply"
+            ? _localization["Node_SaveConflict"]
             : _autosaveState.Phase switch
             {
-                AutosavePhase.Pending => "Pending · autosave scheduled",
-                AutosavePhase.Saving => "Saving…",
-                AutosavePhase.OfflineRetry => "Offline · Retry available",
-                AutosavePhase.Conflict => "Conflict · choose Reload or Reapply",
+                AutosavePhase.Pending => _localization["Node_SavePending"],
+                AutosavePhase.Saving => _localization["Node_SaveSaving"],
+                AutosavePhase.OfflineRetry => _localization["Node_SaveOffline"],
+                AutosavePhase.Conflict => _localization["Node_SaveConflict"],
                 AutosavePhase.Blocked => _autosaveState.Message,
-                _ => $"Saved · rev {_canonicalNode.SemanticRevision}",
+                _ => _localization.Format("Node_SaveSaved", _canonicalNode.SemanticRevision),
             };
         SaveStateText.Text = _hasExplicitLocalChanges
-            ? $"{text} · explicit state/CPT commit pending"
+            ? _localization.Format("Node_ExplicitPending", text)
             : text;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs args)
+    {
+        RenderCanonicalNode();
+        _evidenceViewModel?.RefreshLanguage();
+        _bnViewModel?.RefreshLanguage();
     }
 
     private void CreateEditorSurface()
@@ -335,7 +351,8 @@ public sealed partial class NodeEditorWindow : Window
                     _key.SchemeId,
                     _sessionRevisionId,
                     _editorGateway,
-                    _bayesianEditorGateway);
+                    _bayesianEditorGateway,
+                    _localization);
                 _evidenceEditor = new EvidenceEditor();
                 _evidenceEditor.SetViewModel(_evidenceViewModel);
                 _evidenceEditor.LocalEditChanged += OnLocalEditChanged;
@@ -348,7 +365,8 @@ public sealed partial class NodeEditorWindow : Window
                     _canonicalNode,
                     _key.SchemeId,
                     _editorGateway,
-                    _bayesianEditorGateway);
+                    _bayesianEditorGateway,
+                    _localization);
                 _bnEditor = new BnNodeEditor();
                 _bnEditor.SetViewModel(_bnViewModel);
                 _bnEditor.LocalEditChanged += OnLocalEditChanged;
@@ -405,7 +423,7 @@ public sealed partial class NodeEditorWindow : Window
         }
         catch (Exception error)
         {
-            SaveStateText.Text = $"Editor metadata error · {error.Message}";
+            SaveStateText.Text = _localization.Format("Node_EvidenceMetadataError", error.Message);
         }
     }
 
@@ -420,7 +438,7 @@ public sealed partial class NodeEditorWindow : Window
         }
         catch (Exception error)
         {
-            SaveStateText.Text = $"BN editor metadata error · {error.Message}";
+            SaveStateText.Text = _localization.Format("Node_BnMetadataError", error.Message);
         }
     }
 
@@ -510,13 +528,13 @@ public sealed partial class NodeEditorWindow : Window
             _pendingCanonicalNode = current;
             _autosave.AcceptExternalCanonical(current);
             SaveConflictBanner.ShowConflict(
-                $"Canonical revision {current.SemanticRevision} is current. Reload it or reapply the editor intent.");
+                _localization.Format("Node_ConflictRevision", current.SemanticRevision));
             RenderSaveState();
         }
         catch (Exception error)
         {
             SaveConflictBanner.ShowBlocked(
-                $"The current canonical node could not be loaded: {error.Message}");
+                _localization.Format("Node_ConflictLoadFailed", error.Message));
         }
     }
 
@@ -542,6 +560,7 @@ public sealed partial class NodeEditorWindow : Window
         _evidenceViewModel?.Dispose();
         _autosave.StateChanged -= OnAutosaveStateChanged;
         _autosave.Committed -= OnAutosaveCommitted;
+        _localization.LanguageChanged -= OnLanguageChanged;
         _ = FlushAndDisposeAutosaveAsync();
     }
 
@@ -612,22 +631,25 @@ public sealed partial class NodeEditorWindow : Window
         return result;
     }
 
-    private static string PrimaryName(ModelNode node) =>
-        node.NameEn ?? node.ShortNameEn ?? node.NameZh ?? node.ShortNameZh ?? node.NodeId;
+    private string PrimaryName(ModelNode node) => BilingualTextSelector.SelectShortOrFull(
+        _localization.CurrentLanguage,
+        node.ShortNameZh,
+        node.ShortNameEn,
+        node.NameZh,
+        node.NameEn,
+        node.NodeId);
 
-    private static string BilingualName(ModelNode node)
+    private string DisplayKind(ModelNodeKind kind) => kind switch
     {
-        var names = new[] { node.NameZh, node.NameEn }
-            .Where(name => !string.IsNullOrWhiteSpace(name))
-            .Distinct(StringComparer.Ordinal)
-            .ToArray();
-        return names.Length == 0 ? node.NodeId : string.Join(" / ", names);
-    }
+        ModelNodeKind.RawInput => _localization["Node_KindRaw"],
+        ModelNodeKind.Evidence => _localization["Node_KindEvidence"],
+        _ => _localization["Node_KindBn"],
+    };
 
-    private static string DisplayKind(ModelNodeKind kind) => kind switch
+    private string DisplayTechnicalStatus(ModelTechnicalStatus status) => status switch
     {
-        ModelNodeKind.RawInput => "RAW INPUT / 原始输入",
-        ModelNodeKind.Evidence => "EVIDENCE / 证据",
-        _ => "BN NODE / 贝叶斯节点",
+        ModelTechnicalStatus.Executable => _localization["Node_TechnicalExecutable"],
+        ModelTechnicalStatus.Incomplete => _localization["Node_TechnicalIncomplete"],
+        _ => _localization["Node_TechnicalBlocked"],
     };
 }

@@ -14,11 +14,11 @@
             HorizontalAlignment="Stretch"
             Spacing="18">
             <StackPanel Spacing="6">
-                <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="Projects" />
+            <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{Binding [Project_Title], Source={StaticResource Localization}}" />
                 <TextBlock
                     MaxWidth="780"
                     Opacity="0.72"
-                    Text="A managed project contains the editable model library, task schemes, imported Session Bundles, runs and results. It can be moved as one folder."
+                Text="{Binding [Project_Description], Source={StaticResource Localization}}"
                     TextWrapping="Wrap" />
             </StackPanel>
 
@@ -27,20 +27,20 @@
                 IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}"
                 Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
                 Severity="Error"
-                Title="Project operation failed" />
+                Title="{Binding [Project_OperationFailed], Source={StaticResource Localization}}" />
             <InfoBar
                 IsClosable="False"
                 IsOpen="True"
                 Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
                 Severity="Informational"
-                Title="Project status" />
+                Title="{Binding [Project_Status], Source={StaticResource Localization}}" />
 
             <Border
                 Padding="20"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 CornerRadius="10">
                 <StackPanel Spacing="12">
-                    <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="Current project" />
+                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Project_Current], Source={StaticResource Localization}}" />
                     <TextBlock Text="{x:Bind ViewModel.CurrentProjectText, Mode=OneWay}" TextWrapping="Wrap" />
                     <TextBlock
                         Opacity="0.65"
@@ -49,7 +49,7 @@
                     <Button
                         HorizontalAlignment="Left"
                         Command="{x:Bind ViewModel.CloseProjectCommand}"
-                        Content="Close project" />
+                        Content="{Binding [Project_Close], Source={StaticResource Localization}}" />
                 </StackPanel>
             </Border>
 
@@ -64,25 +64,25 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     CornerRadius="10">
                     <StackPanel Spacing="12">
-                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="Create managed project" />
+                    <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Project_Create], Source={StaticResource Localization}}" />
                         <TextBox
-                            Header="Project name"
+                        Header="{Binding [Project_Name], Source={StaticResource Localization}}"
                             Text="{x:Bind ViewModel.ProjectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBox
-                            Header="Stable project ID"
+                        Header="{Binding [Project_StableId], Source={StaticResource Localization}}"
                             Text="{x:Bind ViewModel.ProjectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBox
-                            Header="Project folder"
+                        Header="{Binding [Project_Folder], Source={StaticResource Localization}}"
                             IsReadOnly="True"
-                            PlaceholderText="Choose an empty folder or a new folder path"
+                        PlaceholderText="{Binding [Project_FolderPlaceholder], Source={StaticResource Localization}}"
                             Text="{x:Bind ViewModel.CreateRootPath, Mode=OneWay}" />
                         <StackPanel Orientation="Horizontal" Spacing="10">
                             <Button
                                 Command="{x:Bind ViewModel.ChooseCreateFolderCommand}"
-                                Content="Choose folder" />
+                        Content="{Binding [Project_ChooseFolder], Source={StaticResource Localization}}" />
                             <Button
                                 Command="{x:Bind ViewModel.CreateProjectCommand}"
-                                Content="Create and open"
+                        Content="{Binding [Project_CreateAndOpen], Source={StaticResource Localization}}"
                                 Style="{StaticResource AccentButtonStyle}" />
                         </StackPanel>
                     </StackPanel>
@@ -94,14 +94,14 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     CornerRadius="10">
                     <StackPanel Spacing="12">
-                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="Open managed project" />
+                    <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Project_OpenManaged], Source={StaticResource Localization}}" />
                         <TextBlock
-                            Text="Choose a folder that contains project.json and project.sqlite3. Opening does not copy or relocate it."
+                        Text="{Binding [Project_OpenDescription], Source={StaticResource Localization}}"
                             TextWrapping="Wrap" />
                         <Button
                             HorizontalAlignment="Left"
                             Command="{x:Bind ViewModel.OpenProjectCommand}"
-                            Content="Choose project folder"
+                        Content="{Binding [Project_ChooseProjectFolder], Source={StaticResource Localization}}"
                             Style="{StaticResource AccentButtonStyle}" />
                         <ProgressRing
                             Width="28"
@@ -117,10 +117,10 @@
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 CornerRadius="10">
                 <StackPanel Spacing="10">
-                    <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="Recent projects" />
+                    <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Project_Recent], Source={StaticResource Localization}}" />
                     <TextBlock
                         Opacity="0.68"
-                        Text="These are local path shortcuts only. No project or Session data is duplicated here."
+                        Text="{Binding [Project_RecentDescription], Source={StaticResource Localization}}"
                         TextWrapping="Wrap" />
                     <ListView
                         MaxHeight="300"
@@ -142,7 +142,7 @@
                                         Grid.Column="1"
                                         VerticalAlignment="Center"
                                         Click="OnOpenRecentClick"
-                                        Content="Open" />
+                                    Content="{Binding [Common_Open], Source={StaticResource Localization}}" />
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>

@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:PilotAssessment.Desktop.Controls"
-    Title="Node Editor">
+    Title="{Binding [Node_DefaultTitle], Source={StaticResource Localization}}">
     <Grid x:Name="RootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -21,7 +21,7 @@
                     x:Name="NodeNameText"
                     AutomationProperties.HeadingLevel="Level1"
                     Style="{ThemeResource TitleTextBlockStyle}"
-                    Text="Node" />
+                    Text="{Binding [Node_Header], Source={StaticResource Localization}}" />
                 <TextBlock
                     x:Name="NodeIdentityText"
                     Opacity="0.68"
@@ -45,9 +45,9 @@
                     x:Name="WindowModeInfoBar"
                     IsClosable="False"
                     IsOpen="True"
-                    Message="This is an independent, non-modal editor window. The main graph remains interactive."
+                    Message="{Binding [Node_IndependentDescription], Source={StaticResource Localization}}"
                     Severity="Informational"
-                    Title="Independent node editor" />
+                    Title="{Binding [Node_IndependentEditor], Source={StaticResource Localization}}" />
 
                 <controls:SaveConflictBanner
                     x:Name="SaveConflictBanner"
@@ -59,7 +59,7 @@
                     <TextBlock
                         AutomationProperties.HeadingLevel="Level2"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
-                        Text="Context / 上下文" />
+                        Text="{Binding [Node_Context], Source={StaticResource Localization}}" />
                     <Grid ColumnSpacing="16" RowSpacing="8">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="160" />
@@ -70,11 +70,11 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Opacity="0.66" Text="Task scheme" />
+                        <TextBlock Opacity="0.66" Text="{Binding [Node_TaskScheme], Source={StaticResource Localization}}" />
                         <TextBlock x:Name="TaskSchemeText" Grid.Column="1" TextWrapping="Wrap" />
-                        <TextBlock Grid.Row="1" Opacity="0.66" Text="Shared usage" />
+                        <TextBlock Grid.Row="1" Opacity="0.66" Text="{Binding [Node_SharedUsage], Source={StaticResource Localization}}" />
                         <TextBlock x:Name="SharedUsageText" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" />
-                        <TextBlock Grid.Row="2" Opacity="0.66" Text="Window key" />
+                        <TextBlock Grid.Row="2" Opacity="0.66" Text="{Binding [Node_WindowKey], Source={StaticResource Localization}}" />
                         <TextBlock x:Name="WindowKeyText" Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" />
                     </Grid>
                 </StackPanel>
@@ -85,7 +85,7 @@
                     <TextBlock
                         AutomationProperties.HeadingLevel="Level2"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
-                        Text="Canonical definition / 后端权威定义" />
+                        Text="{Binding [Node_CanonicalDefinition], Source={StaticResource Localization}}" />
                     <Grid ColumnSpacing="16" RowSpacing="8">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="160" />
@@ -98,15 +98,15 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Opacity="0.66" Text="Technical status" />
+                        <TextBlock Opacity="0.66" Text="{Binding [Node_TechnicalStatus], Source={StaticResource Localization}}" />
                         <TextBlock x:Name="TechnicalStatusText" Grid.Column="1" />
-                        <TextBlock Grid.Row="1" Opacity="0.66" Text="Semantic revision" />
+                        <TextBlock Grid.Row="1" Opacity="0.66" Text="{Binding [Node_SemanticRevision], Source={StaticResource Localization}}" />
                         <TextBlock x:Name="SemanticRevisionText" Grid.Row="1" Grid.Column="1" />
-                        <TextBlock Grid.Row="2" Opacity="0.66" Text="Layout revision" />
+                        <TextBlock Grid.Row="2" Opacity="0.66" Text="{Binding [Node_LayoutRevision], Source={StaticResource Localization}}" />
                         <TextBlock x:Name="LayoutRevisionText" Grid.Row="2" Grid.Column="1" />
-                        <TextBlock Grid.Row="3" Opacity="0.66" Text="Group" />
+                        <TextBlock Grid.Row="3" Opacity="0.66" Text="{Binding [Common_Group], Source={StaticResource Localization}}" />
                         <TextBlock x:Name="GroupText" Grid.Row="3" Grid.Column="1" TextWrapping="Wrap" />
-                        <TextBlock Grid.Row="4" Opacity="0.66" Text="Tags" />
+                        <TextBlock Grid.Row="4" Opacity="0.66" Text="{Binding [Common_Tags], Source={StaticResource Localization}}" />
                         <TextBlock x:Name="TagsText" Grid.Row="4" Grid.Column="1" TextWrapping="Wrap" />
                     </Grid>
                 </StackPanel>
@@ -115,9 +115,9 @@
                     <InfoBar
                         IsClosable="False"
                         IsOpen="True"
-                        Message="This node type does not yet have its complete editor surface."
+                        Message="{Binding [Node_NoEditorDescription], Source={StaticResource Localization}}"
                         Severity="Informational"
-                        Title="Editor surface" />
+                        Title="{Binding [Node_EditorSurface], Source={StaticResource Localization}}" />
                 </ContentControl>
             </StackPanel>
         </ScrollViewer>

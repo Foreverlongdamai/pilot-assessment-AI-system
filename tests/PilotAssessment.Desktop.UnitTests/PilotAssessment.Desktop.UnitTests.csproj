@@ -30,6 +30,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\src\PilotAssessment.Desktop\Strings\en-US\Resources.resw"
+          Link="Strings\en-US\Resources.resw"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\PilotAssessment.Desktop\Strings\zh-CN\Resources.resw"
+          Link="Strings\zh-CN\Resources.resw"
+          CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\PilotAssessment.Desktop.ContractTests\Fixtures\*.json"
           Link="Fixtures\%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" />

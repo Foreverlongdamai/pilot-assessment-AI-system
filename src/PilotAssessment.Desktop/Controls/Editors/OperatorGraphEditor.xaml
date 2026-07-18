@@ -18,16 +18,16 @@
             </Grid.ColumnDefinitions>
             <ComboBox
                 x:Name="OperatorPicker"
-                AutomationProperties.Name="Trusted operator catalog"
+                AutomationProperties.Name="{Binding [Operator_CatalogA11y], Source={StaticResource Localization}}"
                 DisplayMemberPath="DisplayName"
                 ItemsSource="{Binding OperatorOptions}"
-                PlaceholderText="Choose an installed operator"
+                PlaceholderText="{Binding [Operator_ChooseInstalled], Source={StaticResource Localization}}"
                 SelectedItem="{Binding SelectedOperator, Mode=TwoWay}" />
             <Button
                 Grid.Column="1"
-                AutomationProperties.Name="Add selected operator to recipe"
+                AutomationProperties.Name="{Binding [Operator_AddA11y], Source={StaticResource Localization}}"
                 Click="OnAddOperatorClick"
-                Content="Add operator" />
+                Content="{Binding [Operator_Add], Source={StaticResource Localization}}" />
         </Grid>
 
         <Grid Grid.Row="1" ColumnSpacing="14">
@@ -36,10 +36,10 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <StackPanel Spacing="6">
-                <TextBlock FontWeight="SemiBold" Text="Operator nodes" />
+                <TextBlock FontWeight="SemiBold" Text="{Binding [Operator_Nodes], Source={StaticResource Localization}}" />
                 <ListView
                     x:Name="NodeList"
-                    AutomationProperties.Name="Evidence recipe operator nodes"
+                    AutomationProperties.Name="{Binding [Operator_NodesA11y], Source={StaticResource Localization}}"
                     ItemsSource="{Binding RecipeNodes}"
                     SelectionChanged="OnNodeSelectionChanged">
                     <ListView.ItemTemplate>
@@ -53,16 +53,16 @@
                     </ListView.ItemTemplate>
                 </ListView>
                 <Button
-                    AutomationProperties.Name="Remove selected operator from recipe"
+                    AutomationProperties.Name="{Binding [Operator_RemoveA11y], Source={StaticResource Localization}}"
                     Click="OnRemoveOperatorClick"
-                    Content="Remove selected operator" />
+                    Content="{Binding [Operator_Remove], Source={StaticResource Localization}}" />
             </StackPanel>
 
             <StackPanel Grid.Column="1" Spacing="6">
-                <TextBlock FontWeight="SemiBold" Text="Typed recipe edges" />
+                <TextBlock FontWeight="SemiBold" Text="{Binding [Operator_TypedEdges], Source={StaticResource Localization}}" />
                 <ListView
                     x:Name="EdgeList"
-                    AutomationProperties.Name="Evidence recipe typed edges"
+                    AutomationProperties.Name="{Binding [Operator_TypedEdgesA11y], Source={StaticResource Localization}}"
                     ItemsSource="{Binding RecipeEdges}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -74,14 +74,14 @@
                     </ListView.ItemTemplate>
                 </ListView>
                 <Button
-                    AutomationProperties.Name="Remove selected Evidence recipe edge"
+                    AutomationProperties.Name="{Binding [Operator_RemoveEdgeA11y], Source={StaticResource Localization}}"
                     Click="OnRemoveEdgeClick"
-                    Content="Remove selected edge" />
+                    Content="{Binding [Operator_RemoveEdge], Source={StaticResource Localization}}" />
             </StackPanel>
         </Grid>
 
         <StackPanel Grid.Row="2" Spacing="8">
-            <TextBlock FontWeight="SemiBold" Text="Connect declared operator ports" />
+            <TextBlock FontWeight="SemiBold" Text="{Binding [Operator_ConnectPorts], Source={StaticResource Localization}}" />
             <Grid ColumnSpacing="8" RowSpacing="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -91,17 +91,17 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="SourceNodeText" Header="Source node ID" />
-                <TextBox x:Name="SourcePortText" Grid.Column="1" Header="Output port ID" />
-                <TextBox x:Name="TargetNodeText" Grid.Column="2" Header="Target node ID" />
-                <TextBox x:Name="TargetPortText" Grid.Column="3" Header="Input port ID" />
-                <TextBox x:Name="TargetSlotText" Grid.Column="4" Header="Optional slot ID" />
+                <TextBox x:Name="SourceNodeText" Header="{Binding [Operator_SourceNodeId], Source={StaticResource Localization}}" />
+                <TextBox x:Name="SourcePortText" Grid.Column="1" Header="{Binding [Operator_OutputPortId], Source={StaticResource Localization}}" />
+                <TextBox x:Name="TargetNodeText" Grid.Column="2" Header="{Binding [Operator_TargetNodeId], Source={StaticResource Localization}}" />
+                <TextBox x:Name="TargetPortText" Grid.Column="3" Header="{Binding [Operator_InputPortId], Source={StaticResource Localization}}" />
+                <TextBox x:Name="TargetSlotText" Grid.Column="4" Header="{Binding [Operator_OptionalSlotId], Source={StaticResource Localization}}" />
                 <Button
                     Grid.Column="5"
                     VerticalAlignment="Bottom"
-                    AutomationProperties.Name="Connect declared Evidence recipe ports"
+                    AutomationProperties.Name="{Binding [Operator_ConnectA11y], Source={StaticResource Localization}}"
                     Click="OnAddEdgeClick"
-                    Content="Connect" />
+                    Content="{Binding [Operator_Connect], Source={StaticResource Localization}}" />
             </Grid>
         </StackPanel>
 

@@ -13,11 +13,11 @@
     <ScrollViewer>
         <StackPanel Padding="28,24,28,48" Spacing="18">
             <StackPanel Spacing="6">
-                <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="Sessions" />
+                <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{Binding [Session_Title], Source={StaticResource Localization}}" />
                 <TextBlock
                     MaxWidth="920"
                     Opacity="0.72"
-                    Text="Inspect an external Session Bundle without changing it, then import an exact copy into the current managed project. Large images and time-series stay in managed storage."
+                    Text="{Binding [Session_Description], Source={StaticResource Localization}}"
                     TextWrapping="Wrap" />
             </StackPanel>
 
@@ -26,35 +26,35 @@
                 IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}"
                 Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
                 Severity="Error"
-                Title="Session operation failed" />
+                Title="{Binding [Session_OperationFailed], Source={StaticResource Localization}}" />
             <InfoBar
                 IsClosable="False"
                 IsOpen="True"
                 Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
                 Severity="Informational"
-                Title="Session status" />
+                Title="{Binding [Session_Status], Source={StaticResource Localization}}" />
 
             <Border
                 Padding="18"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 CornerRadius="10">
                 <StackPanel Spacing="12">
-                    <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="1. Inspect external source · 2. Import managed copy" />
+                    <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Session_Workflow], Source={StaticResource Localization}}" />
                     <TextBox
-                        Header="External source folder (never moved or modified)"
+                        Header="{Binding [Session_ExternalFolder], Source={StaticResource Localization}}"
                         IsReadOnly="True"
-                        PlaceholderText="Choose a Session Bundle folder"
+                        PlaceholderText="{Binding [Session_ChooseBundlePlaceholder], Source={StaticResource Localization}}"
                         Text="{x:Bind ViewModel.SourceBundlePath, Mode=OneWay}" />
                     <StackPanel Orientation="Horizontal" Spacing="10">
                         <Button
                             Command="{x:Bind ViewModel.ChooseSessionBundleCommand}"
-                            Content="Choose Session Bundle" />
-                        <Button Command="{x:Bind ViewModel.InspectSessionCommand}" Content="Inspect" />
+                            Content="{Binding [Session_ChooseBundle], Source={StaticResource Localization}}" />
+                        <Button Command="{x:Bind ViewModel.InspectSessionCommand}" Content="{Binding [Session_Inspect], Source={StaticResource Localization}}" />
                         <Button
                             Command="{x:Bind ViewModel.ImportSessionCommand}"
-                            Content="Import exact managed copy"
+                            Content="{Binding [Session_ImportManaged], Source={StaticResource Localization}}"
                             Style="{StaticResource AccentButtonStyle}" />
-                        <Button Command="{x:Bind ViewModel.RefreshSessionsCommand}" Content="Refresh" />
+                        <Button Command="{x:Bind ViewModel.RefreshSessionsCommand}" Content="{Binding [Common_Refresh], Source={StaticResource Localization}}" />
                         <ProgressRing
                             Width="26"
                             Height="26"
@@ -79,7 +79,7 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     CornerRadius="10">
                     <StackPanel Spacing="10">
-                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="Managed sessions" />
+                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Session_ManagedSessions], Source={StaticResource Localization}}" />
                         <ListView
                             x:Name="SessionList"
                             MaxHeight="420"
@@ -105,10 +105,10 @@
                     Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                     CornerRadius="10">
                     <StackPanel Spacing="10">
-                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="Selected managed revision" />
+                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Session_SelectedRevision], Source={StaticResource Localization}}" />
                         <ComboBox
                             x:Name="RevisionSelector"
-                            Header="Revision"
+                            Header="{Binding [Common_Revision], Source={StaticResource Localization}}"
                             ItemsSource="{x:Bind ViewModel.Revisions}"
                             SelectionChanged="OnRevisionSelectionChanged">
                             <ComboBox.ItemTemplate>
@@ -117,26 +117,26 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <TextBlock FontWeight="SemiBold" Text="Managed bundle path" />
+                        <TextBlock FontWeight="SemiBold" Text="{Binding [Session_ManagedPath], Source={StaticResource Localization}}" />
                         <TextBlock Text="{x:Bind ViewModel.ManagedBundlePathText, Mode=OneWay}" TextWrapping="Wrap" />
-                        <TextBlock FontWeight="SemiBold" Text="Ingestion readiness artifact" />
+                        <TextBlock FontWeight="SemiBold" Text="{Binding [Session_IngestionArtifact], Source={StaticResource Localization}}" />
                         <TextBlock Text="{x:Bind ViewModel.ReadinessArtifactText, Mode=OneWay}" TextWrapping="Wrap" />
-                        <TextBlock FontWeight="SemiBold" Text="Synchronization report artifact" />
+                        <TextBlock FontWeight="SemiBold" Text="{Binding [Session_SyncArtifact], Source={StaticResource Localization}}" />
                         <TextBlock Text="{x:Bind ViewModel.SynchronizationArtifactText, Mode=OneWay}" TextWrapping="Wrap" />
                         <TextBlock
                             Margin="0,4,0,0"
                             Opacity="0.68"
-                            Text="The external source path above and this managed path are intentionally distinct. Product installation files never contain user Session data."
+                            Text="{Binding [Session_PathBoundary], Source={StaticResource Localization}}"
                             TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>
             </Grid>
 
             <StackPanel Spacing="10">
-                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="Canonical input families" />
+                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Session_InputFamilies], Source={StaticResource Localization}}" />
                 <TextBlock
                     Opacity="0.68"
-                    Text="Visual scene, gaze, pilot camera, EEG and ECG remain first-class even when this Session declares them missing or export pending."
+                    Text="{Binding [Session_InputFamiliesDescription], Source={StaticResource Localization}}"
                     TextWrapping="Wrap" />
                 <GridView
                     IsItemClickEnabled="False"
