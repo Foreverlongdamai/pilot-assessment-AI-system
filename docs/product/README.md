@@ -4,12 +4,14 @@
 |---|---|
 | 设计基线 | 产品 v0.5 complete-node/task-activation expert designer；D-031–D-053 已获用户确认 |
 | 基线日期 | 2026-07-17 |
-| 产品阶段 | M1/M2/M3、M4R、M5、M6 与 M7A Current Model Runtime 已工程验证；M7B Task 1–12 已完成 WinUI scaffold、强类型合同层、受监督 sidecar、受管 project/session、canonical task-scheme、global active/dim 模型图、图上节点/任务激活编辑、多独立节点浮窗、Raw Input/Evidence/BN/CPT 编辑器，以及写回 Python canonical state 的持久 autosave/reconciliation；Task 13 起继续实现即时中英文切换和运行结果工作区；M8 packaging 尚未设计；starter/synthetic `formal_run_authorized=false` |
+| 产品阶段 | M1/M2/M3、M4R、M5、M6 与 M7A Current Model Runtime 已工程验证；M7B Task 1–13 已完成 WinUI scaffold、强类型合同层、受监督 sidecar、受管 project/session、canonical task-scheme、global active/dim 模型图、图上节点/任务激活编辑、多独立节点浮窗、Raw Input/Evidence/BN/CPT 编辑器、写回 Python canonical state 的持久 autosave/reconciliation，以及不改 canonical 模型的即时中英文切换；Task 14 起实现实际运行、结果、trace 与 diagnostics；M8 packaging 尚未设计；starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
 
 2026-07-17 M7B Task 12 已完成普通表单字段的 350 ms autosave、同一 canonical 对象的有序写入、独立对象并发、transaction-ID 幂等重试、晚响应 rebase、Reload/Reapply 冲突恢复、编辑器/主窗口保存状态和关闭前 flush。可见验证将 BN 描述写入后端、恢复原文并在重开窗口后读回 revision `2`；因此前文 Task 11 时点的“Task 12 才负责”已由本段取代。离散 activation/edge/copy/archive 与 parent/state/CPT 仍直接使用已有原子后端操作，不经过延迟表单保存。
+
+2026-07-17 M7B Task 13 已完成即时中英文切换：shell、页面、任务侧栏、active/dim 图、对话框以及已打开的 Raw Input/Evidence/BN/CPT 节点窗口均原地刷新；模型翻译缺失时显示明确 fallback 标记。语言只保存为 `%LOCALAPPDATA%` UI preference，不发送模型写操作，也不改变 ID、revision、hash、参数或结果。fresh gate 为 desktop Unit `75/75`、Contract `3/3`、focused localization `8/8`、x64 Debug build `0 warning / 0 error`，`527` 对资源键与 `481` 个实际引用均零缺失。下一项是 Task 14 actual run/results/trace/diagnostics；`model.preview.node` 仍只是 frozen snapshot metadata，不代表已经执行评估。
 
 ## 1. 文档用途
 

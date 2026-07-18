@@ -14,7 +14,7 @@
 |---|---|
 | Milestone | M7B |
 | Date | 2026-07-17 |
-| Status | Tasks 1–12 complete; Task 13 live Chinese/English switching is next |
+| Status | Tasks 1–13 complete; Task 14 run/result workspace is next |
 | Parent roadmap | [M7 Implementation Roadmap](2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) |
 | Backend dependency | [M7A Current Model Runtime Plan](2026-07-17-m7a-current-model-runtime-implementation-plan.md) |
 | Authoritative design | [M7 Design](../specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) |
@@ -588,13 +588,13 @@ Fresh verification: desktop Unit `67/67`, Contract `3/3`, x64 Debug build `0 war
 - Modify: all visible shell/page/control XAML and view models
 - Create: `tests/PilotAssessment.Desktop.UnitTests/State/LocalizationTests.cs`
 
-- [ ] Put all product-owned visible strings, status labels, errors and accessibility names in resource files with one-to-one keys.
-- [ ] Implement a resource indexer/service that explicitly reloads the selected MRT Core resource context and raises binding notifications. Do not rely only on already-loaded `x:Uid` resources after `PrimaryLanguageOverride` changes.
-- [ ] Switch visible shell, open node windows, dialogs and graph labels immediately; newly opened windows inherit the selected language.
-- [ ] Select model `name_zh/name_en` and descriptions client-side with a visible fallback marker when one translation is absent. Do not mutate backend metadata during language switch.
-- [ ] Persist language as a local UI preference only. Assert IDs, revisions, hashes, parameter values and results do not change.
-- [ ] Test resource parity, fallback, live change notification and identity invariance.
-- [ ] Run:
+- [x] Put all product-owned visible strings, status labels, errors and accessibility names in resource files with one-to-one keys.
+- [x] Implement a resource indexer/service that explicitly reloads the selected MRT Core resource context and raises binding notifications. Do not rely only on already-loaded `x:Uid` resources after `PrimaryLanguageOverride` changes.
+- [x] Switch visible shell, open node windows, dialogs and graph labels immediately; newly opened windows inherit the selected language.
+- [x] Select model `name_zh/name_en` and descriptions client-side with a visible fallback marker when one translation is absent. Do not mutate backend metadata during language switch.
+- [x] Persist language as a local UI preference only. Assert IDs, revisions, hashes, parameter values and results do not change.
+- [x] Test resource parity, fallback, live change notification and identity invariance.
+- [x] Run:
 
 ```powershell
 dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.UnitTests.csproj --filter FullyQualifiedName~LocalizationTests
@@ -602,12 +602,16 @@ dotnet test tests/PilotAssessment.Desktop.UnitTests/PilotAssessment.Desktop.Unit
 
 Expected: both resource sets have equal keys and switching changes presentation only.
 
-- [ ] Commit:
+- [x] Commit:
 
 ```powershell
 git add src/PilotAssessment.Desktop/Strings src/PilotAssessment.Desktop/Services/Localization src/PilotAssessment.Desktop.Core/State/BilingualTextSelector.cs src/PilotAssessment.Desktop tests/PilotAssessment.Desktop.UnitTests/State/LocalizationTests.cs
 git commit -m "feat: add live Chinese and English UI"
 ```
+
+Recorded commit: `8ed9581`. The application now resolves `527` one-to-one MRT Core resource keys through an explicitly language-qualified context and raises live indexer notifications. Shell/pages, task sidebar, global graph, dialogs, Raw Input/Evidence/BN/CPT editors, technical status labels and already-open independent node windows refresh in place. Model metadata is selected client-side with explicit `[EN fallback]`, `[中文回退]` or `[ID fallback]` markers; language is stored only in `%LOCALAPPDATA%\PilotAssessmentSystem\ui-state.json`.
+
+Fresh verification: desktop Unit `75/75`, Contract `3/3`, focused localization `8/8`, x64 Debug build `0 warning / 0 error`, `527/527` unique resource-key parity, `481` referenced keys with zero missing, and `git diff --check` clean apart from Git's existing line-ending notice. The visible application switched English → Chinese without reopening the shell, refreshed the active/dim graph and its technical labels, opened a Chinese independent BN editor, then switched both the shell and that already-open editor back to English. Restart preserved the local language choice. The representative BN node remained semantic/layout revision `2`; language projection performed no model/session/task write and changed no canonical ID, revision, hash, parameter or result. Task 14 remains the owner of actual run execution, posterior and result rendering.
 
 ## Task 14: Add preview, runs, results, trace and diagnostics pages
 
