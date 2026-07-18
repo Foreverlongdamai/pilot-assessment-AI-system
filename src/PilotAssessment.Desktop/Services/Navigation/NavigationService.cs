@@ -12,8 +12,8 @@ public sealed class NavigationService
             ["project"] = typeof(ProjectLauncherPage),
             ["session"] = typeof(SessionExplorerPage),
             ["model"] = typeof(ModelStudioPage),
-            ["runs"] = typeof(WorkspacePlaceholderPage),
-            ["results"] = typeof(WorkspacePlaceholderPage),
+            ["runs"] = typeof(RunsPage),
+            ["results"] = typeof(ResultsPage),
             ["library"] = typeof(WorkspacePlaceholderPage),
             ["diagnostics"] = typeof(DiagnosticsPage),
         };

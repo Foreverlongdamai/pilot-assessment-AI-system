@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="PilotAssessment.Desktop.Views.Pages.RunsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:contracts="using:PilotAssessment.Desktop.Core.Contracts"
+    xmlns:vm="using:PilotAssessment.Desktop.ViewModels"
+    Loaded="OnPageLoaded">
+    <ScrollViewer>
+        <StackPanel Padding="28,24,28,48" Spacing="18">
+            <StackPanel Spacing="6">
+                <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Text="{Binding [Runs_Title], Source={StaticResource Localization}}" />
+                <TextBlock
+                    MaxWidth="980"
+                    Opacity="0.72"
+                    Text="{Binding [Runs_Description], Source={StaticResource Localization}}"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+
+            <InfoBar
+                IsClosable="False"
+                IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}"
+                Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
+                Severity="Error"
+                Title="{Binding [Runs_OperationFailed], Source={StaticResource Localization}}" />
+            <InfoBar
+                IsClosable="False"
+                IsOpen="True"
+                Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                Severity="Informational"
+                Title="{Binding [Common_Status], Source={StaticResource Localization}}" />
+
+            <CommandBar DefaultLabelPosition="Right">
+                <AppBarButton Command="{x:Bind ViewModel.RefreshCommand}" Label="{Binding [Common_Refresh], Source={StaticResource Localization}}">
+                    <AppBarButton.Icon><FontIcon Glyph="&#xE72C;" /></AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton Command="{x:Bind ViewModel.PreflightCommand}" Label="{Binding [Runs_Preflight], Source={StaticResource Localization}}">
+                    <AppBarButton.Icon><FontIcon Glyph="&#xE9D9;" /></AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton Command="{x:Bind ViewModel.StartCommand}" Label="{Binding [Runs_Start], Source={StaticResource Localization}}">
+                    <AppBarButton.Icon><FontIcon Glyph="&#xE768;" /></AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton Command="{x:Bind ViewModel.CancelCommand}" Label="{Binding [Common_Cancel], Source={StaticResource Localization}}">
+                    <AppBarButton.Icon><FontIcon Glyph="&#xE711;" /></AppBarButton.Icon>
+                </AppBarButton>
+            </CommandBar>
+
+            <Border Padding="18" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="10">
+                <Grid ColumnSpacing="20" RowSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="260" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <ComboBox
+                        Header="{Binding [Runs_Purpose], Source={StaticResource Localization}}"
+                        ItemsSource="{x:Bind ViewModel.PurposeOptions}"
+                        SelectedItem="{x:Bind ViewModel.SelectedPurpose, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:RunPurposeOption">
+                                <TextBlock Text="{x:Bind Label}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <StackPanel Grid.Column="1" Spacing="5">
+                        <TextBlock FontWeight="SemiBold" Text="{Binding [Runs_CurrentInput], Source={StaticResource Localization}}" />
+                        <TextBlock Text="{x:Bind ViewModel.SelectionText, Mode=OneWay}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Spacing="5">
+                        <TextBlock FontWeight="SemiBold" Text="{Binding [Runs_PreflightIdentity], Source={StaticResource Localization}}" />
+                        <TextBlock FontFamily="Consolas" Text="{x:Bind ViewModel.PreflightStatusText, Mode=OneWay}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <InfoBar
+                        Grid.Row="2"
+                        Grid.ColumnSpan="2"
+                        IsClosable="False"
+                        IsOpen="True"
+                        Message="{x:Bind ViewModel.ScientificBannerText, Mode=OneWay}"
+                        Severity="Warning"
+                        Title="{Binding [Runs_ScientificBoundary], Source={StaticResource Localization}}" />
+                </Grid>
+            </Border>
+
+            <Expander Header="{Binding [Runs_PreflightDiagnostics], Source={StaticResource Localization}}" IsExpanded="False">
+                <ListView MaxHeight="260" ItemsSource="{x:Bind ViewModel.PreflightDiagnostics}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="contracts:RunDiagnostic">
+                            <Grid Padding="4" ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120" />
+                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock FontWeight="SemiBold" Text="{x:Bind Severity}" />
+                                <TextBlock Grid.Column="1" FontFamily="Consolas" Text="{x:Bind Code}" />
+                                <TextBlock Grid.Column="2" Text="{x:Bind Message}" TextWrapping="Wrap" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Expander>
+
+            <Grid ColumnSpacing="18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="360" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Padding="14" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="10">
+                    <StackPanel Spacing="10">
+                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Runs_History], Source={StaticResource Localization}}" />
+                        <ListView
+                            MaxHeight="520"
+                            ItemsSource="{x:Bind ViewModel.Runs}"
+                            SelectedItem="{x:Bind ViewModel.SelectedRun, Mode=TwoWay}"
+                            SelectionMode="Single">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="vm:RunListItemViewModel">
+                                    <StackPanel Padding="4" Spacing="3">
+                                        <TextBlock FontWeight="SemiBold" Text="{x:Bind Title}" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Opacity="0.76" Text="{x:Bind StateText}" />
+                                        <TextBlock Opacity="0.62" Text="{x:Bind DetailText}" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Padding="18" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="10">
+                    <StackPanel Spacing="12">
+                        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Runs_FrozenSnapshot], Source={StaticResource Localization}}" />
+                        <TextBlock FontFamily="Consolas" Text="{x:Bind ViewModel.FrozenSnapshotText, Mode=OneWay}" TextWrapping="Wrap" />
+                        <TextBlock FontWeight="SemiBold" Text="{x:Bind ViewModel.ProgressText, Mode=OneWay}" TextWrapping="Wrap" />
+                        <ProgressBar
+                            IsIndeterminate="{x:Bind ViewModel.IsProgressIndeterminate, Mode=OneWay}"
+                            Maximum="100"
+                            Value="{x:Bind ViewModel.ProgressValue, Mode=OneWay}" />
+                        <TextBlock Margin="0,6,0,0" FontWeight="SemiBold" Text="{Binding [Runs_FrozenNodes], Source={StaticResource Localization}}" />
+                        <ListView MaxHeight="360" ItemsSource="{x:Bind ViewModel.FrozenNodes}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="vm:FrozenNodeItemViewModel">
+                                    <Grid Padding="4" ColumnSpacing="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="190" />
+                                            <ColumnDefinition Width="100" />
+                                            <ColumnDefinition Width="70" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock FontWeight="SemiBold" Text="{x:Bind Name}" />
+                                            <TextBlock Opacity="0.62" Text="{x:Bind NodeId}" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="{x:Bind Kind}" />
+                                        <TextBlock Grid.Column="2" Text="{x:Bind Revision}" />
+                                        <TextBlock Grid.Column="3" FontFamily="Consolas" Text="{x:Bind ContentHash}" TextTrimming="CharacterEllipsis" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

@@ -6,15 +6,15 @@ using PilotAssessment.Desktop.ViewModels;
 
 namespace PilotAssessment.Desktop.Views.Pages;
 
-public sealed partial class DiagnosticsPage : Page
+public sealed partial class RunsPage : Page
 {
-    public DiagnosticsPage()
+    public RunsPage()
     {
-        ViewModel = App.Services.GetRequiredService<DiagnosticsViewModel>();
+        ViewModel = App.Services.GetRequiredService<RunsViewModel>();
         InitializeComponent();
     }
 
-    public DiagnosticsViewModel ViewModel { get; }
+    public RunsViewModel ViewModel { get; }
 
     private async void OnPageLoaded(object sender, RoutedEventArgs args) =>
         await ViewModel.InitializeAsync();

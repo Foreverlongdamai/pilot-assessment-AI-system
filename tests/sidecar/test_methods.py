@@ -227,7 +227,9 @@ def test_current_workspace_methods_return_canonical_state_and_idempotent_retries
         capabilities = rpc.call("capabilities.list")
         assert "model.current-workspace.v1" in capabilities["capabilities"]
         assert "model.graph.get" in capabilities["method_families"]["current_model"]
+        assert "model.run.list" in capabilities["method_families"]["current_model"]
         assert "scheme.draft.publish" in capabilities["method_families"]["compatibility_model"]
+        assert rpc.call("model.run.list")["runs"] == []
 
         base = rpc.call("model.scheme.list")["schemes"][0]
         graph = rpc.call("model.graph.get", {"scheme_id": base["scheme_id"]})["graph"]

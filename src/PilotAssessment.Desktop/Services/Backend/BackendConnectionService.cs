@@ -3,6 +3,16 @@ using PilotAssessment.Desktop.Core.State;
 
 namespace PilotAssessment.Desktop.Services.Backend;
 
+public sealed class BackendClientChangedEventArgs : EventArgs
+{
+    public BackendClientChangedEventArgs(JsonRpcClient? client)
+    {
+        Client = client;
+    }
+
+    public JsonRpcClient? Client { get; }
+}
+
 public sealed class BackendConnectionService : IAsyncDisposable
 {
     private readonly ApplicationShellState _shellState;
@@ -17,6 +27,13 @@ public sealed class BackendConnectionService : IAsyncDisposable
 
     public JsonRpcClient? Client => Volatile.Read(ref _host)?.Client;
 
+    public BackendHandshake? Handshake => Volatile.Read(ref _host)?.Handshake;
+
+    public IReadOnlyList<string> DiagnosticLines =>
+        Volatile.Read(ref _host)?.DiagnosticLines ?? [];
+
+    public event EventHandler<BackendClientChangedEventArgs>? ClientChanged;
+
     public async Task<bool> ConnectAsync(CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
@@ -29,6 +46,7 @@ public sealed class BackendConnectionService : IAsyncDisposable
                 var previous = Interlocked.Exchange(ref _host, null);
                 if (previous is not null)
                 {
+                    RaiseClientChanged(null);
                     previous.DiagnosticLineReceived -= OnDiagnosticLineReceived;
                     await previous.DisposeAsync().ConfigureAwait(false);
                 }
@@ -38,6 +56,7 @@ public sealed class BackendConnectionService : IAsyncDisposable
                     .ConfigureAwait(false);
                 host.DiagnosticLineReceived += OnDiagnosticLineReceived;
                 Volatile.Write(ref _host, host);
+                RaiseClientChanged(host.Client);
 
                 var handshake = host.Handshake
                     ?? throw new InvalidOperationException("Sidecar handshake did not complete.");
@@ -76,6 +95,7 @@ public sealed class BackendConnectionService : IAsyncDisposable
             var host = Interlocked.Exchange(ref _host, null);
             if (host is not null)
             {
+                RaiseClientChanged(null);
                 host.DiagnosticLineReceived -= OnDiagnosticLineReceived;
                 await host.DisposeAsync().ConfigureAwait(false);
             }
@@ -96,8 +116,13 @@ public sealed class BackendConnectionService : IAsyncDisposable
             await Task.WhenAny(host.ProcessExit, host.Client.Completion).ConfigureAwait(false);
             if (Volatile.Read(ref _disposed) == 0 && ReferenceEquals(Volatile.Read(ref _host), host))
             {
-                _shellState.FailBackendConnection(
-                    "The local assessment backend stopped unexpectedly. Open Diagnostics and reconnect.");
+                if (ReferenceEquals(Interlocked.CompareExchange(ref _host, null, host), host))
+                {
+                    RaiseClientChanged(null);
+                    _shellState.FailBackendConnection(
+                        "The local assessment backend stopped unexpectedly. Open Diagnostics and reconnect.");
+                    await host.DisposeAsync().ConfigureAwait(false);
+                }
             }
         }
         catch (Exception error)
@@ -112,4 +137,7 @@ public sealed class BackendConnectionService : IAsyncDisposable
 
     private void OnDiagnosticLineReceived(object? sender, string line) =>
         _shellState.AppendDiagnostic(line);
+
+    private void RaiseClientChanged(JsonRpcClient? client) =>
+        ClientChanged?.Invoke(this, new BackendClientChangedEventArgs(client));
 }

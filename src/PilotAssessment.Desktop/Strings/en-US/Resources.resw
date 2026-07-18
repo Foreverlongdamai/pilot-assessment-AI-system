@@ -531,4 +531,94 @@
   <data name="Node_ConflictLoadFailed" xml:space="preserve"><value>The current canonical node could not be loaded: {0}</value></data>
   <data name="Node_EvidenceMetadataError" xml:space="preserve"><value>Evidence editor metadata error · {0}</value></data>
   <data name="Node_BnMetadataError" xml:space="preserve"><value>BN editor metadata error · {0}</value></data>
+  <data name="Common_Cancelled" xml:space="preserve"><value>Cancelled</value></data>
+  <data name="Runs_Title" xml:space="preserve"><value>Assessment runs</value></data>
+  <data name="Runs_Description" xml:space="preserve"><value>Run the selected managed Session revision with the current task scheme. Technical preflight, immutable snapshot identity, progress, cancellation and restart recovery are all backend-owned.</value></data>
+  <data name="Runs_OperationFailed" xml:space="preserve"><value>Run operation failed</value></data>
+  <data name="Runs_Preflight" xml:space="preserve"><value>Technical preflight</value></data>
+  <data name="Runs_Start" xml:space="preserve"><value>Start run</value></data>
+  <data name="Runs_Purpose" xml:space="preserve"><value>Purpose</value></data>
+  <data name="Runs_CurrentInput" xml:space="preserve"><value>Selected managed input and current task scheme</value></data>
+  <data name="Runs_PreflightIdentity" xml:space="preserve"><value>Preflight identity</value></data>
+  <data name="Runs_ScientificBoundary" xml:space="preserve"><value>Scientific boundary</value></data>
+  <data name="Runs_PreflightDiagnostics" xml:space="preserve"><value>Exact technical preflight diagnostics</value></data>
+  <data name="Runs_History" xml:space="preserve"><value>Durable current-model runs</value></data>
+  <data name="Runs_FrozenSnapshot" xml:space="preserve"><value>Frozen run snapshot</value></data>
+  <data name="Runs_FrozenNodes" xml:space="preserve"><value>Frozen complete nodes and content hashes</value></data>
+  <data name="Runs_PurposePreview" xml:space="preserve"><value>Preview</value></data>
+  <data name="Runs_PurposeSoftwareTest" xml:space="preserve"><value>Software test</value></data>
+  <data name="Runs_PurposeAssessment" xml:space="preserve"><value>Assessment</value></data>
+  <data name="Runs_StatusStart" xml:space="preserve"><value>Select a managed Session revision and current task scheme, then run technical preflight.</value></data>
+  <data name="Runs_StatusRefreshed" xml:space="preserve"><value>Current-model runs recovered from managed project storage.</value></data>
+  <data name="Runs_StatusPreflightReady" xml:space="preserve"><value>Technical preflight is ready. The current model can run directly.</value></data>
+  <data name="Runs_StatusPreflightBlocked" xml:space="preserve"><value>Technical preflight is blocked; review the exact diagnostics below.</value></data>
+  <data name="Runs_StatusStarted" xml:space="preserve"><value>Assessment run started from the frozen current scheme; no Publish step was used.</value></data>
+  <data name="Runs_StatusCancellationRequested" xml:space="preserve"><value>Cancellation was requested and reconciled with the canonical backend run.</value></data>
+  <data name="Runs_NoSessionRevision" xml:space="preserve"><value>No managed Session revision selected</value></data>
+  <data name="Runs_NoScheme" xml:space="preserve"><value>No current task scheme selected</value></data>
+  <data name="Runs_PreflightNotRun" xml:space="preserve"><value>Preflight not run</value></data>
+  <data name="Runs_ScientificUnknown" xml:space="preserve"><value>Scientific status will be shown after preflight.</value></data>
+  <data name="Runs_ScientificAuthorized" xml:space="preserve"><value>Formal assessment is authorized by the selected scheme/session metadata.</value></data>
+  <data name="Runs_ScientificSynthetic" xml:space="preserve"><value>Engineering / synthetic run: useful for workflow verification, not a validated pilot assessment.</value></data>
+  <data name="Runs_ScientificNotAuthorized" xml:space="preserve"><value>Engineering run: formal assessment is not authorized. Technical execution remains available.</value></data>
+  <data name="Runs_NoFrozenSnapshot" xml:space="preserve"><value>No frozen run snapshot selected.</value></data>
+  <data name="Runs_Idle" xml:space="preserve"><value>Idle</value></data>
+  <data name="Runs_Ready" xml:space="preserve"><value>Ready</value></data>
+  <data name="Runs_Blocked" xml:space="preserve"><value>Blocked</value></data>
+  <data name="Runs_State_Queued" xml:space="preserve"><value>Queued</value></data>
+  <data name="Runs_State_Running" xml:space="preserve"><value>Running</value></data>
+  <data name="Runs_State_Cancelling" xml:space="preserve"><value>Cancelling</value></data>
+  <data name="Runs_State_Cancelled" xml:space="preserve"><value>Cancelled</value></data>
+  <data name="Runs_State_Completed" xml:space="preserve"><value>Completed</value></data>
+  <data name="Runs_State_Failed" xml:space="preserve"><value>Failed</value></data>
+  <data name="Runs_State_Interrupted" xml:space="preserve"><value>Interrupted</value></data>
+  <data name="Runs_Stage_Queued" xml:space="preserve"><value>Queued</value></data>
+  <data name="Runs_Stage_SnapshotValidation" xml:space="preserve"><value>Snapshot validation</value></data>
+  <data name="Runs_Stage_Ingestion" xml:space="preserve"><value>Ingestion</value></data>
+  <data name="Runs_Stage_Synchronization" xml:space="preserve"><value>Synchronization</value></data>
+  <data name="Runs_Stage_Evidence" xml:space="preserve"><value>Evidence extraction</value></data>
+  <data name="Runs_Stage_Inference" xml:space="preserve"><value>Bayesian inference</value></data>
+  <data name="Runs_Stage_Reporting" xml:space="preserve"><value>Reporting</value></data>
+  <data name="Runs_Stage_Completed" xml:space="preserve"><value>Completed</value></data>
+  <data name="Results_Title" xml:space="preserve"><value>Assessment results</value></data>
+  <data name="Results_Description" xml:space="preserve"><value>Inspect backend-verified Evidence observations, Bayesian posteriors, read-only inference influence, provenance and managed artifact references for an immutable run snapshot.</value></data>
+  <data name="Results_OperationFailed" xml:space="preserve"><value>Result operation failed</value></data>
+  <data name="Results_Load" xml:space="preserve"><value>Load result</value></data>
+  <data name="Results_CompletedRuns" xml:space="preserve"><value>Completed current-model runs</value></data>
+  <data name="Results_Summary" xml:space="preserve"><value>Immutable result summary</value></data>
+  <data name="Results_ScientificStatus" xml:space="preserve"><value>Scientific status</value></data>
+  <data name="Results_EvidenceTab" xml:space="preserve"><value>Evidence / observations</value></data>
+  <data name="Results_EvidenceDau" xml:space="preserve"><value>Evidence D / A / U scoring</value></data>
+  <data name="Results_Observations" xml:space="preserve"><value>Bayesian hard, virtual or omitted observations</value></data>
+  <data name="Results_PosteriorTab" xml:space="preserve"><value>BN posterior</value></data>
+  <data name="Results_InfluenceTab" xml:space="preserve"><value>Inference influence</value></data>
+  <data name="Results_InfluenceNotCanonical" xml:space="preserve"><value>Explanation overlay — not a canonical edge</value></data>
+  <data name="Results_ArtifactsTab" xml:space="preserve"><value>Artifacts / coverage</value></data>
+  <data name="Results_ProvenanceTab" xml:space="preserve"><value>Provenance</value></data>
+  <data name="Results_ShowInFolder" xml:space="preserve"><value>Show in folder</value></data>
+  <data name="Results_StatusStart" xml:space="preserve"><value>Completed current-model runs will appear here.</value></data>
+  <data name="Results_NoCurrentResults" xml:space="preserve"><value>No completed current-model result is stored in this project yet.</value></data>
+  <data name="Results_ArtifactOpened" xml:space="preserve"><value>The verified managed artifact was selected in Windows Explorer.</value></data>
+  <data name="Results_StatusLoaded" xml:space="preserve"><value>Result artifacts were verified by the backend and projected read-only.</value></data>
+  <data name="Results_NoCoverageArtifacts" xml:space="preserve"><value>No separate coverage artifact was emitted for this run.</value></data>
+  <data name="Results_CoverageArtifacts" xml:space="preserve"><value>{0} verified coverage artifact(s) are available below.</value></data>
+  <data name="Results_NoResultLoaded" xml:space="preserve"><value>No result loaded.</value></data>
+  <data name="Results_ScientificUnknown" xml:space="preserve"><value>Scientific status is not available.</value></data>
+  <data name="Results_InfluenceExplanation" xml:space="preserve"><value>Inference influence is a read-only explanation from this result. It is not a canonical BN edge and cannot be edited into the model graph.</value></data>
+  <data name="Results_ScientificNotSupported" xml:space="preserve"><value>Scientific status: not supported / engineering workflow only.</value></data>
+  <data name="Results_ScientificEngineering" xml:space="preserve"><value>Scientific status: engineering default.</value></data>
+  <data name="Results_ScientificExpertReviewed" xml:space="preserve"><value>Scientific status: expert reviewed.</value></data>
+  <data name="Results_ScientificCalibrated" xml:space="preserve"><value>Scientific status: calibrated.</value></data>
+  <data name="Results_ScientificInternal" xml:space="preserve"><value>Scientific status: internally validated.</value></data>
+  <data name="Results_ScientificExternal" xml:space="preserve"><value>Scientific status: externally validated.</value></data>
+  <data name="Diagnostics_RefreshFailed" xml:space="preserve"><value>Diagnostics refresh failed</value></data>
+  <data name="Diagnostics_BackendIdentity" xml:space="preserve"><value>Backend identity</value></data>
+  <data name="Diagnostics_RuntimeStatus" xml:space="preserve"><value>Runtime status</value></data>
+  <data name="Diagnostics_ProjectRecovery" xml:space="preserve"><value>Project / run recovery</value></data>
+  <data name="Diagnostics_SchemaIdentities" xml:space="preserve"><value>Run and result schema identities</value></data>
+  <data name="Diagnostics_Capabilities" xml:space="preserve"><value>Capabilities</value></data>
+  <data name="Diagnostics_MethodCatalog" xml:space="preserve"><value>JSON-RPC method catalog</value></data>
+  <data name="Diagnostics_AuditEvents" xml:space="preserve"><value>Recent audit events</value></data>
+  <data name="Diagnostics_NoRecoverableRuns" xml:space="preserve"><value>No queued, active or interrupted current-model run requires attention.</value></data>
+  <data name="Diagnostics_NoHandshake" xml:space="preserve"><value>No active backend handshake.</value></data>
 </root>

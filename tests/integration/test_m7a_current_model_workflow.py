@@ -260,6 +260,13 @@ def test_m7a_current_model_sidecar_workflow_is_editable_portable_and_snapshot_sa
         assert completed["snapshot"]["snapshot_hash"] == started["snapshot"]["snapshot_hash"]
         current_result = rpc.call("result.get", {"run_id": current_run_id})["result"]
         assert current_result["snapshot_hash"] == started["snapshot"]["snapshot_hash"]
+        listed_current_runs = rpc.call("model.run.list")["runs"]
+        listed_current = next(
+            item for item in listed_current_runs if item["run"]["run_id"] == current_run_id
+        )
+        assert listed_current["run"]["contract_version"] == "0.2.0"
+        assert listed_current["result_id"] == current_result["result_id"]
+        assert all(item["run"]["run_id"] != legacy_run_id for item in listed_current_runs)
         for reference_name in ("observation_set_ref", "posterior_ref", "inference_trace_ref"):
             reference = current_result[reference_name]
             artifact = rpc.call(

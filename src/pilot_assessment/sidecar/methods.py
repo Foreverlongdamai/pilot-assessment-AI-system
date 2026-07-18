@@ -235,6 +235,7 @@ _CURRENT_MODEL_METHOD_NAMES = (
     "model.cpt.update",
     "model.preview.node",
     "model.preview.scheme",
+    "model.run.list",
     "model.run.preflight",
     "model.run.start",
 )
@@ -2274,6 +2275,25 @@ class SidecarMethods:
             preview_id=_optional_str(params, "preview_id") or f"preview.{context.trace_id}",
         )
         return {"preview": _jsonable(preview)}
+
+    def _model_run_list(self, _params, _context) -> RpcResult:
+        """Return current-model runs for durable desktop recovery.
+
+        Legacy M5/M6 runs remain available through ``run.status`` when their ID is
+        known.  The current workspace deliberately lists only v0.2 runs so the
+        typed M7 client never has to guess which snapshot contract it received.
+        """
+
+        app = self._app()
+        items: list[JsonValue] = []
+        for run in app.runs.list_runs():
+            if run.contract_version != "0.2.0":
+                continue
+            result_id = None
+            with suppress(RunResultNotFoundError):
+                result_id = app.results.get_by_run(run.run_id).result_id
+            items.append({"run": _jsonable(run), "result_id": result_id})
+        return {"runs": items}
 
     def _model_run_preflight(self, params, _context) -> RpcResult:
         report = self._app().current_preflight.prepare(

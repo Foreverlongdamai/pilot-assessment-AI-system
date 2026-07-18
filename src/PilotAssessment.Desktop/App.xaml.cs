@@ -67,6 +67,12 @@ public partial class App : Application
             services.GetRequiredService<ModelWorkspaceClient>());
         builder.Services.AddSingleton<IBayesianNodeEditorGateway>(services =>
             services.GetRequiredService<ModelWorkspaceClient>());
+        builder.Services.AddSingleton<RunClient>();
+        builder.Services.AddSingleton<IRunGateway>(services =>
+            services.GetRequiredService<RunClient>());
+        builder.Services.AddSingleton<ManagedArtifactReader>();
+        builder.Services.AddSingleton<IManagedArtifactReader>(services =>
+            services.GetRequiredService<ManagedArtifactReader>());
         builder.Services.AddSingleton<ModelGraphCommandCoordinator>();
         builder.Services.AddSingleton<NavigationService>();
         builder.Services.AddSingleton<ShellViewModel>();
@@ -74,6 +80,9 @@ public partial class App : Application
         builder.Services.AddSingleton<TaskSchemeListViewModel>();
         builder.Services.AddSingleton<ProjectLauncherViewModel>();
         builder.Services.AddSingleton<ModelStudioViewModel>();
+        builder.Services.AddSingleton<RunsViewModel>();
+        builder.Services.AddSingleton<ResultsViewModel>();
+        builder.Services.AddSingleton<DiagnosticsViewModel>();
         builder.Services.AddSingleton<NodeWindowRegistry>();
         builder.Services.AddSingleton<MainWindow>();
         _applicationHost = builder.Build();
