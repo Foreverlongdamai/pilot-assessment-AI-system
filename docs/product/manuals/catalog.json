@@ -84,12 +84,12 @@
       "languages": {"zh-CN": {"title": "前后端协议与 C# 开发手册", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "Sidecar Protocol and C# Development Reference", "source": null, "status": "planned", "output": null}}
     },
     {
-      "document_id": "PAS-BACKUP-001",
+      "document_id": "PAS-PORTABILITY-001",
       "order": 10,
-      "slug": "backup-restore-migration-and-troubleshooting",
+      "slug": "system-distribution-project-portability-and-troubleshooting",
       "dependencies": ["M8D"],
       "release_policy": "blocked_until_dependencies",
-      "languages": {"zh-CN": {"title": "项目备份、恢复、迁移与故障排查", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "Project Backup, Restore, Migration and Troubleshooting", "source": null, "status": "planned", "output": null}}
+      "languages": {"zh-CN": {"title": "系统分发、项目迁移与故障排查", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "System Distribution, Project Portability and Troubleshooting", "source": null, "status": "planned", "output": null}}
     },
     {
       "document_id": "PAS-RELEASE-001",
@@ -105,7 +105,7 @@
       "slug": "master-technical-reference",
       "dependencies": ["M8C-1", "M8D", "M8E"],
       "release_policy": "aggregate_when_all_modules_released",
-      "aggregate_sources": ["PAS-ARCH-001", "PAS-QUICKSTART-001", "PAS-EVALUATOR-001", "PAS-EXPERT-EVIDENCE-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001", "PAS-PYTHON-CORE-001", "PAS-PROTOCOL-CSHARP-001", "PAS-BACKUP-001", "PAS-RELEASE-001"],
+      "aggregate_sources": ["PAS-ARCH-001", "PAS-QUICKSTART-001", "PAS-EVALUATOR-001", "PAS-EXPERT-EVIDENCE-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001", "PAS-PYTHON-CORE-001", "PAS-PROTOCOL-CSHARP-001", "PAS-PORTABILITY-001", "PAS-RELEASE-001"],
       "languages": {"zh-CN": {"title": "系统技术参考总册", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "Master System Technical Reference", "source": null, "status": "planned", "output": null}}
     }
   ]

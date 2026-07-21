@@ -401,7 +401,7 @@ CPT 编辑器支持键盘导航、区域复制粘贴、批量填充、row valida
 5. **Run**：选择 managed session 与当前 scheme，preflight、start、progress、cancel；
 6. **Results**：competency/sub-skill posterior、Evidence observation、时间窗、trace、artifact 和 snapshot drill-down；
 7. **Library**：全局节点搜索、使用情况、归档、operator catalog；
-8. **Diagnostics**：sidecar stderr、stable error code、project recovery 和 support bundle。
+8. **Diagnostics**：sidecar stderr、stable error code、project recovery 和可复制技术摘要；D-077 后不生成 support bundle archive。
 
 打开应用时：有上次成功打开的项目则恢复该项目与最后使用的任务方案；否则进入 Project Launcher。用户 session 数据始终在受管项目中，不随软件安装包分发。
 

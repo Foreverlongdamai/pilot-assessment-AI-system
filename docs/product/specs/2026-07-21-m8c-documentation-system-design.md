@@ -1,6 +1,6 @@
 # M8C Documentation System and Versioned DOCX Design
 
-> **状态：已由 2026-07-21 用户“继续推进 M8B 和之后计划实施”的授权接受。** 本规格把 M8 总路线图中的文档要求收口为可实施合同；M8C-0 可立即实施，M8C-1 的最终截图、备份、发布验收内容必须等待对应产品能力稳定。
+> **状态：已由 2026-07-21 用户“继续推进 M8B 和之后计划实施”的授权接受。** 本规格把 M8 总路线图中的文档要求收口为可实施合同；M8C-0 已完成，M8C-1 的最终截图、current-system packaging/project portability 和发布验收内容必须等待对应产品能力稳定。D-077 取消专用 backup/restore 产品并迁移未发布手册 identity。
 
 | 字段 | 值 |
 |---|---|
@@ -102,7 +102,7 @@ related_documents = ["PAS-QUICKSTART-001", "PAS-EXPERT-EVIDENCE-001"]
 | PAS-PYTHON-EXT-001 | Python operator 与源码扩展开发手册 | M8B complete，可在 M8C-0 迁入正式体系 |
 | PAS-PYTHON-CORE-001 | Python 核心代码维护手册 | M8B complete，可先写 source map |
 | PAS-PROTOCOL-CSHARP-001 | 前后端协议与 C# 开发手册 | M7/M8B stable，可先写 |
-| PAS-BACKUP-001 | 项目备份、恢复、迁移与故障排查 | M8D gate |
+| PAS-PORTABILITY-001 | 系统分发、项目迁移与故障排查 | M8D gate |
 | PAS-RELEASE-001 | 发布构建与交付验收手册 | M8E gate |
 | PAS-TECHREF-001 | 系统技术参考总册 | 从 1–11 聚合；不单独维护正文 |
 
@@ -184,7 +184,7 @@ M8A/M8B portable builder 在 M8C-0 后可携带当前 `released` 文档；`revie
 ### M8C-1 Final Manuals
 
 - 11 个模块手册双语正文完成，`PAS-TECHREF-001` 自动聚合；
-- M7 最终截图、M8D、M8E 内容与 UI terminology parity 完成；
+- M7 最终截图、M8D current-system packaging/portability、M8E 内容与 UI terminology parity 完成；
 - 24 个语言版 DOCX（12 × 2）通过结构、链接、privacy、render 和 release-copy 验证；
 - 只有此时才关闭整体 M8C。
 
@@ -194,4 +194,4 @@ M8A/M8B portable builder 在 M8C-0 后可携带当前 `released` 文档；`revie
 - DOCX 是生成物，任何手工修改都会在下一次构建被覆盖；
 - 英文技术 identity 不翻译；UI 文案按语言本地化；模型 canonical 内容仍遵循 D-055；
 - 文档工具只用于构建交付，不进入 Python assessment runtime；
-- M8C-0 完成后应转向 M8D，再回填 backup/release 手册并关闭 M8C-1/M8E。
+- M8C-0 完成后应转向 M8D，再回填 system-distribution/portability/release 手册并关闭 M8C-1/M8E。

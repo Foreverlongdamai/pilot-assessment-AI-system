@@ -9,6 +9,8 @@
 | 取代口径 | “global model library” 不再表示单个 project 内全局，而表示单个解压软件副本内全局 |
 | 科学状态 | Starter Evidence、BN、CPT 与任务方案仍为工程模板；`formal_run_authorized=false` |
 
+> **2026-07-21 M8D 适用性修订：** D-077 取消专用 project/system backup UI 和诊断包。本文的 ownership 继续有效；第 3 节相应候选由 [M8D Current-System Packaging, Project Portability and Diagnostics Design](./2026-07-21-m8d-current-system-packaging-project-portability-and-diagnostics-design.md) 取代。
+
 ## 1. 设计目的
 
 M8A 已证明一套解压后的 `PilotAssessment/` 可以独立启动 WinUI、私有 Python 和唯一活动 backend source，但当前 M6/M7 实现仍把 `model_nodes`、`task_schemes` 和模型 edit session 放在用户选择的 `project.sqlite3`/`project/staging` 中。因此，当前所谓“全局节点库”实际只在一个 project 内跨任务共享：Project A 的专家修改不会自动出现在 Project B。
@@ -47,7 +49,7 @@ M8B 不实现：
 - 每个 project 单独选择 backend source 或模型库；
 - plugin marketplace、动态不可信代码加载、内置 IDE、Python REPL 或任意代码执行 RPC；
 - 模型科学校准、专家审批流程或 per-edit 强制测试；
-- 完整 project/system backup UI、自动升级合并或诊断包，这些属于 M8D；
+- `.paprojbackup`、project/system Backup/Restore UI 或诊断包；D-077 已将其取消，M8D 只负责 current-system packaging、project directory portability 与现有 diagnostics 收口；
 - 十二类最终 DOCX 和技术总册，这些属于 M8C；
 - clean-machine final candidate，这属于 M8E。
 

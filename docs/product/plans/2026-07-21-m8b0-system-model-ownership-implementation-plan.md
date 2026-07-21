@@ -256,6 +256,6 @@ dotnet build src/PilotAssessment.Desktop/PilotAssessment.Desktop.csproj -c Debug
 - M8B-1：loaded source/runtime/dependency/operator identity、disk drift、source snapshot artifact；
 - M8B-2：从发布副本新增最小 Python operator、注册、重启、前端配置与 run 的完整闭环；
 - M8C：最终 Markdown/DOCX 手册体系；
-- M8D：系统模型和 project 的正式 backup/restore/migration UI；
+- M8D：**本历史候选已由 D-077 取代**；现范围为 current-system packaging、project directory portability 与 diagnostics，不建设 backup/restore UI；
 - M8E：clean tagged release candidate 与用户最终验收；
 - 专家科学校准、真实 CPT/threshold/anchor 有效性。

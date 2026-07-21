@@ -181,11 +181,11 @@ backend/src/pilot_assessment/
 - project 由用户选择创建位置，不放进产品目录；
 - 软件关闭时如存在模型改动，会询问保存全部、放弃全部或取消；
 - 新产品版本解压到新的并列目录，不自动覆盖已修改旧目录；
-- 通用产品备份只备份系统，用户 project 备份和迁移属于独立流程。
+- 发布构建显式捕获已经保存并关闭的 current system；软件关闭后，完整软件目录或完整 project 目录都可以作为独立副本复制，不提供专用 Backup/Restore 功能。
 
 ## 12. 当前状态与科学边界
 
-截至本手册版本，M1–M8B 的工程门已关闭，M8C 文档系统正在实施。M7 的完整用户手工验收和 D-055 canonical 单英文模型迁移仍未关闭；M8D backup/migration 与 M8E final clean-machine handoff 也尚未完成。
+截至本手册版本，M1–M8B 的工程门已关闭，M8C 文档系统正在实施。M7 的完整用户手工验收和 D-055 canonical 单英文模型迁移仍未关闭；M8D current-system packaging/project portability 与 M8E final clean-machine handoff 也尚未完成。
 
 所有 starter/synthetic 运行都保持 `formal_run_authorized=false`。本产品可以证明数据合同、编辑、持久化、推理和追溯工作流能够运行，但不能证明当前 Anchor/Evidence、任务结构、阈值或 CPT 能准确评价飞行员能力。最终科学方法由领域专家在该框架中设计、校准和验证。
 

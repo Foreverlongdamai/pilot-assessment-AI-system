@@ -12,6 +12,8 @@
 
 > **2026-07-17 适用性修订：** 本文关于专家自由设计、EvidenceRecipe/operator、最小技术校验和 starter 非科学真值的原则继续有效；autosaved draft + apply、同 concept 并行 component versions 与 publish 交互已由 [M7 WinUI Expert Designer and Task Activation Workspace Design](./2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) 的 complete nodes、TaskScheme activation、autosaved current objects 和 automatic RunSnapshot 取代。发生冲突时以 D-047–D-053 和 M7 规格为准。
 
+> **2026-07-21 M8D 适用性修订：** 本文末尾把 backup/restore 列入交付的历史候选已由 D-077 取消；当前交付采用 current-system capture 与软件关闭后的完整 project 目录复制。详见 [M8D 规格](./2026-07-21-m8d-current-system-packaging-project-portability-and-diagnostics-design.md)。
+
 ## 1. 方向纠正
 
 本产品的首要交付不是证明当前 O1–O13、H1–H5、阈值或 CPT 科学有效，而是提供一套专家可以自行设计、查看、修改、运行和比较整个评估模型的系统框架。

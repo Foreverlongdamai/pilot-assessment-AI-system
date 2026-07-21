@@ -50,4 +50,4 @@ static 与 extension/run verifier 都必须在 disposable package copy 中执行
 
 ## 4. 结论与下一门
 
-M8C-0 已证明文档系统能够确定性地产生受控 DOCX，并由发布构建器按状态安全装入工程包。它没有证明 12 类双语手册已经完成。M8D 应先冻结 backup/restore/migration/diagnostics 行为；随后 M8C-1 再回填相应手册、最终 M7 UI 截图和技术总册，M8E 才能生成 released 文档与最终交付候选。
+M8C-0 已证明文档系统能够确定性地产生受控 DOCX，并由发布构建器按状态安全装入工程包。它没有证明 12 类双语手册已经完成。**后续适用性：D-077 已取消 backup/restore 并把 M8D 重定义为 current-system packaging/project portability/diagnostics。** M8C-1 应在该行为冻结后回填相应手册、最终 M7 UI 截图和技术总册，M8E 才能生成 released 文档与最终交付候选。

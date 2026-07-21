@@ -53,7 +53,7 @@ Starter 节点可在 software-copy system model library 中直接编辑，也可
 
 ### 2.4 数据与模型分离
 
-Session bundle 是实验事实；global node library 与 TaskScheme 是解释这些事实的评估模型。修改模型不能改变原始 session。每次运行自动冻结 exact session、scheme closure 与完整节点定义为 RunSnapshot，因此重新编辑不会改变此前结果。Model bundle 只是可移植的导入/导出封装。
+Session bundle 是实验事实；global node library 与 TaskScheme 是解释这些事实的评估模型。修改模型不能改变原始 session。每次运行自动冻结 exact session、scheme closure 与完整节点定义为 RunSnapshot，因此重新编辑不会改变此前结果。正式发布通过显式 system source 捕获已保存并关闭的 current system；用户 project 不进入发布包，在软件关闭后通过复制完整 project 目录移动。D-077 不建设专用 Backup/Restore 功能。
 
 ### 2.5 软件验证与科学验证分离
 
@@ -246,6 +246,7 @@ v0 完成必须同时满足：
 - [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)（EvidenceRecipe/operator 与 expert-designer 原则；旧 apply 交互已被 M7 取代）
 - [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)（当前完整节点/任务激活/RunSnapshot 权威）
 - [M8B System-Owned Model Library and Editable Backend Provenance Design](./specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)（当前 system model ownership、project/run 边界与 editable backend provenance 权威）
+- [M8D Current-System Packaging, Project Portability and Diagnostics Design](./specs/2026-07-21-m8d-current-system-packaging-project-portability-and-diagnostics-design.md)（当前发布 current system、project 目录迁移与 diagnostics 权威；专用 backup/restore 已取消）
 - [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)（已实现后端基础与历史 identity/publish 语义）
 - [M4 Anchor Calculation and Evidence Availability 规格](./specs/2026-07-13-m4-anchor-evidence-availability-design.md)（Task 0–28 历史/迁移规格）
 - [M4 Anchor Calculation and Evidence Availability 原实施计划](./plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（历史上已批准，现已被取代且不得执行）

@@ -7,7 +7,7 @@
 - M8C-0 provides the pinned Markdown-to-DOCX pipeline and representative review manuals. The
   complete bilingual 12-manual set, final UI screenshots and master technical reference remain
   M8C-1/M8E deliverables.
-- Project backup/restore/migration UI and redacted diagnostic bundles are M8D deliverables.
+- M8D current-system capture, manifest-driven model verification and the documented close/copy/reopen project-portability workflow are not yet implemented. Dedicated backup/restore archives and UI are intentionally out of scope.
 - The starter Evidence algorithms, thresholds, BN topology and CPTs have not been scientifically
   calibrated by domain experts and do not authorize formal operational assessment.
 - Production exporters/adapters for future real I/G/EEG/ECG/camera device formats may require new

@@ -2,7 +2,7 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 设计基线 | 产品 v0.8 portable engineering distribution；D-031–D-076 已获用户确认 |
+| 设计基线 | 产品 v0.8 portable engineering distribution；D-031–D-077 已获用户确认 |
 | 基线日期 | 2026-07-21 |
 | 产品阶段 | M1/M2/M3、M4R、M5、M6、M7、M8A、M8B 与 **M8C-0 engineering gate 已通过**。**M7 用户手工验收仍未完成，并可能继续返修；D-055、M8C-1、M8D 与 M8E 尚未完成。** starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
@@ -31,7 +31,7 @@
 
 2026-07-21 M8B-1 已按 [Source Provenance and Snapshot Plan](plans/2026-07-21-m8b1-source-provenance-and-snapshot-implementation-plan.md) 完成工程实现：sidecar 启动时冻结 loaded source、私有 Python、依赖与 operator catalog identity；运行前磁盘漂移要求重启，但 release baseline divergence 本身不阻止专家修改后的系统运行；新 RunSnapshot v0.2 保存 exact identity 和内容寻址 source snapshot artifact。M8B-2 随后完成普通 Python operator 扩展入口、私有依赖工具、既有通用 schema 表单和 release-copy run 闭环；正式 ZIP 与 fresh 证据见 [M8B-2 Verification](reviews/2026-07-21-m8b2-python-operator-extension-verification.md)。M8B 已完成。
 
-2026-07-21 M8C-0 已按 [Documentation System Design](specs/2026-07-21-m8c-documentation-system-design.md) 和 [Implementation Plan](plans/2026-07-21-m8c0-documentation-infrastructure-implementation-plan.md) 完成：12 类 stable catalog、metadata schema、固定文档工具链、DOCX reference template、Markdown/交叉引用、C4 assets、双语架构手册和 Python extension 手册均已接入。三份 review DOCX 共 28 页，逐页 render QA 与连续两次 deterministic build 通过；portable builder/verifier 正确区分 `review` 和 `released`。完整证据见 [M8C-0 Verification](reviews/2026-07-21-m8c0-documentation-infrastructure-verification.md)。下一开发阶段为 M8D；最终 12 类双语内容、M7 截图和技术总册继续属于 M8C-1。
+2026-07-21 M8C-0 已按 [Documentation System Design](specs/2026-07-21-m8c-documentation-system-design.md) 和 [Implementation Plan](plans/2026-07-21-m8c0-documentation-infrastructure-implementation-plan.md) 完成：12 类 stable catalog、metadata schema、固定文档工具链、DOCX reference template、Markdown/交叉引用、C4 assets、双语架构手册和 Python extension 手册均已接入。三份 review DOCX 共 28 页，逐页 render QA 与连续两次 deterministic build 通过；portable builder/verifier 正确区分 `review` 和 `released`。完整证据见 [M8C-0 Verification](reviews/2026-07-21-m8c0-documentation-infrastructure-verification.md)。D-077 已取消专用 backup/restore，并把下一开发阶段 M8D 收口为 current-system packaging、project portability 与 diagnostics；最终 12 类双语内容、M7 截图和技术总册继续属于 M8C-1。
 
 ## 1. 文档用途
 
@@ -63,7 +63,7 @@
 | 2.6.1 | [M7 Human-readable UI and eVTOL Branding Plan](plans/2026-07-18-m7-human-readable-ui-and-evtol-branding-implementation-plan.md) | Windows 前端、审查者 | INLINE 返修：统一名称解析、Results/graph/node window 展示收口、图标派生与启动验证 |
 | 2.7 | [M7 Simulator Raw Session Import Adapter Amendment](specs/2026-07-20-m7-simulator-raw-session-import-adapter-design.md) | 产品、数据、前后端 | D-060/D-061：raw source 受管物化、缺失模态与未声明单位原值透传 |
 | 2.7.1 | [M7 Simulator Raw Session Import Adapter Plan](plans/2026-07-20-m7-simulator-raw-session-import-adapter-implementation-plan.md) | 开发、审查者 | INLINE 实施：source contracts、materializer、persistence、RPC、WinUI 与轻量验证 |
-| 2.8 | [M8 Productization Design Outline](specs/2026-07-18-m8-productization-editable-python-documentation-and-handoff-outline.md) | 产品、交付、维护者 | **已批准路线图：** 便携分发、前端 canonical 编辑、直接可改的全局 Python backend、分类文档/DOCX、备份迁移与交付边界；M8A 已完成 |
+| 2.8 | [M8 Productization Design Outline](specs/2026-07-18-m8-productization-editable-python-documentation-and-handoff-outline.md) | 产品、交付、维护者 | **已批准路线图：** 便携分发、前端 canonical 编辑、直接可改的全局 Python backend、分类文档/DOCX、current-system packaging/project portability 与交付边界 |
 | 2.8.1 | [M8 Implementation Roadmap](plans/2026-07-18-m8-pre-uat-implementation-outline.md) | 产品、开发、审查者 | M8A–M8E 阶段关系、M7 UAT/M8E 门与当前执行点 |
 | 2.9 | [M8A Portable Windows Release Design](specs/2026-07-20-m8a-portable-windows-release-design.md) | 产品、交付、维护者 | 已实现：Windows x64 self-contained ZIP、私有 Python、唯一活动 backend source、用户数据隔离与发布元数据 |
 | 2.9.1 | [M8A Implementation Plan](plans/2026-07-20-m8a-portable-windows-release-implementation-plan.md) | 开发、审查者 | 已完成：portable-first locator、publish profile、builder、外部 verifier 与交付收口 |
@@ -78,6 +78,7 @@
 | 2.11 | [M8C Documentation System Design](specs/2026-07-21-m8c-documentation-system-design.md) | 所有人、文档、交付、维护者 | Markdown/TOML/catalog 权威、双语 12 类手册、DOCX 样式/目录/图/截图/验证与 M8C-0/1 gates |
 | 2.11.1 | [M8C-0 Documentation Infrastructure Plan](plans/2026-07-21-m8c0-documentation-infrastructure-implementation-plan.md) | 开发、文档、审查者 | 已完成：catalog/schema、pinned toolchain、template、Markdown/DOCX、C4、双语代表手册和 render QA |
 | 2.11.2 | [M8C-0 Verification](reviews/2026-07-21-m8c0-documentation-infrastructure-verification.md) | 用户、交付、维护者 | 三份 DOCX、28 页逐页 QA、确定性 hashes、portable review-doc integration 与未关闭边界 |
+| 2.12 | [M8D Current-System Packaging, Project Portability and Diagnostics Design](specs/2026-07-21-m8d-current-system-packaging-project-portability-and-diagnostics-design.md) | 产品、交付、维护者 | D-077：取消专用 backup/restore；显式捕获已保存 current system、完整 project 目录复制、compatibility 与轻量 diagnostics |
 | 3 | [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) | 专家、产品、前后端 | 已实现的后端基础与历史 identity/publish 语义；冲突处由 M7 规格取代 |
 | 4 | [M5 Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) | 开发、审查者 | 已完成：inline 任务、合同冻结、O8 迁移、轻量验证与完成门 |
 | 5 | [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) | 前后端、交付、审查者 | 已实现：受管项目、SQLite、artifact、run lifecycle 与 JSON-RPC sidecar |
@@ -157,7 +158,7 @@
 
 M6 completion gate 也已关闭：受管 project/session/artifact、SQLite component/draft/run persistence、idempotency/audit、exact technical preflight、dynamic Evidence→Observation→BN pipeline、single-worker progress/cancel/recovery，以及无网络端口的 JSON-RPC/JSONL stdio sidecar 均已实现。轻量纵向闭环证明 external bundle 删除后仍可从受管副本运行，整个 project 换目录重开后 exact scheme/result/artifact 仍可回放。
 
-2026-07-17 用户确认 D-047–D-053：M7 改用完整独立节点、全局节点库、任务激活集合、默认只复制节点且复用 fixed parents、启用 parent closure、停用 parent 前级联确认、多浮动节点窗口以及 automatic immutable RunSnapshot。M7A/M7B 原工程工作区已完成。2026-07-18 的 D-056/D-057 又把原“每次 autosave 立即写正式模型”取代为 backend-managed staged edit session，并把主画布收口为五层理解投影；C# 仍只构造 typed intent 和只读投影，Python 后端负责草稿/canonical 事务与全部 Evidence/BN/CPT/run 计算。D-055 单一英文 canonical 模型内容尚待实施。M8A、M8B 与 M8C-0 已完成工程门；M8C-1、M8D、M8E 和科学验证仍未完成，starter/synthetic `formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+2026-07-17 用户确认 D-047–D-053：M7 改用完整独立节点、全局节点库、任务激活集合、默认只复制节点且复用 fixed parents、启用 parent closure、停用 parent 前级联确认、多浮动节点窗口以及 automatic immutable RunSnapshot。M7A/M7B 原工程工作区已完成。2026-07-18 的 D-056/D-057 又把原“每次 autosave 立即写正式模型”取代为 backend-managed staged edit session，并把主画布收口为五层理解投影；C# 仍只构造 typed intent 和只读投影，Python 后端负责草稿/canonical 事务与全部 Evidence/BN/CPT/run 计算。D-055 单一英文 canonical 模型内容尚待实施。M8A、M8B 与 M8C-0 已完成工程门；D-077 取消专用 backup/restore，但 M8D current-system packaging/project portability、M8C-1、M8E 和科学验证仍未完成，starter/synthetic `formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
 2026-07-16 另以 repository-external 的 2,902-row 格式样例 X/U 和工程合成 I/G/EEG/ECG/pilot-camera 跑通一次完整 M6 software-test：ingestion/preflight ready、18/18 Evidence computed、exact BN inference completed、39 个结果/追踪工件成功回读且 sidecar stderr 为空。该运行继续标记 `scientific_status=not_supported`；它验证真实产品接口与计算流水线，不验证样例飞行、starter algorithms、阈值或 CPT 的科学正确性。详见 [Captured-Format Multimodal Software Demo](specs/2026-07-16-external-multimodal-session-demo-design.md)。
 

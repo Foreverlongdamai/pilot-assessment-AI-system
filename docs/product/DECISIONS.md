@@ -311,6 +311,7 @@
 ## D-041：M6 使用自包含受管项目目录
 
 - 状态：已接受
+- 当前适用性：自包含 project、relative managed paths 与用户数据不进产品包继续有效；“后续 M8 备份/导出”由 D-077 的完整目录复制取代，“全局组件库 project-wide”由 D-066 的 software-copy system owner 取代。
 - 决策：每个项目使用一个可整体移动的根目录，内部保存 `project.json`、SQLite 数据库、managed sessions、content-addressed artifacts、logs 与 staging。外部 Session Bundle 在 import 时逐字节复制并复核 checksum；导入后运行只引用 exact managed `SessionRevision`。数据库只保存项目相对路径，应用安装包不包含任何用户项目、session 或 run 数据。
 - 理由：用户已确认复制到受管项目存储最适合最终 Windows 产品；自包含目录同时满足离线运行、设备迁移、外部源可删除和后续 M8 备份/导出。
 - 影响：M5 的“全局组件库”解释为 project-wide、跨任务/方案共享；不同项目默认隔离。跨项目 merge/cloud sync 属于后续版本，不能通过隐式绝对路径关联实现。
@@ -564,3 +565,10 @@
 - 决策：`PAS-TECHREF-001` 按 catalog 顺序从 1–11 类 source body 自动聚合，不维护重复 Markdown 正文。`released` 产品文档只包含 dependency gate 已关闭且 inclusion policy 允许的 outputs；`draft/review` 候选只能进入明确标识的 engineering docs 区域。
 - 理由：总册复制会产生第三套权威文本；未完成 M8D/M8E 或尚待 M7 UAT 的操作说明也不能因为已经生成 DOCX 就冒充可用功能。
 - 影响：M8C-0 可以验证聚合机制但不关闭最终总册；release verifier 检查 catalog、status、hash 与实际文件一致。
+
+## D-077：取消专用备份产品，正式发布显式捕获当前 system
+
+- 状态：已接受
+- 决策：M8D 不建设 `.paprojbackup`、`.pasystembackup`、Backup/Restore UI、自动周期备份或 restore archive。用户 project 在软件完全关闭后通过复制完整 project 目录移动；整套软件目录复制会形成包含当前 `system/` 与 `backend/src/` 的独立工作副本。正式 builder 必须从显式 `--system-source` 捕获已保存、已关闭、无 dirty edit session 且不含 user-owned rows 的 current system，不得在输入缺失或无效时静默重新 seed starter model。发布 manifest 记录实际 model identity 与动态 node/scheme counts；新包不会自动更新已经分发的旧副本。
+- 理由：模型编辑属于 software-copy-scoped system state，项目数据属于 project。额外 backup 格式和恢复界面不会改善这套 ownership，反而引入第二套封装、同步歧义和不必要的开发成本。现有 builder 固定重新生成 `53` nodes / `1` scheme 会丢失专家已保存的 current model，必须由 current-system capture 取代。
+- 影响：M8D 改为 Current-System Packaging、Project Portability and Diagnostics；M8C 的未发布 `PAS-BACKUP-001` 迁移为 `PAS-PORTABILITY-001`。正式构建要求应用已关闭并明确选择 system source；项目复制要求应用已关闭并复制整个目录。M6 relative-path、M8B system ownership/RunSnapshot/source identity 与现有 Diagnostics 继续有效；不新增云同步、自动更新、项目 merge 或用户数据打包。

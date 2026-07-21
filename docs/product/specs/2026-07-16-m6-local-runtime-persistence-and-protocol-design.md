@@ -13,6 +13,8 @@
 
 > **2026-07-21 M8B-0 ownership 修订：** 本规格 §2.2、§4.1 及其他把 current ModelNode、TaskScheme、current scheme/edit session 描述为 project-owned 的文字，只保留为 legacy project 迁移与历史回放说明。当前 canonical 模型 owner 是每套解压软件副本的 `system/model-library.sqlite3`；project 只拥有 Session、不可变 RunSnapshot/materialization、result 与 artifacts。M6 的 project/session/run、SQLite、artifact、idempotency、audit 和 stdio sidecar 基础继续有效。详见 [M8B System-Owned Model Library and Editable Backend Provenance Design](./2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)。
 
+> **2026-07-21 M8D 适用性修订：** 本文关于 M8 未来 backup/support bundle 的候选代价与边界已由 D-077 取消；M6 的自包含 project 和相对路径正用于软件关闭后的完整目录复制。正式发布 current system 和轻量 diagnostics 见 [M8D 规格](./2026-07-21-m8d-current-system-packaging-project-portability-and-diagnostics-design.md)。
+
 ## 1. 目的
 
 M6 把 M5 已验证的 transport-neutral、进程内建模后端变成可以被 Windows
@@ -454,7 +456,7 @@ INFERENCE_FAILED, INTERNAL_ERROR
 - `session.artifact.get` 返回的是运行时验证后的只读文件引用；DB 只存相对路径；
 - 普通日志不记录 participant identity、原始 EEG/ECG/gaze、图像内容或整条 recipe payload；
 - audit 保存 actor、operation、IDs、hashes 和 diff，不保存原始生理数据；
-- diagnostic export 默认脱敏，完整 support bundle 属于 M8；
+- diagnostic information 默认脱敏；原“完整 support bundle 属于 M8”的候选已由 D-077 取消；
 - sidecar 不执行 RPC 传入的 Python、module path 或 shell command。
 
 ## 13. Lightweight verification strategy

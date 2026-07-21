@@ -9,9 +9,11 @@
 | TaskScheme | 并列、自动保存、可直接运行的任务方案；保存 explicit active nodes、computed parent closure、outputs、task bindings 和 layout，不覆盖节点内部定义。 |
 | Explicit active selection | 专家在某个 TaskScheme 中主动启用的节点集合。 |
 | Computed active closure | 从 explicit selection 沿每个节点的 fixed data/probabilistic parents 递归补齐的实际执行节点集合。 |
-| Global node library | 项目内保存全部 Raw Input、Evidence 与 BN ModelNodes 的全局库；节点可被零个、一个或多个 TaskSchemes 共享。 |
+| Global node library | 单个解压软件副本的 `system/model-library.sqlite3` 中保存全部 Raw Input、Evidence 与 BN ModelNodes 的全局库；不属于任一 project，节点可被零个、一个或多个 TaskSchemes 共享。 |
 | Node copy | 深复制所选节点自身的 recipe/parameters/states/CPT/metadata，创建新 `node_id`，但继续引用原 fixed parents，不复制 parent branch。 |
 | RunSnapshot | `run.start` 时自动冻结的不可变计算快照；包含 exact managed session、TaskScheme closure、完整节点定义、edges、recipes/operators、CPT、runtime parameters 与 hashes。历史结果只依赖该快照。 |
+| Current-system capture | D-077 的发布过程：builder 从显式选择、已保存、已关闭且无 user-owned rows 的 `system/` 一致复制 canonical model，记录动态 identity/counts；不得在失败时回退 starter seed。它不是用户备份功能。 |
+| Project portability | 软件完全关闭后复制完整 project 根目录，并在目标位置通过“打开项目”重新使用；依赖 project-relative managed paths，不使用专用 backup/restore archive。 |
 | Change journal | Current node/scheme 每次 autosave 的 append-only operation/history；用于 optimistic concurrency、undo/redo、audit 和恢复，不是任务侧可选择的业务版本。 |
 | EvidenceConcept | M5 legacy/replay 术语：一类可观测 Evidence 的稳定语义身份。M7 正常 UI 不用同 concept 多版本来表达不同任务节点。 |
 | EvidenceVersion | M5 legacy/replay 术语：某 EvidenceConcept 的不可变实现。M7 若任务定义不同，迁移为不同 ModelNode；历史 version 继续供旧 run replay。 |

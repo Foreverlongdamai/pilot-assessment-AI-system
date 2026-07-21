@@ -181,11 +181,11 @@ If source files change on disk after the Python process has started, the system 
 - create projects in a user-selected location outside the product directory;
 - when model edits exist, closing the main window asks whether to save all, discard all or cancel;
 - unpack a new product version beside the old one; it does not overwrite a modified older copy;
-- the generic product backup covers the system, while user-project backup and migration are a separate workflow.
+- a release build explicitly captures a saved and closed current system; after the application is closed, either the complete product directory or a complete project directory can be copied as an independent copy, without a dedicated Backup/Restore feature.
 
 ## 12. Current status and scientific boundary
 
-At this document version, engineering gates M1–M8B are complete and the M8C documentation system is in progress. Full M7 hands-on user acceptance and the D-055 single-English canonical-model migration are not closed. M8D backup/migration and the M8E final clean-machine handoff are also unfinished.
+At this document version, engineering gates M1–M8B are complete and the M8C documentation system is in progress. Full M7 hands-on user acceptance and the D-055 single-English canonical-model migration are not closed. M8D current-system packaging/project portability and the M8E final clean-machine handoff are also unfinished.
 
 Every starter/synthetic run remains `formal_run_authorized=false`. The product demonstrates that contracts, editing, persistence, inference and provenance can operate end to end. It does not prove that current Anchors/Evidence, task structure, thresholds or CPTs assess pilot competency accurately. Domain experts will design, calibrate and validate the scientific method within this framework.
 

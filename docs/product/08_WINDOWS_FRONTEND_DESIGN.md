@@ -221,7 +221,7 @@ Preflight 不得依据 residual、gap、artifact flag、轨迹偏差、控制强
 - sidecar 状态、最近错误、trace ID 和日志位置；
 - schema、插件与 model compatibility；
 - restart backend、重新握手、重新获取 canonical graph；
-- 导出默认脱敏的 support bundle；
+- 显示并允许复制默认脱敏的 diagnostics 摘要；D-077 不建设 support bundle archive；
 - 用户明确勾选时才包含原始数据，并提示隐私影响。
 
 ## 5. 图编辑交互状态
