@@ -117,12 +117,9 @@ def _node_fields(
     return {
         "node_id": node_id,
         "node_kind": kind,
-        "name_zh": None,
-        "name_en": node_id,
-        "short_name_zh": None,
-        "short_name_en": node_id,
-        "description_zh": None,
-        "description_en": f"Task-neutral {kind.value} fixture.",
+        "name": node_id,
+        "short_name": node_id,
+        "description": f"Task-neutral {kind.value} fixture.",
         "tags": ("fixture",),
         "group": "fixture",
         "lifecycle": ModelObjectLifecycle.ACTIVE,
@@ -154,8 +151,7 @@ def _raw_node(
             resource_role=RawResourceRole.STREAM,
             source_descriptor=_source(source_id, modality),
             metadata={},
-            help_text_zh=None,
-            help_text_en="Fixture raw input.",
+            help_text="Fixture raw input.",
         ),
     )
     return rehash_model_node(provisional)
@@ -279,8 +275,7 @@ def _bn_node(
             scientific_status=ModelScientificStatus.STARTER_TEMPLATE,
             reporting_metadata={},
             provenance={"fixture": True},
-            help_text_zh=None,
-            help_text_en="Fixture BN node.",
+            help_text="Fixture BN node.",
         ),
     )
     return rehash_model_node(provisional)
@@ -326,8 +321,7 @@ def _evidence_node(
             modality_attribution_weights=modality_weights,
             scientific_status=ModelScientificStatus.STARTER_TEMPLATE,
             provenance={"fixture": True},
-            help_text_zh=None,
-            help_text_en="Fixture Evidence node.",
+            help_text="Fixture Evidence node.",
         ),
     )
     return rehash_model_node(provisional)
@@ -373,10 +367,8 @@ def seven_node_graph() -> tuple[tuple[ModelNode, ...], TaskScheme]:
     nodes = (raw_x, raw_u, raw_g, competency, skill, precision, gaze)
     provisional_scheme = TaskScheme(
         scheme_id="scheme.base",
-        name_zh="基础方案",
-        name_en="Base Scheme",
-        description_zh=None,
-        description_en="Task-neutral partially active fixture scheme.",
+        name="Base Scheme",
+        description="Task-neutral partially active fixture scheme.",
         tags=("fixture",),
         group="fixture",
         lifecycle=ModelObjectLifecycle.ACTIVE,

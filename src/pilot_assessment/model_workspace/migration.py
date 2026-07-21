@@ -113,12 +113,9 @@ class _MaterializedStarter:
 class _NodeFields(TypedDict):
     node_id: str
     node_kind: ModelNodeKind
-    name_zh: None
-    name_en: str
-    short_name_zh: None
-    short_name_en: str
-    description_zh: None
-    description_en: str
+    name: str
+    short_name: str
+    description: str
     tags: tuple[str, ...]
     group: str | None
     lifecycle: ModelObjectLifecycle
@@ -289,12 +286,9 @@ def _node_fields(
     return {
         "node_id": node_id,
         "node_kind": node_kind,
-        "name_zh": None,
-        "name_en": name,
-        "short_name_zh": None,
-        "short_name_en": _short_label(short_name, node_id),
-        "description_zh": None,
-        "description_en": description,
+        "name": name,
+        "short_name": _short_label(short_name, node_id),
+        "description": description,
         "tags": tuple(sorted(set(tags))),
         "group": group,
         "lifecycle": ModelObjectLifecycle.ACTIVE,
@@ -524,8 +518,7 @@ def _materialize(
                 resource_role=_resource_role(descriptor),
                 source_descriptor=descriptor,
                 metadata=metadata,
-                help_text_zh=None,
-                help_text_en=descriptor.description,
+                help_text=descriptor.description,
             ),
         )
         raw_nodes.append(node)
@@ -677,8 +670,7 @@ def _materialize(
                 scientific_status=version.scientific_status,
                 reporting_metadata={"legacy_concept_id": concept.concept_id},
                 provenance=provenance,
-                help_text_zh=None,
-                help_text_en=version.documentation,
+                help_text=version.documentation,
             ),
         )
         bn_nodes.append(node)
@@ -756,8 +748,7 @@ def _materialize(
                 modality_attribution_weights=dict(binding.modality_attribution_weights),
                 scientific_status=evidence.scientific_status,
                 provenance=provenance,
-                help_text_zh=None,
-                help_text_en=evidence.recipe.documentation.summary,
+                help_text=evidence.recipe.documentation.summary,
             ),
         )
         evidence_nodes.append(node)
@@ -811,10 +802,8 @@ def _materialize(
     current_scheme = rehash_task_scheme(
         TaskScheme(
             scheme_id=scheme_id,
-            name_zh=None,
-            name_en="Base Scheme",
-            description_zh=None,
-            description_en=scheme.description,
+            name="Base Scheme",
+            description=scheme.description,
             tags=("starter",),
             group="starter",
             lifecycle=ModelObjectLifecycle.ACTIVE,

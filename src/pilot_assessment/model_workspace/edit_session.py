@@ -14,11 +14,19 @@ from uuid import uuid4
 from pilot_assessment.contracts.model_workspace import (
     CanonicalModelDiff,
     ModelNode,
+    ModelObjectKind,
     TaskScheme,
 )
 from pilot_assessment.contracts.project import AuditEvent
 from pilot_assessment.evidence.registry import OperatorRegistry
 from pilot_assessment.model_library.sources import SourceCatalog
+from pilot_assessment.model_workspace.content_migration import (
+    CurrentModelContentMigrationError,
+    ModelContentMigrationResult,
+    migrate_current_model_content,
+    model_content_fingerprint,
+    normalise_current_model_row,
+)
 from pilot_assessment.model_workspace.hashing import rehash_model_node, rehash_task_scheme
 from pilot_assessment.model_workspace.service import CurrentModelWorkspaceService
 from pilot_assessment.persistence.audit import AuditRepository
@@ -83,6 +91,20 @@ _MODEL_TABLES: tuple[tuple[str, str], ...] = (
     ("task_schemes", "scheme_id"),
 )
 
+_MODEL_TABLE_KINDS = {
+    "model_nodes": ModelObjectKind.NODE,
+    "task_schemes": ModelObjectKind.SCHEME,
+}
+
+
+@dataclass(frozen=True, slots=True)
+class _NormalisedEditSnapshot:
+    state_json: bytes
+    state_hash: str
+    fingerprint: str
+    semantic_state_hash: str
+    migrated: bool
+
 
 def _utc_now() -> datetime:
     return datetime.now(UTC)
@@ -144,6 +166,57 @@ def _workspace_fingerprint(
     return _stable_hash(payload)
 
 
+def _normalise_snapshot_state(payload: bytes) -> _NormalisedEditSnapshot:
+    decoded = decode_canonical_json(payload)
+    if not isinstance(decoded, dict):
+        raise ModelEditSessionError("edit-session snapshot must be an object")
+
+    nodes: list[ModelNode] = []
+    schemes: list[TaskScheme] = []
+    migrated = False
+    normalised_payload: dict[str, list[dict[str, object]]] = {}
+    for table, _id_column in _MODEL_TABLES:
+        rows = decoded.get(table)
+        if not isinstance(rows, list):
+            raise ModelEditSessionError(f"edit-session snapshot is missing {table}")
+        normalised_rows: list[dict[str, object]] = []
+        for raw_row in rows:
+            if not isinstance(raw_row, dict) or not raw_row:
+                raise ModelEditSessionError(f"edit-session {table} row is invalid")
+            stored_row = {key: _row_value(value) for key, value in raw_row.items()}
+            normalised = normalise_current_model_row(
+                stored_row,
+                object_kind=_MODEL_TABLE_KINDS[table],
+            )
+            normalised_rows.append(
+                {
+                    key: (
+                        {"$bytes": base64.b64encode(value).decode("ascii")}
+                        if isinstance(value, bytes)
+                        else value
+                    )
+                    for key, value in normalised.values.items()
+                }
+            )
+            migrated = migrated or normalised.migrated
+            if isinstance(normalised.item, ModelNode):
+                nodes.append(normalised.item)
+            else:
+                schemes.append(normalised.item)
+        normalised_payload[table] = normalised_rows
+
+    state_json = encode_canonical_json(normalised_payload)
+    return _NormalisedEditSnapshot(
+        state_json=state_json,
+        state_hash=hashlib.sha256(state_json).hexdigest(),
+        fingerprint=model_content_fingerprint(tuple(nodes), tuple(schemes), include_revisions=True),
+        semantic_state_hash=model_content_fingerprint(
+            tuple(nodes), tuple(schemes), include_revisions=False
+        ),
+        migrated=migrated,
+    )
+
+
 class ModelEditSessionManager:
     """Own the durable editable mirror and one atomic canonical save boundary."""
 
@@ -157,6 +230,7 @@ class ModelEditSessionManager:
         canonical_idempotency: IdempotencyStore,
         operator_registry: OperatorRegistry,
         source_catalog: SourceCatalog,
+        canonical_content_migration: ModelContentMigrationResult | None = None,
         clock: Clock = _utc_now,
     ) -> None:
         self.model_root = model_root.resolve()
@@ -166,6 +240,7 @@ class ModelEditSessionManager:
         self.canonical_idempotency = canonical_idempotency
         self.operator_registry = operator_registry
         self.source_catalog = source_catalog
+        self.canonical_content_migration = canonical_content_migration
         self._clock = clock
         self._database_path = self.model_root / "staging" / "model-edit" / "workspace.sqlite3"
         self._database: ProjectDatabase | None = None
@@ -233,25 +308,103 @@ class ModelEditSessionManager:
         if self._database_path.exists():
             candidate = ProjectDatabase.connect(self._database_path, clock=self._clock)
             self._create_session_tables(candidate)
-            self._bind(candidate)
             state = candidate.fetchone("SELECT * FROM model_edit_session_state WHERE singleton = 1")
             canonical_fingerprint = _workspace_fingerprint(
                 self.canonical_workspace,
                 include_revisions=True,
             )
+            accepted_base_fingerprints = {canonical_fingerprint}
+            if self.canonical_content_migration is not None:
+                accepted_base_fingerprints.update(
+                    self.canonical_content_migration.compatible_predecessor_fingerprints
+                )
             if (
                 state is not None
                 and state["model_library_id"] == self.model_library_id
-                and state["base_fingerprint"] == canonical_fingerprint
+                and state["base_fingerprint"] in accepted_base_fingerprints
                 and candidate.fetchone(
                     "SELECT 1 FROM model_edit_session_snapshots WHERE sequence = 0"
                 )
                 is not None
             ):
+                try:
+                    snapshots: dict[int, tuple[sqlite3.Row, _NormalisedEditSnapshot]] = {}
+                    for row in candidate.fetchall(
+                        "SELECT * FROM model_edit_session_snapshots ORDER BY sequence"
+                    ):
+                        if hashlib.sha256(row["state_json"]).hexdigest() != row["state_hash"]:
+                            raise ModelEditSessionError(
+                                "edit-session snapshot hash claim does not match"
+                            )
+                        snapshots[int(row["sequence"])] = (
+                            row,
+                            _normalise_snapshot_state(row["state_json"]),
+                        )
+                    baseline = snapshots.get(0)
+                    cursor = snapshots.get(int(state["cursor"]))
+                    latest = snapshots.get(int(state["latest_sequence"]))
+                    if baseline is None or cursor is None or latest is None:
+                        raise ModelEditSessionError(
+                            "edit-session history is missing baseline, cursor, or latest state"
+                        )
+                    if baseline[1].fingerprint != canonical_fingerprint:
+                        raise ModelEditSessionError(
+                            "edit-session baseline does not match canonical current content"
+                        )
+
+                    live_migration = migrate_current_model_content(
+                        candidate,
+                        migrated_at=self._clock(),
+                    )
+                    if live_migration.after_fingerprint != cursor[1].fingerprint:
+                        raise ModelEditSessionError(
+                            "edit-session live state does not match its cursor snapshot"
+                        )
+                    with candidate.transaction() as connection:
+                        for sequence, (row, normalised) in snapshots.items():
+                            if (
+                                normalised.state_json != row["state_json"]
+                                or normalised.state_hash != row["state_hash"]
+                            ):
+                                connection.execute(
+                                    """
+                                    UPDATE model_edit_session_snapshots
+                                    SET state_json = ?, state_hash = ?
+                                    WHERE sequence = ?
+                                    """,
+                                    (
+                                        normalised.state_json,
+                                        normalised.state_hash,
+                                        sequence,
+                                    ),
+                                )
+                        connection.execute(
+                            """
+                            UPDATE model_edit_session_state
+                            SET base_fingerprint = ?, baseline_state_hash = ?
+                            WHERE singleton = 1
+                            """,
+                            (
+                                canonical_fingerprint,
+                                baseline[1].semantic_state_hash,
+                            ),
+                        )
+                except (
+                    CurrentModelContentMigrationError,
+                    ModelEditSessionError,
+                    KeyError,
+                    TypeError,
+                    ValueError,
+                    sqlite3.DatabaseError,
+                ) as error:
+                    candidate.close()
+                    raise ModelEditSessionError(
+                        "MODEL_EDIT_SESSION_CONTENT_MIGRATION_FAILED"
+                    ) from error
+                self._bind(candidate)
                 self._recovered = self.status().dirty
                 return
             candidate.close()
-            self._database = None
             self._preserve_incompatible_database()
         self._rebuild()
 

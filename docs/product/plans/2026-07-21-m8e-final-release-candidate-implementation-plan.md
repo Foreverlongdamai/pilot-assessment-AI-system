@@ -122,9 +122,9 @@ git commit -m "feat: add single-English current model contracts"
 - Test: `tests/model_workspace/test_edit_session.py`
 - Test: `tests/persistence/test_migrations.py`
 
-- [ ] Add normalizer tests that prefer nonblank English and emit `MODEL_CONTENT_ENGLISH_FALLBACK_PRESERVED` when only legacy non-English text exists.
-- [ ] Add database migration version 6 with an append-only `model_content_migration_events` table containing object identity, old/new versions and hashes, legacy payload, diagnostics and migrated timestamp.
-- [ ] Implement `normalise_legacy_model_node`, `normalise_legacy_task_scheme` and `decode_current_model_object`. Use one complete canonical-text selector shared by both normalizers:
+- [x] Add normalizer tests that prefer nonblank English and emit `MODEL_CONTENT_ENGLISH_FALLBACK_PRESERVED` when only legacy non-English text exists.
+- [x] Add database migration version 6 with an append-only `model_content_migration_events` table containing object identity, old/new versions and hashes, legacy payload, diagnostics and migrated timestamp.
+- [x] Implement `normalise_legacy_model_node`, `normalise_legacy_task_scheme` and `decode_current_model_object`. Use one complete canonical-text selector shared by both normalizers:
 
 ```python
 def _select_canonical_text(
@@ -144,14 +144,20 @@ def _select_canonical_text(
     )
 ```
 
-- [ ] Implement an idempotent content migration that validates all replacements before writing, updates current JSON/indexed hashes, records lineage and never touches run/result/artifact payloads.
-- [ ] Migrate canonical state before service composition. Rebuild a clean staging workspace; migrate a dirty staging workspace without deleting its history; stop with a stable error if either path fails.
-- [ ] Route repository current-row and undo/redo snapshot decoding through `decode_current_model_object`; retain old event bytes.
-- [ ] Run:
+- [x] Implement an idempotent content migration that validates all replacements before writing, updates current JSON/indexed hashes, records lineage and never touches run/result/artifact payloads.
+- [x] Migrate canonical state before service composition. Rebuild a clean staging workspace; migrate a dirty staging workspace without deleting its history; stop with a stable error if either path fails.
+- [x] Route repository current-row and undo/redo snapshot decoding through `decode_current_model_object`; retain old event bytes.
+- [x] Run:
 
 ```powershell
 .\.tools\uv\uv.exe run pytest tests\model_workspace\test_content_migration.py tests\model_workspace\test_edit_session.py tests\persistence\test_migrations.py -q
 ```
+
+Implementation evidence (2026-07-21): the exact focused gate passed `10 passed`; the
+extended persistence gate including `test_project_database.py` passed `15 passed`.
+Focused Ruff and `ty check` gates for the migration/runtime path also passed. The dirty
+legacy staging test preserves session identity, cursor, latest sequence, transaction/method
+history and draft content while migrating both live rows and every stored checkpoint.
 
 - [ ] Commit:
 

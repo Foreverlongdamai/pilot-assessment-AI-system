@@ -20,6 +20,7 @@ from pilot_assessment.model_library.repository import (
 )
 from pilot_assessment.model_library.service import ModelLibraryService
 from pilot_assessment.model_library.sources import SourceCatalog
+from pilot_assessment.model_workspace.content_migration import migrate_current_model_content
 from pilot_assessment.model_workspace.edit_session import ModelEditSessionManager
 from pilot_assessment.model_workspace.legacy_import import LegacyProjectModelImporter
 from pilot_assessment.model_workspace.migration import (
@@ -158,6 +159,7 @@ class SystemApplication:
         product_root: str | Path | None,
     ) -> Self:
         database = store.database
+        content_migration = migrate_current_model_content(database, migrated_at=clock())
         audit = AuditRepository(database)
         idempotency = IdempotencyStore(database, audit, clock=clock)
         components = SqliteComponentLibraryRepository(database)
@@ -208,6 +210,7 @@ class SystemApplication:
             canonical_idempotency=idempotency,
             operator_registry=operator_registry,
             source_catalog=source_catalog,
+            canonical_content_migration=content_migration,
             clock=clock,
         )
         legacy_model_importer = LegacyProjectModelImporter(

@@ -23,7 +23,7 @@ def test_database_applies_all_migrations_and_required_pragmas(tmp_path) -> None:
         assert database.fetchone("PRAGMA journal_mode")[0] == "wal"
         assert database.fetchone("PRAGMA synchronous")[0] == 2
         versions = database.fetchall("SELECT version FROM schema_migrations ORDER BY version")
-        assert [row["version"] for row in versions] == [1, 2, 3, 4, 5]
+        assert [row["version"] for row in versions] == [1, 2, 3, 4, 5, 6]
 
         tables = {
             row["name"]
@@ -53,6 +53,7 @@ def test_database_applies_all_migrations_and_required_pragmas(tmp_path) -> None:
             "model_run_preflights_v2",
             "model_run_links_v2",
             "legacy_system_model_import_receipts",
+            "model_content_migration_events",
         }.issubset(tables)
     finally:
         database.close()
@@ -109,7 +110,7 @@ def test_existing_v1_database_upgrades_once_without_changing_legacy_rows(tmp_pat
         assert [
             row["version"]
             for row in database.fetchall("SELECT version FROM schema_migrations ORDER BY version")
-        ] == [1, 2, 3, 4, 5]
+        ] == [1, 2, 3, 4, 5, 6]
         assert (
             tuple(
                 database.fetchone(

@@ -160,12 +160,14 @@ def _check_expected(
 
 
 def _decode_object(payload: bytes, spec: _ObjectSpec) -> CurrentObject:
+    from pilot_assessment.model_workspace.content_migration import (  # noqa: PLC0415
+        CurrentModelContentMigrationError,
+        decode_current_model_object,
+    )
+
     try:
-        decoded = decode_canonical_json(payload)
-        if spec.object_kind is ModelObjectKind.NODE:
-            return ModelNode.model_validate(decoded)
-        return TaskScheme.model_validate(decoded)
-    except (TypeError, ValueError, ValidationError) as error:
+        return decode_current_model_object(payload, object_kind=spec.object_kind)
+    except (CurrentModelContentMigrationError, TypeError, ValueError, ValidationError) as error:
         raise CurrentObjectIntegrityError("stored current-object JSON is invalid") from error
 
 

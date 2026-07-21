@@ -5,7 +5,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 
-LATEST_SCHEMA_VERSION = 5
+LATEST_SCHEMA_VERSION = 6
 
 _BOOTSTRAP_SCHEMA = """
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -583,6 +583,52 @@ MIGRATIONS = (
                 "CREATE INDEX legacy_system_model_import_receipts_project_idx "
                 "ON legacy_system_model_import_receipts(source_project_id, imported_at)"
             ),
+        ),
+    ),
+    Migration(
+        version=6,
+        name="m8e_single_english_model_content_lineage_v6",
+        statements=(
+            """
+            CREATE TABLE model_content_migration_events (
+                migration_event_id TEXT PRIMARY KEY,
+                object_kind TEXT NOT NULL CHECK (object_kind IN ('node', 'scheme')),
+                object_id TEXT NOT NULL,
+                from_contract_version TEXT NOT NULL,
+                to_contract_version TEXT NOT NULL,
+                old_content_hash TEXT NOT NULL,
+                new_content_hash TEXT NOT NULL,
+                old_layout_hash TEXT NOT NULL,
+                new_layout_hash TEXT NOT NULL,
+                before_workspace_fingerprint TEXT NOT NULL,
+                after_workspace_fingerprint TEXT NOT NULL,
+                legacy_payload BLOB NOT NULL,
+                diagnostics_json BLOB NOT NULL,
+                migrated_at TEXT NOT NULL,
+                UNIQUE (
+                    object_kind, object_id, from_contract_version, to_contract_version,
+                    old_content_hash, new_content_hash, old_layout_hash, new_layout_hash
+                )
+            )
+            """,
+            (
+                "CREATE INDEX model_content_migration_events_object_idx "
+                "ON model_content_migration_events(object_kind, object_id, migrated_at)"
+            ),
+            """
+            CREATE TRIGGER model_content_migration_events_append_only_update
+            BEFORE UPDATE ON model_content_migration_events
+            BEGIN
+                SELECT RAISE(ABORT, 'model_content_migration_events is append-only');
+            END
+            """,
+            """
+            CREATE TRIGGER model_content_migration_events_append_only_delete
+            BEFORE DELETE ON model_content_migration_events
+            BEGIN
+                SELECT RAISE(ABORT, 'model_content_migration_events is append-only');
+            END
+            """,
         ),
     ),
 )
