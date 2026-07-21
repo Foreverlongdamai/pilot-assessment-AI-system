@@ -1,6 +1,6 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0.8 portable expert-designer 基线。M1–M7、M8A、M8B 与 M8C-0 已工程验证；M7 用户手工验收、D-055、M8C-1、M8D 与 M8E 尚未完成；starter/synthetic `formal_run_authorized=false`。
+**文档状态：** 产品 v0.8 portable expert-designer 基线。M1–M7、M8A、M8B、M8C-0 与 M8D 已工程验证；M7 用户手工验收、D-055、M8C-1 与 M8E 尚未完成；starter/synthetic `formal_run_authorized=false`。
 **日期：** 2026-07-21
 **适用目录：** `pilot_assessment_system/`
 

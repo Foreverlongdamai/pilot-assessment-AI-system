@@ -15,6 +15,7 @@
 
 ## 当前记录入口
 
+- [M8D Current-System Packaging Verification](2026-07-21-m8d-current-system-packaging-verification.md) — 显式 current-system capture、动态 model baseline、source 不变性、完整 project directory copy/reopen/replay、typed Diagnostics、disposable package verifier 与 privacy scan；关闭 M8D engineering gate，不关闭 M7 UAT、M8C-1/M8E 或科学校准。
 - [M8D Current-System Packaging Design Self-Review](2026-07-21-m8d-current-system-packaging-design-self-review.md) — 核对 D-077、current-system capture、完整 project 目录 portability、catalog 迁移与旧 backup 口径取代；仅关闭书面设计自审，不关闭 M8D 实现。
 - [M8C-0 Documentation Infrastructure Verification](2026-07-21-m8c0-documentation-infrastructure-verification.md) — 12 类 catalog/schema、固定工具链、C4 assets、三份代表 DOCX 的 28 页逐页 QA、确定性 hash 与 portable review-doc integration；关闭 M8C-0，不关闭 M8C-1/M8D/M8E 或 M7 UAT。
 - [M8C-0 Documentation Infrastructure Plan Self-Review](2026-07-21-m8c0-documentation-infrastructure-plan-self-review.md) — 核对 metadata/catalog、pinned toolchain、DOCX preset、Mermaid/C4、双语代表手册与 render QA；明确 M7/M8D/M8E 内容门。

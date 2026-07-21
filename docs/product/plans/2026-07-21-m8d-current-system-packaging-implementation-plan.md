@@ -666,6 +666,7 @@ git commit -m "test: verify project directory portability"
 **Files:**
 
 - Modify: `README.md`
+- Modify: `docs/product/README.md`
 - Modify: `docs/product/11_IMPLEMENTATION_STATUS.md`
 - Modify: `docs/product/plans/2026-07-18-m8-pre-uat-implementation-outline.md`
 - Modify: `docs/product/specs/2026-07-21-m8d-current-system-packaging-project-portability-and-diagnostics-design.md`
@@ -674,11 +675,11 @@ git commit -m "test: verify project directory portability"
 - Create: `docs/product/reviews/2026-07-21-m8d-current-system-packaging-verification.md`
 - Modify: this implementation plan's checkboxes/status notes
 
-- [ ] **Step 1: Verify the current source system without mutating it**
+- [x] **Step 1: Verify the current source system without mutating it**
 
 Run the inspector against `.pilot-assessment-local/system` and record only model library ID, identity, node/scheme counts, schema versions and clean/dirty outcome. Do not print or store absolute paths in release manifests.
 
-- [ ] **Step 2: Build one repository-local engineering package from the explicit source**
+- [x] **Step 2: Build one repository-local engineering package from the explicit source**
 
 Run:
 
@@ -691,7 +692,7 @@ Run:
 
 Expected: builder succeeds; its internal verification copy passes; `system-model-baseline.json`, `release-manifest.json` and runtime diagnostics agree with the source identity and actual dynamic counts. The source system hashes and clean state remain unchanged after the build.
 
-- [ ] **Step 3: Run focused regression gates**
+- [x] **Step 3: Run focused regression gates**
 
 Run:
 
@@ -708,11 +709,11 @@ dotnet build src\PilotAssessment.Desktop\PilotAssessment.Desktop.csproj -c Debug
 
 Expected: all focused Python tests, desktop unit tests, real-sidecar contract tests and x64 desktop build pass. Do not run the entire scientific/anchor suite unless a focused failure points there.
 
-- [ ] **Step 4: Perform privacy and fixed-count scans**
+- [x] **Step 4: Perform privacy and fixed-count scans**
 
 Require no developer absolute path in package text, no user project/Session/result/pilot-camera file, no `53/1` release constraint and no active Backup/Restore promise. Confirm the only packaged SQLite files are the canonical system store and clean edit workspace.
 
-- [ ] **Step 5: Write the verification record and update status**
+- [x] **Step 5: Write the verification record and update status**
 
 The verification record must include:
 
@@ -728,7 +729,7 @@ The verification record must include:
 
 Only then mark M8D engineering implementation complete in README/status/roadmap. Do not mark M8, M7 UAT, M8C-1 or M8E complete.
 
-- [ ] **Step 6: Run documentation and Git checks**
+- [x] **Step 6: Run documentation and Git checks**
 
 Run:
 
@@ -740,7 +741,7 @@ git diff --check
 
 Expected: catalog parses, review documentation validates, and Git reports no whitespace errors.
 
-- [ ] **Step 7: Commit M8D completion evidence**
+- [x] **Step 7: Commit M8D completion evidence**
 
 ```powershell
 git add README.md docs/product
@@ -782,4 +783,7 @@ The plan contains no unresolved implementation marker. Ellipses appear only in t
 
 ## 6. Execution handoff
 
-The user already selected **Inline Execution** for this project. After this plan is committed, continue Task 1 through Task 6 in the current task with concise checkpoints; do not pause for a second execution-mode choice.
+The user selected **Inline Execution** for this project. Tasks 1–6 are complete; the
+fresh evidence is indexed in
+`reviews/2026-07-21-m8d-current-system-packaging-verification.md`. Do not reopen
+M8D merely to calibrate starter scientific content.

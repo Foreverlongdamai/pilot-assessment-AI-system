@@ -185,7 +185,7 @@ backend/src/pilot_assessment/
 
 ## 12. 当前状态与科学边界
 
-截至本手册版本，M1–M8B 的工程门已关闭，M8C 文档系统正在实施。M7 的完整用户手工验收和 D-055 canonical 单英文模型迁移仍未关闭；M8D current-system packaging/project portability 与 M8E final clean-machine handoff 也尚未完成。
+截至本手册版本，M1–M8B、M8C-0 与 M8D 的工程门已关闭，M8C-1 最终文档仍在等待后续门槛。M7 的完整用户手工验收和 D-055 canonical 单英文模型迁移仍未关闭；M8E final clean-machine handoff 也尚未完成。
 
 所有 starter/synthetic 运行都保持 `formal_run_authorized=false`。本产品可以证明数据合同、编辑、持久化、推理和追溯工作流能够运行，但不能证明当前 Anchor/Evidence、任务结构、阈值或 CPT 能准确评价飞行员能力。最终科学方法由领域专家在该框架中设计、校准和验证。
 
