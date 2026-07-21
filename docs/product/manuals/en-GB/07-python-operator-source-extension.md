@@ -5,7 +5,7 @@ title = "Python Operator and Source Extension Development Guide"
 short_title = "Python Extension Guide"
 product_version = "0.1.0"
 document_version = "0.1.0"
-status = "review"
+status = "released"
 audience = ["expert", "developer", "maintainer"]
 information_types = ["tutorial", "how-to", "reference"]
 scope = "Editing or extending the active first-party Python source in one unpacked software copy."
@@ -13,6 +13,9 @@ prerequisites = ["M8B portable product layout", "Ability to read and edit Python
 scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-PYTHON-CORE-001", "PAS-RELEASE-001"]
 support = "Use the Diagnostics workspace and the packaged logs when reporting a failure."
+release_channel = "release-candidate"
+release_label = "v0.1.0-rc.1"
+user_acceptance = "pending"
 +++
 
 # Python Operator and Source Extension Development Guide

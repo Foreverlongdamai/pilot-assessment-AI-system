@@ -5,7 +5,7 @@ title = "Product Overview and System Architecture"
 short_title = "Product Overview and Architecture"
 product_version = "0.1.0"
 document_version = "0.1.0"
-status = "review"
+status = "released"
 audience = ["evaluator", "expert", "developer", "maintainer", "release"]
 information_types = ["explanation", "reference"]
 scope = "Explains the Pilot Assessment System product boundary, roles, containers, data ownership, model structure, computation direction and extension paths."
@@ -13,6 +13,9 @@ prerequisites = []
 scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-EVALUATOR-001", "PAS-EXPERT-EVIDENCE-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001"]
 support = "Retain the product version, stable error ID, Diagnostics summary and a privacy-safe description of the affected project when reporting a problem."
+release_channel = "release-candidate"
+release_label = "v0.1.0-rc.1"
+user_acceptance = "pending"
 +++
 
 # Product Overview and System Architecture

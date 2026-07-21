@@ -5,7 +5,7 @@ title = "产品总览与系统架构"
 short_title = "产品总览与架构"
 product_version = "0.1.0"
 document_version = "0.1.0"
-status = "review"
+status = "released"
 audience = ["evaluator", "expert", "developer", "maintainer", "release"]
 information_types = ["explanation", "reference"]
 scope = "解释 Pilot Assessment System 的产品边界、角色、容器、数据所有权、模型结构、计算方向和扩展方式。"
@@ -13,6 +13,9 @@ prerequisites = []
 scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-EVALUATOR-001", "PAS-EXPERT-EVIDENCE-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001"]
 support = "遇到问题时保留产品版本、错误 ID、Diagnostics 摘要和对应 project 的脱敏说明。"
+release_channel = "release-candidate"
+release_label = "v0.1.0-rc.1"
+user_acceptance = "pending"
 +++
 
 # 产品总览与系统架构
