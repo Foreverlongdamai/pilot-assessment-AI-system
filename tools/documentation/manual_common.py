@@ -25,9 +25,7 @@ BUILD_STATUSES = ("draft", "review", "released")
 STATUS_RANK = {"draft": 0, "review": 1, "released": 2, "superseded": 3}
 DOC_REFERENCE_PATTERN = re.compile(r"\[\[DOC:(PAS-[A-Z-]+-[0-9]{3})\]\]")
 ASSET_REFERENCE_PATTERN = re.compile(r"\[\[ASSET:([a-z0-9][a-z0-9-]*)\]\]")
-SCREENSHOT_REFERENCE_PATTERN = re.compile(
-    r"\[\[SCREENSHOT:([a-z0-9][a-z0-9-]*)\]\]"
-)
+SCREENSHOT_REFERENCE_PATTERN = re.compile(r"\[\[SCREENSHOT:([a-z0-9][a-z0-9-]*)\]\]")
 AGGREGATE_PAGE_BREAK = "@@PA_MODULE_PAGE_BREAK@@"
 MARKDOWN_HEADING_PATTERN = re.compile(r"^(#{1,6})([ \t]+.*)$")
 
@@ -219,9 +217,7 @@ def aggregate_manual_source(
         source_path = safe_manual_path(source_value)
         source = parse_manual_source(source_path)
         if source.metadata.get("status") != "released":
-            raise DocumentationError(
-                f"aggregate module is not released: {document_id}:{language}"
-            )
+            raise DocumentationError(f"aggregate module is not released: {document_id}:{language}")
         if position > 1:
             sections.append(AGGREGATE_PAGE_BREAK)
         sections.append(f"## {module_variant['title']}")

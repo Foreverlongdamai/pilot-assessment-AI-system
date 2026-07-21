@@ -844,9 +844,7 @@ class ManualDocxBuilder:
                     self._add_asset(asset_match.group(1))
                     index += 3
                     continue
-                screenshot_match = SCREENSHOT_REFERENCE_PATTERN.fullmatch(
-                    inline.content.strip()
-                )
+                screenshot_match = SCREENSHOT_REFERENCE_PATTERN.fullmatch(inline.content.strip())
                 if screenshot_match:
                     self._add_screenshot(screenshot_match.group(1))
                     index += 3

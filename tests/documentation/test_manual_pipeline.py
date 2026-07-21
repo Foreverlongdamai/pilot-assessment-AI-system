@@ -30,9 +30,7 @@ def test_release_candidate_catalog_defines_twelve_logical_and_twenty_four_output
     assert len(documents) == 12
     assert sum(len(item["languages"]) for item in documents) == 24
     assert {
-        variant["status"]
-        for document in documents
-        for variant in document["languages"].values()
+        variant["status"] for document in documents for variant in document["languages"].values()
     } == {"released"}
 
     master = next(item for item in documents if item["document_id"] == "PAS-TECHREF-001")
@@ -62,9 +60,7 @@ def test_heading_shift_drops_module_title_and_does_not_rewrite_fenced_code() -> 
 
 def test_master_manual_is_generated_from_all_eleven_released_module_sources() -> None:
     catalog = load_catalog()
-    master = next(
-        item for item in catalog["documents"] if item["document_id"] == "PAS-TECHREF-001"
-    )
+    master = next(item for item in catalog["documents"] if item["document_id"] == "PAS-TECHREF-001")
 
     source, modules = aggregate_manual_source(catalog, master, "en-GB")
 
@@ -83,13 +79,7 @@ def test_c4_diagram_inputs_avoid_randomised_shapes_and_use_stable_ids() -> None:
     assert config["deterministicIDSeed"] == "pilot-assessment-docs-v1"
     for filename in ("c4-system-context.mmd", "c4-container.mmd"):
         source = (
-            REPOSITORY_ROOT
-            / "docs"
-            / "product"
-            / "manuals"
-            / "assets"
-            / "diagrams"
-            / filename
+            REPOSITORY_ROOT / "docs" / "product" / "manuals" / "assets" / "diagrams" / filename
         ).read_text(encoding="utf-8")
         assert '(["' not in source
 
@@ -135,13 +125,8 @@ def test_registers_ten_existing_candidate_screenshots_without_capturing(
     registered = read_json(manifest_path)
     assert result["status"] == "PASS"
     assert len(result["registered"]) == 10
-    assert len(
-        {
-            (item["screenshot_id"], item["language"])
-            for item in registered["screenshots"]
-        }
-    ) == 10
-    assert {item["status"] for item in registered["screenshots"]} == {
-        "release-candidate"
-    }
+    assert (
+        len({(item["screenshot_id"], item["language"]) for item in registered["screenshots"]}) == 10
+    )
+    assert {item["status"] for item in registered["screenshots"]} == {"release-candidate"}
     assert all(item["privacy_review"]["status"] == "passed" for item in registered["screenshots"])

@@ -184,9 +184,7 @@ def test_external_archive_scan_requires_24_private_path_free_docx(tmp_path: Path
     with zipfile.ZipFile(bad_archive, "w") as package:
         for index in range(24):
             xml = (
-                b"<document>C:\\Users\\Alice\\secret</document>"
-                if index == 3
-                else b"<document />"
+                b"<document>C:\\Users\\Alice\\secret</document>" if index == 3 else b"<document />"
             )
             package.writestr(
                 f"PilotAssessment-0.1.0-rc.1-win-x64/docs/en-GB/manual-{index:02d}.docx",

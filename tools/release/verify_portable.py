@@ -154,9 +154,7 @@ def _required_layout(root: Path) -> None:
 
 
 def _verify_release_identity(root: Path) -> dict[str, Any]:
-    manifest = json.loads(
-        (root / "manifest" / "release-manifest.json").read_text(encoding="utf-8")
-    )
+    manifest = json.loads((root / "manifest" / "release-manifest.json").read_text(encoding="utf-8"))
     expected = {
         "schema_version": "pilot-assessment-release-manifest-v2",
         "product_version": "0.1.0",
@@ -466,9 +464,7 @@ def _verify_system_model_baseline(root: Path) -> dict[str, Any]:
     if not isinstance(lineage, dict) or not (
         str(metadata[1]) == baseline.get("system_format_version") == locator.get("format_version")
         and str(metadata[2]) == lineage.get("starter_seed_id") == locator.get("starter_seed_id")
-        and str(metadata[3])
-        == lineage.get("starter_seed_hash")
-        == locator.get("starter_seed_hash")
+        and str(metadata[3]) == lineage.get("starter_seed_hash") == locator.get("starter_seed_hash")
     ):
         raise PortableVerificationError("captured system format or starter lineage differs")
     if (
@@ -491,10 +487,9 @@ def _verify_system_model_baseline(root: Path) -> dict[str, Any]:
         or scheme_count != baseline["scheme_count"]
     ):
         raise PortableVerificationError("captured system model identity differs")
-    if (
-        database_schema_version != baseline.get("database_schema_version")
-        or system_schema_version != baseline.get("system_schema_version")
-    ):
+    if database_schema_version != baseline.get(
+        "database_schema_version"
+    ) or system_schema_version != baseline.get("system_schema_version"):
         raise PortableVerificationError("captured system schema identity differs")
     if user_counts != baseline["user_owned_row_counts"] or any(user_counts.values()):
         raise PortableVerificationError(f"captured system contains user-owned rows: {user_counts}")
