@@ -165,7 +165,10 @@ class _SystemWriterLock(AbstractContextManager["_SystemWriterLock"]):
 
 def _read_only_connection(path: Path) -> sqlite3.Connection:
     try:
-        connection = sqlite3.connect(f"{path.resolve().as_uri()}?mode=ro", uri=True)
+        connection = sqlite3.connect(
+            f"{path.resolve().as_uri()}?mode=ro&immutable=1",
+            uri=True,
+        )
         connection.row_factory = sqlite3.Row
         connection.execute("PRAGMA query_only = ON")
         return connection

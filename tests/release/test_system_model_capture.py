@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import sqlite3
 import sys
 from datetime import UTC, datetime
@@ -55,6 +56,17 @@ def _create_saved_dynamic_system(root: Path) -> tuple[Path, int, int]:
     scheme_count = len(app.current_model.list_schemes())
     app.close()
     return root, node_count, scheme_count
+
+
+def _file_snapshot(root: Path) -> dict[str, tuple[int, str]]:
+    return {
+        path.relative_to(root).as_posix(): (
+            path.stat().st_size,
+            hashlib.sha256(path.read_bytes()).hexdigest(),
+        )
+        for path in root.rglob("*")
+        if path.is_file()
+    }
 
 
 def test_capture_preserves_saved_dynamic_model_and_rebuilds_clean_workspace(
@@ -169,6 +181,16 @@ def test_inspection_rejects_active_writer(tmp_path: Path) -> None:
             inspect_system_source(root)
     finally:
         app.close()
+
+
+def test_inspection_does_not_create_or_modify_source_files(tmp_path: Path) -> None:
+    _, _, inspect_system_source = _capture_api()
+    root = _create_closed_system(tmp_path / "system")
+    before = _file_snapshot(root)
+
+    inspect_system_source(root)
+
+    assert _file_snapshot(root) == before
 
 
 def test_inspection_rejects_closed_but_dirty_edit_session(tmp_path: Path) -> None:

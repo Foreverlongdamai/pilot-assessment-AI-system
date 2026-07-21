@@ -200,7 +200,7 @@ The module must:
 1. resolve and validate `system.json`, `model-library.sqlite3` and `staging/model-edit/workspace.sqlite3`;
 2. acquire `.system-writer.lock` non-blockingly with `msvcrt` on Windows and `fcntl` elsewhere;
 3. reject any `*.sqlite3-wal` or `*.sqlite3-shm` below the source root;
-4. open both databases with SQLite URI `mode=ro`;
+4. after proving no WAL/SHM exists, open both databases with SQLite URI `mode=ro&immutable=1` so inspection itself cannot create source-side shared-memory files;
 5. require `PRAGMA integrity_check == ('ok',)` and an empty `PRAGMA foreign_key_check`;
 6. require contiguous schema migrations no newer than `5`, system schema no newer than `1`, locator/database identity agreement and `clean_shutdown=1`;
 7. compute the exact edit-session dirty state by reproducing the revision-excluding `_workspace_fingerprint` byte contract from each row's `canonical_json`, and require the canonical revision-aware fingerprint to equal `base_fingerprint`;
