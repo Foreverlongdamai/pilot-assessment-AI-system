@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import sqlite3
+import subprocess
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -145,6 +146,26 @@ def test_builder_refuses_system_source_inside_recreated_package_root(tmp_path: P
     source = package_root / "system"
     with pytest.raises(ReleaseBuildError, match="inside the package output"):
         _require_external_system_source(source, package_root)
+
+
+def test_portable_verifier_loads_sibling_capture_contract_in_isolated_python() -> None:
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-B",
+            "-X",
+            "utf8",
+            str(RELEASE_TOOLS / "verify_portable.py"),
+            "--help",
+        ],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
 
 
 def test_runtime_system_model_comparison_rejects_manifest_drift() -> None:

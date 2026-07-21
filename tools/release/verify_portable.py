@@ -19,7 +19,11 @@ from ctypes import wintypes
 from pathlib import Path
 from typing import Any
 
-from system_model_capture import USER_OWNED_SYSTEM_TABLES, model_identity
+_RELEASE_TOOL_ROOT = Path(__file__).resolve().parent
+if str(_RELEASE_TOOL_ROOT) not in sys.path:
+    sys.path.insert(0, str(_RELEASE_TOOL_ROOT))
+
+from system_model_capture import USER_OWNED_SYSTEM_TABLES, model_identity  # noqa: E402
 
 FORBIDDEN_DIRECTORY_NAMES = {
     ".git",
