@@ -643,6 +643,23 @@
   <data name="Diagnostics_AuditEvents" xml:space="preserve"><value>Recent audit events</value></data>
   <data name="Diagnostics_NoRecoverableRuns" xml:space="preserve"><value>No queued, active or interrupted current-model run requires attention.</value></data>
   <data name="Diagnostics_NoHandshake" xml:space="preserve"><value>No active backend handshake.</value></data>
+  <data name="Diagnostics_SystemModel" xml:space="preserve"><value>Current system model</value></data>
+  <data name="Diagnostics_SystemModelUnavailable" xml:space="preserve"><value>System model diagnostics are not available from this runtime.</value></data>
+  <data name="Diagnostics_ModelLibrary" xml:space="preserve"><value>Model library</value></data>
+  <data name="Diagnostics_ModelIdentity" xml:space="preserve"><value>Model identity SHA-256</value></data>
+  <data name="Diagnostics_FormatAndSchema" xml:space="preserve"><value>Format / database schema</value></data>
+  <data name="Diagnostics_ModelCounts" xml:space="preserve"><value>Nodes / task schemes</value></data>
+  <data name="Diagnostics_StagedModelChanges" xml:space="preserve"><value>Staged model changes</value></data>
+  <data name="Diagnostics_ProjectCompatibility" xml:space="preserve"><value>Project compatibility</value></data>
+  <data name="Diagnostics_ProjectNotOpen" xml:space="preserve"><value>No project is open.</value></data>
+  <data name="Diagnostics_Project" xml:space="preserve"><value>Project</value></data>
+  <data name="Diagnostics_Compatibility" xml:space="preserve"><value>Compatibility</value></data>
+  <data name="Diagnostics_Compatible" xml:space="preserve"><value>Compatible</value></data>
+  <data name="Diagnostics_RecoveryDiagnostics" xml:space="preserve"><value>Recovery diagnostics</value></data>
+  <data name="Diagnostics_RecoveredRuns" xml:space="preserve"><value>Recovered runs</value></data>
+  <data name="Diagnostics_None" xml:space="preserve"><value>None</value></data>
+  <data name="Common_Yes" xml:space="preserve"><value>Yes</value></data>
+  <data name="Common_No" xml:space="preserve"><value>No</value></data>
   <data name="RawFamily_X_Name" xml:space="preserve"><value>Flight State</value></data>
   <data name="RawFamily_X_Description" xml:space="preserve"><value>Position, attitude, velocity, acceleration, and other flight states</value></data>
   <data name="RawFamily_U_Name" xml:space="preserve"><value>Control Input</value></data>

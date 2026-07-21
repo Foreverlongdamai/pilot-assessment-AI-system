@@ -41,6 +41,8 @@ public partial class DiagnosticsViewModel : ObservableObject
     private readonly SynchronizationContext? _uiContext;
     private int _initialized;
     private BackendSourceDiskStatus? _lastBackendSource;
+    private SystemModelRuntimeStatus? _lastSystemModel;
+    private ProjectCompatibilityStatus? _lastProjectCompatibility;
 
     [ObservableProperty]
     public partial bool IsBusy { get; private set; }
@@ -59,6 +61,12 @@ public partial class DiagnosticsViewModel : ObservableObject
 
     [ObservableProperty]
     public partial string BackendSourceText { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string SystemModelText { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string ProjectCompatibilityText { get; private set; } = string.Empty;
 
     [ObservableProperty]
     public partial bool SourceRestartRequired { get; private set; }
@@ -134,7 +142,10 @@ public partial class DiagnosticsViewModel : ObservableObject
             RuntimeStatusText =
                 $"{runtime.State} · project_open={runtime.ProjectOpen} · project_id={runtime.ProjectId ?? "—"}";
             _lastBackendSource = runtime.BackendSource;
+            _lastSystemModel = runtime.SystemModel;
+            _lastProjectCompatibility = runtime.ProjectCompatibility;
             RefreshSourceIdentity();
+            RefreshCompatibilityDiagnostics();
             var recoverable = currentRuns
                 .Where(item => item.Run.State is RunState.Queued or RunState.Running or RunState.Cancelling or RunState.Interrupted)
                 .Select(item => $"{item.Run.RunId}: {item.Run.State}/{item.Run.Stage}")
@@ -212,7 +223,54 @@ public partial class DiagnosticsViewModel : ObservableObject
         {
             RefreshIdentity();
             RefreshSourceIdentity();
+            RefreshCompatibilityDiagnostics();
         });
+    }
+
+    private void RefreshCompatibilityDiagnostics()
+    {
+        var systemModel = _lastSystemModel;
+        if (systemModel is null)
+        {
+            SystemModelText = L(
+                "Diagnostics_SystemModelUnavailable",
+                "System model diagnostics are not available from this runtime.");
+        }
+        else
+        {
+            var recovery = systemModel.RecoveryDiagnostics.Length == 0
+                ? L("Diagnostics_None", "None")
+                : string.Join(Environment.NewLine, systemModel.RecoveryDiagnostics);
+            SystemModelText = string.Join(
+                Environment.NewLine,
+                $"{L("Diagnostics_ModelLibrary", "Model library")}: {systemModel.ModelLibraryId}",
+                $"{L("Diagnostics_ModelIdentity", "Model identity SHA-256")}: {systemModel.ModelIdentitySha256}",
+                $"{L("Diagnostics_FormatAndSchema", "Format / database schema")}: {systemModel.FormatVersion} / {systemModel.DatabaseSchemaVersion}",
+                $"{L("Diagnostics_ModelCounts", "Nodes / task schemes")}: {systemModel.NodeCount} / {systemModel.SchemeCount}",
+                $"{L("Diagnostics_StagedModelChanges", "Staged model changes")}: {(systemModel.EditSessionDirty ? L("Common_Yes", "Yes") : L("Common_No", "No"))}",
+                $"{L("Diagnostics_RecoveryDiagnostics", "Recovery diagnostics")}: {recovery}");
+        }
+
+        var project = _lastProjectCompatibility;
+        if (project is null)
+        {
+            ProjectCompatibilityText = L("Diagnostics_ProjectNotOpen", "No project is open.");
+            return;
+        }
+
+        var projectRecovery = project.RecoveryDiagnostics.Length == 0
+            ? L("Diagnostics_None", "None")
+            : string.Join(Environment.NewLine, project.RecoveryDiagnostics);
+        var compatibility = string.Equals(project.Compatibility, "compatible", StringComparison.Ordinal)
+            ? L("Diagnostics_Compatible", "Compatible")
+            : project.Compatibility;
+        ProjectCompatibilityText = string.Join(
+            Environment.NewLine,
+            $"{L("Diagnostics_Project", "Project")}: {project.ProjectId}",
+            $"{L("Diagnostics_Compatibility", "Compatibility")}: {compatibility}",
+            $"{L("Diagnostics_FormatAndSchema", "Format / database schema")}: {project.FormatVersion} / {project.DatabaseSchemaVersion}",
+            $"{L("Diagnostics_RecoveryDiagnostics", "Recovery diagnostics")}: {projectRecovery}",
+            $"{L("Diagnostics_RecoveredRuns", "Recovered runs")}: {project.RecoveredRunCount}");
     }
 
     private void RefreshSourceIdentity()

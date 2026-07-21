@@ -115,6 +115,57 @@ public sealed class ContractSerializationTests
     }
 
     [Fact]
+    public void RuntimeStatus_RoundTripsTypedSystemAndProjectCompatibility()
+    {
+        const string json = """
+            {
+              "state": "ready",
+              "project_open": true,
+              "project_id": "project.alpha",
+              "active_run_ids": [],
+              "trace_id": "trace.runtime-status",
+              "system_ready": true,
+              "model_library_id": "model-library.alpha",
+              "system_model": {
+                "model_library_id": "model-library.alpha",
+                "model_identity_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "format_version": "0.1.0",
+                "database_schema_version": 5,
+                "node_count": 54,
+                "scheme_count": 2,
+                "edit_session_dirty": false,
+                "recovery_diagnostics": []
+              },
+              "project_compatibility": {
+                "project_id": "project.alpha",
+                "format_version": "0.1.0",
+                "database_schema_version": 5,
+                "compatibility": "compatible",
+                "recovery_diagnostics": [],
+                "recovered_run_count": 0
+              }
+            }
+            """;
+
+        var status = JsonSerializer.Deserialize(
+            json,
+            PilotAssessmentJsonContext.Default.RuntimeStatusResponse);
+
+        Assert.NotNull(status);
+        Assert.Equal(54, status.SystemModel!.NodeCount);
+        Assert.Equal(2, status.SystemModel.SchemeCount);
+        Assert.False(status.SystemModel.EditSessionDirty);
+        Assert.Equal("compatible", status.ProjectCompatibility!.Compatibility);
+        Assert.Equal(5, status.ProjectCompatibility.DatabaseSchemaVersion);
+
+        var expected = JsonNode.Parse(json);
+        var actual = JsonNode.Parse(JsonSerializer.Serialize(
+            status,
+            PilotAssessmentJsonContext.Default.RuntimeStatusResponse));
+        Assert.True(JsonNode.DeepEquals(expected, actual));
+    }
+
+    [Fact]
     public void RawSessionInspection_PreservesUndeclaredUnitWithoutUserInput()
     {
         const string json = """

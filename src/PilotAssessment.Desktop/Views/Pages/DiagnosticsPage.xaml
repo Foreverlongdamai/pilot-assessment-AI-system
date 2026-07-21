@@ -73,6 +73,34 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Spacing="8">
+                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding [Diagnostics_SystemModel], Source={StaticResource Localization}}" />
+                    <TextBox
+                        AutomationProperties.Name="{Binding [Diagnostics_SystemModel], Source={StaticResource Localization}}"
+                        FontFamily="Consolas"
+                        IsReadOnly="True"
+                        MinHeight="150"
+                        AcceptsReturn="True"
+                        Text="{x:Bind ViewModel.SystemModelText, Mode=OneWay}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="8">
+                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding [Diagnostics_ProjectCompatibility], Source={StaticResource Localization}}" />
+                    <TextBox
+                        AutomationProperties.Name="{Binding [Diagnostics_ProjectCompatibility], Source={StaticResource Localization}}"
+                        FontFamily="Consolas"
+                        IsReadOnly="True"
+                        MinHeight="150"
+                        AcceptsReturn="True"
+                        Text="{x:Bind ViewModel.ProjectCompatibilityText, Mode=OneWay}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Grid>
+            <Grid ColumnSpacing="18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Spacing="8">
                     <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding [Diagnostics_BackendIdentity], Source={StaticResource Localization}}" />
                     <TextBlock FontFamily="Consolas" Text="{x:Bind ViewModel.BackendIdentityText, Mode=OneWay}" TextWrapping="Wrap" />
                     <TextBlock Margin="0,8,0,0" Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding [Diagnostics_RuntimeStatus], Source={StaticResource Localization}}" />

@@ -536,7 +536,7 @@ git commit -m "feat: report system and project compatibility"
 - Modify: `src/PilotAssessment.Desktop/Strings/en-US/Resources.resw`
 - Modify: `src/PilotAssessment.Desktop/Strings/zh-CN/Resources.resw`
 
-- [ ] **Step 1: Write the typed JSON round-trip test**
+- [x] **Step 1: Write the typed JSON round-trip test**
 
 Deserialize an inline `runtime.status` JSON containing both new objects and assert:
 
@@ -550,7 +550,7 @@ Assert.Equal(5, status.ProjectCompatibility.DatabaseSchemaVersion);
 
 Serialize with `PilotAssessmentJsonContext.Default.RuntimeStatusResponse` and require semantic JSON equivalence.
 
-- [ ] **Step 2: Run the contract test and confirm the typed fields are absent**
+- [x] **Step 2: Run the contract test and confirm the typed fields are absent**
 
 Run:
 
@@ -561,7 +561,7 @@ dotnet test tests\PilotAssessment.Desktop.UnitTests\PilotAssessment.Desktop.Unit
 
 Expected: compile failure until the two records and response fields exist.
 
-- [ ] **Step 3: Add the typed records and source-generation entries**
+- [x] **Step 3: Add the typed records and source-generation entries**
 
 Add:
 
@@ -587,13 +587,13 @@ public sealed record ProjectCompatibilityStatus(
 
 Append nullable `SystemModel` and `ProjectCompatibility` parameters to `RuntimeStatusResponse`, retaining all existing constructor parameters and JSON-null behavior.
 
-- [ ] **Step 4: Add localized Diagnostics projections**
+- [x] **Step 4: Add localized Diagnostics projections**
 
 Add observable `SystemModelText` and `ProjectCompatibilityText`. Use existing `L(key, fallback)` for every user-facing label. System text shows model library ID, model identity, format/schema and node/scheme counts. Project text shows `not open` or project ID, compatibility, format/schema, recovery diagnostics and recovered-run count. Do not display absolute paths.
 
 Add two visible sections to `DiagnosticsPage.xaml`, and add matching English/Chinese keys such as `Diagnostics_SystemModel`, `Diagnostics_ModelCounts`, `Diagnostics_ProjectCompatibility`, `Diagnostics_ProjectNotOpen`, `Diagnostics_Compatible`, `Diagnostics_RecoveryDiagnostics` and `Diagnostics_RecoveredRuns`.
 
-- [ ] **Step 5: Run desktop unit tests and resource parity checks**
+- [x] **Step 5: Run desktop unit tests and resource parity checks**
 
 Run:
 
@@ -603,7 +603,7 @@ dotnet test tests\PilotAssessment.Desktop.UnitTests\PilotAssessment.Desktop.Unit
 
 Expected: all tests pass, including contract serialization, accessibility surface and English/Chinese resource parity.
 
-- [ ] **Step 6: Commit Task 4**
+- [x] **Step 6: Commit Task 4**
 
 ```powershell
 git add src/PilotAssessment.Desktop.Core src/PilotAssessment.Desktop tests/PilotAssessment.Desktop.UnitTests

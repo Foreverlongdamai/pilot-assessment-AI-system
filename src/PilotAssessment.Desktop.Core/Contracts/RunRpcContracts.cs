@@ -79,6 +79,24 @@ public sealed record RunResultArtifactGetResponse(
     bool ReadOnly,
     string TraceId);
 
+public sealed record SystemModelRuntimeStatus(
+    string ModelLibraryId,
+    string ModelIdentitySha256,
+    string FormatVersion,
+    int DatabaseSchemaVersion,
+    int NodeCount,
+    int SchemeCount,
+    bool EditSessionDirty,
+    string[] RecoveryDiagnostics);
+
+public sealed record ProjectCompatibilityStatus(
+    string ProjectId,
+    string FormatVersion,
+    int DatabaseSchemaVersion,
+    string Compatibility,
+    string[] RecoveryDiagnostics,
+    int RecoveredRunCount);
+
 public sealed record RuntimeStatusResponse(
     string State,
     bool ProjectOpen,
@@ -90,7 +108,11 @@ public sealed record RuntimeStatusResponse(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     string? ModelLibraryId = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    BackendSourceDiskStatus? BackendSource = null);
+    BackendSourceDiskStatus? BackendSource = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    SystemModelRuntimeStatus? SystemModel = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    ProjectCompatibilityStatus? ProjectCompatibility = null);
 
 public sealed record CapabilityCatalogResponse(
     string[] Capabilities,

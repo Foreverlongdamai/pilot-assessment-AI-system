@@ -643,6 +643,23 @@
   <data name="Diagnostics_AuditEvents" xml:space="preserve"><value>最近审计事件</value></data>
   <data name="Diagnostics_NoRecoverableRuns" xml:space="preserve"><value>没有需要处理的排队、活动或中断当前模型运行。</value></data>
   <data name="Diagnostics_NoHandshake" xml:space="preserve"><value>没有活动的后端握手。</value></data>
+  <data name="Diagnostics_SystemModel" xml:space="preserve"><value>当前系统模型</value></data>
+  <data name="Diagnostics_SystemModelUnavailable" xml:space="preserve"><value>当前运行环境未提供系统模型诊断信息。</value></data>
+  <data name="Diagnostics_ModelLibrary" xml:space="preserve"><value>模型库</value></data>
+  <data name="Diagnostics_ModelIdentity" xml:space="preserve"><value>模型身份 SHA-256</value></data>
+  <data name="Diagnostics_FormatAndSchema" xml:space="preserve"><value>格式／数据库 Schema</value></data>
+  <data name="Diagnostics_ModelCounts" xml:space="preserve"><value>节点数／任务方案数</value></data>
+  <data name="Diagnostics_StagedModelChanges" xml:space="preserve"><value>暂存中的模型修改</value></data>
+  <data name="Diagnostics_ProjectCompatibility" xml:space="preserve"><value>项目兼容性</value></data>
+  <data name="Diagnostics_ProjectNotOpen" xml:space="preserve"><value>当前未打开项目。</value></data>
+  <data name="Diagnostics_Project" xml:space="preserve"><value>项目</value></data>
+  <data name="Diagnostics_Compatibility" xml:space="preserve"><value>兼容性</value></data>
+  <data name="Diagnostics_Compatible" xml:space="preserve"><value>兼容</value></data>
+  <data name="Diagnostics_RecoveryDiagnostics" xml:space="preserve"><value>恢复诊断</value></data>
+  <data name="Diagnostics_RecoveredRuns" xml:space="preserve"><value>已恢复运行数</value></data>
+  <data name="Diagnostics_None" xml:space="preserve"><value>无</value></data>
+  <data name="Common_Yes" xml:space="preserve"><value>是</value></data>
+  <data name="Common_No" xml:space="preserve"><value>否</value></data>
   <data name="RawFamily_X_Name" xml:space="preserve"><value>飞行状态</value></data>
   <data name="RawFamily_X_Description" xml:space="preserve"><value>位置、姿态、速度、加速度和其他飞行状态</value></data>
   <data name="RawFamily_U_Name" xml:space="preserve"><value>操纵输入</value></data>
