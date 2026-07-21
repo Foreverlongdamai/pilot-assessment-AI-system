@@ -73,6 +73,8 @@
 | 2.10.4 | [M8B-1 Verification](reviews/2026-07-21-m8b1-source-provenance-and-snapshot-verification.md) | 用户、交付、审查者 | focused tests、发布 baseline v2、源码修改/重启、artifact 去重与真实桌面证据 |
 | 2.10.5 | [M8B-2 Python Operator Extension Handoff Plan](plans/2026-07-21-m8b2-python-operator-extension-handoff-implementation-plan.md) | 开发、维护者、审查者 | 已完成：普通源码扩展入口、私有依赖工具、通用参数 UI、release-copy vertical slice 与维护手册 |
 | 2.10.6 | [M8B-2 Verification](reviews/2026-07-21-m8b2-python-operator-extension-verification.md) | 用户、交付、维护者 | focused gates、依赖 add/remove、clean ZIP、外部源码编辑/extension/run/desktop 证据与科学边界 |
+| 2.11 | [M8C Documentation System Design](specs/2026-07-21-m8c-documentation-system-design.md) | 所有人、文档、交付、维护者 | Markdown/TOML/catalog 权威、双语 12 类手册、DOCX 样式/目录/图/截图/验证与 M8C-0/1 gates |
+| 2.11.1 | [M8C-0 Documentation Infrastructure Plan](plans/2026-07-21-m8c0-documentation-infrastructure-implementation-plan.md) | 开发、文档、审查者 | 当前执行：catalog/schema、pinned toolchain、template、Markdown/DOCX、C4、双语代表手册和 render QA |
 | 3 | [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) | 专家、产品、前后端 | 已实现的后端基础与历史 identity/publish 语义；冲突处由 M7 规格取代 |
 | 4 | [M5 Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) | 开发、审查者 | 已完成：inline 任务、合同冻结、O8 迁移、轻量验证与完成门 |
 | 5 | [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) | 前后端、交付、审查者 | 已实现：受管项目、SQLite、artifact、run lifecycle 与 JSON-RPC sidecar |

@@ -529,3 +529,38 @@
 - 决策：system model 和公开 `backend/src` 都允许用户直接修改；与出厂 baseline 不同只标记 `locally_modified`，不审批、不阻止启动或运行。sidecar 启动冻结 `loaded_source_identity`；若当前进程启动后磁盘源码或 dependency lock 又变化，新 run 以 `runtime_restart_required` 阻止，避免记录的 hash 与已加载实现不一致。语法/import/contract 错误必须真实失败，不得加载隐藏 baseline。
 - 理由：产品要为专家自由设计模型和底层算法服务，同时必须能准确回答某次 run 实际使用了哪套代码，而不能用磁盘最新内容冒充进程已加载内容。
 - 影响：完整 source/runtime/operator identity、source snapshot artifact 与新增 operator 闭环在 M8B-1/M8B-2 实现；D-063 的唯一活动 source tree 继续有效。
+
+## D-072：Markdown、TOML metadata 与 catalog 是文档权威，DOCX 是版本化生成物
+
+- 状态：已接受
+- 决策：每份手册正文只在语言专属 Markdown 中维护，并使用 TOML front matter 保存 document ID、产品/文档版本、状态、读者、信息类型、科学状态和稳定引用。`catalog.json` 管理 12 类 logical documents、语言 source/output、依赖门和聚合顺序。DOCX、静态目录、渲染图与总册全部由固定工具链生成，不手工维护平行正文。
+- 理由：用户要求可交付的精细 DOCX，同时需要后续专家和开发者能够长期修改；原稿/生成物分离可以避免 Word 手改、总册复制和多语言文件长期漂移。
+- 影响：DOCX 中的手工修改会在下一次构建被覆盖；需要修改内容时必须回到 Markdown/catalog/assets。M8C validator 负责 metadata、catalog 和 output parity。
+
+## D-073：中文与英文独立输出，共享技术身份且不在正文中混排
+
+- 状态：已接受
+- 决策：每个 logical manual 具有 `zh-CN` 与 `en-GB` 两份 source/output，二者共享 document ID、product/document version、scientific status、related-doc set 和技术 identity。标题、解释与操作文案本地化；文件路径、RPC、schema、operator/error ID 和代码保持英文原值。
+- 理由：符合用户“界面选择一种语言完整呈现”的产品理念，也避免在同一手册段落中堆叠双语而降低可读性。
+- 影响：language parity 是构建门；D-055 的 canonical 模型单英文存储仍是独立产品迁移，文档本地化不能替代它。
+
+## D-074：手册统一采用可审计的 compact reference 样式与 headless-safe 静态目录
+
+- 状态：已接受
+- 决策：版本化 DOCX 使用 `compact_reference_guide` 的精确页面、字体、spacing、numbering 和 DXA table tokens，并统一使用 `editorial_cover` 首屏。目录和内部引用以 heading bookmark/static hyperlink 为确定性基线，不依赖用户打开 Word 后更新 field 才能可读；可以附加 Word field，但它不是正确性前提。
+- 理由：技术手册需要密度、层级和跨机器一致性；默认 Word 样式、假 bullet、百分比 table 和未更新 TOC field 会导致不可重复版面。
+- 影响：M8C builder 和 structural audit 共同执行 token map；每个交付 DOCX 仍必须 render 为 PNG 并逐页视觉复核。
+
+## D-075：最终 UI 截图受 M7 用户验收与隐私 manifest 控制
+
+- 状态：已接受
+- 决策：每张截图必须有 stable ID、产品版本、语言、主题、hash、隐私复核和状态；最终操作截图只从通过用户验收的对应 build 获取，不能暴露真实 Session、生物数据、用户名或绝对路径。M7 UAT 前可以使用架构图和明确的无敏感 mock/synthetic 画面，但不得标记为 final screenshot。
+- 理由：过早截取尚在返修的 UI 会快速过期，真实数据截图又可能泄露隐私；截图必须像代码和合同一样可追溯。
+- 影响：M8C-0 不因缺少最终截图而伪造它；M8C-1/M8E 前必须关闭 screenshot manifest 的 pending 项。
+
+## D-076：技术总册只聚合模块，release 只交付依赖门已满足的文档
+
+- 状态：已接受
+- 决策：`PAS-TECHREF-001` 按 catalog 顺序从 1–11 类 source body 自动聚合，不维护重复 Markdown 正文。`released` 产品文档只包含 dependency gate 已关闭且 inclusion policy 允许的 outputs；`draft/review` 候选只能进入明确标识的 engineering docs 区域。
+- 理由：总册复制会产生第三套权威文本；未完成 M8D/M8E 或尚待 M7 UAT 的操作说明也不能因为已经生成 DOCX 就冒充可用功能。
+- 影响：M8C-0 可以验证聚合机制但不关闭最终总册；release verifier 检查 catalog、status、hash 与实际文件一致。
