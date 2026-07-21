@@ -4,7 +4,20 @@
 
 本项目对应课题 **Development of AI-Based System for Evaluating eVTOL Pilot Training Effectiveness**。它首先是一套让专家设计评估方法的平台，不是一套已经证明科学有效的固定评分标准。
 
-## 系统设计逻辑
+## 这款软件用来做什么
+
+传统评估程序常把“读取数据、计算指标、能力评分”写成一套固定代码。只要飞行任务、Evidence 定义或能力结构改变，就要重新改程序。本系统把这些内容拆成可编辑的系统模型，让领域专家能够在同一套 Windows 软件中完成以下工作：
+
+- 导入一次仿真飞行产生的多模态 Session，并保留原始数据和时间关系；
+- 定义怎样从轨迹、操纵、VR 画面、眼动、EEG、ECG 等输入中提取 Evidence；
+- 直接编辑静态 Bayesian Network 的节点、父子关系、状态空间与 CPT；
+- 为 Hover、直线保持以及未来其他飞行任务建立互不覆盖、可随时切换的评估方案；
+- 选择每种任务真正关注的 Evidence、sub-skills 和 competencies，使评估重点随任务改变；
+- 执行评估并追溯每项结果使用的数据、EvidenceRecipe、operator、参数、BN/CPT 和源码身份。
+
+因此，本产品的核心不是“给出一套永远不变的飞行员分数”，而是提供一套可视化、可追溯、可扩展的**评估系统设计器与执行环境**。当前 Hover、18 个 Evidence、11 个 sub-skills、4 个 competencies、阈值和 CPT 只是可运行的初始模板，后续应由领域专家持续修改和扩充。
+
+## 总体架构与计算逻辑
 
 ```mermaid
 flowchart LR
@@ -34,6 +47,21 @@ Competency --probability--> Sub-skill --probability--> Evidence
 
 它表示 `P(child | parents)` 的概率分解。实际评估观察 Evidence 后，再计算 `P(Sub-skill, Competency | Evidence)`。前端可以用只读 overlay 显示 `Evidence ⇢ Sub-skill ⇢ Competency` 的后验信息影响，但不会为了显示而反转存储的 BN 箭头。
 
+## 从打开软件到得到评估结果
+
+一次完整使用流程如下：
+
+1. **启动软件**：用户运行 `PilotAssessment.Desktop.exe`；WinUI 前端自动启动随包携带的 Python sidecar，并打开该软件副本的 SQLite system model store，不需要手工启动数据库或激活 Python。
+2. **创建或打开项目**：Project 是一次研究或评估工作的容器，保存 Session、运行记录、不可变 RunSnapshot、结果和 artifacts；它不拥有全局 Evidence/BN 定义。
+3. **导入 Session**：选择 canonical Session Bundle，或模拟器直接导出的 `streams/` + `annotations/` 目录。后端只读检查来源，并复制/物化到项目受管存储。
+4. **选择任务方案**：从左侧选择 Base、Hover、Straight 等 `TaskScheme`，或复制现有方案建立新任务。画布以亮/暗显示当前任务启用和未启用的节点与边。
+5. **设计或调整评估模型**：在画布中创建、复制、连接或停用 Evidence/BN 节点；点击节点后在独立浮动窗口修改 recipe、operator 参数、parents、states 和 CPT。
+6. **保存系统模型**：修改先进入 `system/staging/model-edit/`；关闭软件时选择“保存全部并关闭”才原子写入当前 canonical system model，也可以放弃全部更改或取消关闭。
+7. **技术预检并运行**：后端检查 active closure、输入依赖、EvidenceRecipe 和 BN/CPT 的技术可执行性，然后从当前 Session 与方案自动冻结 immutable `RunSnapshot`。
+8. **查看结果与追溯**：界面显示 Evidence 的 D/A/U 或 likelihood、sub-skill/competency posterior、缺失 Evidence、inference influence、trace 和 artifacts。以后修改模型不会改变历史 RunSnapshot 和结果。
+
+Session 不要求五类输入全部存在。依赖缺失模态的 Evidence 会得到明确的 `missing_input` 等状态，不会伪造数据；仍可计算的 Evidence 继续进入 BN，未观测变量由推理引擎边缘化。因此，同一套系统既可以处理完整多模态 Session，也可以利用当前已有数据完成部分证据下的评估。
+
 ## 三类节点、两类边
 
 | 元素 | 含义 |
@@ -44,6 +72,8 @@ Competency --probability--> Sub-skill --probability--> Evidence
 | Data / extraction edge | `Raw Input -> Evidence`；只表达数据和计算依赖 |
 | Probabilistic BN edge | `BN parent -> child`；表达 child CPD/CPT 的条件依赖 |
 
+为了让专家更容易理解，主画布把这些领域对象投影为五个从左到右的视觉层级：`Raw Input Family -> Extracted Data -> Evidence -> Sub-skill -> Competency`。其中 Sub-skill 和 Competency 都是 BN node；Extracted Data 是 Evidence 内部数据来源/处理中间层的可视化，不会被误当成新的概率节点类型。
+
 Evidence 节点的独立浮动窗口必须同时让专家看到两件事：
 
 1. 它如何从原始数据提取，包括输入、窗口、算子、公式、参数、聚合和 scorer；
@@ -53,7 +83,7 @@ Evidence 节点的独立浮动窗口必须同时让专家看到两件事：
 
 高层 extraction graph 不使用 `Evidence -> Evidence` 或 `BN Node -> EvidenceRecipe` 作为数据边。复用计算通过 Evidence 内部的通用 operator/subgraph 或可追溯到 raw/task source 的 typed derived artifact 完成；Evidence 之间若存在概率关系，则必须作为带 CPD/CPT 的 probabilistic BN edge 明确建模。
 
-## 系统级完整节点库、项目与任务方案
+## 系统级完整节点库、项目与按任务扩展方案
 
 每套解压的软件副本在自身 `system/` 目录中维护唯一的系统级节点库。画布上的每个 Evidence/BN 圆形节点都是一个完整、独立、只有一个当前功能定义的 `ModelNode`：名称、fixed parents、EvidenceRecipe/parameters/scorer 或 BN states/CPT 都属于该节点。同一软件副本打开的所有项目立即共享这些节点和任务方案；项目自身只保存 Session、不可变 RunSnapshot、运行、结果和 artifacts。
 
@@ -62,6 +92,30 @@ Evidence 节点的独立浮动窗口必须同时让专家看到两件事：
 - `Precise`：starter 节点；
 - `hover.Precise`：从 starter 复制并为 Hover 修改的新节点；
 - `straight.Precise`：为直线保持建立的另一个节点。
+
+### 不同飞行任务怎样形成不同评估系统
+
+每个 Evidence/BN 节点都是全局模型库中的独立完整定义；每个任务方案选择其中一部分节点组成该任务实际使用的静态网络。这里的“静态”是指：节点的 parents、states、CPT 和 EvidenceRecipe 在一次运行开始前已经确定，运行期间只进行 Evidence 计算和 Bayesian inference，不会临时学习或改写网络结构。
+
+以 Hover 和直线保持为例：
+
+| 设计内容 | Hover 方案 | Straight 方案 |
+|---|---|---|
+| Evidence 提取 | 可采用悬停位置偏差、持续稳定时间、扰动恢复和 AOI 关注 | 可采用横向/高度偏差、航向稳定、直线保持和相关监控 Evidence |
+| 同类但不同算法 | 启用 `hover.Precise`，使用 Hover reference、窗口和阈值 | 启用 `straight.Precise`，使用直线 reference、窗口和阈值 |
+| BN 结构 | 激活与悬停控制、监控和沉着相关的节点与固定关系 | 激活直线保持任务关注的节点；可共享通用节点，也可使用复制后的任务专用节点 |
+| 评估侧重 | 由 active Evidence、sub-skills、competencies 和 outputs 决定 | 由另一套 active selection 决定，不覆盖 Hover 方案 |
+
+专家建立新任务时可以按以下方式工作：
+
+1. 复制最接近的 `TaskScheme`，在左侧得到一个新的并列方案；
+2. 复用所有定义完全相同的通用节点；
+3. 对需要改变提取逻辑、parents、states 或 CPT 的节点执行 copy/paste，重命名为新的任务专用节点；
+4. 修改新 Evidence 的输入、窗口、operator/参数和 scorer，或修改新 BN 节点的 fixed parents、states 与 CPT；
+5. 在新任务中启用定制节点并停用旧节点，系统自动补齐 parent closure；
+6. 保存后，该任务拥有自己确定的 active static BN，原任务方案及其节点不会被覆盖。
+
+如果一个节点同时适用于多个任务，可以直接由多个 `TaskScheme` 共享。只有当其父节点、EvidenceRecipe、状态或 CPT 需要变化时，才应复制成另一个独立节点。这样既避免重复，又不会为了切换任务反复改回同一个节点。
 
 每个 `TaskScheme` 只是全局节点上的激活配置：
 
@@ -77,6 +131,8 @@ Evidence 节点的独立浮动窗口必须同时让专家看到两件事：
 
 ## 专家最终可以修改什么
 
+### 日常模型扩展：只使用前端
+
 在完整 Windows 产品中，专家应能直接在可视化工作区中：
 
 - 新增、复制、停用、恢复或移除 Evidence；
@@ -88,9 +144,30 @@ Evidence 节点的独立浮动窗口必须同时让专家看到两件事：
 - 同时打开多个可移动、缩放、最大化的节点浮动窗口进行比较；
 - 修改一个共享节点，或先复制为任务专用新节点再修改；
 - preview 当前节点/方案，并从历史 RunSnapshot 重放结果；
-- 在中文与英文之间即时切换界面和模型名称。
+- 在中文与英文之间即时切换界面；模型中的 canonical 名称和内容统一保持英文。
 
-普通修改继续由专家在前端完成并提交给 Python backend 保存，不需要发布 Python plugin、人工审批或逐次运行开发测试。只有现有 operator/core 无法达到新的计算目标时，具备 Python 能力的专家才直接修改发布目录中完整暴露的 backend 源码。每个解压系统只有一棵活动 Python source tree；关闭并重启软件后，修改对该系统副本打开的全部项目和未来运行生效。系统不需要内置源码编辑器，正式文档会逐模块说明如何修改、新增 operator、注册、增加依赖、恢复和验证。
+这些操作直接修改 `system/` 中的全局模型库，而不是临时覆盖某个 Project。Python 后端提供通用 EvidenceRecipe 执行器和 BN inference engine，因此新增节点、修改父子关系或 CPT 不要求为每个节点手写新的后端类；保存后的图、参数和 CPT 就是后端下一次运行读取的正式模型。
+
+### 新计算机制：修改随包公开的 Python 源码
+
+普通参数、公式组合、窗口、节点、边、states、CPT 和任务激活都应由专家在前端完成，不需要发布 Python plugin、人工审批或逐次运行开发测试。只有现有 operators 无法表达新的 Evidence 提取目标时，才需要扩展底层计算机制，例如加入一种新的图像特征、信号处理或事件识别算法。
+
+发布包完整暴露唯一活动的 `backend/src/pilot_assessment/` 源码树，并提供普通 Python 扩展入口。具备 Python 能力的专家可以：
+
+1. 在 Evidence operator 扩展目录中实现新的 typed operator；
+2. 声明输入/输出端口和可由前端自动生成表单的 parameter JSON Schema；
+3. 在扩展注册入口登记 operator，必要时使用随包工具增加私有 Python 依赖；
+4. 关闭并重启软件，使 sidecar 加载新源码和新 operator；
+5. 回到前端，把新 operator 组合进一个或多个 EvidenceRecipe，再由不同 TaskScheme 选择相应 Evidence 节点。
+
+每个解压系统只有这一棵活动 Python source tree；源码修改对该软件副本打开的全部项目和未来运行生效，历史 RunSnapshot 仍保存原 source identity。系统不要求内置源码编辑器，交付文档会逐模块说明源码位置、operator 注册、依赖管理、重启边界、恢复和轻量验证方法。
+
+对应的详细操作手册：
+
+- [Evidence 与任务方案专家手册](docs/product/manuals/zh-CN/04-evidence-task-scheme-expert-guide.md)
+- [BN、父节点、状态与 CPT 专家手册](docs/product/manuals/zh-CN/05-bayesian-network-cpt-expert-guide.md)
+- [Python operator 源码扩展手册](docs/product/manuals/zh-CN/07-python-operator-source-extension.md)
+- [Python Core 维护参考](docs/product/manuals/zh-CN/08-python-core-maintenance-reference.md)
 
 ## 数据接口
 
@@ -166,10 +243,15 @@ M7–M8E 的详细 fresh test、build、package 与外部验证数字保存在 [
 ## 目录
 
 ```text
-src/pilot_assessment/     # Python Core
-tests/                    # 轻量平台不变量、合同与工作流测试
-schemas/                  # 确定性生成的跨语言 JSON Schema
-docs/product/             # 当前产品基线、里程碑规格、计划与复核记录
+src/pilot_assessment/              # Python Assessment Core、Evidence operators 与 BN engine
+src/PilotAssessment.Desktop/       # WinUI 3 / C# Windows 前端
+tests/                             # 轻量平台不变量、合同与工作流测试
+schemas/                           # 确定性生成的跨语言 JSON Schema
+developer/examples/                # Python operator 扩展示例
+developer/tools/                   # 发布副本依赖与维护工具
+tools/release/                     # portable candidate 构建和隔离验证
+tools/documentation/               # Markdown -> DOCX 文档工具链
+docs/product/                      # 产品基线、手册、规格、计划、决策与验证记录
 ```
 
 `docs/product/specs/` 保存状态受控设计，`docs/product/plans/` 保存已批准规格的实施步骤；计划不能覆盖正式规格或 `DECISIONS.md`。
