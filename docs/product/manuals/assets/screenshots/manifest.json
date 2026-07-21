@@ -4,7 +4,7 @@
   "release_channel": "release-candidate",
   "release_label": "v0.1.0-rc.1",
   "user_acceptance": "pending",
-  "ui_source_tree_sha256": null,
+  "ui_source_tree_sha256": "2b719c4b12b884a52a178b50929c36b0ddef1ac12c2c700081b062819fad5ec2",
   "screenshots": [
     {
       "screenshot_id": "ui-project-launcher",
@@ -13,13 +13,17 @@
       "path": "assets/screenshots/zh-CN/ui-project-launcher.png",
       "caption": "项目启动器：创建、打开与切换用户项目",
       "alt_text": "中文界面的项目启动器，显示创建项目和打开项目入口。",
-      "status": "pending",
-      "sha256": null,
-      "width": null,
-      "height": null,
-      "captured_at": null,
-      "ui_source_tree_sha256": null,
-      "privacy_review": {"status": "pending", "reviewer": null, "reviewed_at": null}
+      "status": "release-candidate",
+      "sha256": "6290d2c4f05d75f937ca77a69156702726b0c8596d6a9c900dc72c43aefcc790",
+      "width": 1426,
+      "height": 746,
+      "captured_at": "2026-07-21T18:39:31.900745Z",
+      "ui_source_tree_sha256": "2b719c4b12b884a52a178b50929c36b0ddef1ac12c2c700081b062819fad5ec2",
+      "privacy_review": {
+        "status": "passed",
+        "reviewer": "Codex M8E release review",
+        "reviewed_at": "2026-07-21T18:39:31.900745Z"
+      }
     },
     {
       "screenshot_id": "ui-project-launcher",
@@ -28,13 +32,17 @@
       "path": "assets/screenshots/en-GB/ui-project-launcher.png",
       "caption": "Project launcher: create, open and switch user projects",
       "alt_text": "English project launcher with Create Project and Open Project actions.",
-      "status": "pending",
-      "sha256": null,
-      "width": null,
-      "height": null,
-      "captured_at": null,
-      "ui_source_tree_sha256": null,
-      "privacy_review": {"status": "pending", "reviewer": null, "reviewed_at": null}
+      "status": "release-candidate",
+      "sha256": "7dd5015d4332f667fcfc5e014115544748be993953944a2243cd8330011e945b",
+      "width": 1426,
+      "height": 746,
+      "captured_at": "2026-07-21T18:39:31.900745Z",
+      "ui_source_tree_sha256": "2b719c4b12b884a52a178b50929c36b0ddef1ac12c2c700081b062819fad5ec2",
+      "privacy_review": {
+        "status": "passed",
+        "reviewer": "Codex M8E release review",
+        "reviewed_at": "2026-07-21T18:39:31.900745Z"
+      }
     },
     {
       "screenshot_id": "ui-five-layer-model-studio",
@@ -43,13 +51,17 @@
       "path": "assets/screenshots/zh-CN/ui-five-layer-model-studio.png",
       "caption": "五层模型画布与任务方案切换",
       "alt_text": "中文模型工作室，从左到右显示原始输入、提取数据、Evidence、子技能和聚合能力。",
-      "status": "pending",
-      "sha256": null,
-      "width": null,
-      "height": null,
-      "captured_at": null,
-      "ui_source_tree_sha256": null,
-      "privacy_review": {"status": "pending", "reviewer": null, "reviewed_at": null}
+      "status": "release-candidate",
+      "sha256": "75e982ba1b8b4670dbe801b818a53072e14235f0bd2349ccdb59e5d06fcf89e7",
+      "width": 1426,
+      "height": 746,
+      "captured_at": "2026-07-21T18:39:31.900745Z",
+      "ui_source_tree_sha256": "2b719c4b12b884a52a178b50929c36b0ddef1ac12c2c700081b062819fad5ec2",
+      "privacy_review": {
+        "status": "passed",
+        "reviewer": "Codex M8E release review",
+        "reviewed_at": "2026-07-21T18:39:31.900745Z"
+      }
     },
     {
       "screenshot_id": "ui-five-layer-model-studio",
@@ -58,13 +70,17 @@
       "path": "assets/screenshots/en-GB/ui-five-layer-model-studio.png",
       "caption": "Five-layer model canvas and task-scheme switching",
       "alt_text": "English Model Studio showing Raw Input, Extracted Data, Evidence, Sub-skill and Competency from left to right.",
-      "status": "pending",
-      "sha256": null,
-      "width": null,
-      "height": null,
-      "captured_at": null,
-      "ui_source_tree_sha256": null,
-      "privacy_review": {"status": "pending", "reviewer": null, "reviewed_at": null}
+      "status": "release-candidate",
+      "sha256": "7a193d9209bb6dc5ab8455bad2bef15e898fd479a62d859563d1785a1e3b8c60",
+      "width": 1426,
+      "height": 746,
+      "captured_at": "2026-07-21T18:39:31.900745Z",
+      "ui_source_tree_sha256": "2b719c4b12b884a52a178b50929c36b0ddef1ac12c2c700081b062819fad5ec2",
+      "privacy_review": {
+        "status": "passed",
+        "reviewer": "Codex M8E release review",
+        "reviewed_at": "2026-07-21T18:39:31.900745Z"
+      }
     },
     {
       "screenshot_id": "ui-evidence-node-editor",
@@ -73,13 +89,17 @@
       "path": "assets/screenshots/zh-CN/ui-evidence-node-editor.png",
       "caption": "Evidence 节点浮动编辑窗口",
       "alt_text": "中文 Evidence 编辑器，显示英文 canonical 名称、Recipe、operator 参数和观察映射。",
-      "status": "pending",
-      "sha256": null,
-      "width": null,
-      "height": null,
-      "captured_at": null,
-      "ui_source_tree_sha256": null,
-      "privacy_review": {"status": "pending", "reviewer": null, "reviewed_at": null}
+      "status": "release-candidate",
+      "sha256": "254fd601a1f3e082d6f49a1467237cf3a3b76e2c95f5c9770755ed7053487b44",
+      "width": 1920,
+      "height": 1032,
+      "captured_at": "2026-07-21T18:39:31.900745Z",
+      "ui_source_tree_sha256": "2b719c4b12b884a52a178b50929c36b0ddef1ac12c2c700081b062819fad5ec2",
+      "privacy_review": {
+        "status": "passed",
+        "reviewer": "Codex M8E release review",
+        "reviewed_at": "2026-07-21T18:39:31.900745Z"
+      }
     },
     {
       "screenshot_id": "ui-evidence-node-editor",
@@ -88,13 +108,17 @@
       "path": "assets/screenshots/en-GB/ui-evidence-node-editor.png",
       "caption": "Evidence-node floating editor",
       "alt_text": "English Evidence editor showing canonical name, recipe, operator parameters and observation mapping.",
-      "status": "pending",
-      "sha256": null,
-      "width": null,
-      "height": null,
-      "captured_at": null,
-      "ui_source_tree_sha256": null,
-      "privacy_review": {"status": "pending", "reviewer": null, "reviewed_at": null}
+      "status": "release-candidate",
+      "sha256": "58dea26483b5fc4c133a98f9dd5c5245f25821bda59c1ecf584a57caa9a77b3d",
+      "width": 1920,
+      "height": 1032,
+      "captured_at": "2026-07-21T18:39:31.900745Z",
+      "ui_source_tree_sha256": "2b719c4b12b884a52a178b50929c36b0ddef1ac12c2c700081b062819fad5ec2",
+      "privacy_review": {
+        "status": "passed",
+        "reviewer": "Codex M8E release review",
+        "reviewed_at": "2026-07-21T18:39:31.900745Z"
+      }
     },
     {
       "screenshot_id": "ui-bn-cpt-editor",
@@ -103,13 +127,17 @@
       "path": "assets/screenshots/zh-CN/ui-bn-cpt-editor.png",
       "caption": "BN 父节点、状态与 CPT 编辑窗口",
       "alt_text": "中文 BN 编辑器，显示固定父节点、状态顺序和条件概率表。",
-      "status": "pending",
-      "sha256": null,
-      "width": null,
-      "height": null,
-      "captured_at": null,
-      "ui_source_tree_sha256": null,
-      "privacy_review": {"status": "pending", "reviewer": null, "reviewed_at": null}
+      "status": "release-candidate",
+      "sha256": "7b1ae78e0c4d9b86ca97701bd159a75d4c7bbd71cb40a750f0e5a990dc60a594",
+      "width": 1920,
+      "height": 1032,
+      "captured_at": "2026-07-21T18:39:31.900745Z",
+      "ui_source_tree_sha256": "2b719c4b12b884a52a178b50929c36b0ddef1ac12c2c700081b062819fad5ec2",
+      "privacy_review": {
+        "status": "passed",
+        "reviewer": "Codex M8E release review",
+        "reviewed_at": "2026-07-21T18:39:31.900745Z"
+      }
     },
     {
       "screenshot_id": "ui-bn-cpt-editor",
@@ -118,13 +146,17 @@
       "path": "assets/screenshots/en-GB/ui-bn-cpt-editor.png",
       "caption": "BN parent, state and CPT editor",
       "alt_text": "English BN editor showing fixed parents, ordered states and the conditional probability table.",
-      "status": "pending",
-      "sha256": null,
-      "width": null,
-      "height": null,
-      "captured_at": null,
-      "ui_source_tree_sha256": null,
-      "privacy_review": {"status": "pending", "reviewer": null, "reviewed_at": null}
+      "status": "release-candidate",
+      "sha256": "47a2574e9ba1ecea3532d50497d802d9ef258b9f338db3f5849fe86d103a0dd0",
+      "width": 1920,
+      "height": 1032,
+      "captured_at": "2026-07-21T18:39:31.900745Z",
+      "ui_source_tree_sha256": "2b719c4b12b884a52a178b50929c36b0ddef1ac12c2c700081b062819fad5ec2",
+      "privacy_review": {
+        "status": "passed",
+        "reviewer": "Codex M8E release review",
+        "reviewed_at": "2026-07-21T18:39:31.900745Z"
+      }
     },
     {
       "screenshot_id": "ui-run-results-diagnostics",
@@ -133,13 +165,17 @@
       "path": "assets/screenshots/zh-CN/ui-run-results-diagnostics.png",
       "caption": "运行、结果与 Diagnostics 工作区",
       "alt_text": "中文结果界面，显示 Evidence、能力结果、缺失输入状态和来源诊断。",
-      "status": "pending",
-      "sha256": null,
-      "width": null,
-      "height": null,
-      "captured_at": null,
-      "ui_source_tree_sha256": null,
-      "privacy_review": {"status": "pending", "reviewer": null, "reviewed_at": null}
+      "status": "release-candidate",
+      "sha256": "e7e5938d2e497454c2918c38e6c0beb74a55f496f68a62c1958d99994836ca70",
+      "width": 1426,
+      "height": 746,
+      "captured_at": "2026-07-21T18:39:31.900745Z",
+      "ui_source_tree_sha256": "2b719c4b12b884a52a178b50929c36b0ddef1ac12c2c700081b062819fad5ec2",
+      "privacy_review": {
+        "status": "passed",
+        "reviewer": "Codex M8E release review",
+        "reviewed_at": "2026-07-21T18:39:31.900745Z"
+      }
     },
     {
       "screenshot_id": "ui-run-results-diagnostics",
@@ -148,13 +184,17 @@
       "path": "assets/screenshots/en-GB/ui-run-results-diagnostics.png",
       "caption": "Runs, Results and Diagnostics workspace",
       "alt_text": "English results workspace showing Evidence, competency results, missing-input status and provenance diagnostics.",
-      "status": "pending",
-      "sha256": null,
-      "width": null,
-      "height": null,
-      "captured_at": null,
-      "ui_source_tree_sha256": null,
-      "privacy_review": {"status": "pending", "reviewer": null, "reviewed_at": null}
+      "status": "release-candidate",
+      "sha256": "172c720aa2eba78db316aba73c865549b77c7c9139fff1246f54935ae28a212b",
+      "width": 1426,
+      "height": 746,
+      "captured_at": "2026-07-21T18:39:31.900745Z",
+      "ui_source_tree_sha256": "2b719c4b12b884a52a178b50929c36b0ddef1ac12c2c700081b062819fad5ec2",
+      "privacy_review": {
+        "status": "passed",
+        "reviewer": "Codex M8E release review",
+        "reviewed_at": "2026-07-21T18:39:31.900745Z"
+      }
     }
   ]
 }

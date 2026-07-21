@@ -76,6 +76,24 @@ def test_master_manual_is_generated_from_all_eleven_released_module_sources() ->
     assert all(len(item["sha256"]) == 64 for item in modules)
 
 
+def test_c4_diagram_inputs_avoid_randomised_shapes_and_use_stable_ids() -> None:
+    config = read_json(DOCUMENTATION_TOOLS / "mermaid-config.json")
+
+    assert config["deterministicIds"] is True
+    assert config["deterministicIDSeed"] == "pilot-assessment-docs-v1"
+    for filename in ("c4-system-context.mmd", "c4-container.mmd"):
+        source = (
+            REPOSITORY_ROOT
+            / "docs"
+            / "product"
+            / "manuals"
+            / "assets"
+            / "diagrams"
+            / filename
+        ).read_text(encoding="utf-8")
+        assert '(["' not in source
+
+
 def test_registers_ten_existing_candidate_screenshots_without_capturing(
     tmp_path: Path,
 ) -> None:
@@ -87,6 +105,11 @@ def test_registers_ten_existing_candidate_screenshots_without_capturing(
         / "assets"
         / "screenshots"
         / "manifest.json"
+    )
+    assert all(
+        "\ufffd" not in str(item[field])
+        for item in source_manifest["screenshots"]
+        for field in ("caption", "alt_text")
     )
     manual_root = tmp_path / "manuals"
     manifest_path = manual_root / "assets" / "screenshots" / "manifest.json"

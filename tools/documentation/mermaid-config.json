@@ -2,6 +2,8 @@
   "theme": "base",
   "look": "classic",
   "securityLevel": "strict",
+  "deterministicIds": true,
+  "deterministicIDSeed": "pilot-assessment-docs-v1",
   "fontFamily": "Arial, Segoe UI, sans-serif",
   "themeVariables": {
     "primaryColor": "#E8EEF5",

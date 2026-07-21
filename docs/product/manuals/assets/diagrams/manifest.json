@@ -19,13 +19,13 @@
         "en-GB": "Evaluators, domain experts and maintainers interact with the offline Pilot Assessment System; simulator data enters the product and immutable run evidence is stored in managed projects."
       },
       "renderer_version": "11.16.0",
-      "source_sha256": "bc13bf2c7f057aae386a659d67551c97d8ea451305efee769500c6ba30ad6499",
+      "source_sha256": "36eacd4be7a632946c1c5a024c533dcdfab3e04e65f3507d52cac4e1be5f94b2",
       "svg": "c4-system-context.svg",
-      "svg_sha256": "73b64a25848fe4320507fadee9dcbd547b3ce4361ec00c073911dfd36947361d",
+      "svg_sha256": "f2b2730aaa2bfbfec8d769367658f1446190c4a8d3aed583d708a59d47c352c4",
       "png": "c4-system-context.png",
-      "png_sha256": "25be25dfadeacc3b64360bc04d3e3b860b0dd3dabed55d31011e2519e854cf19",
+      "png_sha256": "d00e8e8963d78e23465ff5daaddb3e4af44f8b3540c4b535a3d7880eac006149",
       "png_width": 1225,
-      "png_height": 528
+      "png_height": 570
     },
     {
       "asset_id": "c4-container",
@@ -46,11 +46,11 @@
         "en-GB": "WinUI calls the local Python sidecar over JSON-RPC; the sidecar uses exposed source and a private runtime, the model library belongs to the software copy, and sessions and run results belong to user projects."
       },
       "renderer_version": "11.16.0",
-      "source_sha256": "75b71aa49701760e2de8c76bb8da1a307990175c5873fafce2a7589612dbbe06",
+      "source_sha256": "e559e1ab8a5e2831dfd3b667da62df69a385d12e35923e0ce1b4dc3b2e469f87",
       "svg": "c4-container.svg",
-      "svg_sha256": "6dbcc41e5c814fd4e3d9a5bfbef588cbd262ffcfef4556b54f913339e47e6980",
+      "svg_sha256": "1b7c03dbdcfb9e27f54f34c9eced27a97f6a63ff3b77729f71ec015ce5e756a6",
       "png": "c4-container.png",
-      "png_sha256": "146c3dca0e70b39d23009d84668da23d04d130497d9ad036b326911e8ba42591",
+      "png_sha256": "afb3f92ee09154c8b637df46093818f1bcefb605068a747f8f94b3327343e63e",
       "png_width": 891,
       "png_height": 1159
     }

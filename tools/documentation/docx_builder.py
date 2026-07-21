@@ -777,6 +777,7 @@ class ManualDocxBuilder:
         index = 0
         list_stack: list[ListState] = []
         blockquote_depth = 0
+        aggregate_page_break_pending = False
         while index < len(tokens):
             token = tokens[index]
             token_type = token.type
@@ -789,6 +790,12 @@ class ManualDocxBuilder:
                 heading = headings[self._heading_cursor]
                 self._heading_cursor += 1
                 paragraph = self.document.add_paragraph(style=f"Heading {heading.level}")
+                if aggregate_page_break_pending:
+                    # A page-break-before property starts the next aggregate module on a
+                    # fresh page without creating an empty page when the previous module
+                    # already ended exactly at a page boundary.
+                    paragraph.paragraph_format.page_break_before = True
+                    aggregate_page_break_pending = False
                 self._render_inline(paragraph, inline)
                 _add_bookmark(paragraph, heading.bookmark, self._bookmark_id)
                 self._bookmark_id += 1
@@ -829,7 +836,7 @@ class ManualDocxBuilder:
             elif token_type == "paragraph_open":
                 inline = tokens[index + 1]
                 if inline.content.strip() == AGGREGATE_PAGE_BREAK:
-                    self.document.add_page_break()
+                    aggregate_page_break_pending = True
                     index += 3
                     continue
                 asset_match = ASSET_ONLY.fullmatch(inline.content.strip())
