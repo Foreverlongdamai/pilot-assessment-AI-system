@@ -617,7 +617,7 @@ git commit -m "feat: show model compatibility diagnostics"
 - Modify: `tests/integration/test_m6_managed_assessment.py`
 - Modify: `docs/product/release/README-PORTABLE.md`
 
-- [ ] **Step 1: Strengthen the existing micro portability test**
+- [x] **Step 1: Strengthen the existing micro portability test**
 
 Replace the same-volume directory rename with:
 
@@ -631,7 +631,7 @@ reopened = ProjectApplication.open(copied_root, system=system, clock=lambda: NOW
 
 Retain the existing assertions for project ID, managed Session revision, exact scheme replay, result equality, result-by-run equality and verified observation artifact bytes. This is a filesystem copy, not a product backup API.
 
-- [ ] **Step 2: Run the micro project test**
+- [x] **Step 2: Run the micro project test**
 
 Run:
 
@@ -641,7 +641,7 @@ Run:
 
 Expected: one micro test passes without generating large modalities or image sets.
 
-- [ ] **Step 3: Update portable user instructions**
+- [x] **Step 3: Update portable user instructions**
 
 Replace “clean starter model” language with “captured current system.” State explicitly:
 
@@ -651,7 +651,7 @@ Replace “clean starter model” language with “captured current system.” S
 4. opening a copied project uses the destination software's current system for future runs while historical RunSnapshots remain unchanged;
 5. no dedicated Backup/Restore feature exists.
 
-- [ ] **Step 4: Commit Task 5**
+- [x] **Step 4: Commit Task 5**
 
 ```powershell
 git add tests/integration/test_m6_managed_assessment.py docs/product/release/README-PORTABLE.md

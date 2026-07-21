@@ -8,7 +8,7 @@ not the final M8E release candidate and not a scientifically calibrated pilot-ra
 1. Extract the complete ZIP to a normal user-writable folder.
 2. Double-click `PilotAssessment.Desktop.exe`.
 3. The app starts its private Python backend automatically. Do not start Python or SQLite manually.
-4. Model Studio is immediately available from the software-owned starter model library; no
+4. Model Studio is immediately available from the software-owned current system model; no
    project is required to inspect or edit Evidence, BN, CPT or task schemes.
 5. Create a project by entering a readable name and selecting an empty folder, or open an existing
    project. The backend generates its technical project ID.
@@ -20,7 +20,7 @@ runtime and backend source.
 ## What is and is not in this package
 
 The package contains the desktop app, private runtimes, editable first-party Python source,
-starter resources, one clean `system\` model library, desktop source, release tools, a copyable
+starter resources, the captured current `system\` model library, desktop source, release tools, a copyable
 operator example, bundled private dependency helper/uv, manifests and generated M8C engineering
 manuals. It contains no user project, Session, simulator sample, biometric data, result or artifact.
 
@@ -34,6 +34,24 @@ links are stored under `%LOCALAPPDATA%\PilotAssessmentSystem` on each Windows ac
 entire extracted software copy. Every project opened by this copy sees the same model edits.
 Projects own only their Sessions, immutable RunSnapshots, runs, results and artifacts. Copying the
 whole software directory creates an independent model/source copy; copying only a project does not.
+
+## Copying the software or a project
+
+Close the app before copying either the software directory or a project directory. Do not copy an
+open SQLite database piecemeal.
+
+- Copy the complete extracted software directory to transfer the current `system\` model library,
+  editable `backend\src\` Python source, private runtime, desktop app and manifests as one
+  independent software copy.
+- Copy the complete project root to transfer that project's managed Sessions, immutable
+  RunSnapshots, runs, results and artifacts. Open the copied root from the destination software.
+- Future runs in a copied project use the destination software copy's current system model and
+  Python source. Historical RunSnapshots and their stored source identities remain unchanged.
+- Recent-project shortcuts are per Windows account; after copying a project, select its new folder
+  once in the app.
+
+This product has no dedicated Backup/Restore command or proprietary project-backup archive. A
+normal whole-directory filesystem copy is the supported portability operation.
 
 ## Editing
 
@@ -51,7 +69,7 @@ the same generic EvidenceRecipe editor as packaged operators and does not requir
 ## Integrity and scientific status
 
 `manifest\checksums.sha256` records the original delivered files, while
-`manifest\system-model-baseline.json` identifies the clean starter model and
+`manifest\system-model-baseline.json` identifies the current system captured for that build and
 `manifest\source-baseline.json` identifies the delivered first-party Python tree. Diagnostics
 shows the exact loaded source, private Python, dependency and operator-catalog identities. A local
 source difference is recorded but does not block use. If files change while the app is already
@@ -61,8 +79,9 @@ in-memory code with new disk bytes.
 Every new run stores its exact backend identity and a deterministic source snapshot in that
 project's content-addressed artifacts. The snapshot is for explanation and maintenance; the app
 never auto-executes source from a historical artifact. Normal model edits and local Python edits
-naturally change their respective baselines. Preserve a clean copy or re-extract the ZIP for
-recovery; user projects are not part of that reset.
+naturally make the running copy differ from its delivered manifest. To transfer those edits, close
+the app and copy the complete software directory. User projects remain separate and are never part
+of a software re-extraction.
 
 The included starter Evidence rules, thresholds, topology and CPTs are engineering defaults that
 require domain-expert calibration. `formal_run_authorized=false`; software execution is not proof

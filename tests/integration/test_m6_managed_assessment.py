@@ -14,13 +14,13 @@ from tests.runtime.system_support import open_test_system
 NOW = datetime(2026, 7, 16, 22, 0, tzinfo=UTC)
 
 
-def test_managed_project_survives_source_deletion_and_directory_move(
+def test_managed_project_survives_source_deletion_and_directory_copy(
     tmp_path: Path,
     m4_workflow_bundle: Path,
 ) -> None:
     external_bundle = tmp_path / "external-session"
     project_root = tmp_path / "assessment-project"
-    moved_root = tmp_path / "moved-assessment-project"
+    copied_root = tmp_path / "copied-assessment-project"
     shutil.copytree(m4_workflow_bundle, external_bundle)
 
     system = open_test_system(tmp_path / "system", clock=lambda: NOW)
@@ -36,7 +36,7 @@ def test_managed_project_survives_source_deletion_and_directory_move(
     imported_revision_id = ""
     result_id = ""
     run_id = "run.m6-managed"
-    result_before_move = None
+    result_before_copy = None
     try:
         imported = application.sessions.import_bundle(
             external_bundle,
@@ -124,20 +124,20 @@ def test_managed_project_survives_source_deletion_and_directory_move(
         application.coordinator.enqueue(run_id)
         completed = application.coordinator.wait(run_id, timeout=30)
         assert completed.state is RunState.COMPLETED
-        result_before_move = application.results.get_by_run(run_id)
-        result_id = result_before_move.result_id
+        result_before_copy = application.results.get_by_run(run_id)
+        result_id = result_before_copy.result_id
         with application.artifacts.open_verified(
-            result_before_move.observation_set_ref.artifact_id
+            result_before_copy.observation_set_ref.artifact_id
         ) as stream:
             assert stream.read()
     finally:
         application.close()
 
-    assert project_root.resolve().parent == moved_root.resolve().parent
-    project_root.rename(moved_root)
-    assert not project_root.exists()
+    shutil.copytree(project_root, copied_root)
+    assert project_root.is_dir()
+    assert copied_root.is_dir()
 
-    reopened = ProjectApplication.open(moved_root, system=system, clock=lambda: NOW)
+    reopened = ProjectApplication.open(copied_root, system=system, clock=lambda: NOW)
     try:
         assert reopened.project.descriptor.project_id == "project.m6-vertical-slice"
         assert reopened.sessions.verify_managed_revision(imported_revision_id).managed_bundle_path
@@ -148,11 +148,11 @@ def test_managed_project_survives_source_deletion_and_directory_move(
             == reference.content_hash
             for reference in replay.component_refs
         )
-        result_after_move = reopened.results.get(result_id)
-        assert result_after_move == result_before_move
-        assert reopened.results.get_by_run(run_id) == result_after_move
+        result_after_copy = reopened.results.get(result_id)
+        assert result_after_copy == result_before_copy
+        assert reopened.results.get_by_run(run_id) == result_after_copy
         with reopened.artifacts.open_verified(
-            result_after_move.observation_set_ref.artifact_id
+            result_after_copy.observation_set_ref.artifact_id
         ) as stream:
             assert stream.read()
         rebased_draft = reopened.drafts.get("draft.m6-portable").draft
