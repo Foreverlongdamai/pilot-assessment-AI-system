@@ -81,6 +81,55 @@ public sealed class AccessibilitySurfaceTests
         Assert.Contains("GraphProbabilisticEdgeBrush", brushKeys);
     }
 
+    [Fact]
+    public void GraphExposesGlobalNodeDeleteAndUsesStableHandledPointerTracking()
+    {
+        var root = FindRepositoryRoot(AppContext.BaseDirectory);
+        var nodeXaml = Load(
+            root,
+            "src/PilotAssessment.Desktop/Controls/Graph/GraphNodeButton.xaml");
+        Assert.Contains(
+            nodeXaml.Descendants(Presentation + "MenuFlyoutItem"),
+            element => Attribute(element, "Text") ==
+                "{Binding [Graph_DeleteNode], Source={StaticResource Localization}}");
+
+        var nodeCode = File.ReadAllText(Path.Combine(
+            root,
+            "src",
+            "PilotAssessment.Desktop",
+            "Controls",
+            "Graph",
+            "GraphNodeButton.xaml.cs"));
+        Assert.Contains("args.GetCurrentPoint(this)", nodeCode, StringComparison.Ordinal);
+        Assert.Contains(
+            "AddHandler(PointerMovedEvent",
+            nodeCode,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain(
+            "DragHoldDuration",
+            nodeCode,
+            StringComparison.Ordinal);
+
+        var page = Load(
+            root,
+            "src/PilotAssessment.Desktop/Views/Pages/ModelStudioPage.xaml");
+        Assert.Contains(
+            page.Descendants(Presentation + "AppBarButton"),
+            element => Attribute(element, "Label") ==
+                "{Binding [Model_DeleteNode], Source={StaticResource Localization}}");
+        var pageCode = File.ReadAllText(Path.Combine(
+            root,
+            "src",
+            "PilotAssessment.Desktop",
+            "Views",
+            "Pages",
+            "ModelStudioPage.xaml.cs"));
+        Assert.Contains(
+            "case GraphNodeCommand.DeleteGlobal:",
+            pageCode,
+            StringComparison.Ordinal);
+    }
+
     private static string? Attribute(XElement element, string localName) =>
         element.Attributes().FirstOrDefault(attribute => attribute.Name.LocalName == localName)?.Value;
 

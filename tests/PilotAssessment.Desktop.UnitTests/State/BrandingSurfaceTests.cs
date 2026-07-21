@@ -1,5 +1,7 @@
 using System.Xml.Linq;
 
+using PilotAssessment.Desktop.Core.State;
+
 namespace PilotAssessment.Desktop.UnitTests.State;
 
 public sealed class BrandingSurfaceTests
@@ -22,6 +24,48 @@ public sealed class BrandingSurfaceTests
 
         Assert.Equal(@"Assets\AppIcon.ico", applicationIcon);
         Assert.True(File.Exists(Path.Combine(Path.GetDirectoryName(projectPath)!, applicationIcon!)));
+    }
+
+    [Fact]
+    public void DesktopPublishesIconAndResolvesItFromTheExecutableDirectory()
+    {
+        var root = FindRepositoryRoot(AppContext.BaseDirectory);
+        var projectPath = Path.Combine(
+            root,
+            "src",
+            "PilotAssessment.Desktop",
+            "PilotAssessment.Desktop.csproj");
+        var project = XDocument.Load(projectPath);
+        var icon = Assert.Single(
+            project.Descendants("Content"),
+            element => element.Attribute("Include")?.Value == @"Assets\AppIcon.ico");
+
+        Assert.Equal("PreserveNewest", icon.Element("CopyToOutputDirectory")?.Value);
+        Assert.Equal("PreserveNewest", icon.Element("CopyToPublishDirectory")?.Value);
+
+        var baseDirectory = Path.Combine(Path.GetTempPath(), "pilot-assessment", "app");
+        Assert.Equal(
+            Path.GetFullPath(Path.Combine(baseDirectory, "Assets", "AppIcon.ico")),
+            DesktopAssetLocator.AppIconPath(baseDirectory));
+    }
+
+    [Fact]
+    public void RuntimeLanguageSwitchUsesExplicitResourcesWithoutChangingPlatformOverride()
+    {
+        var root = FindRepositoryRoot(AppContext.BaseDirectory);
+        var service = File.ReadAllText(Path.Combine(
+            root,
+            "src",
+            "PilotAssessment.Desktop",
+            "Services",
+            "Localization",
+            "LocalizationService.cs"));
+
+        Assert.Contains("CreateContext(normalized)", service, StringComparison.Ordinal);
+        Assert.DoesNotContain(
+            "ApplicationLanguages.PrimaryLanguageOverride",
+            service,
+            StringComparison.Ordinal);
     }
 
     private static string FindRepositoryRoot(string startDirectory)

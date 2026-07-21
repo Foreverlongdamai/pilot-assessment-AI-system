@@ -72,6 +72,14 @@ public sealed partial class ModelStudioPage : Page
         }
     }
 
+    private async void OnDeleteSelectionClick(object sender, RoutedEventArgs args)
+    {
+        if (await RequireSelectedNodeAsync() is { } node)
+        {
+            await DeleteNodeWithConfirmationAsync(node);
+        }
+    }
+
     private async void OnCopySelectionClick(object sender, RoutedEventArgs args)
     {
         try
@@ -216,6 +224,9 @@ public sealed partial class ModelStudioPage : Page
                     }
 
                     break;
+                case GraphNodeCommand.DeleteGlobal:
+                    await DeleteNodeWithConfirmationAsync(args.Node);
+                    break;
             }
         }
         catch (Exception error)
@@ -265,6 +276,28 @@ public sealed partial class ModelStudioPage : Page
             node,
             impact,
             result is ContentDialogResult.Primary);
+    }
+
+    private async Task DeleteNodeWithConfirmationAsync(GraphNodeProjection node)
+    {
+        var dialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = Localization["Dialog_DeleteNodeTitle"],
+            Content = string.Format(
+                Localization["Dialog_DeleteNodeDescription"],
+                node.DisplayName),
+            PrimaryButtonText = Localization["Dialog_DeleteNodeConfirm"],
+            CloseButtonText = Localization["Common_Cancel"],
+            DefaultButton = ContentDialogButton.Close,
+        };
+        if (await dialog.ShowAsync() is not ContentDialogResult.Primary)
+        {
+            return;
+        }
+
+        await App.Services.GetRequiredService<NodeWindowRegistry>().FlushAllEditsAsync();
+        await ViewModel.DeleteNodeAsync(node);
     }
 
     private async Task<bool?> AskEdgeMigrationChoiceAsync(

@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-SESSION-001", "PAS-EXPERT-EVIDENCE-001", "PAS-PORTABILITY-001"]
 support = "Report the release label, concise project name, run state, stable error code and privacy-safe Diagnostics summary."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.2"
+release_label = "v0.1.0-rc.3"
 user_acceptance = "pending"
 +++
 
@@ -72,9 +72,11 @@ Review:
 
 Unusual flight behaviour, large trajectory error, aggressive control or abnormal physiological values are assessment observations, not reasons to discard otherwise parseable data. Structural absence or an impossible execution contract is reported separately as unavailable or blocked.
 
+Assessment purpose and scientific authorization are separate fields. When technical disposition is ready, an Assessment-purpose run can start and complete. If the exact model or Session is not formally authorized, preflight shows the `run.assessment_not_authorized` warning and the run's frozen preflight provenance retains `formal_run_authorized=false`. The warning does not block engineering computation and must not be ignored as if it were a scientific-validity claim.
+
 ## 6. Start, monitor or cancel a run
 
-Select **Start run** only after preflight is ready. The backend creates an immutable RunSnapshot before computation. The usual stages are snapshot validation, ingestion, synchronization, Evidence extraction, Bayesian inference, reporting and completion.
+Select **Start run** only after preflight is ready. Assessment purpose is not disabled solely by false scientific authorization; real structure, dependency, dirty/stale source or runtime problems still block execution. The backend creates an immutable RunSnapshot before computation. The usual stages are snapshot validation, ingestion, synchronization, Evidence extraction, Bayesian inference, reporting and completion.
 
 Closing and reopening the application does not rewrite a durable run. The backend reconciles queued, interrupted or completed state from the project. A cancellation request is also reconciled with the canonical backend run; wait for its final state before copying the project.
 

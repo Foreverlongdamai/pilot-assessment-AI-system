@@ -172,6 +172,19 @@ public sealed class GraphCommandTests
             node => node.InputBindingId == fixture.LastExtractionBindingId);
     }
 
+    [Fact]
+    public async Task GlobalDeleteArchivesTheCompleteNodeThroughTheBackend()
+    {
+        var fixture = new FakeGraphGateway();
+        var coordinator = new ModelGraphCommandCoordinator(fixture, new ModelClipboard());
+        var node = fixture.Graph.Nodes.Single(item => item.NodeId == fixture.InactiveNodeId);
+
+        var response = await coordinator.ArchiveNodeAsync(node);
+
+        Assert.Equal(node.NodeId, fixture.LastArchivedNodeId);
+        Assert.Equal(ModelObjectLifecycle.Archived, response.Node.Lifecycle);
+    }
+
     private static ModelNode Draft(ModelNodeKind kind, string name) =>
         ModelNodeDraftFactory.Create(new ModelNodeDraftRequest(
             kind,
@@ -220,6 +233,7 @@ public sealed class GraphCommandTests
         public double[]? LastMarginalWeights { get; private set; }
         public string? LastExtractionBindingId { get; private set; }
         public EvidenceRecipe? LastExtractionRecipe { get; private set; }
+        public string? LastArchivedNodeId { get; private set; }
 
         public Task<ModelGraphSnapshot> GetGraphAsync(
             string schemeId,
@@ -232,6 +246,28 @@ public sealed class GraphCommandTests
         {
             Graph = Graph with { Nodes = [.. Graph.Nodes, node] };
             return Task.FromResult(NodeMutation(node));
+        }
+
+        public Task<ModelNodeMutationResponse> ArchiveNodeAsync(
+            string nodeId,
+            int expectedSemanticRevision,
+            string actor,
+            CancellationToken cancellationToken = default)
+        {
+            LastArchivedNodeId = nodeId;
+            var current = Graph.Nodes.Single(node => node.NodeId == nodeId);
+            var archived = current with
+            {
+                Lifecycle = ModelObjectLifecycle.Archived,
+                SemanticRevision = current.SemanticRevision + 1,
+            };
+            Graph = Graph with
+            {
+                Nodes = Graph.Nodes
+                    .Select(node => node.NodeId == nodeId ? archived : node)
+                    .ToArray(),
+            };
+            return Task.FromResult(NodeMutation(archived));
         }
 
         public Task<TaskSchemeMutationResponse> ActivateNodeAsync(

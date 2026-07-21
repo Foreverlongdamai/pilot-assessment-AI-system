@@ -32,9 +32,10 @@ def _prepare_run(
     report = application.current_preflight.prepare(
         session_revision_id=session_revision_id,
         scheme_id=scheme.scheme_id,
-        purpose=RunPurpose.SOFTWARE_TEST,
+        purpose=RunPurpose.ASSESSMENT,
         runtime_parameters={},
     )
+    assert report.formal_run_authorized is False
     run = application.current_preflight.create_run(
         report.preflight_id,
         run_id=run_id,
@@ -42,6 +43,7 @@ def _prepare_run(
         requested_at=NOW,
     )
     assert isinstance(run.snapshot, CurrentModelRunSnapshotV3)
+    assert run.snapshot.purpose is RunPurpose.ASSESSMENT
     return run.snapshot
 
 

@@ -214,6 +214,7 @@
   <data name="Graph_PasteTask" xml:space="preserve"><value>粘贴到当前任务</value></data>
   <data name="Graph_ConnectParent" xml:space="preserve"><value>把所选父节点连接到此节点</value></data>
   <data name="Graph_RemoveParent" xml:space="preserve"><value>从此节点移除所选父节点</value></data>
+  <data name="Graph_DeleteNode" xml:space="preserve"><value>从系统模型中删除节点</value></data>
   <data name="Graph_OutputBadge" xml:space="preserve"><value>输出</value></data>
   <data name="Graph_ZoomOutA11y" xml:space="preserve"><value>缩小</value></data>
   <data name="Graph_ZoomInA11y" xml:space="preserve"><value>放大</value></data>
@@ -471,6 +472,14 @@
   <data name="Model_StatusNodeSavedInactive" xml:space="preserve"><value>节点已暂存到全局库草稿，但无法在当前任务中启用。</value></data>
   <data name="Model_StatusNodeActivationRepair" xml:space="preserve"><value>节点已存在于全局库；请修正定义或重试任务启用操作。</value></data>
   <data name="Model_StatusNodeCreateFailed" xml:space="preserve"><value>未能创建新节点。</value></data>
+  <data name="Model_DeleteNode" xml:space="preserve"><value>删除节点</value></data>
+  <data name="Dialog_DeleteNodeTitle" xml:space="preserve"><value>从系统模型中删除节点？</value></data>
+  <data name="Dialog_DeleteNodeDescription" xml:space="preserve"><value>{0} 将从当前全局模型库中删除。后端会在所有任务方案中停用它及其依赖的下游节点；历史 RunSnapshot 不受影响，本次暂存修改可用 Ctrl+Z 撤销。</value></data>
+  <data name="Dialog_DeleteNodeConfirm" xml:space="preserve"><value>删除节点</value></data>
+  <data name="Model_StatusDeletingNode" xml:space="preserve"><value>正在通过后端编辑会话删除节点…</value></data>
+  <data name="Model_StatusNodeDeleted" xml:space="preserve"><value>{0} 已从系统模型删除，并在 {1} 个受影响的任务方案中停用。</value></data>
+  <data name="Model_StatusNodeAlreadyDeleted" xml:space="preserve"><value>此节点已从当前系统模型中删除。</value></data>
+  <data name="Model_StatusNodeDeleteFailed" xml:space="preserve"><value>未能删除节点。</value></data>
   <data name="Model_StatusAlreadyActive" xml:space="preserve"><value>此节点已在当前任务中启用。</value></data>
   <data name="Model_StatusActivating" xml:space="preserve"><value>正在启用节点及其固定父节点闭包…</value></data>
   <data name="Model_StatusActivated" xml:space="preserve"><value>此节点及其所有固定父节点已在当前任务中启用。</value></data>

@@ -1,6 +1,6 @@
 # Pilot Assessment System — Portable Release Candidate
 
-This directory contains Pilot Assessment System `v0.1.0-rc.2` for Windows x64. Its acceptance
+This directory contains Pilot Assessment System `v0.1.0-rc.3` for Windows x64. Its acceptance
 state is `pending`; it is not yet the accepted final release and is not a scientifically calibrated
 pilot-rating product.
 
@@ -85,5 +85,7 @@ the app and copy the complete software directory. User projects remain separate 
 of a software re-extraction.
 
 The included starter Evidence rules, thresholds, topology and CPTs are engineering defaults that
-require domain-expert calibration. `formal_run_authorized=false`; software execution is not proof
-of scientific validity, certification or fitness for operational decisions.
+require domain-expert calibration. Technically ready runs may use purpose `assessment`, but the
+starter still records `formal_run_authorized=false` and displays a not-authorized warning.
+Software execution is not proof of scientific validity, certification or fitness for operational
+decisions.

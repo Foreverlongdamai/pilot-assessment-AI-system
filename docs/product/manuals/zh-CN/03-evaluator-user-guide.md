@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-SESSION-001", "PAS-EXPERT-EVIDENCE-001", "PAS-PORTABILITY-001"]
 support = "报告问题时提供发布标签、简洁 project 名称、run 状态、稳定错误码和不含隐私的 Diagnostics 摘要。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.2"
+release_label = "v0.1.0-rc.3"
 user_acceptance = "pending"
 +++
 
@@ -72,9 +72,11 @@ project 名称应简洁，并避免包含敏感参与者信息。技术 project 
 
 飞行表现差、轨迹误差大、控制剧烈或生理数值异常都是评估观察，不是丢弃可解析数据的理由。结构性缺失或不可能执行的合同会单独报告为 unavailable 或 blocked。
 
+“评估”用途与科学授权状态是两个字段。只要 technical disposition 为 ready，选择“评估”也可启动并完成运行；如果当前模型或 Session 未获正式授权，preflight 显示 `run.assessment_not_authorized` warning，run 关联的 frozen preflight provenance 继续记录 `formal_run_authorized=false`。该 warning 不阻止工程计算，也不得被忽略为科学有效性声明。
+
 ## 6. 启动、监控或取消 run
 
-只有 preflight ready 后才点击“开始运行”。后端会在计算前创建不可变 RunSnapshot。正常阶段依次为 snapshot validation、ingestion、synchronization、Evidence extraction、Bayesian inference、reporting 和 completion。
+只有 preflight ready 后才点击“开始运行”。“评估”用途不再因为 false scientific authorization 单独禁用该按钮；真正的结构、依赖、dirty/stale source 或 runtime 问题仍会阻止运行。后端会在计算前创建不可变 RunSnapshot。正常阶段依次为 snapshot validation、ingestion、synchronization、Evidence extraction、Bayesian inference、reporting 和 completion。
 
 关闭再打开应用不会改写 durable run。后端会从 project 恢复 queued、interrupted 或 completed 状态。取消请求也会与 canonical backend run 对账；复制 project 前应等待其进入最终状态。
 

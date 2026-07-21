@@ -164,6 +164,26 @@ public sealed class ModelWorkspaceClient :
             cancellationToken);
     }
 
+    public Task<ModelNodeMutationResponse> ArchiveNodeAsync(
+        string nodeId,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default)
+    {
+        var transactionId = NewTransactionId("node-archive");
+        return MutateAsync(
+            "model.node.archive",
+            transactionId,
+            new ModelNodeArchiveRequest(
+                nodeId,
+                expectedSemanticRevision,
+                actor,
+                transactionId),
+            PilotAssessmentJsonContext.Default.ModelNodeArchiveRequest,
+            PilotAssessmentJsonContext.Default.ModelNodeMutationResponse,
+            cancellationToken);
+    }
+
     public async Task<IReadOnlyList<OperatorDefinition>> ListOperatorsAsync(
         CancellationToken cancellationToken = default)
     {

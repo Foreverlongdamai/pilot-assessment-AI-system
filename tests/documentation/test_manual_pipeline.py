@@ -25,7 +25,7 @@ def test_release_candidate_catalog_defines_twelve_logical_and_twenty_four_output
     documents = catalog["documents"]
 
     assert catalog["release_channel"] == "release-candidate"
-    assert catalog["release_label"] == "v0.1.0-rc.2"
+    assert catalog["release_label"] == "v0.1.0-rc.3"
     assert catalog["user_acceptance"] == "pending"
     assert len(documents) == 12
     assert sum(len(item["languages"]) for item in documents) == 24
@@ -65,7 +65,7 @@ def test_master_manual_is_generated_from_all_eleven_released_module_sources() ->
     source, modules = aggregate_manual_source(catalog, master, "en-GB")
 
     assert source.metadata["status"] == "released"
-    assert source.metadata["release_label"] == "v0.1.0-rc.2"
+    assert source.metadata["release_label"] == "v0.1.0-rc.3"
     assert len(modules) == 11
     assert source.body.count(AGGREGATE_PAGE_BREAK) == 10
     assert [item["document_id"] for item in modules] == master["aggregate_sources"]
@@ -130,3 +130,59 @@ def test_registers_ten_existing_candidate_screenshots_without_capturing(
     )
     assert {item["status"] for item in registered["screenshots"]} == {"release-candidate"}
     assert all(item["privacy_review"]["status"] == "passed" for item in registered["screenshots"])
+    assert all(
+        item["captured_for_release_label"] == "v0.1.0-rc.3" for item in registered["screenshots"]
+    )
+
+
+def test_selective_screenshot_registration_preserves_explicit_reuse_provenance(
+    tmp_path: Path,
+) -> None:
+    source_manifest = read_json(
+        REPOSITORY_ROOT
+        / "docs"
+        / "product"
+        / "manuals"
+        / "assets"
+        / "screenshots"
+        / "manifest.json"
+    )
+    manual_root = tmp_path / "manuals"
+    manifest_path = manual_root / "assets" / "screenshots" / "manifest.json"
+    manifest_path.parent.mkdir(parents=True)
+    manifest_path.write_text(
+        json.dumps(source_manifest, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    for index, item in enumerate(source_manifest["screenshots"]):
+        path = manual_root / item["path"]
+        path.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGB", (800, 500), color=(20 + index, 80, 120)).save(path, format="PNG")
+
+    old_identity = source_manifest["screenshots"][0]["ui_source_tree_sha256"]
+    register(
+        manifest_path=manifest_path,
+        manual_root=manual_root,
+        ui_source_tree_sha256="b" * 64,
+        captured_at="2026-07-21T19:30:00Z",
+        reviewer="release-test",
+        privacy_reviewed=True,
+        screenshot_ids={"ui-five-layer-model-studio"},
+    )
+
+    registered = read_json(manifest_path)
+    recaptured = [
+        item
+        for item in registered["screenshots"]
+        if item["screenshot_id"] == "ui-five-layer-model-studio"
+    ]
+    reused = [
+        item
+        for item in registered["screenshots"]
+        if item["screenshot_id"] != "ui-five-layer-model-studio"
+    ]
+    assert all(item["ui_source_tree_sha256"] == "b" * 64 for item in recaptured)
+    assert all(item["captured_for_release_label"] == "v0.1.0-rc.3" for item in recaptured)
+    assert all(item["ui_source_tree_sha256"] == old_identity for item in reused)
+    assert all(item["reused_from_release_label"] == "v0.1.0-rc.2" for item in reused)
+    assert all(item["reuse_reason"] for item in reused)

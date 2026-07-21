@@ -2,9 +2,9 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 设计基线 | 产品 v0.1.0-rc.2 portable expert-designer release candidate；D-031–D-083 已获用户确认 |
+| 设计基线 | 产品 v0.1.0-rc.3 portable expert-designer release candidate 修订；D-031–D-087 已获用户确认 |
 | 基线日期 | 2026-07-21 |
-| 产品阶段 | M1–M8E engineering history 保持完整；`v0.1.0-rc.1` 用户验收为 `changes-required`。clean annotated `v0.1.0-rc.2` 已按 D-082/D-083 收纳 `app/` desktop payload、建立唯一根启动器，并通过仓库外 restricted-PATH 验证；当前 `user_acceptance=pending`，starter/synthetic `formal_run_authorized=false` |
+| 产品阶段 | M1–M8E engineering history 保持完整；RC.1/RC.2 用户验收均为 `changes-required`。RC.2 的 `app/` 根布局证据保留；D-084–D-087 的 RC.3 Assessment/图标/删除/拖动修订正在完成新候选验证，starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -36,6 +36,8 @@
 2026-07-21 用户批准 D-078–D-081 与 [M8E Final Release Candidate Design](specs/2026-07-21-m8e-final-release-candidate-and-handoff-design.md)：不再单独执行 M7 中间验收，改为先完成 D-055、M8C-1 和 tagged clean-source `v0.1.0-rc.1`，再直接验收完整候选。D-055 单一英文 current-model contract/持久化迁移、24 份 released DOCX、10 张隐私审核后的 `release-candidate` screenshots、annotated tag、最终构建以及内部/仓库外自动隔离验证现均已完成；精确证据见 [M8E Verification](reviews/2026-07-21-m8e-release-candidate-verification.md)。候选形成不等于用户接受，也不得在 `user_acceptance=pending` 时称为正式 `v0.1.0`。
 
 2026-07-21 用户完成 RC.1 的首项独立验收并给出 `changes-required`：产品根目录暴露 94 个文件夹和 374 个文件。D-082/D-083 与 [RC.2 Portable Root Layout Amendment](specs/2026-07-21-rc2-portable-root-layout-amendment.md) 冻结新口径：RC.1 不可变，RC.2 将完整 WinUI/.NET runtime 收纳到 `app/`，根目录只提供 `PilotAssessment.exe` 一个启动入口，并显式保留八个语义目录。clean annotated `v0.1.0-rc.2` 现已构建并通过仓库外 restricted-PATH 验证，精确证据见 [RC.2 Verification](reviews/2026-07-21-rc2-portable-root-layout-verification.md)；用户验收重新保持 `pending`。
+
+2026-07-21 用户继续验收 RC.2 并给出 `changes-required`：Assessment 用途被错误阻止、发布任务栏图标缺失、没有明确的全局删除节点、长按拖动无可见移动。D-084–D-087 与 [RC.3 Run and Model Studio Amendment](specs/2026-07-21-rc3-run-and-model-studio-acceptance-amendment.md) 将四项修订放入新 RC.3；RC.2 tag/package/evidence 不改写。
 
 ## 1. 文档用途
 
@@ -93,6 +95,9 @@
 | 2.14.1 | [RC.2 Implementation Plan](plans/2026-07-21-rc2-portable-root-layout-implementation-plan.md) | 开发、交付、审查者 | inline 实施、轻量回归、clean RC.2 tag、仓库外启动验证与不可变 RC.1 边界 |
 | 2.14.2 | [RC.1 User Acceptance Result](reviews/2026-07-21-v0.1.0-rc.1-user-acceptance-result.md) | 用户、产品、交付 | `changes-required` 的独立验收事实、根目录计数、必要修订和新 candidate 规则 |
 | 2.14.3 | [RC.2 Portable Root Layout Verification](reviews/2026-07-21-rc2-portable-root-layout-verification.md) | 用户、交付、维护者、审查者 | clean tag、8/2/1 root surface、manifest v3、ZIP hash 与仓库外 launcher/desktop/sidecar/editable-source/operator/run 证据 |
+| 2.15 | [RC.3 Run and Model Studio Acceptance Amendment](specs/2026-07-21-rc3-run-and-model-studio-acceptance-amendment.md) | 产品、用户、前后端、交付 | D-084–D-087：Assessment 执行/科学状态分离、发布图标、全局删除节点与长按拖动 |
+| 2.15.1 | [RC.3 Implementation Plan](plans/2026-07-21-rc3-run-and-model-studio-implementation-plan.md) | 开发、交付、审查者 | INLINE 修复、轻量回归、DOCX/截图、新 clean tag 与仓库外验证 |
+| 2.15.2 | [RC.2 User Acceptance Result](reviews/2026-07-21-v0.1.0-rc.2-user-acceptance-result.md) | 用户、产品、交付 | RC.2 `changes-required` 的四项事实与不可变候选边界 |
 | 3 | [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) | 专家、产品、前后端 | 已实现的后端基础与历史 identity/publish 语义；冲突处由 M7 规格取代 |
 | 4 | [M5 Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) | 开发、审查者 | 已完成：inline 任务、合同冻结、O8 迁移、轻量验证与完成门 |
 | 5 | [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) | 前后端、交付、审查者 | 已实现：受管项目、SQLite、artifact、run lifecycle 与 JSON-RPC sidecar |

@@ -461,6 +461,62 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         }
     }
 
+    public async Task<bool> DeleteNodeAsync(
+        GraphNodeProjection node,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(node);
+        if (node.IsArchived)
+        {
+            StatusMessage = L("Model_StatusNodeAlreadyDeleted");
+            return true;
+        }
+
+        var snapshot = RequireSnapshot();
+        var projectId = RequireProjectId();
+        var schemeId = snapshot.Scheme.SchemeId;
+        BeginBusy();
+        ClearError();
+        StatusMessage = L("Model_StatusDeletingNode");
+        try
+        {
+            _pendingLayouts.Remove(node.NodeId);
+            var response = await _commands.ArchiveNodeAsync(node.Node, cancellationToken);
+            _selectedNodeIds.Remove(node.NodeId);
+            await _schemes.LoadAsync(projectId, cancellationToken);
+            if (IsCurrentContext(projectId, schemeId))
+            {
+                var graph = await _commands.GetGraphAsync(schemeId, cancellationToken);
+                ApplyCanonicalGraph(
+                    graph,
+                    _selectedNodeIds,
+                    F(
+                        "Model_StatusNodeDeleted",
+                        node.DisplayName,
+                        response.AffectedSchemeIds.Length));
+            }
+
+            return true;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception error)
+        {
+            if (IsCurrentContext(projectId, schemeId))
+            {
+                SetError(error, L("Model_StatusNodeDeleteFailed"));
+            }
+
+            return false;
+        }
+        finally
+        {
+            EndBusy();
+        }
+    }
+
     public void CopySelection(GraphNodeProjection? fallbackNode = null)
     {
         var projectId = RequireProjectId();

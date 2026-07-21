@@ -162,8 +162,10 @@ public sealed class NodeWindowRegistry : IDisposable
         var nodesById = graph.Nodes.ToDictionary(node => node.NodeId, StringComparer.Ordinal);
         foreach (var entry in _windows.Snapshot())
         {
-            if (!nodesById.TryGetValue(entry.Key.NodeId, out var node))
+            if (!nodesById.TryGetValue(entry.Key.NodeId, out var node) ||
+                node.Lifecycle is ModelObjectLifecycle.Archived)
             {
+                entry.Value.Close();
                 continue;
             }
 

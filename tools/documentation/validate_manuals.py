@@ -46,8 +46,8 @@ def _catalog_errors(catalog: dict[str, Any]) -> list[str]:
         errors.append("catalog languages must be exactly ['zh-CN', 'en-GB']")
     if catalog.get("release_channel") != "release-candidate":
         errors.append("catalog release_channel must be release-candidate")
-    if catalog.get("release_label") != "v0.1.0-rc.2":
-        errors.append("catalog release_label must be v0.1.0-rc.2")
+    if catalog.get("release_label") != "v0.1.0-rc.3":
+        errors.append("catalog release_label must be v0.1.0-rc.3")
     if catalog.get("user_acceptance") != "pending":
         errors.append("catalog user_acceptance must be pending")
     documents = catalog_documents(catalog)
@@ -228,8 +228,21 @@ def _screenshot_errors(
         privacy = item.get("privacy_review")
         if not isinstance(privacy, dict) or privacy.get("status") != "passed":
             errors.append(f"screenshot {key} privacy review is not passed")
-        if item.get("ui_source_tree_sha256") != source_identity:
-            errors.append(f"screenshot {key} UI source identity mismatch")
+        entry_identity = item.get("ui_source_tree_sha256")
+        if not isinstance(entry_identity, str) or not re.fullmatch(r"[0-9a-f]{64}", entry_identity):
+            errors.append(f"screenshot {key} UI source identity is invalid")
+        elif entry_identity != source_identity:
+            reused_from = item.get("reused_from_release_label")
+            reuse_reason = item.get("reuse_reason")
+            if not isinstance(reused_from, str) or not reused_from.strip():
+                errors.append(f"screenshot {key} UI source identity mismatch")
+            if not isinstance(reuse_reason, str) or not reuse_reason.strip():
+                errors.append(f"screenshot {key} reuse reason is missing")
+        elif item.get("captured_for_release_label") not in {
+            None,
+            manifest.get("release_label"),
+        }:
+            errors.append(f"screenshot {key} captured release label mismatch")
     return errors, keys
 
 

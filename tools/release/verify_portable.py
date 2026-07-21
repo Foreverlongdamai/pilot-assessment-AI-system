@@ -165,6 +165,7 @@ def _required_layout(root: Path) -> dict[str, Any]:
         "PilotAssessment.exe",
         "app/PilotAssessment.Desktop.exe",
         "app/PilotAssessment.Desktop.deps.json",
+        "app/Assets/AppIcon.ico",
         "runtime/python/python.exe",
         "runtime/python/python311._pth",
         "backend/src/pilot_assessment/__init__.py",
@@ -1274,11 +1275,16 @@ try:
     preflight = application.current_preflight.prepare(
         session_revision_id=imported.revision.session_revision_id,
         scheme_id=scheme.scheme_id,
-        purpose=RunPurpose.SOFTWARE_TEST,
+        purpose=RunPurpose.ASSESSMENT,
         runtime_parameters={},
     )
     if preflight.technical_disposition.value != "ready":
         raise RuntimeError(f"micro assessment preflight is not ready: {preflight.issues}")
+    authorization_codes = [diagnostic.code for diagnostic in preflight.diagnostics]
+    if preflight.formal_run_authorized is not False:
+        raise RuntimeError("engineering Assessment unexpectedly became formally authorized")
+    if "run.assessment_not_authorized" not in authorization_codes:
+        raise RuntimeError("engineering Assessment omitted its authorization warning")
     run = application.current_preflight.create_run(
         preflight.preflight_id,
         run_id="run.m8b2-extension",
@@ -1311,6 +1317,9 @@ try:
         "recipe_state": str(executed.scoring_outputs["state"]),
         "recipe_trace_operator": executed.traces[1].operator_id,
         "run_state": terminal.state.value,
+        "run_purpose": run.snapshot.purpose.value,
+        "formal_run_authorized": preflight.formal_run_authorized,
+        "authorization_warning": "run.assessment_not_authorized" in authorization_codes,
         "source_identity": run.snapshot.backend_source_identity.identity_sha256,
         "source_artifact_id": source_artifact.artifact_id,
         "source_artifact_sha256": source_artifact.sha256,
@@ -1456,6 +1465,9 @@ def _verify_operator_extension(root: Path) -> dict[str, Any]:
             or vertical.get("recipe_state") != "desired"
             or vertical.get("recipe_trace_operator") != "extension.example.scalar-offset"
             or vertical.get("run_state") != "completed"
+            or vertical.get("run_purpose") != "assessment"
+            or vertical.get("formal_run_authorized") is not False
+            or vertical.get("authorization_warning") is not True
             or vertical.get("source_identity") != loaded.get("identity_sha256")
         ):
             raise PortableVerificationError(

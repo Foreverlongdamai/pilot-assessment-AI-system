@@ -214,6 +214,7 @@
   <data name="Graph_PasteTask" xml:space="preserve"><value>Paste into current task</value></data>
   <data name="Graph_ConnectParent" xml:space="preserve"><value>Connect selected parent to this node</value></data>
   <data name="Graph_RemoveParent" xml:space="preserve"><value>Remove selected parent from this node</value></data>
+  <data name="Graph_DeleteNode" xml:space="preserve"><value>Delete node from system model</value></data>
   <data name="Graph_OutputBadge" xml:space="preserve"><value>OUT</value></data>
   <data name="Graph_ZoomOutA11y" xml:space="preserve"><value>Zoom out</value></data>
   <data name="Graph_ZoomInA11y" xml:space="preserve"><value>Zoom in</value></data>
@@ -471,6 +472,14 @@
   <data name="Model_StatusNodeSavedInactive" xml:space="preserve"><value>The node was staged globally but could not be activated in this task.</value></data>
   <data name="Model_StatusNodeActivationRepair" xml:space="preserve"><value>The node exists globally; correct its definition or retry task activation.</value></data>
   <data name="Model_StatusNodeCreateFailed" xml:space="preserve"><value>The new node was not created.</value></data>
+  <data name="Model_DeleteNode" xml:space="preserve"><value>Delete node</value></data>
+  <data name="Dialog_DeleteNodeTitle" xml:space="preserve"><value>Delete node from the system model?</value></data>
+  <data name="Dialog_DeleteNodeDescription" xml:space="preserve"><value>{0} will be removed from the current global model library. The backend will deactivate it and dependent downstream nodes in every task scheme. Historical RunSnapshots remain unchanged, and this staged change can be undone with Ctrl+Z.</value></data>
+  <data name="Dialog_DeleteNodeConfirm" xml:space="preserve"><value>Delete node</value></data>
+  <data name="Model_StatusDeletingNode" xml:space="preserve"><value>Deleting the node through the backend edit session…</value></data>
+  <data name="Model_StatusNodeDeleted" xml:space="preserve"><value>{0} was deleted from the system model and deactivated across {1} affected task scheme(s).</value></data>
+  <data name="Model_StatusNodeAlreadyDeleted" xml:space="preserve"><value>This node is already deleted from the current system model.</value></data>
+  <data name="Model_StatusNodeDeleteFailed" xml:space="preserve"><value>The node was not deleted.</value></data>
   <data name="Model_StatusAlreadyActive" xml:space="preserve"><value>This node is already active in the current task.</value></data>
   <data name="Model_StatusActivating" xml:space="preserve"><value>Activating the node and its fixed parent closure…</value></data>
   <data name="Model_StatusActivated" xml:space="preserve"><value>The node and all fixed parents are active in this task.</value></data>

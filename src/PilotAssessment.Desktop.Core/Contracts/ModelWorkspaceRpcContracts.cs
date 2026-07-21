@@ -91,6 +91,12 @@ public sealed record ModelNodeUpdateRequest(
     string Actor,
     string TransactionId);
 
+public sealed record ModelNodeArchiveRequest(
+    string NodeId,
+    int ExpectedSemanticRevision,
+    string Actor,
+    string TransactionId);
+
 public sealed record ModelNodeMutationResponse(
     ModelNode Node,
     string[] AffectedSchemeIds,

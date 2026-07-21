@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-EVALUATOR-001", "PAS-SESSION-001", "PAS-PORTABILITY-001"]
 support = "记录发布标签、可见错误消息和 Diagnostics 摘要；除非经过授权的支持流程明确要求，不要发送原始生理或 Session 数据。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.2"
+release_label = "v0.1.0-rc.3"
 user_acceptance = "pending"
 +++
 
@@ -29,7 +29,7 @@ user_acceptance = "pending"
 ## 2. 完整解压
 
 1. 如果交付目录同时提供 `.sha256`，先校验 ZIP。
-2. 把整个压缩包解压到较短且可写的本地路径，例如 `D:\PilotAssessment-0.1.0-rc.2`。
+2. 把整个压缩包解压到较短且可写的本地路径，例如 `D:\PilotAssessment-0.1.0-rc.3`。
 3. 保持根目录中的 `app\`、`backend\`、`system\`、`runtime\`、`developer\`、`docs\`、`licenses\` 与 `manifest\` 不变，不要单独移动启动器或 `app\` 中的文件。
 4. 不要覆盖已经修改过的旧软件副本；解压到并列新目录，以便保留旧副本的 Python 源码和 `system\`。
 
@@ -72,7 +72,7 @@ project 只拥有导入的 Session revisions、RunSnapshots、runs、results 和
 5. 只有 preflight 允许时才启动 run。
 6. 完成后打开“结果”，查看 Evidence 连续值、D/A/U observation、BN posterior、缺失 Evidence、影响信息和 provenance。
 
-starter 模板仍保持 `formal_run_authorized=false`。run 完成只证明工程执行通顺，不代表科学有效或可用于真实运行决策。
+运行用途可选择“预览”“软件测试”或“评估”。只要 technical preflight 为 ready，评估用途也可以完成整条工程管线；starter 模板仍保持 `formal_run_authorized=false`，界面会显示未正式授权 warning，run 关联的 frozen preflight provenance 保留该状态。run 完成只证明工程执行通顺，不代表科学有效或可用于真实运行决策。
 
 ## 7. 快速健康检查
 

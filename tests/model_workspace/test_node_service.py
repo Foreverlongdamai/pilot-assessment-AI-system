@@ -22,7 +22,6 @@ from pilot_assessment.model_library.sources import (
     source_descriptor_content_hash,
 )
 from pilot_assessment.model_workspace.service import (
-    CurrentModelArchiveConflict,
     CurrentModelRevisionConflict,
     CurrentModelWorkspaceService,
 )
@@ -266,7 +265,7 @@ def test_raw_input_update_rehashes_nested_source_descriptor(
         database.close()
 
 
-def test_shared_node_update_revalidates_using_scheme_and_active_node_cannot_archive(
+def test_shared_node_update_revalidates_and_global_delete_cascades_across_active_schemes(
     tmp_path: Path,
 ) -> None:
     database, repository, service = _service(tmp_path / "project.sqlite3")
@@ -319,15 +318,19 @@ def test_shared_node_update_revalidates_using_scheme_and_active_node_cannot_arch
         assert usage[0].active_in_closure is True
 
         active_skill = service.get_node("bn.skill")
-        with pytest.raises(CurrentModelArchiveConflict) as captured:
-            service.archive_node(
-                "bn.skill",
-                expected_semantic_revision=active_skill.semantic_revision,
-                transaction_id="tx.archive.active-skill",
-                actor_id="expert.one",
-            )
-        assert captured.value.active_scheme_ids == ("scheme.base",)
-        assert service.get_node("bn.skill").lifecycle is ModelObjectLifecycle.ACTIVE
+        deleted = service.archive_node(
+            "bn.skill",
+            expected_semantic_revision=active_skill.semantic_revision,
+            transaction_id="tx.archive.active-skill",
+            actor_id="expert.one",
+        )
+        assert deleted.node.lifecycle is ModelObjectLifecycle.ARCHIVED
+        assert deleted.affected_scheme_ids == ("scheme.base",)
+        cascaded = repository.get_scheme("scheme.base")
+        assert "bn.skill" not in cascaded.computed_active_closure
+        assert "bn.competency" not in cascaded.computed_active_closure
+        assert "bn.skill" not in cascaded.output_node_ids
+        assert "bn.competency" not in cascaded.output_node_ids
 
         # The unrelated inactive node remains freely archivable.
         raw_g = _create(service, _node(nodes, "raw.g"), "raw-g")

@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-PYTHON-CORE-001", "PAS-RELEASE-001", "PAS-PORTABILITY-001"]
 support = "Record the UI action, protocol/method version, transaction ID, trace ID, stderr diagnostic and reproducible state."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.2"
+release_label = "v0.1.0-rc.3"
 user_acceptance = "pending"
 +++
 

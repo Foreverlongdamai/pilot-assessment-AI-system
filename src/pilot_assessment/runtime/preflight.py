@@ -571,8 +571,9 @@ class RunPreflightService:
                 _diagnostic(
                     "run.assessment_not_authorized",
                     "/purpose",
-                    "assessment purpose requires a ready, non-synthetic, "
-                    "formally authorized policy",
+                    "assessment purpose is running as an engineering evaluation; "
+                    "the selected policy/session is not formally authorized",
+                    severity=RunDiagnosticSeverity.WARNING,
                     details={
                         "formal_policy_declared": formal_policy_declared,
                         "synthetic_data": synthetic_data,
@@ -632,11 +633,6 @@ class RunPreflightService:
             raise RunPreflightStaleError(str(error)) from error
         if revision.bundle_root_hash != prepared.lock.session_revision_ref.bundle_root_hash:
             raise RunPreflightStaleError("managed session root no longer matches preflight")
-        if prepared.lock.purpose is RunPurpose.ASSESSMENT and not (
-            prepared.report.formal_run_authorized
-        ):
-            raise RunPreflightBlockedError("assessment preflight is not formally authorized")
-
         provisional = RunSnapshot(
             run_id=run_id,
             purpose=prepared.lock.purpose,

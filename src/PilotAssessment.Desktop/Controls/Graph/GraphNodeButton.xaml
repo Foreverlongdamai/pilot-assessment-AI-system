@@ -15,11 +15,7 @@
         Click="OnNodeClick"
         CornerRadius="58"
         DoubleTapped="OnNodeDoubleTapped"
-        AutomationProperties.HelpText="{Binding [Graph_NodeHelp], Source={StaticResource Localization}}"
-        PointerCanceled="OnPointerCanceled"
-        PointerMoved="OnPointerMoved"
-        PointerPressed="OnPointerPressed"
-        PointerReleased="OnPointerReleased">
+        AutomationProperties.HelpText="{Binding [Graph_NodeHelp], Source={StaticResource Localization}}">
         <Button.ContextFlyout>
             <MenuFlyout>
                 <MenuFlyoutItem Click="OnSelectClick" Text="{Binding [Graph_SelectNode], Source={StaticResource Localization}}">
@@ -56,6 +52,15 @@
                 <MenuFlyoutItem
                     Click="OnRemoveParentClick"
                     Text="{Binding [Graph_RemoveParent], Source={StaticResource Localization}}" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem
+                    x:Name="DeleteNodeItem"
+                    Click="OnDeleteNodeClick"
+                    Text="{Binding [Graph_DeleteNode], Source={StaticResource Localization}}">
+                    <MenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xE74D;" />
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
             </MenuFlyout>
         </Button.ContextFlyout>
         <Grid>

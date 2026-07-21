@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-EVALUATOR-001", "PAS-SESSION-001", "PAS-PORTABILITY-001"]
 support = "Record the release label, visible error message and Diagnostics summary; do not send raw biometric or Session data unless an authorised support process requests it."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.2"
+release_label = "v0.1.0-rc.3"
 user_acceptance = "pending"
 +++
 
@@ -29,7 +29,7 @@ This is a release candidate with `user_acceptance=pending`. Its starter Evidence
 ## 2. Unpack the complete product
 
 1. Verify the separate `.sha256` file if it is supplied with the ZIP.
-2. Extract the whole archive to a short, writable local path such as `D:\PilotAssessment-0.1.0-rc.2`.
+2. Extract the whole archive to a short, writable local path such as `D:\PilotAssessment-0.1.0-rc.3`.
 3. Keep the root `app\`, `backend\`, `system\`, `runtime\`, `developer\`, `docs\`, `licenses\` and `manifest\` directories together; do not move the launcher or files from `app\` on their own.
 4. Do not extract over an older modified copy. Use a parallel directory so its Python source and `system\` remain recoverable.
 
@@ -72,7 +72,7 @@ Missing modalities are allowed. The product does not generate synthetic I/G/EEG/
 5. Start the run only when preflight permits it.
 6. Open **Results** after completion to inspect Evidence values, D/A/U observations, BN posteriors, missing Evidence, influence information and provenance.
 
-`formal_run_authorized=false` remains true for the starter template. A completed run proves engineering execution, not scientific validity or operational fitness.
+The purpose may be Preview, Software Test or Assessment. An Assessment-purpose run may complete whenever technical preflight is ready; the starter template still records `formal_run_authorized=false`, shows a not-authorized warning and retains that status in the run's frozen preflight provenance. Completion proves engineering execution, not scientific validity or operational fitness.
 
 ## 7. Quick health checks
 

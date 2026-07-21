@@ -100,6 +100,7 @@ namespace PilotAssessment.Desktop.Core.Contracts;
 [JsonSerializable(typeof(ModelGraphGetResponse))]
 [JsonSerializable(typeof(ModelNodeCreateRequest))]
 [JsonSerializable(typeof(ModelNodeUpdateRequest))]
+[JsonSerializable(typeof(ModelNodeArchiveRequest))]
 [JsonSerializable(typeof(ModelNodeMutationResponse))]
 [JsonSerializable(typeof(ModelNodeUsageListRequest))]
 [JsonSerializable(typeof(ModelNodeUsageListResponse))]

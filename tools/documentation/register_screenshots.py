@@ -41,6 +41,7 @@ def register(
     captured_at: str,
     reviewer: str,
     privacy_reviewed: bool,
+    screenshot_ids: set[str] | None = None,
 ) -> dict[str, Any]:
     if not SHA256.fullmatch(ui_source_tree_sha256):
         raise DocumentationError("ui-source-tree-sha256 must be a lowercase SHA-256")
@@ -55,6 +56,12 @@ def register(
     entries = manifest.get("screenshots")
     if not isinstance(entries, list) or len(entries) != 10:
         raise DocumentationError("screenshot manifest must define exactly ten assets")
+    available_ids = {
+        str(item.get("screenshot_id", "")) for item in entries if isinstance(item, dict)
+    }
+    unknown_ids = (screenshot_ids or set()) - available_ids
+    if unknown_ids:
+        raise DocumentationError(f"unknown screenshot IDs: {', '.join(sorted(unknown_ids))}")
     registered: list[dict[str, Any]] = []
     for item in entries:
         if not isinstance(item, dict):
@@ -75,6 +82,32 @@ def register(
             raise DocumentationError(f"cannot inspect screenshot {relative}: {error}") from error
         if width < 800 or height < 500:
             raise DocumentationError(f"screenshot resolution is too small: {relative}")
+        screenshot_id = str(item.get("screenshot_id", ""))
+        should_register = screenshot_ids is None or screenshot_id in screenshot_ids
+        if not should_register:
+            reused_from = manifest.get("reused_from_release_label")
+            reuse_reason = manifest.get("reuse_reason")
+            if not isinstance(reused_from, str) or not reused_from.strip():
+                raise DocumentationError(
+                    "selective registration requires reused_from_release_label"
+                )
+            if not isinstance(reuse_reason, str) or not reuse_reason.strip():
+                raise DocumentationError("selective registration requires reuse_reason")
+            item["reused_from_release_label"] = reused_from
+            item["reuse_reason"] = reuse_reason
+            item.pop("captured_for_release_label", None)
+            registered.append(
+                {
+                    "screenshot_id": screenshot_id,
+                    "language": item["language"],
+                    "path": relative,
+                    "sha256": item["sha256"],
+                    "width": item["width"],
+                    "height": item["height"],
+                    "reused": True,
+                }
+            )
+            continue
         item.update(
             {
                 "status": "release-candidate",
@@ -83,6 +116,7 @@ def register(
                 "height": height,
                 "captured_at": timestamp,
                 "ui_source_tree_sha256": ui_source_tree_sha256,
+                "captured_for_release_label": manifest.get("release_label"),
                 "privacy_review": {
                     "status": "passed",
                     "reviewer": reviewer.strip(),
@@ -90,6 +124,8 @@ def register(
                 },
             }
         )
+        item.pop("reused_from_release_label", None)
+        item.pop("reuse_reason", None)
         registered.append(
             {
                 "screenshot_id": item["screenshot_id"],
@@ -98,6 +134,7 @@ def register(
                 "sha256": item["sha256"],
                 "width": width,
                 "height": height,
+                "reused": False,
             }
         )
     manifest["ui_source_tree_sha256"] = ui_source_tree_sha256
@@ -116,6 +153,11 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("--captured-at", required=True)
     parser.add_argument("--reviewer", required=True)
     parser.add_argument("--privacy-reviewed", action="store_true")
+    parser.add_argument(
+        "--screenshot-id",
+        action="append",
+        help="Only recapture this screenshot ID (repeatable); other entries stay explicit reuses.",
+    )
     return parser.parse_args()
 
 
@@ -129,6 +171,7 @@ def main() -> int:
             captured_at=args.captured_at,
             reviewer=args.reviewer,
             privacy_reviewed=args.privacy_reviewed,
+            screenshot_ids=set(args.screenshot_id) if args.screenshot_id else None,
         )
     except (DocumentationError, OSError, ValueError) as error:
         print(f"screenshot registration failed: {error}", file=sys.stderr)

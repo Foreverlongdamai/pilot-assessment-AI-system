@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-EXPERT-EVIDENCE-001", "PAS-EVALUATOR-001", "PAS-PYTHON-CORE-001"]
 support = "记录 child node 名称、ordered parents、ordered states、出错 CPT row 和稳定 validation error。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.2"
+release_label = "v0.1.0-rc.3"
 user_acceptance = "pending"
 +++
 

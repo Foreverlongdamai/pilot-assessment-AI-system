@@ -23,7 +23,7 @@ from tests.runtime.system_support import open_test_system
 NOW = datetime(2026, 7, 16, 12, 0, tzinfo=UTC)
 
 
-def test_preflight_locks_dynamic_closure_allows_bad_performance_and_blocks_formal_use(
+def test_preflight_locks_dynamic_closure_and_keeps_scientific_status_separate_from_execution(
     tmp_path: Path,
     m4_workflow_bundle: Path,
 ) -> None:
@@ -104,10 +104,19 @@ def test_preflight_locks_dynamic_closure_allows_bad_performance_and_blocks_forma
             purpose=RunPurpose.ASSESSMENT,
             runtime_parameters={},
         )
-        assert formal.report.technical_disposition is TechnicalDisposition.BLOCKED
-        assert "run.assessment_not_authorized" in {
-            diagnostic.code for diagnostic in formal.report.diagnostics
-        }
+        assert formal.report.technical_disposition is TechnicalDisposition.READY
+        assert formal.report.formal_run_authorized is False
+        authorization = next(
+            diagnostic
+            for diagnostic in formal.report.diagnostics
+            if diagnostic.code == "run.assessment_not_authorized"
+        )
+        assert authorization.severity.value == "warning"
+        assessment_snapshot = service.build_snapshot(
+            formal.report.preflight_id,
+            run_id="run.assessment-engineering",
+        )
+        assert assessment_snapshot.purpose is RunPurpose.ASSESSMENT
 
         manifest_path = (
             application.sessions.managed_bundle_path(imported.revision.session_revision_id)

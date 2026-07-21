@@ -207,7 +207,9 @@ def _migration_rows(root: Path) -> tuple[tuple[object, ...], ...]:
         connection.close()
 
 
-def _legacy_lineage(root: Path) -> tuple[
+def _legacy_lineage(
+    root: Path,
+) -> tuple[
     dict[str, dict[str, object]],
     dict[str, dict[str, object]],
     str,

@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001"]
 support = "Before reporting an editor defect, record the node name, node kind, task scheme, edit-session state and stable error code."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.2"
+release_label = "v0.1.0-rc.3"
 user_acceptance = "pending"
 +++
 
@@ -42,7 +42,7 @@ The main canvas is arranged from left to right:
 
 Raw Input nodes are larger and green. Other node types use their own visual categories. Operator implementations are not graph nodes: an Evidence or Extracted Data editor shows the operator recipe it uses.
 
-Use the type filter to isolate any of the five layers. Pan and zoom the viewport, and press-and-hold a node to move its stored canvas position. Layout is presentation metadata; moving a node does not change its fixed parents.
+Use the type filter to isolate any of the five layers. Pan and zoom the viewport; hold the primary button and move a node at least 4 px to change its stored canvas position, while an ordinary click still selects it. Layout is presentation metadata; moving a node does not change its fixed parents.
 
 ## 3. Create, copy and delete nodes
 
@@ -56,7 +56,7 @@ Copy and paste is the preferred way to specialise starter content:
 4. rename and edit the new definition;
 5. enable the copy and disable the old node in that scheme.
 
-By default, a copied node continues to reference the original fixed parents. Edit its parent set only when it is genuinely a different complete node. Deleting a global node is stronger than deactivating it: use deletion only when no retained scheme or historical design requires the live object. Historical RunSnapshots remain immutable.
+By default, a copied node continues to reference the original fixed parents. Edit its parent set only when it is genuinely a different complete node. Global deletion is stronger than task deactivation. Select a node and use **Delete node from system model** on the toolbar or context menu. After confirmation, one staged backend transaction removes the node and dependent downstream nodes from every affected scheme's active closure/output, then archives the global node. The status reports the number of affected schemes. Ctrl+Z can undo it; only Save All changes the canonical system and Discard All restores the earlier state. Historical RunSnapshots remain immutable.
 
 ## 4. Edit an Evidence node
 

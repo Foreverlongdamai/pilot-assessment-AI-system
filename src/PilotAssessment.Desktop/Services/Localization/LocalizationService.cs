@@ -1,7 +1,6 @@
 using System.Globalization;
 
 using Microsoft.Windows.ApplicationModel.Resources;
-using Microsoft.Windows.Globalization;
 
 using PilotAssessment.Desktop.Core.State;
 
@@ -30,14 +29,14 @@ public sealed class LocalizationService : ObservableLocalizationLookup
             : new ResourceManager();
         _resources = _resourceManager.MainResourceMap.GetSubtree("Resources");
         _context = CreateContext(CurrentLanguage);
-        ApplyPlatformLanguage(CurrentLanguage);
+        ApplyCulture(CurrentLanguage);
     }
 
     public void ChangeLanguage(string language)
     {
         var normalized = NormalizeLanguage(language);
         _context = CreateContext(normalized);
-        ApplyPlatformLanguage(normalized);
+        ApplyCulture(normalized);
         SetCurrentLanguage(normalized, forceNotification: true);
     }
 
@@ -65,9 +64,8 @@ public sealed class LocalizationService : ObservableLocalizationLookup
         return context;
     }
 
-    private static void ApplyPlatformLanguage(string language)
+    private static void ApplyCulture(string language)
     {
-        ApplicationLanguages.PrimaryLanguageOverride = language;
         CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(language);
         CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(language);
     }

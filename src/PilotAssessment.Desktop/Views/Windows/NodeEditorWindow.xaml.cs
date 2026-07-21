@@ -84,7 +84,7 @@ public sealed partial class NodeEditorWindow : Window
         _autosave.Committed += OnAutosaveCommitted;
         _localization.LanguageChanged += OnLanguageChanged;
 
-        AppWindow.SetIcon("Assets/AppIcon.ico");
+        AppWindow.SetIcon(DesktopAssetLocator.AppIconPath(AppContext.BaseDirectory));
         AppWindow.Changed += OnAppWindowChanged;
         _restoredPlacement = RestorePlacement(savedPlacement, cascadeIndex);
         RenderCanonicalNode();

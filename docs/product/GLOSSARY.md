@@ -136,7 +136,7 @@
 | Undeclared unit pass-through | D-061 的单位处理：source/profile 未声明单位时保持 null/空 object，不询问、不猜测、不换算，原始数值按固定 adapter/Evidence 方法运行，并记录 `unit_handling=undeclared-pass-through-v1`。 |
 | TPX | O8 使用的 task performance composite。M4R `starter.o8` 从 O1/O5 score 组合的 recipe 只作 legacy migration/replay；M5 active starter 使用同一 concept 下从 raw/session/task sources 计算的并行 compliant version。两者不要求 provisional 数值等价。 |
 | Engineering verified / Software verified | 某个明确里程碑的软件按其设计合同执行，并通过该里程碑规定的 fresh tests、static/schema/build/package gates；它是里程碑范围内的工程结论，不表示完整产品、后续里程碑或科学有效性已经完成。 |
-| Release candidate | 带明确 prerelease 标签、源码提交、system identity、文档、checksum、SBOM、限制和验证证据的可验收交付物。candidate 不等于最终版本；`v0.1.0-rc.1` 已被用户标记为 `changes-required`，不得改写，修订进入 `v0.1.0-rc.2`。 |
+| Release candidate | 带明确 prerelease 标签、源码提交、system identity、文档、checksum、SBOM、限制和验证证据的可验收交付物。candidate 不等于最终版本；`v0.1.0-rc.1` 与 `v0.1.0-rc.2` 均已被用户标记为 `changes-required`，不得改写，当前修订进入 `v0.1.0-rc.3`。 |
 | user_acceptance | 用户对一个精确候选进行独立实际操作后的产品验收状态，至少区分 `pending`、`accepted` 与 `changes-required`。构建机自动验证通过时仍保持 `pending`；一个候选的结果不能自动继承给后续候选。 |
-| formal_run_authorized | 是否允许创建 `purpose=assessment` 的显式状态。M1–M5 的 ingestion、alignment、Evidence、scheme preview 和 inference 工程通过都不能自动把它设为 true；M6 preflight 只有在 technical disposition ready、输入非 synthetic 且 exact reporting policy 显式声明授权时才设为 true。当前 starter/synthetic 流程仍为 false，`purpose=software_test` 可在 ready 且 false 时运行。 |
+| formal_run_authorized | 精确 session/model/reporting policy 是否已经获得正式科学评估授权的 provenance 状态，不是技术执行开关。M1–M5 的工程通过不能自动把它设为 true。按 D-085，`software_test` 与 `assessment` 在 technical disposition ready 时都可运行；Assessment 未获授权时必须显示 `run.assessment_not_authorized` warning，在 run 关联的 frozen preflight provenance 中保持 false，并继续把结果标为 engineering-only。 |
 | Scientifically validated | 评估指标、阈值、CPT 和输出经过足够样本、专家标注及统计研究证明有效。 |

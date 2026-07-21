@@ -13,14 +13,10 @@ namespace PilotAssessment.Desktop.Controls.Graph;
 
 public sealed partial class GraphNodeButton : UserControl
 {
-    private static readonly TimeSpan DragHoldDuration = TimeSpan.FromMilliseconds(350);
     private readonly TranslateTransform _dragTransform = new();
-    private readonly DispatcherQueueTimer _dragHoldTimer;
     private Windows.Foundation.Point _dragStart;
     private uint? _dragPointerId;
     private bool _dragMoved;
-    private bool _dragArmed;
-    private bool _pressCancelled;
     private bool _suppressClick;
 
     public static readonly DependencyProperty NodeProperty = DependencyProperty.Register(
@@ -33,10 +29,10 @@ public sealed partial class GraphNodeButton : UserControl
     {
         InitializeComponent();
         NodeButton.RenderTransform = _dragTransform;
-        _dragHoldTimer = DispatcherQueue.CreateTimer();
-        _dragHoldTimer.Interval = DragHoldDuration;
-        _dragHoldTimer.IsRepeating = false;
-        _dragHoldTimer.Tick += OnDragHoldElapsed;
+        NodeButton.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
+        NodeButton.AddHandler(PointerMovedEvent, new PointerEventHandler(OnPointerMoved), true);
+        NodeButton.AddHandler(PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
+        NodeButton.AddHandler(PointerCanceledEvent, new PointerEventHandler(OnPointerCanceled), true);
     }
 
     public GraphNodeProjection? Node
@@ -76,6 +72,7 @@ public sealed partial class GraphNodeButton : UserControl
         OutputBadge.Visibility = node.IsOutput ? Visibility.Visible : Visibility.Collapsed;
         ActivateItem.IsEnabled = !node.IsActive && !node.IsArchived;
         DeactivateItem.IsEnabled = node.IsActive;
+        DeleteNodeItem.IsEnabled = !node.IsArchived;
         AutomationProperties.SetName(NodeButton, node.AutomationName);
         ToolTipService.SetToolTip(NodeButton, node.AutomationName);
 
@@ -135,9 +132,12 @@ public sealed partial class GraphNodeButton : UserControl
     private void OnRemoveParentClick(object sender, RoutedEventArgs args) =>
         RaiseCommand(GraphNodeCommand.RemoveSelectedParent);
 
+    private void OnDeleteNodeClick(object sender, RoutedEventArgs args) =>
+        RaiseCommand(GraphNodeCommand.DeleteGlobal);
+
     private void OnPointerPressed(object sender, PointerRoutedEventArgs args)
     {
-        var point = args.GetCurrentPoint(NodeButton);
+        var point = args.GetCurrentPoint(this);
         if (!point.Properties.IsLeftButtonPressed)
         {
             return;
@@ -146,10 +146,7 @@ public sealed partial class GraphNodeButton : UserControl
         _dragPointerId = args.Pointer.PointerId;
         _dragStart = point.Position;
         _dragMoved = false;
-        _dragArmed = false;
-        _pressCancelled = false;
         NodeButton.CapturePointer(args.Pointer);
-        _dragHoldTimer.Start();
     }
 
     private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
@@ -159,21 +156,10 @@ public sealed partial class GraphNodeButton : UserControl
             return;
         }
 
-        var current = args.GetCurrentPoint(NodeButton).Position;
+        var current = args.GetCurrentPoint(this).Position;
         var x = current.X - _dragStart.X;
         var y = current.Y - _dragStart.Y;
         var distance = Math.Sqrt((x * x) + (y * y));
-        if (!_dragArmed)
-        {
-            if (distance >= 8)
-            {
-                _pressCancelled = true;
-                _dragHoldTimer.Stop();
-            }
-
-            return;
-        }
-
         if (!_dragMoved && distance < 4)
         {
             return;
@@ -193,7 +179,6 @@ public sealed partial class GraphNodeButton : UserControl
         }
 
         NodeButton.ReleasePointerCapture(args.Pointer);
-        _dragHoldTimer.Stop();
         if (_dragMoved && Node is not null)
         {
             _suppressClick = true;
@@ -210,15 +195,6 @@ public sealed partial class GraphNodeButton : UserControl
     }
 
     private void OnPointerCanceled(object sender, PointerRoutedEventArgs args) => ResetDrag();
-
-    private void OnDragHoldElapsed(DispatcherQueueTimer sender, object args)
-    {
-        sender.Stop();
-        if (_dragPointerId is not null && !_pressCancelled)
-        {
-            _dragArmed = true;
-        }
-    }
 
     private void RaiseInvoked(bool forceAdditive)
     {
@@ -238,11 +214,8 @@ public sealed partial class GraphNodeButton : UserControl
 
     private void ResetDrag()
     {
-        _dragHoldTimer.Stop();
         _dragPointerId = null;
         _dragMoved = false;
-        _dragArmed = false;
-        _pressCancelled = false;
         _dragTransform.X = 0;
         _dragTransform.Y = 0;
     }
@@ -281,6 +254,7 @@ public enum GraphNodeCommand
     Paste,
     ConnectSelectedParent,
     RemoveSelectedParent,
+    DeleteGlobal,
 }
 
 public sealed class GraphNodeCommandEventArgs(

@@ -98,6 +98,7 @@
                         Label="{Binding [Model_OpenDetails], Source={StaticResource Localization}}" />
                     <AppBarButton Click="OnActivateSelectionClick" Icon="Accept" Label="{Binding [Model_Activate], Source={StaticResource Localization}}" />
                     <AppBarButton Click="OnDeactivateSelectionClick" Icon="Remove" Label="{Binding [Model_Deactivate], Source={StaticResource Localization}}" />
+                    <AppBarButton Click="OnDeleteSelectionClick" Icon="Delete" Label="{Binding [Model_DeleteNode], Source={StaticResource Localization}}" />
                     <AppBarButton Click="OnCopySelectionClick" Icon="Copy" Label="{Binding [Common_Copy], Source={StaticResource Localization}}" />
                     <AppBarButton Click="OnPasteClick" Icon="Paste" Label="{Binding [Model_Paste], Source={StaticResource Localization}}" />
                     <AppBarToggleButton

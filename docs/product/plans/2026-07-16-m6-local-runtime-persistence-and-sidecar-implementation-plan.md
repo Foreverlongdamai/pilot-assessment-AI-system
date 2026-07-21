@@ -315,7 +315,7 @@ feat: compose durable project application services
 
 **GREEN**
 
-实现 `RunRepository` 与 `RunPreflightService.prepare(...)`。preflight 从 exact session revision 和 exact published scheme 动态构造 frozen execution plan；锁定 component/content hashes、operator definitions、source descriptors、engine/runtime identity 和 policy。`software_test` 可运行 starter/synthetic 数据；`assessment` 必须要求 `formal_run_authorized=true`。
+实现 `RunRepository` 与 `RunPreflightService.prepare(...)`。preflight 从 exact session revision 和 exact published scheme 动态构造 frozen execution plan；锁定 component/content hashes、operator definitions、source descriptors、engine/runtime identity 和 policy。此处历史实现曾要求 `assessment` 必须 `formal_run_authorized=true`；该技术阻断口径现由 D-085 取代：ready 的 Assessment 可执行，未授权状态以 warning 和 frozen false provenance 表达。
 
 **Commit**
 

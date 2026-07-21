@@ -614,3 +614,31 @@
 - 决策：portable product 根目录只允许 `PilotAssessment.exe`、`README.txt` 以及 `app/`、`backend/`、`system/`、`runtime/`、`developer/`、`docs/`、`licenses/`、`manifest/`。完整 WinUI/.NET/Windows App SDK publish 位于 `app/`；用户只启动根 `PilotAssessment.exe`，不得把内部 `app/PilotAssessment.Desktop.exe` 作为第二个根入口。
 - 理由：产品结构应先呈现可理解、可编辑和可维护的语义边界，而不是暴露框架部署细节。单一根入口也能避免用户误移动某个 DLL 或直接绕开产品根定位。
 - 影响：本决策只取代 D-064 与 M8A/M8E 中关于根 EXE 和 desktop payload 位置的旧口径；unpackaged self-contained、无需预装 .NET/Python/SQLite 服务、活动 Python 源码与 software-owned `system/` 的其他边界继续有效。release manifest、runtime locator、manuals 与 verifier 必须共同执行该布局。
+
+## D-084：RC.2 用户验收为 `changes-required`，修订进入 RC.3
+
+- 状态：已接受
+- 决策：`v0.1.0-rc.2` 的独立用户验收记录为 `changes-required`。RC.2 tag、commit、ZIP、checksum 与工程验证证据保持不可变；评估用途、任务栏图标、全局删除节点和长按拖动四项修订统一进入 `v0.1.0-rc.3`，其 `user_acceptance` 从 `pending` 重新开始。
+- 理由：工程自动验证不能替代用户对真实 Windows 交互的验收；修改已被测试对象必须产生新的候选身份。
+- 影响：任何“RC.2 已通过用户验收”的当前状态均无效。RC.3 必须重新生成受影响的可执行文件、文档、截图身份、manifest 与外部验证证据。
+
+## D-085：Assessment 用途可执行，科学授权状态与技术 readiness 分离
+
+- 状态：已接受
+- 决策：`purpose=assessment` 是写入 RunSnapshot 的评估用途标签，不再要求 `formal_run_authorized=true` 才能技术执行。只要 preflight 的结构、依赖、source、runtime 和模型合同 ready，Assessment run 可以创建并运行；未获正式授权时返回 `run.assessment_not_authorized` warning，保留 `formal_run_authorized=false` 的精确 preflight provenance，并把结果继续标为 engineering-only。
+- 理由：用户需要用当前工程模型完成真实的评估工作流，同时明确知道该模型尚未经过专家校准。把科学声明误作技术开关会阻止产品的核心用途。
+- 影响：D-046、M6 规格/计划与 glossary 中“Assessment 必须 formal true”的旧口径由本决策取代。`formal_run_authorized=false` 仍禁止把结果宣称为科学验证、资格认证或运行决策依据；真正的技术错误和 dirty/stale model/source 仍然阻止 run。
+
+## D-086：全局删除节点采用暂存归档并原子级联任务方案
+
+- 状态：已接受
+- 决策：Model Studio 的“删除节点”调用 backend `model.node.archive`。确认后，同一 edit-session 事务先把该节点及其 downstream 依赖从所有受影响 TaskScheme 的 active closure/output 中移出，再归档 current global node。操作可 Undo/Redo，并在关闭时随 Save All/Discard All 一并提交或放弃。
+- 理由：专家需要直接删除不再需要的当前节点；仅提供“从当前任务停用”不能表达全局移除。物理抹除又会破坏审计与历史重放。
+- 影响：历史 RunSnapshot、run、result 和 artifact 永不改变。一个仍被多个任务使用的节点删除时会影响这些任务，因此 UI 必须先明确确认；后端返回 affected schemes，不能由 C# 猜测或局部模拟。
+
+## D-087：发布图标和节点拖动必须以实际 WinUI 运行坐标为准
+
+- 状态：已接受
+- 决策：窗口图标从 `AppContext.BaseDirectory/Assets/AppIcon.ico` 解析绝对路径，资产同时复制到 build/publish。节点通过 handled-events-too 接收 Button 已处理的 pointer 事件；按住主键并移动至少 4 px 即在稳定坐标系中跟随指针，不再依赖容易失效的驻留计时器，release 时只提交一次 layout delta。
+- 理由：相对路径会在根 launcher + `app/` 的发布布局下随工作目录漂移；WinUI Button 会处理 pointer 事件，且以移动元素自身为坐标原点会抵消可见位移。
+- 影响：release verifier 必须检查发布图标资产；drag 只修改 staged layout，不改变 node semantic hash、parents、EvidenceRecipe 或 CPT。

@@ -13,6 +13,12 @@ public interface IModelGraphGateway
         string actor,
         CancellationToken cancellationToken = default);
 
+    Task<ModelNodeMutationResponse> ArchiveNodeAsync(
+        string nodeId,
+        int expectedSemanticRevision,
+        string actor,
+        CancellationToken cancellationToken = default);
+
     Task<TaskSchemeMutationResponse> ActivateNodeAsync(
         string schemeId,
         string nodeId,

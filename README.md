@@ -55,9 +55,9 @@ Competency --probability--> Sub-skill --probability--> Evidence
 2. **创建或打开项目**：Project 是一次研究或评估工作的容器，保存 Session、运行记录、不可变 RunSnapshot、结果和 artifacts；它不拥有全局 Evidence/BN 定义。
 3. **导入 Session**：选择 canonical Session Bundle，或模拟器直接导出的 `streams/` + `annotations/` 目录。后端只读检查来源，并复制/物化到项目受管存储。
 4. **选择任务方案**：从左侧选择 Base、Hover、Straight 等 `TaskScheme`，或复制现有方案建立新任务。画布以亮/暗显示当前任务启用和未启用的节点与边。
-5. **设计或调整评估模型**：在画布中创建、复制、连接或停用 Evidence/BN 节点；点击节点后在独立浮动窗口修改 recipe、operator 参数、parents、states 和 CPT。
+5. **设计或调整评估模型**：在画布中创建、复制、连接、停用或全局删除 Evidence/BN 节点；按住节点并拖动可调整布局，点击节点后在独立浮动窗口修改 recipe、operator 参数、parents、states 和 CPT。
 6. **保存系统模型**：修改先进入 `system/staging/model-edit/`；关闭软件时选择“保存全部并关闭”才原子写入当前 canonical system model，也可以放弃全部更改或取消关闭。
-7. **技术预检并运行**：后端检查 active closure、输入依赖、EvidenceRecipe 和 BN/CPT 的技术可执行性，然后从当前 Session 与方案自动冻结 immutable `RunSnapshot`。
+7. **技术预检并运行**：后端检查 active closure、输入依赖、EvidenceRecipe 和 BN/CPT 的技术可执行性，然后从当前 Session 与方案自动冻结 immutable `RunSnapshot`。选择“评估”用途不会因为 `formal_run_authorized=false` 被技术阻止；系统以 warning 和 engineering-only provenance 保留科学边界。
 8. **查看结果与追溯**：界面显示 Evidence 的 D/A/U 或 likelihood、sub-skill/competency posterior、缺失 Evidence、inference influence、trace 和 artifacts。以后修改模型不会改变历史 RunSnapshot 和结果。
 
 RC.2 的便携发布根目录专门保持为可读的产品结构：
@@ -231,15 +231,15 @@ Session Import 现在同时接受两种目录：已经包含 `manifest.json` 的
 | M8B-2 Python Operator Extension Handoff | 已工程实现；普通源码扩展入口、私有依赖 add/remove/sync、通用参数表单、轻量 extension/run 与 source snapshot 闭环已验证，M8B complete |
 | M8C-0 Documentation Infrastructure | 已工程实现；12 类 catalog/schema、固定工具链、C4 assets、确定性 DOCX、三份 review 手册与 portable verifier 已通过 |
 | M8D Current-System Packaging / Portability / Diagnostics | 已工程实现；builder 显式捕获已保存并关闭的 current system，动态验证模型身份/规模，完整 project 目录复制后可 reopen/replay，Diagnostics 展示 system/project compatibility；专用 backup/restore 已取消 |
-| M8C-1 / M8E / RC.2 | `v0.1.0-rc.1` 用户验收为 **`changes-required`**；D-082/D-083 的 RC.2 返修已形成 clean annotated `v0.1.0-rc.2`，并通过仓库外 restricted-PATH 验证。根目录由 RC.1 的 94 folders / 374 files 收敛为 **8 directories / 2 files / 1 launcher**；当前等待用户验收 RC.2 |
+| M8C-1 / M8E / RC.3 | RC.1 与 RC.2 用户验收均为 **`changes-required`**。RC.2 已把根目录收敛为 **8 directories / 2 files / 1 launcher**；D-084–D-087 的 RC.3 修复 Assessment 技术运行、发布图标、全局删除节点和按住拖动，当前正在完成新候选的文档与外部验证 |
 
 M7–M8E 的详细 fresh test、build、package 与外部验证数字保存在 [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md) 及对应 review records 中。最终候选使用 `54` nodes / `2` schemes，且构建前后源 system identity 和文件 hash 不变；这些数字只证明工程工作流，不能替代用户亲自验收。
 
-当前 18 个 Evidence、11 个 sub-skills、4 个 competencies 和 Hover BN 都只是 `starter_template` / `engineering_default`。通用代码、schema、API、UI 和测试不得依赖这些数量、名称或连接。RC.1 已被用户标记为 `changes-required`；已验证的 RC.2 重新保持 `user_acceptance=pending` 与 `formal_run_authorized=false`，直到用户独立验收和未来科学授权分别改变对应状态。
+当前 18 个 Evidence、11 个 sub-skills、4 个 competencies 和 Hover BN 都只是 `starter_template` / `engineering_default`。通用代码、schema、API、UI 和测试不得依赖这些数量、名称或连接。RC.1 与 RC.2 已被用户标记为 `changes-required`；新 RC.3 必须重新保持 `user_acceptance=pending`，而 starter 的 `formal_run_authorized=false` 作为科学状态不再阻止技术 ready 的 Assessment run。
 
 ## 从这里开始阅读
 
-1. [RC.2 Portable Root Layout Amendment](docs/product/specs/2026-07-21-rc2-portable-root-layout-amendment.md)、[Implementation Plan](docs/product/plans/2026-07-21-rc2-portable-root-layout-implementation-plan.md)、[RC.1 User Acceptance Result](docs/product/reviews/2026-07-21-v0.1.0-rc.1-user-acceptance-result.md) 与 [RC.2 Verification](docs/product/reviews/2026-07-21-rc2-portable-root-layout-verification.md) — `changes-required`、`app/` desktop payload、唯一根启动器与新候选实测证据。
+1. [RC.3 Run and Model Studio Amendment](docs/product/specs/2026-07-21-rc3-run-and-model-studio-acceptance-amendment.md)、[Implementation Plan](docs/product/plans/2026-07-21-rc3-run-and-model-studio-implementation-plan.md) 与 [RC.2 User Acceptance Result](docs/product/reviews/2026-07-21-v0.1.0-rc.2-user-acceptance-result.md) — Assessment 运行、图标、删除和拖动的当前修订权威。
 2. [M8E Final Release Candidate Design](docs/product/specs/2026-07-21-m8e-final-release-candidate-and-handoff-design.md)、[Implementation Plan](docs/product/plans/2026-07-21-m8e-final-release-candidate-implementation-plan.md) 与 [Verification](docs/product/reviews/2026-07-21-m8e-release-candidate-verification.md) — `v0.1.0-rc.1`、D-055、M8C-1、candidate screenshots、标签、两层验收证据和历史交付的执行权威与实测结果。
 3. [M8D Current-System Packaging, Project Portability and Diagnostics Design](docs/product/specs/2026-07-21-m8d-current-system-packaging-project-portability-and-diagnostics-design.md)、[Implementation Plan](docs/product/plans/2026-07-21-m8d-current-system-packaging-implementation-plan.md) 与 [Verification](docs/product/reviews/2026-07-21-m8d-current-system-packaging-verification.md) — 当前发布 system、project 目录迁移、diagnostics 和取消 backup/restore 的权威边界与 fresh evidence。
 4. [M8C Documentation System Design](docs/product/specs/2026-07-21-m8c-documentation-system-design.md)、[M8C-0 Plan](docs/product/plans/2026-07-21-m8c0-documentation-infrastructure-implementation-plan.md) 与 [Verification](docs/product/reviews/2026-07-21-m8c0-documentation-infrastructure-verification.md) — 当前文档 catalog、DOCX pipeline、状态门和发布集成权威。

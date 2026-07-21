@@ -295,10 +295,12 @@ M6 v0.1 支持：
 - `preview`：锁定 exact draft hash/revisions，结果为 non-formal，可选择不进入长期历史；
 - `software_test`：锁定 published scheme 和 managed session，持久化完整结果，但明确标记
   engineering/synthetic status；
-- `assessment`：只有 `formal_run_authorized=true` 才可启动。
+- `assessment`：记录用户选择的评估用途；按 D-085，技术 preflight ready 时可以启动。
 
 当前 Hover starter reporting policy 为 `formal_run_authorized=false`，synthetic bundle 也不能
-成为正式飞行员评估；它们仍可完整执行 `software_test`，用于验证系统工作流。
+成为已经科学授权的飞行员评估；它们可以完整执行 `software_test`，也可以用
+`assessment` 记录实际用途。后一种情况必须返回 `run.assessment_not_authorized` warning，
+并在 run 关联的 frozen preflight provenance 中保留 false，不得把完成运行表述为科学校准或认证。
 
 ### 9.2 Preflight
 

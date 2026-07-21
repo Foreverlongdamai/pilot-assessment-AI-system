@@ -1378,43 +1378,113 @@ class CurrentModelWorkspaceService:
         transaction_id: str,
         actor_id: str,
     ) -> NodeMutationResult:
-        self.repository.get_node(node_id)
-        active_scheme_ids = tuple(
-            scheme.scheme_id for scheme in self._affected_active_schemes(node_id)
-        )
-        if active_scheme_ids:
-            raise CurrentModelArchiveConflict(
-                node_id,
-                active_scheme_ids=active_scheme_ids,
-            )
-        diff = CanonicalModelDiff(
-            changed_paths=("/lifecycle",),
-            added_node_ids=(),
-            removed_node_ids=(node_id,),
-            added_edge_ids=(),
-            removed_edge_ids=tuple(
-                edge.edge_id for edge in _child_edges(self.repository.list_nodes(), node_id)
-            ),
-            metadata={"mutation": "archive_node"},
-        )
+        occurred_at = self._clock()
+        affected_scheme_ids: list[str] = []
         try:
-            saved = self.repository.archive_node(
-                node_id,
-                expected_semantic_revision=expected_semantic_revision,
-                event_id=self._event_id(),
-                actor_id=actor_id,
-                transaction_id=transaction_id,
-                occurred_at=self._clock(),
-                diff=diff,
-                join_existing=True,
-            )
+            with self.repository.database.transaction(join_existing=True):
+                current = self.repository.get_node(node_id)
+                nodes = self.repository.list_nodes()
+                edges = _all_resolvable_edges(nodes)
+                for scheme in self._affected_active_schemes(node_id):
+                    try:
+                        deactivation = plan_deactivation(
+                            scheme,
+                            nodes,
+                            edges,
+                            node_id,
+                        )
+                    except ActivationPlanningError as error:
+                        raise CurrentActivationConflict(error.code, str(error)) from error
+                    except ModelGraphError:
+                        # An expert must still be able to remove a node while repairing an
+                        # already-incomplete graph.  A precise descendant closure cannot be
+                        # trusted in that state, so clear the affected scheme conservatively.
+                        remaining_explicit_node_ids: tuple[str, ...] = ()
+                        computed_closure: tuple[str, ...] = ()
+                        remaining_output_node_ids: tuple[str, ...] = ()
+                        impacted_node_ids = scheme.computed_active_closure
+                        impacted_edge_ids = tuple(
+                            edge.edge_id
+                            for edge in edge_activation(
+                                edges,
+                                scheme.computed_active_closure,
+                            ).active_edges
+                        )
+                    else:
+                        remaining_explicit_node_ids = deactivation.remaining_explicit_node_ids
+                        computed_closure = deactivation.computed_closure
+                        remaining_output_node_ids = deactivation.remaining_output_node_ids
+                        impacted_node_ids = deactivation.impact.impacted_node_ids
+                        impacted_edge_ids = deactivation.impact.impacted_edge_ids
+                    normalized = rehash_task_scheme(
+                        self._normalize_scheme(
+                            scheme.model_copy(
+                                update={
+                                    "explicit_active_node_ids": remaining_explicit_node_ids,
+                                    "computed_active_closure": computed_closure,
+                                    "output_node_ids": remaining_output_node_ids,
+                                }
+                            ),
+                            nodes,
+                        )
+                    )
+                    changed_paths = [
+                        "/explicit_active_node_ids",
+                        "/computed_active_closure",
+                    ]
+                    if normalized.output_node_ids != scheme.output_node_ids:
+                        changed_paths.append("/output_node_ids")
+                    self.repository.update_scheme(
+                        normalized,
+                        expected_semantic_revision=scheme.semantic_revision,
+                        expected_layout_revision=None,
+                        event_id=self._event_id(),
+                        actor_id=actor_id,
+                        transaction_id=transaction_id,
+                        occurred_at=occurred_at,
+                        diff=CanonicalModelDiff(
+                            changed_paths=tuple(changed_paths),
+                            added_node_ids=(),
+                            removed_node_ids=impacted_node_ids,
+                            added_edge_ids=(),
+                            removed_edge_ids=impacted_edge_ids,
+                            metadata={
+                                "mutation": "deactivate_for_node_archive",
+                                "requested_node_id": node_id,
+                            },
+                        ),
+                        join_existing=True,
+                    )
+                    affected_scheme_ids.append(scheme.scheme_id)
+
+                diff = CanonicalModelDiff(
+                    changed_paths=("/lifecycle",),
+                    added_node_ids=(),
+                    removed_node_ids=(node_id,),
+                    added_edge_ids=(),
+                    removed_edge_ids=tuple(edge.edge_id for edge in _child_edges(nodes, node_id)),
+                    metadata={
+                        "mutation": "archive_node",
+                        "cascade_scheme_ids": affected_scheme_ids,
+                    },
+                )
+                saved = self.repository.archive_node(
+                    current.node_id,
+                    expected_semantic_revision=expected_semantic_revision,
+                    event_id=self._event_id(),
+                    actor_id=actor_id,
+                    transaction_id=transaction_id,
+                    occurred_at=occurred_at,
+                    diff=diff,
+                    join_existing=True,
+                )
         except CurrentObjectConflictError as error:
             canonical = self.repository.get_node(node_id)
             raise CurrentModelRevisionConflict(
                 str(error),
                 current_node=canonical,
             ) from error
-        return self._result(saved, (), diff)
+        return self._result(saved, tuple(affected_scheme_ids), diff)
 
     def _travel_node(
         self,

@@ -25,6 +25,18 @@ public sealed class ModelGraphCommandCoordinator
         CancellationToken cancellationToken = default) =>
         _gateway.CreateNodeAsync(ModelNodeDraftFactory.Create(request), Actor, cancellationToken);
 
+    public Task<ModelNodeMutationResponse> ArchiveNodeAsync(
+        ModelNode node,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(node);
+        return _gateway.ArchiveNodeAsync(
+            node.NodeId,
+            node.SemanticRevision,
+            Actor,
+            cancellationToken);
+    }
+
     public Task<TaskSchemeMutationResponse> ActivateNodeAsync(
         TaskScheme scheme,
         string nodeId,
