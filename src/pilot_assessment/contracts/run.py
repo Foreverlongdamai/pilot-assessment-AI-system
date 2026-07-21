@@ -33,6 +33,10 @@ from pilot_assessment.contracts.model_workspace import (
     ModelObjectLifecycle,
     TaskScheme,
 )
+from pilot_assessment.contracts.model_workspace_legacy import (
+    LegacyModelNodeV010,
+    LegacyTaskSchemeV010,
+)
 from pilot_assessment.contracts.project import ArtifactIdRef, SessionRevisionRef
 from pilot_assessment.contracts.source_provenance import BackendSourceIdentity
 
@@ -281,15 +285,15 @@ class RunSnapshot(StrictContractModel):
 
 
 class CurrentModelRunSnapshot(StrictContractModel):
-    """Immutable full current-model state paired with a legacy execution snapshot."""
+    """Frozen reader for a v0.1 bilingual current-model run snapshot."""
 
     contract_id: Literal["current-model-run-snapshot"] = "current-model-run-snapshot"
     contract_version: Literal["0.1.0"] = "0.1.0"
     run_id: StableId
     purpose: RunPurpose
     session_revision_ref: SessionRevisionRef
-    scheme: TaskScheme
-    active_nodes: tuple[ModelNode, ...]
+    scheme: LegacyTaskSchemeV010
+    active_nodes: tuple[LegacyModelNodeV010, ...]
     locked_operator_identities: tuple[ExecutableIdentity, ...]
     engine_identity: ExecutableIdentity
     numeric_runtime_identities: tuple[ExecutableIdentity, ...]
@@ -347,6 +351,14 @@ class CurrentModelRunSnapshotV2(CurrentModelRunSnapshot):
         if self.source_snapshot_ref.artifact_id != f"artifact.{self.source_snapshot_ref.sha256}":
             raise ValueError("source snapshot artifact ID must match its SHA-256")
         return self
+
+
+class CurrentModelRunSnapshotV3(CurrentModelRunSnapshotV2):
+    """Current single-English run snapshot with immutable backend provenance."""
+
+    contract_version: Literal["0.3.0"] = "0.3.0"
+    scheme: TaskScheme
+    active_nodes: tuple[ModelNode, ...]
 
 
 class AssessmentRun(StrictContractModel):
@@ -497,6 +509,13 @@ class AssessmentRunV2(StrictContractModel):
         return self
 
 
+class AssessmentRunV3(AssessmentRunV2):
+    """Run lifecycle for the single-English current-model snapshot contract."""
+
+    contract_version: Literal["0.3.0"] = "0.3.0"
+    snapshot: CurrentModelRunSnapshotV3
+
+
 class RunEvent(StrictContractModel):
     contract_id: Literal["run-event"] = "run-event"
     contract_version: Literal["0.1.0"] = "0.1.0"
@@ -560,10 +579,12 @@ class RunResultEnvelope(StrictContractModel):
 __all__ = [
     "AssessmentRun",
     "AssessmentRunV2",
+    "AssessmentRunV3",
     "CurrentModelRunPreflightReport",
     "CurrentModelRunPreflightReportV2",
     "CurrentModelRunSnapshot",
     "CurrentModelRunSnapshotV2",
+    "CurrentModelRunSnapshotV3",
     "ExecutableIdentity",
     "ModelNodeSnapshotRef",
     "RunDiagnostic",

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta, timezone
+from hashlib import sha256
 
 import pytest
 from pydantic import ValidationError
 
+import pilot_assessment.contracts as public_contracts
 import pilot_assessment.contracts.model_workspace as current
+import pilot_assessment.contracts.model_workspace_legacy as legacy
 import pilot_assessment.contracts.run as run_contracts
 from pilot_assessment.contracts.evidence_recipe import (
     PortCardinality,
@@ -34,6 +37,13 @@ from pilot_assessment.contracts.run import (
     RunStage,
     RunState,
     TechnicalDisposition,
+)
+from pilot_assessment.contracts.source_provenance import (
+    BackendSourceIdentity,
+    DependencyManifestIdentity,
+    OperatorCatalogIdentity,
+    PythonRuntimeIdentity,
+    SourceChangeSummary,
 )
 
 NOW = datetime(2026, 7, 16, 12, 0, tzinfo=UTC)
@@ -111,12 +121,9 @@ def _current_raw_node() -> current.ModelNode:
     return current.ModelNode(
         node_id=node_id,
         node_kind=current.ModelNodeKind.RAW_INPUT,
-        name_zh=None,
-        name_en="Flight state",
-        short_name_zh=None,
-        short_name_en="X",
-        description_zh=None,
-        description_en="Current raw X input.",
+        name="Flight state",
+        short_name="X",
+        description="Current raw X input.",
         tags=("starter",),
         group=None,
         lifecycle=current.ModelObjectLifecycle.ACTIVE,
@@ -141,8 +148,7 @@ def _current_raw_node() -> current.ModelNode:
                 content_hash=HASH_A,
             ),
             metadata={},
-            help_text_zh=None,
-            help_text_en="Raw input fields.",
+            help_text="Raw input fields.",
         ),
         global_layout=current.NodeLayout(node_id=node_id, x=0.0, y=0.0),
         semantic_revision=2,
@@ -159,10 +165,8 @@ def _current_raw_node() -> current.ModelNode:
 def _current_scheme() -> current.TaskScheme:
     return current.TaskScheme(
         scheme_id="scheme.current",
-        name_zh=None,
-        name_en="Current Scheme",
-        description_zh=None,
-        description_en="Autosaved current task scheme.",
+        name="Current Scheme",
+        description="Autosaved current task scheme.",
         tags=("starter",),
         group=None,
         lifecycle=current.ModelObjectLifecycle.ACTIVE,
@@ -183,9 +187,76 @@ def _current_scheme() -> current.TaskScheme:
     )
 
 
-def _current_snapshot() -> run_contracts.CurrentModelRunSnapshot:
+def _legacy_raw_node() -> legacy.LegacyModelNodeV010:
+    payload = _current_raw_node().model_dump(mode="json")
+    payload["contract_version"] = "0.1.0"
+    payload["name_en"] = payload.pop("name")
+    payload["name_zh"] = None
+    payload["short_name_en"] = payload.pop("short_name")
+    payload["short_name_zh"] = None
+    payload["description_en"] = payload.pop("description")
+    payload["description_zh"] = None
+    payload["definition"]["help_text_en"] = payload["definition"].pop("help_text")
+    payload["definition"]["help_text_zh"] = None
+    return legacy.LegacyModelNodeV010.model_validate(payload)
+
+
+def _legacy_scheme() -> legacy.LegacyTaskSchemeV010:
+    payload = _current_scheme().model_dump(mode="json")
+    payload["contract_version"] = "0.1.0"
+    payload["name_en"] = payload.pop("name")
+    payload["name_zh"] = None
+    payload["description_en"] = payload.pop("description")
+    payload["description_zh"] = None
+    return legacy.LegacyTaskSchemeV010.model_validate(payload)
+
+
+def _backend_source_identity() -> BackendSourceIdentity:
+    return BackendSourceIdentity(
+        active_source_root="backend/src",
+        source_tree_sha256=HASH_A,
+        source_file_count=1,
+        release_baseline_sha256=HASH_A,
+        baseline_available=True,
+        locally_modified=False,
+        baseline_changes=SourceChangeSummary(),
+        pyproject_sha256=HASH_B,
+        uv_lock_sha256=HASH_C,
+        python_runtime=PythonRuntimeIdentity(
+            implementation="CPython",
+            version="3.13.5",
+            executable_name="python.exe",
+            executable_sha256=HASH_D,
+            private_runtime=True,
+            identity_sha256=HASH_A,
+        ),
+        dependencies=DependencyManifestIdentity(package_count=1, manifest_sha256=HASH_B),
+        operator_catalog=OperatorCatalogIdentity(operator_count=1, catalog_sha256=HASH_C),
+        identity_sha256=HASH_D,
+    )
+
+
+def _legacy_current_snapshot() -> run_contracts.CurrentModelRunSnapshot:
     execution = _snapshot()
     return run_contracts.CurrentModelRunSnapshot(
+        run_id=execution.run_id,
+        purpose=execution.purpose,
+        session_revision_ref=execution.session_revision_ref,
+        scheme=_legacy_scheme(),
+        active_nodes=(_legacy_raw_node(),),
+        locked_operator_identities=execution.locked_operator_identities,
+        engine_identity=execution.engine_identity,
+        numeric_runtime_identities=execution.numeric_runtime_identities,
+        runtime_parameters_hash=execution.runtime_parameters_hash,
+        preflight_hash=HASH_C,
+        execution_snapshot=execution,
+        snapshot_hash=HASH_D,
+    )
+
+
+def _current_snapshot_v3() -> run_contracts.CurrentModelRunSnapshotV3:
+    execution = _snapshot()
+    return run_contracts.CurrentModelRunSnapshotV3(
         run_id=execution.run_id,
         purpose=execution.purpose,
         session_revision_ref=execution.session_revision_ref,
@@ -198,6 +269,8 @@ def _current_snapshot() -> run_contracts.CurrentModelRunSnapshot:
         preflight_hash=HASH_C,
         execution_snapshot=execution,
         snapshot_hash=HASH_D,
+        backend_source_identity=_backend_source_identity(),
+        source_snapshot_ref=ArtifactIdRef(artifact_id=f"artifact.{HASH_A}", sha256=HASH_A),
     )
 
 
@@ -395,7 +468,7 @@ def test_current_preflight_locks_current_scheme_and_nodes_without_changing_legac
 
 
 def test_current_snapshot_freezes_complete_nodes_and_legacy_execution_snapshot() -> None:
-    snapshot = _current_snapshot()
+    snapshot = _legacy_current_snapshot()
     assert isinstance(snapshot, run_contracts.CurrentModelRunSnapshot)
 
     assert (
@@ -417,7 +490,7 @@ def test_current_snapshot_freezes_complete_nodes_and_legacy_execution_snapshot()
 
 
 def test_assessment_run_v2_uses_current_snapshot_and_preserves_legacy_contract() -> None:
-    snapshot = _current_snapshot()
+    snapshot = _legacy_current_snapshot()
     run = run_contracts.AssessmentRunV2(
         run_id=snapshot.run_id,
         snapshot=snapshot,
@@ -456,3 +529,53 @@ def test_assessment_run_v2_uses_current_snapshot_and_preserves_legacy_contract()
     non_utc["requested_at"] = NOW.astimezone(timezone(timedelta(hours=1)))
     with pytest.raises(ValidationError, match="UTC"):
         run_contracts.AssessmentRunV2.model_validate(non_utc)
+
+
+def test_historical_v2_run_bytes_remain_readable_and_new_run_uses_v3_snapshot() -> None:
+    assert public_contracts.AssessmentRunV3 is run_contracts.AssessmentRunV3
+    assert public_contracts.CurrentModelRunSnapshotV3 is run_contracts.CurrentModelRunSnapshotV3
+    legacy_snapshot_payload = _legacy_current_snapshot().model_dump(mode="python")
+    legacy_snapshot_payload["contract_version"] = "0.2.0"
+    legacy_snapshot = run_contracts.CurrentModelRunSnapshotV2(
+        **legacy_snapshot_payload,
+        backend_source_identity=_backend_source_identity(),
+        source_snapshot_ref=ArtifactIdRef(artifact_id=f"artifact.{HASH_A}", sha256=HASH_A),
+    )
+    legacy_run = run_contracts.AssessmentRunV2(
+        run_id=legacy_snapshot.run_id,
+        snapshot=legacy_snapshot,
+        state=RunState.QUEUED,
+        stage=RunStage.QUEUED,
+        progress_sequence=0,
+        requested_at=NOW,
+        started_at=None,
+        finished_at=None,
+        cancellation_requested_at=None,
+    )
+    historical_bytes = legacy_run.model_dump_json().encode("utf-8")
+    historical_digest = sha256(historical_bytes).hexdigest()
+
+    restored = run_contracts.AssessmentRunV2.model_validate_json(historical_bytes)
+
+    assert restored.model_dump_json().encode("utf-8") == historical_bytes
+    assert sha256(restored.model_dump_json().encode("utf-8")).hexdigest() == historical_digest
+    assert restored.snapshot.snapshot_hash == HASH_D
+
+    current_snapshot = _current_snapshot_v3()
+    current_run = run_contracts.AssessmentRunV3(
+        run_id=current_snapshot.run_id,
+        snapshot=current_snapshot,
+        state=RunState.QUEUED,
+        stage=RunStage.QUEUED,
+        progress_sequence=0,
+        requested_at=NOW,
+        started_at=None,
+        finished_at=None,
+        cancellation_requested_at=None,
+    )
+    current_payload = current_run.model_dump(mode="json")
+    assert current_run.contract_version == "0.3.0"
+    assert current_payload["snapshot"]["contract_version"] == "0.3.0"
+    assert current_payload["snapshot"]["scheme"]["contract_version"] == "0.2.0"
+    assert current_payload["snapshot"]["active_nodes"][0]["name"] == "Flight state"
+    assert "name_en" not in current_payload["snapshot"]["active_nodes"][0]

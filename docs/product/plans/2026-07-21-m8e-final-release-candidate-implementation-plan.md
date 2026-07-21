@@ -67,7 +67,7 @@ git commit -m "docs: adopt M8E release candidate gate"
 - Test: `tests/contracts/test_model_workspace.py`
 - Test: `tests/contracts/test_run_contracts.py`
 
-- [ ] Add failing tests requiring current serialized objects to contain only:
+- [x] Add failing tests requiring current serialized objects to contain only:
 
 ```python
 assert payload["contract_version"] == "0.2.0"
@@ -78,15 +78,15 @@ assert not ({"name_zh", "name_en", "short_name_zh", "short_name_en"} & payload)
 assert payload["definition"]["help_text"]
 ```
 
-- [ ] Add a test proving existing v0.2 historical run JSON still validates with unchanged bytes/hash, while a new current snapshot uses `0.3.0`.
-- [ ] Run the focused tests and confirm the new assertions fail:
+- [x] Add a test proving existing v0.2 historical run JSON still validates with unchanged bytes/hash, while a new current snapshot uses `0.3.0`.
+- [x] Run the focused tests and confirm the new assertions fail:
 
 ```powershell
 .\.tools\uv\uv.exe run pytest tests\contracts\test_model_workspace.py tests\contracts\test_run_contracts.py -q
 ```
 
-- [ ] Freeze the exact old bilingual node, definition and scheme models as `Legacy*V010` types in the compatibility module.
-- [ ] Replace current fields with:
+- [x] Freeze the exact old bilingual node, definition and scheme models as `Legacy*V010` types in the compatibility module.
+- [x] Replace current fields with:
 
 ```python
 class ModelNode(StrictContractModel):
@@ -100,9 +100,9 @@ class RawInputNodeDefinition(StrictContractModel):
     help_text: HumanText
 ```
 
-- [ ] Apply the same `help_text` shape to Evidence and BN definitions; remove localized-pair validation only from current types.
-- [ ] Bind historical run snapshot classes to legacy types; add `ModelGraphSnapshot 0.3.0`, `CurrentModelRunSnapshotV3` and `AssessmentRunV3` for new runs.
-- [ ] Rerun focused contract tests and commit:
+- [x] Apply the same `help_text` shape to Evidence and BN definitions; remove localized-pair validation only from current types.
+- [x] Bind historical run snapshot classes to legacy types; add `ModelGraphSnapshot 0.3.0`, `CurrentModelRunSnapshotV3` and `AssessmentRunV3` for new runs.
+- [x] Rerun focused contract tests and commit:
 
 ```powershell
 git add src/pilot_assessment/contracts tests/contracts

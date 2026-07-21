@@ -166,12 +166,9 @@ def _node_fields(node_id: str, kind: current.ModelNodeKind, *, x: float) -> dict
     return {
         "node_id": node_id,
         "node_kind": kind,
-        "name_zh": None,
-        "name_en": node_id,
-        "short_name_zh": None,
-        "short_name_en": node_id,
-        "description_zh": None,
-        "description_en": f"Current complete {kind.value} node.",
+        "name": node_id,
+        "short_name": node_id,
+        "description": f"Current complete {kind.value} node.",
         "tags": ("starter",),
         "group": None,
         "lifecycle": current.ModelObjectLifecycle.ACTIVE,
@@ -198,8 +195,7 @@ def _raw_node() -> current.ModelNode:
             resource_role=current.RawResourceRole.STREAM,
             source_descriptor=_source(),
             metadata={"display_group": "flight"},
-            help_text_zh=None,
-            help_text_en="Flight state fields and units.",
+            help_text="Flight state fields and units.",
         ),
     )
 
@@ -226,8 +222,7 @@ def _bn_node() -> current.ModelNode:
             scientific_status=ModelScientificStatus.STARTER_TEMPLATE,
             reporting_metadata={},
             provenance={"origin": "starter"},
-            help_text_zh=None,
-            help_text_en="Latent BN node.",
+            help_text="Latent BN node.",
         ),
     )
 
@@ -266,8 +261,7 @@ def _evidence_node() -> current.ModelNode:
             modality_attribution_weights={"X": 1.0},
             scientific_status=ModelScientificStatus.STARTER_TEMPLATE,
             provenance={"origin": "starter"},
-            help_text_zh=None,
-            help_text_en="Computed from the raw X stream.",
+            help_text="Computed from the raw X stream.",
         ),
     )
 
@@ -275,10 +269,8 @@ def _evidence_node() -> current.ModelNode:
 def _scheme() -> current.TaskScheme:
     return current.TaskScheme(
         scheme_id="scheme.base",
-        name_zh=None,
-        name_en="Base Scheme",
-        description_zh=None,
-        description_en="Editable starter task scheme.",
+        name="Base Scheme",
+        description="Editable starter task scheme.",
         tags=("starter",),
         group=None,
         lifecycle=current.ModelObjectLifecycle.ACTIVE,
@@ -317,6 +309,21 @@ def test_complete_nodes_round_trip_with_discriminated_definitions() -> None:
     for node in (raw, evidence, bn):
         assert current.ModelNode.model_validate_json(node.model_dump_json()) == node
         assert node.global_layout.node_id == node.node_id
+        payload = node.model_dump(mode="json")
+        assert payload["contract_version"] == "0.2.0"
+        assert not (
+            {
+                "name_zh",
+                "name_en",
+                "short_name_zh",
+                "short_name_en",
+                "description_zh",
+                "description_en",
+            }
+            & payload.keys()
+        )
+        assert payload["definition"]["help_text"]
+        assert not ({"help_text_zh", "help_text_en"} & payload["definition"].keys())
 
     assert evidence.definition.definition_kind == "evidence"
     assert tuple(
@@ -325,11 +332,11 @@ def test_complete_nodes_round_trip_with_discriminated_definitions() -> None:
     assert bn.definition.definition_kind == "bn"
 
 
-def test_node_identity_requires_bilingual_fallback_and_matching_definition_kind() -> None:
+def test_node_identity_requires_single_content_and_matching_definition_kind() -> None:
     raw = _raw_node()
 
     missing_name = raw.model_dump(mode="json")
-    missing_name.update(name_zh=None, name_en=None)
+    missing_name["name"] = ""
     with pytest.raises(ValidationError, match="name"):
         current.ModelNode.model_validate(missing_name)
 
@@ -482,7 +489,7 @@ def test_graph_snapshot_uses_unique_current_nodes_and_typed_edges() -> None:
         recipe_input_binding_id=None,
     )
     snapshot = current.ModelGraphSnapshot(
-        project_id="project.alpha",
+        model_library_id="model-library.alpha",
         scheme=_scheme(),
         nodes=nodes,
         edges=(extraction, probabilistic),
@@ -491,6 +498,7 @@ def test_graph_snapshot_uses_unique_current_nodes_and_typed_edges() -> None:
     )
 
     assert current.ModelGraphSnapshot.model_validate_json(snapshot.model_dump_json()) == snapshot
+    assert snapshot.contract_version == "0.3.0"
     duplicate = snapshot.model_dump(mode="json")
     duplicate["nodes"].append(duplicate["nodes"][0])
     with pytest.raises(ValidationError, match="node"):
