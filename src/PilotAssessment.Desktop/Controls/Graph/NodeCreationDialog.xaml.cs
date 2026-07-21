@@ -24,8 +24,7 @@ public sealed partial class NodeCreationDialog : ContentDialog
 
     public ModelNodeDraftRequest CreateRequest(double x, double y) => new(
         SelectedKind(),
-        EnglishNameBox.Text,
-        ChineseNameBox.Text,
+        NameBox.Text,
         SelectedRawModality(),
         x,
         y);
@@ -35,8 +34,7 @@ public sealed partial class NodeCreationDialog : ContentDialog
 
     private void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        if (string.IsNullOrWhiteSpace(EnglishNameBox.Text) &&
-            string.IsNullOrWhiteSpace(ChineseNameBox.Text))
+        if (string.IsNullOrWhiteSpace(NameBox.Text))
         {
             ValidationInfo.Message = App.Services
                 .GetRequiredService<ILocalizationLookup>()["Dialog_NodeNameRequired"];

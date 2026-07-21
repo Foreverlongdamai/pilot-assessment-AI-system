@@ -11,7 +11,7 @@ using PilotAssessment.Desktop.Core.ViewModels;
 namespace PilotAssessment.Desktop.ViewModels;
 
 public sealed record ResultRunItemViewModel(
-    AssessmentRunV2 Run,
+    AssessmentRunV3 Run,
     string ResultId,
     string Title,
     string DetailText);
@@ -329,14 +329,14 @@ public partial class ResultsViewModel : ObservableObject
             StringComparer.Ordinal);
     }
 
-    private Dictionary<string, string> BuildNodeNames(AssessmentRunV2 run) =>
+    private Dictionary<string, string> BuildNodeNames(AssessmentRunV3 run) =>
         run.Snapshot.ActiveNodes.ToDictionary(
             node => node.NodeId,
             node => ModelDisplayNameResolver.ForNode(node, preferShort: false),
             StringComparer.Ordinal);
 
     private void BuildProvenance(
-        AssessmentRunV2 run,
+        AssessmentRunV3 run,
         RunResultEnvelope result,
         IReadOnlyList<LoadedArtifact> artifacts)
     {
@@ -397,7 +397,7 @@ public partial class ResultsViewModel : ObservableObject
         return descriptors.ToArray();
     }
 
-    private ResultRunItemViewModel BuildRunItem(AssessmentRunV2 run, string resultId)
+    private ResultRunItemViewModel BuildRunItem(AssessmentRunV3 run, string resultId)
     {
         var schemeName = ModelDisplayNameResolver.ForScheme(run.Snapshot.Scheme);
         return new ResultRunItemViewModel(

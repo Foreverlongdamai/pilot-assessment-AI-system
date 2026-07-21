@@ -170,11 +170,11 @@ public sealed class TaskSchemeListViewModelTests
         await viewModel.LoadAsync("project.test");
         viewModel.Select(viewModel.Schemes.Single(item => item.SchemeId == "task-scheme.alpha"));
 
-        var renamed = await viewModel.RenameSelectedAsync("Alpha edited", "Alpha 中文");
+        var renamed = await viewModel.RenameSelectedAsync("Alpha edited");
         var archived = await viewModel.ArchiveSelectedAsync();
 
         Assert.Equal(1, renamed!.SemanticRevision);
-        Assert.Equal("Alpha edited", renamed.NameEn);
+        Assert.Equal("Alpha edited", renamed.Name);
         Assert.Equal(ModelObjectLifecycle.Archived, archived!.Lifecycle);
         Assert.Single(viewModel.Schemes);
         Assert.Equal("task-scheme.beta", viewModel.SelectedScheme!.SchemeId);
@@ -193,12 +193,10 @@ public sealed class TaskSchemeListViewModelTests
         string? copiedFrom = null,
         char hashCharacter = 'a') => new(
             "task-scheme",
-            "0.1.0",
+            "0.2.0",
             id,
-            null,
             name,
-            null,
-            null,
+            $"{name} assessment scheme.",
             tags ?? [],
             group,
             lifecycle,
@@ -221,7 +219,7 @@ public sealed class TaskSchemeListViewModelTests
         scheme,
         new ModelGraphSnapshot(
             "model-graph-snapshot",
-            "0.2.0",
+            "0.3.0",
             "model-library.test",
             scheme,
             [],
@@ -279,8 +277,7 @@ public sealed class TaskSchemeListViewModelTests
         public Task<TaskSchemeMutationResponse> CopySchemeAsync(
             string sourceSchemeId,
             string newSchemeId,
-            string? nameZh,
-            string? nameEn,
+            string? name,
             string actor,
             CancellationToken cancellationToken = default)
         {
@@ -289,8 +286,7 @@ public sealed class TaskSchemeListViewModelTests
             var copy = Canonical(source with
             {
                 SchemeId = newSchemeId,
-                NameZh = nameZh,
-                NameEn = nameEn,
+                Name = name ?? source.Name,
                 CopiedFromSchemeId = sourceSchemeId,
                 SemanticRevision = 0,
             });

@@ -176,7 +176,6 @@ public sealed class GraphCommandTests
         ModelNodeDraftFactory.Create(new ModelNodeDraftRequest(
             kind,
             name,
-            null,
             RawModality.X,
             100,
             100));
@@ -515,11 +514,9 @@ public sealed class GraphCommandTests
             string[] explicitIds,
             string[] closure) => new(
                 "task-scheme",
-                "0.1.0",
+                "0.2.0",
                 id,
-                null,
                 id,
-                null,
                 "Test task scheme.",
                 [],
                 "test",
@@ -541,7 +538,7 @@ public sealed class GraphCommandTests
 
         private static ModelGraphSnapshot Snapshot(TaskScheme scheme, ModelNode[] nodes) => new(
             "model-graph-snapshot",
-            "0.1.0",
+            "0.3.0",
             "project.test",
             scheme,
             nodes,

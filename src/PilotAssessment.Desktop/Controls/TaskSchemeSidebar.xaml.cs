@@ -22,13 +22,12 @@ public sealed partial class TaskSchemeSidebar : UserControl
 
     private async void OnCreateClick(object sender, RoutedEventArgs args)
     {
-        var names = await ShowNameDialogAsync(
+        var name = await ShowNameDialogAsync(
             Localization["Task_CreateDialog"],
-            Localization["Task_DefaultNewName"],
-            null);
-        if (names is not null)
+            Localization["Task_DefaultNewName"]);
+        if (name is not null)
         {
-            await RunUiActionAsync(() => ViewModel.CreateAsync(names.NameEn, names.NameZh));
+            await RunUiActionAsync(() => ViewModel.CreateAsync(name));
         }
     }
 
@@ -43,13 +42,12 @@ public sealed partial class TaskSchemeSidebar : UserControl
             return;
         }
 
-        var names = await ShowNameDialogAsync(
+        var name = await ShowNameDialogAsync(
             Localization["Task_RenameDialog"],
-            selected.NameEn,
-            selected.NameZh);
-        if (names is not null)
+            selected.Name);
+        if (name is not null)
         {
-            await RunUiActionAsync(() => ViewModel.RenameSelectedAsync(names.NameEn, names.NameZh));
+            await RunUiActionAsync(() => ViewModel.RenameSelectedAsync(name));
         }
     }
 
@@ -87,26 +85,18 @@ public sealed partial class TaskSchemeSidebar : UserControl
     private void OnSchemeSelectionChanged(object sender, SelectionChangedEventArgs args) =>
         ViewModel.Select(SchemeList.SelectedItem as TaskSchemeListItemViewModel);
 
-    private async Task<SchemeNames?> ShowNameDialogAsync(
+    private async Task<string?> ShowNameDialogAsync(
         string title,
-        string? nameEn,
-        string? nameZh)
+        string? name)
     {
-        var english = new TextBox
+        var canonicalName = new TextBox
         {
-            Header = Localization["Editor_EnglishName"],
-            Text = nameEn ?? string.Empty,
-            PlaceholderText = Localization["Task_OneLanguageRequired"],
-        };
-        var chinese = new TextBox
-        {
-            Header = Localization["Editor_ChineseName"],
-            Text = nameZh ?? string.Empty,
-            PlaceholderText = Localization["Task_OneLanguageRequired"],
+            Header = Localization["Editor_CanonicalName"],
+            Text = name ?? string.Empty,
+            PlaceholderText = Localization["Editor_CanonicalEnglishHint"],
         };
         var fields = new StackPanel { Spacing = 12 };
-        fields.Children.Add(english);
-        fields.Children.Add(chinese);
+        fields.Children.Add(canonicalName);
         var dialog = new ContentDialog
         {
             XamlRoot = XamlRoot,
@@ -117,7 +107,7 @@ public sealed partial class TaskSchemeSidebar : UserControl
             DefaultButton = ContentDialogButton.Primary,
         };
         return await dialog.ShowAsync() is ContentDialogResult.Primary
-            ? new SchemeNames(english.Text, chinese.Text)
+            ? canonicalName.Text
             : null;
     }
 
@@ -139,6 +129,4 @@ public sealed partial class TaskSchemeSidebar : UserControl
             await dialog.ShowAsync();
         }
     }
-
-    private sealed record SchemeNames(string? NameEn, string? NameZh);
 }

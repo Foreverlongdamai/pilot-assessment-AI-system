@@ -52,7 +52,7 @@ public sealed class GraphProjectionTests
     }
 
     [Fact]
-    public void AllGlobalAndFiltersSearchBilingualMetadataWithoutReconstructingEdges()
+    public void AllGlobalAndFiltersSearchCanonicalMetadataWithoutReconstructingEdges()
     {
         var snapshot = SevenNodeGraph();
         var all = GraphProjection.Project(
@@ -62,15 +62,15 @@ public sealed class GraphProjectionTests
         Assert.Equal(7, all.Nodes.Count);
         Assert.True(all.Nodes.Single(node => node.NodeId == "bn.archived").IsArchived);
 
-        var bilingual = GraphProjection.Project(
+        var canonical = GraphProjection.Project(
             snapshot,
             new GraphProjectionOptions(
                 GraphViewMode.AllGlobalNodes,
-                SearchText: "轨迹",
+                SearchText: "Trajectory",
                 Layer: GraphDisplayLayer.Evidence));
-        Assert.Single(bilingual.Nodes);
-        Assert.Equal("evidence.precision", bilingual.Nodes[0].NodeId);
-        Assert.Empty(bilingual.Edges);
+        Assert.Single(canonical.Nodes);
+        Assert.Equal("evidence.precision", canonical.Nodes[0].NodeId);
+        Assert.Empty(canonical.Edges);
 
         var inactiveGaze = GraphProjection.Project(
             snapshot,
@@ -145,12 +145,10 @@ public sealed class GraphProjectionTests
         var active = nodes.Select(node => node.NodeId).ToArray();
         var scheme = new TaskScheme(
             "task-scheme",
-            "0.1.0",
+            "0.2.0",
             "task-scheme.ui-benchmark",
-            null,
             "In-memory UI projection benchmark",
-            null,
-            null,
+            "In-memory graph projection performance fixture.",
             [],
             null,
             ModelObjectLifecycle.Active,
@@ -170,7 +168,7 @@ public sealed class GraphProjectionTests
             Now);
         var snapshot = new ModelGraphSnapshot(
             "model-graph-snapshot",
-            "0.2.0",
+            "0.3.0",
             "model-library.ui-benchmark",
             scheme,
             nodes,
@@ -331,12 +329,10 @@ public sealed class GraphProjectionTests
         var active = new[] { "bn.competency", "bn.skill", "evidence.precision", "raw.x" };
         var scheme = new TaskScheme(
             "task-scheme",
-            "0.1.0",
+            "0.2.0",
             "task-scheme.test",
-            null,
             "Projection test",
-            null,
-            null,
+            "Graph projection test scheme.",
             [],
             null,
             ModelObjectLifecycle.Active,
@@ -364,7 +360,7 @@ public sealed class GraphProjectionTests
         };
         return new ModelGraphSnapshot(
             "model-graph-snapshot",
-            "0.2.0",
+            "0.3.0",
             "model-library.test",
             scheme,
             nodes,
@@ -375,12 +371,10 @@ public sealed class GraphProjectionTests
 
     private static TaskScheme Scheme(string schemeId, IReadOnlyList<ModelNode> nodes) => new(
         "task-scheme",
-        "0.1.0",
+        "0.2.0",
         schemeId,
-        null,
         "Raw family projection",
-        null,
-        null,
+        "Raw input family projection scheme.",
         [],
         null,
         ModelObjectLifecycle.Active,
@@ -422,15 +416,12 @@ public sealed class GraphProjectionTests
             new string('f', 64));
         return new ModelNode(
             "model-node",
-            "0.1.0",
+            "0.2.0",
             id,
             ModelNodeKind.RawInput,
-            null,
             sourceId,
-            null,
             sourceId,
-            null,
-            sourceId,
+            $"{sourceId} raw input.",
             [],
             "inputs",
             ModelObjectLifecycle.Active,
@@ -442,8 +433,7 @@ public sealed class GraphProjectionTests
                     : RawResourceRole.Stream,
                 descriptor,
                 new Dictionary<string, JsonElement>(StringComparer.Ordinal),
-                null,
-                null),
+                "Raw input help."),
             new NodeLayout(id, x, y),
             0,
             0,
@@ -466,15 +456,12 @@ public sealed class GraphProjectionTests
         string group,
         ModelObjectLifecycle lifecycle = ModelObjectLifecycle.Active) => new(
             "model-node",
-            "0.1.0",
+            "0.2.0",
             id,
             kind,
-            nameZh,
             nameEn,
-            nameZh,
             nameEn,
-            nameZh,
-            nameEn,
+            $"{nameEn} graph node.",
             tags,
             group,
             lifecycle,

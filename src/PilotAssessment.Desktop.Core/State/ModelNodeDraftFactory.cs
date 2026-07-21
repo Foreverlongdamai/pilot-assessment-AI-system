@@ -5,48 +5,40 @@ namespace PilotAssessment.Desktop.Core.State;
 
 public sealed record ModelNodeDraftRequest(
     ModelNodeKind NodeKind,
-    string? NameEn,
-    string? NameZh,
+    string Name,
     RawModality RawModality,
     double X,
     double Y);
 
 public static class ModelNodeDraftFactory
 {
-    private const string ContractVersion = "0.1.0";
+    private const string ComponentContractVersion = "0.1.0";
+    private const string CurrentModelContractVersion = "0.2.0";
     private static readonly string[] DauStateIds = ["desired", "adequate", "undesired"];
     private static readonly string[] BnStateIds = ["low", "medium", "high"];
 
     public static ModelNode Create(ModelNodeDraftRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-        var nameEn = Normalize(request.NameEn);
-        var nameZh = Normalize(request.NameZh);
-        if (nameEn is null && nameZh is null)
-        {
-            throw new ArgumentException("A model node needs an English or Chinese name.");
-        }
+        var name = Normalize(request.Name)
+            ?? throw new ArgumentException("A model node needs a canonical English name.");
 
         var nodeId = $"model-node.{KindId(request.NodeKind)}.{Guid.NewGuid():N}";
-        var displayName = nameEn ?? nameZh!;
         var now = DateTime.UtcNow;
         ModelNodeDefinition definition = request.NodeKind switch
         {
-            ModelNodeKind.RawInput => CreateRawDefinition(displayName, request.RawModality),
-            ModelNodeKind.Evidence => CreateEvidenceDefinition(nodeId, displayName),
+            ModelNodeKind.RawInput => CreateRawDefinition(name, request.RawModality),
+            ModelNodeKind.Evidence => CreateEvidenceDefinition(nodeId, name),
             ModelNodeKind.Bn => CreateBnDefinition(nodeId),
             _ => throw new ArgumentOutOfRangeException(nameof(request), request.NodeKind, null),
         };
         return new ModelNode(
             "model-node",
-            ContractVersion,
+            CurrentModelContractVersion,
             nodeId,
             request.NodeKind,
-            nameZh,
-            nameEn,
-            Shorten(nameZh),
-            Shorten(nameEn),
-            nameZh is null ? null : "专家新建的可编辑节点；请在节点编辑器中补全其计算定义。",
+            name,
+            Shorten(name)!,
             "Expert-created editable node; complete its definition in the node editor.",
             ["expert-created"],
             "expert",
@@ -74,7 +66,7 @@ public static class ModelNodeDraftFactory
             RawResourceRole.Stream,
             new SourceDescriptor(
                 "source-descriptor",
-                ContractVersion,
+                ComponentContractVersion,
                 sourceId,
                 SourceKind.RawStream,
                 displayName,
@@ -85,7 +77,6 @@ public static class ModelNodeDraftFactory
                 EmptyElements(),
                 ZeroHash()),
             EmptyElements(),
-            null,
             "Select the session source and schema expected by this raw input node.");
     }
 
@@ -106,7 +97,7 @@ public static class ModelNodeDraftFactory
         return new EvidenceNodeDefinition(
             new EvidenceRecipe(
                 "evidence-recipe",
-                ContractVersion,
+                ComponentContractVersion,
                 recipeId,
                 1,
                 new RecipeAnchor(
@@ -134,7 +125,6 @@ public static class ModelNodeDraftFactory
             new Dictionary<string, double>(StringComparer.Ordinal) { ["X"] = 1.0 },
             ModelScientificStatus.ExpertDefined,
             Provenance("blank_expert_evidence"),
-            null,
             "Connect Raw Input sources, design the operator graph and configure observation scoring." );
     }
 
@@ -153,7 +143,6 @@ public static class ModelNodeDraftFactory
             ModelScientificStatus.ExpertDefined,
             EmptyElements(),
             Provenance("blank_expert_bn"),
-            null,
             "Configure fixed probabilistic parents, state semantics and the CPT." );
     }
 

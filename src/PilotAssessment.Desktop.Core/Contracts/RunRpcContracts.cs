@@ -21,14 +21,14 @@ public sealed record CurrentModelRunStartRequest(
     string TransactionId);
 
 public sealed record CurrentModelRunMutationResponse(
-    AssessmentRunV2 Run,
+    AssessmentRunV3 Run,
     string TransactionId,
     string AuditEventId,
     bool Replayed,
     string TraceId);
 
 public sealed record CurrentModelRunListItem(
-    AssessmentRunV2 Run,
+    AssessmentRunV3 Run,
     string? ResultId);
 
 public sealed record CurrentModelRunListResponse(
@@ -38,7 +38,7 @@ public sealed record CurrentModelRunListResponse(
 public sealed record RunStatusRequest(string RunId);
 
 public sealed record CurrentModelRunStatusResponse(
-    AssessmentRunV2 Run,
+    AssessmentRunV3 Run,
     string? ResultId,
     string TraceId);
 
@@ -56,7 +56,7 @@ public sealed record RunCancelRequest(
     string TransactionId);
 
 public sealed record CurrentModelRunCancelResponse(
-    AssessmentRunV2 Run,
+    AssessmentRunV3 Run,
     string TransactionId,
     string AuditEventId,
     bool Replayed,

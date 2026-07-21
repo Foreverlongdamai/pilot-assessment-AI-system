@@ -128,9 +128,9 @@ public sealed class RunResultViewModelTests
         Assert.DoesNotContain("probabilistic", influence.MethodId, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static AssessmentRunV2 CurrentRun() => ReadFixture(
-        "assessment-run-v2.json",
-        PilotAssessmentJsonContext.Default.AssessmentRunV2);
+    private static AssessmentRunV3 CurrentRun() => ReadFixture(
+        "assessment-run-v3.json",
+        PilotAssessmentJsonContext.Default.AssessmentRunV3);
 
     private static RunEvent Event(
         string runId,

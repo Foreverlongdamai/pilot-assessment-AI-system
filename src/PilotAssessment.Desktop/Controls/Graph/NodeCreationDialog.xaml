@@ -26,8 +26,8 @@
             <ComboBoxItem Content="{Binding [Model_KindEvidence], Source={StaticResource Localization}}" Tag="evidence" />
             <ComboBoxItem Content="BN" Tag="bn" />
         </ComboBox>
-        <TextBox x:Name="EnglishNameBox" Header="{Binding [Editor_EnglishName], Source={StaticResource Localization}}" PlaceholderText="{Binding [Dialog_EnglishNameExample], Source={StaticResource Localization}}" />
-        <TextBox x:Name="ChineseNameBox" Header="{Binding [Editor_ChineseName], Source={StaticResource Localization}}" PlaceholderText="{Binding [Dialog_ChineseNameExample], Source={StaticResource Localization}}" />
+        <TextBox x:Name="NameBox" Header="{Binding [Editor_CanonicalName], Source={StaticResource Localization}}" PlaceholderText="{Binding [Dialog_EnglishNameExample], Source={StaticResource Localization}}" />
+        <TextBlock Opacity="0.68" Text="{Binding [Editor_CanonicalEnglishHint], Source={StaticResource Localization}}" TextWrapping="Wrap" />
         <ComboBox x:Name="RawModalityCombo" Header="{Binding [Dialog_RawModality], Source={StaticResource Localization}}">
             <ComboBoxItem Content="{Binding [Dialog_ModalityX], Source={StaticResource Localization}}" Tag="X" />
             <ComboBoxItem Content="{Binding [Dialog_ModalityU], Source={StaticResource Localization}}" Tag="U" />

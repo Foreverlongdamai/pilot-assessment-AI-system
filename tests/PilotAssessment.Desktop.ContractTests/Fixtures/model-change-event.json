@@ -12,7 +12,7 @@
   "after_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "diff": {
     "changed_paths": [
-      "/name_en"
+      "/name"
     ],
     "added_node_ids": [],
     "removed_node_ids": [],

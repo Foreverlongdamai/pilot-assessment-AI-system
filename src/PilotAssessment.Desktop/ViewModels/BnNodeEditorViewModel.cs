@@ -380,16 +380,10 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
     private object?[] _statusArguments = [];
 
     [ObservableProperty]
-    public partial string NameZh { get; set; } = string.Empty;
+    public partial string Name { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string NameEn { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string DescriptionZh { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string DescriptionEn { get; set; } = string.Empty;
+    public partial string Description { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial string Group { get; set; } = string.Empty;
@@ -410,10 +404,7 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
     public partial string ReportingMetadataJson { get; set; } = "{}";
 
     [ObservableProperty]
-    public partial string HelpTextZh { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string HelpTextEn { get; set; } = string.Empty;
+    public partial string HelpText { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial string StatusMessage { get; private set; } = "Loading BN editor metadata…";
@@ -527,10 +518,8 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
             ?? throw new ArgumentException("BN editor requires a BN node.");
         _canonicalNode = node;
         _schemeId = schemeId;
-        NameZh = node.NameZh ?? string.Empty;
-        NameEn = node.NameEn ?? string.Empty;
-        DescriptionZh = node.DescriptionZh ?? string.Empty;
-        DescriptionEn = node.DescriptionEn ?? string.Empty;
+        Name = node.Name;
+        Description = node.Description;
         Group = node.Group ?? string.Empty;
         TagsText = string.Join(", ", node.Tags);
         NodeRole = definition.NodeRole;
@@ -539,8 +528,7 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
         ReportingMetadataJson = JsonSerializer.Serialize(
             definition.ReportingMetadata,
             ContractJsonOptions);
-        HelpTextZh = definition.HelpTextZh ?? string.Empty;
-        HelpTextEn = definition.HelpTextEn ?? string.Empty;
+        HelpText = definition.HelpText;
         Replace(States, definition.OrderedStates.Select(state => new BnStateEditItem(state)));
         Cpt.ApplyCanonical(node, EditorFrom(definition.Cpt));
         if (_graph is not null)
@@ -586,12 +574,12 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
     public ModelNode BuildUpdatedNode()
     {
         var definition = (BnNodeDefinition)_canonicalNode.Definition;
+        var canonicalName = Require(Name, "BN node name");
         return _canonicalNode with
         {
-            NameZh = Normalize(NameZh),
-            NameEn = Normalize(NameEn),
-            DescriptionZh = Normalize(DescriptionZh),
-            DescriptionEn = Normalize(DescriptionEn),
+            Name = canonicalName,
+            ShortName = Shorten(canonicalName),
+            Description = Require(Description, "BN node description"),
             Group = Normalize(Group),
             Tags = SplitValues(TagsText),
             Definition = definition with
@@ -600,8 +588,7 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
                 Documentation = Documentation.Trim(),
                 ScientificStatus = ScientificStatus,
                 ReportingMetadata = ParseJsonDictionary(ReportingMetadataJson),
-                HelpTextZh = Normalize(HelpTextZh),
-                HelpTextEn = Normalize(HelpTextEn),
+                HelpText = Require(HelpText, "BN node help text"),
             },
         };
     }
@@ -922,6 +909,11 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
 
     private static string? Normalize(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static string Require(string value, string label) =>
+        Normalize(value) ?? throw new InvalidOperationException($"{label} must not be blank.");
+
+    private static string Shorten(string value) => value.Length <= 96 ? value : value[..96];
 
     private static void Replace<T>(ObservableCollection<T> target, IEnumerable<T> values)
     {

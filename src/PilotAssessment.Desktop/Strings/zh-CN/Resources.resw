@@ -225,10 +225,11 @@
   <data name="Dialog_CreateNodeButton" xml:space="preserve"><value>创建节点</value></data>
   <data name="Dialog_CreateNodeDescription" xml:space="preserve"><value>后端保存一个完整节点定义。Evidence 与 BN 节点最初标记为不完整，专家无需生成 Python 代码即可继续配置。</value></data>
   <data name="Dialog_NodeKind" xml:space="preserve"><value>节点类型</value></data>
-  <data name="Editor_EnglishName" xml:space="preserve"><value>英文名称</value></data>
-  <data name="Editor_ChineseName" xml:space="preserve"><value>中文名称</value></data>
+  <data name="Editor_CanonicalName" xml:space="preserve"><value>名称（模型内容使用英文）</value></data>
+  <data name="Editor_CanonicalDescription" xml:space="preserve"><value>说明（模型内容使用英文）</value></data>
+  <data name="Editor_CanonicalHelp" xml:space="preserve"><value>帮助文本（模型内容使用英文）</value></data>
+  <data name="Editor_CanonicalEnglishHint" xml:space="preserve"><value>模型内容统一以英文保存；切换软件语言只会更改界面标签，不会改写模型内容。</value></data>
   <data name="Dialog_EnglishNameExample" xml:space="preserve"><value>例如 Disturbance instrument scan</value></data>
-  <data name="Dialog_ChineseNameExample" xml:space="preserve"><value>例如：扰动仪表扫描</value></data>
   <data name="Dialog_RawModality" xml:space="preserve"><value>原始模态</value></data>
   <data name="Dialog_ModalityX" xml:space="preserve"><value>X — 飞行状态</value></data>
   <data name="Dialog_ModalityU" xml:space="preserve"><value>U — 控制输入</value></data>
@@ -237,12 +238,8 @@
   <data name="Dialog_ModalityCamera" xml:space="preserve"><value>飞行员相机</value></data>
   <data name="Editor_SelectOperatorParameters" xml:space="preserve"><value>选择一个已安装算子节点，以编辑由 schema 驱动的参数。</value></data>
   <data name="Editor_General" xml:space="preserve"><value>常规</value></data>
-  <data name="Editor_EnglishDescription" xml:space="preserve"><value>英文说明</value></data>
-  <data name="Editor_ChineseDescription" xml:space="preserve"><value>中文说明</value></data>
   <data name="Editor_TagsSeparated" xml:space="preserve"><value>标签（逗号或换行分隔）</value></data>
   <data name="Editor_Help" xml:space="preserve"><value>帮助</value></data>
-  <data name="Editor_EnglishHelp" xml:space="preserve"><value>英文帮助</value></data>
-  <data name="Editor_ChineseHelp" xml:space="preserve"><value>中文帮助</value></data>
   <data name="Raw_ContractDescription" xml:space="preserve"><value>此节点声明如何向 Evidence 配方暴露一项受管 Session Bundle 资源。常规字段会在 350 毫秒后暂存到后端持久化编辑会话；只有选择“保存全部”才会修改正式模型。</value></data>
   <data name="Raw_ContractTitle" xml:space="preserve"><value>原始输入契约编辑器</value></data>
   <data name="Raw_InputFamily" xml:space="preserve"><value>输入族</value></data>

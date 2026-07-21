@@ -225,10 +225,11 @@
   <data name="Dialog_CreateNodeButton" xml:space="preserve"><value>Create node</value></data>
   <data name="Dialog_CreateNodeDescription" xml:space="preserve"><value>The backend stores one complete node definition. Evidence and BN nodes begin incomplete so experts can configure them without generated Python code.</value></data>
   <data name="Dialog_NodeKind" xml:space="preserve"><value>Node kind</value></data>
-  <data name="Editor_EnglishName" xml:space="preserve"><value>English name</value></data>
-  <data name="Editor_ChineseName" xml:space="preserve"><value>Chinese name</value></data>
+  <data name="Editor_CanonicalName" xml:space="preserve"><value>Name (canonical content in English)</value></data>
+  <data name="Editor_CanonicalDescription" xml:space="preserve"><value>Description (canonical content in English)</value></data>
+  <data name="Editor_CanonicalHelp" xml:space="preserve"><value>Help text (canonical content in English)</value></data>
+  <data name="Editor_CanonicalEnglishHint" xml:space="preserve"><value>Model content is stored once in English; changing the application language only changes interface labels.</value></data>
   <data name="Dialog_EnglishNameExample" xml:space="preserve"><value>e.g. Disturbance instrument scan</value></data>
-  <data name="Dialog_ChineseNameExample" xml:space="preserve"><value>e.g. 扰动仪表扫描</value></data>
   <data name="Dialog_RawModality" xml:space="preserve"><value>Raw modality</value></data>
   <data name="Dialog_ModalityX" xml:space="preserve"><value>X — flight state</value></data>
   <data name="Dialog_ModalityU" xml:space="preserve"><value>U — control input</value></data>
@@ -237,12 +238,8 @@
   <data name="Dialog_ModalityCamera" xml:space="preserve"><value>Pilot camera</value></data>
   <data name="Editor_SelectOperatorParameters" xml:space="preserve"><value>Select an installed operator node to edit its schema-driven parameters.</value></data>
   <data name="Editor_General" xml:space="preserve"><value>General</value></data>
-  <data name="Editor_EnglishDescription" xml:space="preserve"><value>English description</value></data>
-  <data name="Editor_ChineseDescription" xml:space="preserve"><value>Chinese description</value></data>
   <data name="Editor_TagsSeparated" xml:space="preserve"><value>Tags (comma/newline separated)</value></data>
   <data name="Editor_Help" xml:space="preserve"><value>Help</value></data>
-  <data name="Editor_EnglishHelp" xml:space="preserve"><value>English help</value></data>
-  <data name="Editor_ChineseHelp" xml:space="preserve"><value>Chinese help</value></data>
   <data name="Raw_ContractDescription" xml:space="preserve"><value>This node declares how one managed Session Bundle resource is exposed to Evidence recipes. Ordinary fields are staged in the durable backend edit session after 350 ms; the canonical model changes only when Save all is chosen.</value></data>
   <data name="Raw_ContractTitle" xml:space="preserve"><value>Raw Input contract editor</value></data>
   <data name="Raw_InputFamily" xml:space="preserve"><value>Input family</value></data>

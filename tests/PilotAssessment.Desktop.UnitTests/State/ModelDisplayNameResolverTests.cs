@@ -28,12 +28,11 @@ public sealed class ModelDisplayNameResolverTests
                 EmptyJson(),
                 Hash('1')),
             EmptyJson(),
-            null,
-            null);
+            "Raw input help.");
 
         Assert.Equal(
             "Flight Dynamics State",
-            ModelDisplayNameResolver.ForNode(Node("model-node.raw_input." + Hash('a')[..32], ModelNodeKind.RawInput, definition)));
+            ModelDisplayNameResolver.ForNode(Node("model-node.raw_input." + Hash('a')[..32], ModelNodeKind.RawInput, definition, "Flight Dynamics State")));
     }
 
     [Fact]
@@ -67,12 +66,11 @@ public sealed class ModelDisplayNameResolverTests
             new Dictionary<string, double>(),
             ModelScientificStatus.ExpertDefined,
             EmptyJson(),
-            null,
-            null);
+            "Evidence help.");
 
         Assert.Equal(
             "Disturbance AOI Dwell",
-            ModelDisplayNameResolver.ForNode(Node(nodeId, ModelNodeKind.Evidence, definition)));
+            ModelDisplayNameResolver.ForNode(Node(nodeId, ModelNodeKind.Evidence, definition, "Disturbance AOI Dwell")));
     }
 
     [Fact]
@@ -92,10 +90,9 @@ public sealed class ModelDisplayNameResolverTests
             ModelScientificStatus.ExpertDefined,
             reporting,
             EmptyJson(),
-            null,
-            null);
+            "BN node help.");
 
-        var name = ModelDisplayNameResolver.ForNode(Node(nodeId, ModelNodeKind.Bn, definition));
+        var name = ModelDisplayNameResolver.ForNode(Node(nodeId, ModelNodeKind.Bn, definition, "Disturbance Recovery Skill"));
 
         Assert.Equal("Disturbance Recovery Skill", name);
         Assert.DoesNotContain(Hash('c')[..12], name, StringComparison.OrdinalIgnoreCase);
@@ -110,12 +107,10 @@ public sealed class ModelDisplayNameResolverTests
         };
         var scheme = new TaskScheme(
             "task-scheme",
-            "0.1.0",
+            "0.2.0",
             "task-scheme.user." + Hash('d')[..32],
-            null,
-            null,
-            null,
-            null,
+            "Hover Assessment Scheme",
+            "Hover task assessment scheme.",
             [],
             null,
             ModelObjectLifecycle.Active,
@@ -148,17 +143,18 @@ public sealed class ModelDisplayNameResolverTests
         Assert.DoesNotContain("8cad", name, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static ModelNode Node(string nodeId, ModelNodeKind kind, ModelNodeDefinition definition) => new(
+    private static ModelNode Node(
+        string nodeId,
+        ModelNodeKind kind,
+        ModelNodeDefinition definition,
+        string name) => new(
         "model-node",
-        "0.1.0",
+        "0.2.0",
         nodeId,
         kind,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
+        name,
+        name,
+        $"{name} description.",
         [],
         null,
         ModelObjectLifecycle.Active,

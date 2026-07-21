@@ -9,7 +9,7 @@ public sealed class RunWorkspaceState
 {
     public CurrentModelRunPreflightReport? Preflight { get; private set; }
 
-    public AssessmentRunV2? CurrentRun { get; private set; }
+    public AssessmentRunV3? CurrentRun { get; private set; }
 
     public string? ResultId { get; private set; }
 
@@ -45,7 +45,7 @@ public sealed class RunWorkspaceState
         Preflight = preflight;
     }
 
-    public void SetRun(AssessmentRunV2 run, string? resultId = null)
+    public void SetRun(AssessmentRunV3 run, string? resultId = null)
     {
         ArgumentNullException.ThrowIfNull(run);
         CurrentRun = run;
@@ -136,7 +136,7 @@ public sealed record InfluenceProjection(
 
 public static class RunResultProjector
 {
-    public static FrozenNodeProjection[] FrozenNodes(AssessmentRunV2 run) =>
+    public static FrozenNodeProjection[] FrozenNodes(AssessmentRunV3 run) =>
         run.Snapshot.ActiveNodes
             .Select(node => new FrozenNodeProjection(
                 node.NodeId,

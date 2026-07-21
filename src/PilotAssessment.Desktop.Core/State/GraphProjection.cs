@@ -312,12 +312,9 @@ public static class GraphProjection
 
         var search = options.SearchText.Trim();
         return Contains(node.NodeId, search) ||
-               Contains(node.NameEn, search) ||
-               Contains(node.NameZh, search) ||
-               Contains(node.ShortNameEn, search) ||
-               Contains(node.ShortNameZh, search) ||
-               Contains(node.DescriptionEn, search) ||
-               Contains(node.DescriptionZh, search) ||
+               Contains(node.Name, search) ||
+               Contains(node.ShortName, search) ||
+               Contains(node.Description, search) ||
                Contains(node.Group, search) ||
                node.Tags.Any(tag => Contains(tag, search));
     }

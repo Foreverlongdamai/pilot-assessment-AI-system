@@ -1,15 +1,13 @@
 {
   "contract_id": "model-graph-snapshot",
-  "contract_version": "0.2.0",
+  "contract_version": "0.3.0",
   "model_library_id": "model-library.alpha",
   "scheme": {
     "contract_id": "task-scheme",
-    "contract_version": "0.1.0",
+    "contract_version": "0.2.0",
     "scheme_id": "scheme.current",
-    "name_zh": null,
-    "name_en": "Current Scheme",
-    "description_zh": null,
-    "description_en": "Autosaved current task scheme.",
+    "name": "Current Scheme",
+    "description": "Autosaved current task scheme.",
     "tags": [
       "starter"
     ],
@@ -37,15 +35,12 @@
   "nodes": [
     {
       "contract_id": "model-node",
-      "contract_version": "0.1.0",
+      "contract_version": "0.2.0",
       "node_id": "raw.x",
       "node_kind": "raw_input",
-      "name_zh": null,
-      "name_en": "Flight state",
-      "short_name_zh": null,
-      "short_name_en": "X",
-      "description_zh": null,
-      "description_en": "Current raw X input.",
+      "name": "Flight State",
+      "short_name": "X",
+      "description": "Current raw X input.",
       "tags": [
         "starter"
       ],
@@ -75,8 +70,7 @@
           "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         },
         "metadata": {},
-        "help_text_zh": null,
-        "help_text_en": "Raw input fields."
+        "help_text": "Raw input fields."
       },
       "global_layout": {
         "node_id": "raw.x",

@@ -158,10 +158,8 @@ public sealed class EvidenceRecipeEditorModel
 
     public ModelNode BuildUpdatedNode(
         ModelNode original,
-        string? nameZh,
-        string? nameEn,
-        string? descriptionZh,
-        string? descriptionEn,
+        string name,
+        string description,
         string? group,
         IEnumerable<string> tags)
     {
@@ -171,14 +169,16 @@ public sealed class EvidenceRecipeEditorModel
             throw new ArgumentException("The editor model can only update an Evidence node.");
         }
 
+        var canonicalName = Normalize(name)
+            ?? throw new ArgumentException("Evidence name must not be blank.", nameof(name));
+        var canonicalDescription = Normalize(description)
+            ?? throw new ArgumentException("Evidence description must not be blank.", nameof(description));
+
         return original with
         {
-            NameZh = Normalize(nameZh),
-            NameEn = Normalize(nameEn),
-            ShortNameZh = Shorten(nameZh),
-            ShortNameEn = Shorten(nameEn),
-            DescriptionZh = Normalize(descriptionZh),
-            DescriptionEn = Normalize(descriptionEn),
+            Name = canonicalName,
+            ShortName = Shorten(canonicalName)!,
+            Description = canonicalDescription,
             Group = Normalize(group),
             Tags = tags
                 .Select(Normalize)

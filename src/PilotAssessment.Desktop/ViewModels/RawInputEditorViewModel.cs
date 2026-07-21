@@ -13,16 +13,10 @@ public sealed partial class RawInputEditorViewModel : ObservableObject
     private ModelNode _canonicalNode;
 
     [ObservableProperty]
-    public partial string NameZh { get; set; } = string.Empty;
+    public partial string Name { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string NameEn { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string DescriptionZh { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string DescriptionEn { get; set; } = string.Empty;
+    public partial string Description { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial string Group { get; set; } = string.Empty;
@@ -88,10 +82,7 @@ public sealed partial class RawInputEditorViewModel : ObservableObject
     public partial string MetadataJson { get; set; } = "{}";
 
     [ObservableProperty]
-    public partial string HelpTextZh { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string HelpTextEn { get; set; } = string.Empty;
+    public partial string HelpText { get; set; } = string.Empty;
 
     public RawInputEditorViewModel(
         ModelNode node,
@@ -131,10 +122,8 @@ public sealed partial class RawInputEditorViewModel : ObservableObject
             ?? throw new ArgumentException("Raw Input editor requires a Raw Input node.");
         _canonicalNode = node;
         var descriptor = definition.SourceDescriptor;
-        NameZh = node.NameZh ?? string.Empty;
-        NameEn = node.NameEn ?? string.Empty;
-        DescriptionZh = node.DescriptionZh ?? string.Empty;
-        DescriptionEn = node.DescriptionEn ?? string.Empty;
+        Name = node.Name;
+        Description = node.Description;
         Group = node.Group ?? string.Empty;
         TagsText = string.Join(", ", node.Tags);
         Family = definition.Family;
@@ -158,8 +147,7 @@ public sealed partial class RawInputEditorViewModel : ObservableObject
         MetadataJson = JsonSerializer.Serialize(
             descriptor.Metadata,
             new JsonSerializerOptions { WriteIndented = true });
-        HelpTextZh = definition.HelpTextZh ?? string.Empty;
-        HelpTextEn = definition.HelpTextEn ?? string.Empty;
+        HelpText = definition.HelpText;
     }
 
     public void ApplyDraftIntent(ModelNode draft)
@@ -202,14 +190,12 @@ public sealed partial class RawInputEditorViewModel : ObservableObject
             Metadata = metadata,
             ContentHash = new string('0', 64),
         };
+        var canonicalName = Require(Name, "Raw Input name");
         return _canonicalNode with
         {
-            NameZh = Normalize(NameZh),
-            NameEn = Normalize(NameEn),
-            ShortNameZh = Shorten(NameZh),
-            ShortNameEn = Shorten(NameEn),
-            DescriptionZh = Normalize(DescriptionZh),
-            DescriptionEn = Normalize(DescriptionEn),
+            Name = canonicalName,
+            ShortName = Shorten(canonicalName)!,
+            Description = Require(Description, "Raw Input description"),
             Tags = SplitValues(TagsText),
             Group = Normalize(Group),
             Definition = definition with
@@ -217,8 +203,7 @@ public sealed partial class RawInputEditorViewModel : ObservableObject
                 Family = Family,
                 ResourceRole = ResourceRole,
                 SourceDescriptor = descriptor,
-                HelpTextZh = Normalize(HelpTextZh),
-                HelpTextEn = Normalize(HelpTextEn),
+                HelpText = Require(HelpText, "Raw Input help text"),
             },
         };
     }
@@ -274,6 +259,9 @@ public sealed partial class RawInputEditorViewModel : ObservableObject
 
     private static string? Normalize(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static string Require(string value, string label) =>
+        Normalize(value) ?? throw new InvalidOperationException($"{label} must not be blank.");
 
     private static string? Shorten(string? value)
     {

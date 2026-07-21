@@ -44,8 +44,7 @@ public sealed record TaskSchemeCreateRequest(
 public sealed record TaskSchemeCopyRequest(
     string SourceSchemeId,
     string NewSchemeId,
-    string? NameZh,
-    string? NameEn,
+    string? Name,
     string Actor,
     string TransactionId);
 
@@ -135,7 +134,7 @@ public sealed record ModelNodePreviewRequest(
     string PreviewId);
 
 public sealed record ModelNodePreviewResponse(
-    CurrentModelRunSnapshot Preview,
+    CurrentModelRunSnapshotV3 Preview,
     string TraceId);
 
 public sealed record SchemeNodeActivationRequest(

@@ -133,7 +133,6 @@ public sealed class EvidenceEditorTests
         var original = ModelNodeDraftFactory.Create(new ModelNodeDraftRequest(
             ModelNodeKind.Evidence,
             "Original",
-            null,
             RawModality.X,
             120,
             140)) with
@@ -146,9 +145,7 @@ public sealed class EvidenceEditorTests
         editor.AddOperator("event.threshold", "1.0.0");
         var updated = editor.BuildUpdatedNode(
             original,
-            "证据",
             "Edited Evidence",
-            "中文说明",
             "English description",
             "attention",
             ["gaze", "expert"]);
@@ -163,7 +160,7 @@ public sealed class EvidenceEditorTests
         var mapped = Assert.IsType<EvidenceNodeDefinition>(gateway.UpdatedNode!.Definition);
         Assert.Same(definition.Cpt, mapped.Cpt);
         Assert.Single(mapped.Recipe.Graph.Nodes);
-        Assert.Equal("Edited Evidence", gateway.UpdatedNode.NameEn);
+        Assert.Equal("Edited Evidence", gateway.UpdatedNode.Name);
     }
 
     [Fact]
@@ -191,7 +188,6 @@ public sealed class EvidenceEditorTests
         var node = ModelNodeDraftFactory.Create(new ModelNodeDraftRequest(
             ModelNodeKind.Evidence,
             "Evidence",
-            null,
             RawModality.X,
             100,
             100));
@@ -333,7 +329,7 @@ public sealed class EvidenceEditorTests
             CancellationToken cancellationToken = default) =>
             Task.FromResult<IReadOnlyList<ModelChangeEvent>>([]);
 
-        public async Task<CurrentModelRunSnapshot> PreviewNodeAsync(
+        public async Task<CurrentModelRunSnapshotV3> PreviewNodeAsync(
             string sessionRevisionId,
             string schemeId,
             string nodeId,

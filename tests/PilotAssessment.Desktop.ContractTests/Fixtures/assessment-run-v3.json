@@ -1,0 +1,222 @@
+{
+  "contract_id": "assessment-run",
+  "contract_version": "0.3.0",
+  "run_id": "run.alpha",
+  "snapshot": {
+    "contract_id": "current-model-run-snapshot",
+    "contract_version": "0.3.0",
+    "run_id": "run.alpha",
+    "purpose": "software_test",
+    "session_revision_ref": {
+      "session_id": "session.alpha",
+      "session_revision_id": "session.alpha.rev1",
+      "bundle_root_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "scheme": {
+      "contract_id": "task-scheme",
+      "contract_version": "0.2.0",
+      "scheme_id": "scheme.current",
+      "name": "Current Scheme",
+      "description": "Autosaved current task scheme.",
+      "tags": [
+        "starter"
+      ],
+      "group": null,
+      "lifecycle": "active",
+      "copied_from_scheme_id": null,
+      "explicit_active_node_ids": [
+        "raw.x"
+      ],
+      "computed_active_closure": [
+        "raw.x"
+      ],
+      "output_node_ids": [],
+      "task_bindings": {},
+      "layout_overrides": [],
+      "semantic_revision": 3,
+      "layout_revision": 1,
+      "technical_status": "executable",
+      "diagnostics": [],
+      "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "layout_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "created_at": "2026-07-16T12:00:00Z",
+      "updated_at": "2026-07-16T12:00:00Z"
+    },
+    "active_nodes": [
+      {
+        "contract_id": "model-node",
+        "contract_version": "0.2.0",
+        "node_id": "raw.x",
+        "node_kind": "raw_input",
+        "name": "Flight State",
+        "short_name": "X",
+        "description": "Current raw X input.",
+        "tags": [
+          "starter"
+        ],
+        "group": null,
+        "lifecycle": "active",
+        "copied_from_node_id": null,
+        "definition": {
+          "definition_kind": "raw_input",
+          "family": "X",
+          "resource_role": "stream",
+          "source_descriptor": {
+            "contract_id": "source-descriptor",
+            "contract_version": "0.1.0",
+            "source_id": "source.X",
+            "kind": "raw_stream",
+            "name": "Flight state",
+            "description": "Aligned X stream.",
+            "declared_type": {
+              "value_type": "table",
+              "cardinality": "one",
+              "temporal_semantics": "sampled",
+              "unit": null
+            },
+            "raw_modality": "X",
+            "source_dependencies": [],
+            "metadata": {},
+            "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "metadata": {},
+          "help_text": "Raw input fields."
+        },
+        "global_layout": {
+          "node_id": "raw.x",
+          "x": 0.0,
+          "y": 0.0
+        },
+        "semantic_revision": 2,
+        "layout_revision": 1,
+        "technical_status": "executable",
+        "diagnostics": [],
+        "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "layout_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "created_at": "2026-07-16T12:00:00Z",
+        "updated_at": "2026-07-16T12:00:00Z"
+      }
+    ],
+    "locked_operator_identities": [
+      {
+        "identity_id": "operator.mean",
+        "version": "1.0.0",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ],
+    "engine_identity": {
+      "identity_id": "engine.exact-discrete-bn",
+      "version": "0.1.0",
+      "content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "numeric_runtime_identities": [
+      {
+        "identity_id": "runtime.numpy",
+        "version": "2.3.4",
+        "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      }
+    ],
+    "runtime_parameters_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "preflight_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "execution_snapshot": {
+      "contract_id": "run-snapshot",
+      "contract_version": "0.1.0",
+      "run_id": "run.alpha",
+      "purpose": "software_test",
+      "session_revision_ref": {
+        "session_id": "session.alpha",
+        "session_revision_id": "session.alpha.rev1",
+        "bundle_root_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "scheme_ref": {
+        "kind": "assessment_scheme_version",
+        "version_id": "scheme.alpha.v1",
+        "content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "locked_component_refs": [
+        {
+          "kind": "evidence_version",
+          "version_id": "evidence.alpha.v1",
+          "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "locked_source_refs": [
+        {
+          "kind": "source_descriptor",
+          "version_id": "source.x-state",
+          "content_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        }
+      ],
+      "locked_operator_identities": [
+        {
+          "identity_id": "operator.mean",
+          "version": "1.0.0",
+          "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "engine_identity": {
+        "identity_id": "engine.exact-discrete-bn",
+        "version": "0.1.0",
+        "content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "numeric_runtime_identities": [
+        {
+          "identity_id": "runtime.numpy",
+          "version": "2.3.4",
+          "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "runtime_parameters_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "preflight_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "snapshot_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "snapshot_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "backend_source_identity": {
+      "contract_id": "backend-source-identity",
+      "contract_version": "0.1.0",
+      "identity_algorithm": "pilot-assessment-backend-identity-v1",
+      "tree_algorithm": "pilot-assessment-source-tree-v2",
+      "active_source_root": "backend/src/pilot_assessment",
+      "source_tree_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source_file_count": 42,
+      "release_baseline_sha256": null,
+      "baseline_available": false,
+      "locally_modified": null,
+      "baseline_changes": {
+        "added": [],
+        "modified": [],
+        "deleted": []
+      },
+      "pyproject_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "uv_lock_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "python_runtime": {
+        "implementation": "CPython",
+        "version": "3.11.13",
+        "executable_name": "python.exe",
+        "executable_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "private_runtime": true,
+        "identity_sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "dependencies": {
+        "package_count": 12,
+        "manifest_sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+      },
+      "operator_catalog": {
+        "operator_count": 46,
+        "catalog_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+      },
+      "identity_sha256": "6666666666666666666666666666666666666666666666666666666666666666"
+    },
+    "source_snapshot_ref": {
+      "artifact_id": "artifact.7777777777777777777777777777777777777777777777777777777777777777",
+      "sha256": "7777777777777777777777777777777777777777777777777777777777777777"
+    }
+  },
+  "state": "queued",
+  "stage": "queued",
+  "progress_sequence": 0,
+  "requested_at": "2026-07-16T12:00:00Z",
+  "started_at": null,
+  "finished_at": null,
+  "cancellation_requested_at": null
+}

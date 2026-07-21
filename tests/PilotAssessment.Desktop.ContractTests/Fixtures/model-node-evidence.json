@@ -1,14 +1,11 @@
 {
   "contract_id": "model-node",
-  "contract_version": "0.1.0",
+  "contract_version": "0.2.0",
   "node_id": "evidence.precision",
   "node_kind": "evidence",
-  "name_zh": null,
-  "name_en": "evidence.precision",
-  "short_name_zh": null,
-  "short_name_en": "evidence.precision",
-  "description_zh": null,
-  "description_en": "Task-neutral evidence fixture.",
+  "name": "Trajectory Precision Evidence",
+  "short_name": "Trajectory Precision",
+  "description": "Task-neutral evidence fixture.",
   "tags": [
     "fixture"
   ],
@@ -220,8 +217,7 @@
     "provenance": {
       "fixture": true
     },
-    "help_text_zh": null,
-    "help_text_en": "Fixture Evidence node."
+    "help_text": "Fixture Evidence node."
   },
   "global_layout": {
     "node_id": "evidence.precision",

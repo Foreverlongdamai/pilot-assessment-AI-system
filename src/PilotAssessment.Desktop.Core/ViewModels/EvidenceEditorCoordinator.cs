@@ -39,7 +39,7 @@ public sealed class EvidenceEditorCoordinator : IDisposable
             transactionId,
             cancellationToken);
 
-    public async Task<CurrentModelRunSnapshot?> PreviewAsync(
+    public async Task<CurrentModelRunSnapshotV3?> PreviewAsync(
         string sessionRevisionId,
         string schemeId,
         string nodeId,

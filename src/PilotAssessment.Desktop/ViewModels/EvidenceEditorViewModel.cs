@@ -90,16 +90,10 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
     private object?[] _previewArguments = [];
 
     [ObservableProperty]
-    public partial string NameZh { get; set; } = string.Empty;
+    public partial string Name { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string NameEn { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string DescriptionZh { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string DescriptionEn { get; set; } = string.Empty;
+    public partial string Description { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial string Group { get; set; } = string.Empty;
@@ -129,10 +123,7 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
     public partial ObservationPolicy ObservationPolicy { get; set; }
 
     [ObservableProperty]
-    public partial string HelpTextZh { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string HelpTextEn { get; set; } = string.Empty;
+    public partial string HelpText { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial OperatorOptionItem? SelectedOperator { get; set; }
@@ -308,10 +299,8 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         _sessionRevisionId = sessionRevisionId;
         var catalog = _recipeModel.Operators;
         _recipeModel = new EvidenceRecipeEditorModel(definition.Recipe, catalog);
-        NameZh = node.NameZh ?? string.Empty;
-        NameEn = node.NameEn ?? string.Empty;
-        DescriptionZh = node.DescriptionZh ?? string.Empty;
-        DescriptionEn = node.DescriptionEn ?? string.Empty;
+        Name = node.Name;
+        Description = node.Description;
         Group = node.Group ?? string.Empty;
         TagsText = string.Join(", ", node.Tags);
         AnchorName = definition.Recipe.Anchor.Name;
@@ -327,8 +316,7 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
             definition.ModalityAttributionWeights,
             ContractJsonOptions);
         ObservationPolicy = definition.ObservationPolicy;
-        HelpTextZh = definition.HelpTextZh ?? string.Empty;
-        HelpTextEn = definition.HelpTextEn ?? string.Empty;
+        HelpText = definition.HelpText;
         Replace(ObservationStates, definition.OrderedObservationStates.Select(state =>
             new ObservationStateEditItem(state)));
         Replace(RawBindings, definition.DataBindings.Select(binding =>
@@ -505,10 +493,8 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
         };
         var mapped = _recipeModel.BuildUpdatedNode(
             _canonicalNode,
-            NameZh,
-            NameEn,
-            DescriptionZh,
-            DescriptionEn,
+            Name,
+            Description,
             Group,
             SplitValues(TagsText));
         return mapped with
@@ -519,8 +505,7 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
                 ObservationMapping = ParseJsonElementDictionary(ObservationMappingJson),
                 ObservationPolicy = ObservationPolicy,
                 ModalityAttributionWeights = ParseDoubleDictionary(ModalityWeightsJson),
-                HelpTextZh = Normalize(HelpTextZh),
-                HelpTextEn = Normalize(HelpTextEn),
+                HelpText = Require(HelpText, "Evidence help text"),
             },
         };
     }
@@ -696,6 +681,9 @@ public sealed partial class EvidenceEditorViewModel : ObservableObject, IDisposa
 
     private static string? Normalize(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static string Require(string value, string label) =>
+        Normalize(value) ?? throw new InvalidOperationException($"{label} must not be blank.");
 
     private static CptEditorState EditorFrom(NodeCpt cpt)
     {

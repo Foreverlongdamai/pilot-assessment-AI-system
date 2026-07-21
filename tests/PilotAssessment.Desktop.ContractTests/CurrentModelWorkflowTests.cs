@@ -71,7 +71,7 @@ public sealed class CurrentModelWorkflowTests
             var copyScheme = Mutation($"tx.contract.scheme-copy.{Guid.NewGuid():N}");
             copyScheme["source_scheme_id"] = baseSchemeId;
             copyScheme["new_scheme_id"] = $"task-scheme.contract.{Guid.NewGuid():N}";
-            copyScheme["name_en"] = "Task 15 contract scheme";
+            copyScheme["name"] = "Task 15 contract scheme";
             var copiedSchemeResponse = await CallAsync(client, "model.scheme.copy", copyScheme);
             var copiedScheme = Object(copiedSchemeResponse, "scheme");
             var schemeId = Text(copiedScheme, "scheme_id");
@@ -139,12 +139,12 @@ public sealed class CurrentModelWorkflowTests
                 new JsonObject { ["node_id"] = copiedNodeId });
             var editableNode = Object(nodeResponse, "node").DeepClone().AsObject();
             var editedName = $"Task 15 edited node {Guid.NewGuid():N}";
-            editableNode["name_en"] = editedName;
+            editableNode["name"] = editedName;
             var updateNode = Mutation($"tx.contract.node-update.{Guid.NewGuid():N}");
             updateNode["node"] = editableNode.DeepClone();
             updateNode["expected_semantic_revision"] = Number(editableNode, "semantic_revision");
             var updatedResponse = await CallAsync(client, "model.node.update", updateNode);
-            Assert.Equal(editedName, Text(Object(updatedResponse, "node"), "name_en"));
+            Assert.Equal(editedName, Text(Object(updatedResponse, "node"), "name"));
 
             var importSession = Mutation($"tx.contract.session-import.{Guid.NewGuid():N}");
             importSession["external_bundle"] = bundleRoot;
@@ -213,7 +213,7 @@ public sealed class CurrentModelWorkflowTests
                     "model.node.get",
                     new JsonObject { ["node_id"] = copiedNodeId }),
                 "node");
-            Assert.Equal(editedName, Text(reopenedNode, "name_en"));
+            Assert.Equal(editedName, Text(reopenedNode, "name"));
             var reopenedResult = Object(
                 await CallAsync(
                     client,

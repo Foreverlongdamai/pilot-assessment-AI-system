@@ -53,7 +53,7 @@ public sealed class RunClient : IRunGateway, IDisposable
         return response.Runs;
     }
 
-    public async Task<AssessmentRunV2> StartAsync(
+    public async Task<AssessmentRunV3> StartAsync(
         string preflightId,
         string runId,
         int expectedSchemeRevision,
@@ -103,7 +103,7 @@ public sealed class RunClient : IRunGateway, IDisposable
         return response.Events;
     }
 
-    public async Task<AssessmentRunV2> CancelAsync(
+    public async Task<AssessmentRunV3> CancelAsync(
         string runId,
         string actor,
         string transactionId,

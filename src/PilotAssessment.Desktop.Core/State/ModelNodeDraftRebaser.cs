@@ -16,12 +16,9 @@ public static class ModelNodeDraftRebaser
 
         return canonical with
         {
-            NameZh = draft.NameZh,
-            NameEn = draft.NameEn,
-            ShortNameZh = draft.ShortNameZh,
-            ShortNameEn = draft.ShortNameEn,
-            DescriptionZh = draft.DescriptionZh,
-            DescriptionEn = draft.DescriptionEn,
+            Name = draft.Name,
+            ShortName = draft.ShortName,
+            Description = draft.Description,
             Tags = draft.Tags,
             Group = draft.Group,
             Definition = RebaseDefinition(draft.Definition, canonical.Definition),
@@ -40,8 +37,7 @@ public static class ModelNodeDraftRebaser
                 ObservationMapping = local.ObservationMapping,
                 ObservationPolicy = local.ObservationPolicy,
                 ModalityAttributionWeights = local.ModalityAttributionWeights,
-                HelpTextZh = local.HelpTextZh,
-                HelpTextEn = local.HelpTextEn,
+                HelpText = local.HelpText,
             },
             (BnNodeDefinition local, BnNodeDefinition current) => current with
             {
@@ -49,8 +45,7 @@ public static class ModelNodeDraftRebaser
                 Documentation = local.Documentation,
                 ScientificStatus = local.ScientificStatus,
                 ReportingMetadata = local.ReportingMetadata,
-                HelpTextZh = local.HelpTextZh,
-                HelpTextEn = local.HelpTextEn,
+                HelpText = local.HelpText,
             },
             _ => throw new ArgumentException("Local and canonical node definitions have different kinds."),
         };

@@ -61,24 +61,17 @@ public sealed class LocalizationTests
     {
         var node = Node();
         var identityBefore = Identity(node);
+        var lookup = new TestLocalization();
 
-        var english = BilingualTextSelector.SelectShortOrFull(
-            "en-US",
-            node.ShortNameZh,
-            node.ShortNameEn,
-            node.NameZh,
-            node.NameEn,
-            node.NodeId);
-        var chinese = BilingualTextSelector.SelectShortOrFull(
-            "zh-CN",
-            node.ShortNameZh,
-            node.ShortNameEn,
-            node.NameZh,
-            node.NameEn,
-            node.NodeId);
+        var nameBefore = ModelDisplayNameResolver.ForNode(node);
+        var labelBefore = lookup["Project_Title"];
+        lookup.Switch("zh-CN");
+        var nameAfter = ModelDisplayNameResolver.ForNode(node);
+        var labelAfter = lookup["Project_Title"];
 
-        Assert.Equal("Precision", english);
-        Assert.Equal("Precision", chinese);
+        Assert.NotEqual(labelBefore, labelAfter);
+        Assert.Equal("Precision", nameBefore);
+        Assert.Equal("Precision", nameAfter);
         Assert.Equal(identityBefore, Identity(node));
     }
 
@@ -99,14 +92,11 @@ public sealed class LocalizationTests
 
     private static ModelNode Node() => new(
         "model-node",
-        "0.1.0",
+        "0.2.0",
         "evidence.precision",
         ModelNodeKind.Evidence,
-        "精度",
         "Precision",
-        "精度",
         "Precision",
-        "说明",
         "Description",
         ["precision"],
         "control",

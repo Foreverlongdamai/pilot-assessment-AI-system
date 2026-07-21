@@ -14,7 +14,7 @@ namespace PilotAssessment.Desktop.ViewModels;
 public sealed record RunPurposeOption(RunPurpose Purpose, string Label);
 
 public sealed record RunListItemViewModel(
-    AssessmentRunV2 Run,
+    AssessmentRunV3 Run,
     string? ResultId,
     string Title,
     string StateText,
@@ -334,7 +334,7 @@ public partial class RunsViewModel : ObservableObject
         }
     }
 
-    private void UpsertRun(AssessmentRunV2 run, string? resultId, bool select)
+    private void UpsertRun(AssessmentRunV3 run, string? resultId, bool select)
     {
         var existing = Runs.FirstOrDefault(item => item.RunId == run.RunId);
         var index = existing is null ? -1 : Runs.IndexOf(existing);
@@ -354,7 +354,7 @@ public partial class RunsViewModel : ObservableObject
         }
     }
 
-    private RunListItemViewModel BuildRunItem(AssessmentRunV2 run, string? resultId)
+    private RunListItemViewModel BuildRunItem(AssessmentRunV3 run, string? resultId)
     {
         var schemeName = ModelDisplayNameResolver.ForScheme(run.Snapshot.Scheme);
         return new RunListItemViewModel(

@@ -26,7 +26,7 @@ public interface IRunGateway
     Task<IReadOnlyList<CurrentModelRunListItem>> ListCurrentRunsAsync(
         CancellationToken cancellationToken = default);
 
-    Task<AssessmentRunV2> StartAsync(
+    Task<AssessmentRunV3> StartAsync(
         string preflightId,
         string runId,
         int expectedSchemeRevision,
@@ -43,7 +43,7 @@ public interface IRunGateway
         int afterSequence,
         CancellationToken cancellationToken = default);
 
-    Task<AssessmentRunV2> CancelAsync(
+    Task<AssessmentRunV3> CancelAsync(
         string runId,
         string actor,
         string transactionId,

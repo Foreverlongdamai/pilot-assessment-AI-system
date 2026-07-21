@@ -502,8 +502,7 @@ public sealed record RawInputNodeDefinition(
     RawResourceRole ResourceRole,
     SourceDescriptor SourceDescriptor,
     IReadOnlyDictionary<string, JsonElement> Metadata,
-    string? HelpTextZh,
-    string? HelpTextEn) : ModelNodeDefinition;
+    string HelpText) : ModelNodeDefinition;
 
 public sealed record EvidenceNodeDefinition(
     EvidenceRecipe Recipe,
@@ -516,8 +515,7 @@ public sealed record EvidenceNodeDefinition(
     IReadOnlyDictionary<string, double> ModalityAttributionWeights,
     ModelScientificStatus ScientificStatus,
     IReadOnlyDictionary<string, JsonElement> Provenance,
-    string? HelpTextZh,
-    string? HelpTextEn) : ModelNodeDefinition;
+    string HelpText) : ModelNodeDefinition;
 
 public sealed record BnNodeDefinition(
     BnNodeRole NodeRole,
@@ -528,20 +526,16 @@ public sealed record BnNodeDefinition(
     ModelScientificStatus ScientificStatus,
     IReadOnlyDictionary<string, JsonElement> ReportingMetadata,
     IReadOnlyDictionary<string, JsonElement> Provenance,
-    string? HelpTextZh,
-    string? HelpTextEn) : ModelNodeDefinition;
+    string HelpText) : ModelNodeDefinition;
 
 public sealed record ModelNode(
     string ContractId,
     string ContractVersion,
     string NodeId,
     ModelNodeKind NodeKind,
-    string? NameZh,
-    string? NameEn,
-    string? ShortNameZh,
-    string? ShortNameEn,
-    string? DescriptionZh,
-    string? DescriptionEn,
+    string Name,
+    string ShortName,
+    string Description,
     string[] Tags,
     string? Group,
     ModelObjectLifecycle Lifecycle,
@@ -561,10 +555,8 @@ public sealed record TaskScheme(
     string ContractId,
     string ContractVersion,
     string SchemeId,
-    string? NameZh,
-    string? NameEn,
-    string? DescriptionZh,
-    string? DescriptionEn,
+    string Name,
+    string Description,
     string[] Tags,
     string? Group,
     ModelObjectLifecycle Lifecycle,

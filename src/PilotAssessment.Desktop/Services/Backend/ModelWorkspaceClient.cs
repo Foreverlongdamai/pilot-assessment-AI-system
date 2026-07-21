@@ -78,8 +78,7 @@ public sealed class ModelWorkspaceClient :
     public Task<TaskSchemeMutationResponse> CopySchemeAsync(
         string sourceSchemeId,
         string newSchemeId,
-        string? nameZh,
-        string? nameEn,
+        string? name,
         string actor,
         CancellationToken cancellationToken = default)
     {
@@ -90,8 +89,7 @@ public sealed class ModelWorkspaceClient :
             new TaskSchemeCopyRequest(
                 sourceSchemeId,
                 newSchemeId,
-                nameZh,
-                nameEn,
+                name,
                 actor,
                 transactionId),
             PilotAssessmentJsonContext.Default.TaskSchemeCopyRequest,
@@ -225,7 +223,7 @@ public sealed class ModelWorkspaceClient :
         return response.Events;
     }
 
-    public async Task<CurrentModelRunSnapshot> PreviewNodeAsync(
+    public async Task<CurrentModelRunSnapshotV3> PreviewNodeAsync(
         string sessionRevisionId,
         string schemeId,
         string nodeId,

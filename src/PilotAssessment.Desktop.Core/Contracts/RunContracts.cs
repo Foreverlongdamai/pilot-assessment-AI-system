@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
@@ -233,7 +234,7 @@ public sealed record RunSnapshot(
     string PreflightHash,
     string SnapshotHash);
 
-public sealed record CurrentModelRunSnapshot(
+public sealed record CurrentModelRunSnapshotV3(
     string ContractId,
     string ContractVersion,
     string RunId,
@@ -248,10 +249,8 @@ public sealed record CurrentModelRunSnapshot(
     string PreflightHash,
     RunSnapshot ExecutionSnapshot,
     string SnapshotHash,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    BackendSourceIdentity? BackendSourceIdentity = null,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    ArtifactIdRef? SourceSnapshotRef = null);
+    BackendSourceIdentity BackendSourceIdentity,
+    ArtifactIdRef SourceSnapshotRef);
 
 public sealed record AssessmentRun(
     string ContractId,
@@ -266,11 +265,49 @@ public sealed record AssessmentRun(
     DateTime? FinishedAt,
     DateTime? CancellationRequestedAt);
 
-public sealed record AssessmentRunV2(
+public sealed record AssessmentRunV3(
     string ContractId,
     string ContractVersion,
     string RunId,
-    CurrentModelRunSnapshot Snapshot,
+    CurrentModelRunSnapshotV3 Snapshot,
+    RunState State,
+    RunStage Stage,
+    int ProgressSequence,
+    DateTime RequestedAt,
+    DateTime? StartedAt,
+    DateTime? FinishedAt,
+    DateTime? CancellationRequestedAt);
+
+/// <summary>
+/// Read-only DTO for immutable assessment-run/0.2.0 payloads. The nested model bytes
+/// intentionally remain opaque so historical bilingual snapshots can round-trip exactly
+/// without re-entering the editable current-model type system.
+/// </summary>
+public sealed record LegacyCurrentModelRunSnapshotV2(
+    string ContractId,
+    string ContractVersion,
+    string RunId,
+    RunPurpose Purpose,
+    SessionRevisionRef SessionRevisionRef,
+    JsonElement Scheme,
+    JsonElement[] ActiveNodes,
+    ExecutableIdentity[] LockedOperatorIdentities,
+    ExecutableIdentity EngineIdentity,
+    ExecutableIdentity[] NumericRuntimeIdentities,
+    string RuntimeParametersHash,
+    string PreflightHash,
+    RunSnapshot ExecutionSnapshot,
+    string SnapshotHash,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    BackendSourceIdentity? BackendSourceIdentity = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    ArtifactIdRef? SourceSnapshotRef = null);
+
+public sealed record LegacyAssessmentRunV2(
+    string ContractId,
+    string ContractVersion,
+    string RunId,
+    LegacyCurrentModelRunSnapshotV2 Snapshot,
     RunState State,
     RunStage Stage,
     int ProgressSequence,

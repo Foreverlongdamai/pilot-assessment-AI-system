@@ -17,14 +17,47 @@ public sealed class ContractSerializationTests
 
         Assert.Equal("evidence.precision", node.NodeId);
         Assert.Equal(ModelNodeKind.Evidence, node.NodeKind);
+        Assert.Equal("0.2.0", node.ContractVersion);
+        Assert.Equal("Trajectory Precision Evidence", node.Name);
+        Assert.Equal("Trajectory Precision", node.ShortName);
+        Assert.Equal("Task-neutral evidence fixture.", node.Description);
         var definition = Assert.IsType<EvidenceNodeDefinition>(node.Definition);
+        Assert.Equal("Fixture Evidence node.", definition.HelpText);
         Assert.Equal("recipe.evidence.precision", definition.Recipe.RecipeId);
         Assert.Equal(0.5, definition.Recipe.Scoring!.Parameters["desired_boundary"]!.GetValue<double>());
+
+        var currentJson = JsonSerializer.SerializeToNode(
+            node,
+            PilotAssessmentJsonContext.Default.ModelNode)!.AsObject();
+        Assert.Equal("Trajectory Precision Evidence", currentJson["name"]!.GetValue<string>());
+        Assert.DoesNotContain("name_en", currentJson);
+        Assert.DoesNotContain("name_zh", currentJson);
+        Assert.DoesNotContain("description_en", currentJson);
+        Assert.DoesNotContain("description_zh", currentJson);
 
         AssertRoundTripEquivalent(
             "model-node-evidence.json",
             node,
             PilotAssessmentJsonContext.Default.ModelNode);
+    }
+
+    [Fact]
+    public void TaskSchemeCopyRequest_UsesOneCanonicalNameField()
+    {
+        var request = new TaskSchemeCopyRequest(
+            "scheme.base",
+            "scheme.copy",
+            "Copied scheme",
+            "expert",
+            "tx.copy");
+
+        var json = JsonSerializer.SerializeToNode(
+            request,
+            PilotAssessmentJsonContext.Default.TaskSchemeCopyRequest)!.AsObject();
+
+        Assert.Equal("Copied scheme", json["name"]!.GetValue<string>());
+        Assert.DoesNotContain("name_en", json);
+        Assert.DoesNotContain("name_zh", json);
     }
 
     [Fact]
@@ -43,7 +76,7 @@ public sealed class ContractSerializationTests
         Assert.Equal("model-library.alpha", graph.ModelLibraryId);
         Assert.Equal(["raw.x"], graph.Scheme.ComputedActiveClosure);
         Assert.Equal("41b97e6b379f1d744d0b63a1937fcffd1044d31dddeb67cf6f41adb1b2e7eb2a", graph.GraphHash);
-        Assert.Equal(["/name_en"], change.Diff.ChangedPaths);
+        Assert.Equal(["/name"], change.Diff.ChangedPaths);
         Assert.Equal("input.binding", operatorDefinition.OperatorId);
 
         AssertRoundTripEquivalent(
@@ -234,14 +267,20 @@ public sealed class ContractSerializationTests
         var preflight = ReadFixture(
             "current-model-run-preflight.json",
             PilotAssessmentJsonContext.Default.CurrentModelRunPreflightReport);
-        var run = ReadFixture(
+        var legacyRun = ReadFixture(
             "assessment-run-v2.json",
-            PilotAssessmentJsonContext.Default.AssessmentRunV2);
+            PilotAssessmentJsonContext.Default.LegacyAssessmentRunV2);
+        var run = ReadFixture(
+            "assessment-run-v3.json",
+            PilotAssessmentJsonContext.Default.AssessmentRunV3);
         var result = ReadFixture(
             "run-result-envelope.json",
             PilotAssessmentJsonContext.Default.RunResultEnvelope);
 
         Assert.Equal(TechnicalDisposition.Ready, preflight.TechnicalDisposition);
+        Assert.Equal(
+            "scheme.current",
+            legacyRun.Snapshot.Scheme.GetProperty("scheme_id").GetString());
         Assert.Equal("scheme.current", run.Snapshot.Scheme.SchemeId);
         Assert.Equal("artifact.posterior", result.PosteriorRef.ArtifactId);
 
@@ -251,8 +290,12 @@ public sealed class ContractSerializationTests
             PilotAssessmentJsonContext.Default.CurrentModelRunPreflightReport);
         AssertRoundTripEquivalent(
             "assessment-run-v2.json",
+            legacyRun,
+            PilotAssessmentJsonContext.Default.LegacyAssessmentRunV2);
+        AssertRoundTripEquivalent(
+            "assessment-run-v3.json",
             run,
-            PilotAssessmentJsonContext.Default.AssessmentRunV2);
+            PilotAssessmentJsonContext.Default.AssessmentRunV3);
         AssertRoundTripEquivalent(
             "run-result-envelope.json",
             result,

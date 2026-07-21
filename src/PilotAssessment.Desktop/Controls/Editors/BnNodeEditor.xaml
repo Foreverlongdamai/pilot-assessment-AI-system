@@ -33,10 +33,9 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <TextBox Header="{Binding [Editor_EnglishName], Source={StaticResource Localization}}" Text="{Binding NameEn, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Column="1" Header="{Binding [Editor_ChineseName], Source={StaticResource Localization}}" Text="{Binding NameZh, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                            <TextBox Grid.Row="1" Header="{Binding [Editor_EnglishDescription], Source={StaticResource Localization}}" Text="{Binding DescriptionEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Header="{Binding [Editor_ChineseDescription], Source={StaticResource Localization}}" Text="{Binding DescriptionZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBox Header="{Binding [Editor_CanonicalName], Source={StaticResource Localization}}" Text="{Binding Name, Mode=TwoWay}" TextChanged="OnFieldChanged" />
+                            <TextBox Grid.Column="1" Header="{Binding [Editor_CanonicalDescription], Source={StaticResource Localization}}" Text="{Binding Description, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                            <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Opacity="0.68" Text="{Binding [Editor_CanonicalEnglishHint], Source={StaticResource Localization}}" TextWrapping="Wrap" />
                             <TextBox Grid.Row="2" Header="{Binding [Common_Group], Source={StaticResource Localization}}" Text="{Binding Group, Mode=TwoWay}" TextChanged="OnFieldChanged" />
                             <TextBox Grid.Row="2" Grid.Column="1" Header="{Binding [Editor_TagsSeparated], Source={StaticResource Localization}}" Text="{Binding TagsText, Mode=TwoWay}" TextChanged="OnFieldChanged" />
                             <ComboBox Grid.Row="3" Header="{Binding [Bn_NodeRole], Source={StaticResource Localization}}" ItemsSource="{Binding NodeRoles}" SelectedItem="{Binding NodeRole, Mode=TwoWay}" SelectionChanged="OnSelectionChanged" />
@@ -44,14 +43,10 @@
                         </Grid>
                         <TextBox AcceptsReturn="True" Header="{Binding [Common_Documentation], Source={StaticResource Localization}}" MinHeight="110" Text="{Binding Documentation, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
                         <TextBox AcceptsReturn="True" Header="{Binding [Bn_ReportingMetadata], Source={StaticResource Localization}}" MinHeight="130" FontFamily="Consolas" Text="{Binding ReportingMetadataJson, Mode=TwoWay}" TextChanged="OnFieldChanged" />
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <TextBox AcceptsReturn="True" Header="{Binding [Editor_EnglishHelp], Source={StaticResource Localization}}" MinHeight="110" Text="{Binding HelpTextEn, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                            <TextBox Grid.Column="1" AcceptsReturn="True" Header="{Binding [Editor_ChineseHelp], Source={StaticResource Localization}}" MinHeight="110" Text="{Binding HelpTextZh, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
-                        </Grid>
+                        <StackPanel Spacing="8">
+                            <TextBlock Opacity="0.68" Text="{Binding [Editor_CanonicalEnglishHint], Source={StaticResource Localization}}" TextWrapping="Wrap" />
+                            <TextBox AcceptsReturn="True" Header="{Binding [Editor_CanonicalHelp], Source={StaticResource Localization}}" MinHeight="110" Text="{Binding HelpText, Mode=TwoWay}" TextChanged="OnFieldChanged" TextWrapping="Wrap" />
+                        </StackPanel>
                         <InfoBar IsClosable="False" IsOpen="True" Message="{Binding [Bn_SaveBoundaryDescription], Source={StaticResource Localization}}" Severity="Informational" Title="{Binding [Bn_SaveBoundary], Source={StaticResource Localization}}" />
                     </StackPanel>
                 </ScrollViewer>

@@ -47,8 +47,8 @@ public static class ModelDisplayNameResolver
     {
         ArgumentNullException.ThrowIfNull(node);
         var savedName = preferShort
-            ? FirstNonBlank(node.ShortNameEn, node.NameEn)
-            : FirstNonBlank(node.NameEn, node.ShortNameEn);
+            ? FirstNonBlank(node.ShortName, node.Name)
+            : FirstNonBlank(node.Name, node.ShortName);
         if (savedName is not null)
         {
             return savedName;
@@ -70,7 +70,7 @@ public static class ModelDisplayNameResolver
     public static string ForScheme(TaskScheme scheme)
     {
         ArgumentNullException.ThrowIfNull(scheme);
-        var savedName = FirstNonBlank(scheme.NameEn);
+        var savedName = FirstNonBlank(scheme.Name);
         if (savedName is not null)
         {
             return savedName;

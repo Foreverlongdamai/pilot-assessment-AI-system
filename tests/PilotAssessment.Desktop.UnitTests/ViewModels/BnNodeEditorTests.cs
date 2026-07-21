@@ -184,7 +184,6 @@ public sealed class BnNodeEditorTests
         var draft = ModelNodeDraftFactory.Create(new ModelNodeDraftRequest(
             ModelNodeKind.Bn,
             nodeId,
-            null,
             RawModality.X,
             100,
             100));
@@ -197,7 +196,8 @@ public sealed class BnNodeEditorTests
         return draft with
         {
             NodeId = nodeId,
-            NameEn = nodeId,
+            Name = nodeId,
+            ShortName = nodeId,
             SemanticRevision = semanticRevision,
             GlobalLayout = new NodeLayout(nodeId, 100, 100),
             Definition = definition with
@@ -224,12 +224,10 @@ public sealed class BnNodeEditorTests
         var now = DateTime.UtcNow;
         var scheme = new TaskScheme(
             "task-scheme",
-            "0.1.0",
+            "0.2.0",
             "task-scheme.test",
-            null,
             "Test scheme",
-            null,
-            null,
+            "BN editor test scheme.",
             [],
             null,
             ModelObjectLifecycle.Active,
@@ -249,7 +247,7 @@ public sealed class BnNodeEditorTests
             now);
         return new ModelGraphSnapshot(
             "model-graph-snapshot",
-            "0.2.0",
+            "0.3.0",
             "model-library.test",
             scheme,
             nodes,
@@ -288,7 +286,7 @@ public sealed class BnNodeEditorTests
         public Task<IReadOnlyList<ModelChangeEvent>> ListNodeHistoryAsync(string nodeId, CancellationToken cancellationToken = default) =>
             Task.FromResult<IReadOnlyList<ModelChangeEvent>>([]);
 
-        public Task<CurrentModelRunSnapshot> PreviewNodeAsync(string sessionRevisionId, string schemeId, string nodeId, IReadOnlyDictionary<string, JsonElement> runtimeParameters, CancellationToken cancellationToken = default) =>
+        public Task<CurrentModelRunSnapshotV3> PreviewNodeAsync(string sessionRevisionId, string schemeId, string nodeId, IReadOnlyDictionary<string, JsonElement> runtimeParameters, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
     }
 

@@ -107,7 +107,7 @@ public interface IModelNodeEditorGateway
         string nodeId,
         CancellationToken cancellationToken = default);
 
-    Task<CurrentModelRunSnapshot> PreviewNodeAsync(
+    Task<CurrentModelRunSnapshotV3> PreviewNodeAsync(
         string sessionRevisionId,
         string schemeId,
         string nodeId,

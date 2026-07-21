@@ -151,21 +151,18 @@ public sealed class SidecarContractTests
                 ModelNodeDraftFactory.Create(new ModelNodeDraftRequest(
                     ModelNodeKind.RawInput,
                     "Contract smoke Raw Input",
-                    "合同烟雾测试原始输入",
                     RawModality.G,
                     640,
                     280)),
                 ModelNodeDraftFactory.Create(new ModelNodeDraftRequest(
                     ModelNodeKind.Evidence,
                     "Contract smoke Evidence",
-                    "合同烟雾测试证据",
                     RawModality.X,
                     840,
                     280)),
                 ModelNodeDraftFactory.Create(new ModelNodeDraftRequest(
                     ModelNodeKind.Bn,
                     "Contract smoke BN",
-                    "合同烟雾测试贝叶斯节点",
                     RawModality.X,
                     1040,
                     280)),

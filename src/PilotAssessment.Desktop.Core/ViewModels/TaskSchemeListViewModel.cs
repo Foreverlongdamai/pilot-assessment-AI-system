@@ -263,27 +263,20 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
     }
 
     public async Task<TaskScheme?> CreateAsync(
-        string? nameEn,
-        string? nameZh,
+        string name,
         CancellationToken cancellationToken = default)
     {
         EnsureProjectOpen();
-        var normalizedEn = NormalizeOptional(nameEn);
-        var normalizedZh = NormalizeOptional(nameZh);
-        if (normalizedEn is null && normalizedZh is null)
-        {
-            throw new ArgumentException("A task scheme needs an English or Chinese name.");
-        }
+        var canonicalName = NormalizeOptional(name)
+            ?? throw new ArgumentException("A task scheme needs a canonical English name.");
 
         var now = DateTime.UtcNow;
         var provisional = new TaskScheme(
             "task-scheme",
-            "0.1.0",
+            "0.2.0",
             NewSchemeId(),
-            normalizedZh,
-            normalizedEn,
-            null,
-            null,
+            canonicalName,
+            "Expert-created editable task scheme.",
             [],
             null,
             ModelObjectLifecycle.Active,
@@ -311,24 +304,18 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
     }
 
     public async Task<TaskScheme?> CopySelectedAsync(
-        string? nameEn = null,
-        string? nameZh = null,
+        string? name = null,
         CancellationToken cancellationToken = default)
     {
         var source = RequireEditableSelection();
-        var copyNameEn = NormalizeOptional(nameEn) ?? AppendCopy(source.Scheme.NameEn, "Copy");
-        var copyNameZh = NormalizeOptional(nameZh) ?? AppendCopy(source.Scheme.NameZh, "副本");
-        if (copyNameEn is null && copyNameZh is null)
-        {
-            copyNameEn = $"{source.SchemeId} Copy";
-        }
+        var copyName = NormalizeOptional(name) ?? AppendCopy(source.Scheme.Name, "Copy")
+            ?? $"{source.SchemeId} Copy";
 
         return await RunMutationAsync(
             token => _gateway.CopySchemeAsync(
                 source.SchemeId,
                 NewSchemeId(),
-                copyNameZh,
-                copyNameEn,
+                copyName,
                 "expert.local",
                 token),
             selectCanonical: true,
@@ -338,22 +325,16 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
     }
 
     public async Task<TaskScheme?> RenameSelectedAsync(
-        string? nameEn,
-        string? nameZh,
+        string name,
         CancellationToken cancellationToken = default)
     {
         var selected = RequireEditableSelection();
-        var normalizedEn = NormalizeOptional(nameEn);
-        var normalizedZh = NormalizeOptional(nameZh);
-        if (normalizedEn is null && normalizedZh is null)
-        {
-            throw new ArgumentException("A task scheme needs an English or Chinese name.");
-        }
+        var canonicalName = NormalizeOptional(name)
+            ?? throw new ArgumentException("A task scheme needs a canonical English name.");
 
         var candidate = selected.Scheme with
         {
-            NameEn = normalizedEn,
-            NameZh = normalizedZh,
+            Name = canonicalName,
         };
         return await RunMutationAsync(
             token => _gateway.UpdateSchemeAsync(
@@ -512,8 +493,8 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
             var search = SearchText.Trim();
             query = query.Where(item =>
                 item.SchemeId.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                (item.Scheme.NameEn?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                (item.Scheme.NameZh?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                item.Scheme.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                item.Scheme.Description.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                 item.Scheme.Tags.Any(tag => tag.Contains(search, StringComparison.OrdinalIgnoreCase)) ||
                 (item.Scheme.Group?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
         }
@@ -710,8 +691,7 @@ public interface IModelWorkspaceGateway
     Task<TaskSchemeMutationResponse> CopySchemeAsync(
         string sourceSchemeId,
         string newSchemeId,
-        string? nameZh,
-        string? nameEn,
+        string? name,
         string actor,
         CancellationToken cancellationToken = default);
 

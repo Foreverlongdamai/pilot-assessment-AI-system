@@ -32,7 +32,7 @@ public static class EvidenceRecipeEdgeEditor
             bindingId,
             InputBindingKind.Stream,
             rawDefinition.SourceDescriptor.SourceId,
-            rawInput.ShortNameEn ?? rawInput.NameEn ?? rawInput.ShortNameZh ?? rawInput.NameZh ?? rawInput.NodeId,
+            rawInput.ShortName,
             rawDefinition.SourceDescriptor.DeclaredType,
             new Dictionary<string, JsonElement>(StringComparer.Ordinal));
         var recipeNode = new RecipeNode(
