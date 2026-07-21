@@ -1,0 +1,58 @@
+{
+  "schema_version": "pilot-assessment-diagram-manifest-v1",
+  "renderer": "@mermaid-js/mermaid-cli",
+  "diagrams": [
+    {
+      "asset_id": "c4-system-context",
+      "source": "c4-system-context.mmd",
+      "status": "rendered",
+      "audience": [
+        "all"
+      ],
+      "scope": "Pilot Assessment System context",
+      "caption": {
+        "zh-CN": "图 1  系统环境：人员、外部采集数据、系统与受管项目",
+        "en-GB": "Figure 1  System context: people, captured data, the product and managed projects"
+      },
+      "alt_text": {
+        "zh-CN": "评估用户、领域专家和维护者与离线 Pilot Assessment System 交互；模拟器数据进入系统，运行证据和来源信息保存到受管项目。",
+        "en-GB": "Evaluators, domain experts and maintainers interact with the offline Pilot Assessment System; simulator data enters the product and immutable run evidence is stored in managed projects."
+      },
+      "renderer_version": "11.16.0",
+      "source_sha256": "bc13bf2c7f057aae386a659d67551c97d8ea451305efee769500c6ba30ad6499",
+      "svg": "c4-system-context.svg",
+      "svg_sha256": "73b64a25848fe4320507fadee9dcbd547b3ce4361ec00c073911dfd36947361d",
+      "png": "c4-system-context.png",
+      "png_sha256": "25be25dfadeacc3b64360bc04d3e3b860b0dd3dabed55d31011e2519e854cf19",
+      "png_width": 1225,
+      "png_height": 528
+    },
+    {
+      "asset_id": "c4-container",
+      "source": "c4-container.mmd",
+      "status": "rendered",
+      "audience": [
+        "expert",
+        "developer",
+        "maintainer"
+      ],
+      "scope": "Portable software-copy containers and data ownership",
+      "caption": {
+        "zh-CN": "图 2  容器和所有权：WinUI、Python sidecar、系统模型库与用户项目",
+        "en-GB": "Figure 2  Containers and ownership: WinUI, Python sidecar, the system model library and user projects"
+      },
+      "alt_text": {
+        "zh-CN": "WinUI 通过本地 JSON-RPC 调用 Python sidecar；sidecar 使用公开源码和私有运行时，系统模型库属于软件副本，Session 与运行结果属于用户项目。",
+        "en-GB": "WinUI calls the local Python sidecar over JSON-RPC; the sidecar uses exposed source and a private runtime, the model library belongs to the software copy, and sessions and run results belong to user projects."
+      },
+      "renderer_version": "11.16.0",
+      "source_sha256": "75b71aa49701760e2de8c76bb8da1a307990175c5873fafce2a7589612dbbe06",
+      "svg": "c4-container.svg",
+      "svg_sha256": "6dbcc41e5c814fd4e3d9a5bfbef588cbd262ffcfef4556b54f913339e47e6980",
+      "png": "c4-container.png",
+      "png_sha256": "146c3dca0e70b39d23009d84668da23d04d130497d9ad036b326911e8ba42591",
+      "png_width": 891,
+      "png_height": 1159
+    }
+  ]
+}

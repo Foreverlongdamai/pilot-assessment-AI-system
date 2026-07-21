@@ -2,12 +2,12 @@
 
 | 字段 | 值 |
 |---|---|
-| 设计版本 | v0.6 staged-edit/five-layer validation baseline |
-| 当前软件状态 | in_progress（M1–M7 engineering verified；M7 user acceptance pending；M8 只有 pre-UAT 候选大纲且未实施；starter/synthetic `formal_run_authorized=false`） |
+| 设计版本 | v0.8 portable/documentation engineering baseline |
+| 当前软件状态 | in_progress（M1–M8B 与 M8C-0 engineering verified；M7 user acceptance pending；D-055、M8C-1、M8D/M8E 未完成；starter/synthetic `formal_run_authorized=false`） |
 | 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
-> **当前权威补充：** M5/M6/M7 工程测试只证明已实现平台、built-in operators、recipe/inference executor、persistence/protocol、current-node/task-activation 和 WinUI 映射按合同工作；它不评判专家 recipe、Anchor、阈值或 CPT 是否科学合理，也不能替代用户亲自验收 M7。M7 编辑先进入后端持久 edit session，不设业务发布门；主窗口关闭时统一保存或放弃。dirty 草稿禁止 preview/preflight/run，clean canonical workspace 的 run preflight 只执行最小技术校验并自动冻结 RunSnapshot。继续使用小型平台不变量和手算 BN，不建立重型多模态 fixtures。M8 当前只有不可执行的 pre-UAT 候选大纲；正常模型编辑继续走前端，现有方法不足时才直接修改发布目录中的全局 Python backend source。详见 [M7 基础规格](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)、[D-056/D-057 修订](./specs/2026-07-18-m7-staged-edit-session-and-five-layer-canvas-amendment.md) 与 [M8 候选大纲](./specs/2026-07-18-m8-productization-editable-python-documentation-and-handoff-outline.md)。
+> **当前权威补充：** M5/M6/M7 工程测试只证明已实现平台、built-in operators、recipe/inference executor、persistence/protocol、current-node/task-activation 和 WinUI 映射按合同工作；它不评判专家 recipe、Anchor、阈值或 CPT 是否科学合理，也不能替代用户亲自验收 M7。M7 编辑先进入后端持久 edit session，不设业务发布门；主窗口关闭时统一保存或放弃。dirty 草稿禁止 preview/preflight/run，clean canonical workspace 的 run preflight 只执行最小技术校验并自动冻结 RunSnapshot。继续使用小型平台不变量和手算 BN，不建立重型多模态 fixtures。M8A/M8B 已提供 portable runtime、system-owned model library、editable Python/source identity 与 operator handoff；M8C-0 已提供受控文档 pipeline。正常模型编辑继续走前端，现有方法不足时才直接修改发布目录中的全局 Python backend source。M8D/M8E 与 M7 用户验收仍未关闭。详见 [M8B 规格](./specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)、[M8C 规格](./specs/2026-07-21-m8c-documentation-system-design.md) 与 [Implementation Status](./11_IMPLEMENTATION_STATUS.md)。
 
 M5 的 D-040 migration smoke 已对全部 M4R recipe source bindings 执行 generic provenance closure：旧 `starter.o8` 因 Evidence observation input 被保留但拒绝 active import，新 raw/session/task-derived TPX parallel version 可执行。该 smoke 不比较两版 provisional 数值，也没有按 O8 ID 写特判。
 
@@ -364,4 +364,4 @@ PilotAssessment/
 - reference trajectory、phase/event annotation 的生产方式需与实验团队确认；
 - shared-evidence 多 parent CPT 会指数增长；v0.1 已设 parent/row/cell/size 硬上限，但数值仍需性能基准和专家审查后才能提高；
 - WinUI 图编辑控件选型和无障碍支持需原型验证；
-- M1–M7 的合同、ingestion/synchronization、editable Evidence、BN、受管项目、sidecar 和 WinUI expert workspace 均已通过各自工程门；M7 用户手工验收仍待完成。M8 便携发布、直接可编辑的 Python backend source layout、DOCX 文档体系、项目备份迁移和 clean-machine handoff 尚未实施。starter/synthetic `formal_run_authorized=false`；现有证据不构成科学有效性声明。
+- M1–M8B 与 M8C-0 的合同、ingestion/synchronization、editable Evidence、BN、受管项目、sidecar、WinUI、portable runtime、editable Python/source identity 和文档 pipeline 均已通过各自工程门；M7 用户手工验收仍待完成。M8C-1 最终文档、M8D 项目备份迁移和 M8E clean-machine handoff 尚未实施。starter/synthetic `formal_run_authorized=false`；现有证据不构成科学有效性声明。

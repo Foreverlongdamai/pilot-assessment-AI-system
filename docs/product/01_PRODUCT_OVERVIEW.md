@@ -1,10 +1,10 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0.8 portable expert-designer 基线。M1–M7、M8A 与 M8B-0 已工程验证；M7 用户手工验收、D-055、M8B-1/M8B-2 与 M8C–M8E 尚未完成；starter/synthetic `formal_run_authorized=false`。
+**文档状态：** 产品 v0.8 portable expert-designer 基线。M1–M7、M8A、M8B 与 M8C-0 已工程验证；M7 用户手工验收、D-055、M8C-1、M8D 与 M8E 尚未完成；starter/synthetic `formal_run_authorized=false`。
 **日期：** 2026-07-21
 **适用目录：** `pilot_assessment_system/`
 
-> **当前权威：** M7 交互见 [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)，模型 ownership 与 project/run 分层见 [M8B System-Owned Model Library and Editable Backend Provenance Design](./specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)。M5/M6 的 version/draft/publish 和 project-local current-model 文字只作为 migration/replay 基础。本总览中出现的 Hover、18 Anchor、11 sub-skills、4 competencies 与默认公式/CPT 均指 starter template，不限制任务、方案或节点数量。
+> **当前权威：** M7 交互见 [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)，模型 ownership 与 project/run 分层见 [M8B System-Owned Model Library and Editable Backend Provenance Design](./specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)，文档生产与状态门见 [M8C Documentation System Design](./specs/2026-07-21-m8c-documentation-system-design.md)。M5/M6 的 version/draft/publish 和 project-local current-model 文字只作为 migration/replay 基础。本总览中出现的 Hover、18 Anchor、11 sub-skills、4 competencies 与默认公式/CPT 均指 starter template，不限制任务、方案或节点数量。
 
 ## 1. 产品目的
 

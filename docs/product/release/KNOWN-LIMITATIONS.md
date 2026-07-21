@@ -4,8 +4,9 @@
 - This build is generated from the current working tree and may record `git.dirty=true`.
 - Clean-machine verification without any preinstalled developer runtime remains an M8E gate.
 - Code signing, installer/MSIX, automatic update and application-store delivery are not included.
-- The complete Markdown-to-DOCX manual suite is an M8C deliverable; this package has minimal
-  startup and source-editing guidance only.
+- M8C-0 provides the pinned Markdown-to-DOCX pipeline and representative review manuals. The
+  complete bilingual 12-manual set, final UI screenshots and master technical reference remain
+  M8C-1/M8E deliverables.
 - Project backup/restore/migration UI and redacted diagnostic bundles are M8D deliverables.
 - The starter Evidence algorithms, thresholds, BN topology and CPTs have not been scientifically
   calibrated by domain experts and do not authorize formal operational assessment.

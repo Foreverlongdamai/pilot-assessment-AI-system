@@ -1,0 +1,12 @@
+{
+  "schema_version": "pilot-assessment-screenshot-manifest-v1",
+  "product_version": "0.1.0",
+  "final_capture_gate": "M7-UAT",
+  "screenshots": [
+    {"screenshot_id": "ui-project-launcher", "status": "pending", "reason": "final capture waits for M7 user acceptance"},
+    {"screenshot_id": "ui-five-layer-model-studio", "status": "pending", "reason": "final capture waits for M7 user acceptance and D-055"},
+    {"screenshot_id": "ui-evidence-node-editor", "status": "pending", "reason": "final capture waits for M7 user acceptance and D-055"},
+    {"screenshot_id": "ui-bn-cpt-editor", "status": "pending", "reason": "final capture waits for M7 user acceptance and D-055"},
+    {"screenshot_id": "ui-run-results-diagnostics", "status": "pending", "reason": "final capture waits for M7 user acceptance"}
+  ]
+}

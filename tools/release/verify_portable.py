@@ -142,7 +142,9 @@ def _required_layout(root: Path) -> None:
         "developer/examples/operator-extension/example_scalar_offset.py",
         "developer/examples/operator-extension/test_example_scalar_offset.py",
         "developer/examples/operator-extension/README.md",
-        "docs/python-operator-extension-development.md",
+        "docs/documentation-manifest.json",
+        "docs/source-catalog.json",
+        "docs/review/README.txt",
         "system/system.json",
         "system/model-library.sqlite3",
         "system/staging/model-edit/workspace.sqlite3",
@@ -194,6 +196,107 @@ def _verify_checksums(root: Path, *, ignore_mutable_system: bool = False) -> int
             f"checksum inventory differs from product files: unlisted={missing}, stale={extra}"
         )
     return len(entries)
+
+
+def _verify_documentation(root: Path) -> dict[str, Any]:
+    docs_root = root / "docs"
+    manifest_path = docs_root / "documentation-manifest.json"
+    catalog_path = docs_root / "source-catalog.json"
+    release_manifest_path = root / "manifest" / "release-manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+    release_manifest = json.loads(release_manifest_path.read_text(encoding="utf-8"))
+
+    if manifest.get("schema_version") != "pilot-assessment-document-build-v1":
+        raise PortableVerificationError("documentation manifest version is unsupported")
+    if catalog.get("schema_version") != "pilot-assessment-document-catalog-v1":
+        raise PortableVerificationError("documentation catalog version is unsupported")
+    product_version = release_manifest.get("product_version")
+    if not (product_version == manifest.get("product_version") == catalog.get("product_version")):
+        raise PortableVerificationError("documentation and product versions differ")
+    if manifest.get("build_status") != "review":
+        raise PortableVerificationError(
+            "the M8C-0 engineering package must identify its documentation as review"
+        )
+
+    documents = catalog.get("documents")
+    outputs = manifest.get("outputs")
+    if not isinstance(documents, list) or not isinstance(outputs, list) or not outputs:
+        raise PortableVerificationError("documentation catalog/outputs are missing")
+    catalog_index = {
+        str(item.get("document_id")): item for item in documents if isinstance(item, dict)
+    }
+    if len(catalog_index) != 12:
+        raise PortableVerificationError("documentation catalog must contain 12 logical manuals")
+
+    expected_docx: set[str] = set()
+    status_counts = {"review": 0, "released": 0}
+    for item in outputs:
+        if not isinstance(item, dict):
+            raise PortableVerificationError("documentation output must be an object")
+        status = str(item.get("status"))
+        if status not in status_counts:
+            raise PortableVerificationError(
+                f"draft/unknown documentation cannot enter the engineering package: {status!r}"
+            )
+        relative = Path(str(item.get("output", "")))
+        if relative.is_absolute() or not relative.parts or ".." in relative.parts:
+            raise PortableVerificationError(f"unsafe documentation output path: {relative}")
+        package_relative = (
+            Path("docs") / relative if status == "released" else Path("docs") / "review" / relative
+        )
+        output = (root / package_relative).resolve()
+        if not output.is_relative_to(root) or not output.is_file():
+            raise PortableVerificationError(
+                f"document output is missing from its status directory: {package_relative}"
+            )
+        if output.stat().st_size != int(item.get("output_bytes", -1)):
+            raise PortableVerificationError(f"document output size differs: {package_relative}")
+        if _sha256(output) != item.get("output_sha256"):
+            raise PortableVerificationError(f"document output hash differs: {package_relative}")
+        logical = package_relative.as_posix()
+        if logical in expected_docx:
+            raise PortableVerificationError(f"duplicate documentation output: {logical}")
+        expected_docx.add(logical)
+        status_counts[status] += 1
+
+        document_id = str(item.get("document_id"))
+        language = str(item.get("language"))
+        record = catalog_index.get(document_id)
+        variants = record.get("languages") if isinstance(record, dict) else None
+        variant = variants.get(language) if isinstance(variants, dict) else None
+        if not isinstance(variant, dict):
+            raise PortableVerificationError(
+                f"documentation output is absent from the catalog: {document_id}/{language}"
+            )
+        if variant.get("status") != status or variant.get("output") != relative.name:
+            raise PortableVerificationError(
+                f"documentation catalog differs from output: {document_id}/{language}"
+            )
+
+    actual_docx = {
+        path.relative_to(root).as_posix() for path in docs_root.rglob("*.docx") if path.is_file()
+    }
+    if actual_docx != expected_docx:
+        raise PortableVerificationError(
+            "packaged DOCX inventory differs from documentation manifest: "
+            f"actual={sorted(actual_docx)}, expected={sorted(expected_docx)}"
+        )
+
+    recorded = release_manifest.get("documentation")
+    expected_summary = {
+        "build_status": manifest.get("build_status"),
+        "manifest": "docs/documentation-manifest.json",
+        "manifest_sha256": _sha256(manifest_path),
+        "catalog": "docs/source-catalog.json",
+        "catalog_sha256": _sha256(catalog_path),
+        "generated_output_count": len(outputs),
+        "released_output_count": status_counts["released"],
+        "review_output_count": status_counts["review"],
+    }
+    if recorded != expected_summary:
+        raise PortableVerificationError("release manifest documentation summary differs")
+    return expected_summary
 
 
 def _model_identity(connection: sqlite3.Connection) -> tuple[str, int, int]:
@@ -1313,6 +1416,7 @@ def verify(
         raise PortableVerificationError(f"package root does not exist: {root}")
     _required_layout(root)
     checksum_count = _verify_checksums(root)
+    documentation = _verify_documentation(root)
     source_count = _verify_source_baseline(root)
     system_model = _verify_system_model_baseline(root)
     _verify_content_policy(root)
@@ -1327,6 +1431,7 @@ def verify(
     return {
         "package_root": str(root),
         "checksummed_files": checksum_count,
+        "documentation": documentation,
         "backend_source_files": source_count,
         "system_model": system_model,
         "private_python_import": imported,
@@ -1349,10 +1454,10 @@ def main() -> int:
             desktop_timeout=args.desktop_timeout,
         )
     except (OSError, ValueError, json.JSONDecodeError, subprocess.SubprocessError) as error:
-        print(f"M8B portable verification failed: {error}", file=sys.stderr)
+        print(f"Pilot Assessment portable verification failed: {error}", file=sys.stderr)
         return 1
     except PortableVerificationError as error:
-        print(f"M8B portable verification failed: {error}", file=sys.stderr)
+        print(f"Pilot Assessment portable verification failed: {error}", file=sys.stderr)
         return 1
     print(json.dumps(result, indent=2, ensure_ascii=False))
     return 0

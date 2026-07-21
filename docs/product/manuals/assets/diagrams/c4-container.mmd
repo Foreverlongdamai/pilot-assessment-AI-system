@@ -1,0 +1,31 @@
+flowchart TB
+    user(["Evaluator / Expert"])
+    raw["External Session Source\nread-only canonical bundle or streams + annotations"]
+    project[("User-selected Project\nmanaged Session revisions, RunSnapshots, results and artifacts")]
+
+    subgraph copy["One unpacked Pilot Assessment software copy"]
+        direction TB
+        manuals["Versioned Manuals\nMarkdown-derived DOCX"]
+        ui["WinUI Desktop\nC# presentation, windows and typed intents"]
+        sidecar["Python Sidecar\nJSON-RPC lifecycle and domain services"]
+        source["Active Python Source + Private Runtime\noperators, adapters, Evidence and BN engines"]
+        model[("System Model Library\nall ModelNodes, TaskSchemes, CPTs and edit session")]
+
+        ui -->|"typed JSON-RPC over supervised stdin/stdout"| sidecar
+        sidecar -->|"executes exact loaded implementation"| source
+        sidecar -->|"reads/writes global canonical model"| model
+    end
+
+    manuals -->|"guides operation and extension"| user
+    user -->|"opens and edits"| ui
+    raw -->|"read-only inspect and managed copy"| sidecar
+    sidecar -->|"copies input and freezes exact runs"| project
+
+    classDef person fill:#E8F4EF,stroke:#1F7A64,color:#203748,stroke-width:2px;
+    classDef app fill:#E8EEF5,stroke:#2E74B5,color:#203748,stroke-width:2px;
+    classDef store fill:#FFF7E6,stroke:#B7791F,color:#203748;
+    classDef external fill:#F4F6F9,stroke:#5A6470,color:#203748;
+    class user person;
+    class ui,sidecar,source,manuals app;
+    class model,project store;
+    class raw external;

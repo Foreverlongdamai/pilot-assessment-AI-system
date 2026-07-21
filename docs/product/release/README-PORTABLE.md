@@ -21,9 +21,11 @@ runtime and backend source.
 
 The package contains the desktop app, private runtimes, editable first-party Python source,
 starter resources, one clean `system\` model library, desktop source, release tools, a copyable
-operator example, bundled private dependency helper/uv, manifests and minimal release
-documentation. It contains no user project, Session, simulator sample, biometric data, result or
-artifact.
+operator example, bundled private dependency helper/uv, manifests and generated M8C engineering
+manuals. It contains no user project, Session, simulator sample, biometric data, result or artifact.
+
+The generated DOCX catalog is in `docs\documentation-manifest.json`. Until M8E, current manuals
+are explicitly stored under `docs\review\` and must not be represented as final released manuals.
 
 User projects remain in the locations selected in the app. UI preferences and recent-project
 links are stored under `%LOCALAPPDATA%\PilotAssessmentSystem` on each Windows account.
@@ -40,8 +42,9 @@ existing backend mechanisms cannot express a new calculation, the active Python 
 `backend\src\pilot_assessment`. Close the app completely before editing and restart it afterward.
 See `backend\README-DEVELOPMENT.md` before changing source.
 
-The dedicated instructions are in `docs\python-operator-extension-development.md`. Local
-operators register through
+The dedicated review guide is
+`docs\review\en-GB\PAS-PYTHON-EXT-001_Python-Operator-and-Source-Extension_v0.1.0.docx`.
+Local operators register through
 `backend\src\pilot_assessment\evidence\extensions\__init__.py`; their JSON parameter schema uses
 the same generic EvidenceRecipe editor as packaged operators and does not require a new C# page.
 

@@ -1,0 +1,21 @@
+flowchart LR
+    evaluator(["Evaluator\nImports sessions and runs assessments"])
+    expert(["Domain Expert\nDesigns Evidence and BN models"])
+    maintainer(["Maintainer\nExtends Python/C# and builds releases"])
+    simulator["Simulator / Capture Export\nstreams + annotations or canonical bundle"]
+    system[["Pilot Assessment System\nOffline Windows expert-design and assessment software"]]
+    results[("Managed Project\nSessions, RunSnapshots, results, artifacts")]
+
+    evaluator -->|"selects data, task scheme, runs and reviews"| system
+    expert -->|"edits global nodes, recipes, parents, CPTs and activation"| system
+    maintainer -->|"edits exposed source and builds documentation/releases"| system
+    simulator -->|"X/U/I/G/P and pilot_camera inputs"| system
+    system -->|"stores immutable run evidence and provenance"| results
+    results -->|"reopens and reviews historical assessments"| evaluator
+
+    classDef person fill:#E8F4EF,stroke:#1F7A64,color:#203748,stroke-width:2px;
+    classDef system fill:#E8EEF5,stroke:#2E74B5,color:#203748,stroke-width:3px;
+    classDef external fill:#F4F6F9,stroke:#5A6470,color:#203748;
+    class evaluator,expert,maintainer person;
+    class system system;
+    class simulator,results external;

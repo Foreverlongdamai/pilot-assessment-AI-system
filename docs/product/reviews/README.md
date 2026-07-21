@@ -15,6 +15,7 @@
 
 ## 当前记录入口
 
+- [M8C-0 Documentation Infrastructure Verification](2026-07-21-m8c0-documentation-infrastructure-verification.md) — 12 类 catalog/schema、固定工具链、C4 assets、三份代表 DOCX 的 28 页逐页 QA、确定性 hash 与 portable review-doc integration；关闭 M8C-0，不关闭 M8C-1/M8D/M8E 或 M7 UAT。
 - [M8C-0 Documentation Infrastructure Plan Self-Review](2026-07-21-m8c0-documentation-infrastructure-plan-self-review.md) — 核对 metadata/catalog、pinned toolchain、DOCX preset、Mermaid/C4、双语代表手册与 render QA；明确 M7/M8D/M8E 内容门。
 - [M8B-2 Python Operator Extension Handoff Verification](2026-07-21-m8b2-python-operator-extension-verification.md) — 普通源码扩展入口、私有依赖 add/remove/sync、通用 schema UI、clean ZIP 与外部 extension/run/desktop 的 fresh gate；关闭 M8B，不关闭 M7 UAT、M8C–M8E 或科学校准。
 - [M8B-1 Source Provenance and Snapshot Verification](2026-07-21-m8b1-source-provenance-and-snapshot-verification.md) — loaded source/runtime/dependency/operator identity、disk drift/restart boundary、RunSnapshot v0.2、source artifact 与 portable baseline v2 的 fresh engineering gate；不关闭 M8B-2、M7 UAT 或科学校准。

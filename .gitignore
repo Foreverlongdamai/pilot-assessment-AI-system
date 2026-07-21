@@ -8,6 +8,7 @@ dist/
 
 # --- Tooling caches ---
 .tools/
+node_modules/
 src/PilotAssessment.Desktop/Assets/Brand/*-chroma-*.png
 .pytest_cache/
 .ruff_cache/

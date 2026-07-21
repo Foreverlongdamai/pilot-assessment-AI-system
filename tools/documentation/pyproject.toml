@@ -1,0 +1,17 @@
+[project]
+name = "pilot-assessment-documentation-toolchain"
+version = "0.1.0"
+description = "Pinned Markdown, DOCX and documentation validation toolchain"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "jsonschema==4.26.0",
+    "lxml==6.0.2",
+    "markdown-it-py==4.0.0",
+    "mdit-py-plugins==0.5.0",
+    "pillow==12.2.0",
+    "pymupdf==1.26.7",
+    "python-docx==1.2.0",
+]
+
+[tool.uv]
+package = false

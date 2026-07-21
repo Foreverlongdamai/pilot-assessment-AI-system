@@ -27,6 +27,8 @@ UV = REPOSITORY_ROOT / ".tools" / "uv" / "uv.exe"
 WORK_ROOT = REPOSITORY_ROOT / "build" / "portable-release"
 CACHE_ROOT = REPOSITORY_ROOT / "build" / "release-cache"
 DEFAULT_OUTPUT_ROOT = REPOSITORY_ROOT / "dist" / "releases"
+DOCUMENTATION_TOOL_ROOT = REPOSITORY_ROOT / "tools" / "documentation"
+DOCUMENTATION_SOURCE_ROOT = REPOSITORY_ROOT / "docs" / "product" / "manuals"
 
 PYTHON_VERSION = "3.11.9"
 PYTHON_EMBED_URL = "https://www.python.org/ftp/python/3.11.9/python-3.11.9-embed-amd64.zip"
@@ -144,6 +146,44 @@ def _read_product_version() -> str:
     if not isinstance(value, str) or not value:
         raise ReleaseBuildError("pyproject project.version must be a non-empty string")
     return value
+
+
+def _generate_documentation(product_version: str) -> Path:
+    """Build the current review/released manual set before staging the package."""
+
+    _run(
+        [
+            str(UV),
+            "run",
+            "--project",
+            str(DOCUMENTATION_TOOL_ROOT),
+            "--frozen",
+            "python",
+            str(DOCUMENTATION_TOOL_ROOT / "build_manuals.py"),
+            "--status",
+            "review",
+        ],
+        echo_output=False,
+    )
+    documentation_root = (
+        REPOSITORY_ROOT / "dist" / "documentation" / f"PilotAssessment-{product_version}-docs"
+    )
+    manifest_path = documentation_root / "documentation-manifest.json"
+    catalog_path = documentation_root / "source-catalog.json"
+    if not manifest_path.is_file() or not catalog_path.is_file():
+        raise ReleaseBuildError("documentation build did not produce its manifest and catalog")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+    if manifest.get("product_version") != product_version:
+        raise ReleaseBuildError("documentation manifest product version differs from the product")
+    if catalog.get("product_version") != product_version:
+        raise ReleaseBuildError("documentation catalog product version differs from the product")
+    if manifest.get("build_status") != "review":
+        raise ReleaseBuildError("engineering package documentation must be built at review status")
+    outputs = manifest.get("outputs")
+    if not isinstance(outputs, list) or not outputs:
+        raise ReleaseBuildError("documentation build produced no review/released manuals")
+    return documentation_root
 
 
 def _download_python_embed() -> Path:
@@ -273,7 +313,48 @@ def _install_python_runtime(package_root: Path, requirements: Path) -> None:
         raise ReleaseBuildError(f"private site-packages contains first-party copy: {names}")
 
 
-def _copy_product_sources(package_root: Path) -> None:
+def _copy_documentation(documentation_root: Path, docs_root: Path) -> None:
+    manifest_path = documentation_root / "documentation-manifest.json"
+    catalog_path = documentation_root / "source-catalog.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    outputs = manifest.get("outputs")
+    if not isinstance(outputs, list):
+        raise ReleaseBuildError("documentation manifest outputs must be an array")
+
+    shutil.copy2(manifest_path, docs_root / manifest_path.name)
+    shutil.copy2(catalog_path, docs_root / catalog_path.name)
+    review_count = 0
+    for item in outputs:
+        if not isinstance(item, dict):
+            raise ReleaseBuildError("documentation manifest output must be an object")
+        status = item.get("status")
+        if status not in {"review", "released"}:
+            raise ReleaseBuildError(f"documentation output has invalid package status: {status!r}")
+        relative = Path(str(item.get("output", "")))
+        if relative.is_absolute() or not relative.parts or ".." in relative.parts:
+            raise ReleaseBuildError(f"documentation output path is unsafe: {relative}")
+        source = (documentation_root / relative).resolve()
+        if not source.is_relative_to(documentation_root.resolve()) or not source.is_file():
+            raise ReleaseBuildError(f"generated documentation output is missing: {relative}")
+        destination_root = docs_root if status == "released" else docs_root / "review"
+        destination = destination_root / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+        if status == "review":
+            review_count += 1
+
+    if review_count:
+        review_readme = docs_root / "review" / "README.txt"
+        review_readme.parent.mkdir(parents=True, exist_ok=True)
+        review_readme.write_text(
+            "These DOCX files are generated review-status engineering manuals.\n"
+            "They are included for M8C-0 evaluation and are not M8E released manuals.\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+
+
+def _copy_product_sources(package_root: Path, documentation_root: Path) -> None:
     backend = package_root / "backend"
     _copy_tree(
         REPOSITORY_ROOT / "src" / "pilot_assessment",
@@ -315,14 +396,7 @@ def _copy_product_sources(package_root: Path) -> None:
     docs_root.mkdir(parents=True, exist_ok=True)
     for name in ("README-PORTABLE.md", "KNOWN-LIMITATIONS.md"):
         shutil.copy2(REPOSITORY_ROOT / "docs" / "product" / "release" / name, docs_root / name)
-    shutil.copy2(
-        REPOSITORY_ROOT
-        / "docs"
-        / "product"
-        / "manuals"
-        / "python-operator-extension-development.md",
-        docs_root / "python-operator-extension-development.md",
-    )
+    _copy_documentation(documentation_root, docs_root)
     shutil.copy2(docs_root / "README-PORTABLE.md", package_root / "README.txt")
 
 
@@ -694,6 +768,29 @@ def _write_checksums(package_root: Path) -> int:
     return len(files)
 
 
+def _documentation_release_summary(package_root: Path) -> dict[str, Any]:
+    docs_root = package_root / "docs"
+    manifest_path = docs_root / "documentation-manifest.json"
+    catalog_path = docs_root / "source-catalog.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    outputs = manifest.get("outputs")
+    if not isinstance(outputs, list):
+        raise ReleaseBuildError("documentation manifest outputs must be an array")
+    statuses = [str(item.get("status")) for item in outputs if isinstance(item, dict)]
+    if len(statuses) != len(outputs):
+        raise ReleaseBuildError("documentation manifest contains a non-object output")
+    return {
+        "build_status": manifest.get("build_status"),
+        "manifest": "docs/documentation-manifest.json",
+        "manifest_sha256": _sha256(manifest_path),
+        "catalog": "docs/source-catalog.json",
+        "catalog_sha256": _sha256(catalog_path),
+        "generated_output_count": len(outputs),
+        "released_output_count": statuses.count("released"),
+        "review_output_count": statuses.count("review"),
+    }
+
+
 def _write_manifests(
     package_root: Path,
     *,
@@ -721,7 +818,7 @@ def _write_manifests(
         "schema_version": "pilot-assessment-release-manifest-v1",
         "product": "Pilot Assessment System",
         "product_version": product_version,
-        "build_kind": "m8b-operator-extension-engineering",
+        "build_kind": "m8c0-documentation-engineering",
         "built_at_utc": built_at,
         "target": {
             "operating_system": "windows",
@@ -749,6 +846,7 @@ def _write_manifests(
         },
         "git": _git_state(),
         "python_packages": python_packages,
+        "documentation": _documentation_release_summary(package_root),
         "source_baseline_sha256": source_baseline["aggregate_sha256"],
         "system_model_baseline_sha256": _sha256(manifest_root / "system-model-baseline.json"),
         "license_files_collected": license_files,
@@ -779,17 +877,16 @@ def _build(output_root: Path, *, skip_archive: bool) -> dict[str, Any]:
         REPOSITORY_ROOT / "tools" / "developer" / "manage_python_dependencies.ps1",
         REPOSITORY_ROOT / "developer" / "examples" / "operator-extension",
         REPOSITORY_ROOT / "docs" / "product" / "release" / "README-PORTABLE.md",
-        REPOSITORY_ROOT
-        / "docs"
-        / "product"
-        / "manuals"
-        / "python-operator-extension-development.md",
+        DOCUMENTATION_SOURCE_ROOT / "catalog.json",
+        DOCUMENTATION_TOOL_ROOT / "build_manuals.py",
+        DOCUMENTATION_TOOL_ROOT / "uv.lock",
     ]
     missing = [str(path) for path in required if not path.exists()]
     if missing:
         raise ReleaseBuildError(f"required release inputs are missing: {missing}")
 
     version = _read_product_version()
+    documentation_root = _generate_documentation(version)
     package_name = f"PilotAssessment-{version}-win-x64"
     output_root = output_root.resolve()
     output_root.mkdir(parents=True, exist_ok=True)
@@ -815,7 +912,7 @@ def _build(output_root: Path, *, skip_archive: bool) -> dict[str, Any]:
             path.unlink()
 
     _install_python_runtime(package_root, requirements)
-    _copy_product_sources(package_root)
+    _copy_product_sources(package_root, documentation_root)
     built_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     _initialize_system_model(
         package_root,
@@ -880,10 +977,10 @@ def main() -> int:
     try:
         result = _build(args.output_root, skip_archive=args.skip_archive)
     except (OSError, KeyError, ValueError, subprocess.SubprocessError, zipfile.BadZipFile) as error:
-        print(f"M8B-0 portable build failed: {error}", file=sys.stderr)
+        print(f"Pilot Assessment portable build failed: {error}", file=sys.stderr)
         return 1
     except ReleaseBuildError as error:
-        print(f"M8B-0 portable build failed: {error}", file=sys.stderr)
+        print(f"Pilot Assessment portable build failed: {error}", file=sys.stderr)
         return 1
     print(json.dumps(result, indent=2, ensure_ascii=False))
     return 0
