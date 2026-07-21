@@ -1,6 +1,6 @@
 # M8D Current-System Packaging, Project Portability and Diagnostics Design
 
-> **状态：用户已于 2026-07-21 批准取消专用 backup/restore 功能，并确认发布包应携带当前已保存的 system model。本书面规格为 review candidate；实施计划须在本规格复核后建立。**
+> **状态：用户已于 2026-07-21 批准取消专用 backup/restore 功能，并确认发布包应携带当前已保存的 system model；同日已完成本书面规格复核并批准进入实施。**
 
 | 字段 | 值 |
 |---|---|

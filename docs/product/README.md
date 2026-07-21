@@ -79,6 +79,7 @@
 | 2.11.1 | [M8C-0 Documentation Infrastructure Plan](plans/2026-07-21-m8c0-documentation-infrastructure-implementation-plan.md) | 开发、文档、审查者 | 已完成：catalog/schema、pinned toolchain、template、Markdown/DOCX、C4、双语代表手册和 render QA |
 | 2.11.2 | [M8C-0 Verification](reviews/2026-07-21-m8c0-documentation-infrastructure-verification.md) | 用户、交付、维护者 | 三份 DOCX、28 页逐页 QA、确定性 hashes、portable review-doc integration 与未关闭边界 |
 | 2.12 | [M8D Current-System Packaging, Project Portability and Diagnostics Design](specs/2026-07-21-m8d-current-system-packaging-project-portability-and-diagnostics-design.md) | 产品、交付、维护者 | D-077：取消专用 backup/restore；显式捕获已保存 current system、完整 project 目录复制、compatibility 与轻量 diagnostics |
+| 2.12.1 | [M8D Current-System Packaging Implementation Plan](plans/2026-07-21-m8d-current-system-packaging-implementation-plan.md) | 开发、交付、审查者 | INLINE 六个垂直切片：只读捕获、动态 manifest/verifier、后端与 WinUI diagnostics、project copy/reopen 和一次最终工程构建 |
 | 3 | [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) | 专家、产品、前后端 | 已实现的后端基础与历史 identity/publish 语义；冲突处由 M7 规格取代 |
 | 4 | [M5 Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) | 开发、审查者 | 已完成：inline 任务、合同冻结、O8 迁移、轻量验证与完成门 |
 | 5 | [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) | 前后端、交付、审查者 | 已实现：受管项目、SQLite、artifact、run lifecycle 与 JSON-RPC sidecar |
