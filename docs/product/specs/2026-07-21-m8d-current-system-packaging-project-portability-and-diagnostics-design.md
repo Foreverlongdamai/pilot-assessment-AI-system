@@ -215,7 +215,7 @@ M8D 只有在以下条件全部满足后才完成：
 - 整体 project 目录复制后的 reopen/replay 通过；
 - Diagnostics 足以区分 system model、Python source、runtime 和 project compatibility；
 - catalog、路线图、README、known limitations 与手册不再承诺 backup/restore 功能；
-- 轻量验证记录已保存，M8C-1/M8E 仍按真实状态保持未完成。
+- 轻量验证记录已保存。**本条是 M8D 完成时的范围边界**：它本身不关闭 M8C-1/M8E；后续完成状态以 M8E 实施计划和 `11_IMPLEMENTATION_STATUS.md` 为准。
 
 ## 14. 决策取代关系
 

@@ -42,7 +42,7 @@
 - [x] Add D-078 through D-081 exactly as approved: deferred intermediate UAT, `rc.1` identity, candidate screenshots and two-layer acceptance evidence.
 - [x] Replace current Gate 0 flow with `M7 engineering verified -> D-055/M8C-1/M8E -> rc.1 -> user acceptance`.
 - [x] Preserve that final `v0.1.0` cannot be called accepted before the user test.
-- [ ] Run:
+- [x] Run:
 
 ```powershell
 rg -n "M7 user acceptance.*hard|M7 用户.*硬|Gate 0" README.md docs/product -g "*.md"
@@ -337,20 +337,20 @@ one-off SQL patch was applied.
 - Create: `tools/documentation/register_screenshots.py`
 - Create: `tests/documentation/test_manual_pipeline.py`
 
-- [ ] Add failing tests requiring 12 logical documents, 24 released language outputs, an 11-module generated master and ten unique candidate screenshot assets.
-- [ ] Add catalog fields `release_channel=release-candidate`, `release_label=v0.1.0-rc.1`, `user_acceptance=pending`; set every module variant to `released`.
-- [ ] Let the technical-reference variants use `source: null` and generate their metadata/body from `aggregate_sources`; do not create a third Markdown authority.
-- [ ] Implement deterministic heading shifting and page breaks when aggregating 11 module bodies.
-- [ ] Validate screenshot file/hash/language/dimensions/source identity/privacy; accept `release-candidate` only for a candidate catalog with pending acceptance.
-- [ ] Add `register_screenshots.py` to hash and register existing PNGs; it must not capture screens or generate product data.
-- [ ] Run:
+- [x] Add failing tests requiring 12 logical documents, 24 released language outputs, an 11-module generated master and ten unique candidate screenshot assets.
+- [x] Add catalog fields `release_channel=release-candidate`, `release_label=v0.1.0-rc.1`, `user_acceptance=pending`; set every module variant to `released`.
+- [x] Let the technical-reference variants use `source: null` and generate their metadata/body from `aggregate_sources`; do not create a third Markdown authority.
+- [x] Implement deterministic heading shifting and page breaks when aggregating 11 module bodies.
+- [x] Validate screenshot file/hash/language/dimensions/source identity/privacy; accept `release-candidate` only for a candidate catalog with pending acceptance.
+- [x] Add `register_screenshots.py` to hash and register existing PNGs; it must not capture screens or generate product data.
+- [x] Run:
 
 ```powershell
 .\.tools\uv\uv.exe run pytest tests\documentation\test_manual_pipeline.py -q
 .\.tools\uv\uv.exe run python tools\documentation\validate_manuals.py --status released
 ```
 
-- [ ] Commit:
+- [x] Commit (`f56e5c2`):
 
 ```powershell
 git add docs/product/manuals/catalog.json docs/product/manuals/schemas docs/product/manuals/assets/screenshots tools/documentation tests/documentation
@@ -384,12 +384,12 @@ git commit -m "feat: add M8C release-candidate documentation contracts"
 - Create: `docs/product/manuals/zh-CN/11-release-build-delivery-acceptance.md`
 - Create: `docs/product/manuals/en-GB/11-release-build-delivery-acceptance.md`
 
-- [ ] Write task-focused quick-start/evaluator paths: unzip, automatic backend/SQLite, project, import, partial modalities, run/result, diagnostics and shutdown.
-- [ ] Write expert Evidence/BN paths: five layers, recipes/operators, parents/closure, states/CPT, task activation, staged save/discard/cancel and scientific boundary.
-- [ ] Write input/source/protocol references: X/U/I/G/P, EEG/ECG/pilot-camera, canonical/raw input, missing modalities, Python source identity and C# typed-intent boundary.
-- [ ] Write portability/release paths: current `system/`, whole-project copy, no backup product, source divergence, hashes/SBOM/licenses, candidate acceptance and final promotion.
-- [ ] Keep language metadata parity; localize prose while leaving code, paths, IDs, RPC fields and canonical model values English.
-- [ ] Validate and commit:
+- [x] Write task-focused quick-start/evaluator paths: unzip, automatic backend/SQLite, project, import, partial modalities, run/result, diagnostics and shutdown.
+- [x] Write expert Evidence/BN paths: five layers, recipes/operators, parents/closure, states/CPT, task activation, staged save/discard/cancel and scientific boundary.
+- [x] Write input/source/protocol references: X/U/I/G/P, EEG/ECG/pilot-camera, canonical/raw input, missing modalities, Python source identity and C# typed-intent boundary.
+- [x] Write portability/release paths: current `system/`, whole-project copy, no backup product, source divergence, hashes/SBOM/licenses, candidate acceptance and final promotion.
+- [x] Keep language metadata parity; localize prose while leaving code, paths, IDs, RPC fields and canonical model values English.
+- [x] Validate and commit (`b9f2bfa`):
 
 ```powershell
 .\tools\documentation\build_docs.ps1 validate -Status released
@@ -415,18 +415,18 @@ git commit -m "docs: complete bilingual M8C module manuals"
 - Generate: `dist/documentation/PilotAssessment-0.1.0-docs/`
 - Generate QA: `build/documentation/rendered/`
 
-- [ ] Build a clean pre-capture UI and record its UI source-tree SHA-256; do not change UI code afterward.
-- [ ] Create an anonymous disposable project outside the repo/release solely for screenshots; never package it.
-- [ ] Capture project launcher, five-layer Model Studio, Evidence editor, BN/CPT editor and Run/Results/Diagnostics in Chinese and English.
-- [ ] Register ten PNGs and confirm no username, user-home path, real Session/biometric content or external identifier.
-- [ ] Build and render:
+- [x] Build a clean pre-capture UI and record its UI source-tree SHA-256; do not change UI code afterward.
+- [x] Create an anonymous disposable project outside the repo/release solely for screenshots; never package it.
+- [x] Capture project launcher, five-layer Model Studio, Evidence editor, BN/CPT editor and Run/Results/Diagnostics in Chinese and English.
+- [x] Register ten PNGs and confirm no username, user-home path, real Session/biometric content or external identifier.
+- [x] Build and render:
 
 ```powershell
 .\tools\documentation\build_docs.ps1 all -Status released
 ```
 
-- [ ] Require 24 DOCX outputs and visually inspect rendered pages for clipping, overlap, blank pages, table overflow, unreadable images and broken navigation.
-- [ ] Commit authoritative sources/assets/tool changes, not generated `dist/` or `build/` artifacts:
+- [x] Require 24 DOCX outputs and visually inspect rendered pages for clipping, overlap, blank pages, table overflow, unreadable images and broken navigation.
+- [x] Commit authoritative sources/assets/tool changes, not generated `dist/` or `build/` artifacts (`894947a`, `58a781c`):
 
 ```powershell
 git add docs/product/manuals tools/documentation tests/documentation
@@ -448,14 +448,14 @@ git commit -m "docs: complete M8C release-candidate manuals"
 - Test: `tests/release/test_release_candidate.py`
 - Test: `tests/release/test_system_model_capture.py`
 
-- [ ] Add failing tests for product `0.1.0`, channel `release-candidate`, candidate `rc.1`, label/tag `v0.1.0-rc.1`, pending acceptance, clean Git and 24 released docs.
-- [ ] Add explicit CLI args: `--release-label`, `--release-channel`, `--candidate`, `--user-acceptance`, `--documentation-status`.
-- [ ] Candidate mode refuses dirty source, mismatched/non-annotated tag, wrong base version and final candidate `--skip-archive`.
-- [ ] Name output `PilotAssessment-0.1.0-rc.1-win-x64`; set `build_kind=m8e-release-candidate`.
-- [ ] Copy release notes, acceptance checklist, candidate README and limitations into the package root.
-- [ ] Write an outer delivery JSON with ZIP name/bytes/hash, tag/commit, system identity/counts, docs/SBOM hashes and acceptance status; never include absolute source paths.
-- [ ] Extend packaged/external verifiers for candidate fields, 24 docs, ten screenshots, acceptance files, restricted PATH, visible desktop and zero TCP listener.
-- [ ] Run and commit:
+- [x] Add failing tests for product `0.1.0`, channel `release-candidate`, candidate `rc.1`, label/tag `v0.1.0-rc.1`, pending acceptance, clean Git and 24 released docs.
+- [x] Add explicit CLI args: `--release-label`, `--release-channel`, `--candidate`, `--user-acceptance`, `--documentation-status`.
+- [x] Candidate mode refuses dirty source, mismatched/non-annotated tag, wrong base version and final candidate `--skip-archive`.
+- [x] Name output `PilotAssessment-0.1.0-rc.1-win-x64`; set `build_kind=m8e-release-candidate`.
+- [x] Copy release notes, acceptance checklist, candidate README and limitations into the package root.
+- [x] Write an outer delivery JSON with ZIP name/bytes/hash, tag/commit, system identity/counts, docs/SBOM hashes and acceptance status; never include absolute source paths.
+- [x] Extend packaged/external verifiers for candidate fields, 24 docs, ten screenshots, acceptance files, restricted PATH, visible desktop and zero TCP listener.
+- [x] Run and commit (`0496cef`):
 
 ```powershell
 .\.tools\uv\uv.exe run pytest tests\release\test_release_candidate.py tests\release\test_system_model_capture.py -q
@@ -477,10 +477,10 @@ git commit -m "feat: build tagged M8E release candidates"
 - Modify: `docs/product/reviews/README.md`
 - Modify: this plan
 
-- [ ] Record `M8E release candidate implementation complete / final candidate verification pending`, `user acceptance pending`, and `formal_run_authorized=false`.
-- [ ] Remove stale current-status statements that D-055/M8C-1 implementation remains pending; retain dated history only when labelled.
-- [ ] Run released-document validation and `git diff --check`.
-- [ ] Commit:
+- [x] Record `M8E release candidate implementation complete / final candidate verification pending`, `user acceptance pending`, and `formal_run_authorized=false`.
+- [x] Remove stale current-status statements that D-055/M8C-1 implementation remains pending; retain dated history only when labelled.
+- [x] Run released-document validation and `git diff --check` (`5 passed`; `24` released variants; render QA `PASS`).
+- [x] Commit this source-preparation slice:
 
 ```powershell
 git add README.md docs/product

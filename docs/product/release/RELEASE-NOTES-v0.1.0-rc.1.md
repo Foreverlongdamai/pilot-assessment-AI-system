@@ -1,8 +1,11 @@
 # Release notes — v0.1.0-rc.1
 
-Release channel: `release-candidate`  
-Candidate: `rc.1`  
-User acceptance: `pending`  
+Release channel: `release-candidate`
+
+Candidate: `rc.1`
+
+User acceptance: `pending`
+
 Scientific status: `engineering-only`; `formal_run_authorized=false`
 
 ## Included

@@ -1,16 +1,16 @@
 # M8 Pre-UAT Implementation Outline
 
-> **For agentic workers:** REQUIRED execution mode is **INLINE**. This file remains the M8 roadmap rather than a file-level task list. M8A、M8B、M8C-0 与 M8D 已完成。D-078–D-081 现允许先构建完整 `v0.1.0-rc.1` 再由用户统一验收。Do not infer that candidate construction means user acceptance or final release.
+> **For agentic workers:** REQUIRED execution mode is **INLINE**. This file remains the M8 roadmap rather than a file-level task list. M8A–M8D、D-055、M8C-1 与 M8E source implementation 已完成。D-078–D-081 允许先构建和验证完整 `v0.1.0-rc.1` 再由用户统一验收。Do not infer that candidate construction means user acceptance or final release.
 
 | 字段 | 值 |
 |---|---|
 | 计划类型 | Pre-UAT implementation outline |
 | 日期 | 2026-07-18 |
-| 状态 | **路线图已批准；M8A、M8B、M8C-0、M8D 已完成；M8E `v0.1.0-rc.1` 正在实施** |
+| 状态 | **路线图已批准；M8A–M8D、D-055、M8C-1 与 M8E source implementation 已完成；最终 tagged candidate verification 待执行** |
 | 设计来源 | [M8 Productization, Editable Python Source, Documentation and Handoff Design Outline](../specs/2026-07-18-m8-productization-editable-python-documentation-and-handoff-outline.md) |
 | 边界 | 先完成完整候选，再由用户统一验收；候选不等于 accepted final |
 | 执行方式 | 后续默认 INLINE、小型垂直切片、选择性轻量验证 |
-| 当前动作 | 按 [M8E Implementation Plan](2026-07-21-m8e-final-release-candidate-implementation-plan.md) 完成 D-055、M8C-1 与 `v0.1.0-rc.1` |
+| 当前动作 | 按 [M8E Implementation Plan](2026-07-21-m8e-final-release-candidate-implementation-plan.md) 创建 annotated tag，并构建、外部验证 `v0.1.0-rc.1` |
 
 ## 1. 计划目的
 
@@ -509,5 +509,5 @@ M8C 分成两段：
 - M7 代码仍是已通过工程完成门的当前实现，用户验收尚未完成；
 - M8A、M8B、M8C-0 与 M8D 已关闭各自 engineering gate；system model ownership、loaded source provenance、operator handoff、可重复文档 pipeline、current-system capture、project portability 与 compatibility Diagnostics 已落地；
 - D-078–D-081 已取消单独 M7 中间验收硬门，并冻结 `v0.1.0-rc.1`、candidate screenshot 和两层验收证据；
-- M8C-1 与 M8E 正在按正式计划实施，完整双语文档套件和 clean tagged candidate 尚未形成；专用 backup 格式已由 D-077 正式取消；
-- 下一开发动作是完成 D-055、M8C-1 和 M8E，再把保持 `user_acceptance=pending` 的完整候选交给用户验收。
+- D-055、M8C-1 与 M8E source implementation 后续已按正式计划完成，完整双语文档套件已形成；clean annotated tag、最终候选打包与外部验证仍待 M8E Task 13，专用 backup 格式已由 D-077 正式取消；
+- 下一开发动作是构建并验证保持 `user_acceptance=pending` 的完整候选，再交给用户独立验收。

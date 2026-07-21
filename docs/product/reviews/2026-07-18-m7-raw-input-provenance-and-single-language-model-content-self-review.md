@@ -89,4 +89,4 @@
 - accessibility tree 同时发现五个 family groups、中文标签、说明和成员数；画布图例明确标注 provenance 为“仅展示”；
 - focused `GraphProjectionTests + GraphCommandTests` 为 `12/12`，localization tests 为 `8/8`，x64 Debug build 为 `0 warning / 0 error`；
 - 可见窗口确认绿色 family lane、绿色虚线来源边、蓝色 fine-grained nodes 和 canonical BN/Evidence 原有配色同时存在；
-- D-055 尚未实施，旧 `[EN fallback]` 仍可见，因此不得把本次 D-054 完成误报为整份 amendment 完成。
+- **本段记录 2026-07-18 复核时点**：当时 D-055 尚未实施，旧 `[EN fallback]` 仍可见，因此该次复核没有把 D-054 完成误报为整份 amendment 完成；D-055 后续已在 M8E 单独实现和验证。

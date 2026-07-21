@@ -4,12 +4,12 @@
 |---|---|
 | 设计基线 | M7 v0.2 amendment |
 | 日期 | 2026-07-18 |
-| 状态 | 已批准；D-054 画布部分已实现并可见验证，D-055 单语 canonical 内容迁移待实施 |
+| 状态 | 已批准并实现；D-054 画布部分已可见验证，D-055 单语 current-model contract、持久化与 current-system 迁移已由 M8E 完成 |
 | 上游 | M7 WinUI Expert Designer and Task Activation Workspace Design |
 | 决策 | D-054、D-055（已写入 `DECISIONS.md`） |
 | 科学状态 | 不改变 starter Evidence、BN、CPT 或 `formal_run_authorized=false` |
 
-> **后续取代说明：** 本文 D-054 的绿色输入族与 typed provenance 继续有效；输入族固定显示、统一平移、顶层筛选和保存边界已由 [M7 Staged Edit Session and Five-Layer Canvas Amendment](2026-07-18-m7-staged-edit-session-and-five-layer-canvas-amendment.md) 的 D-056/D-057 取代。D-055 单一英文 canonical 模型内容仍待实施。
+> **后续取代说明：** 本文 D-054 的绿色输入族与 typed provenance 继续有效；输入族固定显示、统一平移、顶层筛选和保存边界已由 [M7 Staged Edit Session and Five-Layer Canvas Amendment](2026-07-18-m7-staged-edit-session-and-five-layer-canvas-amendment.md) 的 D-056/D-057 取代。D-055 的实现与 legacy compatibility 口径由 [M8E Final Release Candidate Design](2026-07-21-m8e-final-release-candidate-and-handoff-design.md) 及其实施计划收口。
 
 ## 1. 目的与取代关系
 

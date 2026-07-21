@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | M8 pre-UAT outline v0.2 |
 | 日期 | 2026-07-18 |
-| 状态 | **路线图已批准；M8A、M8B、M8C-0 与 M8D 已完成；M8E `v0.1.0-rc.1` 正在实施** |
+| 状态 | **路线图已批准；M8A–M8D、D-055、M8C-1 与 M8E source implementation 已完成；最终 tagged candidate verification 待执行** |
 | 上游状态 | M7 工程完成门已通过；用户手工验收与可能返修尚未完成 |
 | 目标平台 | Windows x64、本地离线、解压即用的便携交付方向 |
 | 科学状态 | Starter algorithms、thresholds、BN topology 与 CPT 未经领域专家校准；`formal_run_authorized=false` |

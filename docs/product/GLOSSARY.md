@@ -136,5 +136,7 @@
 | Undeclared unit pass-through | D-061 的单位处理：source/profile 未声明单位时保持 null/空 object，不询问、不猜测、不换算，原始数值按固定 adapter/Evidence 方法运行，并记录 `unit_handling=undeclared-pass-through-v1`。 |
 | TPX | O8 使用的 task performance composite。M4R `starter.o8` 从 O1/O5 score 组合的 recipe 只作 legacy migration/replay；M5 active starter 使用同一 concept 下从 raw/session/task sources 计算的并行 compliant version。两者不要求 provisional 数值等价。 |
 | Engineering verified / Software verified | 某个明确里程碑的软件按其设计合同执行，并通过该里程碑规定的 fresh tests、static/schema/build/package gates；它是里程碑范围内的工程结论，不表示完整产品、后续里程碑或科学有效性已经完成。 |
+| Release candidate | 带明确 prerelease 标签、源码提交、system identity、文档、checksum、SBOM、限制和验证证据的可验收交付物。`v0.1.0-rc.1` 不是最终 `v0.1.0`，也不自动表示用户已经接受。 |
+| user_acceptance | 用户对完整候选进行独立实际操作后的产品验收状态。构建机自动验证通过时仍保持 `pending`；只有用户验收结果可以改变它。 |
 | formal_run_authorized | 是否允许创建 `purpose=assessment` 的显式状态。M1–M5 的 ingestion、alignment、Evidence、scheme preview 和 inference 工程通过都不能自动把它设为 true；M6 preflight 只有在 technical disposition ready、输入非 synthetic 且 exact reporting policy 显式声明授权时才设为 true。当前 starter/synthetic 流程仍为 false，`purpose=software_test` 可在 ready 且 false 时运行。 |
 | Scientifically validated | 评估指标、阈值、CPT 和输出经过足够样本、专家标注及统计研究证明有效。 |
