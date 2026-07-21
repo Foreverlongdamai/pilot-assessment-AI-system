@@ -59,7 +59,7 @@ def test_saved_legacy_model_is_merged_without_overwriting_system_nodes_and_repla
     )
     source = legacy.list_nodes()[0]
     legacy.update_node(
-        source.model_copy(update={"name_en": f"{source.name_en} Legacy"}),
+        source.model_copy(update={"name": f"{source.name} Legacy"}),
         expected_semantic_revision=source.semantic_revision,
         expected_layout_revision=None,
         transaction_id="tx.legacy.saved-edit",
@@ -80,7 +80,7 @@ def test_saved_legacy_model_is_merged_without_overwriting_system_nodes_and_repla
         assert result.inserted_scheme_count == 1
         assert imported_id != source.node_id
         assert system.current_model.get_node(source.node_id) == original
-        assert system.current_model.get_node(imported_id).name_en.endswith(" Legacy")
+        assert system.current_model.get_node(imported_id).name.endswith(" Legacy")
         assert len(system.current_model.list_nodes()) > initial_count
         assert application.project.database.fetchone("SELECT COUNT(*) FROM model_nodes")[0] == 53
     finally:
@@ -123,7 +123,7 @@ def test_unsaved_legacy_edit_is_recovered_as_one_system_staging_change(
     source = manager.workspace.list_nodes()[0]
     with manager.database.transaction() as connection:
         manager.workspace.update_node(
-            source.model_copy(update={"name_en": f"{source.name_en} Unsaved"}),
+            source.model_copy(update={"name": f"{source.name} Unsaved"}),
             expected_semantic_revision=source.semantic_revision,
             expected_layout_revision=None,
             transaction_id="tx.legacy.unsaved-edit",
@@ -138,7 +138,7 @@ def test_unsaved_legacy_edit_is_recovered_as_one_system_staging_change(
     manager.close()
     project.close()
 
-    canonical_name = system.current_model.get_node(source.node_id).name_en
+    canonical_name = system.current_model.get_node(source.node_id).name
     application = ProjectApplication.open(project_root, system=system, clock=lambda: NOW)
     try:
         result = application.legacy_model_import
@@ -146,8 +146,8 @@ def test_unsaved_legacy_edit_is_recovered_as_one_system_staging_change(
         assert result.dirty_edit_recovered is True
         assert result.inserted_node_count == 0
         assert result.inserted_scheme_count == 0
-        assert system.current_model.get_node(source.node_id).name_en == canonical_name
-        assert system.editable_model.get_node(source.node_id).name_en.endswith(" Unsaved")
+        assert system.current_model.get_node(source.node_id).name == canonical_name
+        assert system.editable_model.get_node(source.node_id).name.endswith(" Unsaved")
         assert system.model_edits.status().dirty is True
         assert system.model_edits.status().change_count == 1
     finally:

@@ -14,6 +14,7 @@ from pilot_assessment.contracts.model_components import ComponentKind
 from pilot_assessment.contracts.run import (
     CurrentModelRunSnapshot,
     CurrentModelRunSnapshotV2,
+    CurrentModelRunSnapshotV3,
     RunEvent,
     RunResultEnvelope,
     RunStage,
@@ -73,7 +74,10 @@ def run_total_units(snapshot: RunSnapshotRecord) -> int:
 
     execution = (
         snapshot.execution_snapshot
-        if isinstance(snapshot, (CurrentModelRunSnapshot, CurrentModelRunSnapshotV2))
+        if isinstance(
+            snapshot,
+            (CurrentModelRunSnapshot, CurrentModelRunSnapshotV2, CurrentModelRunSnapshotV3),
+        )
         else snapshot
     )
     evidence_count = sum(

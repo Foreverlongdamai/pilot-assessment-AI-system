@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from pilot_assessment.contracts.model_workspace import EvidenceNodeDefinition
-from pilot_assessment.contracts.run import AssessmentRunV2, RunPurpose, RunState
+from pilot_assessment.contracts.run import AssessmentRunV3, RunPurpose, RunState
 from pilot_assessment.runtime import ProjectApplication
 from tests.runtime.system_support import open_test_system
 
@@ -49,7 +49,7 @@ def test_current_run_freezes_nodes_executes_and_survives_later_shared_node_edit(
             expected_scheme_revision=scheme.semantic_revision,
             requested_at=NOW,
         )
-        assert isinstance(first, AssessmentRunV2)
+        assert isinstance(first, AssessmentRunV3)
         assert len(first.snapshot.active_nodes) == 52
         assert application.runs.get(first.run_id) == first
         assert (
@@ -64,7 +64,7 @@ def test_current_run_freezes_nodes_executes_and_survives_later_shared_node_edit(
 
         application.coordinator.enqueue(first.run_id)
         completed = application.coordinator.wait(first.run_id, timeout=30.0)
-        assert isinstance(completed, AssessmentRunV2)
+        assert isinstance(completed, AssessmentRunV3)
         assert completed.state is RunState.COMPLETED
         result = application.results.get_by_run(first.run_id)
         assert result.snapshot_hash == first.snapshot.snapshot_hash
@@ -87,11 +87,7 @@ def test_current_run_freezes_nodes_executes_and_survives_later_shared_node_edit(
         first_node_hash = evidence.content_hash
         application.current_model.update_node(
             evidence.model_copy(
-                update={
-                    "description_en": (
-                        f"{evidence.description_en} Expert-visible documentation edit."
-                    )
-                }
+                update={"description": f"{evidence.description} Expert-visible documentation edit."}
             ),
             expected_semantic_revision=evidence.semantic_revision,
             expected_layout_revision=None,
@@ -140,7 +136,7 @@ def test_current_run_freezes_nodes_executes_and_survives_later_shared_node_edit(
     reopened = ProjectApplication.open(project_root, system=system, clock=lambda: NOW)
     try:
         replay = reopened.runs.get("run.current.first")
-        assert isinstance(replay, AssessmentRunV2)
+        assert isinstance(replay, AssessmentRunV3)
         assert replay.state is RunState.COMPLETED
         assert replay.snapshot.snapshot_hash == first_snapshot_hash
         assert any(node.content_hash == first_node_hash for node in replay.snapshot.active_nodes)

@@ -84,7 +84,7 @@ def test_system_model_is_browsable_and_editable_without_an_open_project(
         assert system_model["model_library_id"] == status["model_library_id"]
         assert len(initial_model_identity) == 64
         assert system_model["format_version"] == "0.1.0"
-        assert system_model["database_schema_version"] == 5
+        assert system_model["database_schema_version"] == 6
         assert system_model["node_count"] == 53
         assert system_model["scheme_count"] == 1
         assert system_model["edit_session_dirty"] is False
@@ -102,7 +102,7 @@ def test_system_model_is_browsable_and_editable_without_an_open_project(
                 "tx.no-project-copy",
                 source_scheme_id=base["scheme_id"],
                 new_scheme_id="task-scheme.no-project-copy",
-                name_en="No-project editable copy",
+                name="No-project editable copy",
             ),
         )["scheme"]
         assert copied["scheme_id"] == "task-scheme.no-project-copy"
@@ -127,7 +127,7 @@ def test_system_model_is_browsable_and_editable_without_an_open_project(
         )
         project_status = rpc.call("runtime.status")["project_compatibility"]
         assert project_status["format_version"] == "0.1.0"
-        assert project_status["database_schema_version"] == 5
+        assert project_status["database_schema_version"] == 6
         assert project_status["compatibility"] == "compatible"
         assert project_status["recovery_diagnostics"] == []
         assert project_status["recovered_run_count"] == 0
@@ -331,21 +331,38 @@ def test_current_workspace_methods_return_canonical_state_and_idempotent_retries
         graph = rpc.call("model.graph.get", {"scheme_id": base["scheme_id"]})["graph"]
         assert len(graph["nodes"]) == 53
         assert len(graph["scheme"]["computed_active_closure"]) == 52
+        assert graph["scheme"]["contract_version"] == "0.2.0"
+        assert {"name", "description"}.issubset(graph["scheme"])
+        assert not (
+            {"name_zh", "name_en", "description_zh", "description_en"} & graph["scheme"].keys()
+        )
+        assert all(node["contract_version"] == "0.2.0" for node in graph["nodes"])
+        assert all({"name", "short_name", "description"}.issubset(node) for node in graph["nodes"])
 
         copy_request = _mutation(
             "tx.current-scheme-copy",
             source_scheme_id=base["scheme_id"],
             new_scheme_id="task-scheme.methods-copy",
-            name_en="Methods copy",
+            name="Methods copy",
         )
         copied = rpc.call("model.scheme.copy", copy_request)
         assert copied["scheme"]["copied_from_scheme_id"] == base["scheme_id"]
+        legacy_copy = rpc.call_error(
+            "model.scheme.copy",
+            _mutation(
+                "tx.current-scheme-legacy-copy",
+                source_scheme_id=base["scheme_id"],
+                new_scheme_id="task-scheme.legacy-copy",
+                name_en="Legacy field must be rejected",
+            ),
+        )
+        assert legacy_copy["code"] == -32602
         replayed = rpc.call("model.scheme.copy", copy_request)
         assert replayed["scheme"] == copied["scheme"]
         assert replayed["replayed"] is True
         mismatch = rpc.call_error(
             "model.scheme.copy",
-            {**copy_request, "name_en": "Different request"},
+            {**copy_request, "name": "Different request"},
         )
         assert mismatch["data"]["error_code"] == "TRANSACTION_REUSE_MISMATCH"
 
@@ -369,7 +386,7 @@ def test_current_workspace_methods_return_canonical_state_and_idempotent_retries
             "tx.current-node-update",
             node={
                 **new_node,
-                "description_en": f"{new_node['description_en']} Edited through JSON-RPC.",
+                "description": f"{new_node['description']} Edited through JSON-RPC.",
             },
             expected_semantic_revision=new_node["semantic_revision"],
         )
@@ -381,7 +398,7 @@ def test_current_workspace_methods_return_canonical_state_and_idempotent_retries
             "model.node.update",
             _mutation(
                 "tx.current-node-stale",
-                node={**updated["node"], "description_en": "Stale write"},
+                node={**updated["node"], "description": "Stale write"},
                 expected_semantic_revision=new_node["semantic_revision"],
             ),
         )

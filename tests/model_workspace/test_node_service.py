@@ -154,7 +154,7 @@ def test_semantic_layout_conflict_history_undo_and_redo_return_canonical_state(
     nodes, _ = seven_node_graph()
     try:
         original = _create(service, _node(nodes, "raw.x"), "raw-x")
-        renamed = original.model_copy(update={"name_en": "Flight-state stream"})
+        renamed = original.model_copy(update={"name": "Flight-state stream"})
         semantic = service.update_node(
             renamed,
             expected_semantic_revision=0,
@@ -162,10 +162,10 @@ def test_semantic_layout_conflict_history_undo_and_redo_return_canonical_state(
             transaction_id="tx.rename.raw-x",
             actor_id="expert.one",
         )
-        assert semantic.node.name_en == "Flight-state stream"
+        assert semantic.node.name == "Flight-state stream"
         assert semantic.semantic_revision == 1
         assert semantic.layout_revision == 0
-        assert "/name_en" in semantic.diff.changed_paths
+        assert "/name" in semantic.diff.changed_paths
 
         stale_layout_copy = original.model_copy(
             update={
@@ -179,14 +179,14 @@ def test_semantic_layout_conflict_history_undo_and_redo_return_canonical_state(
             transaction_id="tx.move.raw-x",
             actor_id="expert.one",
         )
-        assert moved.node.name_en == "Flight-state stream"
+        assert moved.node.name == "Flight-state stream"
         assert moved.semantic_revision == 1
         assert moved.layout_revision == 1
         assert moved.node.global_layout.x == 999.0
 
         with pytest.raises(CurrentModelRevisionConflict) as captured:
             service.update_node(
-                renamed.model_copy(update={"name_en": "Stale edit"}),
+                renamed.model_copy(update={"name": "Stale edit"}),
                 expected_semantic_revision=0,
                 expected_layout_revision=None,
                 transaction_id="tx.stale.raw-x",
@@ -202,7 +202,7 @@ def test_semantic_layout_conflict_history_undo_and_redo_return_canonical_state(
             actor_id="expert.one",
         )
         assert undone.node.global_layout == original.global_layout
-        assert undone.node.name_en == "Flight-state stream"
+        assert undone.node.name == "Flight-state stream"
         redone = service.redo_node(
             "raw.x",
             expected_semantic_revision=1,

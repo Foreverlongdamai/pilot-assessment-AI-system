@@ -159,8 +159,8 @@ def test_stdio_sidecar_supports_the_managed_edit_and_assessment_loop(
                 "tx.subprocess-current-edit",
                 node={
                     **current_node,
-                    "description_en": (
-                        f"{current_node['description_en']} Edited by subprocess contract test."
+                    "description": (
+                        f"{current_node['description']} Edited by subprocess contract test."
                     ),
                 },
                 expected_semantic_revision=current_node["semantic_revision"],
@@ -309,7 +309,7 @@ def test_stdio_sidecar_supports_the_managed_edit_and_assessment_loop(
                 expected_scheme_revision=current_preflight["scheme_semantic_revision"],
             ),
         )
-        assert current_started["run"]["contract_version"] == "0.2.0"
+        assert current_started["run"]["contract_version"] == "0.3.0"
         assert current_started["run"]["snapshot"]["contract_id"] == "current-model-run-snapshot"
         current_terminal = None
         for _ in range(100):

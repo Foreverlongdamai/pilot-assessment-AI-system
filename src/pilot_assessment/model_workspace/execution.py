@@ -125,11 +125,11 @@ def _node_digest(node: ModelNode, *, graph_hash: str) -> str:
 
 
 def _name(node: ModelNode) -> str:
-    return node.name_en or cast(str, node.name_zh)
+    return node.name
 
 
 def _description(node: ModelNode) -> str:
-    return node.description_en or cast(str, node.description_zh)
+    return node.description
 
 
 def _lineage(
@@ -355,8 +355,8 @@ def _materialized_records(
         update={
             "task_profile_version_id": task_id,
             "task_concept_id": _compat_id("task.concept", graph_hash),
-            "name": scheme.name_en or cast(str, scheme.name_zh),
-            "description": scheme.description_en or cast(str, scheme.description_zh),
+            "name": scheme.name,
+            "description": scheme.description,
             "required_source_descriptor_ids": source_ids,
             "lineage": task_lineage,
             "content_hash": ZERO_HASH,
@@ -424,8 +424,8 @@ def _materialized_records(
     provisional_scheme = AssessmentSchemeVersion(
         scheme_version_id=_compat_id("scheme", graph_hash),
         scheme_concept_id=_compat_id("scheme.concept", graph_hash),
-        name=scheme.name_en or cast(str, scheme.name_zh),
-        description=scheme.description_en or cast(str, scheme.description_zh),
+        name=scheme.name,
+        description=scheme.description,
         task_profile=_pin(task),
         source_descriptors=tuple(_pin(raw_records[key]) for key in source_ids),
         evidence_versions=tuple(_pin(item) for item in evidence_versions),

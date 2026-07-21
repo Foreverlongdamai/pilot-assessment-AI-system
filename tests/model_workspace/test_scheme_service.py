@@ -99,8 +99,7 @@ def test_scheme_create_copy_and_graph_snapshot_share_nodes_without_publish_state
         copied = service.copy_scheme(
             "scheme.base",
             new_scheme_id="scheme.parallel",
-            name_zh="并行任务方案",
-            name_en="Parallel Task Scheme",
+            name="Parallel Task Scheme",
             transaction_id="tx.scheme.parallel.copy",
             actor_id="expert.one",
         )
@@ -136,15 +135,14 @@ def test_scheme_semantic_and_layout_edits_are_isolated_between_parallel_schemes(
         parallel = service.copy_scheme(
             base.scheme_id,
             new_scheme_id="scheme.parallel",
-            name_zh=None,
-            name_en="Parallel Scheme",
+            name="Parallel Scheme",
             transaction_id="tx.scheme.parallel.copy",
             actor_id="expert.one",
         ).scheme
 
         edited = parallel.model_copy(
             update={
-                "name_en": "Straight Task Scheme",
+                "name": "Straight Task Scheme",
                 "task_bindings": {"task": "straight"},
             }
         )
@@ -155,7 +153,7 @@ def test_scheme_semantic_and_layout_edits_are_isolated_between_parallel_schemes(
             transaction_id="tx.scheme.parallel.semantic",
             actor_id="expert.one",
         )
-        assert semantic.scheme.name_en == "Straight Task Scheme"
+        assert semantic.scheme.name == "Straight Task Scheme"
         assert semantic.scheme.task_bindings == {"task": "straight"}
         assert semantic.semantic_revision == 1
         assert service.get_scheme(base.scheme_id) == base_saved
@@ -172,7 +170,7 @@ def test_scheme_semantic_and_layout_edits_are_isolated_between_parallel_schemes(
             transaction_id="tx.scheme.parallel.layout",
             actor_id="expert.one",
         )
-        assert layout.scheme.name_en == "Straight Task Scheme"
+        assert layout.scheme.name == "Straight Task Scheme"
         assert layout.scheme.task_bindings == {"task": "straight"}
         assert layout.semantic_revision == 1
         assert layout.layout_revision == 1
@@ -181,7 +179,7 @@ def test_scheme_semantic_and_layout_edits_are_isolated_between_parallel_schemes(
 
         with pytest.raises(CurrentSchemeRevisionConflict) as captured:
             service.update_scheme(
-                edited.model_copy(update={"name_en": "Stale name"}),
+                edited.model_copy(update={"name": "Stale name"}),
                 expected_semantic_revision=0,
                 expected_layout_revision=None,
                 transaction_id="tx.scheme.parallel.stale",

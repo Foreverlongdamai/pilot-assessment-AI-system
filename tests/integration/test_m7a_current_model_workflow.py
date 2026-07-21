@@ -110,7 +110,7 @@ def test_m7a_current_model_sidecar_workflow_is_editable_portable_and_snapshot_sa
                 "tx.m7a-scheme-copy",
                 source_scheme_id=base["scheme_id"],
                 new_scheme_id="task-scheme.m7a-focused",
-                name_en="Focused expert-editable task",
+                name="Focused expert-editable task",
             ),
         )["scheme"]
         source = next(
@@ -203,7 +203,7 @@ def test_m7a_current_model_sidecar_workflow_is_editable_portable_and_snapshot_sa
         editable = _mutable(rpc.call("model.node.get", {"node_id": copied_node["node_id"]})["node"])
         recipe = editable["definition"]["recipe"]
         recipe["scoring"]["parameters"]["likelihood_strength"] = 0.8
-        editable["name_en"] = f"Task-specific {editable['name_en']}"
+        editable["name"] = f"Task-specific {editable['name']}"
         edited = rpc.call(
             "model.node.update",
             _mutation(
@@ -269,7 +269,7 @@ def test_m7a_current_model_sidecar_workflow_is_editable_portable_and_snapshot_sa
         listed_current = next(
             item for item in listed_current_runs if item["run"]["run_id"] == current_run_id
         )
-        assert listed_current["run"]["contract_version"] == "0.2.0"
+        assert listed_current["run"]["contract_version"] == "0.3.0"
         assert listed_current["result_id"] == current_result["result_id"]
         assert all(item["run"]["run_id"] != legacy_run_id for item in listed_current_runs)
         for reference_name in ("observation_set_ref", "posterior_ref", "inference_trace_ref"):
@@ -285,7 +285,7 @@ def test_m7a_current_model_sidecar_workflow_is_editable_portable_and_snapshot_sa
 
         shared = _mutable(rpc.call("model.node.get", {"node_id": aggregate_id})["node"])
         old_shared_hash = shared["content_hash"]
-        shared["description_en"] = f"{shared['description_en']} Future-run edit."
+        shared["description"] = f"{shared['description']} Future-run edit."
         rpc.call(
             "model.node.update",
             _mutation(

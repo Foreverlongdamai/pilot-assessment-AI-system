@@ -19,11 +19,12 @@ from pilot_assessment.contracts.project import (
     ArtifactReference,
 )
 from pilot_assessment.contracts.run import (
-    AssessmentRunV2,
+    AssessmentRunV3,
     CurrentModelRunPreflightReport,
     CurrentModelRunPreflightReportV2,
     CurrentModelRunSnapshot,
     CurrentModelRunSnapshotV2,
+    CurrentModelRunSnapshotV3,
     RunDiagnostic,
     RunDiagnosticSeverity,
     RunPurpose,
@@ -77,7 +78,9 @@ def _utc_text(value: datetime) -> str:
 
 
 CurrentPreflightRecord = CurrentModelRunPreflightReport | CurrentModelRunPreflightReportV2
-CurrentSnapshotRecord = CurrentModelRunSnapshot | CurrentModelRunSnapshotV2
+CurrentSnapshotRecord = (
+    CurrentModelRunSnapshot | CurrentModelRunSnapshotV2 | CurrentModelRunSnapshotV3
+)
 
 
 def current_preflight_hash(report: CurrentPreflightRecord) -> str:
@@ -286,7 +289,7 @@ class CurrentRunPreflightService:
         *,
         run_id: str,
         expected_scheme_revision: int,
-    ) -> CurrentModelRunSnapshotV2:
+    ) -> CurrentModelRunSnapshotV3:
         report = self.get(preflight_id)
         if not isinstance(report, CurrentModelRunPreflightReportV2):
             raise CurrentRunPreflightStaleError(
@@ -344,7 +347,7 @@ class CurrentRunPreflightService:
         if row is None:
             raise CurrentRunPreflightNotFoundError(preflight_id)
         execution = self.legacy.build_snapshot(row["legacy_preflight_id"], run_id=run_id)
-        provisional = CurrentModelRunSnapshotV2(
+        provisional = CurrentModelRunSnapshotV3(
             run_id=run_id,
             purpose=execution.purpose,
             session_revision_ref=execution.session_revision_ref,
@@ -369,14 +372,14 @@ class CurrentRunPreflightService:
         run_id: str,
         expected_scheme_revision: int,
         requested_at: datetime,
-    ) -> AssessmentRunV2:
+    ) -> AssessmentRunV3:
         try:
             existing = self.runs.get(run_id)
         except RunNotFoundError:
             pass
         else:
             report = self.get(preflight_id)
-            if not isinstance(existing, AssessmentRunV2) or (
+            if not isinstance(existing, AssessmentRunV3) or (
                 existing.snapshot.preflight_hash != report.preflight_hash
                 or existing.snapshot.scheme.semantic_revision != expected_scheme_revision
                 or existing.requested_at != requested_at
@@ -395,6 +398,10 @@ class CurrentRunPreflightService:
             current_preflight_id=preflight_id,
             requested_at=requested_at,
         )
+        if not isinstance(created, AssessmentRunV3):
+            raise CurrentRunPreflightIntegrityError(
+                "single-English snapshot produced a non-v0.3 run record"
+            )
         with self.database.transaction(join_existing=True) as connection:
             self.artifacts.add_reference_in_transaction(
                 connection,
@@ -414,7 +421,7 @@ class CurrentRunPreflightService:
         scheme_id: str,
         runtime_parameters: Mapping[str, JsonValue],
         preview_id: str,
-    ) -> CurrentModelRunSnapshotV2:
+    ) -> CurrentModelRunSnapshotV3:
         """Freeze a read-only ephemeral preview without creating a run record."""
 
         report = self.prepare(
@@ -437,7 +444,7 @@ class CurrentRunPreflightService:
         node_id: str,
         runtime_parameters: Mapping[str, JsonValue],
         preview_id: str,
-    ) -> CurrentModelRunSnapshotV2:
+    ) -> CurrentModelRunSnapshotV3:
         """Freeze the containing scheme so a node editor can request its trace safely."""
 
         scheme = self.workspace.get_scheme(scheme_id)

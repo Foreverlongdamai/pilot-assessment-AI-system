@@ -44,8 +44,7 @@ def _create_saved_dynamic_system(root: Path) -> tuple[Path, int, int]:
     app.editable_model.copy_scheme(
         base_scheme.scheme_id,
         new_scheme_id="task-scheme.m8d.parallel",
-        name_zh=None,
-        name_en="M8D Parallel",
+        name="M8D Parallel",
         transaction_id="tx.m8d.copy-scheme",
         actor_id="expert.test",
     )
@@ -100,9 +99,7 @@ def test_v2_baseline_and_verifier_accept_dynamic_captured_facts(tmp_path: Path) 
     from verify_portable import _verify_system_model_baseline
 
     _, capture_current_system, _ = _capture_api()
-    source, node_count, scheme_count = _create_saved_dynamic_system(
-        tmp_path / "source-system"
-    )
+    source, node_count, scheme_count = _create_saved_dynamic_system(tmp_path / "source-system")
     package_root = tmp_path / "package"
     target = package_root / "system"
     report = capture_current_system(source, target)
@@ -219,7 +216,7 @@ def test_inspection_rejects_closed_but_dirty_edit_session(tmp_path: Path) -> Non
     root = tmp_path / "system"
     app = SystemApplication.open_or_create(root, clock=lambda: NOW)
     current = app.editable_model.list_nodes()[0]
-    proposal = current.model_copy(update={"name_en": f"{current.name_en} Draft"})
+    proposal = current.model_copy(update={"name": f"{current.name} Draft"})
     with app.model_edits.database.transaction() as connection:
         app.editable_model.update_node(
             proposal,
@@ -317,7 +314,7 @@ def test_inspection_rejects_future_schema(tmp_path: Path) -> None:
     database = sqlite3.connect(root / "model-library.sqlite3")
     try:
         database.execute(
-            "INSERT INTO schema_migrations(version, name, applied_at) VALUES (6, ?, ?)",
+            "INSERT INTO schema_migrations(version, name, applied_at) VALUES (7, ?, ?)",
             ("future_schema", NOW.isoformat()),
         )
         database.commit()

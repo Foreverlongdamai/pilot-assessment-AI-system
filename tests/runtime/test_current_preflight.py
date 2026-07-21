@@ -6,7 +6,7 @@ from pathlib import Path
 
 from pilot_assessment.contracts.run import (
     CurrentModelRunPreflightReportV2,
-    CurrentModelRunSnapshotV2,
+    CurrentModelRunSnapshotV3,
     RunPurpose,
     TechnicalDisposition,
 )
@@ -133,7 +133,7 @@ def test_current_preflight_materializes_once_and_does_not_edit_current_objects(
             preview_id="preview.current-scheme",
         )
         assert preview.purpose is RunPurpose.PREVIEW
-        assert isinstance(preview, CurrentModelRunSnapshotV2)
+        assert isinstance(preview, CurrentModelRunSnapshotV3)
         assert preview.source_snapshot_ref == report.source_snapshot_ref
         assert application.artifacts.reference_count(report.source_snapshot_ref.artifact_id) == 2
         assert preview.scheme == scheme_before

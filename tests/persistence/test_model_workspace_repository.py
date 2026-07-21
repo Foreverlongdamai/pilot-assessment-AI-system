@@ -121,7 +121,7 @@ def test_semantic_and_layout_updates_merge_without_lost_updates_and_check_revisi
     repository = SqliteModelWorkspaceRepository(database)
     try:
         created = _create_node(repository, original)
-        renamed = created.model_copy(update={"name_en": "Renamed precision"})
+        renamed = created.model_copy(update={"name": "Renamed precision"})
         semantic = repository.update_node(
             renamed,
             expected_semantic_revision=0,
@@ -130,7 +130,7 @@ def test_semantic_and_layout_updates_merge_without_lost_updates_and_check_revisi
             actor_id="expert.one",
             transaction_id="tx.node.rename",
             occurred_at=NOW + timedelta(seconds=1),
-            diff=_diff("/name_en"),
+            diff=_diff("/name"),
         )
         assert semantic.semantic_revision == 1
         assert semantic.layout_revision == 0
@@ -155,7 +155,7 @@ def test_semantic_and_layout_updates_merge_without_lost_updates_and_check_revisi
             occurred_at=NOW + timedelta(seconds=2),
             diff=_diff("/global_layout"),
         )
-        assert moved.name_en == "Renamed precision"
+        assert moved.name == "Renamed precision"
         assert moved.semantic_revision == 1
         assert moved.layout_revision == 1
         assert moved.global_layout.x == 777.0
@@ -169,7 +169,7 @@ def test_semantic_and_layout_updates_merge_without_lost_updates_and_check_revisi
                 actor_id="expert.one",
                 transaction_id="tx.node.stale",
                 occurred_at=NOW + timedelta(seconds=3),
-                diff=_diff("/name_en"),
+                diff=_diff("/name"),
             )
 
         archived = repository.archive_node(
@@ -204,16 +204,16 @@ def test_undo_redo_keep_monotonic_revisions_and_new_edit_preserves_old_branch(tm
         current = _create_node(repository, original)
         for index, label in enumerate(("Name A", "Name B"), start=1):
             current = repository.update_node(
-                current.model_copy(update={"name_en": label}),
+                current.model_copy(update={"name": label}),
                 expected_semantic_revision=current.semantic_revision,
                 expected_layout_revision=None,
                 event_id=f"event.node.rename-{index}",
                 actor_id="expert.one",
                 transaction_id=f"tx.node.rename-{index}",
                 occurred_at=NOW + timedelta(seconds=index),
-                diff=_diff("/name_en"),
+                diff=_diff("/name"),
             )
-        assert current.name_en == "Name B"
+        assert current.name == "Name B"
         assert current.semantic_revision == 2
 
         first_undo = repository.undo_node(
@@ -225,7 +225,7 @@ def test_undo_redo_keep_monotonic_revisions_and_new_edit_preserves_old_branch(tm
             transaction_id="tx.node.undo-1",
             occurred_at=NOW + timedelta(seconds=3),
         )
-        assert first_undo.name_en == "Name A"
+        assert first_undo.name == "Name A"
         assert first_undo.semantic_revision == 3
 
         second_undo = repository.undo_node(
@@ -237,7 +237,7 @@ def test_undo_redo_keep_monotonic_revisions_and_new_edit_preserves_old_branch(tm
             transaction_id="tx.node.undo-2",
             occurred_at=NOW + timedelta(seconds=4),
         )
-        assert second_undo.name_en == original.name_en
+        assert second_undo.name == original.name
         assert second_undo.semantic_revision == 4
 
         redone = repository.redo_node(
@@ -249,18 +249,18 @@ def test_undo_redo_keep_monotonic_revisions_and_new_edit_preserves_old_branch(tm
             transaction_id="tx.node.redo-1",
             occurred_at=NOW + timedelta(seconds=5),
         )
-        assert redone.name_en == "Name A"
+        assert redone.name == "Name A"
         assert redone.semantic_revision == 5
 
         branched = repository.update_node(
-            redone.model_copy(update={"name_en": "Branch C"}),
+            redone.model_copy(update={"name": "Branch C"}),
             expected_semantic_revision=5,
             expected_layout_revision=None,
             event_id="event.node.branch-c",
             actor_id="expert.one",
             transaction_id="tx.node.branch-c",
             occurred_at=NOW + timedelta(seconds=6),
-            diff=_diff("/name_en", metadata={"branch": "new"}),
+            diff=_diff("/name", metadata={"branch": "new"}),
         )
         assert branched.semantic_revision == 6
         with pytest.raises(UndoRedoUnavailableError, match="redo"):
@@ -302,7 +302,7 @@ def test_scheme_update_archive_and_history_use_the_same_current_object_rules(tmp
             occurred_at=NOW,
             diff=_diff("/"),
         )
-        proposal = created.model_copy(update={"name_en": "Renamed Scheme"})
+        proposal = created.model_copy(update={"name": "Renamed Scheme"})
         updated = repository.update_scheme(
             proposal,
             expected_semantic_revision=0,
@@ -311,7 +311,7 @@ def test_scheme_update_archive_and_history_use_the_same_current_object_rules(tmp
             actor_id="expert.one",
             transaction_id="tx.scheme.rename",
             occurred_at=NOW + timedelta(seconds=1),
-            diff=_diff("/name_en"),
+            diff=_diff("/name"),
         )
         archived = repository.archive_scheme(
             scheme.scheme_id,

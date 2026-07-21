@@ -319,6 +319,34 @@ M8B_SCHEMA_METADATA = {
     ),
 }
 
+M8E_SCHEMA_METADATA = {
+    "model-node-0.2.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:model-node:0.2.0",
+        "Pilot Assessment Current Model Node 0.2.0",
+        "0.2.0",
+    ),
+    "task-scheme-0.2.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:task-scheme:0.2.0",
+        "Pilot Assessment Current Task Scheme 0.2.0",
+        "0.2.0",
+    ),
+    "model-graph-snapshot-0.3.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:model-graph-snapshot:0.3.0",
+        "Pilot Assessment Current Model Graph Snapshot 0.3.0",
+        "0.3.0",
+    ),
+    "current-model-run-snapshot-0.3.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:current-model-run-snapshot:0.3.0",
+        "Pilot Assessment Current Model Run Snapshot 0.3.0",
+        "0.3.0",
+    ),
+    "assessment-run-0.3.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:assessment-run:0.3.0",
+        "Pilot Assessment Current Model Run 0.3.0",
+        "0.3.0",
+    ),
+}
+
 ALL_SCHEMA_NAMES = (
     frozenset(LEGACY_SCHEMA_SHA256)
     | frozenset(M4_SCHEMA_METADATA)
@@ -326,6 +354,7 @@ ALL_SCHEMA_NAMES = (
     | frozenset(M6_SCHEMA_METADATA)
     | frozenset(M7_SCHEMA_METADATA)
     | frozenset(M8B_SCHEMA_METADATA)
+    | frozenset(M8E_SCHEMA_METADATA)
 )
 QUALITY_GATE_FIELD_NAMES = {
     "quality",
@@ -620,6 +649,44 @@ def test_m8b_schema_ids_titles_and_contract_versions_are_frozen() -> None:
         assert schema["x-contract-version"] == contract_version
         assert schema["x-runtime-invariants"]
         Draft202012Validator.check_schema(schema)
+
+
+def test_m8e_schema_ids_titles_and_contract_versions_are_frozen() -> None:
+    rendered = render_schemas()
+
+    for name, (schema_id, title, contract_version) in M8E_SCHEMA_METADATA.items():
+        schema = json.loads(rendered[name])
+        assert schema["$schema"] == SCHEMA_DIALECT
+        assert schema["$id"] == schema_id
+        assert schema["title"] == title
+        assert schema["x-contract-version"] == contract_version
+        assert schema["x-runtime-invariants"]
+        Draft202012Validator.check_schema(schema)
+
+
+def test_m8e_current_model_schemas_expose_only_single_canonical_content_fields() -> None:
+    rendered = render_schemas()
+    node = json.loads(rendered["model-node-0.2.0.schema.json"])
+    scheme = json.loads(rendered["task-scheme-0.2.0.schema.json"])
+
+    assert {"name", "short_name", "description"}.issubset(node["properties"])
+    assert not (
+        {"name_zh", "name_en", "short_name_zh", "short_name_en", "description_zh", "description_en"}
+        & node["properties"].keys()
+    )
+    assert {"name", "description"}.issubset(scheme["properties"])
+    assert not (
+        {"name_zh", "name_en", "description_zh", "description_en"} & scheme["properties"].keys()
+    )
+    for definition_name in (
+        "RawInputNodeDefinition",
+        "EvidenceNodeDefinition",
+        "BnNodeDefinition",
+    ):
+        properties = node["$defs"][definition_name]["properties"]
+        assert "help_text" in properties
+        assert "help_text_zh" not in properties
+        assert "help_text_en" not in properties
 
 
 def test_schema_ids_titles_and_cross_language_invariants_are_frozen() -> None:

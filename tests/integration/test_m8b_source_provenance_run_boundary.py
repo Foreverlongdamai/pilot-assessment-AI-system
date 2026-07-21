@@ -4,7 +4,7 @@ import shutil
 from datetime import UTC, datetime
 from pathlib import Path
 
-from pilot_assessment.contracts.run import CurrentModelRunSnapshotV2, RunPurpose
+from pilot_assessment.contracts.run import CurrentModelRunSnapshotV3, RunPurpose
 from pilot_assessment.runtime import ProjectApplication, SystemApplication
 
 NOW = datetime(2026, 7, 21, 10, 0, tzinfo=UTC)
@@ -27,7 +27,7 @@ def _prepare_run(
     *,
     session_revision_id: str,
     run_id: str,
-) -> CurrentModelRunSnapshotV2:
+) -> CurrentModelRunSnapshotV3:
     scheme = application.current_model.get_scheme(application.current_starter_scheme_id)
     report = application.current_preflight.prepare(
         session_revision_id=session_revision_id,
@@ -41,7 +41,7 @@ def _prepare_run(
         expected_scheme_revision=scheme.semantic_revision,
         requested_at=NOW,
     )
-    assert isinstance(run.snapshot, CurrentModelRunSnapshotV2)
+    assert isinstance(run.snapshot, CurrentModelRunSnapshotV3)
     return run.snapshot
 
 

@@ -1608,8 +1608,7 @@ class CurrentModelWorkspaceService:
         source_scheme_id: str,
         *,
         new_scheme_id: str,
-        name_zh: str | None,
-        name_en: str | None,
+        name: str | None,
         transaction_id: str,
         actor_id: str,
     ) -> SchemeMutationResult:
@@ -1617,8 +1616,7 @@ class CurrentModelWorkspaceService:
         copy = source.model_copy(
             update={
                 "scheme_id": new_scheme_id,
-                "name_zh": source.name_zh if name_zh is None else name_zh,
-                "name_en": source.name_en if name_en is None else name_en,
+                "name": source.name if name is None else name,
                 "lifecycle": ModelObjectLifecycle.ACTIVE,
                 "copied_from_scheme_id": source.scheme_id,
             }

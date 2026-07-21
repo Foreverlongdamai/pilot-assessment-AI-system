@@ -44,7 +44,7 @@ def test_copy_node_deep_copies_complete_definition_and_keeps_fixed_parents(
         assert copied.node_id != source.node_id
         assert copied.copied_from_node_id == source.node_id
         assert copied.node_kind is source.node_kind
-        assert copied.name_en == source.name_en
+        assert copied.name == source.name
         assert copied_definition.recipe == source_definition.recipe
         assert copied_definition.recipe is not source_definition.recipe
         assert (

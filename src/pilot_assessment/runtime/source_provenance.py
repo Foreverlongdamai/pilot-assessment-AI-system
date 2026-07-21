@@ -260,7 +260,7 @@ def _python_runtime_identity(product_root: Path) -> PythonRuntimeIdentity:
 def _dependency_identity() -> DependencyManifestIdentity:
     packages: dict[str, str] = {}
     for distribution in importlib.metadata.distributions():
-        name = distribution.metadata.get("Name")
+        name = distribution.metadata["Name"]
         if not name:
             continue
         normalized = name.casefold().replace("_", "-")
@@ -358,7 +358,9 @@ class BackendSourceProvenance:
                 }
             ),
         )
-        self.loaded_identity = BackendSourceIdentity(**raw, identity_sha256=identity_hash)
+        self.loaded_identity = BackendSourceIdentity.model_validate(
+            {**raw, "identity_sha256": identity_hash}
+        )
         self.snapshot_bytes = self._build_snapshot_bytes()
         self.snapshot_sha256 = _sha256_bytes(self.snapshot_bytes)
 

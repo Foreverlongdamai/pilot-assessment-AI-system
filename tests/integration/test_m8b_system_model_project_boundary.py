@@ -141,7 +141,7 @@ def test_one_system_model_serves_two_projects_without_rewriting_old_runs(
         target = _mutable(next(node for node in graph["nodes"] if node["node_kind"] == "bn"))
         target_id = target["node_id"]
         old_content_hash = target["content_hash"]
-        target["description_en"] = f"{target['description_en']} Shared system edit."
+        target["description"] = f"{target['description']} Shared system edit."
         edited = rpc.call(
             "model.node.update",
             _mutation(

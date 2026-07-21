@@ -66,10 +66,12 @@ from pilot_assessment.contracts.project import (
 from pilot_assessment.contracts.run import (
     AssessmentRun,
     AssessmentRunV2,
+    AssessmentRunV3,
     CurrentModelRunPreflightReport,
     CurrentModelRunPreflightReportV2,
     CurrentModelRunSnapshot,
     CurrentModelRunSnapshotV2,
+    CurrentModelRunSnapshotV3,
     RunEvent,
     RunPreflightReport,
     RunResultEnvelope,
@@ -601,6 +603,80 @@ _M8B_SCHEMA_MODELS: tuple[
             "source snapshot reference is content-addressed and immutable",
         ],
     ),
+)
+
+_M8E_SCHEMA_MODELS: tuple[
+    tuple[str, type[BaseModel], str, str, str, list[str]],
+    ...,
+] = (
+    (
+        "model-node-0.2.0.schema.json",
+        ModelNode,
+        "urn:cranfield:pilot-assessment:schema:model-node:0.2.0",
+        "Pilot Assessment Current Model Node 0.2.0",
+        "0.2.0",
+        [
+            "model content uses one canonical English name, short name, description and help text",
+            "node kind determines the discriminated complete definition shape",
+            "semantic and layout revisions remain independent",
+        ],
+    ),
+    (
+        "task-scheme-0.2.0.schema.json",
+        TaskScheme,
+        "urn:cranfield:pilot-assessment:schema:task-scheme:0.2.0",
+        "Pilot Assessment Current Task Scheme 0.2.0",
+        "0.2.0",
+        [
+            "model content uses one canonical English name and description",
+            "explicit activation is a subset of the canonical active closure",
+            "scheme layout overrides do not change shared node semantics",
+        ],
+    ),
+    (
+        "model-graph-snapshot-0.3.0.schema.json",
+        ModelGraphSnapshot,
+        "urn:cranfield:pilot-assessment:schema:model-graph-snapshot:0.3.0",
+        "Pilot Assessment Current Model Graph Snapshot 0.3.0",
+        "0.3.0",
+        [
+            "nodes use the single-English v0.2 current content contract",
+            "nodes and derived typed edges use canonical order",
+        ],
+    ),
+    (
+        "current-model-run-snapshot-0.3.0.schema.json",
+        CurrentModelRunSnapshotV3,
+        "urn:cranfield:pilot-assessment:schema:current-model-run-snapshot:0.3.0",
+        "Pilot Assessment Current Model Run Snapshot 0.3.0",
+        "0.3.0",
+        [
+            "run snapshot freezes single-English current model content and backend identity",
+            "historical v0.1 and v0.2 snapshots remain readable through frozen contracts",
+        ],
+    ),
+    (
+        "assessment-run-0.3.0.schema.json",
+        AssessmentRunV3,
+        "urn:cranfield:pilot-assessment:schema:assessment-run:0.3.0",
+        "Pilot Assessment Current Model Run 0.3.0",
+        "0.3.0",
+        [
+            "new current-model runs always freeze a v0.3 snapshot",
+            "run lifecycle timestamps and stages use one consistent shape",
+        ],
+    ),
+)
+
+_FROZEN_BILINGUAL_SCHEMA_NAMES = frozenset(
+    {
+        "model-node-0.1.0.schema.json",
+        "task-scheme-0.1.0.schema.json",
+        "model-graph-snapshot-0.1.0.schema.json",
+        "current-model-run-snapshot-0.1.0.schema.json",
+        "current-model-run-snapshot-0.2.0.schema.json",
+        "assessment-run-0.2.0.schema.json",
+    }
 )
 
 _QUALITY_GATE_FIELD_NAMES = frozenset(
@@ -1772,9 +1848,16 @@ def render_schemas() -> dict[str, bytes]:
                 *_M6_SCHEMA_MODELS,
                 *_M7_SCHEMA_MODELS,
                 *_M8B_SCHEMA_MODELS,
+                *_M8E_SCHEMA_MODELS,
             )
+            if name not in _FROZEN_BILINGUAL_SCHEMA_NAMES
         }
     )
+    for name in _FROZEN_BILINGUAL_SCHEMA_NAMES:
+        source = _DEFAULT_PACKAGE_OUTPUT_DIRECTORY / name
+        if not source.is_file():
+            raise FileNotFoundError(f"frozen historical schema resource is missing: {name}")
+        schemas[name] = source.read_bytes()
     return schemas
 
 

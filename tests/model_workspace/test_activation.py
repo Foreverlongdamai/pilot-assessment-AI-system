@@ -21,8 +21,7 @@ def _create_parallel_schemes(service):
     parallel = service.copy_scheme(
         base.scheme_id,
         new_scheme_id="scheme.parallel",
-        name_zh=None,
-        name_en="Parallel Scheme",
+        name="Parallel Scheme",
         transaction_id="tx.scheme.parallel.copy",
         actor_id="expert.one",
     ).scheme
@@ -90,7 +89,7 @@ def test_deactivation_preview_is_read_only_and_stale_shared_graph_hash_is_reject
         # A shared node edit changes the graph hash without cloning the scheme.
         raw_u = service.get_node("raw.u")
         service.update_node(
-            raw_u.model_copy(update={"name_en": "Renamed control stream"}),
+            raw_u.model_copy(update={"name": "Renamed control stream"}),
             expected_semantic_revision=raw_u.semantic_revision,
             expected_layout_revision=None,
             transaction_id="tx.node.raw-u.rename",

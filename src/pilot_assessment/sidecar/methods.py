@@ -167,6 +167,18 @@ RpcResult: TypeAlias = dict[str, JsonValue]
 RunNotificationSink: TypeAlias = Callable[[JsonRpcMessage], None]
 Mutation = Callable[[], Mapping[str, JsonValue]]
 _MAX_INLINE_SESSION_REPORT_BYTES = 1024 * 1024
+_LEGACY_LOCALIZED_FIELD_NAMES = frozenset(
+    {
+        "name_zh",
+        "name_en",
+        "short_name_zh",
+        "short_name_en",
+        "description_zh",
+        "description_en",
+        "help_text_zh",
+        "help_text_en",
+    }
+)
 
 _CONCEPT_KINDS = frozenset({ComponentKind.EVIDENCE_CONCEPT, ComponentKind.BN_NODE_CONCEPT})
 _BASE_METHOD_NAMES = (
@@ -381,6 +393,16 @@ def _optional_str(params: Mapping[str, JsonValue], field: str) -> str | None:
     if type(value) is not str or not value:
         raise InvalidParamsFault(f"{field} must be a non-empty string", path=f"/{field}")
     return value
+
+
+def _reject_legacy_localized_fields(params: Mapping[str, JsonValue]) -> None:
+    legacy = sorted(_LEGACY_LOCALIZED_FIELD_NAMES & params.keys())
+    if legacy:
+        field = legacy[0]
+        raise InvalidParamsFault(
+            f"{field} is a legacy internal field; use the single canonical field",
+            path=f"/{field}",
+        )
 
 
 def _required_int(params: Mapping[str, JsonValue], field: str) -> int:
@@ -2015,6 +2037,7 @@ class SidecarMethods:
 
     def _model_scheme_copy(self, params, context) -> RpcResult:
         app = self._app()
+        _reject_legacy_localized_fields(params)
         source_scheme_id = _required_str(params, "source_scheme_id")
         new_scheme_id = _required_str(params, "new_scheme_id")
         actor = _required_str(params, "actor")
@@ -2031,8 +2054,7 @@ class SidecarMethods:
                 app.editable_model.copy_scheme(
                     source_scheme_id,
                     new_scheme_id=new_scheme_id,
-                    name_zh=_optional_str(params, "name_zh"),
-                    name_en=_optional_str(params, "name_en"),
+                    name=_optional_str(params, "name"),
                     transaction_id=transaction_id,
                     actor_id=actor,
                 ),
@@ -2574,14 +2596,14 @@ class SidecarMethods:
         """Return current-model runs for durable desktop recovery.
 
         Legacy M5/M6 runs remain available through ``run.status`` when their ID is
-        known.  The current workspace deliberately lists only v0.2 runs so the
+        known.  The current workspace deliberately lists only v0.3 runs so the
         typed M7 client never has to guess which snapshot contract it received.
         """
 
         app = self._app()
         items: list[JsonValue] = []
         for run in app.runs.list_runs():
-            if run.contract_version != "0.2.0":
+            if run.contract_version != "0.3.0":
                 continue
             result_id = None
             with suppress(RunResultNotFoundError):

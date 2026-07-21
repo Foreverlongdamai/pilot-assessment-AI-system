@@ -173,7 +173,7 @@ def test_semantic_and_layout_hashes_are_deterministic_and_separate() -> None:
     assert model_node_semantic_hash(moved) == model_node_semantic_hash(precision)
     assert model_node_layout_hash(moved) != model_node_layout_hash(precision)
 
-    renamed = precision.model_copy(update={"name_en": "Renamed Evidence"})
+    renamed = precision.model_copy(update={"name": "Renamed Evidence"})
     assert model_node_semantic_hash(renamed) != model_node_semantic_hash(precision)
 
     moved_scheme = scheme.model_copy(

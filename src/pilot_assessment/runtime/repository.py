@@ -12,10 +12,12 @@ from pydantic import JsonValue, ValidationError
 from pilot_assessment.contracts.run import (
     AssessmentRun,
     AssessmentRunV2,
+    AssessmentRunV3,
     CurrentModelRunPreflightReport,
     CurrentModelRunPreflightReportV2,
     CurrentModelRunSnapshot,
     CurrentModelRunSnapshotV2,
+    CurrentModelRunSnapshotV3,
     RunEvent,
     RunSnapshot,
     RunStage,
@@ -74,8 +76,10 @@ def _utc_text(value: datetime) -> str:
     return value.astimezone(UTC).isoformat().replace("+00:00", "Z")
 
 
-RunSnapshotRecord = RunSnapshot | CurrentModelRunSnapshot | CurrentModelRunSnapshotV2
-AssessmentRunRecord = AssessmentRun | AssessmentRunV2
+RunSnapshotRecord = (
+    RunSnapshot | CurrentModelRunSnapshot | CurrentModelRunSnapshotV2 | CurrentModelRunSnapshotV3
+)
+AssessmentRunRecord = AssessmentRun | AssessmentRunV2 | AssessmentRunV3
 
 
 def run_snapshot_hash(snapshot: RunSnapshotRecord) -> str:
@@ -150,11 +154,11 @@ class RunRepository:
 
     def create_current(
         self,
-        snapshot: CurrentModelRunSnapshot | CurrentModelRunSnapshotV2,
+        snapshot: CurrentModelRunSnapshot | CurrentModelRunSnapshotV2 | CurrentModelRunSnapshotV3,
         *,
         current_preflight_id: str,
         requested_at: datetime,
-    ) -> AssessmentRunV2:
+    ) -> AssessmentRunV2 | AssessmentRunV3:
         """Atomically lock current revisions while retaining the legacy execution row."""
 
         if run_snapshot_hash(snapshot) != snapshot.snapshot_hash:
@@ -162,7 +166,10 @@ class RunRepository:
         execution = snapshot.execution_snapshot
         if run_snapshot_hash(execution) != execution.snapshot_hash:
             raise RunIntegrityError("embedded execution snapshot hash is invalid")
-        current_run = AssessmentRunV2(
+        run_type = (
+            AssessmentRunV3 if isinstance(snapshot, CurrentModelRunSnapshotV3) else AssessmentRunV2
+        )
+        current_run = run_type(
             run_id=snapshot.run_id,
             snapshot=snapshot,
             state=RunState.QUEUED,
@@ -181,7 +188,7 @@ class RunRepository:
                 ).fetchone()
                 if existing is not None:
                     restored = self._run_from_row(existing)
-                    if not isinstance(restored, AssessmentRunV2) or (
+                    if type(restored) is not type(current_run) or (
                         restored.snapshot != snapshot or restored.requested_at != requested_at
                     ):
                         raise RunAlreadyExistsError(
@@ -521,8 +528,20 @@ class RunRepository:
             started_at = occurred_at if set_started else current.started_at
             finished_at = occurred_at if set_finished else current.finished_at
             cancellation_at = occurred_at if set_cancel else current.cancellation_requested_at
-            if isinstance(current, AssessmentRunV2):
-                updated: AssessmentRunRecord = AssessmentRunV2(
+            if isinstance(current, AssessmentRunV3):
+                updated: AssessmentRunRecord = AssessmentRunV3(
+                    run_id=current.run_id,
+                    snapshot=current.snapshot,
+                    state=state,
+                    stage=stage,
+                    progress_sequence=sequence,
+                    requested_at=current.requested_at,
+                    started_at=started_at,
+                    finished_at=finished_at,
+                    cancellation_requested_at=cancellation_at,
+                )
+            elif isinstance(current, AssessmentRunV2):
+                updated = AssessmentRunV2(
                     run_id=current.run_id,
                     snapshot=current.snapshot,
                     state=state,
@@ -621,18 +640,22 @@ class RunRepository:
                 (row["run_id"],),
             )
             preflight_table = "model_run_preflights"
-        run_model: type[AssessmentRun] | type[AssessmentRunV2] = AssessmentRun
+        run_model: type[AssessmentRun] | type[AssessmentRunV2] | type[AssessmentRunV3] = (
+            AssessmentRun
+        )
         resolved_snapshot: RunSnapshotRecord = snapshot
         if link is not None:
             try:
                 current_payload = decode_canonical_json(link["current_snapshot_json"])
                 if not isinstance(current_payload, dict):
                     raise ValueError("current run snapshot must be an object")
-                current_type = (
-                    CurrentModelRunSnapshotV2
-                    if current_payload.get("contract_version") == "0.2.0"
-                    else CurrentModelRunSnapshot
-                )
+                version = current_payload.get("contract_version")
+                if version == "0.3.0":
+                    current_type = CurrentModelRunSnapshotV3
+                elif version == "0.2.0":
+                    current_type = CurrentModelRunSnapshotV2
+                else:
+                    current_type = CurrentModelRunSnapshot
                 current = current_type.model_validate(current_payload)
             except (ValueError, ValidationError) as error:
                 raise RunIntegrityError("stored current run snapshot JSON is invalid") from error
@@ -650,7 +673,11 @@ class RunRepository:
                 or run_snapshot_hash(current) != current.snapshot_hash
             ):
                 raise RunIntegrityError("stored current run snapshot identity columns disagree")
-            run_model = AssessmentRunV2
+            run_model = (
+                AssessmentRunV3
+                if isinstance(current, CurrentModelRunSnapshotV3)
+                else AssessmentRunV2
+            )
             resolved_snapshot = current
         try:
             return run_model(

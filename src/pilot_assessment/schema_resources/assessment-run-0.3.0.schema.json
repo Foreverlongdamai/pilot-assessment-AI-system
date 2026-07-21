@@ -1,0 +1,2426 @@
+{
+  "$defs": {
+    "ArtifactIdRef": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "sha256"
+      ],
+      "title": "ArtifactIdRef",
+      "type": "object"
+    },
+    "BackendSourceIdentity": {
+      "additionalProperties": false,
+      "description": "Frozen technical identity of one imported backend process.",
+      "properties": {
+        "active_source_root": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+          "title": "Active Source Root",
+          "type": "string",
+          "x-runtime-invariants": [
+            "segments are not empty, '.' or '..'",
+            "segments do not end in a dot or space",
+            "resolved files remain below the owning artifact root"
+          ]
+        },
+        "baseline_available": {
+          "title": "Baseline Available",
+          "type": "boolean"
+        },
+        "baseline_changes": {
+          "$ref": "#/$defs/SourceChangeSummary"
+        },
+        "contract_id": {
+          "const": "backend-source-identity",
+          "default": "backend-source-identity",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "contract_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "dependencies": {
+          "$ref": "#/$defs/DependencyManifestIdentity"
+        },
+        "identity_algorithm": {
+          "const": "pilot-assessment-backend-identity-v1",
+          "default": "pilot-assessment-backend-identity-v1",
+          "title": "Identity Algorithm",
+          "type": "string"
+        },
+        "identity_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Identity Sha256",
+          "type": "string"
+        },
+        "locally_modified": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Locally Modified"
+        },
+        "operator_catalog": {
+          "$ref": "#/$defs/OperatorCatalogIdentity"
+        },
+        "pyproject_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Pyproject Sha256",
+          "type": "string"
+        },
+        "python_runtime": {
+          "$ref": "#/$defs/PythonRuntimeIdentity"
+        },
+        "release_baseline_sha256": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9A-Fa-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Release Baseline Sha256"
+        },
+        "source_file_count": {
+          "minimum": 0,
+          "title": "Source File Count",
+          "type": "integer"
+        },
+        "source_tree_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Source Tree Sha256",
+          "type": "string"
+        },
+        "tree_algorithm": {
+          "const": "pilot-assessment-source-tree-v2",
+          "default": "pilot-assessment-source-tree-v2",
+          "title": "Tree Algorithm",
+          "type": "string"
+        },
+        "uv_lock_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Uv Lock Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "active_source_root",
+        "source_tree_sha256",
+        "source_file_count",
+        "release_baseline_sha256",
+        "baseline_available",
+        "locally_modified",
+        "baseline_changes",
+        "pyproject_sha256",
+        "uv_lock_sha256",
+        "python_runtime",
+        "dependencies",
+        "operator_catalog",
+        "identity_sha256"
+      ],
+      "title": "BackendSourceIdentity",
+      "type": "object"
+    },
+    "BnNodeDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "cpt": {
+          "$ref": "#/$defs/NodeCpt"
+        },
+        "definition_kind": {
+          "const": "bn",
+          "default": "bn",
+          "title": "Definition Kind",
+          "type": "string"
+        },
+        "documentation": {
+          "maxLength": 8000,
+          "minLength": 1,
+          "title": "Documentation",
+          "type": "string"
+        },
+        "help_text": {
+          "maxLength": 8000,
+          "minLength": 1,
+          "title": "Help Text",
+          "type": "string"
+        },
+        "node_role": {
+          "$ref": "#/$defs/BnNodeRole"
+        },
+        "ordered_probabilistic_parent_nodes": {
+          "items": {
+            "$ref": "#/$defs/ModelNodeRef"
+          },
+          "title": "Ordered Probabilistic Parent Nodes",
+          "type": "array"
+        },
+        "ordered_states": {
+          "items": {
+            "$ref": "#/$defs/VariableState"
+          },
+          "minItems": 2,
+          "title": "Ordered States",
+          "type": "array"
+        },
+        "provenance": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Provenance",
+          "type": "object"
+        },
+        "reporting_metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Reporting Metadata",
+          "type": "object"
+        },
+        "scientific_status": {
+          "$ref": "#/$defs/ModelScientificStatus"
+        }
+      },
+      "required": [
+        "node_role",
+        "ordered_states",
+        "ordered_probabilistic_parent_nodes",
+        "cpt",
+        "documentation",
+        "scientific_status",
+        "reporting_metadata",
+        "provenance",
+        "help_text"
+      ],
+      "title": "BnNodeDefinition",
+      "type": "object"
+    },
+    "BnNodeRole": {
+      "enum": [
+        "aggregate_competency",
+        "sub_skill",
+        "latent",
+        "derived",
+        "custom"
+      ],
+      "title": "BnNodeRole",
+      "type": "string"
+    },
+    "ComponentKind": {
+      "enum": [
+        "evidence_concept",
+        "evidence_version",
+        "bn_node_concept",
+        "bn_node_version",
+        "evidence_binding_version",
+        "cpt_version",
+        "task_profile_version",
+        "coverage_reporting_policy_version",
+        "layout_version",
+        "assessment_scheme_version",
+        "source_descriptor"
+      ],
+      "title": "ComponentKind",
+      "type": "string"
+    },
+    "ComponentSource": {
+      "enum": [
+        "engineering_default",
+        "expert_defined",
+        "calibrated",
+        "imported"
+      ],
+      "title": "ComponentSource",
+      "type": "string"
+    },
+    "CptMode": {
+      "enum": [
+        "manual",
+        "generated",
+        "incomplete"
+      ],
+      "title": "CptMode",
+      "type": "string"
+    },
+    "CurrentModelRunSnapshotV3": {
+      "additionalProperties": false,
+      "description": "Current single-English run snapshot with immutable backend provenance.",
+      "properties": {
+        "active_nodes": {
+          "items": {
+            "$ref": "#/$defs/ModelNode"
+          },
+          "title": "Active Nodes",
+          "type": "array"
+        },
+        "backend_source_identity": {
+          "$ref": "#/$defs/BackendSourceIdentity"
+        },
+        "contract_id": {
+          "const": "current-model-run-snapshot",
+          "default": "current-model-run-snapshot",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "contract_version": {
+          "const": "0.3.0",
+          "default": "0.3.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "engine_identity": {
+          "$ref": "#/$defs/ExecutableIdentity"
+        },
+        "execution_snapshot": {
+          "$ref": "#/$defs/RunSnapshot"
+        },
+        "locked_operator_identities": {
+          "items": {
+            "$ref": "#/$defs/ExecutableIdentity"
+          },
+          "title": "Locked Operator Identities",
+          "type": "array"
+        },
+        "numeric_runtime_identities": {
+          "items": {
+            "$ref": "#/$defs/ExecutableIdentity"
+          },
+          "title": "Numeric Runtime Identities",
+          "type": "array"
+        },
+        "preflight_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Preflight Hash",
+          "type": "string"
+        },
+        "purpose": {
+          "$ref": "#/$defs/RunPurpose"
+        },
+        "run_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "runtime_parameters_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Runtime Parameters Hash",
+          "type": "string"
+        },
+        "scheme": {
+          "$ref": "#/$defs/TaskScheme"
+        },
+        "session_revision_ref": {
+          "$ref": "#/$defs/SessionRevisionRef"
+        },
+        "snapshot_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Snapshot Hash",
+          "type": "string"
+        },
+        "source_snapshot_ref": {
+          "$ref": "#/$defs/ArtifactIdRef"
+        }
+      },
+      "required": [
+        "run_id",
+        "purpose",
+        "session_revision_ref",
+        "scheme",
+        "active_nodes",
+        "locked_operator_identities",
+        "engine_identity",
+        "numeric_runtime_identities",
+        "runtime_parameters_hash",
+        "preflight_hash",
+        "execution_snapshot",
+        "snapshot_hash",
+        "backend_source_identity",
+        "source_snapshot_ref"
+      ],
+      "title": "CurrentModelRunSnapshotV3",
+      "type": "object"
+    },
+    "DependencyManifestIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "manifest_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Manifest Sha256",
+          "type": "string"
+        },
+        "package_count": {
+          "minimum": 0,
+          "title": "Package Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "package_count",
+        "manifest_sha256"
+      ],
+      "title": "DependencyManifestIdentity",
+      "type": "object"
+    },
+    "EvidenceDataBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "raw_input_node": {
+          "$ref": "#/$defs/ModelNodeRef"
+        },
+        "recipe_input_binding_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Recipe Input Binding Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "recipe_input_binding_id",
+        "raw_input_node"
+      ],
+      "title": "EvidenceDataBinding",
+      "type": "object"
+    },
+    "EvidenceNodeDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "cpt": {
+          "$ref": "#/$defs/NodeCpt"
+        },
+        "data_bindings": {
+          "items": {
+            "$ref": "#/$defs/EvidenceDataBinding"
+          },
+          "title": "Data Bindings",
+          "type": "array"
+        },
+        "definition_kind": {
+          "const": "evidence",
+          "default": "evidence",
+          "title": "Definition Kind",
+          "type": "string"
+        },
+        "help_text": {
+          "maxLength": 8000,
+          "minLength": 1,
+          "title": "Help Text",
+          "type": "string"
+        },
+        "modality_attribution_weights": {
+          "patternProperties": {
+            "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$": {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "title": "Modality Attribution Weights",
+          "type": "object"
+        },
+        "observation_mapping": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Observation Mapping",
+          "type": "object"
+        },
+        "observation_policy": {
+          "$ref": "#/$defs/ObservationPolicy"
+        },
+        "ordered_observation_states": {
+          "items": {
+            "$ref": "#/$defs/VariableState"
+          },
+          "minItems": 2,
+          "title": "Ordered Observation States",
+          "type": "array"
+        },
+        "ordered_probabilistic_parent_nodes": {
+          "items": {
+            "$ref": "#/$defs/ModelNodeRef"
+          },
+          "title": "Ordered Probabilistic Parent Nodes",
+          "type": "array"
+        },
+        "provenance": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Provenance",
+          "type": "object"
+        },
+        "recipe": {
+          "$ref": "#/$defs/EvidenceRecipe"
+        },
+        "scientific_status": {
+          "$ref": "#/$defs/ModelScientificStatus"
+        }
+      },
+      "required": [
+        "recipe",
+        "data_bindings",
+        "ordered_observation_states",
+        "observation_mapping",
+        "ordered_probabilistic_parent_nodes",
+        "cpt",
+        "observation_policy",
+        "modality_attribution_weights",
+        "scientific_status",
+        "provenance",
+        "help_text"
+      ],
+      "title": "EvidenceNodeDefinition",
+      "type": "object"
+    },
+    "EvidenceRecipe": {
+      "additionalProperties": false,
+      "description": "The sole editable source used for display, persistence and execution.",
+      "properties": {
+        "anchor": {
+          "$ref": "#/$defs/RecipeAnchor"
+        },
+        "contract_id": {
+          "const": "evidence-recipe",
+          "default": "evidence-recipe",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "contract_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "documentation": {
+          "$ref": "#/$defs/RecipeDocumentation"
+        },
+        "graph": {
+          "$ref": "#/$defs/RecipeGraph"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/RecipeInputBinding"
+          },
+          "title": "Inputs",
+          "type": "array"
+        },
+        "outputs": {
+          "items": {
+            "$ref": "#/$defs/RecipeOutputBinding"
+          },
+          "title": "Outputs",
+          "type": "array"
+        },
+        "recipe_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Recipe Id",
+          "type": "string"
+        },
+        "recipe_version": {
+          "minimum": 1,
+          "title": "Recipe Version",
+          "type": "integer"
+        },
+        "scoring": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RecipeScoring"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ui": {
+          "$ref": "#/$defs/RecipeUiMetadata"
+        }
+      },
+      "required": [
+        "recipe_id",
+        "recipe_version",
+        "anchor",
+        "inputs",
+        "graph",
+        "outputs",
+        "scoring",
+        "documentation",
+        "ui"
+      ],
+      "title": "EvidenceRecipe",
+      "type": "object"
+    },
+    "ExecutableIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "identity_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Identity Id",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity_id",
+        "version",
+        "content_hash"
+      ],
+      "title": "ExecutableIdentity",
+      "type": "object"
+    },
+    "InputBindingKind": {
+      "enum": [
+        "stream",
+        "semantic",
+        "reference"
+      ],
+      "title": "InputBindingKind",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "ModelDiagnostic": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "details": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Details",
+          "type": "object"
+        },
+        "location": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "pattern": "^/",
+          "title": "Location",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/ModelDiagnosticSeverity"
+        }
+      },
+      "required": [
+        "code",
+        "severity",
+        "location",
+        "message",
+        "details"
+      ],
+      "title": "ModelDiagnostic",
+      "type": "object"
+    },
+    "ModelDiagnosticSeverity": {
+      "enum": [
+        "info",
+        "warning",
+        "error"
+      ],
+      "title": "ModelDiagnosticSeverity",
+      "type": "string"
+    },
+    "ModelNode": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "contract_id": {
+          "const": "model-node",
+          "default": "model-node",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "contract_version": {
+          "const": "0.2.0",
+          "default": "0.2.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "copied_from_node_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Copied From Node Id"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "definition": {
+          "discriminator": {
+            "mapping": {
+              "bn": "#/$defs/BnNodeDefinition",
+              "evidence": "#/$defs/EvidenceNodeDefinition",
+              "raw_input": "#/$defs/RawInputNodeDefinition"
+            },
+            "propertyName": "definition_kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/RawInputNodeDefinition"
+            },
+            {
+              "$ref": "#/$defs/EvidenceNodeDefinition"
+            },
+            {
+              "$ref": "#/$defs/BnNodeDefinition"
+            }
+          ],
+          "title": "Definition"
+        },
+        "description": {
+          "maxLength": 8000,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "diagnostics": {
+          "items": {
+            "$ref": "#/$defs/ModelDiagnostic"
+          },
+          "title": "Diagnostics",
+          "type": "array"
+        },
+        "global_layout": {
+          "$ref": "#/$defs/NodeLayout"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Group"
+        },
+        "layout_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Layout Hash",
+          "type": "string"
+        },
+        "layout_revision": {
+          "minimum": 0,
+          "title": "Layout Revision",
+          "type": "integer"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/ModelObjectLifecycle"
+        },
+        "name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "node_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_kind": {
+          "$ref": "#/$defs/ModelNodeKind"
+        },
+        "semantic_revision": {
+          "minimum": 0,
+          "title": "Semantic Revision",
+          "type": "integer"
+        },
+        "short_name": {
+          "maxLength": 96,
+          "minLength": 1,
+          "title": "Short Name",
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        },
+        "technical_status": {
+          "$ref": "#/$defs/ModelTechnicalStatus"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "title": "Updated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "node_kind",
+        "name",
+        "short_name",
+        "description",
+        "tags",
+        "group",
+        "lifecycle",
+        "copied_from_node_id",
+        "definition",
+        "global_layout",
+        "semantic_revision",
+        "layout_revision",
+        "technical_status",
+        "diagnostics",
+        "content_hash",
+        "layout_hash",
+        "created_at",
+        "updated_at"
+      ],
+      "title": "ModelNode",
+      "type": "object"
+    },
+    "ModelNodeKind": {
+      "enum": [
+        "raw_input",
+        "evidence",
+        "bn"
+      ],
+      "title": "ModelNodeKind",
+      "type": "string"
+    },
+    "ModelNodeRef": {
+      "additionalProperties": false,
+      "properties": {
+        "node_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_kind": {
+          "$ref": "#/$defs/ModelNodeKind"
+        }
+      },
+      "required": [
+        "node_id",
+        "node_kind"
+      ],
+      "title": "ModelNodeRef",
+      "type": "object"
+    },
+    "ModelObjectLifecycle": {
+      "enum": [
+        "active",
+        "archived"
+      ],
+      "title": "ModelObjectLifecycle",
+      "type": "string"
+    },
+    "ModelScientificStatus": {
+      "enum": [
+        "starter_template",
+        "engineering_default",
+        "expert_defined",
+        "calibrated"
+      ],
+      "title": "ModelScientificStatus",
+      "type": "string"
+    },
+    "ModelTechnicalStatus": {
+      "enum": [
+        "executable",
+        "incomplete",
+        "blocked"
+      ],
+      "title": "ModelTechnicalStatus",
+      "type": "string"
+    },
+    "NodeCpt": {
+      "additionalProperties": false,
+      "properties": {
+        "child_node": {
+          "$ref": "#/$defs/ModelNodeRef"
+        },
+        "child_state_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "minItems": 2,
+          "title": "Child State Ids",
+          "type": "array"
+        },
+        "cpt_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Cpt Id",
+          "type": "string"
+        },
+        "generator_metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Generator Metadata",
+          "type": "object"
+        },
+        "materialized_probabilities": {
+          "items": {
+            "items": {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "title": "Materialized Probabilities",
+          "type": "array"
+        },
+        "mode": {
+          "$ref": "#/$defs/CptMode"
+        },
+        "ordered_parent_nodes": {
+          "items": {
+            "$ref": "#/$defs/ModelNodeRef"
+          },
+          "title": "Ordered Parent Nodes",
+          "type": "array"
+        },
+        "ordered_parent_state_ids": {
+          "items": {
+            "items": {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": "Ordered Parent State Ids",
+          "type": "array"
+        },
+        "source": {
+          "$ref": "#/$defs/ComponentSource"
+        }
+      },
+      "required": [
+        "cpt_id",
+        "child_node",
+        "ordered_parent_nodes",
+        "child_state_ids",
+        "ordered_parent_state_ids",
+        "materialized_probabilities",
+        "mode",
+        "generator_metadata",
+        "source"
+      ],
+      "title": "NodeCpt",
+      "type": "object"
+    },
+    "NodeLayout": {
+      "additionalProperties": false,
+      "properties": {
+        "node_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "node_id",
+        "x",
+        "y"
+      ],
+      "title": "NodeLayout",
+      "type": "object"
+    },
+    "NodePortReference": {
+      "additionalProperties": false,
+      "properties": {
+        "node_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "port_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Port Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "port_id"
+      ],
+      "title": "NodePortReference",
+      "type": "object"
+    },
+    "ObservationPolicy": {
+      "enum": [
+        "hard",
+        "virtual",
+        "hard_or_virtual"
+      ],
+      "title": "ObservationPolicy",
+      "type": "string"
+    },
+    "OperatorCatalogIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "catalog_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Catalog Sha256",
+          "type": "string"
+        },
+        "operator_count": {
+          "minimum": 0,
+          "title": "Operator Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "operator_count",
+        "catalog_sha256"
+      ],
+      "title": "OperatorCatalogIdentity",
+      "type": "object"
+    },
+    "OutputRole": {
+      "enum": [
+        "primary_value",
+        "raw_metric",
+        "breakdown",
+        "trace"
+      ],
+      "title": "OutputRole",
+      "type": "string"
+    },
+    "PinnedComponentRef": {
+      "additionalProperties": false,
+      "description": "An external replay pin binding an exact ID to its canonical content.",
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id",
+        "content_hash"
+      ],
+      "title": "PinnedComponentRef",
+      "type": "object"
+    },
+    "PortCardinality": {
+      "enum": [
+        "one",
+        "optional",
+        "many"
+      ],
+      "title": "PortCardinality",
+      "type": "string"
+    },
+    "PortType": {
+      "additionalProperties": false,
+      "description": "Type information shared by operator ports and external recipe bindings.",
+      "properties": {
+        "cardinality": {
+          "$ref": "#/$defs/PortCardinality"
+        },
+        "temporal_semantics": {
+          "$ref": "#/$defs/TemporalSemantics"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unit"
+        },
+        "value_type": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Value Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value_type",
+        "cardinality",
+        "temporal_semantics",
+        "unit"
+      ],
+      "title": "PortType",
+      "type": "object"
+    },
+    "PythonRuntimeIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "executable_name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Executable Name",
+          "type": "string"
+        },
+        "executable_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Executable Sha256",
+          "type": "string"
+        },
+        "identity_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Identity Sha256",
+          "type": "string"
+        },
+        "implementation": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Implementation",
+          "type": "string"
+        },
+        "private_runtime": {
+          "title": "Private Runtime",
+          "type": "boolean"
+        },
+        "version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "implementation",
+        "version",
+        "executable_name",
+        "executable_sha256",
+        "private_runtime",
+        "identity_sha256"
+      ],
+      "title": "PythonRuntimeIdentity",
+      "type": "object"
+    },
+    "RawInputFamily": {
+      "enum": [
+        "X",
+        "U",
+        "I",
+        "G",
+        "P",
+        "pilot_camera"
+      ],
+      "title": "RawInputFamily",
+      "type": "string"
+    },
+    "RawInputNodeDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "definition_kind": {
+          "const": "raw_input",
+          "default": "raw_input",
+          "title": "Definition Kind",
+          "type": "string"
+        },
+        "family": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RawInputFamily"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "help_text": {
+          "maxLength": 8000,
+          "minLength": 1,
+          "title": "Help Text",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Metadata",
+          "type": "object"
+        },
+        "resource_role": {
+          "$ref": "#/$defs/RawResourceRole"
+        },
+        "source_descriptor": {
+          "$ref": "#/$defs/SourceDescriptor"
+        }
+      },
+      "required": [
+        "family",
+        "resource_role",
+        "source_descriptor",
+        "metadata",
+        "help_text"
+      ],
+      "title": "RawInputNodeDefinition",
+      "type": "object"
+    },
+    "RawModality": {
+      "enum": [
+        "X",
+        "U",
+        "I",
+        "G",
+        "EEG",
+        "ECG",
+        "pilot_camera"
+      ],
+      "title": "RawModality",
+      "type": "string"
+    },
+    "RawResourceRole": {
+      "enum": [
+        "stream",
+        "task_reference",
+        "annotation",
+        "event",
+        "aoi_definition",
+        "derived_resource"
+      ],
+      "title": "RawResourceRole",
+      "type": "string"
+    },
+    "RecipeAnchor": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Anchor Id",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 8000,
+          "title": "Description",
+          "type": "string"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/RecipeLifecycle"
+        },
+        "name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "scientific_status": {
+          "$ref": "#/$defs/RecipeScientificStatus"
+        }
+      },
+      "required": [
+        "anchor_id",
+        "name",
+        "description",
+        "lifecycle",
+        "scientific_status"
+      ],
+      "title": "RecipeAnchor",
+      "type": "object"
+    },
+    "RecipeDocumentation": {
+      "additionalProperties": false,
+      "properties": {
+        "assumptions": {
+          "items": {
+            "maxLength": 8000,
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "parameter_notes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Parameter Notes",
+          "type": "object"
+        },
+        "references": {
+          "items": {
+            "maxLength": 8000,
+            "type": "string"
+          },
+          "title": "References",
+          "type": "array"
+        },
+        "summary": {
+          "maxLength": 8000,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "summary",
+        "assumptions",
+        "parameter_notes",
+        "references"
+      ],
+      "title": "RecipeDocumentation",
+      "type": "object"
+    },
+    "RecipeEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "edge_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Edge Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/NodePortReference"
+        },
+        "target": {
+          "$ref": "#/$defs/NodePortReference"
+        },
+        "target_slot_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Slot Id"
+        }
+      },
+      "required": [
+        "edge_id",
+        "source",
+        "target"
+      ],
+      "title": "RecipeEdge",
+      "type": "object"
+    },
+    "RecipeGraph": {
+      "additionalProperties": false,
+      "properties": {
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/RecipeEdge"
+          },
+          "title": "Edges",
+          "type": "array"
+        },
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/RecipeNode"
+          },
+          "title": "Nodes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "nodes",
+        "edges"
+      ],
+      "title": "RecipeGraph",
+      "type": "object"
+    },
+    "RecipeInputBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "binding_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Binding Id",
+          "type": "string"
+        },
+        "declared_type": {
+          "$ref": "#/$defs/PortType"
+        },
+        "kind": {
+          "$ref": "#/$defs/InputBindingKind"
+        },
+        "name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "selector": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Selector",
+          "type": "object"
+        },
+        "source_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "binding_id",
+        "kind",
+        "source_id",
+        "name",
+        "declared_type",
+        "selector"
+      ],
+      "title": "RecipeInputBinding",
+      "type": "object"
+    },
+    "RecipeLifecycle": {
+      "enum": [
+        "active",
+        "disabled",
+        "retired"
+      ],
+      "title": "RecipeLifecycle",
+      "type": "string"
+    },
+    "RecipeNode": {
+      "additionalProperties": false,
+      "properties": {
+        "input_binding_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input Binding Id"
+        },
+        "node_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "operator_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Operator Id",
+          "type": "string"
+        },
+        "operator_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Operator Version",
+          "type": "string"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Parameters",
+          "type": "object"
+        }
+      },
+      "required": [
+        "node_id",
+        "operator_id",
+        "operator_version",
+        "parameters"
+      ],
+      "title": "RecipeNode",
+      "type": "object"
+    },
+    "RecipeOutputBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "output_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Output Id",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/OutputRole"
+        },
+        "source": {
+          "$ref": "#/$defs/NodePortReference"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unit"
+        }
+      },
+      "required": [
+        "output_id",
+        "role",
+        "name",
+        "source",
+        "unit"
+      ],
+      "title": "RecipeOutputBinding",
+      "type": "object"
+    },
+    "RecipeScientificStatus": {
+      "enum": [
+        "starter_template",
+        "expert_defined",
+        "calibrated"
+      ],
+      "title": "RecipeScientificStatus",
+      "type": "string"
+    },
+    "RecipeScoring": {
+      "additionalProperties": false,
+      "properties": {
+        "custom_operator_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Custom Operator Id"
+        },
+        "custom_operator_version": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Custom Operator Version"
+        },
+        "input": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NodePortReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mode": {
+          "$ref": "#/$defs/ScoringMode"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Parameters",
+          "type": "object"
+        }
+      },
+      "required": [
+        "mode",
+        "input",
+        "parameters",
+        "custom_operator_id",
+        "custom_operator_version"
+      ],
+      "title": "RecipeScoring",
+      "type": "object"
+    },
+    "RecipeUiGroup": {
+      "additionalProperties": false,
+      "properties": {
+        "group_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Group Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "parameter_paths": {
+          "items": {
+            "maxLength": 1024,
+            "minLength": 2,
+            "type": "string"
+          },
+          "title": "Parameter Paths",
+          "type": "array"
+        }
+      },
+      "required": [
+        "group_id",
+        "label",
+        "parameter_paths"
+      ],
+      "title": "RecipeUiGroup",
+      "type": "object"
+    },
+    "RecipeUiMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "groups": {
+          "items": {
+            "$ref": "#/$defs/RecipeUiGroup"
+          },
+          "title": "Groups",
+          "type": "array"
+        },
+        "preferred_layout": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Preferred Layout",
+          "type": "object"
+        }
+      },
+      "required": [
+        "groups",
+        "preferred_layout"
+      ],
+      "title": "RecipeUiMetadata",
+      "type": "object"
+    },
+    "RunPurpose": {
+      "enum": [
+        "preview",
+        "software_test",
+        "assessment"
+      ],
+      "title": "RunPurpose",
+      "type": "string"
+    },
+    "RunSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_id": {
+          "const": "run-snapshot",
+          "default": "run-snapshot",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "contract_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "engine_identity": {
+          "$ref": "#/$defs/ExecutableIdentity"
+        },
+        "locked_component_refs": {
+          "items": {
+            "$ref": "#/$defs/PinnedComponentRef"
+          },
+          "title": "Locked Component Refs",
+          "type": "array"
+        },
+        "locked_operator_identities": {
+          "items": {
+            "$ref": "#/$defs/ExecutableIdentity"
+          },
+          "title": "Locked Operator Identities",
+          "type": "array"
+        },
+        "locked_source_refs": {
+          "items": {
+            "$ref": "#/$defs/PinnedComponentRef"
+          },
+          "title": "Locked Source Refs",
+          "type": "array"
+        },
+        "numeric_runtime_identities": {
+          "items": {
+            "$ref": "#/$defs/ExecutableIdentity"
+          },
+          "title": "Numeric Runtime Identities",
+          "type": "array"
+        },
+        "preflight_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Preflight Hash",
+          "type": "string"
+        },
+        "purpose": {
+          "$ref": "#/$defs/RunPurpose"
+        },
+        "run_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "runtime_parameters_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Runtime Parameters Hash",
+          "type": "string"
+        },
+        "scheme_ref": {
+          "$ref": "#/$defs/PinnedComponentRef"
+        },
+        "session_revision_ref": {
+          "$ref": "#/$defs/SessionRevisionRef"
+        },
+        "snapshot_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Snapshot Hash",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "purpose",
+        "session_revision_ref",
+        "scheme_ref",
+        "locked_component_refs",
+        "locked_source_refs",
+        "locked_operator_identities",
+        "engine_identity",
+        "numeric_runtime_identities",
+        "runtime_parameters_hash",
+        "preflight_hash",
+        "snapshot_hash"
+      ],
+      "title": "RunSnapshot",
+      "type": "object"
+    },
+    "RunStage": {
+      "enum": [
+        "queued",
+        "snapshot_validation",
+        "ingestion",
+        "synchronization",
+        "evidence",
+        "inference",
+        "reporting",
+        "completed"
+      ],
+      "title": "RunStage",
+      "type": "string"
+    },
+    "RunState": {
+      "enum": [
+        "queued",
+        "running",
+        "cancelling",
+        "cancelled",
+        "completed",
+        "failed",
+        "interrupted"
+      ],
+      "title": "RunState",
+      "type": "string"
+    },
+    "ScoringMode": {
+      "enum": [
+        "ordered_dau",
+        "soft_likelihood",
+        "custom_operator"
+      ],
+      "title": "ScoringMode",
+      "type": "string"
+    },
+    "SessionRevisionRef": {
+      "additionalProperties": false,
+      "properties": {
+        "bundle_root_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Bundle Root Hash",
+          "type": "string"
+        },
+        "session_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "session_revision_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Session Revision Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id",
+        "session_revision_id",
+        "bundle_root_hash"
+      ],
+      "title": "SessionRevisionRef",
+      "type": "object"
+    },
+    "SourceChangeSummary": {
+      "additionalProperties": false,
+      "description": "Difference between a loaded tree and a reference tree.",
+      "properties": {
+        "added": {
+          "default": [],
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+            "type": "string",
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Added",
+          "type": "array"
+        },
+        "deleted": {
+          "default": [],
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+            "type": "string",
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Deleted",
+          "type": "array"
+        },
+        "modified": {
+          "default": [],
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+            "type": "string",
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Modified",
+          "type": "array"
+        }
+      },
+      "title": "SourceChangeSummary",
+      "type": "object"
+    },
+    "SourceDescriptor": {
+      "additionalProperties": false,
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "contract_id": {
+          "const": "source-descriptor",
+          "default": "source-descriptor",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "contract_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "declared_type": {
+          "$ref": "#/$defs/PortType"
+        },
+        "description": {
+          "maxLength": 8000,
+          "title": "Description",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/SourceKind"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Metadata",
+          "type": "object"
+        },
+        "name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "raw_modality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RawModality"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_dependencies": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Source Dependencies",
+          "type": "array"
+        },
+        "source_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "kind",
+        "name",
+        "description",
+        "declared_type",
+        "raw_modality",
+        "source_dependencies",
+        "metadata",
+        "content_hash"
+      ],
+      "title": "SourceDescriptor",
+      "type": "object"
+    },
+    "SourceKind": {
+      "enum": [
+        "raw_stream",
+        "session_semantic",
+        "task_semantic",
+        "derived_artifact",
+        "evidence_observation"
+      ],
+      "title": "SourceKind",
+      "type": "string"
+    },
+    "TaskScheme": {
+      "additionalProperties": false,
+      "properties": {
+        "computed_active_closure": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Computed Active Closure",
+          "type": "array"
+        },
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "contract_id": {
+          "const": "task-scheme",
+          "default": "task-scheme",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "contract_version": {
+          "const": "0.2.0",
+          "default": "0.2.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "copied_from_scheme_id": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Copied From Scheme Id"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 8000,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "diagnostics": {
+          "items": {
+            "$ref": "#/$defs/ModelDiagnostic"
+          },
+          "title": "Diagnostics",
+          "type": "array"
+        },
+        "explicit_active_node_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Explicit Active Node Ids",
+          "type": "array"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Group"
+        },
+        "layout_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Layout Hash",
+          "type": "string"
+        },
+        "layout_overrides": {
+          "items": {
+            "$ref": "#/$defs/NodeLayout"
+          },
+          "title": "Layout Overrides",
+          "type": "array"
+        },
+        "layout_revision": {
+          "minimum": 0,
+          "title": "Layout Revision",
+          "type": "integer"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/ModelObjectLifecycle"
+        },
+        "name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "output_node_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Output Node Ids",
+          "type": "array"
+        },
+        "scheme_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Scheme Id",
+          "type": "string"
+        },
+        "semantic_revision": {
+          "minimum": 0,
+          "title": "Semantic Revision",
+          "type": "integer"
+        },
+        "tags": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        },
+        "task_bindings": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Task Bindings",
+          "type": "object"
+        },
+        "technical_status": {
+          "$ref": "#/$defs/ModelTechnicalStatus"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "title": "Updated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scheme_id",
+        "name",
+        "description",
+        "tags",
+        "group",
+        "lifecycle",
+        "copied_from_scheme_id",
+        "explicit_active_node_ids",
+        "computed_active_closure",
+        "output_node_ids",
+        "task_bindings",
+        "layout_overrides",
+        "semantic_revision",
+        "layout_revision",
+        "technical_status",
+        "diagnostics",
+        "content_hash",
+        "layout_hash",
+        "created_at",
+        "updated_at"
+      ],
+      "title": "TaskScheme",
+      "type": "object"
+    },
+    "TemporalSemantics": {
+      "enum": [
+        "timeless",
+        "sampled",
+        "point",
+        "interval",
+        "mixed"
+      ],
+      "title": "TemporalSemantics",
+      "type": "string"
+    },
+    "VariableState": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 8000,
+          "title": "Description",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "state_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "State Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "state_id",
+        "label",
+        "description"
+      ],
+      "title": "VariableState",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:assessment-run:0.3.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Run lifecycle for the single-English current-model snapshot contract.",
+  "properties": {
+    "cancellation_requested_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Cancellation Requested At"
+    },
+    "contract_id": {
+      "const": "assessment-run",
+      "default": "assessment-run",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.3.0",
+      "default": "0.3.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "finished_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Finished At"
+    },
+    "progress_sequence": {
+      "minimum": 0,
+      "title": "Progress Sequence",
+      "type": "integer"
+    },
+    "requested_at": {
+      "format": "date-time",
+      "title": "Requested At",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "snapshot": {
+      "$ref": "#/$defs/CurrentModelRunSnapshotV3"
+    },
+    "stage": {
+      "$ref": "#/$defs/RunStage"
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Started At"
+    },
+    "state": {
+      "$ref": "#/$defs/RunState"
+    }
+  },
+  "required": [
+    "run_id",
+    "snapshot",
+    "state",
+    "stage",
+    "progress_sequence",
+    "requested_at",
+    "started_at",
+    "finished_at",
+    "cancellation_requested_at"
+  ],
+  "title": "Pilot Assessment Current Model Run 0.3.0",
+  "type": "object",
+  "x-contract-version": "0.3.0",
+  "x-runtime-invariants": [
+    "new current-model runs always freeze a v0.3 snapshot",
+    "run lifecycle timestamps and stages use one consistent shape"
+  ]
+}
