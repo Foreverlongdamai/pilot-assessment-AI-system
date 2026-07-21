@@ -20,9 +20,10 @@ runtime and backend source.
 ## What is and is not in this package
 
 The package contains the desktop app, private runtimes, editable first-party Python source,
-starter resources, one clean `system\` model library, desktop source, release tools, manifests and
-minimal release documentation. It contains no user project, Session, simulator sample, biometric
-data, result or artifact.
+starter resources, one clean `system\` model library, desktop source, release tools, a copyable
+operator example, bundled private dependency helper/uv, manifests and minimal release
+documentation. It contains no user project, Session, simulator sample, biometric data, result or
+artifact.
 
 User projects remain in the locations selected in the app. UI preferences and recent-project
 links are stored under `%LOCALAPPDATA%\PilotAssessmentSystem` on each Windows account.
@@ -38,6 +39,11 @@ Normal Evidence, BN, CPT and task-scheme edits should be made in the graphical i
 existing backend mechanisms cannot express a new calculation, the active Python source is under
 `backend\src\pilot_assessment`. Close the app completely before editing and restart it afterward.
 See `backend\README-DEVELOPMENT.md` before changing source.
+
+The dedicated instructions are in `docs\python-operator-extension-development.md`. Local
+operators register through
+`backend\src\pilot_assessment\evidence\extensions\__init__.py`; their JSON parameter schema uses
+the same generic EvidenceRecipe editor as packaged operators and does not require a new C# page.
 
 ## Integrity and scientific status
 

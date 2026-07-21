@@ -69,6 +69,26 @@ public sealed class EvidenceEditorTests
     }
 
     [Fact]
+    public void TrustedExtensionUsesTheSameGenericSchemaFormAndRecipeEditor()
+    {
+        var extension = ThresholdOperator() with
+        {
+            OperatorId = "extension.example.threshold",
+            ImplementationSource = OperatorImplementationSource.TrustedExtension,
+            ImplementationRef = "extension.example.threshold",
+        };
+        var form = JsonSchemaFormModel.Create(extension, Parameters());
+        var editor = new EvidenceRecipeEditorModel(BlankEvidence().Recipe, [extension]);
+
+        Assert.True(form.TrySetValue("/threshold", "6.25", out var error), error);
+        var added = editor.AddOperator(extension.OperatorId, extension.ImplementationVersion);
+
+        Assert.Equal(6.25, form.BuildParameters()["threshold"]!.GetValue<double>());
+        Assert.Equal(extension.OperatorId, added.OperatorId);
+        Assert.Equal(OperatorImplementationSource.TrustedExtension, extension.ImplementationSource);
+    }
+
+    [Fact]
     public void RecipeEditorUsesExactOperatorPortsAndMapsCompleteRecipe()
     {
         var threshold = ThresholdOperator();

@@ -6,7 +6,7 @@
 |---|---|
 | 里程碑 | M8B-2 — Editable Python Operator Extension Handoff |
 | 日期 | 2026-07-21 |
-| 状态 | **已由 2026-07-21 用户持续实施指令批准；等待 M8B-1 后实施** |
+| 状态 | **已实施并通过 fresh engineering gate；M8B complete** |
 | 设计依据 | [M8B System-Owned Model Library and Editable Backend Provenance Design](../specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md) §14–§18 |
 | 上游 | M8B-1 Backend Source Provenance |
 | 下游 | M8C Documentation System |
@@ -35,10 +35,10 @@
 
 **动作**
 
-- [ ] 提供显式、可读、普通 Python 的 `register_extension_operators(registry)`；
-- [ ] 注册顺序确定且 duplicate ID 返回清晰错误；
-- [ ] 不使用动态下载、入口点市场、签名审批或隐藏生成代码；
-- [ ] extension operator 与 built-in 使用同一合同、compiler 和 runtime。
+- [x] 提供显式、可读、普通 Python 的 `register_extension_operators(registry)`；
+- [x] 注册顺序确定且 duplicate ID 返回清晰错误；
+- [x] 不使用动态下载、入口点市场、签名审批或隐藏生成代码；
+- [x] extension operator 与 built-in 使用同一合同、compiler 和 runtime。
 
 ### Task 2 — 暴露最小模板与依赖工具
 
@@ -51,10 +51,10 @@
 
 **动作**
 
-- [ ] 模板包含 operator function、typed definition、parameter JSON schema、registration diff 和最小测试；
-- [ ] 提供 `list`、`add`、`remove`、`sync` 操作，始终调用 release 内 private Python/uv；
-- [ ] 不依赖全局 Python、全局 PATH 或 Visual Studio；
-- [ ] tool 修改 `pyproject.toml`/`uv.lock` 后提示重启，source provenance 自动记录新依赖 identity。
+- [x] 模板包含 operator function、typed definition、parameter JSON schema、registration diff 和最小测试；
+- [x] 提供 `list`、`add`、`remove`、`sync` 操作，始终调用 release 内 private Python/uv；
+- [x] 不依赖全局 Python、全局 PATH 或 Visual Studio；
+- [x] tool 修改 `pyproject.toml`/`uv.lock` 后提示重启，source provenance 自动记录新依赖 identity。
 
 ### Task 3 — 确认通用前端 schema 闭环
 
@@ -65,10 +65,10 @@
 
 **动作**
 
-- [ ] operator catalog 返回 display name、description、input/output contract 和 parameter schema；
-- [ ] 节点详情从 schema 生成可编辑参数，不增加 operator-specific switch；
-- [ ] 保存仍写 system model library 的 EvidenceRecipe；
-- [ ] operator 只出现在 operator 菜单和节点详情，不作为主画布节点。
+- [x] operator catalog 返回 display name、description、input/output contract 和 parameter schema；
+- [x] 节点详情从 schema 生成可编辑参数，不增加 operator-specific switch；
+- [x] 保存仍写 system model library 的 EvidenceRecipe；
+- [x] operator 只出现在 operator 菜单和节点详情，不作为主画布节点。
 
 ### Task 4 — Disposable release-copy 扩展闭环
 
@@ -79,12 +79,12 @@
 
 **动作**
 
-- [ ] 复制正式 release 到临时目录；
-- [ ] 按开发文档增加一个无科学含义的 arithmetic operator 并注册；
-- [ ] 验证未重启旧 sidecar 报 restart-required；
-- [ ] 重启后 catalog 出现新 ID，parameter schema 可读取；
-- [ ] 创建非 starter 的临时 EvidenceRecipe，用微型 Session 得到确定结果；
-- [ ] 新 run 保存新的 backend identity/source snapshot，正式 release 与 starter model 不被修改。
+- [x] 复制正式 release 到临时目录；
+- [x] 按开发文档增加一个无科学含义的 arithmetic operator 并注册；
+- [x] 验证未重启旧 sidecar 报 restart-required；
+- [x] 重启后 catalog 出现新 ID，parameter schema 可读取；
+- [x] 创建非 starter 的临时 EvidenceRecipe，用微型 Session 得到确定结果；
+- [x] 新 run 保存新的 backend identity/source snapshot，正式 release 与 starter model 不被修改。
 
 ### Task 5 — 开发交接文档与 M8B 收口
 
@@ -97,11 +97,11 @@
 
 **动作**
 
-- [ ] 用实际文件、命令和故障信息写完整步骤；
-- [ ] 说明前端模型编辑与 Python 机制开发的边界；
-- [ ] 说明备份、重启、identity 与历史 run 不变性；
-- [ ] 重建 clean ZIP，记录 SHA-256、focused tests、x64 build 和外部 release-copy 结果；
-- [ ] M8B-0/1/2 全部满足后才把 M8B 标为 complete，随后进入 M8C。
+- [x] 用实际文件、命令和故障信息写完整步骤；
+- [x] 说明前端模型编辑与 Python 机制开发的边界；
+- [x] 说明备份、重启、identity 与历史 run 不变性；
+- [x] 重建 clean ZIP，记录 SHA-256、focused tests、x64 build 和外部 release-copy 结果；
+- [x] M8B-0/1/2 全部满足后才把 M8B 标为 complete，随后进入 M8C。
 
 ## 3. 自审不变量
 
@@ -110,4 +110,3 @@
 - 一个 operator 可被多个 EvidenceRecipe 复用，operator 本身不成为 BN/DAG 主画布节点；
 - 示例只证明工程扩展性，不进入基础 Hover 方案，也不代表推荐科学算法；
 - 打包系统仍不携带任何用户 project/session/result。
-

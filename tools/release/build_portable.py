@@ -299,11 +299,30 @@ def _copy_product_sources(package_root: Path) -> None:
         REPOSITORY_ROOT / "tools" / "release",
         package_root / "developer" / "build" / "release",
     )
+    developer_tools = package_root / "developer" / "tools"
+    developer_tools.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(
+        REPOSITORY_ROOT / "tools" / "developer" / "manage_python_dependencies.ps1",
+        developer_tools / "manage_python_dependencies.ps1",
+    )
+    shutil.copy2(UV, developer_tools / "uv.exe")
+    _copy_tree(
+        REPOSITORY_ROOT / "developer" / "examples" / "operator-extension",
+        package_root / "developer" / "examples" / "operator-extension",
+    )
 
     docs_root = package_root / "docs"
     docs_root.mkdir(parents=True, exist_ok=True)
     for name in ("README-PORTABLE.md", "KNOWN-LIMITATIONS.md"):
         shutil.copy2(REPOSITORY_ROOT / "docs" / "product" / "release" / name, docs_root / name)
+    shutil.copy2(
+        REPOSITORY_ROOT
+        / "docs"
+        / "product"
+        / "manuals"
+        / "python-operator-extension-development.md",
+        docs_root / "python-operator-extension-development.md",
+    )
     shutil.copy2(docs_root / "README-PORTABLE.md", package_root / "README.txt")
 
 
@@ -702,7 +721,7 @@ def _write_manifests(
         "schema_version": "pilot-assessment-release-manifest-v1",
         "product": "Pilot Assessment System",
         "product_version": product_version,
-        "build_kind": "m8b-source-provenance-engineering",
+        "build_kind": "m8b-operator-extension-engineering",
         "built_at_utc": built_at,
         "target": {
             "operating_system": "windows",
@@ -716,6 +735,10 @@ def _write_manifests(
             "active_source_root": "backend/src/pilot_assessment",
             "source_policy": "single-active-first-party-python-tree",
             "project_wheel_installed": False,
+            "extension_registration": (
+                "backend/src/pilot_assessment/evidence/extensions/__init__.py"
+            ),
+            "dependency_tool": "developer/tools/manage_python_dependencies.ps1",
         },
         "toolchain": {
             "dotnet_sdk": dotnet_version,
@@ -753,7 +776,14 @@ def _build(output_root: Path, *, skip_archive: bool) -> dict[str, Any]:
         REPOSITORY_ROOT / "uv.lock",
         REPOSITORY_ROOT / "src" / "pilot_assessment",
         REPOSITORY_ROOT / "tools" / "release" / "verify_portable.py",
+        REPOSITORY_ROOT / "tools" / "developer" / "manage_python_dependencies.ps1",
+        REPOSITORY_ROOT / "developer" / "examples" / "operator-extension",
         REPOSITORY_ROOT / "docs" / "product" / "release" / "README-PORTABLE.md",
+        REPOSITORY_ROOT
+        / "docs"
+        / "product"
+        / "manuals"
+        / "python-operator-extension-development.md",
     ]
     missing = [str(path) for path in required if not path.exists()]
     if missing:
@@ -812,6 +842,7 @@ def _build(output_root: Path, *, skip_archive: bool) -> dict[str, Any]:
             "utf8",
             str(verification_root / "developer" / "build" / "release" / "verify_portable.py"),
             str(verification_root),
+            "--verify-operator-extension",
         ],
         cwd=verification_root,
     )

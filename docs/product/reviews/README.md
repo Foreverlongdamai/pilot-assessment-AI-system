@@ -15,9 +15,10 @@
 
 ## 当前记录入口
 
+- [M8B-2 Python Operator Extension Handoff Verification](2026-07-21-m8b2-python-operator-extension-verification.md) — 普通源码扩展入口、私有依赖 add/remove/sync、通用 schema UI、clean ZIP 与外部 extension/run/desktop 的 fresh gate；关闭 M8B，不关闭 M7 UAT、M8C–M8E 或科学校准。
 - [M8B-1 Source Provenance and Snapshot Verification](2026-07-21-m8b1-source-provenance-and-snapshot-verification.md) — loaded source/runtime/dependency/operator identity、disk drift/restart boundary、RunSnapshot v0.2、source artifact 与 portable baseline v2 的 fresh engineering gate；不关闭 M8B-2、M7 UAT 或科学校准。
 - [M8B-1 Implementation Plan Self-Review](2026-07-21-m8b1-implementation-plan-self-review.md) — 核对启动时冻结、运行前重扫、旧合同可读、新 run 严格 provenance 和轻量验证边界。
-- [M8B-2 Implementation Plan Self-Review](2026-07-21-m8b2-implementation-plan-self-review.md) — 核对普通源码扩展入口、private dependency tool、通用参数 UI、release-copy vertical slice 与非 plugin 边界；当前进入实施。
+- [M8B-2 Implementation Plan Self-Review](2026-07-21-m8b2-implementation-plan-self-review.md) — 核对普通源码扩展入口、private dependency tool、通用参数 UI、release-copy vertical slice 与非 plugin 边界；计划随后已实施。
 - [M8B-0 System Model Ownership Verification](2026-07-21-m8b0-system-model-ownership-verification.md) — system store、双项目共享、旧 run 隔离、legacy import、portable baseline 与仓库外桌面启动的 fresh engineering gate；不关闭 M8B-1/2、M7 UAT 或科学校准。
 - [M8B-0 Implementation Plan Self-Review](2026-07-21-m8b0-implementation-plan-self-review.md) — 核对 system ownership 实施顺序、双项目/快照验证、legacy migration 与 M8B-1/2 停止边界；计划已获用户批准并进入实施。
 - [M8B System-Owned Model Library Design Self-Review](2026-07-21-m8b-system-owned-model-library-design-self-review.md) — 核对 software-copy system store、project data boundary、legacy migration、exact RunSnapshot 与 loaded-source provenance；written spec 已获用户批准。

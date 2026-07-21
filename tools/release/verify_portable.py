@@ -7,11 +7,14 @@ import ctypes
 import hashlib
 import json
 import os
+import shutil
 import sqlite3
 import subprocess
 import sys
 import tempfile
 import time
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FutureTimeoutError
 from ctypes import wintypes
 from pathlib import Path
 from typing import Any
@@ -87,6 +90,11 @@ def _arguments() -> argparse.Namespace:
         help="Temporarily edit dispatcher.py and prove restart loads the edit.",
     )
     parser.add_argument(
+        "--verify-operator-extension",
+        action="store_true",
+        help="Temporarily install the bundled example operator and run the M8B-2 vertical slice.",
+    )
+    parser.add_argument(
         "--launch-desktop",
         action="store_true",
         help="Launch the WinUI app, observe its packaged Python child, then close it.",
@@ -119,6 +127,7 @@ def _required_layout(root: Path) -> None:
         "runtime/python/python.exe",
         "runtime/python/python311._pth",
         "backend/src/pilot_assessment/__init__.py",
+        "backend/src/pilot_assessment/evidence/extensions/__init__.py",
         "backend/src/pilot_assessment/sidecar/__main__.py",
         "backend/pyproject.toml",
         "backend/uv.lock",
@@ -128,6 +137,12 @@ def _required_layout(root: Path) -> None:
         "manifest/checksums.sha256",
         "manifest/sbom.spdx.json",
         "README.txt",
+        "developer/tools/manage_python_dependencies.ps1",
+        "developer/tools/uv.exe",
+        "developer/examples/operator-extension/example_scalar_offset.py",
+        "developer/examples/operator-extension/test_example_scalar_offset.py",
+        "developer/examples/operator-extension/README.md",
+        "docs/python-operator-extension-development.md",
         "system/system.json",
         "system/model-library.sqlite3",
         "system/staging/model-edit/workspace.sqlite3",
@@ -547,6 +562,589 @@ def _verify_editable_source(root: Path) -> str:
     return marker
 
 
+def _start_sidecar(root: Path, system_root: Path) -> subprocess.Popen[str]:
+    environment = _restricted_environment()
+    environment["PILOT_ASSESSMENT_PRODUCT_ROOT"] = str(root)
+    environment["PILOT_ASSESSMENT_SYSTEM_ROOT"] = str(system_root)
+    return subprocess.Popen(
+        [
+            str(root / "runtime" / "python" / "python.exe"),
+            "-I",
+            "-B",
+            "-u",
+            "-X",
+            "utf8",
+            "-m",
+            "pilot_assessment.sidecar",
+        ],
+        cwd=root,
+        env=environment,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+
+
+def _sidecar_call(
+    process: subprocess.Popen[str],
+    request_id: str,
+    method: str,
+    params: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if process.stdin is None or process.stdout is None:
+        raise PortableVerificationError("sidecar pipes are unavailable")
+    request = {
+        "jsonrpc": "2.0",
+        "id": request_id,
+        "method": method,
+        "params": params or {},
+    }
+    process.stdin.write(json.dumps(request) + "\n")
+    process.stdin.flush()
+    while True:
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            pending = executor.submit(process.stdout.readline)
+            try:
+                raw = pending.result(timeout=30)
+            except FutureTimeoutError as error:
+                process.kill()
+                pending.result(timeout=5)
+                raise PortableVerificationError(
+                    f"sidecar timed out waiting for {method}"
+                ) from error
+        if not raw:
+            stderr = "" if process.stderr is None else process.stderr.read()
+            raise PortableVerificationError(
+                f"sidecar exited before {method} response: {stderr.strip()}"
+            )
+        try:
+            message = json.loads(raw)
+        except json.JSONDecodeError as error:
+            raise PortableVerificationError(f"sidecar emitted non-JSONL output: {raw!r}") from error
+        if message.get("id") != request_id:
+            continue
+        if "error" in message:
+            raise PortableVerificationError(
+                f"sidecar {method} returned an RPC error: {message['error']}"
+            )
+        result = message.get("result")
+        if not isinstance(result, dict):
+            raise PortableVerificationError(f"sidecar {method} result is not an object")
+        return result
+
+
+def _close_sidecar(process: subprocess.Popen[str]) -> str:
+    try:
+        if process.poll() is None:
+            _sidecar_call(process, "shutdown", "runtime.shutdown")
+        if process.stdin is not None:
+            process.stdin.close()
+        process.wait(timeout=20)
+    except (OSError, subprocess.SubprocessError, PortableVerificationError):
+        if process.poll() is None:
+            process.kill()
+            process.wait(timeout=5)
+        raise
+    stderr = "" if process.stderr is None else process.stderr.read().strip()
+    if process.returncode != 0:
+        raise PortableVerificationError(f"sidecar exited with code {process.returncode}: {stderr}")
+    return stderr
+
+
+def _install_example_extension(root: Path) -> tuple[Path, bytes, Path]:
+    source = root / "developer" / "examples" / "operator-extension" / "example_scalar_offset.py"
+    extension_root = root / "backend" / "src" / "pilot_assessment" / "evidence" / "extensions"
+    target = extension_root / "example_scalar_offset.py"
+    registration = extension_root / "__init__.py"
+    if target.exists():
+        raise PortableVerificationError("example extension target unexpectedly already exists")
+    original_registration = registration.read_bytes()
+    import_anchor = b"from pilot_assessment.evidence.registry import OperatorRegistry\n"
+    call_anchor = (
+        b"    del registry  # The clean distribution intentionally starts with no local extensions."
+    )
+    if (
+        original_registration.count(import_anchor) != 1
+        or original_registration.count(call_anchor) != 1
+    ):
+        raise PortableVerificationError("extension registration template anchors are not unique")
+    import_line = (
+        b"from pilot_assessment.evidence.extensions.example_scalar_offset "
+        b"import register_example_scalar_offset\n"
+    )
+    updated = original_registration.replace(import_anchor, import_anchor + import_line).replace(
+        call_anchor,
+        b"    register_example_scalar_offset(registry)",
+    )
+    shutil.copy2(source, target)
+    registration.write_bytes(updated)
+    return registration, original_registration, target
+
+
+def _verify_dependency_tool_and_template(root: Path) -> dict[str, Any]:
+    powershell = (
+        Path(os.environ.get("SYSTEMROOT", r"C:\Windows"))
+        / "System32"
+        / "WindowsPowerShell"
+        / "v1.0"
+        / "powershell.exe"
+    )
+    dependency_tool = root / "developer" / "tools" / "manage_python_dependencies.ps1"
+    listed = subprocess.run(
+        [
+            str(powershell),
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(dependency_tool),
+            "list",
+        ],
+        cwd=root,
+        env=_restricted_environment(),
+        check=False,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        capture_output=True,
+        timeout=60,
+    )
+    if listed.returncode != 0 or "pydantic==" not in listed.stdout.casefold():
+        raise PortableVerificationError(
+            "private dependency list tool failed: "
+            f"stdout={listed.stdout.strip()!r}, stderr={listed.stderr.strip()!r}"
+        )
+    template_test = subprocess.run(
+        [
+            str(root / "runtime" / "python" / "python.exe"),
+            "-I",
+            "-B",
+            "-X",
+            "utf8",
+            str(
+                root
+                / "developer"
+                / "examples"
+                / "operator-extension"
+                / "test_example_scalar_offset.py"
+            ),
+        ],
+        cwd=root,
+        env=_restricted_environment(),
+        check=False,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        capture_output=True,
+        timeout=60,
+    )
+    if template_test.returncode != 0:
+        raise PortableVerificationError(
+            "bundled operator template test failed: "
+            f"stdout={template_test.stdout.strip()!r}, stderr={template_test.stderr.strip()!r}"
+        )
+    uv = subprocess.run(
+        [str(root / "developer" / "tools" / "uv.exe"), "--version"],
+        cwd=root,
+        env=_restricted_environment(),
+        check=False,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        capture_output=True,
+        timeout=30,
+    )
+    if uv.returncode != 0 or not uv.stdout.strip().startswith("uv "):
+        raise PortableVerificationError("bundled uv dependency tool did not start")
+    return {
+        "listed_package_count": len([line for line in listed.stdout.splitlines() if "==" in line]),
+        "uv_version": uv.stdout.strip(),
+        "template_test": "PASS",
+    }
+
+
+def _run_extension_recipe_and_assessment(root: Path) -> dict[str, Any]:
+    program = r"""
+import csv
+import json
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+
+from pilot_assessment.contracts.evidence_recipe import (
+    EvidenceRecipe, InputBindingKind, NodePortReference, OutputRole, PortCardinality,
+    PortType, RecipeAnchor, RecipeDocumentation, RecipeEdge, RecipeGraph,
+    RecipeInputBinding, RecipeLifecycle, RecipeNode, RecipeOutputBinding,
+    RecipeScientificStatus, RecipeScoring, RecipeUiMetadata, ScoringMode,
+    TemporalSemantics,
+)
+from pilot_assessment.contracts.run import RunPurpose
+from pilot_assessment.evidence.compiler import compile_recipe
+from pilot_assessment.evidence.executor import execute_recipe
+from pilot_assessment.ingestion.profiles import CsvProfile, load_builtin_profiles
+from pilot_assessment.runtime import ProjectApplication, SystemApplication
+from pilot_assessment.synthetic import generate_synthetic_bundle
+
+product_root = Path(sys.argv[1]).resolve()
+work_root = Path(sys.argv[2]).resolve()
+now = datetime(2026, 7, 21, 12, 0, tzinfo=UTC)
+system = SystemApplication.open_or_create(
+    work_root / "system",
+    model_library_id="model-library.m8b2-extension",
+    product_root=product_root,
+    clock=lambda: now,
+)
+application = ProjectApplication.create(
+    work_root / "project",
+    system=system,
+    project_id="project.m8b2-extension",
+    name="M8B-2 extension verification",
+    created_at=now,
+    clock=lambda: now,
+)
+try:
+    number_type = PortType(
+        value_type="number",
+        cardinality=PortCardinality.ONE,
+        temporal_semantics=TemporalSemantics.TIMELESS,
+        unit=None,
+    )
+    recipe = EvidenceRecipe(
+        recipe_id="recipe.m8b2-extension",
+        recipe_version=1,
+        anchor=RecipeAnchor(
+            anchor_id="M8B2-EXAMPLE",
+            name="M8B-2 extension example",
+            description="Engineering-only release verification evidence.",
+            lifecycle=RecipeLifecycle.ACTIVE,
+            scientific_status=RecipeScientificStatus.EXPERT_DEFINED,
+        ),
+        inputs=(RecipeInputBinding(
+            binding_id="input.micro-value",
+            kind=InputBindingKind.SEMANTIC,
+            source_id="micro.value",
+            name="Micro value",
+            declared_type=number_type,
+            selector={},
+        ),),
+        graph=RecipeGraph(
+            nodes=(
+                RecipeNode(
+                    node_id="input",
+                    operator_id="input.binding",
+                    operator_version="0.1.0",
+                    input_binding_id="input.micro-value",
+                    parameters={},
+                ),
+                RecipeNode(
+                    node_id="offset",
+                    operator_id="extension.example.scalar-offset",
+                    operator_version="0.1.0",
+                    input_binding_id=None,
+                    parameters={"offset": 0.75},
+                ),
+            ),
+            edges=(RecipeEdge(
+                edge_id="edge.input-offset",
+                source=NodePortReference(node_id="input", port_id="value"),
+                target=NodePortReference(node_id="offset", port_id="value"),
+                target_slot_id=None,
+            ),),
+        ),
+        outputs=(RecipeOutputBinding(
+            output_id="offset-value",
+            role=OutputRole.PRIMARY_VALUE,
+            name="Offset value",
+            source=NodePortReference(node_id="offset", port_id="value"),
+            unit=None,
+        ),),
+        scoring=RecipeScoring(
+            mode=ScoringMode.ORDERED_DAU,
+            input=NodePortReference(node_id="offset", port_id="value"),
+            parameters={
+                "direction": "higher_is_better",
+                "desired_boundary": 2.5,
+                "adequate_boundary": 1.5,
+                "likelihood_strength": 0.8,
+            },
+            custom_operator_id=None,
+            custom_operator_version=None,
+        ),
+        documentation=RecipeDocumentation(
+            summary="Engineering-only extension execution check.",
+            assumptions=(),
+            parameter_notes={},
+            references=(),
+        ),
+        ui=RecipeUiMetadata(groups=(), preferred_layout={}),
+    )
+    compiled = compile_recipe(recipe, application.operator_registry)
+    executed = execute_recipe(
+        compiled,
+        application.operator_registry,
+        binding_values={"input.micro-value": 2.0},
+        trace_node_ids=("offset",),
+    )
+
+    source_csv = work_root / "micro.csv"
+    profile = load_builtin_profiles()["cranfield-simulator-combined-csv-raw-v0.1"]
+    if not isinstance(profile, CsvProfile):
+        raise RuntimeError("combined simulator profile is unavailable")
+    headers = [column.source_header for column in profile.columns]
+    with source_csv.open("w", encoding="utf-8", newline="") as stream:
+        writer = csv.writer(stream, lineterminator="\n")
+        writer.writerow(headers)
+        for index in range(201):
+            time_s = index / 100.0
+            velocity_x = 0.1 * time_s
+            velocity_y = -0.2 * time_s
+            velocity_z = 0.05 * time_s
+            values = ["0" for _ in headers]
+            updates = {
+                "Simulation time": f"{time_s:.2f}",
+                "Xe m": str(0.75 * time_s),
+                "Ze m": "-31.668",
+                "Ground Elevation m": "21.008",
+                "V_ex m/s": str(velocity_x),
+                "V_ey m/s": str(velocity_y),
+                "V_ez m/s": str(velocity_z),
+                "V_ex kts": str(velocity_x * 1.9438444924406048),
+                "V_ey kts": str(velocity_y * 1.9438444924406048),
+                "V_ez kts": str(velocity_z * 1.9438444924406048),
+                "V_bx m/s": str(velocity_x),
+                "V_by m/s": str(velocity_y),
+                "V_bz m/s": str(velocity_z),
+                "psi deg": "270",
+                "Pilot Lon": str(-100.0 * index / 200),
+            }
+            for header, value in updates.items():
+                values[headers.index(header)] = value
+            values[headers.index("Control_Mode")] = "1"
+            values[headers.index("Time Delay s")] = "0.2"
+            values[headers.index("Lon Frequency rad/s")] = "8"
+            values[headers.index("Long Damping")] = "0.8"
+            writer.writerow(values)
+    bundle = generate_synthetic_bundle(source_csv, work_root / "micro-bundle", seed=20260721)
+    imported = application.sessions.import_bundle(
+        bundle,
+        transaction_id="tx.m8b2-extension-session",
+        imported_by="system.m8b2-verifier",
+    )
+    scheme = application.current_model.get_scheme(application.current_starter_scheme_id)
+    preflight = application.current_preflight.prepare(
+        session_revision_id=imported.revision.session_revision_id,
+        scheme_id=scheme.scheme_id,
+        purpose=RunPurpose.SOFTWARE_TEST,
+        runtime_parameters={},
+    )
+    if preflight.technical_disposition.value != "ready":
+        raise RuntimeError(f"micro assessment preflight is not ready: {preflight.issues}")
+    run = application.current_preflight.create_run(
+        preflight.preflight_id,
+        run_id="run.m8b2-extension",
+        expected_scheme_revision=scheme.semantic_revision,
+        requested_at=now,
+    )
+    application.coordinator.enqueue(run.run_id)
+    terminal = application.coordinator.wait(run.run_id, timeout=60)
+    if terminal.state.value != "completed":
+        events = [
+            {
+                "state": event.state.value,
+                "stage": event.stage.value,
+                "message": event.message,
+                "details": event.details,
+            }
+            for event in application.runs.list_events(run.run_id)
+        ]
+        raise RuntimeError(
+            f"micro assessment run ended as {terminal.state.value}: "
+            + json.dumps(events, default=str)
+        )
+    source_ref = run.snapshot.source_snapshot_ref
+    if source_ref is None:
+        raise RuntimeError("run snapshot omitted source artifact")
+    source_artifact = application.artifacts.get(source_ref.artifact_id)
+    print(json.dumps({
+        "operator_count": len(application.operator_registry.catalog()),
+        "recipe_value": executed.outputs["offset-value"],
+        "recipe_state": str(executed.scoring_outputs["state"]),
+        "recipe_trace_operator": executed.traces[1].operator_id,
+        "run_state": terminal.state.value,
+        "source_identity": run.snapshot.backend_source_identity.identity_sha256,
+        "source_artifact_id": source_artifact.artifact_id,
+        "source_artifact_sha256": source_artifact.sha256,
+        "source_operator_count": (
+            run.snapshot.backend_source_identity.operator_catalog.operator_count
+        ),
+        "session_source_rows": 201,
+    }, sort_keys=True))
+finally:
+    application.close()
+    system.close()
+"""
+    with tempfile.TemporaryDirectory(prefix="pilot-assessment-m8b2-extension-run-") as temporary:
+        environment = _restricted_environment()
+        environment["PILOT_ASSESSMENT_PRODUCT_ROOT"] = str(root)
+        completed = subprocess.run(
+            [
+                str(root / "runtime" / "python" / "python.exe"),
+                "-I",
+                "-B",
+                "-X",
+                "utf8",
+                "-c",
+                program,
+                str(root),
+                temporary,
+            ],
+            cwd=root,
+            env=environment,
+            check=False,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            capture_output=True,
+            timeout=120,
+        )
+    if completed.returncode != 0:
+        raise PortableVerificationError(
+            "extension recipe/run vertical slice failed: "
+            f"stdout={completed.stdout.strip()!r}, stderr={completed.stderr.strip()!r}"
+        )
+    try:
+        payload = json.loads(completed.stdout)
+    except json.JSONDecodeError as error:
+        raise PortableVerificationError(
+            f"extension recipe/run output is not JSON: {completed.stdout!r}"
+        ) from error
+    if not isinstance(payload, dict):
+        raise PortableVerificationError("extension recipe/run result is not an object")
+    return payload
+
+
+def _verify_operator_extension(root: Path) -> dict[str, Any]:
+    dependency_tool = _verify_dependency_tool_and_template(root)
+    registration: Path | None = None
+    original_registration: bytes | None = None
+    extension_target: Path | None = None
+    old_process: subprocess.Popen[str] | None = None
+    new_process: subprocess.Popen[str] | None = None
+    try:
+        with tempfile.TemporaryDirectory(prefix="pilot-assessment-m8b2-old-sidecar-") as temporary:
+            old_process = _start_sidecar(root, Path(temporary) / "system")
+            hello = _sidecar_call(
+                old_process,
+                "hello",
+                "runtime.hello",
+                {
+                    "protocol_version": "1.0",
+                    "supported_protocols": ["1.0"],
+                    "client": {"name": "m8b2-extension-verifier", "version": "0.1.0"},
+                },
+            )
+            if hello.get("state") != "ready":
+                raise PortableVerificationError("pre-edit extension sidecar did not become ready")
+            before = _sidecar_call(old_process, "catalog-before", "operator.catalog.list")
+            if len(before.get("operators", [])) != 45:
+                raise PortableVerificationError(
+                    "clean operator catalog does not contain 45 entries"
+                )
+
+            registration, original_registration, extension_target = _install_example_extension(root)
+            stale_status = _sidecar_call(old_process, "status-stale", "runtime.status")
+            backend_source = stale_status.get("backend_source")
+            if not isinstance(backend_source, dict) or not backend_source.get(
+                "runtime_restart_required"
+            ):
+                raise PortableVerificationError(
+                    "running sidecar did not require restart after extension source changed"
+                )
+            _close_sidecar(old_process)
+            old_process = None
+
+        with tempfile.TemporaryDirectory(prefix="pilot-assessment-m8b2-new-sidecar-") as temporary:
+            new_process = _start_sidecar(root, Path(temporary) / "system")
+            _sidecar_call(
+                new_process,
+                "hello",
+                "runtime.hello",
+                {
+                    "protocol_version": "1.0",
+                    "supported_protocols": ["1.0"],
+                    "client": {"name": "m8b2-extension-verifier", "version": "0.1.0"},
+                },
+            )
+            status = _sidecar_call(new_process, "status", "runtime.status")
+            catalog = _sidecar_call(new_process, "catalog", "operator.catalog.list")
+            _close_sidecar(new_process)
+            new_process = None
+
+        operators = catalog.get("operators", [])
+        extension = next(
+            (
+                item
+                for item in operators
+                if item.get("operator_id") == "extension.example.scalar-offset"
+                and item.get("implementation_version") == "0.1.0"
+            ),
+            None,
+        )
+        if len(operators) != 46 or extension is None:
+            raise PortableVerificationError("restarted catalog omitted the example extension")
+        if extension.get("implementation_source") != "trusted_extension":
+            raise PortableVerificationError("example extension has the wrong implementation source")
+        schema = extension.get("parameter_schema")
+        if not isinstance(schema, dict) or schema.get("required") != ["offset"]:
+            raise PortableVerificationError("example extension parameter schema was not exposed")
+        backend_source = status.get("backend_source")
+        if not isinstance(backend_source, dict):
+            raise PortableVerificationError("restarted extension sidecar omitted source provenance")
+        loaded = backend_source.get("loaded_identity")
+        if (
+            not isinstance(loaded, dict)
+            or loaded.get("locally_modified") is not True
+            or backend_source.get("runtime_restart_required") is not False
+        ):
+            raise PortableVerificationError("restarted extension source identity is inconsistent")
+
+        vertical = _run_extension_recipe_and_assessment(root)
+        if (
+            vertical.get("operator_count") != 46
+            or vertical.get("source_operator_count") != 46
+            or vertical.get("recipe_value") != 2.75
+            or vertical.get("recipe_state") != "desired"
+            or vertical.get("recipe_trace_operator") != "extension.example.scalar-offset"
+            or vertical.get("run_state") != "completed"
+            or vertical.get("source_identity") != loaded.get("identity_sha256")
+        ):
+            raise PortableVerificationError(
+                f"extension recipe/run result is inconsistent: {vertical}"
+            )
+        return {
+            "dependency_tool": dependency_tool,
+            "old_process_restart_required": True,
+            "operator_id": extension["operator_id"],
+            "operator_count": len(operators),
+            "parameter_schema": schema,
+            "loaded_source_identity": loaded["identity_sha256"],
+            "recipe_and_run": vertical,
+        }
+    finally:
+        for process in (old_process, new_process):
+            if process is not None and process.poll() is None:
+                process.kill()
+                process.wait(timeout=5)
+        if registration is not None and original_registration is not None:
+            registration.write_bytes(original_registration)
+        if extension_target is not None and extension_target.exists():
+            extension_target.unlink()
+
+
 def _window_for_process(process_id: int) -> int | None:
     if os.name != "nt":
         return None
@@ -706,6 +1304,7 @@ def verify(
     root: Path,
     *,
     editable_source: bool,
+    operator_extension: bool,
     launch_desktop: bool,
     desktop_timeout: float,
 ) -> dict[str, Any]:
@@ -720,7 +1319,8 @@ def verify(
     imported = _run_private_import(root)
     sidecar = _sidecar_roundtrip(root)
     edit_marker = _verify_editable_source(root) if editable_source else None
-    if editable_source:
+    extension = _verify_operator_extension(root) if operator_extension else None
+    if editable_source or operator_extension:
         _verify_checksums(root, ignore_mutable_system=True)
         _verify_source_baseline(root)
     desktop = _launch_desktop(root, desktop_timeout) if launch_desktop else None
@@ -732,6 +1332,7 @@ def verify(
         "private_python_import": imported,
         "sidecar": sidecar,
         "editable_source_marker": edit_marker,
+        "operator_extension": extension,
         "desktop": desktop,
         "status": "PASS",
     }
@@ -743,6 +1344,7 @@ def main() -> int:
         result = verify(
             args.package_root,
             editable_source=args.verify_editable_source,
+            operator_extension=args.verify_operator_extension,
             launch_desktop=args.launch_desktop,
             desktop_timeout=args.desktop_timeout,
         )

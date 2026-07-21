@@ -10,6 +10,7 @@ from uuid import uuid4
 
 from pilot_assessment.contracts.model_components import ComponentKind, SourceDescriptor
 from pilot_assessment.evidence.builtins import register_builtin_operators
+from pilot_assessment.evidence.extensions import register_extension_operators
 from pilot_assessment.evidence.registry import OperatorRegistry
 from pilot_assessment.model_library.profile import LoadedModelProfile, load_hover_starter_package
 from pilot_assessment.model_library.repository import (
@@ -165,6 +166,7 @@ class SystemApplication:
 
         operator_registry = OperatorRegistry()
         register_builtin_operators(operator_registry)
+        register_extension_operators(operator_registry)
         source_provenance = BackendSourceProvenance.capture(
             operator_registry,
             product_root=product_root,
