@@ -27,14 +27,18 @@ restarted.
 3. Edit ordinary `.py` and JSON resource files with any local text editor or IDE.
 4. Preserve public DTO/schema compatibility unless you also update both Python and C# protocol
    contracts.
-5. Restart the desktop app and inspect Diagnostics before using the changed mechanism.
+5. Restart the desktop app and inspect Diagnostics before using the changed mechanism. The new
+   source identity is allowed to differ from the release baseline and will be frozen into future
+   RunSnapshots.
 6. Run a small representative Session before relying on a new operator or core change.
 
 The original hashes are in `manifest\source-baseline.json`. A hash difference is evidence of a
-local modification, not an automatic reason to block the software.
+local modification, not an automatic reason to block the software. Editing source while the app
+is open produces `runtime.restart_required`; this only prevents a run from claiming bytes that the
+current Python process did not import. Close and reopen the app to load the edited source.
 
 The C#/WinUI source delivered for reference is under `developer\desktop-source`. C# changes require
 a new desktop build with the .NET SDK and Windows development tools; Python changes do not.
 
-The full extension and maintenance manuals are M8C deliverables. This file is the minimum M8B-0
+The full extension and maintenance manuals are M8C deliverables. This file is the minimum M8B
 operational contract.

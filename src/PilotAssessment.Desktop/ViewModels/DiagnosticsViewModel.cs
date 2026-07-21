@@ -23,8 +23,9 @@ public partial class DiagnosticsViewModel : ObservableObject
 {
     private static readonly string[] SchemaIdentities =
     [
-        "current-model-run-preflight-report@0.1.0",
-        "current-model-run-snapshot@0.1.0",
+        "current-model-run-preflight-report@0.2.0",
+        "current-model-run-snapshot@0.2.0",
+        "backend-source-identity@0.1.0",
         "assessment-run@0.2.0",
         "run-event@0.1.0",
         "run-result-envelope@0.1.0",
@@ -39,6 +40,7 @@ public partial class DiagnosticsViewModel : ObservableObject
     private readonly ILocalizationLookup? _localization;
     private readonly SynchronizationContext? _uiContext;
     private int _initialized;
+    private BackendSourceDiskStatus? _lastBackendSource;
 
     [ObservableProperty]
     public partial bool IsBusy { get; private set; }
@@ -54,6 +56,15 @@ public partial class DiagnosticsViewModel : ObservableObject
 
     [ObservableProperty]
     public partial string RuntimeStatusText { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string BackendSourceText { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial bool SourceRestartRequired { get; private set; }
+
+    [ObservableProperty]
+    public partial string SourceRestartMessage { get; private set; } = string.Empty;
 
     [ObservableProperty]
     public partial string RecoveryText { get; private set; } = string.Empty;
@@ -122,6 +133,8 @@ public partial class DiagnosticsViewModel : ObservableObject
             var audit = await auditTask;
             RuntimeStatusText =
                 $"{runtime.State} · project_open={runtime.ProjectOpen} · project_id={runtime.ProjectId ?? "—"}";
+            _lastBackendSource = runtime.BackendSource;
+            RefreshSourceIdentity();
             var recoverable = currentRuns
                 .Where(item => item.Run.State is RunState.Queued or RunState.Running or RunState.Cancelling or RunState.Interrupted)
                 .Select(item => $"{item.Run.RunId}: {item.Run.State}/{item.Run.Stage}")
@@ -195,7 +208,47 @@ public partial class DiagnosticsViewModel : ObservableObject
 
     private void OnLanguageChanged(object? sender, EventArgs args)
     {
-        InvokeOnUi(RefreshIdentity);
+        InvokeOnUi(() =>
+        {
+            RefreshIdentity();
+            RefreshSourceIdentity();
+        });
+    }
+
+    private void RefreshSourceIdentity()
+    {
+        var source = _lastBackendSource;
+        if (source is null)
+        {
+            SourceRestartRequired = false;
+            SourceRestartMessage = string.Empty;
+            BackendSourceText = L(
+                "Diagnostics_SourceUnavailable",
+                "Backend source identity is not available from this runtime.");
+            return;
+        }
+
+        var loaded = source.LoadedIdentity;
+        var baseline = !loaded.BaselineAvailable
+            ? L("Diagnostics_BaselineUnavailable", "not available (development runtime)")
+            : loaded.LocallyModified is true
+                ? L("Diagnostics_BaselineModified", "locally modified")
+                : L("Diagnostics_BaselineClean", "matches release baseline");
+        SourceRestartRequired = source.RuntimeRestartRequired;
+        SourceRestartMessage = source.RuntimeRestartRequired
+            ? L(
+                "Diagnostics_SourceRestartRequiredMessage",
+                "Backend source changed after startup. Save your model edits, close and reopen the application before starting a run.")
+            : string.Empty;
+        BackendSourceText = string.Join(
+            Environment.NewLine,
+            $"{L("Diagnostics_SourceRoot", "Active source root")}: {loaded.ActiveSourceRoot}",
+            $"{L("Diagnostics_SourceTreeHash", "Source tree SHA-256")}: {loaded.SourceTreeSha256}",
+            $"{L("Diagnostics_ExecutionIdentity", "Execution identity")}: {loaded.IdentitySha256}",
+            $"{L("Diagnostics_ReleaseBaseline", "Release baseline")}: {baseline}",
+            $"Python: {loaded.PythonRuntime.Implementation} {loaded.PythonRuntime.Version} · {loaded.PythonRuntime.ExecutableName}",
+            $"{L("Diagnostics_Dependencies", "Installed dependencies")}: {loaded.Dependencies.PackageCount} · {loaded.Dependencies.ManifestSha256}",
+            $"{L("Diagnostics_OperatorCatalog", "Operator catalog")}: {loaded.OperatorCatalog.OperatorCount} · {loaded.OperatorCatalog.CatalogSha256}");
     }
 
     private void ClearError()

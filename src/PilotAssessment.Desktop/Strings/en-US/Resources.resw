@@ -675,4 +675,19 @@
   <data name="Model_StatusRedoing" xml:space="preserve"><value>Restoring the latest undone change…</value></data>
   <data name="Model_StatusRedone" xml:space="preserve"><value>The latest undone change was restored.</value></data>
   <data name="Model_StatusRedoFailed" xml:space="preserve"><value>The staged change could not be restored.</value></data>
+  <data name="Diagnostics_BackendSource" xml:space="preserve"><value>Loaded backend source</value></data>
+  <data name="Diagnostics_SourceRestartRequired" xml:space="preserve"><value>Backend restart required</value></data>
+  <data name="Diagnostics_SourceRestartRequiredMessage" xml:space="preserve"><value>Backend source changed after startup. Save your model edits, close and reopen the application before starting a run.</value></data>
+  <data name="Diagnostics_SourceUnavailable" xml:space="preserve"><value>Backend source identity is not available from this runtime.</value></data>
+  <data name="Diagnostics_BaselineUnavailable" xml:space="preserve"><value>not available (development runtime)</value></data>
+  <data name="Diagnostics_BaselineModified" xml:space="preserve"><value>locally modified</value></data>
+  <data name="Diagnostics_BaselineClean" xml:space="preserve"><value>matches release baseline</value></data>
+  <data name="Diagnostics_SourceRoot" xml:space="preserve"><value>Active source root</value></data>
+  <data name="Diagnostics_SourceTreeHash" xml:space="preserve"><value>Source tree SHA-256</value></data>
+  <data name="Diagnostics_ExecutionIdentity" xml:space="preserve"><value>Execution identity</value></data>
+  <data name="Diagnostics_ReleaseBaseline" xml:space="preserve"><value>Release baseline</value></data>
+  <data name="Diagnostics_Dependencies" xml:space="preserve"><value>Installed dependencies</value></data>
+  <data name="Diagnostics_OperatorCatalog" xml:space="preserve"><value>Operator catalog</value></data>
+  <data name="Runs_FrozenBackendSource" xml:space="preserve"><value>Frozen backend source</value></data>
+  <data name="Runs_LegacySourceIdentity" xml:space="preserve"><value>This historical run predates backend source provenance.</value></data>
 </root>

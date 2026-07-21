@@ -128,6 +128,56 @@ public sealed record ExecutableIdentity(
     string Version,
     string ContentHash);
 
+public sealed record SourceChangeSummary(
+    string[] Added,
+    string[] Modified,
+    string[] Deleted);
+
+public sealed record PythonRuntimeIdentity(
+    string Implementation,
+    string Version,
+    string ExecutableName,
+    string ExecutableSha256,
+    bool PrivateRuntime,
+    string IdentitySha256);
+
+public sealed record DependencyManifestIdentity(
+    int PackageCount,
+    string ManifestSha256);
+
+public sealed record OperatorCatalogIdentity(
+    int OperatorCount,
+    string CatalogSha256);
+
+public sealed record BackendSourceIdentity(
+    string ContractId,
+    string ContractVersion,
+    string IdentityAlgorithm,
+    string TreeAlgorithm,
+    string ActiveSourceRoot,
+    string SourceTreeSha256,
+    int SourceFileCount,
+    string? ReleaseBaselineSha256,
+    bool BaselineAvailable,
+    bool? LocallyModified,
+    SourceChangeSummary BaselineChanges,
+    string PyprojectSha256,
+    string UvLockSha256,
+    PythonRuntimeIdentity PythonRuntime,
+    DependencyManifestIdentity Dependencies,
+    OperatorCatalogIdentity OperatorCatalog,
+    string IdentitySha256);
+
+public sealed record BackendSourceDiskStatus(
+    string ContractId,
+    string ContractVersion,
+    BackendSourceIdentity LoadedIdentity,
+    string DiskSourceTreeSha256,
+    string DiskPyprojectSha256,
+    string DiskUvLockSha256,
+    SourceChangeSummary LoadedToDiskChanges,
+    bool RuntimeRestartRequired);
+
 public sealed record ModelNodeSnapshotRef(
     string NodeId,
     ModelNodeKind NodeKind,
@@ -161,7 +211,11 @@ public sealed record CurrentModelRunPreflightReport(
     bool SyntheticData,
     RunDiagnostic[] Diagnostics,
     RunPreflightReport? ExecutionPreflight,
-    string PreflightHash);
+    string PreflightHash,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    BackendSourceIdentity? BackendSourceIdentity = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    ArtifactIdRef? SourceSnapshotRef = null);
 
 public sealed record RunSnapshot(
     string ContractId,
@@ -193,7 +247,11 @@ public sealed record CurrentModelRunSnapshot(
     string RuntimeParametersHash,
     string PreflightHash,
     RunSnapshot ExecutionSnapshot,
-    string SnapshotHash);
+    string SnapshotHash,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    BackendSourceIdentity? BackendSourceIdentity = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    ArtifactIdRef? SourceSnapshotRef = null);
 
 public sealed record AssessmentRun(
     string ContractId,

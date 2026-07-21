@@ -36,6 +36,7 @@ from pilot_assessment.contracts.project import (
 )
 from pilot_assessment.contracts.run import (
     CurrentModelRunSnapshot,
+    CurrentModelRunSnapshotV2,
     RunResultEnvelope,
     RunScientificStatus,
     RunSnapshot,
@@ -452,7 +453,7 @@ class AssessmentPipeline:
 
     def execute(
         self,
-        snapshot: RunSnapshot | CurrentModelRunSnapshot,
+        snapshot: RunSnapshot | CurrentModelRunSnapshot | CurrentModelRunSnapshotV2,
         *,
         cancellation: CancellationProbe | None = None,
         progress: ProgressSink | None = None,
@@ -467,10 +468,10 @@ class AssessmentPipeline:
         cancel()
         execution_snapshot = (
             snapshot.execution_snapshot
-            if isinstance(snapshot, CurrentModelRunSnapshot)
+            if isinstance(snapshot, (CurrentModelRunSnapshot, CurrentModelRunSnapshotV2))
             else snapshot
         )
-        if isinstance(snapshot, CurrentModelRunSnapshot) and (
+        if isinstance(snapshot, (CurrentModelRunSnapshot, CurrentModelRunSnapshotV2)) and (
             run_snapshot_hash(snapshot) != snapshot.snapshot_hash
         ):
             raise AssessmentPipelineError(

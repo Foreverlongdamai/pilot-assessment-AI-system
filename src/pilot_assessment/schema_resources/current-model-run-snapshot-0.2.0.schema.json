@@ -300,210 +300,6 @@
       "title": "CptMode",
       "type": "string"
     },
-    "CurrentModelRunSnapshot": {
-      "additionalProperties": false,
-      "description": "Immutable full current-model state paired with a legacy execution snapshot.",
-      "properties": {
-        "active_nodes": {
-          "items": {
-            "$ref": "#/$defs/ModelNode"
-          },
-          "title": "Active Nodes",
-          "type": "array"
-        },
-        "contract_id": {
-          "const": "current-model-run-snapshot",
-          "default": "current-model-run-snapshot",
-          "title": "Contract Id",
-          "type": "string"
-        },
-        "contract_version": {
-          "const": "0.1.0",
-          "default": "0.1.0",
-          "title": "Contract Version",
-          "type": "string"
-        },
-        "engine_identity": {
-          "$ref": "#/$defs/ExecutableIdentity"
-        },
-        "execution_snapshot": {
-          "$ref": "#/$defs/RunSnapshot"
-        },
-        "locked_operator_identities": {
-          "items": {
-            "$ref": "#/$defs/ExecutableIdentity"
-          },
-          "title": "Locked Operator Identities",
-          "type": "array"
-        },
-        "numeric_runtime_identities": {
-          "items": {
-            "$ref": "#/$defs/ExecutableIdentity"
-          },
-          "title": "Numeric Runtime Identities",
-          "type": "array"
-        },
-        "preflight_hash": {
-          "maxLength": 64,
-          "minLength": 64,
-          "pattern": "^[0-9A-Fa-f]{64}$",
-          "title": "Preflight Hash",
-          "type": "string"
-        },
-        "purpose": {
-          "$ref": "#/$defs/RunPurpose"
-        },
-        "run_id": {
-          "maxLength": 128,
-          "minLength": 1,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
-          "title": "Run Id",
-          "type": "string"
-        },
-        "runtime_parameters_hash": {
-          "maxLength": 64,
-          "minLength": 64,
-          "pattern": "^[0-9A-Fa-f]{64}$",
-          "title": "Runtime Parameters Hash",
-          "type": "string"
-        },
-        "scheme": {
-          "$ref": "#/$defs/TaskScheme"
-        },
-        "session_revision_ref": {
-          "$ref": "#/$defs/SessionRevisionRef"
-        },
-        "snapshot_hash": {
-          "maxLength": 64,
-          "minLength": 64,
-          "pattern": "^[0-9A-Fa-f]{64}$",
-          "title": "Snapshot Hash",
-          "type": "string"
-        }
-      },
-      "required": [
-        "run_id",
-        "purpose",
-        "session_revision_ref",
-        "scheme",
-        "active_nodes",
-        "locked_operator_identities",
-        "engine_identity",
-        "numeric_runtime_identities",
-        "runtime_parameters_hash",
-        "preflight_hash",
-        "execution_snapshot",
-        "snapshot_hash"
-      ],
-      "title": "CurrentModelRunSnapshot",
-      "type": "object"
-    },
-    "CurrentModelRunSnapshotV2": {
-      "additionalProperties": false,
-      "description": "Current-model run snapshot with immutable Python backend provenance.",
-      "properties": {
-        "active_nodes": {
-          "items": {
-            "$ref": "#/$defs/ModelNode"
-          },
-          "title": "Active Nodes",
-          "type": "array"
-        },
-        "backend_source_identity": {
-          "$ref": "#/$defs/BackendSourceIdentity"
-        },
-        "contract_id": {
-          "const": "current-model-run-snapshot",
-          "default": "current-model-run-snapshot",
-          "title": "Contract Id",
-          "type": "string"
-        },
-        "contract_version": {
-          "const": "0.2.0",
-          "default": "0.2.0",
-          "title": "Contract Version",
-          "type": "string"
-        },
-        "engine_identity": {
-          "$ref": "#/$defs/ExecutableIdentity"
-        },
-        "execution_snapshot": {
-          "$ref": "#/$defs/RunSnapshot"
-        },
-        "locked_operator_identities": {
-          "items": {
-            "$ref": "#/$defs/ExecutableIdentity"
-          },
-          "title": "Locked Operator Identities",
-          "type": "array"
-        },
-        "numeric_runtime_identities": {
-          "items": {
-            "$ref": "#/$defs/ExecutableIdentity"
-          },
-          "title": "Numeric Runtime Identities",
-          "type": "array"
-        },
-        "preflight_hash": {
-          "maxLength": 64,
-          "minLength": 64,
-          "pattern": "^[0-9A-Fa-f]{64}$",
-          "title": "Preflight Hash",
-          "type": "string"
-        },
-        "purpose": {
-          "$ref": "#/$defs/RunPurpose"
-        },
-        "run_id": {
-          "maxLength": 128,
-          "minLength": 1,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
-          "title": "Run Id",
-          "type": "string"
-        },
-        "runtime_parameters_hash": {
-          "maxLength": 64,
-          "minLength": 64,
-          "pattern": "^[0-9A-Fa-f]{64}$",
-          "title": "Runtime Parameters Hash",
-          "type": "string"
-        },
-        "scheme": {
-          "$ref": "#/$defs/TaskScheme"
-        },
-        "session_revision_ref": {
-          "$ref": "#/$defs/SessionRevisionRef"
-        },
-        "snapshot_hash": {
-          "maxLength": 64,
-          "minLength": 64,
-          "pattern": "^[0-9A-Fa-f]{64}$",
-          "title": "Snapshot Hash",
-          "type": "string"
-        },
-        "source_snapshot_ref": {
-          "$ref": "#/$defs/ArtifactIdRef"
-        }
-      },
-      "required": [
-        "run_id",
-        "purpose",
-        "session_revision_ref",
-        "scheme",
-        "active_nodes",
-        "locked_operator_identities",
-        "engine_identity",
-        "numeric_runtime_identities",
-        "runtime_parameters_hash",
-        "preflight_hash",
-        "execution_snapshot",
-        "snapshot_hash",
-        "backend_source_identity",
-        "source_snapshot_ref"
-      ],
-      "title": "CurrentModelRunSnapshotV2",
-      "type": "object"
-    },
     "DependencyManifestIdentity": {
       "additionalProperties": false,
       "properties": {
@@ -2094,33 +1890,6 @@
       "title": "RunSnapshot",
       "type": "object"
     },
-    "RunStage": {
-      "enum": [
-        "queued",
-        "snapshot_validation",
-        "ingestion",
-        "synchronization",
-        "evidence",
-        "inference",
-        "reporting",
-        "completed"
-      ],
-      "title": "RunStage",
-      "type": "string"
-    },
-    "RunState": {
-      "enum": [
-        "queued",
-        "running",
-        "cancelling",
-        "cancelled",
-        "completed",
-        "failed",
-        "interrupted"
-      ],
-      "title": "RunState",
-      "type": "string"
-    },
     "ScoringMode": {
       "enum": [
         "ordered_dau",
@@ -2591,26 +2360,24 @@
       "type": "object"
     }
   },
-  "$id": "urn:cranfield:pilot-assessment:schema:assessment-run:0.2.0",
+  "$id": "urn:cranfield:pilot-assessment:schema:current-model-run-snapshot:0.2.0",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
-  "description": "Run lifecycle whose immutable snapshot uses current M7 model definitions.",
+  "description": "Current-model run snapshot with immutable Python backend provenance.",
   "properties": {
-    "cancellation_requested_at": {
-      "anyOf": [
-        {
-          "format": "date-time",
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "title": "Cancellation Requested At"
+    "active_nodes": {
+      "items": {
+        "$ref": "#/$defs/ModelNode"
+      },
+      "title": "Active Nodes",
+      "type": "array"
+    },
+    "backend_source_identity": {
+      "$ref": "#/$defs/BackendSourceIdentity"
     },
     "contract_id": {
-      "const": "assessment-run",
-      "default": "assessment-run",
+      "const": "current-model-run-snapshot",
+      "default": "current-model-run-snapshot",
       "title": "Contract Id",
       "type": "string"
     },
@@ -2620,27 +2387,35 @@
       "title": "Contract Version",
       "type": "string"
     },
-    "finished_at": {
-      "anyOf": [
-        {
-          "format": "date-time",
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "title": "Finished At"
+    "engine_identity": {
+      "$ref": "#/$defs/ExecutableIdentity"
     },
-    "progress_sequence": {
-      "minimum": 0,
-      "title": "Progress Sequence",
-      "type": "integer"
+    "execution_snapshot": {
+      "$ref": "#/$defs/RunSnapshot"
     },
-    "requested_at": {
-      "format": "date-time",
-      "title": "Requested At",
+    "locked_operator_identities": {
+      "items": {
+        "$ref": "#/$defs/ExecutableIdentity"
+      },
+      "title": "Locked Operator Identities",
+      "type": "array"
+    },
+    "numeric_runtime_identities": {
+      "items": {
+        "$ref": "#/$defs/ExecutableIdentity"
+      },
+      "title": "Numeric Runtime Identities",
+      "type": "array"
+    },
+    "preflight_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Preflight Hash",
       "type": "string"
+    },
+    "purpose": {
+      "$ref": "#/$defs/RunPurpose"
     },
     "run_id": {
       "maxLength": 128,
@@ -2649,52 +2424,51 @@
       "title": "Run Id",
       "type": "string"
     },
-    "snapshot": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/CurrentModelRunSnapshot"
-        },
-        {
-          "$ref": "#/$defs/CurrentModelRunSnapshotV2"
-        }
-      ],
-      "title": "Snapshot"
+    "runtime_parameters_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Runtime Parameters Hash",
+      "type": "string"
     },
-    "stage": {
-      "$ref": "#/$defs/RunStage"
+    "scheme": {
+      "$ref": "#/$defs/TaskScheme"
     },
-    "started_at": {
-      "anyOf": [
-        {
-          "format": "date-time",
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "title": "Started At"
+    "session_revision_ref": {
+      "$ref": "#/$defs/SessionRevisionRef"
     },
-    "state": {
-      "$ref": "#/$defs/RunState"
+    "snapshot_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Snapshot Hash",
+      "type": "string"
+    },
+    "source_snapshot_ref": {
+      "$ref": "#/$defs/ArtifactIdRef"
     }
   },
   "required": [
     "run_id",
-    "snapshot",
-    "state",
-    "stage",
-    "progress_sequence",
-    "requested_at",
-    "started_at",
-    "finished_at",
-    "cancellation_requested_at"
+    "purpose",
+    "session_revision_ref",
+    "scheme",
+    "active_nodes",
+    "locked_operator_identities",
+    "engine_identity",
+    "numeric_runtime_identities",
+    "runtime_parameters_hash",
+    "preflight_hash",
+    "execution_snapshot",
+    "snapshot_hash",
+    "backend_source_identity",
+    "source_snapshot_ref"
   ],
-  "title": "Pilot Assessment Current Model Run 0.2.0",
+  "title": "Pilot Assessment Current Model Run Snapshot 0.2.0",
   "type": "object",
   "x-contract-version": "0.2.0",
   "x-runtime-invariants": [
-    "run lifecycle timestamps and stages use one consistent shape",
-    "the current-model snapshot is immutable after run creation"
+    "run snapshot freezes exact model and backend identities",
+    "source snapshot reference is content-addressed and immutable"
   ]
 }

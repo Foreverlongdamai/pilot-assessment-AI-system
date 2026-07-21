@@ -175,6 +175,8 @@ class ProjectApplication:
             execution_materializer,
             preflight,
             runs,
+            artifacts,
+            system.source_provenance,
             clock=clock,
         )
         results = RunResultRepository(database)

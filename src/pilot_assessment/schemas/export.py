@@ -67,7 +67,9 @@ from pilot_assessment.contracts.run import (
     AssessmentRun,
     AssessmentRunV2,
     CurrentModelRunPreflightReport,
+    CurrentModelRunPreflightReportV2,
     CurrentModelRunSnapshot,
+    CurrentModelRunSnapshotV2,
     RunEvent,
     RunPreflightReport,
     RunResultEnvelope,
@@ -78,6 +80,10 @@ from pilot_assessment.contracts.session import (
     CORE_MODALITIES,
     SessionManifest,
     SyntheticSourceProvenance,
+)
+from pilot_assessment.contracts.source_provenance import (
+    BackendSourceIdentity,
+    SourceSnapshotManifest,
 )
 from pilot_assessment.contracts.synchronization import (
     BLOCKING_SYNCHRONIZATION_ERROR_CODES,
@@ -543,6 +549,56 @@ _M7_SCHEMA_MODELS: tuple[
         [
             "run lifecycle timestamps and stages use one consistent shape",
             "the current-model snapshot is immutable after run creation",
+        ],
+    ),
+)
+
+_M8B_SCHEMA_MODELS: tuple[
+    tuple[str, type[BaseModel], str, str, str, list[str]],
+    ...,
+] = (
+    (
+        "backend-source-identity-0.1.0.schema.json",
+        BackendSourceIdentity,
+        "urn:cranfield:pilot-assessment:schema:backend-source-identity:0.1.0",
+        "Pilot Assessment Backend Source Identity 0.1.0",
+        "0.1.0",
+        [
+            "identity records execution provenance and does not claim scientific validity",
+            "absolute paths, user data and third-party package bytes are excluded",
+        ],
+    ),
+    (
+        "backend-source-snapshot-manifest-0.1.0.schema.json",
+        SourceSnapshotManifest,
+        "urn:cranfield:pilot-assessment:schema:backend-source-snapshot-manifest:0.1.0",
+        "Pilot Assessment Backend Source Snapshot Manifest 0.1.0",
+        "0.1.0",
+        [
+            "snapshot files use canonical portable paths and content hashes",
+            "snapshot archives are documentation artifacts and are never auto-executed",
+        ],
+    ),
+    (
+        "current-model-run-preflight-report-0.2.0.schema.json",
+        CurrentModelRunPreflightReportV2,
+        "urn:cranfield:pilot-assessment:schema:current-model-run-preflight-report:0.2.0",
+        "Pilot Assessment Current Model Run Preflight Report 0.2.0",
+        "0.2.0",
+        [
+            "ready preflight requires an exact backend source identity and snapshot reference",
+            "loaded-to-disk source drift blocks only until the runtime restarts",
+        ],
+    ),
+    (
+        "current-model-run-snapshot-0.2.0.schema.json",
+        CurrentModelRunSnapshotV2,
+        "urn:cranfield:pilot-assessment:schema:current-model-run-snapshot:0.2.0",
+        "Pilot Assessment Current Model Run Snapshot 0.2.0",
+        "0.2.0",
+        [
+            "run snapshot freezes exact model and backend identities",
+            "source snapshot reference is content-addressed and immutable",
         ],
     ),
 )
@@ -1715,6 +1771,7 @@ def render_schemas() -> dict[str, bytes]:
                 *_M5_SCHEMA_MODELS,
                 *_M6_SCHEMA_MODELS,
                 *_M7_SCHEMA_MODELS,
+                *_M8B_SCHEMA_MODELS,
             )
         }
     )

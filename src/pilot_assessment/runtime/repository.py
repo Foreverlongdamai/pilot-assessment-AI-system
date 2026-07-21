@@ -13,7 +13,9 @@ from pilot_assessment.contracts.run import (
     AssessmentRun,
     AssessmentRunV2,
     CurrentModelRunPreflightReport,
+    CurrentModelRunPreflightReportV2,
     CurrentModelRunSnapshot,
+    CurrentModelRunSnapshotV2,
     RunEvent,
     RunSnapshot,
     RunStage,
@@ -72,7 +74,7 @@ def _utc_text(value: datetime) -> str:
     return value.astimezone(UTC).isoformat().replace("+00:00", "Z")
 
 
-RunSnapshotRecord = RunSnapshot | CurrentModelRunSnapshot
+RunSnapshotRecord = RunSnapshot | CurrentModelRunSnapshot | CurrentModelRunSnapshotV2
 AssessmentRunRecord = AssessmentRun | AssessmentRunV2
 
 
@@ -148,7 +150,7 @@ class RunRepository:
 
     def create_current(
         self,
-        snapshot: CurrentModelRunSnapshot,
+        snapshot: CurrentModelRunSnapshot | CurrentModelRunSnapshotV2,
         *,
         current_preflight_id: str,
         requested_at: datetime,
@@ -200,9 +202,15 @@ class RunRepository:
                         "current snapshot preflight hash differs from the durable preflight"
                     )
                 try:
-                    report = CurrentModelRunPreflightReport.model_validate(
-                        decode_canonical_json(preflight["report_json"])
+                    report_payload = decode_canonical_json(preflight["report_json"])
+                    if not isinstance(report_payload, dict):
+                        raise ValueError("current preflight must be an object")
+                    report_type = (
+                        CurrentModelRunPreflightReportV2
+                        if report_payload.get("contract_version") == "0.2.0"
+                        else CurrentModelRunPreflightReport
                     )
+                    report = report_type.model_validate(report_payload)
                 except (ValueError, ValidationError) as error:
                     raise RunIntegrityError("stored current preflight JSON is invalid") from error
                 expected_refs = tuple(
@@ -617,9 +625,15 @@ class RunRepository:
         resolved_snapshot: RunSnapshotRecord = snapshot
         if link is not None:
             try:
-                current = CurrentModelRunSnapshot.model_validate(
-                    decode_canonical_json(link["current_snapshot_json"])
+                current_payload = decode_canonical_json(link["current_snapshot_json"])
+                if not isinstance(current_payload, dict):
+                    raise ValueError("current run snapshot must be an object")
+                current_type = (
+                    CurrentModelRunSnapshotV2
+                    if current_payload.get("contract_version") == "0.2.0"
+                    else CurrentModelRunSnapshot
                 )
+                current = current_type.model_validate(current_payload)
             except (ValueError, ValidationError) as error:
                 raise RunIntegrityError("stored current run snapshot JSON is invalid") from error
             current_preflight = self.database.fetchone(

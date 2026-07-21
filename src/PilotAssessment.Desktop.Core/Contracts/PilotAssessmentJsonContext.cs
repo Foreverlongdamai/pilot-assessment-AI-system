@@ -23,6 +23,8 @@ namespace PilotAssessment.Desktop.Core.Contracts;
 [JsonSerializable(typeof(AuditEvent))]
 [JsonSerializable(typeof(CurrentModelRunPreflightReport))]
 [JsonSerializable(typeof(CurrentModelRunSnapshot))]
+[JsonSerializable(typeof(BackendSourceIdentity))]
+[JsonSerializable(typeof(BackendSourceDiskStatus))]
 [JsonSerializable(typeof(AssessmentRun))]
 [JsonSerializable(typeof(AssessmentRunV2))]
 [JsonSerializable(typeof(RunEvent))]

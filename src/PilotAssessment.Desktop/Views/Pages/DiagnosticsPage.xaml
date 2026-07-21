@@ -60,6 +60,13 @@
                 Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
                 Severity="Error"
                 Title="{Binding [Diagnostics_RefreshFailed], Source={StaticResource Localization}}" />
+            <InfoBar
+                AutomationProperties.LiveSetting="Assertive"
+                IsClosable="False"
+                IsOpen="{x:Bind ViewModel.SourceRestartRequired, Mode=OneWay}"
+                Message="{x:Bind ViewModel.SourceRestartMessage, Mode=OneWay}"
+                Severity="Warning"
+                Title="{Binding [Diagnostics_SourceRestartRequired], Source={StaticResource Localization}}" />
             <Grid ColumnSpacing="18">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -72,6 +79,14 @@
                     <TextBlock Text="{x:Bind ViewModel.RuntimeStatusText, Mode=OneWay}" TextWrapping="Wrap" />
                     <TextBlock Margin="0,8,0,0" Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding [Diagnostics_ProjectRecovery], Source={StaticResource Localization}}" />
                     <TextBlock Text="{x:Bind ViewModel.RecoveryText, Mode=OneWay}" TextWrapping="Wrap" />
+                    <TextBlock Margin="0,8,0,0" Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding [Diagnostics_BackendSource], Source={StaticResource Localization}}" />
+                    <TextBox
+                        FontFamily="Consolas"
+                        IsReadOnly="True"
+                        MinHeight="170"
+                        AcceptsReturn="True"
+                        Text="{x:Bind ViewModel.BackendSourceText, Mode=OneWay}"
+                        TextWrapping="Wrap" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Spacing="8">
                     <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{Binding [Diagnostics_SchemaIdentities], Source={StaticResource Localization}}" />

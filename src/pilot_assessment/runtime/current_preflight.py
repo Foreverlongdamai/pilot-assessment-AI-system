@@ -13,10 +13,17 @@ from pilot_assessment.contracts.model_workspace import (
     ModelObjectLifecycle,
     ModelTechnicalStatus,
 )
+from pilot_assessment.contracts.project import (
+    ArtifactIdRef,
+    ArtifactOwnerKind,
+    ArtifactReference,
+)
 from pilot_assessment.contracts.run import (
     AssessmentRunV2,
     CurrentModelRunPreflightReport,
+    CurrentModelRunPreflightReportV2,
     CurrentModelRunSnapshot,
+    CurrentModelRunSnapshotV2,
     RunDiagnostic,
     RunDiagnosticSeverity,
     RunPurpose,
@@ -25,6 +32,7 @@ from pilot_assessment.contracts.run import (
 from pilot_assessment.model_library.identity import typed_content_sha256
 from pilot_assessment.model_workspace.execution import CurrentModelExecutionMaterializer
 from pilot_assessment.model_workspace.service import CurrentModelWorkspaceService
+from pilot_assessment.persistence.artifacts import ArtifactOwner, ManagedArtifactStore
 from pilot_assessment.persistence.database import (
     Clock,
     ProjectDatabase,
@@ -37,6 +45,7 @@ from pilot_assessment.runtime.repository import (
     RunRepository,
     run_snapshot_hash,
 )
+from pilot_assessment.runtime.source_provenance import BackendSourceProvenance
 
 ZERO_HASH = "0" * 64
 
@@ -67,7 +76,11 @@ def _utc_text(value: datetime) -> str:
     return value.astimezone(UTC).isoformat().replace("+00:00", "Z")
 
 
-def current_preflight_hash(report: CurrentModelRunPreflightReport) -> str:
+CurrentPreflightRecord = CurrentModelRunPreflightReport | CurrentModelRunPreflightReportV2
+CurrentSnapshotRecord = CurrentModelRunSnapshot | CurrentModelRunSnapshotV2
+
+
+def current_preflight_hash(report: CurrentPreflightRecord) -> str:
     payload = report.model_dump(mode="json")
     payload.pop("preflight_id")
     payload.pop("preflight_hash")
@@ -100,6 +113,8 @@ class CurrentRunPreflightService:
         materializer: CurrentModelExecutionMaterializer,
         legacy: RunPreflightService,
         runs: RunRepository,
+        artifacts: ManagedArtifactStore,
+        source_provenance: BackendSourceProvenance,
         *,
         clock: Clock,
     ) -> None:
@@ -108,6 +123,8 @@ class CurrentRunPreflightService:
         self.materializer = materializer
         self.legacy = legacy
         self.runs = runs
+        self.artifacts = artifacts
+        self.source_provenance = source_provenance
         self.clock = clock
 
     def prepare(
@@ -117,7 +134,7 @@ class CurrentRunPreflightService:
         scheme_id: str,
         purpose: RunPurpose,
         runtime_parameters: Mapping[str, JsonValue],
-    ) -> CurrentModelRunPreflightReport:
+    ) -> CurrentModelRunPreflightReportV2:
         scheme = self.workspace.get_scheme(scheme_id)
         materialization = self.materializer.materialize(scheme_id)
         execution = self.legacy.prepare(
@@ -140,6 +157,28 @@ class CurrentRunPreflightService:
                     location=f"/current_scheme{item.location}",
                     message=item.message,
                     details=dict(item.details),
+                )
+            )
+        source_status = self.source_provenance.disk_status()
+        if source_status.runtime_restart_required:
+            diagnostics.append(
+                RunDiagnostic(
+                    code="runtime.restart_required",
+                    severity=RunDiagnosticSeverity.ERROR,
+                    location="/backend_source",
+                    message=(
+                        "Backend source or dependency lock changed after this runtime started; "
+                        "restart the application before running."
+                    ),
+                    details={
+                        "loaded_source_tree_sha256": (
+                            source_status.loaded_identity.source_tree_sha256
+                        ),
+                        "disk_source_tree_sha256": source_status.disk_source_tree_sha256,
+                        "added": list(source_status.loaded_to_disk_changes.added),
+                        "modified": list(source_status.loaded_to_disk_changes.modified),
+                        "deleted": list(source_status.loaded_to_disk_changes.deleted),
+                    },
                 )
             )
         if scheme.lifecycle is not ModelObjectLifecycle.ACTIVE:
@@ -169,6 +208,7 @@ class CurrentRunPreflightService:
         ready = (
             scheme.technical_status is ModelTechnicalStatus.EXECUTABLE
             and execution.report.technical_disposition is TechnicalDisposition.READY
+            and not source_status.runtime_restart_required
             and not any(item.severity is RunDiagnosticSeverity.ERROR for item in ordered)
         )
         disposition = TechnicalDisposition.READY if ready else TechnicalDisposition.BLOCKED
@@ -176,7 +216,13 @@ class CurrentRunPreflightService:
         embedded_execution = execution.report
         if embedded_execution.formal_run_authorized is not formal:
             embedded_execution = None
-        provisional = CurrentModelRunPreflightReport(
+        source_snapshot_ref = None
+        if ready:
+            source_snapshot_ref = ArtifactIdRef(
+                artifact_id=f"artifact.{self.source_provenance.snapshot_sha256}",
+                sha256=self.source_provenance.snapshot_sha256,
+            )
+        provisional = CurrentModelRunPreflightReportV2(
             preflight_id="current-preflight.pending",
             session_revision_ref=execution.report.session_revision_ref,
             scheme_id=scheme.scheme_id,
@@ -188,6 +234,8 @@ class CurrentRunPreflightService:
             synthetic_data=execution.report.synthetic_data,
             diagnostics=ordered,
             execution_preflight=embedded_execution,
+            backend_source_identity=self.source_provenance.loaded_identity,
+            source_snapshot_ref=source_snapshot_ref,
             preflight_hash=ZERO_HASH,
         )
         digest = current_preflight_hash(provisional)
@@ -197,6 +245,25 @@ class CurrentRunPreflightService:
                 "preflight_hash": digest,
             }
         )
+        if report.source_snapshot_ref is not None:
+            artifact = self.artifacts.put_bytes(
+                self.source_provenance.snapshot_bytes,
+                transaction_id=f"source-snapshot.{report.source_snapshot_ref.sha256[:32]}",
+                media_type="application/zip",
+                schema_id="backend-source-snapshot-v1",
+                owner=ArtifactOwner(
+                    owner_kind=ArtifactOwnerKind.RUN_PREFLIGHT,
+                    owner_id=report.preflight_id,
+                    role="backend-source-snapshot",
+                ),
+            )
+            if (
+                artifact.artifact_id != report.source_snapshot_ref.artifact_id
+                or artifact.sha256 != report.source_snapshot_ref.sha256
+            ):
+                raise CurrentRunPreflightIntegrityError(
+                    "stored backend source snapshot identity changed"
+                )
         self._persist(
             report,
             legacy_preflight_id=execution.report.preflight_id,
@@ -204,7 +271,7 @@ class CurrentRunPreflightService:
         )
         return report
 
-    def get(self, preflight_id: str) -> CurrentModelRunPreflightReport:
+    def get(self, preflight_id: str) -> CurrentPreflightRecord:
         row = self.database.fetchone(
             "SELECT * FROM model_run_preflights_v2 WHERE current_preflight_id = ?",
             (preflight_id,),
@@ -219,14 +286,34 @@ class CurrentRunPreflightService:
         *,
         run_id: str,
         expected_scheme_revision: int,
-    ) -> CurrentModelRunSnapshot:
+    ) -> CurrentModelRunSnapshotV2:
         report = self.get(preflight_id)
+        if not isinstance(report, CurrentModelRunPreflightReportV2):
+            raise CurrentRunPreflightStaleError(
+                "legacy current-model preflight has no backend provenance; run preflight again"
+            )
         if report.technical_disposition is not TechnicalDisposition.READY:
             raise CurrentRunPreflightBlockedError(preflight_id)
         if expected_scheme_revision != report.scheme_semantic_revision:
             raise CurrentRunPreflightStaleError(
                 "expected scheme revision differs from the prepared revision"
             )
+        source_status = self.source_provenance.disk_status()
+        if source_status.runtime_restart_required:
+            raise CurrentRunPreflightStaleError(
+                "backend source changed after preflight; restart the application "
+                "and run preflight again"
+            )
+        if report.backend_source_identity != self.source_provenance.loaded_identity:
+            raise CurrentRunPreflightIntegrityError(
+                "preflight backend identity differs from the loaded runtime"
+            )
+        if report.source_snapshot_ref is None:
+            raise CurrentRunPreflightIntegrityError(
+                "ready preflight does not reference a backend source snapshot"
+            )
+        with self.artifacts.open_verified(report.source_snapshot_ref.artifact_id):
+            pass
         scheme = self.workspace.get_scheme(report.scheme_id)
         if (
             scheme.semantic_revision != report.scheme_semantic_revision
@@ -257,7 +344,7 @@ class CurrentRunPreflightService:
         if row is None:
             raise CurrentRunPreflightNotFoundError(preflight_id)
         execution = self.legacy.build_snapshot(row["legacy_preflight_id"], run_id=run_id)
-        provisional = CurrentModelRunSnapshot(
+        provisional = CurrentModelRunSnapshotV2(
             run_id=run_id,
             purpose=execution.purpose,
             session_revision_ref=execution.session_revision_ref,
@@ -269,6 +356,8 @@ class CurrentRunPreflightService:
             runtime_parameters_hash=execution.runtime_parameters_hash,
             preflight_hash=report.preflight_hash,
             execution_snapshot=execution,
+            backend_source_identity=report.backend_source_identity,
+            source_snapshot_ref=report.source_snapshot_ref,
             snapshot_hash=ZERO_HASH,
         )
         return provisional.model_copy(update={"snapshot_hash": run_snapshot_hash(provisional)})
@@ -301,11 +390,22 @@ class CurrentRunPreflightService:
             run_id=run_id,
             expected_scheme_revision=expected_scheme_revision,
         )
-        return self.runs.create_current(
+        created = self.runs.create_current(
             snapshot,
             current_preflight_id=preflight_id,
             requested_at=requested_at,
         )
+        with self.database.transaction(join_existing=True) as connection:
+            self.artifacts.add_reference_in_transaction(
+                connection,
+                ArtifactReference(
+                    owner_kind=ArtifactOwnerKind.RUN,
+                    owner_id=run_id,
+                    role="backend-source-snapshot",
+                    artifact_id=snapshot.source_snapshot_ref.artifact_id,
+                ),
+            )
+        return created
 
     def preview(
         self,
@@ -314,7 +414,7 @@ class CurrentRunPreflightService:
         scheme_id: str,
         runtime_parameters: Mapping[str, JsonValue],
         preview_id: str,
-    ) -> CurrentModelRunSnapshot:
+    ) -> CurrentModelRunSnapshotV2:
         """Freeze a read-only ephemeral preview without creating a run record."""
 
         report = self.prepare(
@@ -337,7 +437,7 @@ class CurrentRunPreflightService:
         node_id: str,
         runtime_parameters: Mapping[str, JsonValue],
         preview_id: str,
-    ) -> CurrentModelRunSnapshot:
+    ) -> CurrentModelRunSnapshotV2:
         """Freeze the containing scheme so a node editor can request its trace safely."""
 
         scheme = self.workspace.get_scheme(scheme_id)
@@ -354,7 +454,7 @@ class CurrentRunPreflightService:
 
     def _persist(
         self,
-        report: CurrentModelRunPreflightReport,
+        report: CurrentPreflightRecord,
         *,
         legacy_preflight_id: str,
         legacy_preflight_hash: str,
@@ -400,11 +500,17 @@ class CurrentRunPreflightService:
                 "current preflight could not be persisted exactly"
             ) from error
 
-    def _from_row(self, row) -> CurrentModelRunPreflightReport:
+    def _from_row(self, row) -> CurrentPreflightRecord:
         try:
-            report = CurrentModelRunPreflightReport.model_validate(
-                decode_canonical_json(row["report_json"])
+            payload = decode_canonical_json(row["report_json"])
+            if not isinstance(payload, dict):
+                raise ValueError("current preflight JSON must be an object")
+            report_type = (
+                CurrentModelRunPreflightReportV2
+                if payload.get("contract_version") == "0.2.0"
+                else CurrentModelRunPreflightReport
             )
+            report = report_type.model_validate(payload)
         except (ValueError, ValidationError) as error:
             raise CurrentRunPreflightIntegrityError(
                 "stored current preflight JSON is invalid"

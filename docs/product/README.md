@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | 产品 v0.8 portable engineering distribution；D-031–D-071 已获用户确认 |
 | 基线日期 | 2026-07-21 |
-| 产品阶段 | M1/M2/M3、M4R、M5、M6、M7、M8A 与 **M8B-0 engineering gate 已通过**。**M7 用户手工验收仍未完成，并可能继续返修；D-055 尚待实施；M8B-1/M8B-2、M8C–M8E 未完成。** starter/synthetic `formal_run_authorized=false` |
+| 产品阶段 | M1/M2/M3、M4R、M5、M6、M7、M8A、M8B-0 与 **M8B-1 engineering gate 已通过**。**M7 用户手工验收仍未完成，并可能继续返修；D-055 尚待实施；M8B-2、M8C–M8E 未完成。** starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -28,6 +28,8 @@
 2026-07-20 用户进一步授权执行既定 M8 路线并开始打包。D-062–D-065 与 M8A 正式规格已经实现：发布脚本生成 Windows x64 unpackaged self-contained 产品目录和 ZIP，包含 WinUI/.NET/Windows App SDK、私有 CPython、production dependencies 与唯一活动的完整第一方 backend source；不包含用户 project/session/result。最终 ZIP 已在仓库外解压验证自动 sidecar、visible desktop、live-source edit/restart、checksums 和零 TCP listener。M8A 仅是 engineering build；M8B–M8E、M7 最终用户验收和科学校准仍未完成。
 
 2026-07-21 用户批准 D-066–D-071 与 [M8B system-owned model library 规格](specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)。M8B-0 已按 [实施计划](plans/2026-07-21-m8b0-system-model-ownership-implementation-plan.md) 完成工程实现：current ModelNode/TaskScheme/edit session 的 owner 从单个 project 提升为每套解压软件副本的 `system/`；Model Studio 可在无 project 时工作；Project 只保存 Session、不可变 RunSnapshot/materialization、result 和 artifacts；legacy project-local 模型采用确定性、幂等、无覆盖导入。新 portable ZIP 已携带 clean starter system baseline，并完成双项目共享与旧运行快照隔离验证。精确命令、hash 与边界见 [M8B-0 Verification](reviews/2026-07-21-m8b0-system-model-ownership-verification.md)。
+
+2026-07-21 M8B-1 已按 [Source Provenance and Snapshot Plan](plans/2026-07-21-m8b1-source-provenance-and-snapshot-implementation-plan.md) 完成工程实现：sidecar 启动时冻结 loaded source、私有 Python、依赖与 operator catalog identity；运行前磁盘漂移要求重启，但 release baseline divergence 本身不阻止专家修改后的系统运行；新 RunSnapshot v0.2 保存 exact identity 和内容寻址 source snapshot artifact。Diagnostics 与 Runs 已可查看这些技术信息。fresh 命令、hash 与边界见 [M8B-1 Verification](reviews/2026-07-21-m8b1-source-provenance-and-snapshot-verification.md)。M8B-2 继续交付普通 Python operator 扩展入口、依赖工具、通用表单验证和维护手册。
 
 ## 1. 文档用途
 
@@ -67,6 +69,9 @@
 | 2.10 | [M8B System-Owned Model Library and Editable Backend Provenance Design](specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md) | 产品、专家、前后端、交付 | 当前 ownership 权威：software-copy `system/`、project/run 边界、legacy import，以及 M8B-1/2 source/operator 后续边界 |
 | 2.10.1 | [M8B-0 System Model Ownership Implementation Plan](plans/2026-07-21-m8b0-system-model-ownership-implementation-plan.md) | 开发、审查者 | 已完成：system store、无 project Model Studio、双项目共享、exact run materialization、legacy import 与 portable rebuild |
 | 2.10.2 | [M8B-0 Verification](reviews/2026-07-21-m8b0-system-model-ownership-verification.md) | 用户、交付、审查者 | focused tests、双项目快照隔离、桌面构建、仓库外 ZIP 启动、system baseline 与用户数据隔离证据 |
+| 2.10.3 | [M8B-1 Source Provenance and Snapshot Plan](plans/2026-07-21-m8b1-source-provenance-and-snapshot-implementation-plan.md) | 开发、审查者 | 已完成：loaded source/runtime/dependency/operator identity、restart boundary、RunSnapshot v0.2 与 source artifact |
+| 2.10.4 | [M8B-1 Verification](reviews/2026-07-21-m8b1-source-provenance-and-snapshot-verification.md) | 用户、交付、审查者 | focused tests、发布 baseline v2、源码修改/重启、artifact 去重与真实桌面证据 |
+| 2.10.5 | [M8B-2 Python Operator Extension Handoff Plan](plans/2026-07-21-m8b2-python-operator-extension-handoff-implementation-plan.md) | 开发、维护者、审查者 | 当前执行：普通源码扩展入口、私有依赖工具、通用参数 UI、release-copy vertical slice 与维护手册 |
 | 3 | [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) | 专家、产品、前后端 | 已实现的后端基础与历史 identity/publish 语义；冲突处由 M7 规格取代 |
 | 4 | [M5 Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) | 开发、审查者 | 已完成：inline 任务、合同冻结、O8 迁移、轻量验证与完成门 |
 | 5 | [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) | 前后端、交付、审查者 | 已实现：受管项目、SQLite、artifact、run lifecycle 与 JSON-RPC sidecar |
@@ -146,7 +151,7 @@
 
 M6 completion gate 也已关闭：受管 project/session/artifact、SQLite component/draft/run persistence、idempotency/audit、exact technical preflight、dynamic Evidence→Observation→BN pipeline、single-worker progress/cancel/recovery，以及无网络端口的 JSON-RPC/JSONL stdio sidecar 均已实现。轻量纵向闭环证明 external bundle 删除后仍可从受管副本运行，整个 project 换目录重开后 exact scheme/result/artifact 仍可回放。
 
-2026-07-17 用户确认 D-047–D-053：M7 改用完整独立节点、全局节点库、任务激活集合、默认只复制节点且复用 fixed parents、启用 parent closure、停用 parent 前级联确认、多浮动节点窗口以及 automatic immutable RunSnapshot。M7A/M7B 原工程工作区已完成。2026-07-18 的 D-056/D-057 又把原“每次 autosave 立即写正式模型”取代为 backend-managed staged edit session，并把主画布收口为五层理解投影；C# 仍只构造 typed intent 和只读投影，Python 后端负责草稿/canonical 事务与全部 Evidence/BN/CPT/run 计算。D-055 单一英文 canonical 模型内容尚待实施。M8A 已完成首个 portable engineering package；M8B–M8E 和科学验证仍未完成，starter/synthetic `formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+2026-07-17 用户确认 D-047–D-053：M7 改用完整独立节点、全局节点库、任务激活集合、默认只复制节点且复用 fixed parents、启用 parent closure、停用 parent 前级联确认、多浮动节点窗口以及 automatic immutable RunSnapshot。M7A/M7B 原工程工作区已完成。2026-07-18 的 D-056/D-057 又把原“每次 autosave 立即写正式模型”取代为 backend-managed staged edit session，并把主画布收口为五层理解投影；C# 仍只构造 typed intent 和只读投影，Python 后端负责草稿/canonical 事务与全部 Evidence/BN/CPT/run 计算。D-055 单一英文 canonical 模型内容尚待实施。M8A、M8B-0 与 M8B-1 已完成工程门；M8B-2–M8E 和科学验证仍未完成，starter/synthetic `formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
 2026-07-16 另以 repository-external 的 2,902-row 格式样例 X/U 和工程合成 I/G/EEG/ECG/pilot-camera 跑通一次完整 M6 software-test：ingestion/preflight ready、18/18 Evidence computed、exact BN inference completed、39 个结果/追踪工件成功回读且 sidecar stderr 为空。该运行继续标记 `scientific_status=not_supported`；它验证真实产品接口与计算流水线，不验证样例飞行、starter algorithms、阈值或 CPT 的科学正确性。详见 [Captured-Format Multimodal Software Demo](specs/2026-07-16-external-multimodal-session-demo-design.md)。
 

@@ -13,6 +13,7 @@ from pydantic import JsonValue
 from pilot_assessment.contracts.model_components import ComponentKind
 from pilot_assessment.contracts.run import (
     CurrentModelRunSnapshot,
+    CurrentModelRunSnapshotV2,
     RunEvent,
     RunResultEnvelope,
     RunStage,
@@ -71,7 +72,9 @@ def run_total_units(snapshot: RunSnapshotRecord) -> int:
     """Derive display progress total from the frozen dynamic execution closure."""
 
     execution = (
-        snapshot.execution_snapshot if isinstance(snapshot, CurrentModelRunSnapshot) else snapshot
+        snapshot.execution_snapshot
+        if isinstance(snapshot, (CurrentModelRunSnapshot, CurrentModelRunSnapshotV2))
+        else snapshot
     )
     evidence_count = sum(
         reference.kind is ComponentKind.EVIDENCE_VERSION

@@ -675,4 +675,19 @@
   <data name="Model_StatusRedoing" xml:space="preserve"><value>正在恢复最近一次撤销的修改…</value></data>
   <data name="Model_StatusRedone" xml:space="preserve"><value>已恢复最近一次撤销的修改。</value></data>
   <data name="Model_StatusRedoFailed" xml:space="preserve"><value>无法恢复暂存修改。</value></data>
+  <data name="Diagnostics_BackendSource" xml:space="preserve"><value>已加载的后端源码</value></data>
+  <data name="Diagnostics_SourceRestartRequired" xml:space="preserve"><value>需要重启后端</value></data>
+  <data name="Diagnostics_SourceRestartRequiredMessage" xml:space="preserve"><value>后端源码在启动后发生了变化。请保存模型编辑，关闭并重新打开应用，再开始评估。</value></data>
+  <data name="Diagnostics_SourceUnavailable" xml:space="preserve"><value>当前运行时未提供后端源码身份。</value></data>
+  <data name="Diagnostics_BaselineUnavailable" xml:space="preserve"><value>不可用（开发运行环境）</value></data>
+  <data name="Diagnostics_BaselineModified" xml:space="preserve"><value>已在本地修改</value></data>
+  <data name="Diagnostics_BaselineClean" xml:space="preserve"><value>与发布基线一致</value></data>
+  <data name="Diagnostics_SourceRoot" xml:space="preserve"><value>活动源码根目录</value></data>
+  <data name="Diagnostics_SourceTreeHash" xml:space="preserve"><value>源码树 SHA-256</value></data>
+  <data name="Diagnostics_ExecutionIdentity" xml:space="preserve"><value>执行身份</value></data>
+  <data name="Diagnostics_ReleaseBaseline" xml:space="preserve"><value>发布基线</value></data>
+  <data name="Diagnostics_Dependencies" xml:space="preserve"><value>已安装依赖</value></data>
+  <data name="Diagnostics_OperatorCatalog" xml:space="preserve"><value>Operator 目录</value></data>
+  <data name="Runs_FrozenBackendSource" xml:space="preserve"><value>已冻结的后端源码</value></data>
+  <data name="Runs_LegacySourceIdentity" xml:space="preserve"><value>这条历史运行早于后端源码溯源功能，因此没有保存源码身份。</value></data>
 </root>

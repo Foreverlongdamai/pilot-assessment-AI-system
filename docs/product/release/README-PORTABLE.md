@@ -1,6 +1,6 @@
 # Pilot Assessment System — Portable Engineering Build
 
-This directory contains the Windows x64 Pilot Assessment System. It is an M8B-0 engineering build,
+This directory contains the Windows x64 Pilot Assessment System. It is an M8B engineering build,
 not the final M8E release candidate and not a scientifically calibrated pilot-rating product.
 
 ## Start
@@ -42,8 +42,17 @@ See `backend\README-DEVELOPMENT.md` before changing source.
 ## Integrity and scientific status
 
 `manifest\checksums.sha256` records the original delivered files, while
-`manifest\system-model-baseline.json` identifies the clean starter model. Normal model edits and
-local Python edits naturally change this baseline. Preserve a clean copy or re-extract the ZIP for
+`manifest\system-model-baseline.json` identifies the clean starter model and
+`manifest\source-baseline.json` identifies the delivered first-party Python tree. Diagnostics
+shows the exact loaded source, private Python, dependency and operator-catalog identities. A local
+source difference is recorded but does not block use. If files change while the app is already
+running, new preflight is blocked only until the app is restarted so one run cannot mix old
+in-memory code with new disk bytes.
+
+Every new run stores its exact backend identity and a deterministic source snapshot in that
+project's content-addressed artifacts. The snapshot is for explanation and maintenance; the app
+never auto-executes source from a historical artifact. Normal model edits and local Python edits
+naturally change their respective baselines. Preserve a clean copy or re-extract the ZIP for
 recovery; user projects are not part of that reset.
 
 The included starter Evidence rules, thresholds, topology and CPTs are engineering defaults that

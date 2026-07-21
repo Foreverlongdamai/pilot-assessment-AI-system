@@ -84,7 +84,13 @@ public sealed record RuntimeStatusResponse(
     bool ProjectOpen,
     string? ProjectId,
     string[] ActiveRunIds,
-    string TraceId);
+    string TraceId,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    bool? SystemReady = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    string? ModelLibraryId = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    BackendSourceDiskStatus? BackendSource = null);
 
 public sealed record CapabilityCatalogResponse(
     string[] Capabilities,

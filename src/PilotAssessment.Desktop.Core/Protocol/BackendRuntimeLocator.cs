@@ -62,6 +62,7 @@ public static class BackendRuntimeLocator
                                 root,
                                 ".pilot-assessment-local",
                                 "system"),
+                            ["PILOT_ASSESSMENT_PRODUCT_ROOT"] = root,
                         });
                 }
             }
@@ -100,6 +101,7 @@ public static class BackendRuntimeLocator
                     ["PYTHONNOUSERSITE"] = "1",
                     ["PYTHONDONTWRITEBYTECODE"] = "1",
                     ["PILOT_ASSESSMENT_SYSTEM_ROOT"] = Path.Combine(root, "system"),
+                    ["PILOT_ASSESSMENT_PRODUCT_ROOT"] = root,
                 });
             return true;
         }

@@ -1,0 +1,702 @@
+{
+  "$defs": {
+    "ArtifactIdRef": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "sha256"
+      ],
+      "title": "ArtifactIdRef",
+      "type": "object"
+    },
+    "BackendSourceIdentity": {
+      "additionalProperties": false,
+      "description": "Frozen technical identity of one imported backend process.",
+      "properties": {
+        "active_source_root": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+          "title": "Active Source Root",
+          "type": "string",
+          "x-runtime-invariants": [
+            "segments are not empty, '.' or '..'",
+            "segments do not end in a dot or space",
+            "resolved files remain below the owning artifact root"
+          ]
+        },
+        "baseline_available": {
+          "title": "Baseline Available",
+          "type": "boolean"
+        },
+        "baseline_changes": {
+          "$ref": "#/$defs/SourceChangeSummary"
+        },
+        "contract_id": {
+          "const": "backend-source-identity",
+          "default": "backend-source-identity",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "contract_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "dependencies": {
+          "$ref": "#/$defs/DependencyManifestIdentity"
+        },
+        "identity_algorithm": {
+          "const": "pilot-assessment-backend-identity-v1",
+          "default": "pilot-assessment-backend-identity-v1",
+          "title": "Identity Algorithm",
+          "type": "string"
+        },
+        "identity_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Identity Sha256",
+          "type": "string"
+        },
+        "locally_modified": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Locally Modified"
+        },
+        "operator_catalog": {
+          "$ref": "#/$defs/OperatorCatalogIdentity"
+        },
+        "pyproject_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Pyproject Sha256",
+          "type": "string"
+        },
+        "python_runtime": {
+          "$ref": "#/$defs/PythonRuntimeIdentity"
+        },
+        "release_baseline_sha256": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9A-Fa-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Release Baseline Sha256"
+        },
+        "source_file_count": {
+          "minimum": 0,
+          "title": "Source File Count",
+          "type": "integer"
+        },
+        "source_tree_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Source Tree Sha256",
+          "type": "string"
+        },
+        "tree_algorithm": {
+          "const": "pilot-assessment-source-tree-v2",
+          "default": "pilot-assessment-source-tree-v2",
+          "title": "Tree Algorithm",
+          "type": "string"
+        },
+        "uv_lock_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Uv Lock Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "active_source_root",
+        "source_tree_sha256",
+        "source_file_count",
+        "release_baseline_sha256",
+        "baseline_available",
+        "locally_modified",
+        "baseline_changes",
+        "pyproject_sha256",
+        "uv_lock_sha256",
+        "python_runtime",
+        "dependencies",
+        "operator_catalog",
+        "identity_sha256"
+      ],
+      "title": "BackendSourceIdentity",
+      "type": "object"
+    },
+    "ComponentKind": {
+      "enum": [
+        "evidence_concept",
+        "evidence_version",
+        "bn_node_concept",
+        "bn_node_version",
+        "evidence_binding_version",
+        "cpt_version",
+        "task_profile_version",
+        "coverage_reporting_policy_version",
+        "layout_version",
+        "assessment_scheme_version",
+        "source_descriptor"
+      ],
+      "title": "ComponentKind",
+      "type": "string"
+    },
+    "DependencyManifestIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "manifest_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Manifest Sha256",
+          "type": "string"
+        },
+        "package_count": {
+          "minimum": 0,
+          "title": "Package Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "package_count",
+        "manifest_sha256"
+      ],
+      "title": "DependencyManifestIdentity",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "ModelNodeKind": {
+      "enum": [
+        "raw_input",
+        "evidence",
+        "bn"
+      ],
+      "title": "ModelNodeKind",
+      "type": "string"
+    },
+    "ModelNodeSnapshotRef": {
+      "additionalProperties": false,
+      "description": "Exact current-node identity used by current-model preflight.",
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "node_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_kind": {
+          "$ref": "#/$defs/ModelNodeKind"
+        },
+        "semantic_revision": {
+          "minimum": 0,
+          "title": "Semantic Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "node_id",
+        "node_kind",
+        "semantic_revision",
+        "content_hash"
+      ],
+      "title": "ModelNodeSnapshotRef",
+      "type": "object"
+    },
+    "OperatorCatalogIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "catalog_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Catalog Sha256",
+          "type": "string"
+        },
+        "operator_count": {
+          "minimum": 0,
+          "title": "Operator Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "operator_count",
+        "catalog_sha256"
+      ],
+      "title": "OperatorCatalogIdentity",
+      "type": "object"
+    },
+    "PinnedComponentRef": {
+      "additionalProperties": false,
+      "description": "An external replay pin binding an exact ID to its canonical content.",
+      "properties": {
+        "content_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Content Hash",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ComponentKind"
+        },
+        "version_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Version Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "version_id",
+        "content_hash"
+      ],
+      "title": "PinnedComponentRef",
+      "type": "object"
+    },
+    "PythonRuntimeIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "executable_name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Executable Name",
+          "type": "string"
+        },
+        "executable_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Executable Sha256",
+          "type": "string"
+        },
+        "identity_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Identity Sha256",
+          "type": "string"
+        },
+        "implementation": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Implementation",
+          "type": "string"
+        },
+        "private_runtime": {
+          "title": "Private Runtime",
+          "type": "boolean"
+        },
+        "version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "implementation",
+        "version",
+        "executable_name",
+        "executable_sha256",
+        "private_runtime",
+        "identity_sha256"
+      ],
+      "title": "PythonRuntimeIdentity",
+      "type": "object"
+    },
+    "RunDiagnostic": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "details": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Details",
+          "type": "object"
+        },
+        "location": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "pattern": "^/",
+          "title": "Location",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/RunDiagnosticSeverity"
+        }
+      },
+      "required": [
+        "code",
+        "severity",
+        "location",
+        "message",
+        "details"
+      ],
+      "title": "RunDiagnostic",
+      "type": "object"
+    },
+    "RunDiagnosticSeverity": {
+      "enum": [
+        "info",
+        "warning",
+        "error"
+      ],
+      "title": "RunDiagnosticSeverity",
+      "type": "string"
+    },
+    "RunPreflightReport": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_id": {
+          "const": "run-preflight-report",
+          "default": "run-preflight-report",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "contract_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "diagnostics": {
+          "items": {
+            "$ref": "#/$defs/RunDiagnostic"
+          },
+          "title": "Diagnostics",
+          "type": "array"
+        },
+        "formal_run_authorized": {
+          "title": "Formal Run Authorized",
+          "type": "boolean"
+        },
+        "locked_component_refs": {
+          "items": {
+            "$ref": "#/$defs/PinnedComponentRef"
+          },
+          "title": "Locked Component Refs",
+          "type": "array"
+        },
+        "preflight_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Preflight Hash",
+          "type": "string"
+        },
+        "preflight_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Preflight Id",
+          "type": "string"
+        },
+        "scheme_ref": {
+          "$ref": "#/$defs/PinnedComponentRef"
+        },
+        "session_revision_ref": {
+          "$ref": "#/$defs/SessionRevisionRef"
+        },
+        "synthetic_data": {
+          "title": "Synthetic Data",
+          "type": "boolean"
+        },
+        "technical_disposition": {
+          "$ref": "#/$defs/TechnicalDisposition"
+        }
+      },
+      "required": [
+        "preflight_id",
+        "session_revision_ref",
+        "scheme_ref",
+        "technical_disposition",
+        "formal_run_authorized",
+        "synthetic_data",
+        "locked_component_refs",
+        "diagnostics",
+        "preflight_hash"
+      ],
+      "title": "RunPreflightReport",
+      "type": "object"
+    },
+    "SessionRevisionRef": {
+      "additionalProperties": false,
+      "properties": {
+        "bundle_root_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Bundle Root Hash",
+          "type": "string"
+        },
+        "session_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "session_revision_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "title": "Session Revision Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id",
+        "session_revision_id",
+        "bundle_root_hash"
+      ],
+      "title": "SessionRevisionRef",
+      "type": "object"
+    },
+    "SourceChangeSummary": {
+      "additionalProperties": false,
+      "description": "Difference between a loaded tree and a reference tree.",
+      "properties": {
+        "added": {
+          "default": [],
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+            "type": "string",
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Added",
+          "type": "array"
+        },
+        "deleted": {
+          "default": [],
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+            "type": "string",
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Deleted",
+          "type": "array"
+        },
+        "modified": {
+          "default": [],
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+            "type": "string",
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Modified",
+          "type": "array"
+        }
+      },
+      "title": "SourceChangeSummary",
+      "type": "object"
+    },
+    "TechnicalDisposition": {
+      "enum": [
+        "ready",
+        "blocked"
+      ],
+      "title": "TechnicalDisposition",
+      "type": "string"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:current-model-run-preflight-report:0.2.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Current-model preflight carrying the process-frozen Python backend identity.",
+  "properties": {
+    "active_node_refs": {
+      "items": {
+        "$ref": "#/$defs/ModelNodeSnapshotRef"
+      },
+      "title": "Active Node Refs",
+      "type": "array"
+    },
+    "backend_source_identity": {
+      "$ref": "#/$defs/BackendSourceIdentity"
+    },
+    "contract_id": {
+      "const": "current-model-run-preflight-report",
+      "default": "current-model-run-preflight-report",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.2.0",
+      "default": "0.2.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "diagnostics": {
+      "items": {
+        "$ref": "#/$defs/RunDiagnostic"
+      },
+      "title": "Diagnostics",
+      "type": "array"
+    },
+    "execution_preflight": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RunPreflightReport"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "formal_run_authorized": {
+      "title": "Formal Run Authorized",
+      "type": "boolean"
+    },
+    "preflight_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Preflight Hash",
+      "type": "string"
+    },
+    "preflight_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Preflight Id",
+      "type": "string"
+    },
+    "scheme_content_hash": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Scheme Content Hash",
+      "type": "string"
+    },
+    "scheme_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Scheme Id",
+      "type": "string"
+    },
+    "scheme_semantic_revision": {
+      "minimum": 0,
+      "title": "Scheme Semantic Revision",
+      "type": "integer"
+    },
+    "session_revision_ref": {
+      "$ref": "#/$defs/SessionRevisionRef"
+    },
+    "source_snapshot_ref": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ArtifactIdRef"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "synthetic_data": {
+      "title": "Synthetic Data",
+      "type": "boolean"
+    },
+    "technical_disposition": {
+      "$ref": "#/$defs/TechnicalDisposition"
+    }
+  },
+  "required": [
+    "preflight_id",
+    "session_revision_ref",
+    "scheme_id",
+    "scheme_semantic_revision",
+    "scheme_content_hash",
+    "active_node_refs",
+    "technical_disposition",
+    "formal_run_authorized",
+    "synthetic_data",
+    "diagnostics",
+    "execution_preflight",
+    "preflight_hash",
+    "backend_source_identity",
+    "source_snapshot_ref"
+  ],
+  "title": "Pilot Assessment Current Model Run Preflight Report 0.2.0",
+  "type": "object",
+  "x-contract-version": "0.2.0",
+  "x-runtime-invariants": [
+    "ready preflight requires an exact backend source identity and snapshot reference",
+    "loaded-to-disk source drift blocks only until the runtime restarts"
+  ]
+}

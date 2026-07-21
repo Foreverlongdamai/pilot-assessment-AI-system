@@ -34,6 +34,7 @@ from pilot_assessment.contracts.model_workspace import (
     TaskScheme,
 )
 from pilot_assessment.contracts.project import ArtifactIdRef, SessionRevisionRef
+from pilot_assessment.contracts.source_provenance import BackendSourceIdentity
 
 HumanMessage = Annotated[str, StringConstraints(min_length=1, max_length=2000)]
 JsonPointer = Annotated[str, StringConstraints(min_length=1, max_length=2048, pattern=r"^/")]
@@ -214,6 +215,27 @@ class CurrentModelRunPreflightReport(StrictContractModel):
         return self
 
 
+class CurrentModelRunPreflightReportV2(CurrentModelRunPreflightReport):
+    """Current-model preflight carrying the process-frozen Python backend identity."""
+
+    contract_version: Literal["0.2.0"] = "0.2.0"
+    backend_source_identity: BackendSourceIdentity
+    source_snapshot_ref: ArtifactIdRef | None
+
+    @model_validator(mode="after")
+    def validate_source_provenance(self) -> Self:
+        if (
+            self.technical_disposition is TechnicalDisposition.READY
+            and self.source_snapshot_ref is None
+        ):
+            raise ValueError("ready current preflight requires a backend source snapshot")
+        if self.source_snapshot_ref is not None and (
+            self.source_snapshot_ref.artifact_id != f"artifact.{self.source_snapshot_ref.sha256}"
+        ):
+            raise ValueError("source snapshot artifact ID must match its SHA-256")
+        return self
+
+
 class RunSnapshot(StrictContractModel):
     contract_id: Literal["run-snapshot"] = "run-snapshot"
     contract_version: Literal["0.1.0"] = "0.1.0"
@@ -313,6 +335,20 @@ class CurrentModelRunSnapshot(StrictContractModel):
         return self
 
 
+class CurrentModelRunSnapshotV2(CurrentModelRunSnapshot):
+    """Current-model run snapshot with immutable Python backend provenance."""
+
+    contract_version: Literal["0.2.0"] = "0.2.0"
+    backend_source_identity: BackendSourceIdentity
+    source_snapshot_ref: ArtifactIdRef
+
+    @model_validator(mode="after")
+    def validate_source_snapshot(self) -> Self:
+        if self.source_snapshot_ref.artifact_id != f"artifact.{self.source_snapshot_ref.sha256}":
+            raise ValueError("source snapshot artifact ID must match its SHA-256")
+        return self
+
+
 class AssessmentRun(StrictContractModel):
     contract_id: Literal["assessment-run"] = "assessment-run"
     contract_version: Literal["0.1.0"] = "0.1.0"
@@ -386,7 +422,7 @@ class AssessmentRunV2(StrictContractModel):
     contract_id: Literal["assessment-run"] = "assessment-run"
     contract_version: Literal["0.2.0"] = "0.2.0"
     run_id: StableId
-    snapshot: CurrentModelRunSnapshot
+    snapshot: CurrentModelRunSnapshot | CurrentModelRunSnapshotV2
     state: RunState
     stage: RunStage
     progress_sequence: NonNegativeInt
@@ -525,7 +561,9 @@ __all__ = [
     "AssessmentRun",
     "AssessmentRunV2",
     "CurrentModelRunPreflightReport",
+    "CurrentModelRunPreflightReportV2",
     "CurrentModelRunSnapshot",
+    "CurrentModelRunSnapshotV2",
     "ExecutableIdentity",
     "ModelNodeSnapshotRef",
     "RunDiagnostic",

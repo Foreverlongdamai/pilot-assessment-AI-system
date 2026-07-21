@@ -615,25 +615,36 @@ def _write_sbom(
 
 def _source_baseline(package_root: Path) -> dict[str, Any]:
     source_root = package_root / "backend" / "src" / "pilot_assessment"
-    files = [
-        {
-            "path": path.relative_to(package_root).as_posix(),
-            "sha256": _sha256(path),
-            "bytes": path.stat().st_size,
-        }
-        for path in sorted(source_root.rglob("*"))
-        if path.is_file()
-    ]
+    candidates = [path for path in source_root.rglob("*") if path.is_file()]
+    candidates.sort(key=lambda path: path.relative_to(source_root).as_posix().casefold())
+    files: list[dict[str, Any]] = []
     aggregate = hashlib.sha256()
-    for item in files:
-        aggregate.update(item["path"].encode("utf-8"))
-        aggregate.update(b"\0")
-        aggregate.update(item["sha256"].encode("ascii"))
-        aggregate.update(b"\n")
+    aggregate.update(b"pilot-assessment-source-tree-v2\0")
+    seen: set[str] = set()
+    for path in candidates:
+        relative = path.relative_to(source_root).as_posix().casefold()
+        if relative in seen:
+            raise ReleaseBuildError(f"case-insensitive source path collision: {relative}")
+        seen.add(relative)
+        payload = path.read_bytes()
+        path_bytes = relative.encode("utf-8")
+        aggregate.update(len(path_bytes).to_bytes(8, "big"))
+        aggregate.update(path_bytes)
+        aggregate.update(len(payload).to_bytes(8, "big"))
+        aggregate.update(payload)
+        files.append(
+            {
+                "path": f"backend/src/pilot_assessment/{relative}",
+                "sha256": hashlib.sha256(payload).hexdigest(),
+                "bytes": len(payload),
+            }
+        )
     return {
-        "schema_version": "pilot-assessment-source-baseline-v1",
+        "schema_version": "pilot-assessment-source-baseline-v2",
         "active_source_root": "backend/src/pilot_assessment",
         "policy": "single-active-first-party-python-tree",
+        "tree_algorithm": "pilot-assessment-source-tree-v2",
+        "tree_sha256": aggregate.hexdigest(),
         "aggregate_sha256": aggregate.hexdigest(),
         "file_count": len(files),
         "files": files,
@@ -691,7 +702,7 @@ def _write_manifests(
         "schema_version": "pilot-assessment-release-manifest-v1",
         "product": "Pilot Assessment System",
         "product_version": product_version,
-        "build_kind": "m8b0-engineering",
+        "build_kind": "m8b-source-provenance-engineering",
         "built_at_utc": built_at,
         "target": {
             "operating_system": "windows",

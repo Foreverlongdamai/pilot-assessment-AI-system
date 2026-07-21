@@ -77,6 +77,9 @@ public partial class RunsViewModel : ObservableObject
     public partial string FrozenSnapshotText { get; private set; } = string.Empty;
 
     [ObservableProperty]
+    public partial string FrozenSourceText { get; private set; } = string.Empty;
+
+    [ObservableProperty]
     public partial string ProgressText { get; private set; } = string.Empty;
 
     [ObservableProperty]
@@ -434,6 +437,7 @@ public partial class RunsViewModel : ObservableObject
         if (run is null)
         {
             FrozenSnapshotText = L("Runs_NoFrozenSnapshot", "No frozen run snapshot selected.");
+            FrozenSourceText = string.Empty;
             ProgressText = L("Runs_Idle", "Idle");
             ProgressValue = 0;
             IsProgressIndeterminate = false;
@@ -453,6 +457,16 @@ public partial class RunsViewModel : ObservableObject
 
         FrozenSnapshotText =
             $"{run.RunId} · snapshot {run.Snapshot.SnapshotHash} · scheme rev {run.Snapshot.Scheme.SemanticRevision} · {run.Snapshot.ActiveNodes.Length} nodes";
+        FrozenSourceText = run.Snapshot.BackendSourceIdentity is null
+            ? L(
+                "Runs_LegacySourceIdentity",
+                "This historical run predates backend source provenance.")
+            : string.Join(
+                Environment.NewLine,
+                $"identity: {run.Snapshot.BackendSourceIdentity.IdentitySha256}",
+                $"source tree: {run.Snapshot.BackendSourceIdentity.SourceTreeSha256}",
+                $"operator catalog: {run.Snapshot.BackendSourceIdentity.OperatorCatalog.CatalogSha256}",
+                $"artifact: {run.Snapshot.SourceSnapshotRef?.ArtifactId ?? "—"}");
         ProgressValue = _workspace.TotalUnits > 0
             ? 100.0 * _workspace.CompletedUnits / _workspace.TotalUnits
             : run.State is RunState.Completed ? 100 : 0;

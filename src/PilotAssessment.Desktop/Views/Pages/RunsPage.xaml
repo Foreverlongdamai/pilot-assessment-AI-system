@@ -138,6 +138,15 @@
                     <StackPanel Spacing="12">
                         <TextBlock AutomationProperties.HeadingLevel="Level2" Style="{ThemeResource SubtitleTextBlockStyle}" Text="{Binding [Runs_FrozenSnapshot], Source={StaticResource Localization}}" />
                         <TextBlock FontFamily="Consolas" Text="{x:Bind ViewModel.FrozenSnapshotText, Mode=OneWay}" TextWrapping="Wrap" />
+                        <Expander Header="{Binding [Runs_FrozenBackendSource], Source={StaticResource Localization}}" IsExpanded="False">
+                            <TextBox
+                                FontFamily="Consolas"
+                                IsReadOnly="True"
+                                MinHeight="120"
+                                AcceptsReturn="True"
+                                Text="{x:Bind ViewModel.FrozenSourceText, Mode=OneWay}"
+                                TextWrapping="Wrap" />
+                        </Expander>
                         <TextBlock FontWeight="SemiBold" Text="{x:Bind ViewModel.ProgressText, Mode=OneWay}" TextWrapping="Wrap" />
                         <ProgressBar
                             AutomationProperties.LiveSetting="Polite"

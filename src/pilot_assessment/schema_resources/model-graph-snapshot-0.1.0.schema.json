@@ -1890,8 +1890,8 @@
       "type": "string"
     },
     "contract_version": {
-      "const": "0.1.0",
-      "default": "0.1.0",
+      "const": "0.2.0",
+      "default": "0.2.0",
       "title": "Contract Version",
       "type": "string"
     },
@@ -1914,6 +1914,13 @@
       "title": "Graph Hash",
       "type": "string"
     },
+    "model_library_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "title": "Model Library Id",
+      "type": "string"
+    },
     "nodes": {
       "items": {
         "$ref": "#/$defs/ModelNode"
@@ -1921,19 +1928,12 @@
       "title": "Nodes",
       "type": "array"
     },
-    "project_id": {
-      "maxLength": 128,
-      "minLength": 1,
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
-      "title": "Project Id",
-      "type": "string"
-    },
     "scheme": {
       "$ref": "#/$defs/TaskScheme"
     }
   },
   "required": [
-    "project_id",
+    "model_library_id",
     "scheme",
     "nodes",
     "edges",

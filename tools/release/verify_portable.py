@@ -294,14 +294,31 @@ def _verify_source_baseline(root: Path) -> int:
     if not isinstance(expected_files, list):
         raise PortableVerificationError("source baseline files must be a list")
     source_root = root / expected_root
-    actual = {
-        path.relative_to(root).as_posix(): _sha256(path)
-        for path in source_root.rglob("*")
-        if path.is_file()
-    }
-    recorded = {item["path"]: item["sha256"] for item in expected_files}
+    candidates = [path for path in source_root.rglob("*") if path.is_file()]
+    candidates.sort(key=lambda path: path.relative_to(source_root).as_posix().casefold())
+    actual: dict[str, str] = {}
+    digest = hashlib.sha256()
+    digest.update(b"pilot-assessment-source-tree-v2\0")
+    for path in candidates:
+        relative = path.relative_to(source_root).as_posix().casefold()
+        logical = f"backend/src/pilot_assessment/{relative}"
+        if logical in actual:
+            raise PortableVerificationError("live backend has a case-insensitive path collision")
+        payload = path.read_bytes()
+        path_bytes = relative.encode("utf-8")
+        digest.update(len(path_bytes).to_bytes(8, "big"))
+        digest.update(path_bytes)
+        digest.update(len(payload).to_bytes(8, "big"))
+        digest.update(payload)
+        actual[logical] = hashlib.sha256(payload).hexdigest()
+    recorded = {str(item["path"]).casefold(): item["sha256"] for item in expected_files}
     if actual != recorded:
         raise PortableVerificationError("live backend source differs from source-baseline.json")
+    expected_tree_hash = baseline.get("tree_sha256") or baseline.get("aggregate_sha256")
+    if baseline.get("tree_algorithm") != "pilot-assessment-source-tree-v2":
+        raise PortableVerificationError("source baseline uses an unsupported tree algorithm")
+    if digest.hexdigest() != expected_tree_hash:
+        raise PortableVerificationError("live backend tree hash differs from source baseline")
     return len(actual)
 
 
@@ -369,7 +386,7 @@ def _run_private_import(root: Path) -> dict[str, Any]:
 
 def _sidecar_roundtrip(root: Path) -> dict[str, Any]:
     python = root / "runtime" / "python" / "python.exe"
-    with tempfile.TemporaryDirectory(prefix="pilot-assessment-m8b0-projects-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="pilot-assessment-m8b-projects-") as temporary:
         project_root = Path(temporary)
         requests = [
             {
@@ -379,7 +396,7 @@ def _sidecar_roundtrip(root: Path) -> dict[str, Any]:
                 "params": {
                     "protocol_version": "1.0",
                     "supported_protocols": ["1.0"],
-                    "client": {"name": "m8b0-portable-verifier", "version": "0.1.0"},
+                    "client": {"name": "m8b-portable-verifier", "version": "0.1.0"},
                 },
             },
             {"jsonrpc": "2.0", "id": "status-before", "method": "runtime.status"},
@@ -461,6 +478,14 @@ def _sidecar_roundtrip(root: Path) -> dict[str, Any]:
             raise PortableVerificationError(f"sidecar handshake is not ready: {hello}")
         if not status_before.get("system_ready") or status_before.get("project_open"):
             raise PortableVerificationError("system model is not ready without a project")
+        backend_source = status_before.get("backend_source")
+        if not isinstance(backend_source, dict):
+            raise PortableVerificationError("runtime status omitted backend source provenance")
+        loaded_source = backend_source.get("loaded_identity")
+        if not isinstance(loaded_source, dict) or not loaded_source.get("baseline_available"):
+            raise PortableVerificationError("portable backend did not load its release baseline")
+        if backend_source.get("runtime_restart_required"):
+            raise PortableVerificationError("fresh portable backend unexpectedly requires restart")
         if status_after.get("model_library_id") != status_before.get("model_library_id"):
             raise PortableVerificationError("system model identity changed across projects")
         schemes_before = by_id["schemes-before"]["result"]["schemes"]
@@ -492,23 +517,30 @@ def _sidecar_roundtrip(root: Path) -> dict[str, Any]:
             "created_project_count": len(project_ids),
             "stderr": stderr.strip(),
             "stdout_lines": len(lines),
+            "backend_source": backend_source,
         }
 
 
 def _verify_editable_source(root: Path) -> str:
     dispatcher = root / "backend" / "src" / "pilot_assessment" / "sidecar" / "dispatcher.py"
     original = dispatcher.read_bytes()
-    marker = "0.1.0+m8b0-live-source-smoke"
+    marker = "0.1.0+m8b-live-source-smoke"
     old = b'backend_version: str = "0.1.0"'
     new = f'backend_version: str = "{marker}"'.encode()
     if original.count(old) != 1:
         raise PortableVerificationError("editable-source marker target is not unique")
     try:
         dispatcher.write_bytes(original.replace(old, new))
-        observed = _sidecar_roundtrip(root)["hello"].get("backend_version")
+        edited_roundtrip = _sidecar_roundtrip(root)
+        observed = edited_roundtrip["hello"].get("backend_version")
         if observed != marker:
             raise PortableVerificationError(
                 f"sidecar did not load edited live source: observed {observed!r}"
+            )
+        edited_identity = edited_roundtrip["backend_source"]["loaded_identity"]
+        if edited_identity.get("locally_modified") is not True:
+            raise PortableVerificationError(
+                "restarted sidecar did not report the edited source as locally modified"
             )
     finally:
         dispatcher.write_bytes(original)
@@ -715,10 +747,10 @@ def main() -> int:
             desktop_timeout=args.desktop_timeout,
         )
     except (OSError, ValueError, json.JSONDecodeError, subprocess.SubprocessError) as error:
-        print(f"M8B-0 portable verification failed: {error}", file=sys.stderr)
+        print(f"M8B portable verification failed: {error}", file=sys.stderr)
         return 1
     except PortableVerificationError as error:
-        print(f"M8B-0 portable verification failed: {error}", file=sys.stderr)
+        print(f"M8B portable verification failed: {error}", file=sys.stderr)
         return 1
     print(json.dumps(result, indent=2, ensure_ascii=False))
     return 0

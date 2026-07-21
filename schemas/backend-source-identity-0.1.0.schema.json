@@ -1,0 +1,295 @@
+{
+  "$defs": {
+    "DependencyManifestIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "manifest_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Manifest Sha256",
+          "type": "string"
+        },
+        "package_count": {
+          "minimum": 0,
+          "title": "Package Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "package_count",
+        "manifest_sha256"
+      ],
+      "title": "DependencyManifestIdentity",
+      "type": "object"
+    },
+    "OperatorCatalogIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "catalog_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Catalog Sha256",
+          "type": "string"
+        },
+        "operator_count": {
+          "minimum": 0,
+          "title": "Operator Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "operator_count",
+        "catalog_sha256"
+      ],
+      "title": "OperatorCatalogIdentity",
+      "type": "object"
+    },
+    "PythonRuntimeIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "executable_name": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Executable Name",
+          "type": "string"
+        },
+        "executable_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Executable Sha256",
+          "type": "string"
+        },
+        "identity_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "title": "Identity Sha256",
+          "type": "string"
+        },
+        "implementation": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Implementation",
+          "type": "string"
+        },
+        "private_runtime": {
+          "title": "Private Runtime",
+          "type": "boolean"
+        },
+        "version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "implementation",
+        "version",
+        "executable_name",
+        "executable_sha256",
+        "private_runtime",
+        "identity_sha256"
+      ],
+      "title": "PythonRuntimeIdentity",
+      "type": "object"
+    },
+    "SourceChangeSummary": {
+      "additionalProperties": false,
+      "description": "Difference between a loaded tree and a reference tree.",
+      "properties": {
+        "added": {
+          "default": [],
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+            "type": "string",
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Added",
+          "type": "array"
+        },
+        "deleted": {
+          "default": [],
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+            "type": "string",
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Deleted",
+          "type": "array"
+        },
+        "modified": {
+          "default": [],
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+            "type": "string",
+            "x-runtime-invariants": [
+              "segments are not empty, '.' or '..'",
+              "segments do not end in a dot or space",
+              "resolved files remain below the owning artifact root"
+            ]
+          },
+          "title": "Modified",
+          "type": "array"
+        }
+      },
+      "title": "SourceChangeSummary",
+      "type": "object"
+    }
+  },
+  "$id": "urn:cranfield:pilot-assessment:schema:backend-source-identity:0.1.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Frozen technical identity of one imported backend process.",
+  "properties": {
+    "active_source_root": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)[^/]*[. ](?:/|$))[^/\\\\:\\x00]+(?:/[^/\\\\:\\x00]+)*$",
+      "title": "Active Source Root",
+      "type": "string",
+      "x-runtime-invariants": [
+        "segments are not empty, '.' or '..'",
+        "segments do not end in a dot or space",
+        "resolved files remain below the owning artifact root"
+      ]
+    },
+    "baseline_available": {
+      "title": "Baseline Available",
+      "type": "boolean"
+    },
+    "baseline_changes": {
+      "$ref": "#/$defs/SourceChangeSummary"
+    },
+    "contract_id": {
+      "const": "backend-source-identity",
+      "default": "backend-source-identity",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "dependencies": {
+      "$ref": "#/$defs/DependencyManifestIdentity"
+    },
+    "identity_algorithm": {
+      "const": "pilot-assessment-backend-identity-v1",
+      "default": "pilot-assessment-backend-identity-v1",
+      "title": "Identity Algorithm",
+      "type": "string"
+    },
+    "identity_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Identity Sha256",
+      "type": "string"
+    },
+    "locally_modified": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Locally Modified"
+    },
+    "operator_catalog": {
+      "$ref": "#/$defs/OperatorCatalogIdentity"
+    },
+    "pyproject_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Pyproject Sha256",
+      "type": "string"
+    },
+    "python_runtime": {
+      "$ref": "#/$defs/PythonRuntimeIdentity"
+    },
+    "release_baseline_sha256": {
+      "anyOf": [
+        {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9A-Fa-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Release Baseline Sha256"
+    },
+    "source_file_count": {
+      "minimum": 0,
+      "title": "Source File Count",
+      "type": "integer"
+    },
+    "source_tree_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Source Tree Sha256",
+      "type": "string"
+    },
+    "tree_algorithm": {
+      "const": "pilot-assessment-source-tree-v2",
+      "default": "pilot-assessment-source-tree-v2",
+      "title": "Tree Algorithm",
+      "type": "string"
+    },
+    "uv_lock_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9A-Fa-f]{64}$",
+      "title": "Uv Lock Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "active_source_root",
+    "source_tree_sha256",
+    "source_file_count",
+    "release_baseline_sha256",
+    "baseline_available",
+    "locally_modified",
+    "baseline_changes",
+    "pyproject_sha256",
+    "uv_lock_sha256",
+    "python_runtime",
+    "dependencies",
+    "operator_catalog",
+    "identity_sha256"
+  ],
+  "title": "Pilot Assessment Backend Source Identity 0.1.0",
+  "type": "object",
+  "x-contract-version": "0.1.0",
+  "x-runtime-invariants": [
+    "identity records execution provenance and does not claim scientific validity",
+    "absolute paths, user data and third-party package bytes are excluded"
+  ]
+}

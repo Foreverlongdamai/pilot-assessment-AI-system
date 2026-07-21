@@ -37,6 +37,7 @@ from pilot_assessment.persistence.model_repository import SqliteComponentLibrary
 from pilot_assessment.persistence.model_workspace_repository import SqliteModelWorkspaceRepository
 from pilot_assessment.persistence.system import SystemStore
 from pilot_assessment.persistence.transactions import IdempotencyStore
+from pilot_assessment.runtime.source_provenance import BackendSourceProvenance
 from pilot_assessment.runtime.sources import (
     RuntimeSourceProviderRegistry,
     register_hover_source_providers,
@@ -103,6 +104,7 @@ class SystemApplication:
     model_edits: ModelEditSessionManager
     legacy_model_importer: LegacyProjectModelImporter
     operator_registry: OperatorRegistry
+    source_provenance: BackendSourceProvenance
     source_provider_registry: RuntimeSourceProviderRegistry
     source_catalog: SourceCatalog
     audit: AuditRepository
@@ -123,6 +125,7 @@ class SystemApplication:
         clock: Clock = _utc_now,
         product_version: str = PRODUCT_VERSION,
         model_library_id: str | None = None,
+        product_root: str | Path | None = None,
     ) -> Self:
         profile = load_hover_starter_package()
         store = SystemStore.open_or_create(
@@ -134,7 +137,12 @@ class SystemApplication:
             clock=clock,
         )
         try:
-            return cls._compose(store, profile=profile, clock=clock)
+            return cls._compose(
+                store,
+                profile=profile,
+                clock=clock,
+                product_root=product_root,
+            )
         except BaseException:
             store.close()
             raise
@@ -146,6 +154,7 @@ class SystemApplication:
         *,
         profile: LoadedModelProfile,
         clock: Clock,
+        product_root: str | Path | None,
     ) -> Self:
         database = store.database
         audit = AuditRepository(database)
@@ -156,6 +165,10 @@ class SystemApplication:
 
         operator_registry = OperatorRegistry()
         register_builtin_operators(operator_registry)
+        source_provenance = BackendSourceProvenance.capture(
+            operator_registry,
+            product_root=product_root,
+        )
         source_provider_registry = RuntimeSourceProviderRegistry()
         register_hover_source_providers(source_provider_registry)
         drafts = SqliteSchemeDraftRepository(database, clock=clock)
@@ -212,6 +225,7 @@ class SystemApplication:
             model_edits=model_edits,
             legacy_model_importer=legacy_model_importer,
             operator_registry=operator_registry,
+            source_provenance=source_provenance,
             source_provider_registry=source_provider_registry,
             source_catalog=source_catalog,
             audit=audit,

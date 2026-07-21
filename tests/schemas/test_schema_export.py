@@ -296,12 +296,36 @@ M7_SCHEMA_METADATA = {
     ),
 }
 
+M8B_SCHEMA_METADATA = {
+    "backend-source-identity-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:backend-source-identity:0.1.0",
+        "Pilot Assessment Backend Source Identity 0.1.0",
+        "0.1.0",
+    ),
+    "backend-source-snapshot-manifest-0.1.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:backend-source-snapshot-manifest:0.1.0",
+        "Pilot Assessment Backend Source Snapshot Manifest 0.1.0",
+        "0.1.0",
+    ),
+    "current-model-run-preflight-report-0.2.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:current-model-run-preflight-report:0.2.0",
+        "Pilot Assessment Current Model Run Preflight Report 0.2.0",
+        "0.2.0",
+    ),
+    "current-model-run-snapshot-0.2.0.schema.json": (
+        "urn:cranfield:pilot-assessment:schema:current-model-run-snapshot:0.2.0",
+        "Pilot Assessment Current Model Run Snapshot 0.2.0",
+        "0.2.0",
+    ),
+}
+
 ALL_SCHEMA_NAMES = (
     frozenset(LEGACY_SCHEMA_SHA256)
     | frozenset(M4_SCHEMA_METADATA)
     | frozenset(M5_SCHEMA_METADATA)
     | frozenset(M6_SCHEMA_METADATA)
     | frozenset(M7_SCHEMA_METADATA)
+    | frozenset(M8B_SCHEMA_METADATA)
 )
 QUALITY_GATE_FIELD_NAMES = {
     "quality",
@@ -576,6 +600,19 @@ def test_m7_schema_ids_titles_and_contract_versions_are_frozen() -> None:
     rendered = render_schemas()
 
     for name, (schema_id, title, contract_version) in M7_SCHEMA_METADATA.items():
+        schema = json.loads(rendered[name])
+        assert schema["$schema"] == SCHEMA_DIALECT
+        assert schema["$id"] == schema_id
+        assert schema["title"] == title
+        assert schema["x-contract-version"] == contract_version
+        assert schema["x-runtime-invariants"]
+        Draft202012Validator.check_schema(schema)
+
+
+def test_m8b_schema_ids_titles_and_contract_versions_are_frozen() -> None:
+    rendered = render_schemas()
+
+    for name, (schema_id, title, contract_version) in M8B_SCHEMA_METADATA.items():
         schema = json.loads(rendered[name])
         assert schema["$schema"] == SCHEMA_DIALECT
         assert schema["$id"] == schema_id

@@ -1136,6 +1136,7 @@ class SidecarMethods:
 
     def _runtime_status(self, _params, _context) -> RpcResult:
         app = self.application
+        backend_source = self.system.source_provenance.disk_status()
         active_runs = []
         if app is not None and not app.closed:
             active_runs = [
@@ -1150,6 +1151,7 @@ class SidecarMethods:
             "project_open": app is not None and not app.closed,
             "project_id": None if app is None or app.closed else app.project.descriptor.project_id,
             "active_run_ids": active_runs,
+            "backend_source": _jsonable(backend_source),
         }
 
     def _runtime_shutdown(self, _params, _context) -> RpcResult:

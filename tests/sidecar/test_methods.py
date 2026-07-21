@@ -76,6 +76,9 @@ def test_system_model_is_browsable_and_editable_without_an_open_project(
         assert status["system_ready"] is True
         assert status["project_open"] is False
         assert status["project_id"] is None
+        assert status["backend_source"]["runtime_restart_required"] is False
+        assert status["backend_source"]["loaded_identity"]["baseline_available"] is False
+        assert len(status["backend_source"]["loaded_identity"]["identity_sha256"]) == 64
 
         base = rpc.call("model.scheme.list")["schemes"][0]
         graph = rpc.call("model.graph.get", {"scheme_id": base["scheme_id"]})["graph"]
