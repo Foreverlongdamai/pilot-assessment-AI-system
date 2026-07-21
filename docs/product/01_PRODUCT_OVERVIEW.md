@@ -1,6 +1,6 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0.1.0-rc.2 portable correction source。RC.1 自动隔离验证历史保持有效，但用户验收结论为 `changes-required`；RC.2 已实现 `app/` desktop payload 与唯一根启动器，tagged package/external verification 尚待执行；starter/synthetic `formal_run_authorized=false`。
+**文档状态：** 产品 v0.1.0-rc.2 portable expert-designer candidate。RC.1 用户验收为 `changes-required`；RC.2 已实现 `app/` desktop payload 与唯一根启动器并通过仓库外 restricted-PATH 验证，当前 `user_acceptance=pending`；starter/synthetic `formal_run_authorized=false`。
 **日期：** 2026-07-21
 **适用目录：** `pilot_assessment_system/`
 

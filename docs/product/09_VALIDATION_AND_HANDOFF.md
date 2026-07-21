@@ -3,7 +3,7 @@
 | 字段 | 值 |
 |---|---|
 | 设计版本 | v0.8 portable/documentation engineering baseline |
-| 当前软件状态 | `in_progress`（M1–M8E engineering history preserved；RC.1 user acceptance=`changes-required`；RC.2 root-layout source correction implemented、tag/package verification pending；starter/synthetic `formal_run_authorized=false`） |
+| 当前软件状态 | `in_progress`（M1–M8E engineering history preserved；RC.1 user acceptance=`changes-required`；clean tagged RC.2 已通过仓库外 restricted-PATH verification，`user_acceptance=pending`；starter/synthetic `formal_run_authorized=false`） |
 | 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
@@ -359,4 +359,4 @@ PilotAssessment/
 - reference trajectory、phase/event annotation 的生产方式需与实验团队确认；
 - shared-evidence 多 parent CPT 会指数增长；v0.1 已设 parent/row/cell/size 硬上限，但数值仍需性能基准和专家审查后才能提高；
 - WinUI 图编辑控件选型和无障碍支持需原型验证；
-- M1–M8E、D-055 与 M8C-1 的历史工程门保持有效；`v0.1.0-rc.1` 的标签、打包和自动隔离验证已经完成，但用户验收为 `changes-required`。D-082/D-083 要求以新 RC.2 收纳 `app/` desktop payload、提供唯一根启动器并重新执行 tagged/external gate；当前 source correction 已完成而新候选验证尚待执行。专用 backup/restore 已取消。starter/synthetic `formal_run_authorized=false`；现有证据不构成科学有效性声明。
+- M1–M8E、D-055 与 M8C-1 的历史工程门保持有效；`v0.1.0-rc.1` 用户验收为 `changes-required`。D-082/D-083 的 clean annotated RC.2 已把 `app/` desktop payload、唯一根启动器和根白名单共同落地，并通过 tagged build 与仓库外 restricted-PATH gate；RC.2 当前 `user_acceptance=pending`。专用 backup/restore 已取消。starter/synthetic `formal_run_authorized=false`；现有证据不构成科学有效性声明。

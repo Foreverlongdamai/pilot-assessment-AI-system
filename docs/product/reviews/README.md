@@ -15,6 +15,7 @@
 
 ## 当前记录入口
 
+- [`v0.1.0-rc.2` Portable Root Layout Verification](2026-07-21-rc2-portable-root-layout-verification.md) — clean tag、8 directories / 2 files / 1 launcher、manifest v3、24 DOCX、ZIP/checksum，以及仓库外 restricted-PATH 的 launcher→desktop→sidecar、editable source、operator extension 和 run 证据；RC.2 保持 `user_acceptance=pending`。
 - [`v0.1.0-rc.1` User Acceptance Result](2026-07-21-v0.1.0-rc.1-user-acceptance-result.md) — 用户在 Windows 上给出 `changes-required`：根目录 94 folders / 374 files，要求 desktop payload 进入 `app/`、根目录只留一个启动器；RC.1 保持不可变，修订进入 RC.2。
 - [M8E `v0.1.0-rc.1` Release Candidate Verification](2026-07-21-m8e-release-candidate-verification.md) — clean annotated tag、fresh Python/.NET/docs/release gates、current-system 前后不变性、最终 ZIP/SBOM/checksum、restricted-PATH 仓库外 editable-source/operator/run/desktop 验证；关闭 M8E engineering gate，保留 `user_acceptance=pending` 与 `formal_run_authorized=false`。
 - [M8E Final Release Candidate Design Self-Review](2026-07-21-m8e-final-release-candidate-design-self-review.md) — 设计阶段核对 D-055、完整候选后统一用户验收、`v0.1.0-rc.1` 身份、candidate screenshots、current-system capture 与两层验收证据；其中当时待执行的 tagged verification 现已由上一条记录关闭，用户验收仍待完成。

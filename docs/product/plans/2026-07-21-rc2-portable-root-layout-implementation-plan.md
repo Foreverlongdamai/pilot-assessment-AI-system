@@ -25,14 +25,13 @@
 - [x] 升级 release manifest 并写入 `portable_layout`。
 - [x] 让 packaged/external verifier 使用动态 candidate identity，并从 root launcher 启动。
 - [x] 修订双语 Markdown 权威源、release handoff 与 README。
-- [ ] 从 clean annotated `v0.1.0-rc.2` source 生成 24 份 released DOCX。
+- [x] 从 clean annotated `v0.1.0-rc.2` source 生成 24 份 released DOCX。
 
 ## Task 5：RC.2 交付门
 
-- [ ] Python release/documentation tests 通过。
-- [ ] .NET unit/contract/x64 Release gates 通过。
-- [ ] 创建 annotated `v0.1.0-rc.2`，证明 peel 到 clean `HEAD`。
-- [ ] 构建 RC.2 ZIP，确认根目录计数为 8 directories / 2 files / 1 launcher。
-- [ ] 在仓库外 restricted-PATH extraction 中完成 editable source、operator extension、run 与真实桌面启动验证。
-- [ ] 记录 hashes、counts、process/window evidence 与 `user_acceptance=pending`。
-
+- [x] Python release/documentation tests 通过。
+- [x] .NET unit/contract/x64 Release gates 通过。
+- [x] 创建 annotated `v0.1.0-rc.2`，证明 peel 到 clean `HEAD`。
+- [x] 构建 RC.2 ZIP，确认根目录计数为 8 directories / 2 files / 1 launcher。
+- [x] 在仓库外 restricted-PATH extraction 中完成 editable source、operator extension、run 与真实桌面启动验证。
+- [x] 记录 hashes、counts、process/window evidence 与 `user_acceptance=pending`。
