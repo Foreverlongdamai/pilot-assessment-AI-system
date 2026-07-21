@@ -487,7 +487,7 @@ git add README.md docs/product
 git commit -m "docs: prepare v0.1.0-rc.1 release source"
 ```
 
-- [ ] Require a clean worktree, create annotated tag and prove it peels to `HEAD`:
+- [x] Require a clean worktree, create annotated tag and prove it peels to `HEAD` (`v0.1.0-rc.1` peels to `c736bf7ad58bd24212b8997c5bbbf427b96e2692`):
 
 ```powershell
 git status --short
@@ -503,13 +503,13 @@ git rev-parse v0.1.0-rc.1^{}
 - Generate: `dist/releases/PilotAssessment-0.1.0-rc.1-win-x64/`
 - Generate: `dist/releases/PilotAssessment-0.1.0-rc.1-win-x64.zip`
 - Generate: `dist/releases/PilotAssessment-0.1.0-rc.1-win-x64.zip.sha256`
-- Generate: `dist/releases/PilotAssessment-0.1.0-rc.1-delivery.json`
+- Generate: `dist/releases/PilotAssessment-0.1.0-rc.1-win-x64.delivery.json`
 - Create: `docs/product/reviews/2026-07-21-m8e-release-candidate-verification.md`
 - Modify: this plan
 
-- [ ] Run fresh focused Python, schema, documentation, release, desktop unit/contract and x64 Release build gates.
-- [ ] Capture source-system file hashes, model identity, `54 / 2`, clean edit state, schema versions, user-owned counts and zero transients.
-- [ ] Build:
+- [x] Run fresh focused Python, schema, documentation, release, desktop unit/contract and x64 Release build gates.
+- [x] Capture source-system file hashes, model identity, `54 / 2`, clean edit state, schema versions, user-owned counts and zero transients.
+- [x] Build:
 
 ```powershell
 .\.tools\uv\uv.exe run python tools\release\build_portable.py `
@@ -521,21 +521,21 @@ git rev-parse v0.1.0-rc.1^{}
   --documentation-status released
 ```
 
-- [ ] Verify outside the repository:
+- [x] Verify outside the repository:
 
 ```powershell
 .\.tools\uv\uv.exe run python tools\release\verify_archive_external.py `
-  dist\releases\PilotAssessment-0.1.0-rc.1-win-x64.zip `
+  --dist dist\releases\PilotAssessment-0.1.0-rc.1-win-x64.zip `
   --verify-editable-source `
   --verify-operator-extension `
   --launch-desktop `
   --restricted-path
 ```
 
-- [ ] Re-inspect source and candidate: no source-system change, no WAL/SHM/process leftovers, all mutations confined to disposed copies.
-- [ ] Scan ZIP names, extracted text and DOCX XML for private paths, projects/sessions/results, caches, PDBs and unlisted files.
-- [ ] Record exact tag/commit, toolchain, ZIP hash/bytes, system identity/counts, docs count/hash/pages, test totals, external verifier and remaining boundaries.
-- [ ] Mark every completed checkbox and commit evidence without moving the existing tag:
+- [x] Re-inspect source and candidate: no source-system change, no WAL/SHM/process leftovers, all mutations confined to disposed copies.
+- [x] Scan ZIP names, extracted text and DOCX XML for private paths, projects/sessions/results, caches, PDBs and unlisted files.
+- [x] Record exact tag/commit, toolchain, ZIP hash/bytes, system identity/counts, docs count/hash/pages, test totals, external verifier and remaining boundaries.
+- [x] Mark every completed checkbox and commit evidence without moving the existing tag:
 
 ```powershell
 git add docs/product/reviews/2026-07-21-m8e-release-candidate-verification.md docs/product/plans/2026-07-21-m8e-final-release-candidate-implementation-plan.md
