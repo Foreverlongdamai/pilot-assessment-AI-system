@@ -49,7 +49,7 @@ rg -n "M7 user acceptance.*hard|M7 用户.*硬|Gate 0" README.md docs/product -g
 git diff --check
 ```
 
-- [ ] Commit:
+- [x] Commit (`0605fb8`):
 
 ```powershell
 git add docs/product/DECISIONS.md docs/product/specs docs/product/plans docs/product/reviews/README.md
@@ -102,7 +102,7 @@ class RawInputNodeDefinition(StrictContractModel):
 
 - [x] Apply the same `help_text` shape to Evidence and BN definitions; remove localized-pair validation only from current types.
 - [x] Bind historical run snapshot classes to legacy types; add `ModelGraphSnapshot 0.3.0`, `CurrentModelRunSnapshotV3` and `AssessmentRunV3` for new runs.
-- [x] Rerun focused contract tests and commit:
+- [x] Rerun focused contract tests and commit (`ab76368`):
 
 ```powershell
 git add src/pilot_assessment/contracts tests/contracts
@@ -159,7 +159,7 @@ Focused Ruff and `ty check` gates for the migration/runtime path also passed. Th
 legacy staging test preserves session identity, cursor, latest sequence, transaction/method
 history and draft content while migrating both live rows and every stored checkpoint.
 
-- [ ] Commit:
+- [x] Commit (`0e7aebc`):
 
 ```powershell
 git add src/pilot_assessment/model_workspace src/pilot_assessment/persistence src/pilot_assessment/runtime tests/model_workspace tests/persistence
@@ -184,16 +184,16 @@ git commit -m "feat: migrate current model content to English"
 - Generate matching package resources under `src/pilot_assessment/schema_resources/`
 - Test: `tests/model_workspace/`, `tests/sidecar/test_methods.py`, `tests/schemas/test_schema_export.py`
 
-- [ ] Convert starter materialization, copy/update/search and execution code to `name/short_name/description/help_text`.
-- [ ] Make current RPC mutations accept and return only the single current fields; legacy normalization remains internal.
-- [ ] Freeze new runs as v0.3 and let persistence/result readers discriminate old and new versions.
-- [ ] Export additive v0.2/v0.3 schemas without deleting historical schema files:
+- [x] Convert starter materialization, copy/update/search and execution code to `name/short_name/description/help_text`.
+- [x] Make current RPC mutations accept and return only the single current fields; legacy normalization remains internal.
+- [x] Freeze new runs as v0.3 and let persistence/result readers discriminate old and new versions.
+- [x] Export additive v0.2/v0.3 schemas without deleting historical schema files:
 
 ```powershell
 .\.tools\uv\uv.exe run python -m pilot_assessment.schemas.export
 ```
 
-- [ ] Run focused backend gates:
+- [x] Run focused backend gates:
 
 ```powershell
 .\.tools\uv\uv.exe run pytest tests\model_workspace tests\sidecar\test_methods.py tests\schemas\test_schema_export.py -q
@@ -201,7 +201,14 @@ git commit -m "feat: migrate current model content to English"
 .\.tools\uv\uv.exe run ty check src\pilot_assessment
 ```
 
-- [ ] Commit:
+Implementation evidence (2026-07-21): the exact focused backend gate passed `77 passed`;
+the current-run/persistence/provenance gate passed `10 passed`; and the extended
+subprocess, integration, source-provenance and release-capture regression gate passed
+`18 passed`. Full Ruff and `ty check` gates passed. Historical v0.1/v0.2 schemas remain
+byte-preserved package resources while new current schemas are additive. The release
+capture tool now recognises SQLite schema v6 and continues to reject future v7.
+
+- [x] Commit (`b5872a8`):
 
 ```powershell
 git add src/pilot_assessment schemas tests
