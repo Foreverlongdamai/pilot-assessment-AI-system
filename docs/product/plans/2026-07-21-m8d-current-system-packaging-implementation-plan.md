@@ -115,7 +115,7 @@ When no project is open, `project_compatibility` is `null`. The existing top-lev
 - Create: `tests/release/__init__.py`
 - Create: `tests/release/test_system_model_capture.py`
 
-- [ ] **Step 1: Write the dynamic capture test**
+- [x] **Step 1: Write the dynamic capture test**
 
 Create a disposable `SystemApplication`, copy one node and one TaskScheme through `model_edits.workspace`, commit, close, capture it, initialize the destination once with `SystemApplication.open_or_create`, and assert the source and destination identities/counts match exactly:
 
@@ -157,7 +157,7 @@ def test_capture_preserves_saved_dynamic_model_and_rebuilds_clean_workspace(tmp_
     )
 ```
 
-- [ ] **Step 2: Run the focused test and confirm the missing module failure**
+- [x] **Step 2: Run the focused test and confirm the missing module failure**
 
 Run:
 
@@ -167,7 +167,7 @@ Run:
 
 Expected: collection fails because `tools.release.system_model_capture` does not yet exist.
 
-- [ ] **Step 3: Implement the stdlib-only capture module**
+- [x] **Step 3: Implement the stdlib-only capture module**
 
 Implement all of the following, with no dependency on a project or the running sidecar:
 
@@ -209,7 +209,7 @@ The module must:
 11. copy canonical locator bytes, create only the target staging directory, and remove a newly created target on any failure;
 12. never write to the source system and never seed a fallback.
 
-- [ ] **Step 4: Add deterministic refusal tests**
+- [x] **Step 4: Add deterministic refusal tests**
 
 Add four small tests:
 
@@ -295,7 +295,7 @@ def test_inspection_rejects_corrupt_or_future_schema(tmp_path: Path) -> None:
 
 Each test must assert a stable actionable phrase: `close the application`, `save or discard`, `user-owned rows`, or `unsupported schema`/`integrity`.
 
-- [ ] **Step 5: Run the focused release tests**
+- [x] **Step 5: Run the focused release tests**
 
 Run:
 
@@ -305,7 +305,7 @@ Run:
 
 Expected: all release-capture tests pass in under a few seconds and no large Session fixture is created.
 
-- [ ] **Step 6: Commit Task 1**
+- [x] **Step 6: Commit Task 1**
 
 ```powershell
 git add tools/release/system_model_capture.py tests/release
