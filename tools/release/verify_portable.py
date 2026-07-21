@@ -7,6 +7,7 @@ import ctypes
 import hashlib
 import json
 import os
+import re
 import shutil
 import sqlite3
 import subprocess
@@ -68,6 +69,17 @@ SYSTEM_MODEL_FILES = {
     "system/model-library.sqlite3",
     "system/staging/model-edit/workspace.sqlite3",
 }
+ROOT_DIRECTORIES = {
+    "app",
+    "backend",
+    "developer",
+    "docs",
+    "licenses",
+    "manifest",
+    "runtime",
+    "system",
+}
+ROOT_FILES = {"PilotAssessment.exe", "README.txt"}
 
 
 class PortableVerificationError(RuntimeError):
@@ -114,9 +126,45 @@ def _restricted_environment() -> dict[str, str]:
     return environment
 
 
-def _required_layout(root: Path) -> None:
+def _verify_root_surface(root: Path) -> dict[str, Any]:
+    actual_directories = {path.name for path in root.iterdir() if path.is_dir()}
+    actual_files = {path.name for path in root.iterdir() if path.is_file()}
+    unexpected = sorted(
+        (actual_directories - ROOT_DIRECTORIES) | (actual_files - ROOT_FILES),
+        key=str.casefold,
+    )
+    missing = sorted(
+        (ROOT_DIRECTORIES - actual_directories) | (ROOT_FILES - actual_files),
+        key=str.casefold,
+    )
+    if unexpected or missing:
+        raise PortableVerificationError(
+            "portable product has unexpected root entries or missing semantic entries: "
+            f"unexpected={unexpected}, missing={missing}"
+        )
+    launchers = sorted(
+        name
+        for name in actual_files
+        if Path(name).suffix.casefold() in {".exe", ".cmd", ".bat", ".ps1", ".vbs"}
+    )
+    if launchers != ["PilotAssessment.exe"]:
+        raise PortableVerificationError(
+            f"portable product must expose one root launcher: {launchers}"
+        )
+    return {
+        "root_directories": len(actual_directories),
+        "root_files": len(actual_files),
+        "launchers": launchers,
+        "desktop_payload_root": "app",
+    }
+
+
+def _required_layout(root: Path) -> dict[str, Any]:
+    surface = _verify_root_surface(root)
     required_files = [
-        "PilotAssessment.Desktop.exe",
+        "PilotAssessment.exe",
+        "app/PilotAssessment.Desktop.exe",
+        "app/PilotAssessment.Desktop.deps.json",
         "runtime/python/python.exe",
         "runtime/python/python311._pth",
         "backend/src/pilot_assessment/__init__.py",
@@ -138,10 +186,10 @@ def _required_layout(root: Path) -> None:
         "docs/documentation-manifest.json",
         "docs/source-catalog.json",
         "docs/assets/screenshots/manifest.json",
-        "README-CANDIDATE.md",
-        "RELEASE-NOTES.md",
-        "ACCEPTANCE-CHECKLIST.md",
-        "KNOWN-LIMITATIONS.md",
+        "docs/README-CANDIDATE.md",
+        "docs/RELEASE-NOTES.md",
+        "docs/ACCEPTANCE-CHECKLIST.md",
+        "docs/KNOWN-LIMITATIONS.md",
         "system/system.json",
         "system/model-library.sqlite3",
         "system/staging/model-edit/workspace.sqlite3",
@@ -151,16 +199,15 @@ def _required_layout(root: Path) -> None:
         raise PortableVerificationError(f"portable layout is incomplete: {missing}")
     if not (root / "runtime" / "site-packages").is_dir():
         raise PortableVerificationError("runtime/site-packages is missing")
+    return surface
 
 
 def _verify_release_identity(root: Path) -> dict[str, Any]:
     manifest = json.loads((root / "manifest" / "release-manifest.json").read_text(encoding="utf-8"))
     expected = {
-        "schema_version": "pilot-assessment-release-manifest-v2",
+        "schema_version": "pilot-assessment-release-manifest-v3",
         "product_version": "0.1.0",
         "release_channel": "release-candidate",
-        "release_label": "v0.1.0-rc.1",
-        "candidate": "rc.1",
         "user_acceptance": "pending",
         "documentation_status": "released",
         "build_kind": "m8e-release-candidate",
@@ -170,13 +217,32 @@ def _verify_release_identity(root: Path) -> dict[str, Any]:
         raise PortableVerificationError(
             f"release candidate identity differs: expected={expected}, actual={observed}"
         )
-    if root.name != "PilotAssessment-0.1.0-rc.1-win-x64":
+    candidate = manifest.get("candidate")
+    release_label = manifest.get("release_label")
+    if not isinstance(candidate, str) or re.fullmatch(r"rc\.[1-9][0-9]*", candidate) is None:
+        raise PortableVerificationError("release candidate sequence is invalid")
+    expected_label = f"v{expected['product_version']}-{candidate}"
+    if release_label != expected_label:
+        raise PortableVerificationError("release label differs from product/candidate identity")
+    if root.name != f"PilotAssessment-{expected['product_version']}-{candidate}-win-x64":
         raise PortableVerificationError("product directory name differs from candidate identity")
+    expected_layout = {
+        "schema_version": "pilot-assessment-portable-layout-v2",
+        "launcher": "PilotAssessment.exe",
+        "desktop_payload_root": "app",
+        "desktop_executable": "app/PilotAssessment.Desktop.exe",
+        "semantic_root_directories": sorted(ROOT_DIRECTORIES),
+    }
+    if (
+        manifest.get("entrypoint") != "PilotAssessment.exe"
+        or manifest.get("portable_layout") != expected_layout
+    ):
+        raise PortableVerificationError("portable root/desktop payload contract differs")
     git = manifest.get("git")
     if not isinstance(git, dict) or git.get("dirty") is not False:
         raise PortableVerificationError("release manifest does not prove a clean Git source")
     if (
-        git.get("tag") != expected["release_label"]
+        git.get("tag") != release_label
         or git.get("tag_type") != "annotated"
         or git.get("tag_peels_to_head") is not True
         or not isinstance(git.get("commit"), str)
@@ -192,15 +258,15 @@ def _verify_release_identity(root: Path) -> dict[str, Any]:
         "ACCEPTANCE-CHECKLIST.md",
         "KNOWN-LIMITATIONS.md",
     ):
-        text = (root / filename).read_text(encoding="utf-8")
-        if "v0.1.0-rc.1" not in text or "pending" not in text.lower():
+        text = (root / "docs" / filename).read_text(encoding="utf-8")
+        if release_label not in text or "pending" not in text.lower():
             raise PortableVerificationError(
                 f"candidate handoff file lacks release/acceptance identity: {filename}"
             )
     return {
         "product_version": expected["product_version"],
-        "release_label": expected["release_label"],
-        "candidate": expected["candidate"],
+        "release_label": release_label,
+        "candidate": candidate,
         "user_acceptance": expected["user_acceptance"],
         "git": git,
         "formal_run_authorized": False,
@@ -268,9 +334,17 @@ def _verify_documentation(root: Path) -> dict[str, Any]:
     if manifest.get("build_status") != "released":
         raise PortableVerificationError("release candidate documentation must be released")
     if not (
-        manifest.get("release_channel") == catalog.get("release_channel") == "release-candidate"
-        and manifest.get("release_label") == catalog.get("release_label") == "v0.1.0-rc.1"
-        and manifest.get("user_acceptance") == catalog.get("user_acceptance") == "pending"
+        manifest.get("release_channel")
+        == catalog.get("release_channel")
+        == release_manifest.get("release_channel")
+        == "release-candidate"
+        and manifest.get("release_label")
+        == catalog.get("release_label")
+        == release_manifest.get("release_label")
+        and manifest.get("user_acceptance")
+        == catalog.get("user_acceptance")
+        == release_manifest.get("user_acceptance")
+        == "pending"
     ):
         raise PortableVerificationError("documentation release-candidate identity differs")
 
@@ -1462,6 +1536,19 @@ def _child_processes(parent_id: int) -> list[int]:
     return children
 
 
+def _descendant_processes(parent_id: int) -> set[int]:
+    descendants: set[int] = set()
+    pending = [parent_id]
+    while pending:
+        current = pending.pop()
+        for child in _child_processes(current):
+            if child in descendants:
+                continue
+            descendants.add(child)
+            pending.append(child)
+    return descendants
+
+
 def _process_image(process_id: int) -> Path | None:
     if os.name != "nt":
         return None
@@ -1507,14 +1594,19 @@ def _assert_no_tcp_listener(process_ids: set[int]) -> None:
 
 
 def _launch_desktop(root: Path, timeout: float) -> dict[str, Any]:
-    executable = root / "PilotAssessment.Desktop.exe"
+    executable = root / "PilotAssessment.exe"
     process = subprocess.Popen(
         [str(executable)],
         cwd=root,
         env=_restricted_environment(),
     )
     window: int | None = None
-    child_ids: list[int] = []
+    desktop_id: int | None = None
+    descendant_ids: set[int] = set()
+    descendant_images: dict[int, Path] = {}
+    packaged_sidecars: list[int] = []
+    expected_desktop = (root / "app" / "PilotAssessment.Desktop.exe").resolve()
+    expected_python = (root / "runtime" / "python" / "python.exe").resolve()
     deadline = time.monotonic() + timeout
     try:
         while time.monotonic() < deadline:
@@ -1522,29 +1614,35 @@ def _launch_desktop(root: Path, timeout: float) -> dict[str, Any]:
                 raise PortableVerificationError(
                     f"desktop process exited before verification with code {process.returncode}"
                 )
-            window = _window_for_process(process.pid)
-            child_ids = _child_processes(process.pid)
-            if window and child_ids:
+            descendant_ids = _descendant_processes(process.pid)
+            descendant_images = {
+                process_id: image
+                for process_id in descendant_ids
+                if (image := _process_image(process_id)) is not None
+            }
+            for process_id in descendant_ids:
+                if descendant_images.get(process_id) == expected_desktop:
+                    desktop_id = process_id
+                    break
+            window = _window_for_process(desktop_id) if desktop_id is not None else None
+            packaged_sidecars = [
+                process_id
+                for process_id, image in descendant_images.items()
+                if image == expected_python
+            ]
+            if window and packaged_sidecars:
                 break
             time.sleep(0.25)
         if not window:
             raise PortableVerificationError("desktop main window did not appear")
-        expected_python = (root / "runtime" / "python" / "python.exe").resolve()
-        child_images = {
-            process_id: image
-            for process_id in child_ids
-            if (image := _process_image(process_id)) is not None
-        }
-        packaged_sidecars = [
-            process_id for process_id, image in child_images.items() if image == expected_python
-        ]
         if not packaged_sidecars:
             raise PortableVerificationError(
-                f"desktop did not start packaged Python sidecar; children={child_images}"
+                f"desktop did not start packaged Python sidecar; descendants={descendant_images}"
             )
-        _assert_no_tcp_listener({process.pid, *child_ids})
+        _assert_no_tcp_listener({process.pid, *descendant_ids})
         return {
-            "desktop_pid": process.pid,
+            "launcher_pid": process.pid,
+            "desktop_pid": desktop_id,
             "window_handle": window,
             "packaged_sidecar_pids": packaged_sidecars,
         }
@@ -1573,7 +1671,7 @@ def verify(
     root = root.resolve()
     if not root.is_dir():
         raise PortableVerificationError(f"package root does not exist: {root}")
-    _required_layout(root)
+    root_surface = _required_layout(root)
     release_identity = _verify_release_identity(root)
     checksum_count = _verify_checksums(root)
     documentation = _verify_documentation(root)
@@ -1591,6 +1689,7 @@ def verify(
     desktop = _launch_desktop(root, desktop_timeout) if launch_desktop else None
     return {
         "package_root": str(root),
+        "root_surface": root_surface,
         "release_identity": release_identity,
         "checksummed_files": checksum_count,
         "documentation": documentation,

@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-EXPERT-EVIDENCE-001", "PAS-EVALUATOR-001", "PAS-PYTHON-CORE-001"]
 support = "Record the child node name, ordered parents, ordered states, failing CPT row and stable validation error."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 

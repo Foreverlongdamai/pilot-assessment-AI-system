@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-EVALUATOR-001", "PAS-PYTHON-EXT-001", "PAS-PORTABILITY-001"]
 support = "Provide a privacy-safe directory tree, adapter diagnostic and manifest excerpt; never send biometric files through an unauthorised channel."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 

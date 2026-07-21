@@ -23,7 +23,8 @@ restarted.
 
 ## Safe source workflow
 
-1. Close `PilotAssessment.Desktop.exe` and confirm its private `python.exe` child has stopped.
+1. Close the desktop application started by root `PilotAssessment.exe` and confirm both
+   `app/PilotAssessment.Desktop.exe` and its private `python.exe` child have stopped.
 2. Copy the whole software directory as a rollback point, or keep the original ZIP.
 3. Edit ordinary `.py` and JSON resource files with any local text editor or IDE.
 4. Preserve public DTO/schema compatibility unless you also update both Python and C# protocol

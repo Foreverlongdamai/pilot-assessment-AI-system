@@ -4,7 +4,7 @@
   "product_version": "0.1.0",
   "document_set_version": "0.1.0",
   "release_channel": "release-candidate",
-  "release_label": "v0.1.0-rc.1",
+  "release_label": "v0.1.0-rc.2",
   "user_acceptance": "pending",
   "languages": ["zh-CN", "en-GB"],
   "documents": [

@@ -1,20 +1,20 @@
-# Implementation Status — M8E Release Candidate Externally Verified, User Acceptance Pending
+# Implementation Status — RC.1 Changes Required, RC.2 Root-Layout Correction In Progress
 
 | 字段 | 当前值 |
 |---|---|
 | 状态日期 | 2026-07-21 |
-| 产品设计基线 | v0.1.0-rc.1 portable expert-designer release candidate（D-031–D-081） |
+| 产品设计基线 | v0.1.0-rc.2 portable root-layout correction source（D-031–D-083） |
 | 已完成里程碑 | Backend Foundation M1 + M2 Multimodal Synthetic Foundation + M3 Native-Rate Time Synchronization + M4R Editable Evidence Computation Foundation + M5 Shared Model Library and Bayesian Workspace + M6 Local Runtime, Durable Persistence and Sidecar + M7 WinUI Expert Designer + M8A Portable Runtime and Distribution + M8B System Model/Provenance/Operator Handoff + M8C Documentation + M8D Current-System Packaging/Portability/Diagnostics + D-055 current single-English model migration + M8E tagged release candidate verification |
 | M4 当前状态 | M4R 已完成 canonical EvidenceRecipe/OperatorDefinition schema、trusted registry、only-technical validation、generic compiler/executor、built-in operator library、backend-only draft/preview/apply/replay、18 个 editable starter resources 和轻量 E2E。旧 Task 0–28 的 15 个 whole-Anchor plugins 与三个 providers 保留为 legacy/reference；旧 Task 29–36 已停止。**M4R engineering verified；`formal_run_authorized=false`。** |
-| 下一里程碑 | 用户独立验收完整 `v0.1.0-rc.1` 候选；如发现问题，以后续修订候选处理，不改写已冻结标签 |
-| 软件状态 | `in_progress`（M1–M8E engineering verified；`v0.1.0-rc.1` 已通过仓库外自动隔离验证；`user_acceptance=pending`；starter/synthetic `formal_run_authorized=false`） |
+| 下一里程碑 | 从 clean annotated `v0.1.0-rc.2` source 构建并仓库外验证根目录 8 directories / 2 files / 1 launcher 的新候选 |
+| 软件状态 | `in_progress`（M1–M8E engineering history preserved；RC.1 user acceptance=`changes-required`；RC.2 source correction implemented、tag/package verification pending；starter/synthetic `formal_run_authorized=false`） |
 | 科学状态 | synthetic 数据为 `not_supported`；评估模型仍待领域专家校准与验证 |
 | Python package | `pilot-assessment-system 0.1.0` |
 | 本地运行边界 | Windows、离线、目录形式 Session Bundle |
 
 ## 1. 本轮结论
 
-M1/M2/M3、M4R、M5、M6、M7、M8A、M8B、M8C-1、M8D、D-055 与 M8E tagged release candidate 已实现并关闭各自当前 engineering gate；`v0.1.0-rc.1` 已通过内部和仓库外自动隔离验证，用户手工验收尚未完成，并可能产生返修。系统当前工程实现可以：
+M1/M2/M3、M4R、M5、M6、M7、M8A、M8B、M8C-1、M8D、D-055 与 M8E 的 engineering history 保持完整。`v0.1.0-rc.1` 已通过自动隔离验证，但用户手工验收确认根目录 94 folders / 374 files 不可接受，因此结论为 `changes-required`。RC.2 source 已实现 `app/` 收纳、唯一根启动器与对应 locator/manifest/verifier 修订，尚待 clean tag、完整构建和外部验证。系统当前工程实现可以：
 
 1. 将当前 combined simulator CSV 作为一个通过格式与文件完整性检查的共享物理文件，分别形成 X 与 U 两个逻辑 view；这里的检查不包含任务或表现有效性；
 2. 保留 I、G、EEG、ECG、pilot_camera 与 bundle-local task reference 的版本化理想输入合同；
@@ -223,9 +223,9 @@ M5 自身只实现 transport-neutral、进程内建模工作区后端；其 dura
 
 ### 2.11 M8A Portable Runtime and Distribution
 
-- 首个产品形态是 Windows x64 unpackaged self-contained ZIP；解压后直接运行 `PilotAssessment.Desktop.exe`，目标机不要求 Visual Studio、.NET SDK、系统 Python、Conda 或 uv；
-- 桌面端、.NET runtime 与 Windows App SDK 2.3.1 随产品目录提供；sidecar 使用包内 CPython 3.11.9 embedded runtime，仍通过 stdin/stdout JSON-RPC/JSONL 通信且不监听网络端口；
-- runtime locator 优先且只要完整 portable layout 就使用 `runtime/python/python.exe` 与 `backend/src`；仓库开发态才回退到 `.tools/uv`；
+- 首个产品形态是 Windows x64 unpackaged self-contained ZIP；D-083 要求解压后只运行根 `PilotAssessment.exe`，内部 `app/PilotAssessment.Desktop.exe` 与全部 WinUI/.NET payload 收纳在 `app/`，目标机不要求 Visual Studio、.NET SDK、系统 Python、Conda 或 uv；
+- 桌面端、.NET runtime 与 Windows App SDK 2.3.1 随 `app/` 提供；sidecar 使用根 `runtime/` 内 CPython 3.11.9 embedded runtime，仍通过 stdin/stdout JSON-RPC/JSONL 通信且不监听网络端口；
+- runtime locator 从 `app/` 解析父级产品根目录，再使用 `runtime/python/python.exe` 与 `backend/src`；仓库开发态才回退到 `.tools/uv`；
 - 第一方 Python package 不作为 wheel 安装，唯一活动代码树是公开的 `backend/src/pilot_assessment`；M8A 已用临时源码修改/重启 smoke 证明运行时实际读取该目录；
 - allow-list builder 生成 release manifest、source baseline、checksums、SPDX SBOM、第三方许可证、产品目录与 ZIP；产品包不含用户 project、session、result、artifact 或测试数据；
 - **本段描述 M8A 当时的产物**：该产物是 `m8a-engineering`，不是 M8E clean/tagged final release candidate；当前状态由本文开头和 §6 取代。

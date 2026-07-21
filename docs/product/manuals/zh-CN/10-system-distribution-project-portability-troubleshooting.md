@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001", "PAS-RELEASE-001"]
 support = "恢复前保留原始 ZIP、release hash、Diagnostics 摘要与不含隐私的目录清单。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 
@@ -34,9 +34,9 @@ user_acceptance = "pending"
 ## 2. 迁移或复制 software/system
 
 1. 保存或放弃全部 staged system-model edits；
-2. 关闭所有 app instances，确认 `PilotAssessment.Desktop.exe` 与 child Python process 已退出；
+2. 关闭所有 app instances，确认根启动器、`app/PilotAssessment.Desktop.exe` 与 child Python process 已退出；
 3. 复制完整 product root，不能只选 EXE、`system\` database 或 `backend\`；
-4. 从目标目录启动 `PilotAssessment.Desktop.exe`；
+4. 从目标产品根目录启动唯一入口 `PilotAssessment.exe`；
 5. 在 Diagnostics 确认 product/release label、model library identity/counts、source identity 与 dependency/operator identity。
 
 复制完成后，目标软件与原软件独立演化，不会自动同步。应保留原始 candidate ZIP 与 `.sha256` 作为 delivered baseline。

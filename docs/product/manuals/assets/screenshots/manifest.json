@@ -2,8 +2,10 @@
   "schema_version": "pilot-assessment-screenshot-manifest-v1",
   "product_version": "0.1.0",
   "release_channel": "release-candidate",
-  "release_label": "v0.1.0-rc.1",
+  "release_label": "v0.1.0-rc.2",
   "user_acceptance": "pending",
+  "reused_from_release_label": "v0.1.0-rc.1",
+  "reuse_reason": "RC.2 changes the portable root layout and launcher only; the pictured WinUI screens are unchanged.",
   "ui_source_tree_sha256": "2b719c4b12b884a52a178b50929c36b0ddef1ac12c2c700081b062819fad5ec2",
   "screenshots": [
     {

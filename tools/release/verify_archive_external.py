@@ -53,13 +53,22 @@ def _verify_outer_delivery(archive: Path, delivery_path: Path) -> dict[str, obje
         "schema_version": "pilot-assessment-delivery-v1",
         "product_version": "0.1.0",
         "release_channel": "release-candidate",
-        "release_label": "v0.1.0-rc.1",
-        "candidate": "rc.1",
         "user_acceptance": "pending",
         "build_kind": "m8e-release-candidate",
     }
     if {key: delivery.get(key) for key in expected_identity} != expected_identity:
         raise ExternalArchiveVerificationError("outer delivery candidate identity differs")
+    candidate = delivery.get("candidate")
+    release_label = delivery.get("release_label")
+    if not isinstance(candidate, str) or re.fullmatch(r"rc\.[1-9][0-9]*", candidate) is None:
+        raise ExternalArchiveVerificationError("outer delivery candidate sequence is invalid")
+    if release_label != f"v{expected_identity['product_version']}-{candidate}":
+        raise ExternalArchiveVerificationError("outer delivery release label differs")
+    if (
+        archive.stem
+        != f"PilotAssessment-{expected_identity['product_version']}-{candidate}-win-x64"
+    ):
+        raise ExternalArchiveVerificationError("archive name differs from candidate identity")
     archive_record = delivery.get("archive")
     expected_archive = {
         "file": archive.name,

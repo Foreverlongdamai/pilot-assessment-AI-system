@@ -28,9 +28,12 @@ public static class BackendRuntimeLocator
     {
         var applicationRoot = Path.GetFullPath(
             applicationBaseDirectory ?? AppContext.BaseDirectory);
-        if (TryLocatePortable(applicationRoot, out var portable))
+        foreach (var portableRoot in PortableRoots(applicationRoot))
         {
-            return portable;
+            if (TryLocatePortable(portableRoot, out var portable))
+            {
+                return portable;
+            }
         }
 
         var checkedDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -108,6 +111,18 @@ public static class BackendRuntimeLocator
 
         options = null!;
         return false;
+    }
+
+    private static IEnumerable<string> PortableRoots(string applicationRoot)
+    {
+        yield return applicationRoot;
+
+        var directory = new DirectoryInfo(applicationRoot);
+        if (directory.Name.Equals("app", StringComparison.OrdinalIgnoreCase) &&
+            directory.Parent is not null)
+        {
+            yield return directory.Parent.FullName;
+        }
     }
 
     private static IEnumerable<string> DevelopmentSeeds(

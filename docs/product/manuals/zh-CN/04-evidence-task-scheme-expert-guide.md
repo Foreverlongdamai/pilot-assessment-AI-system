@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001"]
 support = "报告编辑器问题前，记录节点名称、节点类型、任务方案、edit-session 状态和稳定错误码。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 

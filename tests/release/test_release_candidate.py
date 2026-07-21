@@ -15,9 +15,9 @@ sys.path.insert(0, str(RELEASE_TOOLS))
 def _valid_identity_arguments() -> dict[str, object]:
     return {
         "product_version": "0.1.0",
-        "release_label": "v0.1.0-rc.1",
+        "release_label": "v0.1.0-rc.2",
         "release_channel": "release-candidate",
-        "candidate": "rc.1",
+        "candidate": "rc.2",
         "user_acceptance": "pending",
         "documentation_status": "released",
         "skip_archive": False,
@@ -29,8 +29,8 @@ def test_release_candidate_identity_is_explicit_and_names_the_rc_directory() -> 
 
     identity = _release_identity(**_valid_identity_arguments())
 
-    assert identity.package_name == "PilotAssessment-0.1.0-rc.1-win-x64"
-    assert identity.release_label == "v0.1.0-rc.1"
+    assert identity.package_name == "PilotAssessment-0.1.0-rc.2-win-x64"
+    assert identity.release_label == "v0.1.0-rc.2"
     assert identity.user_acceptance == "pending"
     assert (
         _internal_verification_root(
@@ -46,7 +46,7 @@ def test_release_candidate_identity_is_explicit_and_names_the_rc_directory() -> 
     [
         ("product_version", "0.1.1", "base product version"),
         ("release_label", "v0.1.0", "release label"),
-        ("candidate", "rc.2", "must be rc.1"),
+        ("candidate", "candidate-2", "candidate must match"),
         ("documentation_status", "review", "24 released"),
         ("skip_archive", True, "cannot be built with --skip-archive"),
     ],
@@ -70,7 +70,7 @@ def test_release_candidate_requires_clean_annotated_tag_at_head() -> None:
 
     commit = "a" * 40
     valid = {
-        "release_label": "v0.1.0-rc.1",
+        "release_label": "v0.1.0-rc.2",
         "commit": commit,
         "status": "",
         "tag_type": "tag",
@@ -89,7 +89,7 @@ def test_release_candidate_requires_clean_annotated_tag_at_head() -> None:
 def test_outer_delivery_manifest_contains_only_relative_delivery_facts(tmp_path: Path) -> None:
     from build_portable import _sha256, _write_delivery_manifest, _write_json
 
-    package_root = tmp_path / "PilotAssessment-0.1.0-rc.1-win-x64"
+    package_root = tmp_path / "PilotAssessment-0.1.0-rc.2-win-x64"
     manifest_root = package_root / "manifest"
     manifest_root.mkdir(parents=True)
     _write_json(
@@ -98,8 +98,8 @@ def test_outer_delivery_manifest_contains_only_relative_delivery_facts(tmp_path:
             "product": "Pilot Assessment System",
             "product_version": "0.1.0",
             "release_channel": "release-candidate",
-            "release_label": "v0.1.0-rc.1",
-            "candidate": "rc.1",
+            "release_label": "v0.1.0-rc.2",
+            "candidate": "rc.2",
             "user_acceptance": "pending",
             "build_kind": "m8e-release-candidate",
             "git": {"commit": "a" * 40, "dirty": False},
@@ -129,23 +129,40 @@ def test_outer_delivery_manifest_contains_only_relative_delivery_facts(tmp_path:
 def test_packaged_candidate_identity_requires_pending_handoff_files(tmp_path: Path) -> None:
     from verify_portable import _verify_release_identity
 
-    root = tmp_path / "PilotAssessment-0.1.0-rc.1-win-x64"
+    root = tmp_path / "PilotAssessment-0.1.0-rc.2-win-x64"
     (root / "manifest").mkdir(parents=True)
     (root / "manifest" / "release-manifest.json").write_text(
         json.dumps(
             {
-                "schema_version": "pilot-assessment-release-manifest-v2",
+                "schema_version": "pilot-assessment-release-manifest-v3",
                 "product_version": "0.1.0",
                 "release_channel": "release-candidate",
-                "release_label": "v0.1.0-rc.1",
-                "candidate": "rc.1",
+                "release_label": "v0.1.0-rc.2",
+                "candidate": "rc.2",
                 "user_acceptance": "pending",
                 "documentation_status": "released",
                 "build_kind": "m8e-release-candidate",
+                "entrypoint": "PilotAssessment.exe",
+                "portable_layout": {
+                    "schema_version": "pilot-assessment-portable-layout-v2",
+                    "launcher": "PilotAssessment.exe",
+                    "desktop_payload_root": "app",
+                    "desktop_executable": "app/PilotAssessment.Desktop.exe",
+                    "semantic_root_directories": [
+                        "app",
+                        "backend",
+                        "developer",
+                        "docs",
+                        "licenses",
+                        "manifest",
+                        "runtime",
+                        "system",
+                    ],
+                },
                 "git": {
                     "commit": "a" * 40,
                     "dirty": False,
-                    "tag": "v0.1.0-rc.1",
+                    "tag": "v0.1.0-rc.2",
                     "tag_type": "annotated",
                     "tag_peels_to_head": True,
                 },
@@ -154,18 +171,55 @@ def test_packaged_candidate_identity_requires_pending_handoff_files(tmp_path: Pa
         ),
         encoding="utf-8",
     )
+    handoff_root = root / "docs"
+    handoff_root.mkdir()
     for filename in (
         "README-CANDIDATE.md",
         "RELEASE-NOTES.md",
         "ACCEPTANCE-CHECKLIST.md",
         "KNOWN-LIMITATIONS.md",
     ):
-        (root / filename).write_text("v0.1.0-rc.1 user acceptance pending", encoding="utf-8")
+        (handoff_root / filename).write_text(
+            "v0.1.0-rc.2 user acceptance pending",
+            encoding="utf-8",
+        )
 
     verified = _verify_release_identity(root)
 
     assert verified["user_acceptance"] == "pending"
     assert verified["formal_run_authorized"] is False
+
+
+def test_portable_root_surface_exposes_only_semantic_directories_and_one_launcher(
+    tmp_path: Path,
+) -> None:
+    from verify_portable import PortableVerificationError, _verify_root_surface
+
+    root = tmp_path / "PilotAssessment-0.1.0-rc.2-win-x64"
+    for directory in (
+        "app",
+        "backend",
+        "developer",
+        "docs",
+        "licenses",
+        "manifest",
+        "runtime",
+        "system",
+    ):
+        (root / directory).mkdir(parents=True, exist_ok=True)
+    (root / "PilotAssessment.exe").write_bytes(b"launcher")
+    (root / "README.txt").write_text("Start with PilotAssessment.exe", encoding="utf-8")
+
+    assert _verify_root_surface(root) == {
+        "root_directories": 8,
+        "root_files": 2,
+        "launchers": ["PilotAssessment.exe"],
+        "desktop_payload_root": "app",
+    }
+
+    (root / "Microsoft.WindowsAppRuntime.dll").write_bytes(b"leaked payload")
+    with pytest.raises(PortableVerificationError, match="unexpected root entries"):
+        _verify_root_surface(root)
 
 
 def _docx_payload(xml: bytes = b"<document />") -> bytes:
@@ -182,7 +236,7 @@ def test_external_archive_scan_requires_24_private_path_free_docx(tmp_path: Path
     with zipfile.ZipFile(archive, "w") as package:
         for index in range(24):
             package.writestr(
-                f"PilotAssessment-0.1.0-rc.1-win-x64/docs/en-GB/manual-{index:02d}.docx",
+                f"PilotAssessment-0.1.0-rc.2-win-x64/docs/en-GB/manual-{index:02d}.docx",
                 _docx_payload(),
             )
     assert _scan_archive_content(archive)["docx_files"] == 24
@@ -194,7 +248,7 @@ def test_external_archive_scan_requires_24_private_path_free_docx(tmp_path: Path
                 b"<document>C:\\Users\\Alice\\secret</document>" if index == 3 else b"<document />"
             )
             package.writestr(
-                f"PilotAssessment-0.1.0-rc.1-win-x64/docs/en-GB/manual-{index:02d}.docx",
+                f"PilotAssessment-0.1.0-rc.2-win-x64/docs/en-GB/manual-{index:02d}.docx",
                 _docx_payload(xml),
             )
     with pytest.raises(ExternalArchiveVerificationError, match="private user-home path"):

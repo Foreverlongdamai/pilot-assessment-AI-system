@@ -1,4 +1,4 @@
-"""Build the tagged Windows x64 Pilot Assessment v0.1.0-rc.1 candidate."""
+"""Build a tagged Windows x64 Pilot Assessment release candidate."""
 
 from __future__ import annotations
 
@@ -33,6 +33,9 @@ from system_model_capture import (
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 DESKTOP_PROJECT = (
     REPOSITORY_ROOT / "src" / "PilotAssessment.Desktop" / ("PilotAssessment.Desktop.csproj")
+)
+LAUNCHER_PROJECT = (
+    REPOSITORY_ROOT / "src" / "PilotAssessment.Launcher" / "PilotAssessment.Launcher.csproj"
 )
 UV = REPOSITORY_ROOT / ".tools" / "uv" / "uv.exe"
 WORK_ROOT = REPOSITORY_ROOT / "build" / "portable-release"
@@ -136,12 +139,12 @@ def _release_identity(
     expected_label = f"v{product_version}-{candidate}"
     if product_version != "0.1.0":
         raise ReleaseBuildError(
-            f"M8E rc.1 requires base product version 0.1.0, got {product_version}"
+            f"M8E release candidates require base product version 0.1.0, got {product_version}"
         )
     if release_channel != "release-candidate":
-        raise ReleaseBuildError("M8E rc.1 requires release-channel=release-candidate")
-    if candidate != "rc.1":
-        raise ReleaseBuildError(f"M8E first acceptance candidate must be rc.1, got {candidate}")
+        raise ReleaseBuildError("M8E requires release-channel=release-candidate")
+    if re.fullmatch(r"rc\.[1-9][0-9]*", candidate) is None:
+        raise ReleaseBuildError(f"candidate must match rc.<positive-integer>, got {candidate}")
     if release_label != expected_label:
         raise ReleaseBuildError(
             f"release label must match product/candidate identity: expected {expected_label}"
@@ -358,6 +361,35 @@ def _publish_desktop(publish_root: Path) -> None:
         raise ReleaseBuildError(f"desktop publish did not produce {executable.name}")
 
 
+def _publish_launcher(publish_root: Path) -> Path:
+    _run(
+        [
+            "dotnet",
+            "publish",
+            str(LAUNCHER_PROJECT),
+            "--configuration",
+            "Release",
+            "--runtime",
+            "win-x64",
+            "--self-contained",
+            "true",
+            "--output",
+            str(publish_root),
+            "-p:PublishSingleFile=true",
+            "-p:PublishTrimmed=true",
+            "-p:EnableCompressionInSingleFile=true",
+            "-p:IncludeNativeLibrariesForSelfExtract=true",
+            "-p:DebugType=None",
+            "-p:DebugSymbols=false",
+            "--nologo",
+        ]
+    )
+    executable = publish_root / "PilotAssessment.exe"
+    if not executable.is_file():
+        raise ReleaseBuildError(f"launcher publish did not produce {executable.name}")
+    return executable
+
+
 def _install_python_runtime(package_root: Path, requirements: Path) -> None:
     runtime = package_root / "runtime"
     python_root = runtime / "python"
@@ -464,7 +496,11 @@ def _copy_documentation(documentation_root: Path, docs_root: Path) -> None:
         )
 
 
-def _copy_product_sources(package_root: Path, documentation_root: Path) -> None:
+def _copy_product_sources(
+    package_root: Path,
+    documentation_root: Path,
+    identity: ReleaseIdentity,
+) -> None:
     backend = package_root / "backend"
     _copy_tree(
         REPOSITORY_ROOT / "src" / "pilot_assessment",
@@ -487,6 +523,10 @@ def _copy_product_sources(package_root: Path, documentation_root: Path) -> None:
         desktop_source / "PilotAssessment.Desktop.Core",
     )
     _copy_tree(
+        REPOSITORY_ROOT / "src" / "PilotAssessment.Launcher",
+        desktop_source / "PilotAssessment.Launcher",
+    )
+    _copy_tree(
         REPOSITORY_ROOT / "tools" / "release",
         package_root / "developer" / "build" / "release",
     )
@@ -504,7 +544,7 @@ def _copy_product_sources(package_root: Path, documentation_root: Path) -> None:
 
     docs_root = package_root / "docs"
     docs_root.mkdir(parents=True, exist_ok=True)
-    for name in ("README-PORTABLE.md", "KNOWN-LIMITATIONS.md"):
+    for name in ("README-PORTABLE.md",):
         shutil.copy2(RELEASE_SOURCE_ROOT / name, docs_root / name)
     _copy_documentation(documentation_root, docs_root)
     _copy_tree(
@@ -512,14 +552,14 @@ def _copy_product_sources(package_root: Path, documentation_root: Path) -> None:
         docs_root / "assets" / "screenshots",
     )
     handoff_files = {
-        "README-CANDIDATE.md": "README-CANDIDATE.md",
-        "RELEASE-NOTES-v0.1.0-rc.1.md": "RELEASE-NOTES.md",
-        "ACCEPTANCE-CHECKLIST-v0.1.0-rc.1.md": "ACCEPTANCE-CHECKLIST.md",
-        "KNOWN-LIMITATIONS.md": "KNOWN-LIMITATIONS.md",
+        f"README-CANDIDATE-{identity.release_label}.md": "README-CANDIDATE.md",
+        f"RELEASE-NOTES-{identity.release_label}.md": "RELEASE-NOTES.md",
+        f"ACCEPTANCE-CHECKLIST-{identity.release_label}.md": "ACCEPTANCE-CHECKLIST.md",
+        f"KNOWN-LIMITATIONS-{identity.release_label}.md": "KNOWN-LIMITATIONS.md",
     }
     for source_name, destination_name in handoff_files.items():
-        shutil.copy2(RELEASE_SOURCE_ROOT / source_name, package_root / destination_name)
-    shutil.copy2(package_root / "README-CANDIDATE.md", package_root / "README.txt")
+        shutil.copy2(RELEASE_SOURCE_ROOT / source_name, docs_root / destination_name)
+    shutil.copy2(docs_root / "README-CANDIDATE.md", package_root / "README.txt")
 
 
 def _initialize_captured_system(
@@ -809,7 +849,7 @@ def _git_state(release_label: str) -> dict[str, Any]:
 
 
 def _dotnet_packages(package_root: Path) -> list[dict[str, str]]:
-    deps_path = package_root / "PilotAssessment.Desktop.deps.json"
+    deps_path = package_root / "app" / "PilotAssessment.Desktop.deps.json"
     if not deps_path.is_file():
         return []
     payload = json.loads(deps_path.read_text(encoding="utf-8"))
@@ -1012,7 +1052,7 @@ def _write_manifests(
     dotnet_version = _run(["dotnet", "--version"]).splitlines()[-1]
     uv_version = _run([str(UV), "--version"]).splitlines()[-1]
     payload: dict[str, Any] = {
-        "schema_version": "pilot-assessment-release-manifest-v2",
+        "schema_version": "pilot-assessment-release-manifest-v3",
         "product": "Pilot Assessment System",
         "product_version": identity.product_version,
         "release_channel": identity.release_channel,
@@ -1028,7 +1068,23 @@ def _write_manifests(
             "runtime_identifier": "win-x64",
             "distribution": "unpackaged-self-contained-directory",
         },
-        "entrypoint": "PilotAssessment.Desktop.exe",
+        "entrypoint": "PilotAssessment.exe",
+        "portable_layout": {
+            "schema_version": "pilot-assessment-portable-layout-v2",
+            "launcher": "PilotAssessment.exe",
+            "desktop_payload_root": "app",
+            "desktop_executable": "app/PilotAssessment.Desktop.exe",
+            "semantic_root_directories": [
+                "app",
+                "backend",
+                "developer",
+                "docs",
+                "licenses",
+                "manifest",
+                "runtime",
+                "system",
+            ],
+        },
         "backend": {
             "launch": ("runtime/python/python.exe -I -B -u -X utf8 -m pilot_assessment.sidecar"),
             "active_source_root": "backend/src/pilot_assessment",
@@ -1128,8 +1184,19 @@ def _build(
     user_acceptance: str,
     documentation_status: str,
 ) -> dict[str, Any]:
+    version = _read_product_version()
+    identity = _release_identity(
+        product_version=version,
+        release_label=release_label,
+        release_channel=release_channel,
+        candidate=candidate,
+        user_acceptance=user_acceptance,
+        documentation_status=documentation_status,
+        skip_archive=skip_archive,
+    )
     required = [
         DESKTOP_PROJECT,
+        LAUNCHER_PROJECT,
         UV,
         REPOSITORY_ROOT / "uv.lock",
         REPOSITORY_ROOT / "src" / "pilot_assessment",
@@ -1141,25 +1208,15 @@ def _build(
         DOCUMENTATION_TOOL_ROOT / "build_manuals.py",
         DOCUMENTATION_TOOL_ROOT / "uv.lock",
         DOCUMENTATION_SOURCE_ROOT / "assets" / "screenshots" / "manifest.json",
-        RELEASE_SOURCE_ROOT / "README-CANDIDATE.md",
-        RELEASE_SOURCE_ROOT / "RELEASE-NOTES-v0.1.0-rc.1.md",
-        RELEASE_SOURCE_ROOT / "ACCEPTANCE-CHECKLIST-v0.1.0-rc.1.md",
-        RELEASE_SOURCE_ROOT / "KNOWN-LIMITATIONS.md",
+        RELEASE_SOURCE_ROOT / f"README-CANDIDATE-{identity.release_label}.md",
+        RELEASE_SOURCE_ROOT / f"RELEASE-NOTES-{identity.release_label}.md",
+        RELEASE_SOURCE_ROOT / f"ACCEPTANCE-CHECKLIST-{identity.release_label}.md",
+        RELEASE_SOURCE_ROOT / f"KNOWN-LIMITATIONS-{identity.release_label}.md",
     ]
     missing = [str(path) for path in required if not path.exists()]
     if missing:
         raise ReleaseBuildError(f"required release inputs are missing: {missing}")
 
-    version = _read_product_version()
-    identity = _release_identity(
-        product_version=version,
-        release_label=release_label,
-        release_channel=release_channel,
-        candidate=candidate,
-        user_acceptance=user_acceptance,
-        documentation_status=documentation_status,
-        skip_archive=skip_archive,
-    )
     git_state = _git_state(identity.release_label)
     documentation_root = _generate_documentation(version, identity.documentation_status)
     package_name = identity.package_name
@@ -1177,20 +1234,25 @@ def _build(
 
     WORK_ROOT.mkdir(parents=True, exist_ok=True)
     publish_root = WORK_ROOT / "desktop-publish"
+    launcher_publish_root = WORK_ROOT / "launcher-publish"
     _remove_tree(publish_root, WORK_ROOT)
+    _remove_tree(launcher_publish_root, WORK_ROOT)
     publish_root.mkdir(parents=True)
+    launcher_publish_root.mkdir(parents=True)
     requirements = WORK_ROOT / "runtime-requirements.txt"
     if requirements.exists():
         requirements.unlink()
 
     _publish_desktop(publish_root)
-    shutil.copytree(publish_root, package_root, dirs_exist_ok=True)
-    for path in package_root.rglob("*"):
+    shutil.copytree(publish_root, package_root / "app", dirs_exist_ok=True)
+    launcher = _publish_launcher(launcher_publish_root)
+    shutil.copy2(launcher, package_root / "PilotAssessment.exe")
+    for path in (package_root / "app").rglob("*"):
         if path.is_file() and path.suffix.lower() in {".pdb", ".tmp", ".log"}:
             path.unlink()
 
     _install_python_runtime(package_root, requirements)
-    _copy_product_sources(package_root, documentation_root)
+    _copy_product_sources(package_root, documentation_root, identity)
     built_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     capture_report = capture_current_system(system_source, package_root / "system")
     _initialize_captured_system(

@@ -25,7 +25,7 @@ def test_release_candidate_catalog_defines_twelve_logical_and_twenty_four_output
     documents = catalog["documents"]
 
     assert catalog["release_channel"] == "release-candidate"
-    assert catalog["release_label"] == "v0.1.0-rc.1"
+    assert catalog["release_label"] == "v0.1.0-rc.2"
     assert catalog["user_acceptance"] == "pending"
     assert len(documents) == 12
     assert sum(len(item["languages"]) for item in documents) == 24
@@ -65,7 +65,7 @@ def test_master_manual_is_generated_from_all_eleven_released_module_sources() ->
     source, modules = aggregate_manual_source(catalog, master, "en-GB")
 
     assert source.metadata["status"] == "released"
-    assert source.metadata["release_label"] == "v0.1.0-rc.1"
+    assert source.metadata["release_label"] == "v0.1.0-rc.2"
     assert len(modules) == 11
     assert source.body.count(AGGREGATE_PAGE_BREAK) == 10
     assert [item["document_id"] for item in modules] == master["aggregate_sources"]

@@ -1,4 +1,4 @@
-# Third-party notices — v0.1.0-rc.1 engineering inventory
+# Third-party notices — v0.1.0-rc.2 engineering inventory
 
 This product includes self-contained .NET and Windows App SDK components, the CPython embedded
 distribution, the bundled uv dependency tool, and Python wheels resolved from the frozen `uv.lock`

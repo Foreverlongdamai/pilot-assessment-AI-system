@@ -8,13 +8,13 @@ document_version = "0.1.0"
 status = "released"
 audience = ["maintainer", "release"]
 information_types = ["tutorial", "how-to", "reference"]
-scope = "Building, externally verifying and handing off the Windows x64 v0.1.0-rc.1 candidate without claiming final user acceptance."
+scope = "Building, externally verifying and handing off the Windows x64 v0.1.0-rc.2 candidate without claiming final user acceptance."
 prerequisites = ["Clean source checkout at the intended annotated tag", "Explicit saved current system model", "Windows x64 build environment"]
 scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-QUICKSTART-001", "PAS-PORTABILITY-001", "PAS-PYTHON-CORE-001"]
 support = "Retain the delivery JSON, ZIP hash, tag/commit, build log, verification evidence and signed-off acceptance checklist."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 
@@ -28,13 +28,15 @@ This manual applies to:
 |---|---|
 | Product version | `0.1.0` |
 | Release channel | `release-candidate` |
-| Candidate | `rc.1` |
-| Release label/tag | `v0.1.0-rc.1` |
+| Candidate | `rc.2` |
+| Release label/tag | `v0.1.0-rc.2` |
 | User acceptance | `pending` |
 | Scientific status | `engineering-only` |
 | Formal assessment | `formal_run_authorized=false` for the supplied starter |
 
 An engineering-verified candidate is not the final accepted `v0.1.0`. The user must operate and inspect this exact ZIP before acceptance can be recorded. Documentation-only corrections may be recorded explicitly; code/model changes require a new candidate identity.
+
+RC.2 changes only the portable root, launcher and non-visible runtime locator; none of the pictured WinUI surfaces changed. It therefore reuses the ten RC.1 screenshot bytes while preserving their original capture source identity and recording `reused_from_release_label=v0.1.0-rc.1` in the screenshot manifest. They must not be represented as newly captured images.
 
 ## 2. Release inputs
 
@@ -51,7 +53,8 @@ The builder must never guess a system source or silently fall back to a starter.
 
 The Windows x64 ZIP contains:
 
-- self-contained `PilotAssessment.Desktop.exe` and private .NET/Windows App SDK files;
+- the sole self-contained root launcher `PilotAssessment.exe`, plus `PilotAssessment.Desktop.exe`, private .NET/Windows App SDK files and language resources contained under `app\`;
+- clearly visible root semantic directories `backend\`, `system\`, `runtime\`, `developer\`, `docs\`, `licenses\` and `manifest\`;
 - private Python runtime and private dependencies;
 - exposed active `backend/src/pilot_assessment/` source, lock and dependency helper;
 - selected current `system\` model library;
@@ -69,7 +72,7 @@ It contains no user project, Session, result, biometric data, test fixture, cach
 3. Build all 24 DOCX files and render every page for visual inspection.
 4. Run focused backend, schema, documentation, release, C# unit/contract and x64 Release gates.
 5. Confirm `git status --short` is empty.
-6. Create the annotated `v0.1.0-rc.1` tag and prove it peels to `HEAD`.
+6. Create the annotated `v0.1.0-rc.2` tag and prove it peels to `HEAD`.
 
 Do not edit UI code after candidate screenshot capture. Any such change invalidates screenshot source identity and requires recapture.
 
@@ -80,9 +83,9 @@ From the tagged repository root, with the desktop application closed:
 ```powershell
 .\.tools\uv\uv.exe run python tools\release\build_portable.py `
   --system-source .pilot-assessment-local\system `
-  --release-label v0.1.0-rc.1 `
+  --release-label v0.1.0-rc.2 `
   --release-channel release-candidate `
-  --candidate rc.1 `
+  --candidate rc.2 `
   --user-acceptance pending `
   --documentation-status released
 ```
@@ -90,9 +93,9 @@ From the tagged repository root, with the desktop application closed:
 Expected external delivery artifacts are:
 
 ```text
-PilotAssessment-0.1.0-rc.1-win-x64.zip
-PilotAssessment-0.1.0-rc.1-win-x64.zip.sha256
-PilotAssessment-0.1.0-rc.1-win-x64.delivery.json
+PilotAssessment-0.1.0-rc.2-win-x64.zip
+PilotAssessment-0.1.0-rc.2-win-x64.zip.sha256
+PilotAssessment-0.1.0-rc.2-win-x64.delivery.json
 ```
 
 The delivery JSON records file name/bytes/SHA-256, tag/commit, system identity/counts, documentation/SBOM hashes and pending acceptance without exposing absolute build-machine paths.
@@ -103,7 +106,7 @@ The authoritative acceptance rehearsal extracts the ZIP to a fresh repository-ex
 
 ```powershell
 .\.tools\uv\uv.exe run python tools\release\verify_archive_external.py `
-  --dist dist\releases\PilotAssessment-0.1.0-rc.1-win-x64.zip `
+  --dist dist\releases\PilotAssessment-0.1.0-rc.2-win-x64.zip `
   --verify-editable-source `
   --verify-operator-extension `
   --launch-desktop `

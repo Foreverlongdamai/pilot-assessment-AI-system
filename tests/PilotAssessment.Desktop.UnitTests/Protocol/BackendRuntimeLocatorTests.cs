@@ -37,6 +37,31 @@ public sealed class BackendRuntimeLocatorTests : IDisposable
     }
 
     [Fact]
+    public void LocateFindsPortableProductRootFromNestedDesktopPayload()
+    {
+        Touch("runtime/python/python.exe");
+        Directory.CreateDirectory(PathAt("runtime/site-packages"));
+        Touch("backend/src/pilot_assessment/sidecar/__main__.py");
+        Touch("backend/pyproject.toml");
+        Touch("backend/uv.lock");
+        Directory.CreateDirectory(PathAt("app"));
+
+        var options = BackendRuntimeLocator.Locate(
+            PathAt("app"),
+            PathAt("app"),
+            includeCurrentDirectory: false);
+
+        Assert.Equal(PathAt("runtime/python/python.exe"), options.ExecutablePath);
+        Assert.Equal(Path.GetFullPath(_root), options.WorkingDirectory);
+        Assert.Equal(
+            PathAt("system"),
+            options.EnvironmentVariables["PILOT_ASSESSMENT_SYSTEM_ROOT"]);
+        Assert.Equal(
+            Path.GetFullPath(_root),
+            options.EnvironmentVariables["PILOT_ASSESSMENT_PRODUCT_ROOT"]);
+    }
+
+    [Fact]
     public void LocateFallsBackToRepositoryUvForDevelopment()
     {
         var repository = PathAt("repository");

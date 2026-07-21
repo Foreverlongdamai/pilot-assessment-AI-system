@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-EVALUATOR-001", "PAS-EXPERT-EVIDENCE-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001"]
 support = "Retain the product version, stable error ID, Diagnostics summary and a privacy-safe description of the affected project when reporting a problem."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 
@@ -60,15 +60,18 @@ This view borrows the C4 system-context level. It shows people, external data, t
 
 ```text
 One unpacked software copy
-├── Python backend source and private runtime
-│   ├── generic Evidence executor
-│   ├── operators / adapters
+├── PilotAssessment.exe (sole root launcher)
+├── app/ (WinUI/.NET/Windows App SDK payload)
+├── backend/ (active Python source)
+│   ├── generic Evidence executor and operators / adapters
 │   └── BN inference engine
+├── runtime/ (private CPython and dependencies)
 ├── system/ global model library
 │   ├── all Raw Input / Evidence / BN nodes
 │   ├── all task schemes and active selections
 │   ├── parents, states, CPTs and layout
 │   └── current durable edit session
+├── developer/, docs/, licenses/ and manifest/
 └── multiple user-selected projects (outside the software directory)
     ├── managed Session revisions
     ├── immutable RunSnapshots
@@ -179,7 +182,7 @@ If source files change on disk after the Python process has started, the system 
 ## 11. Startup, shutdown and migration facts
 
 - The first delivery is a Windows x64 portable ZIP; use a reasonably short writable path such as `D:\PilotAssessment`;
-- double-click `PilotAssessment.Desktop.exe` to start the front end and supervised sidecar;
+- double-click the sole root launcher `PilotAssessment.exe`; it starts `app\PilotAssessment.Desktop.exe`, after which the front end starts the supervised sidecar;
 - do not start SQLite separately or activate Python manually;
 - create projects in a user-selected location outside the product directory;
 - when model edits exist, closing the main window asks whether to save all, discard all or cancel;
@@ -188,7 +191,7 @@ If source files change on disk after the Python process has started, the system 
 
 ## 12. Current status and scientific boundary
 
-At this document version, engineering gates M1–M8D, D-055 and M8C-1 are complete, and the M8E source is ready for its final tagged external verification. D-078 to D-081 allow the user to review the whole `v0.1.0-rc.1` candidate after that verification; `user_acceptance=pending` and `formal_run_authorized=false` remain unchanged.
+At this document version, engineering gates M1–M8D, D-055 and M8C-1 are complete, and the M8E source is ready for its final tagged external verification. D-078 to D-081 allow the user to review the whole `v0.1.0-rc.2` candidate after that verification; `user_acceptance=pending` and `formal_run_authorized=false` remain unchanged.
 
 Every starter/synthetic run remains `formal_run_authorized=false`. The product demonstrates that contracts, editing, persistence, inference and provenance can operate end to end. It does not prove that current Anchors/Evidence, task structure, thresholds or CPTs assess pilot competency accurately. Domain experts will design, calibrate and validate the scientific method within this framework.
 

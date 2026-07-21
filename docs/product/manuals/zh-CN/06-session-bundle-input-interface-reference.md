@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-EVALUATOR-001", "PAS-PYTHON-EXT-001", "PAS-PORTABILITY-001"]
 support = "提供不含隐私的目录树、adapter diagnostic 与 manifest 片段；禁止通过未授权渠道发送生理数据文件。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 

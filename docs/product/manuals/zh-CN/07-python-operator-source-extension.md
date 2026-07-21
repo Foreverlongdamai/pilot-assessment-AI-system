@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-PYTHON-CORE-001", "PAS-RELEASE-001"]
 support = "报告故障时使用 Diagnostics workspace 与产品内 logs。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 
@@ -54,7 +54,7 @@ developer/tools/uv.exe                             随包 dependency resolver
 
 ## 3. 关闭进程并保留可恢复副本
 
-1. 关闭 `PilotAssessment.Desktop.exe`，等待其子进程 `runtime/python/python.exe` 停止；
+1. 关闭由根目录 `PilotAssessment.exe` 启动的桌面应用，等待 `app/PilotAssessment.Desktop.exe` 与其 `runtime/python/python.exe` 子进程停止；
 2. 保留原始 ZIP，或把整个已解压产品目录复制到新位置；
 3. 不要只复制 project，因为 project 本来就不拥有 Python source 或 system model library。
 

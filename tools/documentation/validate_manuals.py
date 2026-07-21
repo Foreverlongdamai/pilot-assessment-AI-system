@@ -46,8 +46,8 @@ def _catalog_errors(catalog: dict[str, Any]) -> list[str]:
         errors.append("catalog languages must be exactly ['zh-CN', 'en-GB']")
     if catalog.get("release_channel") != "release-candidate":
         errors.append("catalog release_channel must be release-candidate")
-    if catalog.get("release_label") != "v0.1.0-rc.1":
-        errors.append("catalog release_label must be v0.1.0-rc.1")
+    if catalog.get("release_label") != "v0.1.0-rc.2":
+        errors.append("catalog release_label must be v0.1.0-rc.2")
     if catalog.get("user_acceptance") != "pending":
         errors.append("catalog user_acceptance must be pending")
     documents = catalog_documents(catalog)

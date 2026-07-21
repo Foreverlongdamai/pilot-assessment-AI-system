@@ -600,3 +600,17 @@
 - 决策：构建机上的仓库外 disposable extraction、受限 `PATH` 和自动 vertical-slice verification 形成 engineering evidence；用户在自己的 Windows 环境中打开完整候选并操作形成 independent user-acceptance evidence。两者不能互相冒充，也不能在未实际使用 Windows Sandbox 或独立 clean machine 时写成相应验证已经执行。
 - 理由：当前会话无提权权限，无法保证启用 Windows Sandbox；验证记录必须精确说明实际执行环境，而不是用近似隔离条件制造过度声明。
 - 影响：`v0.1.0-rc.1` 可在自动隔离验证通过后交付且保持 `user_acceptance=pending`。用户验收记录单独关闭 acceptance；任何未执行的 Sandbox、VM 或独立设备矩阵项继续写为 pending/not executed。
+
+## D-082：RC.1 用户验收结论为 `changes-required`，不得改写原候选
+
+- 状态：已接受
+- 决策：`v0.1.0-rc.1` 的独立用户验收记录为 `changes-required`。其 annotated tag、commit、ZIP、checksum 和自动验证记录保持不可变；全部修订进入新的 `v0.1.0-rc.2` candidate，且 RC.2 的 `user_acceptance` 重新从 `pending` 开始。
+- 理由：RC.1 根目录暴露 94 个文件夹与 374 个文件，大量 WinUI/.NET runtime payload 淹没产品语义入口。修订历史候选会破坏验收对象与工程证据的一一对应。
+- 影响：任何“RC.1 已通过用户验收”或直接把 RC.1 重命名为 final 的口径均无效；发布状态、README、验收记录和后续 tag 必须反映新的 candidate sequence。
+
+## D-083：桌面运行载荷收纳到 `app/`，产品根目录只有一个启动器
+
+- 状态：已接受
+- 决策：portable product 根目录只允许 `PilotAssessment.exe`、`README.txt` 以及 `app/`、`backend/`、`system/`、`runtime/`、`developer/`、`docs/`、`licenses/`、`manifest/`。完整 WinUI/.NET/Windows App SDK publish 位于 `app/`；用户只启动根 `PilotAssessment.exe`，不得把内部 `app/PilotAssessment.Desktop.exe` 作为第二个根入口。
+- 理由：产品结构应先呈现可理解、可编辑和可维护的语义边界，而不是暴露框架部署细节。单一根入口也能避免用户误移动某个 DLL 或直接绕开产品根定位。
+- 影响：本决策只取代 D-064 与 M8A/M8E 中关于根 EXE 和 desktop payload 位置的旧口径；unpackaged self-contained、无需预装 .NET/Python/SQLite 服务、活动 Python 源码与 software-owned `system/` 的其他边界继续有效。release manifest、runtime locator、manuals 与 verifier 必须共同执行该布局。

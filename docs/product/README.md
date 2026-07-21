@@ -2,9 +2,9 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 设计基线 | 产品 v0.8 portable engineering distribution；D-031–D-081 已获用户确认 |
+| 设计基线 | 产品 v0.1.0-rc.2 portable correction source；D-031–D-083 已获用户确认 |
 | 基线日期 | 2026-07-21 |
-| 产品阶段 | M1–M8E engineering gate、D-055 与 M8C-1 已完成；`v0.1.0-rc.1` 已通过内部和仓库外 restricted-PATH 自动隔离验证。当前等待用户统一验收，`user_acceptance=pending`；starter/synthetic `formal_run_authorized=false` |
+| 产品阶段 | M1–M8E engineering history 保持完整；`v0.1.0-rc.1` 用户验收为 `changes-required`。RC.2 source 已按 D-082/D-083 收纳 `app/` desktop payload 并建立唯一根启动器，tagged build/external verification 尚待执行；starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -34,6 +34,8 @@
 2026-07-21 M8C-0 已按 [Documentation System Design](specs/2026-07-21-m8c-documentation-system-design.md) 和 [Implementation Plan](plans/2026-07-21-m8c0-documentation-infrastructure-implementation-plan.md) 完成：12 类 stable catalog、metadata schema、固定文档工具链、DOCX reference template、Markdown/交叉引用、C4 assets、双语架构手册和 Python extension 手册均已接入。三份 review DOCX 共 28 页，逐页 render QA 与连续两次 deterministic build 通过；portable builder/verifier 正确区分 `review` 和 `released`。完整证据见 [M8C-0 Verification](reviews/2026-07-21-m8c0-documentation-infrastructure-verification.md)。D-077 已取消专用 backup/restore；随后 M8D 已完成 current-system packaging、project portability 与 diagnostics。最终 12 类双语内容、M7 截图和技术总册继续属于 M8C-1。
 
 2026-07-21 用户批准 D-078–D-081 与 [M8E Final Release Candidate Design](specs/2026-07-21-m8e-final-release-candidate-and-handoff-design.md)：不再单独执行 M7 中间验收，改为先完成 D-055、M8C-1 和 tagged clean-source `v0.1.0-rc.1`，再直接验收完整候选。D-055 单一英文 current-model contract/持久化迁移、24 份 released DOCX、10 张隐私审核后的 `release-candidate` screenshots、annotated tag、最终构建以及内部/仓库外自动隔离验证现均已完成；精确证据见 [M8E Verification](reviews/2026-07-21-m8e-release-candidate-verification.md)。候选形成不等于用户接受，也不得在 `user_acceptance=pending` 时称为正式 `v0.1.0`。
+
+2026-07-21 用户完成 RC.1 的首项独立验收并给出 `changes-required`：产品根目录暴露 94 个文件夹和 374 个文件。D-082/D-083 与 [RC.2 Portable Root Layout Amendment](specs/2026-07-21-rc2-portable-root-layout-amendment.md) 冻结新口径：RC.1 不可变，RC.2 将完整 WinUI/.NET runtime 收纳到 `app/`，根目录只提供 `PilotAssessment.exe` 一个启动入口，并显式保留八个语义目录。当前 tagged RC.2 build 与仓库外验证尚待执行。
 
 ## 1. 文档用途
 
@@ -87,6 +89,9 @@
 | 2.13.1 | [M8E Final Release Candidate Implementation Plan](plans/2026-07-21-m8e-final-release-candidate-implementation-plan.md) | 开发、文档、交付、审查者 | INLINE 13 个任务：D-055、M8C-1、C#/WinUI、tagged candidate、自动隔离验证和用户交付 |
 | 2.13.2 | [M8E Design Self-Review](reviews/2026-07-21-m8e-final-release-candidate-design-self-review.md) | 产品、交付、审查者 | 已批准规格的范围、候选身份、隐私、current-system capture 和验收声明自审 |
 | 2.13.3 | [M8E `v0.1.0-rc.1` Verification](reviews/2026-07-21-m8e-release-candidate-verification.md) | 用户、交付、维护者、审查者 | clean tag、fresh gates、source 不变性、ZIP/SBOM/checksum 与仓库外 editable-source/operator/run/desktop 的最终工程证据 |
+| 2.14 | [RC.2 Portable Root Layout Amendment](specs/2026-07-21-rc2-portable-root-layout-amendment.md) | 产品、交付、维护者、用户 | D-082/D-083：RC.1 changes-required、`app/` desktop payload、唯一根启动器、manifest v3 与根白名单 |
+| 2.14.1 | [RC.2 Implementation Plan](plans/2026-07-21-rc2-portable-root-layout-implementation-plan.md) | 开发、交付、审查者 | inline 实施、轻量回归、clean RC.2 tag、仓库外启动验证与不可变 RC.1 边界 |
+| 2.14.2 | [RC.1 User Acceptance Result](reviews/2026-07-21-v0.1.0-rc.1-user-acceptance-result.md) | 用户、产品、交付 | `changes-required` 的独立验收事实、根目录计数、必要修订和新 candidate 规则 |
 | 3 | [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) | 专家、产品、前后端 | 已实现的后端基础与历史 identity/publish 语义；冲突处由 M7 规格取代 |
 | 4 | [M5 Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) | 开发、审查者 | 已完成：inline 任务、合同冻结、O8 迁移、轻量验证与完成门 |
 | 5 | [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) | 前后端、交付、审查者 | 已实现：受管项目、SQLite、artifact、run lifecycle 与 JSON-RPC sidecar |

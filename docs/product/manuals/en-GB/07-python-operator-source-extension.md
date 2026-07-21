@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-PYTHON-CORE-001", "PAS-RELEASE-001"]
 support = "Use the Diagnostics workspace and the packaged logs when reporting a failure."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 
@@ -65,7 +65,7 @@ fallback implementation. `backend/src/pilot_assessment` is the one active source
 
 ## 3. Back up and close the process
 
-1. Close `PilotAssessment.Desktop.exe` and wait for its child `runtime/python/python.exe` to stop.
+1. Close the desktop application started by root `PilotAssessment.exe`, then wait for `app/PilotAssessment.Desktop.exe` and its `runtime/python/python.exe` child to stop.
 2. Keep the original ZIP, or copy the whole unpacked product directory to a new folder.
 3. Do not copy only the project: a project intentionally does not own Python source or the system
    model library.

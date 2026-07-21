@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-PYTHON-EXT-001", "PAS-PROTOCOL-CSHARP-001", "PAS-RELEASE-001"]
 support = "记录 source-tree identity、失败 contract/schema ID、命令、traceback 和最小隐私安全复现。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 

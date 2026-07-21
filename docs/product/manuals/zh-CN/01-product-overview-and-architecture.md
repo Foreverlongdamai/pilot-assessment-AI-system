@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-EVALUATOR-001", "PAS-EXPERT-EVIDENCE-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001"]
 support = "遇到问题时保留产品版本、错误 ID、Diagnostics 摘要和对应 project 的脱敏说明。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 
@@ -60,15 +60,18 @@ Pilot Assessment System 是一套离线 Windows 软件，用来把飞行仿真 S
 
 ```text
 一套解压后的软件副本
-├── Python 后端源码与私有运行环境
-│   ├── 通用 Evidence 执行器
-│   ├── operators / adapters
+├── PilotAssessment.exe（唯一根启动器）
+├── app/（WinUI/.NET/Windows App SDK 载荷）
+├── backend/（活动 Python 源码）
+│   ├── 通用 Evidence 执行器与 operators / adapters
 │   └── BN 推理引擎
+├── runtime/（私有 CPython 与依赖）
 ├── system/ 系统级模型库
 │   ├── 所有 Raw Input / Evidence / BN 节点
 │   ├── 所有任务方案与 active selection
 │   ├── parents、states、CPT、layout
 │   └── 当前持久 edit session
+├── developer/、docs/、licenses/、manifest/
 └── 用户选择的多个 project（在软件目录之外）
     ├── 受管 Session revisions
     ├── immutable RunSnapshots
@@ -179,7 +182,7 @@ backend/src/pilot_assessment/
 ## 11. 启动、关闭与迁移的基本事实
 
 - 首个交付是 Windows x64 portable ZIP，建议解压到较短且可写的目录，例如 `D:\PilotAssessment`；
-- 双击 `PilotAssessment.Desktop.exe` 即可启动前端和受监督 sidecar；
+- 双击产品根目录唯一的 `PilotAssessment.exe`；它启动 `app\PilotAssessment.Desktop.exe`，随后前端自动启动受监督 sidecar；
 - 不单独启动 SQLite，不手工激活 Python；
 - project 由用户选择创建位置，不放进产品目录；
 - 软件关闭时如存在模型改动，会询问保存全部、放弃全部或取消；
@@ -188,7 +191,7 @@ backend/src/pilot_assessment/
 
 ## 12. 当前状态与科学边界
 
-截至本手册版本，M1–M8D、D-055 与 M8C-1 的工程门已关闭，M8E 源码已准备进入最终标签和仓库外验证。D-078–D-081 允许在此后由用户统一验收完整的 `v0.1.0-rc.1` 候选；`user_acceptance=pending` 与 `formal_run_authorized=false` 保持不变。
+截至本手册版本，M1–M8D、D-055 与 M8C-1 的工程门已关闭，M8E 源码已准备进入最终标签和仓库外验证。D-078–D-081 允许在此后由用户统一验收完整的 `v0.1.0-rc.2` 候选；`user_acceptance=pending` 与 `formal_run_authorized=false` 保持不变。
 
 所有 starter/synthetic 运行都保持 `formal_run_authorized=false`。本产品可以证明数据合同、编辑、持久化、推理和追溯工作流能够运行，但不能证明当前 Anchor/Evidence、任务结构、阈值或 CPT 能准确评价飞行员能力。最终科学方法由领域专家在该框架中设计、校准和验证。
 

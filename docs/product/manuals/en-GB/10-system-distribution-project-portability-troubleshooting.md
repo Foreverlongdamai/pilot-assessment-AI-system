@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001", "PAS-RELEASE-001"]
 support = "Retain the original ZIP, release hash, Diagnostics summary and a privacy-safe directory inventory before attempting recovery."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 
@@ -34,9 +34,9 @@ Copying the software transfers its current Evidence/BN/task-scheme library and a
 ## 2. Move or duplicate the software/system
 
 1. Save or discard all staged system-model edits.
-2. Close every app instance and confirm `PilotAssessment.Desktop.exe` and its child Python process have exited.
+2. Close every app instance and confirm the root launcher, `app/PilotAssessment.Desktop.exe` and its child Python process have exited.
 3. Copy the complete product root to the destination. Do not select only the EXE, `system\` database or `backend\` folder.
-4. Start `PilotAssessment.Desktop.exe` from the destination.
+4. Start the sole entry point, `PilotAssessment.exe`, from the destination product root.
 5. Open Diagnostics and confirm product/release label, model library identity and counts, source identity and dependency/operator identity.
 
 The copied software and original become independent after the copy. Changes in one do not synchronize to the other. Keep the original candidate ZIP and `.sha256` as the delivered baseline.

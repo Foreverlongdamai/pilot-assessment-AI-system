@@ -1,13 +1,14 @@
 # Pilot Assessment System — Portable Release Candidate
 
-This directory contains Pilot Assessment System `v0.1.0-rc.1` for Windows x64. Its acceptance
+This directory contains Pilot Assessment System `v0.1.0-rc.2` for Windows x64. Its acceptance
 state is `pending`; it is not yet the accepted final release and is not a scientifically calibrated
 pilot-rating product.
 
 ## Start
 
 1. Extract the complete ZIP to a normal user-writable folder.
-2. Double-click `PilotAssessment.Desktop.exe`.
+2. Double-click the sole root launcher `PilotAssessment.exe`. The WinUI/.NET payload remains
+   contained under `app\`.
 3. The app starts its private Python backend automatically. Do not start Python or SQLite manually.
 4. Model Studio is immediately available from the software-owned current system model; no
    project is required to inspect or edit Evidence, BN, CPT or task schemes.
@@ -15,8 +16,8 @@ pilot-rating product.
    project. The backend generates its technical project ID.
 6. Import your own canonical Session Bundle or simulator `streams/` + `annotations/` source.
 
-Keep the directory structure intact. Moving only the EXE will disconnect it from the private
-runtime and backend source.
+Keep the directory structure intact. Moving only the launcher or files from `app\` will disconnect
+the desktop from the private runtime, system model and backend source.
 
 ## What is and is not in this package
 

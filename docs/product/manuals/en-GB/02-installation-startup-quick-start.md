@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-EVALUATOR-001", "PAS-SESSION-001", "PAS-PORTABILITY-001"]
 support = "Record the release label, visible error message and Diagnostics summary; do not send raw biometric or Session data unless an authorised support process requests it."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.1"
+release_label = "v0.1.0-rc.2"
 user_acceptance = "pending"
 +++
 
@@ -29,15 +29,15 @@ This is a release candidate with `user_acceptance=pending`. Its starter Evidence
 ## 2. Unpack the complete product
 
 1. Verify the separate `.sha256` file if it is supplied with the ZIP.
-2. Extract the whole archive to a short, writable local path such as `D:\PilotAssessment-0.1.0-rc.1`.
-3. Keep every subdirectory beside `PilotAssessment.Desktop.exe`; do not move only the EXE.
+2. Extract the whole archive to a short, writable local path such as `D:\PilotAssessment-0.1.0-rc.2`.
+3. Keep the root `app\`, `backend\`, `system\`, `runtime\`, `developer\`, `docs\`, `licenses\` and `manifest\` directories together; do not move the launcher or files from `app\` on their own.
 4. Do not extract over an older modified copy. Use a parallel directory so its Python source and `system\` remain recoverable.
 
 The candidate is self-contained. Do not install or activate Python, .NET, SQLite, Visual Studio or a database server merely to run it.
 
 ## 3. Start and stop
 
-Double-click `PilotAssessment.Desktop.exe`. The front end starts one local Python sidecar as its child process. JSON-RPC travels through stdin/stdout; there is no TCP service. SQLite is an embedded file database used by that Python process, not a separately started application.
+Double-click the sole root launcher, `PilotAssessment.exe`. It opens the WinUI desktop payload from `app\`; the front end then starts one local Python sidecar as its child process. JSON-RPC travels through stdin/stdout; there is no TCP service. SQLite is an embedded file database used by that Python process, not a separately started application.
 
 On normal shutdown the desktop app stops the sidecar. If system-model edits are staged, the close dialog asks whether to save all changes and close, discard all changes and close, or cancel closing. Do not terminate the process while a save or import is in progress.
 
@@ -102,4 +102,3 @@ See [[DOC:PAS-EVALUATOR-001]] for the full evaluation workflow and [[DOC:PAS-POR
 - [ ] preflight reviewed and one lightweight run completed;
 - [ ] result and provenance opened;
 - [ ] application closed normally.
-
