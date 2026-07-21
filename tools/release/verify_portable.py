@@ -434,6 +434,26 @@ def _verify_system_model_baseline(root: Path) -> dict[str, Any]:
     }
 
 
+def _verify_runtime_system_model(
+    runtime: object,
+    baseline: dict[str, Any],
+) -> None:
+    if not isinstance(runtime, dict):
+        raise PortableVerificationError("runtime status omitted the system model summary")
+    keys = (
+        "model_library_id",
+        "model_identity_sha256",
+        "node_count",
+        "scheme_count",
+    )
+    if any(runtime.get(key) != baseline.get(key) for key in keys):
+        raise PortableVerificationError(
+            "runtime system model identity/counts differ from the captured release baseline"
+        )
+    if runtime.get("edit_session_dirty") is not False:
+        raise PortableVerificationError("fresh packaged runtime system model is unexpectedly dirty")
+
+
 def _verify_source_baseline(root: Path) -> int:
     baseline = json.loads((root / "manifest" / "source-baseline.json").read_text(encoding="utf-8"))
     expected_root = "backend/src/pilot_assessment"
@@ -635,6 +655,11 @@ def _sidecar_roundtrip(root: Path) -> dict[str, Any]:
             raise PortableVerificationError("portable backend did not load its release baseline")
         if backend_source.get("runtime_restart_required"):
             raise PortableVerificationError("fresh portable backend unexpectedly requires restart")
+        runtime_system_model = status_before.get("system_model")
+        if not isinstance(runtime_system_model, dict):
+            raise PortableVerificationError("runtime status omitted system model diagnostics")
+        if status_after.get("system_model") != runtime_system_model:
+            raise PortableVerificationError("runtime system model changed across project switches")
         if status_after.get("model_library_id") != status_before.get("model_library_id"):
             raise PortableVerificationError("system model identity changed across projects")
         schemes_before = by_id["schemes-before"]["result"]["schemes"]
@@ -663,6 +688,7 @@ def _sidecar_roundtrip(root: Path) -> dict[str, Any]:
             "hello": hello,
             "model_library_id": status_before["model_library_id"],
             "scheme_count": len(schemes_before),
+            "system_model": runtime_system_model,
             "created_project_count": len(project_ids),
             "stderr": stderr.strip(),
             "stdout_lines": len(lines),
@@ -1453,13 +1479,7 @@ def verify(
     _verify_content_policy(root)
     imported = _run_private_import(root)
     sidecar = _sidecar_roundtrip(root)
-    if (
-        sidecar["model_library_id"] != system_model["model_library_id"]
-        or sidecar["scheme_count"] != system_model["scheme_count"]
-    ):
-        raise PortableVerificationError(
-            "runtime system identity/counts differ from the captured release baseline"
-        )
+    _verify_runtime_system_model(sidecar["system_model"], system_model)
     edit_marker = _verify_editable_source(root) if editable_source else None
     extension = _verify_operator_extension(root) if operator_extension else None
     if editable_source or operator_extension:

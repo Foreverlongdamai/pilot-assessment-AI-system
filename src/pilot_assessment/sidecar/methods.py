@@ -60,6 +60,7 @@ from pilot_assessment.model_workspace.edit_session import (
     ModelEditSessionHistoryBoundaryError,
 )
 from pilot_assessment.model_workspace.execution import CurrentExecutionMaterializationError
+from pilot_assessment.model_workspace.hashing import model_library_identity
 from pilot_assessment.model_workspace.legacy_import import (
     LegacyModelImportConflictError,
     LegacyModelImportError,
@@ -1137,13 +1138,45 @@ class SidecarMethods:
     def _runtime_status(self, _params, _context) -> RpcResult:
         app = self.application
         backend_source = self.system.source_provenance.disk_status()
+        nodes = self.system.current_model.list_nodes()
+        schemes = self.system.current_model.list_schemes()
+        edit_status = self.system.model_edits.status()
+        system_schema_row = self.system.store.database.fetchone(
+            "SELECT MAX(version) AS version FROM schema_migrations"
+        )
+        if system_schema_row is None or system_schema_row["version"] is None:
+            raise RuntimeError("system database schema identity is unavailable")
+        system_model = {
+            "model_library_id": self.system.model_library_id,
+            "model_identity_sha256": model_library_identity(nodes, schemes),
+            "format_version": self.system.store.descriptor.format_version,
+            "database_schema_version": int(system_schema_row["version"]),
+            "node_count": len(nodes),
+            "scheme_count": len(schemes),
+            "edit_session_dirty": edit_status.dirty,
+            "recovery_diagnostics": list(self.system.store.recovery_diagnostics),
+        }
         active_runs = []
+        project_compatibility = None
         if app is not None and not app.closed:
             active_runs = [
                 run.run_id
                 for run in app.runs.list_runs()
                 if run.state in {RunState.RUNNING, RunState.CANCELLING}
             ]
+            project_schema_row = app.project.database.fetchone(
+                "SELECT MAX(version) AS version FROM schema_migrations"
+            )
+            if project_schema_row is None or project_schema_row["version"] is None:
+                raise RuntimeError("project database schema identity is unavailable")
+            project_compatibility = {
+                "project_id": app.project.descriptor.project_id,
+                "format_version": app.project.descriptor.format_version,
+                "database_schema_version": int(project_schema_row["version"]),
+                "compatibility": "compatible",
+                "recovery_diagnostics": list(app.project.recovery_diagnostics),
+                "recovered_run_count": len(app.run_recovery),
+            }
         return {
             "state": "busy" if active_runs else "ready",
             "system_ready": not self.system.closed,
@@ -1152,6 +1185,8 @@ class SidecarMethods:
             "project_id": None if app is None or app.closed else app.project.descriptor.project_id,
             "active_run_ids": active_runs,
             "backend_source": _jsonable(backend_source),
+            "system_model": system_model,
+            "project_compatibility": project_compatibility,
         }
 
     def _runtime_shutdown(self, _params, _context) -> RpcResult:

@@ -135,6 +135,31 @@ def test_builder_refuses_system_source_inside_recreated_package_root(tmp_path: P
         _require_external_system_source(source, package_root)
 
 
+def test_runtime_system_model_comparison_rejects_manifest_drift() -> None:
+    from verify_portable import (
+        PortableVerificationError,
+        _verify_runtime_system_model,
+    )
+
+    baseline = {
+        "model_library_id": "model-library.alpha",
+        "model_identity_sha256": "a" * 64,
+        "node_count": 54,
+        "scheme_count": 2,
+    }
+    runtime = {
+        **baseline,
+        "format_version": "0.1.0",
+        "database_schema_version": 5,
+        "edit_session_dirty": False,
+        "recovery_diagnostics": [],
+    }
+    _verify_runtime_system_model(runtime, baseline)
+
+    with pytest.raises(PortableVerificationError, match="runtime system model"):
+        _verify_runtime_system_model({**runtime, "node_count": 55}, baseline)
+
+
 def test_inspection_rejects_active_writer(tmp_path: Path) -> None:
     SystemCaptureError, _, inspect_system_source = _capture_api()
     root = tmp_path / "system"

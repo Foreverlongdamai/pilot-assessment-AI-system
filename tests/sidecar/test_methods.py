@@ -79,6 +79,17 @@ def test_system_model_is_browsable_and_editable_without_an_open_project(
         assert status["backend_source"]["runtime_restart_required"] is False
         assert status["backend_source"]["loaded_identity"]["baseline_available"] is False
         assert len(status["backend_source"]["loaded_identity"]["identity_sha256"]) == 64
+        system_model = status["system_model"]
+        initial_model_identity = system_model["model_identity_sha256"]
+        assert system_model["model_library_id"] == status["model_library_id"]
+        assert len(initial_model_identity) == 64
+        assert system_model["format_version"] == "0.1.0"
+        assert system_model["database_schema_version"] == 5
+        assert system_model["node_count"] == 53
+        assert system_model["scheme_count"] == 1
+        assert system_model["edit_session_dirty"] is False
+        assert system_model["recovery_diagnostics"] == []
+        assert status["project_compatibility"] is None
 
         base = rpc.call("model.scheme.list")["schemes"][0]
         graph = rpc.call("model.graph.get", {"scheme_id": base["scheme_id"]})["graph"]
@@ -96,9 +107,31 @@ def test_system_model_is_browsable_and_editable_without_an_open_project(
         )["scheme"]
         assert copied["scheme_id"] == "task-scheme.no-project-copy"
         assert rpc.call("model.edit.status")["edit_session"]["dirty"] is True
+        staged_status = rpc.call("runtime.status")
+        assert staged_status["system_model"]["edit_session_dirty"] is True
+        assert staged_status["system_model"]["scheme_count"] == 1
 
-        rpc.call("model.edit.discard", _mutation("tx.no-project-discard"))
+        rpc.call("model.edit.commit", _mutation("tx.no-project-save"))
         assert rpc.call("model.edit.status")["edit_session"]["dirty"] is False
+        saved_status = rpc.call("runtime.status")
+        assert saved_status["system_model"]["scheme_count"] == 2
+        assert saved_status["system_model"]["model_identity_sha256"] != initial_model_identity
+
+        rpc.call(
+            "project.create",
+            _mutation(
+                "tx.no-project-diagnostics-project",
+                root=str(tmp_path / "diagnostics-project"),
+                name="Diagnostics project",
+            ),
+        )
+        project_status = rpc.call("runtime.status")["project_compatibility"]
+        assert project_status["format_version"] == "0.1.0"
+        assert project_status["database_schema_version"] == 5
+        assert project_status["compatibility"] == "compatible"
+        assert project_status["recovery_diagnostics"] == []
+        assert project_status["recovered_run_count"] == 0
+        rpc.call("project.close")
         project_only = rpc.call_error("session.list", {})
         assert project_only["data"]["error_code"] == "PROJECT_NOT_OPEN"
     finally:

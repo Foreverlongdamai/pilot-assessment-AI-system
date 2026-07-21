@@ -454,8 +454,10 @@ git commit -m "feat: package the selected current system"
 - Modify: `src/pilot_assessment/model_workspace/hashing.py`
 - Modify: `src/pilot_assessment/sidecar/methods.py`
 - Modify: `tests/sidecar/test_methods.py`
+- Modify: `tools/release/verify_portable.py`
+- Modify: `tests/release/test_system_model_capture.py`
 
-- [ ] **Step 1: Extend the existing no-project sidecar test first**
+- [x] **Step 1: Extend the existing no-project sidecar test first**
 
 After obtaining the initial status, assert:
 
@@ -471,7 +473,7 @@ assert status["project_compatibility"] is None
 
 After the existing scheme copy and `model.edit.commit`, call `runtime.status` again and assert `scheme_count == 2` and the model identity changed. Open a micro project and assert `project_compatibility.compatibility == "compatible"`, format `0.1.0`, schema `5`, and no recovery diagnostics.
 
-- [ ] **Step 2: Run the focused test and confirm missing fields**
+- [x] **Step 2: Run the focused test and confirm missing fields**
 
 Run:
 
@@ -481,7 +483,7 @@ Run:
 
 Expected: failure because `system_model` and `project_compatibility` are absent.
 
-- [ ] **Step 3: Add one model-library identity helper**
+- [x] **Step 3: Add one model-library identity helper**
 
 Add this backend API and export it from `hashing.py`:
 
@@ -495,11 +497,11 @@ def model_library_identity(
 
 It must use the same `kind + NUL + id + NUL + content_hash + NUL + layout_hash + LF` byte stream as the release baseline.
 
-- [ ] **Step 4: Extend `_runtime_status` without removing old fields**
+- [x] **Step 4: Extend `_runtime_status` without removing old fields**
 
 Return `system_model` and nullable `project_compatibility` using current in-memory services and existing descriptors. Derive database schema version from `schema_migrations`; use `system.store.recovery_diagnostics` and `project.recovery_diagnostics`; include `len(app.run_recovery)` without reading raw Session files. Never return an absolute project or system path.
 
-- [ ] **Step 5: Run the focused and sidecar contract tests**
+- [x] **Step 5: Run the focused and sidecar contract tests**
 
 Run:
 
@@ -511,10 +513,14 @@ Run:
 
 Expected: all selected tests pass and stdout remains JSONL-only.
 
-- [ ] **Step 6: Commit Task 3**
+Also compare the typed runtime `system_model` with the captured v2 baseline in
+the portable verifier. A focused drift test must prove that a manifest/runtime
+identity mismatch is rejected.
+
+- [x] **Step 6: Commit Task 3**
 
 ```powershell
-git add src/pilot_assessment/model_workspace/hashing.py src/pilot_assessment/sidecar/methods.py tests/sidecar/test_methods.py
+git add src/pilot_assessment/model_workspace/hashing.py src/pilot_assessment/sidecar/methods.py tests/sidecar/test_methods.py tools/release/verify_portable.py tests/release/test_system_model_capture.py docs/product/plans/2026-07-21-m8d-current-system-packaging-implementation-plan.md
 git commit -m "feat: report system and project compatibility"
 ```
 

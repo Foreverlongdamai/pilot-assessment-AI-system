@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Iterable
 
 from pilot_assessment.contracts.model_workspace import (
@@ -91,6 +92,31 @@ def rehash_task_scheme(scheme: TaskScheme) -> TaskScheme:
     )
 
 
+def model_library_identity(
+    nodes: Iterable[ModelNode],
+    schemes: Iterable[TaskScheme],
+) -> str:
+    """Hash ordered current node/scheme semantic and layout identities."""
+
+    digest = hashlib.sha256()
+    collections = (
+        ("node", sorted(nodes, key=lambda item: item.node_id), "node_id"),
+        ("scheme", sorted(schemes, key=lambda item: item.scheme_id), "scheme_id"),
+    )
+    for kind, items, identity_field in collections:
+        for item in items:
+            identity = getattr(item, identity_field)
+            digest.update(kind.encode("ascii"))
+            digest.update(b"\0")
+            digest.update(identity.encode("utf-8"))
+            digest.update(b"\0")
+            digest.update(item.content_hash.encode("ascii"))
+            digest.update(b"\0")
+            digest.update(item.layout_hash.encode("ascii"))
+            digest.update(b"\n")
+    return digest.hexdigest()
+
+
 def model_graph_semantic_hash(
     model_library_id: str,
     scheme: TaskScheme,
@@ -120,6 +146,7 @@ def model_graph_semantic_hash(
 
 __all__ = [
     "model_graph_semantic_hash",
+    "model_library_identity",
     "model_node_layout_hash",
     "model_node_semantic_hash",
     "rehash_model_node",
