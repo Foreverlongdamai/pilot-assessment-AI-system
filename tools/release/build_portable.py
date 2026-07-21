@@ -78,6 +78,12 @@ class ReleaseBuildError(RuntimeError):
     """Raised when a portable release invariant is not satisfied."""
 
 
+def _internal_verification_root(*, work_root: Path, identity: ReleaseIdentity) -> Path:
+    """Keep the disposable copy's root name identical to the candidate package."""
+
+    return work_root / identity.package_name
+
+
 def _arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -1203,7 +1209,10 @@ def _build(
         capture_report=capture_report,
     )
 
-    verification_root = WORK_ROOT / "verification-copy"
+    verification_root = _internal_verification_root(
+        work_root=WORK_ROOT,
+        identity=identity,
+    )
     _remove_tree(verification_root, WORK_ROOT)
     shutil.copytree(package_root, verification_root)
     _run(

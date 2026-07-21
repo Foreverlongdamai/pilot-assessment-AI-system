@@ -25,13 +25,20 @@ def _valid_identity_arguments() -> dict[str, object]:
 
 
 def test_release_candidate_identity_is_explicit_and_names_the_rc_directory() -> None:
-    from build_portable import _release_identity
+    from build_portable import _internal_verification_root, _release_identity
 
     identity = _release_identity(**_valid_identity_arguments())
 
     assert identity.package_name == "PilotAssessment-0.1.0-rc.1-win-x64"
     assert identity.release_label == "v0.1.0-rc.1"
     assert identity.user_acceptance == "pending"
+    assert (
+        _internal_verification_root(
+            work_root=Path("disposable-verification"),
+            identity=identity,
+        ).name
+        == identity.package_name
+    )
 
 
 @pytest.mark.parametrize(
