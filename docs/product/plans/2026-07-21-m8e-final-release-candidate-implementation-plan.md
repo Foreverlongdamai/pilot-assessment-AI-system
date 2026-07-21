@@ -231,18 +231,18 @@ git commit -m "feat: expose single-English current model RPC"
 - Modify: `src/PilotAssessment.Desktop/Services/Backend/ModelWorkspaceClient.cs`
 - Test: desktop unit and contract suites
 
-- [ ] Add a failing C# serialization test for `model-node/0.2.0` with `Name`, `ShortName`, `Description` and definition `HelpText`.
-- [ ] Replace current typed DTOs and RPC payloads; keep explicit legacy snapshot DTOs only for historical fixtures.
-- [ ] Remove bilingual selection from display resolution, graph search, draft/rebase and task scheme list.
-- [ ] Confirm current client payloads contain no null bilingual keys.
-- [ ] Run:
+- [x] Add a failing C# serialization test for `model-node/0.2.0` with `Name`, `ShortName`, `Description` and definition `HelpText`.
+- [x] Replace current typed DTOs and RPC payloads; keep explicit legacy snapshot DTOs only for historical fixtures.
+- [x] Remove bilingual selection from display resolution, graph search, draft/rebase and task scheme list.
+- [x] Confirm current client payloads contain no null bilingual keys.
+- [x] Run:
 
 ```powershell
 dotnet test tests\PilotAssessment.Desktop.UnitTests\PilotAssessment.Desktop.UnitTests.csproj -c Debug --nologo
 dotnet test tests\PilotAssessment.Desktop.ContractTests\PilotAssessment.Desktop.ContractTests.csproj -c Debug -p:Platform=x64 --nologo
 ```
 
-- [ ] Commit:
+- [x] Commit (`ce816e8`, combined with Task 6 to preserve a buildable desktop slice):
 
 ```powershell
 git add src/PilotAssessment.Desktop.Core src/PilotAssessment.Desktop/Services tests/PilotAssessment.Desktop.UnitTests tests/PilotAssessment.Desktop.ContractTests
@@ -267,8 +267,8 @@ git commit -m "feat: consume single-English model contracts in desktop core"
 - Modify: `src/PilotAssessment.Desktop/Strings/zh-CN/Resources.resw`
 - Test: desktop editor/localization unit tests
 
-- [ ] Replace paired editor state with single `Name`, `Description` and `HelpText` properties.
-- [ ] Replace paired XAML fields with one canonical field and localized hint:
+- [x] Replace paired editor state with single `Name`, `Description` and `HelpText` properties.
+- [x] Replace paired XAML fields with one canonical field and localized hint:
 
 ```xml
 <TextBox Header="{Binding [Editor_CanonicalName], Source={StaticResource Localization}}"
@@ -276,16 +276,23 @@ git commit -m "feat: consume single-English model contracts in desktop core"
 <TextBlock Text="{Binding [Editor_CanonicalEnglishHint], Source={StaticResource Localization}}" />
 ```
 
-- [ ] Use `名称（模型内容使用英文）` in Chinese and `Name (canonical content in English)` in English.
-- [ ] Remove obsolete paired resource keys only after all references are gone; keep unrelated UI localization.
-- [ ] Add a test proving language switching changes UI labels but does not mutate or rewrite model content.
-- [ ] Run unit tests, x64 Debug build and a visible WinUI smoke; close normally with `CloseMainWindow`.
-- [ ] Commit:
+- [x] Use `名称（模型内容使用英文）` in Chinese and `Name (canonical content in English)` in English.
+- [x] Remove obsolete paired resource keys only after all references are gone; keep unrelated UI localization.
+- [x] Add a test proving language switching changes UI labels but does not mutate or rewrite model content.
+- [x] Run unit tests and an x64 Debug visible WinUI smoke; close normally with `CloseMainWindow` before current-system capture.
+- [x] Commit (`ce816e8`, combined with Task 5 to preserve a buildable desktop slice):
 
 ```powershell
 git add src/PilotAssessment.Desktop tests/PilotAssessment.Desktop.UnitTests
 git commit -m "feat: use canonical English fields in model editors"
 ```
+
+Implementation evidence (2026-07-21): desktop unit tests passed `105 passed`, the
+real-sidecar contract suite passed `4 passed`, and the x64 Debug WinUI build completed
+with zero warnings and zero errors. The rebuilt desktop process opened a responsive
+main window with a non-zero window handle. Current serialized model payload tests
+explicitly reject legacy bilingual keys; the immutable v0.2 run fixture still round-trips
+through an opaque legacy DTO while the new v0.3 fixture uses current single-English nodes.
 
 ## Task 7: Rehearse and apply D-055 current-system migration
 
@@ -294,17 +301,27 @@ git commit -m "feat: use canonical English fields in model editors"
 - Create: `tests/integration/test_m8e_current_system_migration.py`
 - Modify only through normal runtime migration: `.pilot-assessment-local/system/` (Git-ignored)
 
-- [ ] Inspect and record the read-only source identity, clean edit state, user-owned row counts and transient count.
-- [ ] `copytree` the complete system to a temporary root and open the copy with the new runtime.
-- [ ] Assert counts/parents/CPT/recipe/activation/layout are preserved, all current objects use v0.2 single fields, and historical run bytes remain unchanged.
-- [ ] If the copy passes and the source identity still matches, open/close the selected system through `SystemApplication`; do not run a one-off SQL patch.
-- [ ] Re-inspect: same library ID and `54 / 2`, new content identity due only to contract migration, no user-owned rows or WAL/SHM, and explicit migration lineage.
-- [ ] Commit only the integration test:
+- [x] Inspect and record the read-only source identity, clean edit state, user-owned row counts and transient count.
+- [x] `copytree` the complete system to a temporary root and open the copy with the new runtime.
+- [x] Assert counts/parents/CPT/recipe/activation/layout are preserved, all current objects use v0.2 single fields, and historical run bytes remain unchanged.
+- [x] If the copy passes and the source identity still matches, open/close the selected system through `SystemApplication`; do not run a one-off SQL patch.
+- [x] Re-inspect: same library ID and `54 / 2`, new content identity due only to contract migration, no user-owned rows or WAL/SHM, and explicit migration lineage.
+- [x] Commit only the integration test (`9635e56`):
 
 ```powershell
 git add tests/integration/test_m8e_current_system_migration.py
 git commit -m "test: verify current system English migration"
 ```
+
+Implementation evidence (2026-07-21): a disposable complete legacy system, including
+its clean staging database and baseline snapshot, was copied and migrated through normal
+`SystemApplication` composition. The focused gate passed `2 passed` when the explicit
+selected-system gate was enabled. The selected current system retained its model-library
+ID, `54` nodes and `2` schemes; its `56` append-only lineage rows map every v0.1 object to
+one v0.2 object. Structural projections prove parents, CPTs, Evidence recipes, activation
+sets and layouts are unchanged. User-owned tables, historical Run rows and WAL/SHM files
+are empty. The normal WinUI smoke opened and cleanly closed this selected system; no
+one-off SQL patch was applied.
 
 ## Task 8: Complete documentation aggregation and screenshot contracts
 
