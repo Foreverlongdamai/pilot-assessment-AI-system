@@ -17,8 +17,10 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 from manual_common import (
+    AGGREGATE_PAGE_BREAK,
     MANUAL_ROOT,
     REPOSITORY_ROOT,
+    SCREENSHOT_REFERENCE_PATTERN,
     DocumentationError,
     read_json,
     replace_document_references,
@@ -387,6 +389,14 @@ class ManualDocxBuilder:
         self.diagram_index = {
             str(item["asset_id"]): item for item in self.diagram_manifest["diagrams"]
         }
+        self.screenshot_manifest = read_json(
+            MANUAL_ROOT / "assets" / "screenshots" / "manifest.json"
+        )
+        self.screenshot_index = {
+            (str(item["screenshot_id"]), str(item["language"])): item
+            for item in self.screenshot_manifest.get("screenshots", [])
+            if isinstance(item, dict)
+        }
         _configure_section(self.document)
         _configure_styles(self.document)
         _set_update_fields(self.document)
@@ -500,10 +510,15 @@ class ManualDocxBuilder:
                 ("Product version", self.metadata["product_version"]),
                 ("Document version", self.metadata["document_version"]),
                 ("Status", self.metadata["status"]),
+                ("Release", self.metadata["release_label"]),
+                ("User acceptance", self.metadata["user_acceptance"]),
                 ("Audience", ", ".join(self.metadata["audience"])),
                 ("Scientific status", self.metadata["scientific_status"]),
             ]
         )
+        if self.language == "zh-CN":
+            labels.insert(4, ("发布版本", self.metadata["release_label"]))
+            labels.insert(5, ("用户验收", self.metadata["user_acceptance"]))
         for label, value in labels:
             paragraph = self.document.add_paragraph()
             paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -664,6 +679,34 @@ class ManualDocxBuilder:
         run = explanation.add_run(alt_text)
         _set_run_font(run, size=9, colour=MUTED)
 
+    def _add_screenshot(self, screenshot_id: str) -> None:
+        item = self.screenshot_index.get((screenshot_id, self.language))
+        if not item or item.get("status") != "release-candidate":
+            raise DocumentationError(
+                f"release-candidate screenshot is unavailable: {screenshot_id}:{self.language}"
+            )
+        png = MANUAL_ROOT / str(item["path"])
+        if not png.is_file():
+            raise DocumentationError(f"screenshot PNG is missing: {png}")
+        with Image.open(png) as image:
+            width_px, height_px = image.size
+        max_width = 6.15
+        max_height = 5.5
+        ratio = width_px / height_px
+        width = min(max_width, max_height * ratio)
+        height = width / ratio
+        paragraph = self.document.add_paragraph()
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        paragraph.paragraph_format.keep_with_next = True
+        shape = paragraph.add_run().add_picture(
+            str(png), width=Inches(width), height=Inches(height)
+        )
+        alt_text = str(item["alt_text"])
+        shape._inline.docPr.set("descr", alt_text)
+        caption = self.document.add_paragraph(style="PA Caption")
+        run = caption.add_run(str(item["caption"]))
+        _set_run_font(run, size=9, colour=MUTED, italic=True)
+
     def _add_table(self, rows: list[list[str]]) -> None:
         if not rows:
             return
@@ -785,9 +828,20 @@ class ManualDocxBuilder:
                 blockquote_depth = max(0, blockquote_depth - 1)
             elif token_type == "paragraph_open":
                 inline = tokens[index + 1]
+                if inline.content.strip() == AGGREGATE_PAGE_BREAK:
+                    self.document.add_page_break()
+                    index += 3
+                    continue
                 asset_match = ASSET_ONLY.fullmatch(inline.content.strip())
                 if asset_match:
                     self._add_asset(asset_match.group(1))
+                    index += 3
+                    continue
+                screenshot_match = SCREENSHOT_REFERENCE_PATTERN.fullmatch(
+                    inline.content.strip()
+                )
+                if screenshot_match:
+                    self._add_screenshot(screenshot_match.group(1))
                     index += 3
                     continue
                 if list_stack:

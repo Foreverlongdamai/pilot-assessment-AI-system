@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import shutil
 import sys
 import tempfile
@@ -19,6 +20,7 @@ from manual_common import (
     TOOL_ROOT,
     DocumentationError,
     add_selection_arguments,
+    aggregate_manual_source,
     load_catalog,
     output_root,
     parse_manual_source,
@@ -146,8 +148,21 @@ def build(*, status: str, language: str | None, document_id: str | None) -> dict
     selected = selected_variants(catalog, status=status, language=language, document_id=document_id)
     outputs: list[dict[str, Any]] = []
     for document, current_language, variant in selected:
-        source_path = safe_manual_path(str(variant["source"]))
-        source = parse_manual_source(source_path)
+        aggregate_inputs: list[dict[str, str]] | None = None
+        if variant.get("source") is None:
+            source, aggregate_inputs = aggregate_manual_source(
+                catalog,
+                document,
+                current_language,
+            )
+            source_path = source.path
+            source_reference: str | None = None
+            source_hash = hashlib.sha256(source.body.encode("utf-8")).hexdigest()
+        else:
+            source_path = safe_manual_path(str(variant["source"]))
+            source = parse_manual_source(source_path)
+            source_reference = source_path.relative_to(MANUAL_ROOT).as_posix()
+            source_hash = sha256_file(source_path)
         output = destination_root / current_language / str(variant["output"])
         metrics = build_manual_docx(
             template=TEMPLATE_PATH,
@@ -166,8 +181,9 @@ def build(*, status: str, language: str | None, document_id: str | None) -> dict
                 "document_id": document["document_id"],
                 "language": current_language,
                 "status": variant["status"],
-                "source": source_path.relative_to(MANUAL_ROOT).as_posix(),
-                "source_sha256": sha256_file(source_path),
+                "source": source_reference,
+                "source_sha256": source_hash,
+                "aggregate_sources": aggregate_inputs,
                 "output": output.relative_to(destination_root).as_posix(),
                 "output_sha256": sha256_file(output),
                 "output_bytes": output.stat().st_size,
@@ -180,6 +196,9 @@ def build(*, status: str, language: str | None, document_id: str | None) -> dict
         "schema_version": "pilot-assessment-document-build-v1",
         "product_version": catalog["product_version"],
         "document_set_version": catalog["document_set_version"],
+        "release_channel": catalog["release_channel"],
+        "release_label": catalog["release_label"],
+        "user_acceptance": catalog["user_acceptance"],
         "build_status": status,
         "template": {
             "path": TEMPLATE_PATH.relative_to(MANUAL_ROOT).as_posix(),

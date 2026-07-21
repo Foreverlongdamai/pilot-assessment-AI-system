@@ -6,7 +6,8 @@
   "required": [
     "document_id", "language", "title", "short_title", "product_version",
     "document_version", "status", "audience", "information_types",
-    "scope", "prerequisites", "scientific_status", "related_documents", "support"
+    "scope", "prerequisites", "scientific_status", "related_documents", "support",
+    "release_channel", "release_label", "user_acceptance"
   ],
   "properties": {
     "document_id": {"type": "string", "pattern": "^PAS-[A-Z-]+-[0-9]{3}$"},
@@ -22,7 +23,20 @@
     "prerequisites": {"type": "array", "items": {"type": "string"}},
     "scientific_status": {"enum": ["engineering-only", "expert-reviewed", "calibrated"]},
     "related_documents": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^PAS-[A-Z-]+-[0-9]{3}$"}},
-    "support": {"type": "string", "minLength": 1}
+    "support": {"type": "string", "minLength": 1},
+    "release_channel": {"enum": ["release-candidate", "final"]},
+    "release_label": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+(?:-rc\\.[0-9]+)?$"
+    },
+    "user_acceptance": {
+      "enum": [
+        "pending",
+        "accepted",
+        "accepted-with-documentation-only-corrections",
+        "changes-required"
+      ]
+    }
   },
   "additionalProperties": false
 }

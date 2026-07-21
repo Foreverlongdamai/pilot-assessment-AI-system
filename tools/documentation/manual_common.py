@@ -25,6 +25,11 @@ BUILD_STATUSES = ("draft", "review", "released")
 STATUS_RANK = {"draft": 0, "review": 1, "released": 2, "superseded": 3}
 DOC_REFERENCE_PATTERN = re.compile(r"\[\[DOC:(PAS-[A-Z-]+-[0-9]{3})\]\]")
 ASSET_REFERENCE_PATTERN = re.compile(r"\[\[ASSET:([a-z0-9][a-z0-9-]*)\]\]")
+SCREENSHOT_REFERENCE_PATTERN = re.compile(
+    r"\[\[SCREENSHOT:([a-z0-9][a-z0-9-]*)\]\]"
+)
+AGGREGATE_PAGE_BREAK = "@@PA_MODULE_PAGE_BREAK@@"
+MARKDOWN_HEADING_PATTERN = re.compile(r"^(#{1,6})([ \t]+.*)$")
 
 
 class DocumentationError(RuntimeError):
@@ -145,7 +150,8 @@ def selected_variants(
                 )
             source = variant.get("source")
             source_status = str(variant.get("status"))
-            if source is None or source_status == "planned":
+            is_aggregate = bool(document.get("aggregate_sources"))
+            if (source is None and not is_aggregate) or source_status == "planned":
                 continue
             if source_status not in STATUS_RANK:
                 raise DocumentationError(
@@ -161,6 +167,120 @@ def selected_variants(
             f"language={language!r}, status={status!r}"
         )
     return selected
+
+
+def shift_markdown_headings(body: str, *, drop_title: bool, levels: int = 1) -> str:
+    """Shift Markdown ATX headings without touching fenced code blocks."""
+
+    shifted: list[str] = []
+    title_dropped = False
+    fence: str | None = None
+    for line in body.splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith(("```", "~~~")):
+            marker = stripped[:3]
+            fence = None if fence == marker else marker
+            shifted.append(line)
+            continue
+        match = MARKDOWN_HEADING_PATTERN.match(line) if fence is None else None
+        if match is None:
+            shifted.append(line)
+            continue
+        current_level = len(match.group(1))
+        if drop_title and not title_dropped and current_level == 1:
+            title_dropped = True
+            continue
+        shifted.append("#" * min(6, current_level + levels) + match.group(2))
+    return "\n".join(shifted).strip()
+
+
+def aggregate_manual_source(
+    catalog: dict[str, Any],
+    document: dict[str, Any],
+    language: str,
+) -> tuple[ManualSource, list[dict[str, str]]]:
+    """Generate the master manual from the eleven authoritative module sources."""
+
+    aggregate_ids = document.get("aggregate_sources")
+    if not isinstance(aggregate_ids, list) or len(aggregate_ids) != 11:
+        raise DocumentationError("aggregate manual must declare exactly eleven module IDs")
+    index = document_index(catalog)
+    variant = document["languages"][language]
+    modules: list[dict[str, str]] = []
+    sections: list[str] = []
+    for position, document_id in enumerate(aggregate_ids, start=1):
+        module = index.get(str(document_id))
+        if module is None:
+            raise DocumentationError(f"aggregate source is unknown: {document_id}")
+        module_variant = module["languages"][language]
+        source_value = module_variant.get("source")
+        if not isinstance(source_value, str):
+            raise DocumentationError(f"aggregate module has no source: {document_id}:{language}")
+        source_path = safe_manual_path(source_value)
+        source = parse_manual_source(source_path)
+        if source.metadata.get("status") != "released":
+            raise DocumentationError(
+                f"aggregate module is not released: {document_id}:{language}"
+            )
+        if position > 1:
+            sections.append(AGGREGATE_PAGE_BREAK)
+        sections.append(f"## {module_variant['title']}")
+        sections.append(shift_markdown_headings(source.body, drop_title=True, levels=1))
+        modules.append(
+            {
+                "document_id": str(document_id),
+                "source": source_value,
+                "sha256": sha256_file(source_path),
+            }
+        )
+
+    title = str(variant["title"])
+    introduction = (
+        "本总册由 11 份已发布模块手册自动聚合。模块 Markdown 是唯一人工维护正文；"
+        "本总册不建立第三份内容来源。"
+        if language == "zh-CN"
+        else (
+            "This master reference is generated from the eleven released module manuals. "
+            "Their Markdown remains the only maintained prose; this document introduces no "
+            "third content authority."
+        )
+    )
+    metadata: dict[str, Any] = {
+        "document_id": str(document["document_id"]),
+        "language": language,
+        "title": title,
+        "short_title": "系统技术参考总册" if language == "zh-CN" else "Master Technical Reference",
+        "product_version": str(catalog["product_version"]),
+        "document_version": str(catalog["document_set_version"]),
+        "status": str(variant["status"]),
+        "audience": ["evaluator", "expert", "developer", "maintainer", "release"],
+        "information_types": ["tutorial", "how-to", "reference", "explanation"],
+        "scope": (
+            "汇总产品架构、操作、专家建模、数据接口、开发维护、迁移和发布验收。"
+            if language == "zh-CN"
+            else (
+                "Aggregates architecture, operation, expert modelling, input interfaces, "
+                "development, maintenance, portability and release acceptance."
+            )
+        ),
+        "prerequisites": [],
+        "scientific_status": "engineering-only",
+        "related_documents": [str(value) for value in aggregate_ids],
+        "support": (
+            "报告问题时提供产品版本、文档 ID、Diagnostics 摘要和不含隐私数据的复现步骤。"
+            if language == "zh-CN"
+            else (
+                "Report the product version, document ID, Diagnostics summary and "
+                "privacy-safe reproduction steps."
+            )
+        ),
+        "release_channel": str(catalog["release_channel"]),
+        "release_label": str(catalog["release_label"]),
+        "user_acceptance": str(catalog["user_acceptance"]),
+    }
+    body = f"# {title}\n\n{introduction}\n\n" + "\n\n".join(sections) + "\n"
+    virtual_path = MANUAL_ROOT / language / "_generated-master-technical-reference.md"
+    return ManualSource(path=virtual_path, metadata=metadata, body=body), modules
 
 
 def output_root(catalog: dict[str, Any]) -> Path:
@@ -196,6 +316,7 @@ def result_payload(**values: Any) -> str:
 
 
 __all__ = [
+    "AGGREGATE_PAGE_BREAK",
     "ASSET_REFERENCE_PATTERN",
     "BUILD_STATUSES",
     "CATALOG_PATH",
@@ -208,8 +329,10 @@ __all__ = [
     "METADATA_SCHEMA_PATH",
     "ManualSource",
     "REPOSITORY_ROOT",
+    "SCREENSHOT_REFERENCE_PATTERN",
     "TOOL_ROOT",
     "add_selection_arguments",
+    "aggregate_manual_source",
     "catalog_documents",
     "document_index",
     "load_catalog",
@@ -221,5 +344,6 @@ __all__ = [
     "safe_manual_path",
     "selected_variants",
     "sha256_file",
+    "shift_markdown_headings",
     "write_json",
 ]

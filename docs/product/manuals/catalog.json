@@ -3,110 +3,275 @@
   "product": "Pilot Assessment System",
   "product_version": "0.1.0",
   "document_set_version": "0.1.0",
+  "release_channel": "release-candidate",
+  "release_label": "v0.1.0-rc.1",
+  "user_acceptance": "pending",
   "languages": ["zh-CN", "en-GB"],
   "documents": [
     {
       "document_id": "PAS-ARCH-001",
       "order": 1,
       "slug": "product-overview-and-architecture",
-      "dependencies": ["M8B"],
-      "release_policy": "review_until_m8e",
+      "dependencies": ["M8B", "M8D", "D-055"],
+      "release_policy": "release_candidate_pending_acceptance",
       "languages": {
-        "zh-CN": {"title": "产品总览与系统架构", "source": "zh-CN/01-product-overview-and-architecture.md", "status": "review", "output": "PAS-ARCH-001_产品总览与系统架构_v0.1.0.docx"},
-        "en-GB": {"title": "Product Overview and System Architecture", "source": "en-GB/01-product-overview-and-architecture.md", "status": "review", "output": "PAS-ARCH-001_Product-Overview-and-System-Architecture_v0.1.0.docx"}
+        "zh-CN": {
+          "title": "产品总览与系统架构",
+          "source": "zh-CN/01-product-overview-and-architecture.md",
+          "status": "released",
+          "output": "PAS-ARCH-001_Product-Overview-and-Architecture_zh-CN_v0.1.0.docx"
+        },
+        "en-GB": {
+          "title": "Product Overview and System Architecture",
+          "source": "en-GB/01-product-overview-and-architecture.md",
+          "status": "released",
+          "output": "PAS-ARCH-001_Product-Overview-and-Architecture_en-GB_v0.1.0.docx"
+        }
       }
     },
     {
       "document_id": "PAS-QUICKSTART-001",
       "order": 2,
       "slug": "installation-startup-and-quick-start",
-      "dependencies": ["M7-UAT", "D-055"],
-      "release_policy": "blocked_until_dependencies",
-      "languages": {"zh-CN": {"title": "安装、启动与快速开始", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "Installation, Startup and Quick Start", "source": null, "status": "planned", "output": null}}
+      "dependencies": ["M8A", "M8D", "D-055"],
+      "release_policy": "release_candidate_pending_acceptance",
+      "languages": {
+        "zh-CN": {
+          "title": "安装、启动与快速开始",
+          "source": "zh-CN/02-installation-startup-quick-start.md",
+          "status": "released",
+          "output": "PAS-QUICKSTART-001_Installation-Startup-Quick-Start_zh-CN_v0.1.0.docx"
+        },
+        "en-GB": {
+          "title": "Installation, Startup and Quick Start",
+          "source": "en-GB/02-installation-startup-quick-start.md",
+          "status": "released",
+          "output": "PAS-QUICKSTART-001_Installation-Startup-Quick-Start_en-GB_v0.1.0.docx"
+        }
+      }
     },
     {
       "document_id": "PAS-EVALUATOR-001",
       "order": 3,
       "slug": "evaluator-user-guide",
-      "dependencies": ["M7-UAT", "D-055"],
-      "release_policy": "blocked_until_dependencies",
-      "languages": {"zh-CN": {"title": "普通评估用户操作手册", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "Evaluator User Guide", "source": null, "status": "planned", "output": null}}
+      "dependencies": ["M7", "M8D", "D-055"],
+      "release_policy": "release_candidate_pending_acceptance",
+      "languages": {
+        "zh-CN": {
+          "title": "评估用户操作手册",
+          "source": "zh-CN/03-evaluator-user-guide.md",
+          "status": "released",
+          "output": "PAS-EVALUATOR-001_Evaluator-User-Guide_zh-CN_v0.1.0.docx"
+        },
+        "en-GB": {
+          "title": "Evaluator User Guide",
+          "source": "en-GB/03-evaluator-user-guide.md",
+          "status": "released",
+          "output": "PAS-EVALUATOR-001_Evaluator-User-Guide_en-GB_v0.1.0.docx"
+        }
+      }
     },
     {
       "document_id": "PAS-EXPERT-EVIDENCE-001",
       "order": 4,
       "slug": "evidence-and-task-scheme-expert-guide",
-      "dependencies": ["M7-UAT", "D-055"],
-      "release_policy": "blocked_until_dependencies",
-      "languages": {"zh-CN": {"title": "Evidence 与任务方案专家设计手册", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "Evidence and Task Scheme Expert Design Guide", "source": null, "status": "planned", "output": null}}
+      "dependencies": ["M7", "D-055"],
+      "release_policy": "release_candidate_pending_acceptance",
+      "languages": {
+        "zh-CN": {
+          "title": "Evidence 与任务方案专家设计手册",
+          "source": "zh-CN/04-evidence-task-scheme-expert-guide.md",
+          "status": "released",
+          "output": "PAS-EXPERT-EVIDENCE-001_Evidence-Task-Scheme-Expert-Guide_zh-CN_v0.1.0.docx"
+        },
+        "en-GB": {
+          "title": "Evidence and Task Scheme Expert Design Guide",
+          "source": "en-GB/04-evidence-task-scheme-expert-guide.md",
+          "status": "released",
+          "output": "PAS-EXPERT-EVIDENCE-001_Evidence-Task-Scheme-Expert-Guide_en-GB_v0.1.0.docx"
+        }
+      }
     },
     {
       "document_id": "PAS-EXPERT-BN-001",
       "order": 5,
       "slug": "bayesian-network-and-cpt-expert-guide",
-      "dependencies": ["M7-UAT", "D-055"],
-      "release_policy": "blocked_until_dependencies",
-      "languages": {"zh-CN": {"title": "BN、父节点、状态与 CPT 专家手册", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "BN, Parent, State and CPT Expert Guide", "source": null, "status": "planned", "output": null}}
+      "dependencies": ["M7", "D-055"],
+      "release_policy": "release_candidate_pending_acceptance",
+      "languages": {
+        "zh-CN": {
+          "title": "BN、父节点、状态与 CPT 专家手册",
+          "source": "zh-CN/05-bayesian-network-cpt-expert-guide.md",
+          "status": "released",
+          "output": "PAS-EXPERT-BN-001_BN-Parent-State-CPT-Expert-Guide_zh-CN_v0.1.0.docx"
+        },
+        "en-GB": {
+          "title": "BN, Parent, State and CPT Expert Guide",
+          "source": "en-GB/05-bayesian-network-cpt-expert-guide.md",
+          "status": "released",
+          "output": "PAS-EXPERT-BN-001_BN-Parent-State-CPT-Expert-Guide_en-GB_v0.1.0.docx"
+        }
+      }
     },
     {
       "document_id": "PAS-SESSION-001",
       "order": 6,
       "slug": "session-bundle-and-input-interface-reference",
-      "dependencies": ["M7-RAW-IMPORT"],
-      "release_policy": "review_until_m8e",
-      "languages": {"zh-CN": {"title": "Session Bundle 与五类原始输入接口手册", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "Session Bundle and Five-Input Interface Reference", "source": null, "status": "planned", "output": null}}
+      "dependencies": ["M2", "M3", "M7-RAW-IMPORT"],
+      "release_policy": "release_candidate_pending_acceptance",
+      "languages": {
+        "zh-CN": {
+          "title": "Session Bundle 与原始输入接口手册",
+          "source": "zh-CN/06-session-bundle-input-interface-reference.md",
+          "status": "released",
+          "output": "PAS-SESSION-001_Session-Bundle-Input-Interface_zh-CN_v0.1.0.docx"
+        },
+        "en-GB": {
+          "title": "Session Bundle and Raw Input Interface Reference",
+          "source": "en-GB/06-session-bundle-input-interface-reference.md",
+          "status": "released",
+          "output": "PAS-SESSION-001_Session-Bundle-Input-Interface_en-GB_v0.1.0.docx"
+        }
+      }
     },
     {
       "document_id": "PAS-PYTHON-EXT-001",
       "order": 7,
       "slug": "python-operator-and-source-extension-guide",
-      "dependencies": ["M8B"],
-      "release_policy": "review_until_m8e",
+      "dependencies": ["M8B-2", "D-055"],
+      "release_policy": "release_candidate_pending_acceptance",
       "languages": {
-        "zh-CN": {"title": "Python operator 与源码扩展开发手册", "source": null, "status": "planned", "output": null},
-        "en-GB": {"title": "Python Operator and Source Extension Development Guide", "source": "en-GB/07-python-operator-source-extension.md", "status": "review", "output": "PAS-PYTHON-EXT-001_Python-Operator-and-Source-Extension_v0.1.0.docx"}
+        "zh-CN": {
+          "title": "Python Operator 与源码扩展开发手册",
+          "source": "zh-CN/07-python-operator-source-extension.md",
+          "status": "released",
+          "output": "PAS-PYTHON-EXT-001_Python-Operator-Source-Extension_zh-CN_v0.1.0.docx"
+        },
+        "en-GB": {
+          "title": "Python Operator and Source Extension Development Guide",
+          "source": "en-GB/07-python-operator-source-extension.md",
+          "status": "released",
+          "output": "PAS-PYTHON-EXT-001_Python-Operator-Source-Extension_en-GB_v0.1.0.docx"
+        }
       }
     },
     {
       "document_id": "PAS-PYTHON-CORE-001",
       "order": 8,
       "slug": "python-core-maintenance-reference",
-      "dependencies": ["M8B"],
-      "release_policy": "review_until_m8e",
-      "languages": {"zh-CN": {"title": "Python 核心代码维护手册", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "Python Core Maintenance Reference", "source": null, "status": "planned", "output": null}}
+      "dependencies": ["M8B", "D-055"],
+      "release_policy": "release_candidate_pending_acceptance",
+      "languages": {
+        "zh-CN": {
+          "title": "Python 核心代码维护手册",
+          "source": "zh-CN/08-python-core-maintenance-reference.md",
+          "status": "released",
+          "output": "PAS-PYTHON-CORE-001_Python-Core-Maintenance_zh-CN_v0.1.0.docx"
+        },
+        "en-GB": {
+          "title": "Python Core Maintenance Reference",
+          "source": "en-GB/08-python-core-maintenance-reference.md",
+          "status": "released",
+          "output": "PAS-PYTHON-CORE-001_Python-Core-Maintenance_en-GB_v0.1.0.docx"
+        }
+      }
     },
     {
       "document_id": "PAS-PROTOCOL-CSHARP-001",
       "order": 9,
       "slug": "sidecar-protocol-and-csharp-development-reference",
-      "dependencies": ["M7", "M8B"],
-      "release_policy": "review_until_m8e",
-      "languages": {"zh-CN": {"title": "前后端协议与 C# 开发手册", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "Sidecar Protocol and C# Development Reference", "source": null, "status": "planned", "output": null}}
+      "dependencies": ["M6", "M7", "D-055"],
+      "release_policy": "release_candidate_pending_acceptance",
+      "languages": {
+        "zh-CN": {
+          "title": "Sidecar 协议与 C# 开发手册",
+          "source": "zh-CN/09-sidecar-protocol-csharp-development-reference.md",
+          "status": "released",
+          "output": "PAS-PROTOCOL-CSHARP-001_Sidecar-CSharp-Development_zh-CN_v0.1.0.docx"
+        },
+        "en-GB": {
+          "title": "Sidecar Protocol and C# Development Reference",
+          "source": "en-GB/09-sidecar-protocol-csharp-development-reference.md",
+          "status": "released",
+          "output": "PAS-PROTOCOL-CSHARP-001_Sidecar-CSharp-Development_en-GB_v0.1.0.docx"
+        }
+      }
     },
     {
       "document_id": "PAS-PORTABILITY-001",
       "order": 10,
       "slug": "system-distribution-project-portability-and-troubleshooting",
-      "dependencies": ["M8D"],
-      "release_policy": "blocked_until_dependencies",
-      "languages": {"zh-CN": {"title": "系统分发、项目迁移与故障排查", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "System Distribution, Project Portability and Troubleshooting", "source": null, "status": "planned", "output": null}}
+      "dependencies": ["M8D", "D-055"],
+      "release_policy": "release_candidate_pending_acceptance",
+      "languages": {
+        "zh-CN": {
+          "title": "系统分发、项目迁移与故障排查",
+          "source": "zh-CN/10-system-distribution-project-portability-troubleshooting.md",
+          "status": "released",
+          "output": "PAS-PORTABILITY-001_System-Project-Portability-Troubleshooting_zh-CN_v0.1.0.docx"
+        },
+        "en-GB": {
+          "title": "System Distribution, Project Portability and Troubleshooting",
+          "source": "en-GB/10-system-distribution-project-portability-troubleshooting.md",
+          "status": "released",
+          "output": "PAS-PORTABILITY-001_System-Project-Portability-Troubleshooting_en-GB_v0.1.0.docx"
+        }
+      }
     },
     {
       "document_id": "PAS-RELEASE-001",
       "order": 11,
       "slug": "release-build-and-delivery-acceptance",
       "dependencies": ["M8E"],
-      "release_policy": "blocked_until_dependencies",
-      "languages": {"zh-CN": {"title": "发布构建与交付验收手册", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "Release Build and Delivery Acceptance Guide", "source": null, "status": "planned", "output": null}}
+      "release_policy": "release_candidate_pending_acceptance",
+      "languages": {
+        "zh-CN": {
+          "title": "发布构建与交付验收手册",
+          "source": "zh-CN/11-release-build-delivery-acceptance.md",
+          "status": "released",
+          "output": "PAS-RELEASE-001_Release-Build-Delivery-Acceptance_zh-CN_v0.1.0.docx"
+        },
+        "en-GB": {
+          "title": "Release Build and Delivery Acceptance Guide",
+          "source": "en-GB/11-release-build-delivery-acceptance.md",
+          "status": "released",
+          "output": "PAS-RELEASE-001_Release-Build-Delivery-Acceptance_en-GB_v0.1.0.docx"
+        }
+      }
     },
     {
       "document_id": "PAS-TECHREF-001",
       "order": 12,
       "slug": "master-technical-reference",
       "dependencies": ["M8C-1", "M8D", "M8E"],
-      "release_policy": "aggregate_when_all_modules_released",
-      "aggregate_sources": ["PAS-ARCH-001", "PAS-QUICKSTART-001", "PAS-EVALUATOR-001", "PAS-EXPERT-EVIDENCE-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001", "PAS-PYTHON-CORE-001", "PAS-PROTOCOL-CSHARP-001", "PAS-PORTABILITY-001", "PAS-RELEASE-001"],
-      "languages": {"zh-CN": {"title": "系统技术参考总册", "source": null, "status": "planned", "output": null}, "en-GB": {"title": "Master System Technical Reference", "source": null, "status": "planned", "output": null}}
+      "release_policy": "generated_from_released_modules",
+      "aggregate_sources": [
+        "PAS-ARCH-001",
+        "PAS-QUICKSTART-001",
+        "PAS-EVALUATOR-001",
+        "PAS-EXPERT-EVIDENCE-001",
+        "PAS-EXPERT-BN-001",
+        "PAS-SESSION-001",
+        "PAS-PYTHON-EXT-001",
+        "PAS-PYTHON-CORE-001",
+        "PAS-PROTOCOL-CSHARP-001",
+        "PAS-PORTABILITY-001",
+        "PAS-RELEASE-001"
+      ],
+      "languages": {
+        "zh-CN": {
+          "title": "系统技术参考总册",
+          "source": null,
+          "status": "released",
+          "output": "PAS-TECHREF-001_Master-Technical-Reference_zh-CN_v0.1.0.docx"
+        },
+        "en-GB": {
+          "title": "Master System Technical Reference",
+          "source": null,
+          "status": "released",
+          "output": "PAS-TECHREF-001_Master-Technical-Reference_en-GB_v0.1.0.docx"
+        }
+      }
     }
   ]
 }

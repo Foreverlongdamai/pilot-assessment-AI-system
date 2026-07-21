@@ -15,8 +15,10 @@ from manual_common import (
     LANGUAGES,
     MANUAL_ROOT,
     METADATA_SCHEMA_PATH,
+    SCREENSHOT_REFERENCE_PATTERN,
     DocumentationError,
     add_selection_arguments,
+    aggregate_manual_source,
     catalog_documents,
     document_index,
     load_catalog,
@@ -25,11 +27,15 @@ from manual_common import (
     result_payload,
     safe_manual_path,
     selected_variants,
+    sha256_file,
 )
+from PIL import Image
 
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 PRIVATE_PATH = re.compile(r"(?i)(?:[A-Z]:\\Users\\[^\\\s]+|/Users/[^/\s]+|/home/[^/\s]+)")
-UNRESOLVED = re.compile(r"(?i)\b(?:TODO|TBD|FIXME)\b|\[\[(?!DOC:|ASSET:)[A-Z][^\]]*\]\]")
+UNRESOLVED = re.compile(
+    r"(?i)\b(?:TODO|TBD|FIXME)\b|\[\[(?!DOC:|ASSET:|SCREENSHOT:)[A-Z][^\]]*\]\]"
+)
 
 
 def _catalog_errors(catalog: dict[str, Any]) -> list[str]:
@@ -38,6 +44,12 @@ def _catalog_errors(catalog: dict[str, Any]) -> list[str]:
         errors.append("catalog schema_version must be pilot-assessment-document-catalog-v1")
     if catalog.get("languages") != list(LANGUAGES):
         errors.append("catalog languages must be exactly ['zh-CN', 'en-GB']")
+    if catalog.get("release_channel") != "release-candidate":
+        errors.append("catalog release_channel must be release-candidate")
+    if catalog.get("release_label") != "v0.1.0-rc.1":
+        errors.append("catalog release_label must be v0.1.0-rc.1")
+    if catalog.get("user_acceptance") != "pending":
+        errors.append("catalog user_acceptance must be pending")
     documents = catalog_documents(catalog)
     if len(documents) != 12:
         errors.append(f"catalog must define exactly 12 logical documents, found {len(documents)}")
@@ -60,7 +72,8 @@ def _catalog_errors(catalog: dict[str, Any]) -> list[str]:
             source = variant.get("source")
             output = variant.get("output")
             status = variant.get("status")
-            if source is None and status != "planned":
+            is_aggregate = bool(document.get("aggregate_sources"))
+            if source is None and status != "planned" and not is_aggregate:
                 errors.append(f"{document_id} {language}: null source requires planned status")
             if source is not None:
                 try:
@@ -93,10 +106,16 @@ def _source_errors(
     variant: dict[str, Any],
     schema_validator: Draft202012Validator,
     diagram_ids: set[str],
+    screenshot_ids: set[tuple[str, str]],
 ) -> tuple[list[str], dict[str, Any]]:
     document_id = str(document["document_id"])
-    path = safe_manual_path(str(variant["source"]))
-    source = parse_manual_source(path)
+    is_aggregate = variant.get("source") is None
+    if is_aggregate:
+        source, _ = aggregate_manual_source(catalog, document, language)
+        path = source.path
+    else:
+        path = safe_manual_path(str(variant["source"]))
+        source = parse_manual_source(path)
     metadata = source.metadata
     errors = [
         f"{path}: metadata {error.json_path} {error.message}"
@@ -108,6 +127,9 @@ def _source_errors(
         "title": variant["title"],
         "product_version": catalog["product_version"],
         "status": variant["status"],
+        "release_channel": catalog["release_channel"],
+        "release_label": catalog["release_label"],
+        "user_acceptance": catalog["user_acceptance"],
     }
     for field, value in expected.items():
         if metadata.get(field) != value:
@@ -121,19 +143,94 @@ def _source_errors(
     for asset_id in ASSET_REFERENCE_PATTERN.findall(source.body):
         if asset_id not in diagram_ids:
             errors.append(f"{path}: unknown diagram asset {asset_id}")
-    for raw_target in MARKDOWN_LINK.findall(source.body):
-        target = raw_target.strip().split(maxsplit=1)[0].strip("<>")
-        if target.startswith(("http://", "https://", "mailto:", "#")):
-            continue
-        relative_target = target.split("#", 1)[0]
-        if relative_target and not (path.parent / relative_target).resolve().exists():
-            errors.append(f"{path}: broken relative link {target}")
+    for screenshot_id in SCREENSHOT_REFERENCE_PATTERN.findall(source.body):
+        if (screenshot_id, language) not in screenshot_ids:
+            errors.append(f"{path}: unknown screenshot asset {screenshot_id}:{language}")
+    if not is_aggregate:
+        for raw_target in MARKDOWN_LINK.findall(source.body):
+            target = raw_target.strip().split(maxsplit=1)[0].strip("<>")
+            if target.startswith(("http://", "https://", "mailto:", "#")):
+                continue
+            relative_target = target.split("#", 1)[0]
+            if relative_target and not (path.parent / relative_target).resolve().exists():
+                errors.append(f"{path}: broken relative link {target}")
     if PRIVATE_PATH.search(source.body):
         errors.append(f"{path}: contains a private user-home absolute path")
     unresolved = UNRESOLVED.search(source.body)
     if unresolved:
         errors.append(f"{path}: unresolved placeholder {unresolved.group(0)!r}")
     return errors, metadata
+
+
+def _screenshot_errors(
+    catalog: dict[str, Any],
+    manifest: dict[str, Any],
+    *,
+    require_candidate: bool,
+) -> tuple[list[str], set[tuple[str, str]]]:
+    errors: list[str] = []
+    if manifest.get("schema_version") != "pilot-assessment-screenshot-manifest-v1":
+        errors.append("screenshot manifest schema_version is invalid")
+    for field in ("product_version", "release_channel", "release_label", "user_acceptance"):
+        if manifest.get(field) != catalog.get(field):
+            errors.append(f"screenshot manifest {field} does not match catalog")
+    entries = manifest.get("screenshots")
+    if not isinstance(entries, list):
+        return [*errors, "screenshot manifest screenshots must be an array"], set()
+    keys = {
+        (str(item.get("screenshot_id")), str(item.get("language")))
+        for item in entries
+        if isinstance(item, dict)
+    }
+    if len(entries) != 10 or len(keys) != 10:
+        errors.append("screenshot manifest must contain ten unique language assets")
+    expected_ids = {
+        "ui-project-launcher",
+        "ui-five-layer-model-studio",
+        "ui-evidence-node-editor",
+        "ui-bn-cpt-editor",
+        "ui-run-results-diagnostics",
+    }
+    if keys != {(asset_id, language) for asset_id in expected_ids for language in LANGUAGES}:
+        errors.append("screenshot manifest IDs/languages do not match the candidate contract")
+    if not require_candidate:
+        return errors, keys
+    source_identity = manifest.get("ui_source_tree_sha256")
+    if not isinstance(source_identity, str) or not re.fullmatch(r"[0-9a-f]{64}", source_identity):
+        errors.append("screenshot manifest ui_source_tree_sha256 is invalid")
+    for item in entries:
+        if not isinstance(item, dict):
+            errors.append("screenshot manifest entry must be an object")
+            continue
+        key = f"{item.get('screenshot_id')}:{item.get('language')}"
+        if item.get("status") != "release-candidate":
+            errors.append(f"screenshot {key} is not release-candidate")
+            continue
+        relative = item.get("path")
+        if not isinstance(relative, str):
+            errors.append(f"screenshot {key} has no path")
+            continue
+        path = MANUAL_ROOT / relative
+        if not path.is_file():
+            errors.append(f"screenshot {key} file is missing: {relative}")
+            continue
+        if item.get("sha256") != sha256_file(path):
+            errors.append(f"screenshot {key} SHA-256 mismatch")
+        try:
+            with Image.open(path) as image:
+                dimensions = image.size
+                image.verify()
+        except (OSError, ValueError) as error:
+            errors.append(f"screenshot {key} is invalid: {error}")
+            continue
+        if [*dimensions] != [item.get("width"), item.get("height")]:
+            errors.append(f"screenshot {key} dimensions mismatch")
+        privacy = item.get("privacy_review")
+        if not isinstance(privacy, dict) or privacy.get("status") != "passed":
+            errors.append(f"screenshot {key} privacy review is not passed")
+        if item.get("ui_source_tree_sha256") != source_identity:
+            errors.append(f"screenshot {key} UI source identity mismatch")
+    return errors, keys
 
 
 def validate(*, status: str, language: str | None, document_id: str | None) -> dict[str, Any]:
@@ -148,6 +245,12 @@ def validate(*, status: str, language: str | None, document_id: str | None) -> d
         for item in diagram_manifest.get("diagrams", [])
         if isinstance(item, dict) and "asset_id" in item
     }
+    screenshot_errors, screenshot_ids = _screenshot_errors(
+        catalog,
+        screenshot_manifest,
+        require_candidate=status == "released",
+    )
+    errors.extend(screenshot_errors)
     selected = selected_variants(catalog, status=status, language=language, document_id=document_id)
     metadata_by_document: dict[str, dict[str, dict[str, Any]]] = {}
     for document, current_language, variant in selected:
@@ -158,6 +261,7 @@ def validate(*, status: str, language: str | None, document_id: str | None) -> d
             variant,
             schema_validator,
             diagram_ids,
+            screenshot_ids,
         )
         errors.extend(source_errors)
         metadata_by_document.setdefault(str(document["document_id"]), {})[current_language] = (
@@ -179,14 +283,8 @@ def validate(*, status: str, language: str | None, document_id: str | None) -> d
                 errors.append(f"{current_document_id}: language parity mismatch for {field}")
         if set(zh.get("related_documents", [])) != set(en.get("related_documents", [])):
             errors.append(f"{current_document_id}: language parity mismatch for related_documents")
-    if status == "released":
-        pending = [
-            item.get("screenshot_id")
-            for item in screenshot_manifest.get("screenshots", [])
-            if isinstance(item, dict) and item.get("status") != "released"
-        ]
-        if pending:
-            errors.append(f"released build is blocked by pending screenshots: {pending}")
+    if status == "released" and len(selected) != 24:
+        errors.append(f"released build must select 24 language variants, found {len(selected)}")
     if errors:
         raise DocumentationError("documentation validation failed:\n- " + "\n- ".join(errors))
     return {
@@ -201,7 +299,7 @@ def validate(*, status: str, language: str | None, document_id: str | None) -> d
             [
                 item
                 for item in screenshot_manifest.get("screenshots", [])
-                if isinstance(item, dict) and item.get("status") == "pending"
+                if isinstance(item, dict) and item.get("status") != "release-candidate"
             ]
         ),
         "status": "PASS",
