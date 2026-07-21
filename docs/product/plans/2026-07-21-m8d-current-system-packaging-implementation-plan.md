@@ -321,7 +321,7 @@ git commit -m "feat: add current system capture contract"
 - Modify: `tests/release/test_system_model_capture.py`
 - Modify: `tools/release/README.md`
 
-- [ ] **Step 1: Add a failing baseline/verifier test**
+- [x] **Step 1: Add a failing baseline/verifier test**
 
 Extend the release test to construct a minimal package root containing the captured system, call the builder's baseline function, write `manifest/system-model-baseline.json`, and call `_verify_system_model_baseline`:
 
@@ -336,7 +336,7 @@ verified = _verify_system_model_baseline(package_root)
 assert verified["model_identity_sha256"] == source_report.model_identity_sha256
 ```
 
-- [ ] **Step 2: Run the focused test and confirm v1/fixed-builder failure**
+- [x] **Step 2: Run the focused test and confirm v1/fixed-builder failure**
 
 Run:
 
@@ -346,7 +346,7 @@ Run:
 
 Expected: failure because the builder still initializes the starter and emits baseline v1.
 
-- [ ] **Step 3: Make `--system-source` required and remove fallback seeding**
+- [x] **Step 3: Make `--system-source` required and remove fallback seeding**
 
 Change argument parsing and build signature to:
 
@@ -367,7 +367,7 @@ BUILD_SIGNATURE = (
 
 Delete `_initialize_system_model` and the `SYSTEM_MODEL_LIBRARY_ID` fixed identity. Call `capture_current_system(system_source, package_root / "system")`, then invoke packaged Python once to open/close the target system and build a fresh `staging/model-edit/workspace.sqlite3`. Remove only the target lock file after the packaged process exits. Assert the post-initialization model identity/counts equal the capture report.
 
-- [ ] **Step 4: Emit manifest-driven baseline v2**
+- [x] **Step 4: Emit manifest-driven baseline v2**
 
 The v2 baseline must include:
 
@@ -409,13 +409,13 @@ The v2 baseline must include:
 
 Do not record the absolute `--system-source` path. Add a compact `system_model` summary to `release-manifest.json`, update `build_kind` to `m8d-current-system-engineering`, and retain `system_model_baseline_sha256` for compatibility.
 
-- [ ] **Step 5: Update verifier to compare declared facts with packaged facts**
+- [x] **Step 5: Update verifier to compare declared facts with packaged facts**
 
 Import the capture module's shared constants and identity helper. Require baseline v2, `capture_mode=explicit-current-system`, a clean target workspace, zero user rows, matching hashes/format/schema/identity/counts and a release-manifest summary identical to those facts. Remove wording and checks that assume a starter model or `53/1`.
 
-In `_sidecar_roundtrip`, require `runtime.status.system_model` to match the verified baseline and rename `starter_scheme_count` to `scheme_count`.
+In `_sidecar_roundtrip`, compare the existing top-level runtime model-library ID and actual scheme count with the verified baseline, and rename `starter_scheme_count` to `scheme_count`. Task 3 introduces `runtime.status.system_model` and then tightens this to exact structured identity/node/scheme comparison; keeping that assertion with the field-introducing task avoids an impossible pre-field dependency.
 
-- [ ] **Step 6: Update release-tool usage documentation**
+- [x] **Step 6: Update release-tool usage documentation**
 
 Document this exact example and the three expected corrective actions:
 
@@ -428,7 +428,7 @@ Document this exact example and the three expected corrective actions:
 - save all or discard all if the edit session is dirty;
 - select another valid system directory if schema/integrity/user-row validation fails.
 
-- [ ] **Step 7: Run focused tests and static checks**
+- [x] **Step 7: Run focused tests and static checks**
 
 Run:
 
@@ -440,7 +440,7 @@ Run:
 
 Expected: all commands pass. If `ty` cannot resolve the script namespace, record that tool limitation and keep pytest/ruff as the required gate; do not alter product import paths solely for `ty`.
 
-- [ ] **Step 8: Commit Task 2**
+- [x] **Step 8: Commit Task 2**
 
 ```powershell
 git add tools/release tests/release

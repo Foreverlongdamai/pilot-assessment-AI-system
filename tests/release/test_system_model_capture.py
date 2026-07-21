@@ -30,14 +30,8 @@ def _create_closed_system(root: Path) -> Path:
     return root
 
 
-def test_capture_preserves_saved_dynamic_model_and_rebuilds_clean_workspace(
-    tmp_path: Path,
-) -> None:
-    _, capture_current_system, inspect_system_source = _capture_api()
-
-    source = tmp_path / "source-system"
-    target = tmp_path / "captured-system"
-    app = SystemApplication.open_or_create(source, clock=lambda: NOW)
+def _create_saved_dynamic_system(root: Path) -> tuple[Path, int, int]:
+    app = SystemApplication.open_or_create(root, clock=lambda: NOW)
     base_node = app.editable_model.list_nodes()[0]
     base_scheme = app.editable_model.list_schemes()[0]
     app.editable_model.copy_node(
@@ -57,9 +51,21 @@ def test_capture_preserves_saved_dynamic_model_and_rebuilds_clean_workspace(
         transaction_id="tx.m8d.save",
         actor_id="expert.test",
     )
-    expected_nodes = len(app.current_model.list_nodes())
-    expected_schemes = len(app.current_model.list_schemes())
+    node_count = len(app.current_model.list_nodes())
+    scheme_count = len(app.current_model.list_schemes())
     app.close()
+    return root, node_count, scheme_count
+
+
+def test_capture_preserves_saved_dynamic_model_and_rebuilds_clean_workspace(
+    tmp_path: Path,
+) -> None:
+    _, capture_current_system, inspect_system_source = _capture_api()
+
+    source, expected_nodes, expected_schemes = _create_saved_dynamic_system(
+        tmp_path / "source-system"
+    )
+    target = tmp_path / "captured-system"
 
     source_report = capture_current_system(source, target)
     captured = SystemApplication.open_or_create(target, clock=lambda: NOW)
@@ -74,6 +80,59 @@ def test_capture_preserves_saved_dynamic_model_and_rebuilds_clean_workspace(
     )
     assert target_report.user_owned_row_counts == source_report.user_owned_row_counts
     assert not any(target_report.user_owned_row_counts.values())
+
+
+def test_v2_baseline_and_verifier_accept_dynamic_captured_facts(tmp_path: Path) -> None:
+    from build_portable import _sha256, _system_model_baseline, _write_json
+    from verify_portable import _verify_system_model_baseline
+
+    _, capture_current_system, _ = _capture_api()
+    source, node_count, scheme_count = _create_saved_dynamic_system(
+        tmp_path / "source-system"
+    )
+    package_root = tmp_path / "package"
+    target = package_root / "system"
+    report = capture_current_system(source, target)
+    captured = SystemApplication.open_or_create(target, clock=lambda: NOW)
+    captured.close()
+    (target / ".system-writer.lock").unlink()
+
+    baseline = _system_model_baseline(package_root, capture_report=report)
+    assert baseline["schema_version"] == "pilot-assessment-system-model-baseline-v2"
+    assert baseline["capture_mode"] == "explicit-current-system"
+    assert baseline["node_count"] == node_count
+    assert baseline["scheme_count"] == scheme_count
+    assert baseline["model_identity_sha256"] == report.model_identity_sha256
+    baseline_path = package_root / "manifest" / "system-model-baseline.json"
+    _write_json(baseline_path, baseline)
+    _write_json(
+        package_root / "manifest" / "release-manifest.json",
+        {
+            "system_model_baseline_sha256": _sha256(baseline_path),
+            "system_model": {
+                "baseline": "manifest/system-model-baseline.json",
+                "capture_mode": "explicit-current-system",
+                "model_library_id": report.model_library_id,
+                "model_identity_sha256": report.model_identity_sha256,
+                "node_count": node_count,
+                "scheme_count": scheme_count,
+            },
+        },
+    )
+
+    verified = _verify_system_model_baseline(package_root)
+    assert verified["model_identity_sha256"] == report.model_identity_sha256
+    assert verified["node_count"] == node_count
+    assert verified["scheme_count"] == scheme_count
+
+
+def test_builder_refuses_system_source_inside_recreated_package_root(tmp_path: Path) -> None:
+    from build_portable import ReleaseBuildError, _require_external_system_source
+
+    package_root = tmp_path / "PilotAssessment-0.1.0-win-x64"
+    source = package_root / "system"
+    with pytest.raises(ReleaseBuildError, match="inside the package output"):
+        _require_external_system_source(source, package_root)
 
 
 def test_inspection_rejects_active_writer(tmp_path: Path) -> None:

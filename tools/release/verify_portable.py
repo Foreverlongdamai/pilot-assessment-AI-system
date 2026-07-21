@@ -19,6 +19,8 @@ from ctypes import wintypes
 from pathlib import Path
 from typing import Any
 
+from system_model_capture import USER_OWNED_SYSTEM_TABLES, model_identity
+
 FORBIDDEN_DIRECTORY_NAMES = {
     ".git",
     ".pytest_cache",
@@ -62,21 +64,6 @@ SYSTEM_MODEL_FILES = {
     "system/model-library.sqlite3",
     "system/staging/model-edit/workspace.sqlite3",
 }
-USER_OWNED_SYSTEM_TABLES = (
-    "project_metadata",
-    "sessions",
-    "session_revisions",
-    "managed_artifacts",
-    "artifact_references",
-    "run_preflights",
-    "runs",
-    "run_results",
-    "model_run_preflights_v2",
-    "model_run_links_v2",
-    "legacy_system_model_import_receipts",
-)
-
-
 class PortableVerificationError(RuntimeError):
     """Raised when the portable product violates its release contract."""
 
@@ -299,39 +286,19 @@ def _verify_documentation(root: Path) -> dict[str, Any]:
     return expected_summary
 
 
-def _model_identity(connection: sqlite3.Connection) -> tuple[str, int, int]:
-    digest = hashlib.sha256()
-    node_rows = connection.execute(
-        "SELECT node_id, content_hash, layout_hash FROM model_nodes ORDER BY node_id"
-    ).fetchall()
-    scheme_rows = connection.execute(
-        "SELECT scheme_id, content_hash, layout_hash FROM task_schemes ORDER BY scheme_id"
-    ).fetchall()
-    for kind, rows in (("node", node_rows), ("scheme", scheme_rows)):
-        for identity, content_hash, layout_hash in rows:
-            digest.update(kind.encode("ascii"))
-            digest.update(b"\0")
-            digest.update(str(identity).encode("utf-8"))
-            digest.update(b"\0")
-            digest.update(str(content_hash).encode("ascii"))
-            digest.update(b"\0")
-            digest.update(str(layout_hash).encode("ascii"))
-            digest.update(b"\n")
-    return digest.hexdigest(), len(node_rows), len(scheme_rows)
-
-
 def _verify_system_model_baseline(root: Path) -> dict[str, Any]:
-    baseline = json.loads(
-        (root / "manifest" / "system-model-baseline.json").read_text(encoding="utf-8")
-    )
-    if baseline.get("schema_version") != "pilot-assessment-system-model-baseline-v1":
+    baseline_path = root / "manifest" / "system-model-baseline.json"
+    baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+    if baseline.get("schema_version") != "pilot-assessment-system-model-baseline-v2":
         raise PortableVerificationError("system model baseline version is unsupported")
+    if baseline.get("capture_mode") != "explicit-current-system":
+        raise PortableVerificationError("system model baseline capture mode is invalid")
     actual_system_files = {
         path.relative_to(root).as_posix() for path in (root / "system").rglob("*") if path.is_file()
     }
     if actual_system_files != SYSTEM_MODEL_FILES:
         raise PortableVerificationError(
-            f"starter system file set is invalid: {sorted(actual_system_files)}"
+            f"captured system file set is invalid: {sorted(actual_system_files)}"
         )
 
     locator = json.loads((root / "system" / "system.json").read_text(encoding="utf-8"))
@@ -344,16 +311,20 @@ def _verify_system_model_baseline(root: Path) -> dict[str, Any]:
     canonical_path = (root / baseline["canonical_database"]["path"]).resolve()
     edit_path = (root / baseline["edit_workspace"]["path"]).resolve()
     if _sha256(canonical_path) != baseline["canonical_database"]["sha256"]:
-        raise PortableVerificationError("starter canonical model database hash differs")
+        raise PortableVerificationError("captured canonical model database hash differs")
     if _sha256(edit_path) != baseline["edit_workspace"]["sha256"]:
-        raise PortableVerificationError("starter edit workspace database hash differs")
+        raise PortableVerificationError("captured edit workspace database hash differs")
 
     canonical = sqlite3.connect(canonical_path)
     edit = sqlite3.connect(edit_path)
     try:
-        model_identity, node_count, scheme_count = _model_identity(canonical)
+        current_identity, node_count, scheme_count = model_identity(canonical)
         metadata = canonical.execute(
-            "SELECT model_library_id, clean_shutdown FROM system_metadata WHERE singleton = 1"
+            """
+            SELECT model_library_id, format_version, starter_seed_id,
+                   starter_seed_hash, clean_shutdown
+            FROM system_metadata WHERE singleton = 1
+            """
         ).fetchone()
         state = edit.execute(
             """
@@ -366,40 +337,100 @@ def _verify_system_model_baseline(root: Path) -> dict[str, Any]:
             table: int(canonical.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0])
             for table in USER_OWNED_SYSTEM_TABLES
         }
+        database_schema_version = int(
+            canonical.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
+        )
+        system_schema_version = int(
+            canonical.execute("SELECT MAX(version) FROM system_schema_migrations").fetchone()[0]
+        )
     finally:
         canonical.close()
         edit.close()
 
     if metadata is None or state is None:
-        raise PortableVerificationError("starter system metadata or edit state is missing")
+        raise PortableVerificationError("captured system metadata or edit state is missing")
     model_library_id = str(metadata[0])
     if not (
         model_library_id == baseline["model_library_id"] == locator.get("model_library_id")
         and str(state[0]) == model_library_id
     ):
-        raise PortableVerificationError("starter model-library identities differ")
-    if int(metadata[1]) != 1 or int(state[3]) != 0 or int(state[4]) != 0:
-        raise PortableVerificationError("starter system is not cleanly closed and edit-clean")
+        raise PortableVerificationError("captured model-library identities differ")
+    lineage = baseline.get("starter_lineage")
+    if not isinstance(lineage, dict) or not (
+        str(metadata[1]) == baseline.get("system_format_version") == locator.get("format_version")
+        and str(metadata[2]) == lineage.get("starter_seed_id") == locator.get("starter_seed_id")
+        and str(metadata[3])
+        == lineage.get("starter_seed_hash")
+        == locator.get("starter_seed_hash")
+    ):
+        raise PortableVerificationError("captured system format or starter lineage differs")
+    if (
+        int(metadata[4]) != 1
+        or int(state[3]) != 0
+        or int(state[4]) != 0
+        or baseline["edit_workspace"].get("cursor") != 0
+        or baseline["edit_workspace"].get("latest_sequence") != 0
+    ):
+        raise PortableVerificationError("captured system is not cleanly closed and edit-clean")
     if (
         str(state[1]) != baseline["edit_workspace"]["base_fingerprint"]
         or str(state[2]) != baseline["edit_workspace"]["baseline_state_hash"]
         or baseline["edit_workspace"].get("dirty") is not False
     ):
-        raise PortableVerificationError("starter edit baseline identity differs")
+        raise PortableVerificationError("captured edit baseline identity differs")
     if (
-        model_identity != baseline["model_identity_sha256"]
+        current_identity != baseline["model_identity_sha256"]
         or node_count != baseline["node_count"]
         or scheme_count != baseline["scheme_count"]
     ):
-        raise PortableVerificationError("starter system model identity differs")
+        raise PortableVerificationError("captured system model identity differs")
+    if (
+        database_schema_version != baseline.get("database_schema_version")
+        or system_schema_version != baseline.get("system_schema_version")
+    ):
+        raise PortableVerificationError("captured system schema identity differs")
     if user_counts != baseline["user_owned_row_counts"] or any(user_counts.values()):
-        raise PortableVerificationError(f"starter system contains user-owned rows: {user_counts}")
+        raise PortableVerificationError(f"captured system contains user-owned rows: {user_counts}")
+
+    source = baseline.get("capture_source")
+    if not isinstance(source, dict):
+        raise PortableVerificationError("captured system source facts are missing")
+    source_hashes = (
+        source.get("locator_sha256"),
+        source.get("canonical_database_sha256"),
+    )
+    if any(
+        not isinstance(value, str)
+        or len(value) != 64
+        or any(character not in "0123456789abcdef" for character in value)
+        for value in source_hashes
+    ):
+        raise PortableVerificationError("captured system source hashes are invalid")
+    if _sha256(root / "system" / "system.json") != source["locator_sha256"]:
+        raise PortableVerificationError("captured locator differs from its selected source")
+
+    release_manifest = json.loads(
+        (root / "manifest" / "release-manifest.json").read_text(encoding="utf-8")
+    )
+    expected_summary = {
+        "baseline": "manifest/system-model-baseline.json",
+        "capture_mode": "explicit-current-system",
+        "model_library_id": model_library_id,
+        "model_identity_sha256": current_identity,
+        "node_count": node_count,
+        "scheme_count": scheme_count,
+    }
+    if release_manifest.get("system_model") != expected_summary:
+        raise PortableVerificationError("release manifest system-model summary differs")
+    if release_manifest.get("system_model_baseline_sha256") != _sha256(baseline_path):
+        raise PortableVerificationError("release manifest system baseline hash differs")
     return {
         "model_library_id": model_library_id,
-        "model_identity_sha256": model_identity,
+        "model_identity_sha256": current_identity,
         "node_count": node_count,
         "scheme_count": scheme_count,
         "edit_session_dirty": False,
+        "capture_mode": "explicit-current-system",
     }
 
 
@@ -631,7 +662,7 @@ def _sidecar_roundtrip(root: Path) -> dict[str, Any]:
         return {
             "hello": hello,
             "model_library_id": status_before["model_library_id"],
-            "starter_scheme_count": len(schemes_before),
+            "scheme_count": len(schemes_before),
             "created_project_count": len(project_ids),
             "stderr": stderr.strip(),
             "stdout_lines": len(lines),
@@ -1422,6 +1453,13 @@ def verify(
     _verify_content_policy(root)
     imported = _run_private_import(root)
     sidecar = _sidecar_roundtrip(root)
+    if (
+        sidecar["model_library_id"] != system_model["model_library_id"]
+        or sidecar["scheme_count"] != system_model["scheme_count"]
+    ):
+        raise PortableVerificationError(
+            "runtime system identity/counts differ from the captured release baseline"
+        )
     edit_marker = _verify_editable_source(root) if editable_source else None
     extension = _verify_operator_extension(root) if operator_extension else None
     if editable_source or operator_extension:

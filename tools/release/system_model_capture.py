@@ -12,6 +12,7 @@ from contextlib import AbstractContextManager, suppress
 from dataclasses import dataclass
 from pathlib import Path
 from types import TracebackType
+from typing import cast
 
 SYSTEM_LOCATOR_NAME = "system.json"
 SYSTEM_DATABASE_NAME = "model-library.sqlite3"
@@ -222,8 +223,9 @@ def _locator(path: Path) -> tuple[dict[str, object], bytes]:
     decoded = _canonical_json(payload, label=SYSTEM_LOCATOR_NAME)
     if not isinstance(decoded, dict):
         raise SystemCaptureError(f"{SYSTEM_LOCATOR_NAME} must contain one JSON object")
+    locator = cast(dict[str, object], decoded)
     canonical = json.dumps(
-        decoded,
+        locator,
         ensure_ascii=False,
         allow_nan=False,
         sort_keys=True,
@@ -240,15 +242,15 @@ def _locator(path: Path) -> tuple[dict[str, object], bytes]:
         "starter_seed_hash",
         "created_at",
     }
-    if set(decoded) != required:
+    if set(locator) != required:
         raise SystemCaptureError(f"{SYSTEM_LOCATOR_NAME} fields are incomplete or unknown")
-    if decoded.get("format_version") != SYSTEM_FORMAT_VERSION:
+    if locator.get("format_version") != SYSTEM_FORMAT_VERSION:
         raise SystemCaptureError(
-            f"system uses unsupported format version {decoded.get('format_version')!r}"
+            f"system uses unsupported format version {locator.get('format_version')!r}"
         )
-    if decoded.get("database_path") != SYSTEM_DATABASE_NAME:
+    if locator.get("database_path") != SYSTEM_DATABASE_NAME:
         raise SystemCaptureError("system database_path is invalid")
-    return decoded, payload
+    return locator, payload
 
 
 def _row_payload(row: sqlite3.Row) -> dict[str, object]:

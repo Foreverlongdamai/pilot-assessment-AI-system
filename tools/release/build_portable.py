@@ -19,6 +19,16 @@ from email.parser import Parser
 from pathlib import Path
 from typing import Any
 
+from system_model_capture import (
+    SYSTEM_EDIT_DATABASE,
+    SYSTEM_LOCK_NAME,
+    USER_OWNED_SYSTEM_TABLES,
+    SystemCaptureError,
+    SystemCaptureReport,
+    capture_current_system,
+    model_identity,
+)
+
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 DESKTOP_PROJECT = (
     REPOSITORY_ROOT / "src" / "PilotAssessment.Desktop" / ("PilotAssessment.Desktop.csproj")
@@ -33,8 +43,6 @@ DOCUMENTATION_SOURCE_ROOT = REPOSITORY_ROOT / "docs" / "product" / "manuals"
 PYTHON_VERSION = "3.11.9"
 PYTHON_EMBED_URL = "https://www.python.org/ftp/python/3.11.9/python-3.11.9-embed-amd64.zip"
 PYTHON_EMBED_SHA256 = "009d6bf7e3b2ddca3d784fa09f90fe54336d5b60f0e0f305c37f400bf83cfd3b"
-SYSTEM_MODEL_LIBRARY_ID = "model-library.system.default"
-
 COPY_EXCLUDED_DIRECTORIES = {
     ".git",
     ".pytest_cache",
@@ -64,6 +72,12 @@ def _arguments() -> argparse.Namespace:
         "--skip-archive",
         action="store_true",
         help="Build and verify the product directory without creating a ZIP.",
+    )
+    parser.add_argument(
+        "--system-source",
+        type=Path,
+        required=True,
+        help="Saved and closed system directory to capture into this release.",
     )
     return parser.parse_args()
 
@@ -116,6 +130,20 @@ def _remove_tree(path: Path, parent: Path) -> None:
     resolved = _assert_child(path, parent)
     if resolved.exists():
         shutil.rmtree(resolved)
+
+
+def _require_external_system_source(system_source: Path, package_root: Path) -> Path:
+    """Prevent output cleanup or staging from touching the selected source system."""
+
+    source = system_source.expanduser().resolve()
+    package = package_root.resolve()
+    if source == package or source.is_relative_to(package):
+        raise ReleaseBuildError(
+            "system source is inside the package output that the builder recreates"
+        )
+    if package.is_relative_to(source):
+        raise ReleaseBuildError("package output cannot be created inside the system source")
+    return source
 
 
 def _unlink(path: Path, parent: Path) -> None:
@@ -400,13 +428,14 @@ def _copy_product_sources(package_root: Path, documentation_root: Path) -> None:
     shutil.copy2(docs_root / "README-PORTABLE.md", package_root / "README.txt")
 
 
-def _initialize_system_model(
+def _initialize_captured_system(
     package_root: Path,
     *,
     product_version: str,
     built_at: str,
+    capture_report: SystemCaptureReport,
 ) -> None:
-    """Create the one clean starter model store shipped by this software copy."""
+    """Rebuild one clean edit workspace around the captured canonical model."""
 
     python = package_root / "runtime" / "python" / "python.exe"
     system_root = package_root / "system"
@@ -421,7 +450,6 @@ application = SystemApplication.open_or_create(
     sys.argv[1],
     clock=lambda: stamp,
     product_version=sys.argv[3],
-    model_library_id=sys.argv[4],
 )
 try:
     status = application.model_edits.status()
@@ -430,6 +458,8 @@ try:
         "node_count": len(application.current_model.list_nodes()),
         "scheme_count": len(application.current_model.list_schemes()),
         "edit_session_dirty": status.dirty,
+        "cursor": status.cursor,
+        "latest_sequence": status.latest_sequence,
     }))
 finally:
     application.close()
@@ -446,69 +476,60 @@ finally:
             str(system_root),
             built_at,
             product_version,
-            SYSTEM_MODEL_LIBRARY_ID,
         ],
         cwd=package_root,
         echo_output=False,
     )
     initialized = json.loads(output)
     expected = {
-        "model_library_id": SYSTEM_MODEL_LIBRARY_ID,
-        "node_count": 53,
-        "scheme_count": 1,
+        "model_library_id": capture_report.model_library_id,
+        "node_count": capture_report.node_count,
+        "scheme_count": capture_report.scheme_count,
         "edit_session_dirty": False,
+        "cursor": 0,
+        "latest_sequence": 0,
     }
     if initialized != expected:
-        raise ReleaseBuildError(f"starter system initialization is incomplete: {initialized}")
-    lock_path = system_root / ".system-writer.lock"
+        raise ReleaseBuildError(
+            "captured system initialization changed model facts: "
+            f"expected={expected}, actual={initialized}"
+        )
+    lock_path = system_root / SYSTEM_LOCK_NAME
     if lock_path.exists():
         lock_path.unlink()
     transient = tuple(system_root.rglob("*.sqlite3-wal")) + tuple(
         system_root.rglob("*.sqlite3-shm")
     )
     if transient:
-        raise ReleaseBuildError(f"starter system has transient SQLite files: {transient}")
+        raise ReleaseBuildError(f"captured system has transient SQLite files: {transient}")
 
 
-def _model_identity(connection: sqlite3.Connection) -> tuple[str, int, int]:
-    digest = hashlib.sha256()
-    node_rows = connection.execute(
-        "SELECT node_id, content_hash, layout_hash FROM model_nodes ORDER BY node_id"
-    ).fetchall()
-    scheme_rows = connection.execute(
-        "SELECT scheme_id, content_hash, layout_hash FROM task_schemes ORDER BY scheme_id"
-    ).fetchall()
-    for kind, rows in (("node", node_rows), ("scheme", scheme_rows)):
-        for identity, content_hash, layout_hash in rows:
-            digest.update(kind.encode("ascii"))
-            digest.update(b"\0")
-            digest.update(str(identity).encode("utf-8"))
-            digest.update(b"\0")
-            digest.update(str(content_hash).encode("ascii"))
-            digest.update(b"\0")
-            digest.update(str(layout_hash).encode("ascii"))
-            digest.update(b"\n")
-    return digest.hexdigest(), len(node_rows), len(scheme_rows)
-
-
-def _system_model_baseline(package_root: Path) -> dict[str, Any]:
+def _system_model_baseline(
+    package_root: Path,
+    *,
+    capture_report: SystemCaptureReport,
+) -> dict[str, Any]:
     system_root = package_root / "system"
     canonical_path = system_root / "model-library.sqlite3"
-    edit_path = system_root / "staging" / "model-edit" / "workspace.sqlite3"
+    edit_path = system_root / SYSTEM_EDIT_DATABASE
     locator_path = system_root / "system.json"
     if not all(path.is_file() for path in (canonical_path, edit_path, locator_path)):
-        raise ReleaseBuildError("starter system store is incomplete")
+        raise ReleaseBuildError("captured system store is incomplete")
 
     locator = json.loads(locator_path.read_text(encoding="utf-8"))
     canonical = sqlite3.connect(canonical_path)
     edit = sqlite3.connect(edit_path)
     try:
-        model_identity, node_count, scheme_count = _model_identity(canonical)
+        current_identity, node_count, scheme_count = model_identity(canonical)
         metadata = canonical.execute(
-            "SELECT model_library_id, clean_shutdown FROM system_metadata WHERE singleton = 1"
+            """
+            SELECT model_library_id, format_version, starter_seed_id,
+                   starter_seed_hash, clean_shutdown
+            FROM system_metadata WHERE singleton = 1
+            """
         ).fetchone()
         if metadata is None:
-            raise ReleaseBuildError("starter system metadata is missing")
+            raise ReleaseBuildError("captured system metadata is missing")
         state = edit.execute(
             """
             SELECT model_library_id, base_fingerprint, baseline_state_hash,
@@ -517,46 +538,73 @@ def _system_model_baseline(package_root: Path) -> dict[str, Any]:
             """
         ).fetchone()
         if state is None:
-            raise ReleaseBuildError("starter model edit-session state is missing")
-        user_tables = (
-            "project_metadata",
-            "sessions",
-            "session_revisions",
-            "managed_artifacts",
-            "artifact_references",
-            "run_preflights",
-            "runs",
-            "run_results",
-            "model_run_preflights_v2",
-            "model_run_links_v2",
-            "legacy_system_model_import_receipts",
-        )
+            raise ReleaseBuildError("captured model edit-session state is missing")
         user_counts = {
             table: int(canonical.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0])
-            for table in user_tables
+            for table in USER_OWNED_SYSTEM_TABLES
         }
+        database_schema_version = int(
+            canonical.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
+        )
+        system_schema_version = int(
+            canonical.execute("SELECT MAX(version) FROM system_schema_migrations").fetchone()[0]
+        )
     finally:
         canonical.close()
         edit.close()
 
     model_library_id = str(metadata[0])
     if locator.get("model_library_id") != model_library_id:
-        raise ReleaseBuildError("starter locator and database model-library identities differ")
-    if model_library_id != SYSTEM_MODEL_LIBRARY_ID or int(metadata[1]) != 1:
-        raise ReleaseBuildError("starter system identity or clean-shutdown state is invalid")
+        raise ReleaseBuildError("captured locator and database model-library identities differ")
+    if (
+        model_library_id != capture_report.model_library_id
+        or str(metadata[1]) != capture_report.system_format_version
+        or str(metadata[2]) != capture_report.starter_seed_id
+        or str(metadata[3]) != capture_report.starter_seed_hash
+        or int(metadata[4]) != 1
+    ):
+        raise ReleaseBuildError("captured system identity or clean-shutdown state is invalid")
     if str(state[0]) != model_library_id or int(state[3]) != 0 or int(state[4]) != 0:
-        raise ReleaseBuildError("starter system edit workspace is not clean")
+        raise ReleaseBuildError("captured system edit workspace is not clean")
+    if (
+        str(state[1]) != capture_report.base_fingerprint
+        or str(state[2]) != capture_report.baseline_state_hash
+    ):
+        raise ReleaseBuildError("captured edit baseline differs from the selected source")
     if any(user_counts.values()):
-        raise ReleaseBuildError(f"starter system contains user-owned data: {user_counts}")
+        raise ReleaseBuildError(f"captured system contains user-owned data: {user_counts}")
+    if (
+        current_identity != capture_report.model_identity_sha256
+        or node_count != capture_report.node_count
+        or scheme_count != capture_report.scheme_count
+    ):
+        raise ReleaseBuildError("captured system model facts differ from the selected source")
+    if (
+        database_schema_version != capture_report.database_schema_version
+        or system_schema_version != capture_report.system_schema_version
+    ):
+        raise ReleaseBuildError("captured system schema facts differ from the selected source")
+    if _sha256(locator_path) != capture_report.source_locator_sha256:
+        raise ReleaseBuildError("captured system locator differs from the selected source")
 
     return {
-        "schema_version": "pilot-assessment-system-model-baseline-v1",
+        "schema_version": "pilot-assessment-system-model-baseline-v2",
+        "capture_mode": "explicit-current-system",
         "model_library_id": model_library_id,
-        "starter_seed_id": locator["starter_seed_id"],
-        "starter_seed_hash": locator["starter_seed_hash"],
-        "model_identity_sha256": model_identity,
+        "system_format_version": str(metadata[1]),
+        "database_schema_version": database_schema_version,
+        "system_schema_version": system_schema_version,
+        "starter_lineage": {
+            "starter_seed_id": str(metadata[2]),
+            "starter_seed_hash": str(metadata[3]),
+        },
+        "model_identity_sha256": current_identity,
         "node_count": node_count,
         "scheme_count": scheme_count,
+        "capture_source": {
+            "locator_sha256": capture_report.source_locator_sha256,
+            "canonical_database_sha256": capture_report.source_canonical_sha256,
+        },
         "canonical_database": {
             "path": canonical_path.relative_to(package_root).as_posix(),
             "sha256": _sha256(canonical_path),
@@ -566,6 +614,8 @@ def _system_model_baseline(package_root: Path) -> dict[str, Any]:
             "sha256": _sha256(edit_path),
             "base_fingerprint": str(state[1]),
             "baseline_state_hash": str(state[2]),
+            "cursor": int(state[3]),
+            "latest_sequence": int(state[4]),
             "dirty": False,
         },
         "user_owned_row_counts": user_counts,
@@ -797,14 +847,19 @@ def _write_manifests(
     product_version: str,
     license_files: list[str],
     built_at: str,
+    capture_report: SystemCaptureReport,
 ) -> None:
     manifest_root = package_root / "manifest"
     manifest_root.mkdir(parents=True, exist_ok=True)
     python_packages = _installed_python_packages(package_root / "runtime" / "site-packages")
     source_baseline = _source_baseline(package_root)
     _write_json(manifest_root / "source-baseline.json", source_baseline)
-    system_model_baseline = _system_model_baseline(package_root)
-    _write_json(manifest_root / "system-model-baseline.json", system_model_baseline)
+    system_model_baseline = _system_model_baseline(
+        package_root,
+        capture_report=capture_report,
+    )
+    system_model_baseline_path = manifest_root / "system-model-baseline.json"
+    _write_json(system_model_baseline_path, system_model_baseline)
     _write_sbom(
         package_root,
         product_version=product_version,
@@ -818,7 +873,7 @@ def _write_manifests(
         "schema_version": "pilot-assessment-release-manifest-v1",
         "product": "Pilot Assessment System",
         "product_version": product_version,
-        "build_kind": "m8c0-documentation-engineering",
+        "build_kind": "m8d-current-system-engineering",
         "built_at_utc": built_at,
         "target": {
             "operating_system": "windows",
@@ -848,7 +903,15 @@ def _write_manifests(
         "python_packages": python_packages,
         "documentation": _documentation_release_summary(package_root),
         "source_baseline_sha256": source_baseline["aggregate_sha256"],
-        "system_model_baseline_sha256": _sha256(manifest_root / "system-model-baseline.json"),
+        "system_model_baseline_sha256": _sha256(system_model_baseline_path),
+        "system_model": {
+            "baseline": "manifest/system-model-baseline.json",
+            "capture_mode": system_model_baseline["capture_mode"],
+            "model_library_id": system_model_baseline["model_library_id"],
+            "model_identity_sha256": system_model_baseline["model_identity_sha256"],
+            "node_count": system_model_baseline["node_count"],
+            "scheme_count": system_model_baseline["scheme_count"],
+        },
         "license_files_collected": license_files,
         "content_policy": {
             "user_projects_included": False,
@@ -867,7 +930,12 @@ def _write_manifests(
     _write_checksums(package_root)
 
 
-def _build(output_root: Path, *, skip_archive: bool) -> dict[str, Any]:
+def _build(
+    output_root: Path,
+    *,
+    system_source: Path,
+    skip_archive: bool,
+) -> dict[str, Any]:
     required = [
         DESKTOP_PROJECT,
         UV,
@@ -893,6 +961,7 @@ def _build(output_root: Path, *, skip_archive: bool) -> dict[str, Any]:
     package_root = output_root / package_name
     archive_path = output_root / f"{package_name}.zip"
     archive_hash_path = output_root / f"{package_name}.zip.sha256"
+    system_source = _require_external_system_source(system_source, package_root)
     _remove_tree(package_root, output_root)
     _unlink(archive_path, output_root)
     _unlink(archive_hash_path, output_root)
@@ -914,10 +983,12 @@ def _build(output_root: Path, *, skip_archive: bool) -> dict[str, Any]:
     _install_python_runtime(package_root, requirements)
     _copy_product_sources(package_root, documentation_root)
     built_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-    _initialize_system_model(
+    capture_report = capture_current_system(system_source, package_root / "system")
+    _initialize_captured_system(
         package_root,
         product_version=version,
         built_at=built_at,
+        capture_report=capture_report,
     )
     license_files = _collect_licenses(package_root)
     _write_manifests(
@@ -925,6 +996,7 @@ def _build(output_root: Path, *, skip_archive: bool) -> dict[str, Any]:
         product_version=version,
         license_files=license_files,
         built_at=built_at,
+        capture_report=capture_report,
     )
 
     verification_root = WORK_ROOT / "verification-copy"
@@ -969,17 +1041,30 @@ def _build(output_root: Path, *, skip_archive: bool) -> dict[str, Any]:
         "zip": None if skip_archive else str(archive_path),
         "zip_bytes": None if skip_archive else archive_path.stat().st_size,
         "zip_sha256": archive_hash,
+        "system_model": {
+            "model_library_id": capture_report.model_library_id,
+            "model_identity_sha256": capture_report.model_identity_sha256,
+            "node_count": capture_report.node_count,
+            "scheme_count": capture_report.scheme_count,
+        },
     }
 
 
 def main() -> int:
     args = _arguments()
     try:
-        result = _build(args.output_root, skip_archive=args.skip_archive)
+        result = _build(
+            args.output_root,
+            system_source=args.system_source,
+            skip_archive=args.skip_archive,
+        )
     except (OSError, KeyError, ValueError, subprocess.SubprocessError, zipfile.BadZipFile) as error:
         print(f"Pilot Assessment portable build failed: {error}", file=sys.stderr)
         return 1
     except ReleaseBuildError as error:
+        print(f"Pilot Assessment portable build failed: {error}", file=sys.stderr)
+        return 1
+    except SystemCaptureError as error:
         print(f"Pilot Assessment portable build failed: {error}", file=sys.stderr)
         return 1
     print(json.dumps(result, indent=2, ensure_ascii=False))
