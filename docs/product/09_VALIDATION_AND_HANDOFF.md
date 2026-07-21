@@ -364,4 +364,4 @@ PilotAssessment/
 - reference trajectory、phase/event annotation 的生产方式需与实验团队确认；
 - shared-evidence 多 parent CPT 会指数增长；v0.1 已设 parent/row/cell/size 硬上限，但数值仍需性能基准和专家审查后才能提高；
 - WinUI 图编辑控件选型和无障碍支持需原型验证；
-- M1–M8B、M8C-0 与 M8D 的合同、ingestion/synchronization、editable Evidence、BN、受管项目、sidecar、WinUI、portable runtime、editable Python/source identity、文档 pipeline、current-system packaging 和 project portability 均已通过各自工程门；M7 用户手工验收仍待完成。M8C-1 最终文档和 M8E clean-machine handoff 尚未实施；专用 backup/restore 已取消。starter/synthetic `formal_run_authorized=false`；现有证据不构成科学有效性声明。
+- M1–M8B、M8C-0 与 M8D 的合同、ingestion/synchronization、editable Evidence、BN、受管项目、sidecar、WinUI、portable runtime、editable Python/source identity、文档 pipeline、current-system packaging 和 project portability 均已通过各自工程门。D-078–D-081 允许先完成 D-055、M8C-1 与 M8E `v0.1.0-rc.1`，再由用户统一验收完整候选；当前候选尚未形成且 `user_acceptance=pending`。专用 backup/restore 已取消。starter/synthetic `formal_run_authorized=false`；现有证据不构成科学有效性声明。

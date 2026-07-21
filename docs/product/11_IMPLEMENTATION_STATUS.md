@@ -39,7 +39,7 @@ M1/M2/M3、M4R、M5、M6、M7、M8A 与 M8B 已实现并关闭各自 engineering
 
 本结论证明 M1–M3 的合同、文件不变性与 native-rate 时间计算路径，M4R 对 editable recipe 的保存、技术校验、编译、执行、预览和 revision replay，M5 对历史 immutable versions/exact-pinned scheme/CPT/BN inference，M6 对 durable project/runtime/sidecar，M7 对 complete-node/task-activation/staged-edit/automatic snapshot/可见 WinUI 专家工作区，M8A 对 portable runtime/distribution，M8B 对 system model ownership、project/run 隔离、loaded backend provenance、operator extension handoff，M8C-0 对文档构建与 review-package integration，以及 M8D 对 current-system capture/project portability/compatibility Diagnostics 的**既有实现**均按各自规格运行。它不表示用户已经接受 M7 的实际使用体验，也不表示整个 M8 或科学有效性已经完成。Synthetic scene、gaze、EEG、ECG、pilot-camera、annotation、commanded path、starter Evidence/BN/CPT 与轻量 fixtures 都不是航空、生理或训练评估有效性证据。M3 不执行插值、重采样或 analysis/window grid；M4R 只在 recipe 显式放置相应 operator 时执行变换或建立窗口。
 
-2026-07-18 保存的 [M8 产品化路线图](specs/2026-07-18-m8-productization-editable-python-documentation-and-handoff-outline.md)、[阶段路线图](plans/2026-07-18-m8-pre-uat-implementation-outline.md) 与 [自审](reviews/2026-07-18-m8-outline-self-review.md) 已于 2026-07-20 获用户授权启动。D-062–D-065、[M8A 正式规格](specs/2026-07-20-m8a-portable-windows-release-design.md) 与 [M8A 实施计划](plans/2026-07-20-m8a-portable-windows-release-implementation-plan.md) 已收口首个 portable engineering build；M8B-0 已修正 system ownership，M8B-1 已完成 loaded provenance，M8B-2 已完成 operator/dependency handoff，M8C-0 已完成 documentation infrastructure。2026-07-21 D-077 取消专用 backup/restore，并建立和完成 [M8D Current-System Packaging, Project Portability and Diagnostics](specs/2026-07-21-m8d-current-system-packaging-project-portability-and-diagnostics-design.md)。M8C-1 与 M8E 仍未完成，M7 用户验收继续作为 M8E 的硬门槛。
+2026-07-18 保存的 [M8 产品化路线图](specs/2026-07-18-m8-productization-editable-python-documentation-and-handoff-outline.md)、[阶段路线图](plans/2026-07-18-m8-pre-uat-implementation-outline.md) 与 [自审](reviews/2026-07-18-m8-outline-self-review.md) 已于 2026-07-20 获用户授权启动。D-062–D-065、[M8A 正式规格](specs/2026-07-20-m8a-portable-windows-release-design.md) 与 [M8A 实施计划](plans/2026-07-20-m8a-portable-windows-release-implementation-plan.md) 已收口首个 portable engineering build；M8B-0 已修正 system ownership，M8B-1 已完成 loaded provenance，M8B-2 已完成 operator/dependency handoff，M8C-0 已完成 documentation infrastructure。2026-07-21 D-077 取消专用 backup/restore，并建立和完成 [M8D Current-System Packaging, Project Portability and Diagnostics](specs/2026-07-21-m8d-current-system-packaging-project-portability-and-diagnostics-design.md)。D-078–D-081 随后取消单独 M7 中间验收硬门，冻结先构建 `v0.1.0-rc.1` 再统一用户验收的流程；M8C-1 与 M8E 当前按 [正式规格](specs/2026-07-21-m8e-final-release-candidate-and-handoff-design.md) 和 [实施计划](plans/2026-07-21-m8e-final-release-candidate-implementation-plan.md) 推进。
 
 2026-07-21 用户批准 [M8B System-Owned Model Library and Editable Backend Provenance Design](specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md) 与 [M8B-0 实施计划](plans/2026-07-21-m8b0-system-model-ownership-implementation-plan.md)，并正式接受 D-066–D-071。M8B-0 已建立 software-copy-scoped `system/model-library.sqlite3`、`SystemApplication`、无 project Model Studio、project/run ownership 分离、legacy import、双项目快照隔离和新 portable system baseline；M8B-1 随后完成 loaded-source provenance、disk drift/restart boundary、RunSnapshot v0.2 和 source snapshot artifact；M8B-2 再完成普通 Python operator 扩展、private dependency tool、通用 schema UI 与 release-copy run。fresh 证据分别见 [M8B-0](reviews/2026-07-21-m8b0-system-model-ownership-verification.md)、[M8B-1](reviews/2026-07-21-m8b1-source-provenance-and-snapshot-verification.md) 与 [M8B-2 Verification](reviews/2026-07-21-m8b2-python-operator-extension-verification.md)。
 
@@ -563,8 +563,8 @@ M6 收尾另行核对并关闭：project locator 不保存绝对根路径；mana
 
 ## 5. 尚未实现
 
-- M8C-1：其余 12 类双语正文、最终 M7/M8 UI 截图、M8D/M8E 内容、released DOCX 与《系统技术参考总册》；
-- M8E：clean/tagged 可追溯 release candidate、独立 clean-machine/offline 矩阵、最终文档和用户交付验收；
+- M8C-1：其余 12 类双语正文、10 张 `release-candidate` UI 截图、M8D/M8E 内容、24 份候选 DOCX 与《系统技术参考总册》；
+- M8E：clean/tagged 可追溯 `v0.1.0-rc.1`、仓库外 restricted-PATH 自动隔离验证、候选交付与后续独立用户验收；
 - 生产 I/G/EEG/ECG/camera exporter profile（例如 MP4/frame index、真实设备 sidecar）及真实采集适配；
 - 领域专家阈值、Anchor、sub-skill、拓扑、CPT 校准与科学有效性研究；这些是系统建成后的专家工作，不是平台实现完成门。
 
@@ -572,14 +572,14 @@ M6 收尾另行核对并关闭：project locator 不保存绝对根路径；mana
 
 M7A 与 M7B 原计划均已完成；D-054 与 D-056–D-061 用户验收返修也已工程实现，但用户尚未完成全部 M7 验收，D-055 单一英文 canonical 模型内容仍待实施。当前产品显示层已经只呈现语义名称并隐藏 fallback marker/普通技术 ID；这不冒充 D-055 的存储合同迁移。Session Import 已支持 canonical/raw source 自动识别与受管物化。普通表单、离散 activation/edge/copy/archive 与 state/parent/CPT 操作现在都先写入 Python 持久 edit session；关闭主窗口时统一保存全部或放弃全部。dirty 草稿不得运行；clean canonical scheme 继续自动冻结 immutable RunSnapshot，无业务 Publish 步骤。
 
-M8A、M8B、M8C-0 与 M8D 已完成。下一动作回到 M7 用户手工验收；必要返修与 D-055 必须在 M8C-1 最终截图/正文和 M8E final candidate 前关闭。后续工作流为：
+M8A、M8B、M8C-0 与 M8D 已完成。D-078–D-081 已把下一动作改为直接完成 D-055、M8C-1 与 M8E，再由用户验收完整候选；候选在实际接受前保持 `user_acceptance=pending`。后续工作流为：
 
 1. M8A：Windows x64 unpackaged self-contained portable runtime/distribution（**已完成**）；
 2. M8B-0：software-copy system model library、无 project Model Studio、project/run ownership、legacy import 与 portable baseline（**已完成**）；
 3. M8B-1：loaded source identity/snapshot；M8B-2：新 operator 闭环和详细修改手册（**均已完成；M8B complete**）；
-4. M8C-0：catalog/schema、固定工具链、DOCX pipeline、C4 与代表手册（**已完成**）；M8C-1 在 M7 验收返修后补齐最终文档；
+4. M8C-0：catalog/schema、固定工具链、DOCX pipeline、C4 与代表手册（**已完成**）；M8C-1 现在补齐候选文档与 screenshots；
 5. M8D：current-system packaging、project directory portability、RunSnapshot/source identity continuity 与 diagnostics（**已完成**）；
-6. M8E：checksums/SBOM/licenses/source identity、clean-machine/offline vertical slices 和最终用户验收。
+6. M8E：`v0.1.0-rc.1` checksums/SBOM/licenses/source identity、自动隔离/offline vertical slices、候选交付；用户验收作为候选后的独立状态。
 
 不得回到旧 fixed-plugin Task 29，不得把 legacy draft/publish DTO 带回正常 UI，也不得把 starter template 的工程可运行误写为科学有效。产品包只包含系统、完整可编辑的第一方源码、runtime、starter 资源和文档，不包含任何用户 session/project/result。
 

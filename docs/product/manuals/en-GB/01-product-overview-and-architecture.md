@@ -185,7 +185,7 @@ If source files change on disk after the Python process has started, the system 
 
 ## 12. Current status and scientific boundary
 
-At this document version, engineering gates M1–M8B, M8C-0 and M8D are complete; M8C-1 final documentation still awaits later gates. Full M7 hands-on user acceptance and the D-055 single-English canonical-model migration are not closed. The M8E final clean-machine handoff is also unfinished.
+At this document version, engineering gates M1–M8B, M8C-0 and M8D are complete. D-078 to D-081 allow D-055, M8C-1 and the M8E `v0.1.0-rc.1` candidate to be completed before the user reviews the whole candidate; that work is in progress and `user_acceptance=pending`.
 
 Every starter/synthetic run remains `formal_run_authorized=false`. The product demonstrates that contracts, editing, persistence, inference and provenance can operate end to end. It does not prove that current Anchors/Evidence, task structure, thresholds or CPTs assess pilot competency accurately. Domain experts will design, calibrate and validate the scientific method within this framework.
 

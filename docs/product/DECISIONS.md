@@ -6,12 +6,12 @@
 
 | 当前适用性 | 决策 | 解释 |
 |---|---|---|
-| 当前通用基线 | D-001、D-003、D-005–D-007、D-009–D-014、D-016–D-022、D-024 的 no-quality-mixing 原则、D-027 的 raw-driven 原则、D-028、D-030–D-032、D-034–D-035、D-037–D-044、D-045 的 transaction/idempotency 原则、D-046 的 exact snapshot/recovery 原则、D-047–D-071 | 继续约束通用产品、合同或运行语义；其中 D-007 的“后端权威”只指 canonical state/execution，不表示后端决定科学内容 |
+| 当前通用基线 | D-001、D-003、D-005–D-007、D-009–D-014、D-016–D-022、D-024 的 no-quality-mixing 原则、D-027 的 raw-driven 原则、D-028、D-030–D-032、D-034–D-035、D-037–D-044、D-045 的 transaction/idempotency 原则、D-046 的 exact snapshot/recovery 原则、D-047–D-081 | 继续约束通用产品、合同、运行、文档或候选交付语义；其中 D-007 的“后端权威”只指 canonical state/execution，不表示后端决定科学内容 |
 | Starter/reference 范围 | D-002、D-004、D-015、D-024 的具体默认权重、D-029 的 fixed resource inventory | 只描述 `reference-model-v0.1` / Hover starter 或已发布 legacy resource，不构成 generic engine 的任务、数量、拓扑或算法限制 |
-| 已被部分取代、限定或转为历史实现 | D-008、D-023、D-033、D-036，D-041/D-042/D-048/D-056 中把 current model/edit session 表述为 project-owned 的部分，D-045/D-046 中要求 publish/published scheme 的措辞，以及 D-051/D-053/D-054 的即时 canonical autosave／输入族始终显示细节 | 不可变运行历史、typed DAG、最小技术校验、幂等事务与 exact snapshot 仍有效；current model ownership 由 D-066–D-070 提升为 software-copy system scope。M5/M6 version/draft/publish 和 legacy project-local model 实现只用于迁移和旧 run replay |
+| 已被部分取代、限定或转为历史实现 | D-008、D-023、D-033、D-036，D-041/D-042/D-048/D-056 中把 current model/edit session 表述为 project-owned 的部分，D-045/D-046 中要求 publish/published scheme 的措辞，D-051/D-053/D-054 的即时 canonical autosave／输入族始终显示细节，以及 D-075 中“最终截图必须先关闭 M7 中间验收”的部分 | 不可变运行历史、typed DAG、最小技术校验、幂等事务、exact snapshot 与截图隐私/可追溯性仍有效；current model ownership 由 D-066–D-070 提升为 software-copy system scope，候选截图状态由 D-080 细化。M5/M6 version/draft/publish 和 legacy project-local model 实现只用于迁移和旧 run replay |
 | 历史完成门 | D-025、D-026，以及 D-027 中 fixed-18 测试范围 | 只记录旧 M4 Task 0–28 的工程过程，不再定义 M4R/M5 的完成条件或专家每次修改的测试义务 |
 
-若单条决策正文与该索引或更晚决策冲突，以明确列出的后续决策为准。D-031–D-040 保留专家可设计、三类节点/两类边和 BN 语义基础；D-047–D-059 定义当前完整节点、任务激活、会话暂存、不可变运行快照、五层输入投影、模型内容语言、显示身份与品牌方向；D-060–D-065 定义 raw session 与首个便携交付；D-066–D-071 定义每套软件副本唯一 system model、project/run 边界、legacy 合并和 source identity。历史材料继续保留用于迁移、回放和说明路线演进。
+若单条决策正文与该索引或更晚决策冲突，以明确列出的后续决策为准。D-031–D-040 保留专家可设计、三类节点/两类边和 BN 语义基础；D-047–D-059 定义当前完整节点、任务激活、会话暂存、不可变运行快照、五层输入投影、模型内容语言、显示身份与品牌方向；D-060–D-065 定义 raw session 与首个便携交付；D-066–D-071 定义每套软件副本唯一 system model、project/run 边界、legacy 合并和 source identity；D-072–D-081 定义正式文档、current-system packaging、最终候选与验收证据。历史材料继续保留用于迁移、回放和说明路线演进。
 
 ## D-001：产品提供可配置参考模型，而非最终航空标准
 
@@ -572,3 +572,31 @@
 - 决策：M8D 不建设 `.paprojbackup`、`.pasystembackup`、Backup/Restore UI、自动周期备份或 restore archive。用户 project 在软件完全关闭后通过复制完整 project 目录移动；整套软件目录复制会形成包含当前 `system/` 与 `backend/src/` 的独立工作副本。正式 builder 必须从显式 `--system-source` 捕获已保存、已关闭、无 dirty edit session 且不含 user-owned rows 的 current system，不得在输入缺失或无效时静默重新 seed starter model。发布 manifest 记录实际 model identity 与动态 node/scheme counts；新包不会自动更新已经分发的旧副本。
 - 理由：模型编辑属于 software-copy-scoped system state，项目数据属于 project。额外 backup 格式和恢复界面不会改善这套 ownership，反而引入第二套封装、同步歧义和不必要的开发成本。现有 builder 固定重新生成 `53` nodes / `1` scheme 会丢失专家已保存的 current model，必须由 current-system capture 取代。
 - 影响：M8D 改为 Current-System Packaging、Project Portability and Diagnostics；M8C 的未发布 `PAS-BACKUP-001` 迁移为 `PAS-PORTABILITY-001`。正式构建要求应用已关闭并明确选择 system source；项目复制要求应用已关闭并复制整个目录。M6 relative-path、M8B system ownership/RunSnapshot/source identity 与现有 Diagnostics 继续有效；不新增云同步、自动更新、项目 merge 或用户数据打包。
+
+## D-078：取消单独 M7 中间用户验收硬门，直接验收完整 M8E 候选
+
+- 状态：已接受
+- 决策：M7 engineering verification 之后直接完成 D-055、M8C-1 与 M8E，并构建完整发布候选；用户不再先执行一轮独立 M7 中间验收，而是直接验收完整候选。候选构建完成只表示 engineering candidate ready，不表示用户已经接受，也不得称为 final release。
+- 理由：用户希望一次验收完整软件、文档和交付包，避免在未完成产品与最终候选之间重复验收；工程验证与用户主观使用验收仍需保持不同状态。
+- 影响：旧 M8 大纲中把 M7 用户验收写成 M8C-1/M8E 构建前 Gate 0 的口径被取代。若用户要求修改，则修订后形成新的候选序号；只有用户接受且对应内容不再变化后，才能从已接受 source 重建正式版本。
+
+## D-079：首个最终验收候选采用独立的 `v0.1.0-rc.1` 身份
+
+- 状态：已接受
+- 决策：首个完整候选固定为 clean tagged-source `v0.1.0-rc.1`。release metadata 分别记录 `product_version=0.1.0`、`release_channel=release-candidate`、`candidate=rc.1`、`release_label=v0.1.0-rc.1` 和 `user_acceptance=pending`；不得只靠 ZIP 文件名表达状态。
+- 理由：产品语义版本、候选序号和验收状态是不同维度；显式拆分可以避免把尚未验收的候选误当成正式 `v0.1.0`。
+- 影响：候选必须由 annotated tag 指向的 clean commit 构建。源码、current system、released documentation 或候选截图 bytes 发生变化时必须产生新的 candidate sequence；用户接受后也必须从对应 source 重建 `v0.1.0`，不能只重命名候选 ZIP。
+
+## D-080：M8C-1 可交付经过隐私复核的 release-candidate screenshots
+
+- 状态：已接受
+- 决策：M8C-1 可以从对应候选 build 捕获中英文 UI 截图，并在 screenshot manifest 中标为 `release-candidate`。截图仍必须具备 stable ID、build identity、language、theme、SHA-256 和 privacy review，且不得包含用户数据、真实生物数据、用户名或绝对路径。
+- 理由：D-078 把用户验收移动到完整候选之后，因此文档必须能在候选构建时携带真实 UI 画面，同时不能把待验收画面冒充 final。
+- 影响：D-075 的隐私、追溯和过期检查继续有效；只有用户接受且 UI 未变化时，同一 image bytes 才能在正式重建中晋升为 final。若 UI 变化，必须重新捕获和复核。
+
+## D-081：自动隔离验证与用户独立验收分别记录
+
+- 状态：已接受
+- 决策：构建机上的仓库外 disposable extraction、受限 `PATH` 和自动 vertical-slice verification 形成 engineering evidence；用户在自己的 Windows 环境中打开完整候选并操作形成 independent user-acceptance evidence。两者不能互相冒充，也不能在未实际使用 Windows Sandbox 或独立 clean machine 时写成相应验证已经执行。
+- 理由：当前会话无提权权限，无法保证启用 Windows Sandbox；验证记录必须精确说明实际执行环境，而不是用近似隔离条件制造过度声明。
+- 影响：`v0.1.0-rc.1` 可在自动隔离验证通过后交付且保持 `user_acceptance=pending`。用户验收记录单独关闭 acceptance；任何未执行的 Sandbox、VM 或独立设备矩阵项继续写为 pending/not executed。

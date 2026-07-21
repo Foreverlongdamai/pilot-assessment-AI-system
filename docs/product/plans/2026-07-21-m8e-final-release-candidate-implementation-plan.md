@@ -39,9 +39,9 @@
 - Modify: `docs/product/plans/2026-07-18-m8-pre-uat-implementation-outline.md`
 - Modify: `docs/product/reviews/README.md`
 
-- [ ] Add D-078 through D-081 exactly as approved: deferred intermediate UAT, `rc.1` identity, candidate screenshots and two-layer acceptance evidence.
-- [ ] Replace current Gate 0 flow with `M7 engineering verified -> D-055/M8C-1/M8E -> rc.1 -> user acceptance`.
-- [ ] Preserve that final `v0.1.0` cannot be called accepted before the user test.
+- [x] Add D-078 through D-081 exactly as approved: deferred intermediate UAT, `rc.1` identity, candidate screenshots and two-layer acceptance evidence.
+- [x] Replace current Gate 0 flow with `M7 engineering verified -> D-055/M8C-1/M8E -> rc.1 -> user acceptance`.
+- [x] Preserve that final `v0.1.0` cannot be called accepted before the user test.
 - [ ] Run:
 
 ```powershell
