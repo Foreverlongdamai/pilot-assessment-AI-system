@@ -380,7 +380,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(HasSelection));
         OnPropertyChanged(nameof(CanMutate));
-        _shellState.SetSchemeContext(value?.SchemeId);
+        _shellState.SetSchemeContext(value?.SchemeId, value?.DisplayName);
     }
 
     partial void OnIsBusyChanged(bool value) => OnPropertyChanged(nameof(CanMutate));

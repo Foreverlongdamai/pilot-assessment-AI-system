@@ -195,7 +195,10 @@ public partial class ProjectLauncherViewModel : ObservableObject
         CurrentProjectRoot = root;
         _shellState.SetProjectContext(
             project.ProjectId,
-            schemeId: _schemes?.SelectedScheme?.SchemeId ?? _shellState.Snapshot.SchemeId);
+            schemeId: _schemes?.SelectedScheme?.SchemeId ?? _shellState.Snapshot.SchemeId,
+            projectDisplayName: project.Name,
+            schemeDisplayName: _schemes?.SelectedScheme?.DisplayName ??
+                _shellState.Snapshot.SchemeDisplayName);
         OnPropertyChanged(nameof(HasOpenProject));
         OnPropertyChanged(nameof(CurrentProjectText));
         OnPropertyChanged(nameof(CurrentProjectRootText));
@@ -210,7 +213,7 @@ public partial class ProjectLauncherViewModel : ObservableObject
         CurrentProjectRoot = null;
         var selectedSchemeId = _schemes?.SelectedScheme?.SchemeId ?? _shellState.Snapshot.SchemeId;
         _shellState.SetProjectContext(null);
-        _shellState.SetSchemeContext(selectedSchemeId);
+        _shellState.SetSchemeContext(selectedSchemeId, _schemes?.SelectedScheme?.DisplayName);
         _sessions.Reset();
         OnPropertyChanged(nameof(HasOpenProject));
         OnPropertyChanged(nameof(CurrentProjectText));

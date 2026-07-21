@@ -54,6 +54,9 @@
   <data name="Shell_NoProject" xml:space="preserve"><value>No project</value></data>
   <data name="Shell_NoSession" xml:space="preserve"><value>No session</value></data>
   <data name="Shell_NoTaskScheme" xml:space="preserve"><value>No task scheme</value></data>
+  <data name="Shell_SelectedProject" xml:space="preserve"><value>Open project</value></data>
+  <data name="Shell_SelectedSession" xml:space="preserve"><value>Selected session</value></data>
+  <data name="Shell_SelectedTaskScheme" xml:space="preserve"><value>Selected task scheme</value></data>
   <data name="Shell_Stopped" xml:space="preserve"><value>Stopped</value></data>
   <data name="Shell_Connecting" xml:space="preserve"><value>Connecting</value></data>
   <data name="Shell_Ready" xml:space="preserve"><value>Ready</value></data>

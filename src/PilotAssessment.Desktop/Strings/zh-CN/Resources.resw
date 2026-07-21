@@ -54,6 +54,9 @@
   <data name="Shell_NoProject" xml:space="preserve"><value>未打开项目</value></data>
   <data name="Shell_NoSession" xml:space="preserve"><value>未选择会话</value></data>
   <data name="Shell_NoTaskScheme" xml:space="preserve"><value>未选择任务方案</value></data>
+  <data name="Shell_SelectedProject" xml:space="preserve"><value>已打开项目</value></data>
+  <data name="Shell_SelectedSession" xml:space="preserve"><value>已选择会话</value></data>
+  <data name="Shell_SelectedTaskScheme" xml:space="preserve"><value>已选择任务方案</value></data>
   <data name="Shell_Stopped" xml:space="preserve"><value>已停止</value></data>
   <data name="Shell_Connecting" xml:space="preserve"><value>正在连接</value></data>
   <data name="Shell_Ready" xml:space="preserve"><value>就绪</value></data>

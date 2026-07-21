@@ -185,9 +185,21 @@ public partial class ShellViewModel : ObservableObject
 
     private void ApplySnapshot(ShellStateSnapshot snapshot)
     {
-        ProjectText = snapshot.ProjectId ?? _localization["Shell_NoProject"];
-        SessionText = snapshot.SessionId ?? _localization["Shell_NoSession"];
-        SchemeText = snapshot.SchemeId ?? _localization["Shell_NoTaskScheme"];
+        ProjectText = ResolveVisibleName(
+            snapshot.ProjectId,
+            snapshot.ProjectDisplayName,
+            "Shell_NoProject",
+            "Shell_SelectedProject");
+        SessionText = ResolveVisibleName(
+            snapshot.SessionId,
+            snapshot.SessionDisplayName,
+            "Shell_NoSession",
+            "Shell_SelectedSession");
+        SchemeText = ResolveVisibleName(
+            snapshot.SchemeId,
+            snapshot.SchemeDisplayName,
+            "Shell_NoTaskScheme",
+            "Shell_SelectedTaskScheme");
         BackendStatusText = snapshot.BackendState switch
         {
             BackendConnectionState.Connecting => _localization["Shell_Connecting"],
@@ -227,6 +239,17 @@ public partial class ShellViewModel : ObservableObject
         "Blocked" => _localization["Shell_Blocked"],
         _ => _localization["Shell_NoPendingChanges"],
     };
+
+    private string ResolveVisibleName(
+        string? technicalId,
+        string? displayName,
+        string missingKey,
+        string selectedKey) =>
+        string.IsNullOrWhiteSpace(technicalId)
+            ? _localization[missingKey]
+            : string.IsNullOrWhiteSpace(displayName)
+                ? _localization[selectedKey]
+                : displayName;
 
     private sealed record SnapshotUpdate(
         ShellViewModel ViewModel,

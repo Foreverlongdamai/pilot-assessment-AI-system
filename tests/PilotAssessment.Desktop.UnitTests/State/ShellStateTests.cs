@@ -52,6 +52,32 @@ public sealed class ShellStateTests
         Assert.Null(state.Snapshot.ProjectId);
         Assert.Null(state.Snapshot.SessionId);
         Assert.Null(state.Snapshot.SchemeId);
+        Assert.Null(state.Snapshot.ProjectDisplayName);
+        Assert.Null(state.Snapshot.SessionDisplayName);
+        Assert.Null(state.Snapshot.SchemeDisplayName);
+    }
+
+    [Fact]
+    public void PresentationNamesFollowIdentitiesWithoutReplacingTechnicalContext()
+    {
+        var state = new ApplicationShellState();
+        state.SetProjectContext(
+            "project.alpha",
+            schemeId: "scheme.alpha",
+            projectDisplayName: "Candidate Evaluation Project",
+            schemeDisplayName: "Base Scheme");
+
+        state.SetProjectContext("project.alpha", "session.alpha", "scheme.alpha");
+
+        Assert.Equal("project.alpha", state.Snapshot.ProjectId);
+        Assert.Equal("Candidate Evaluation Project", state.Snapshot.ProjectDisplayName);
+        Assert.Equal("Base Scheme", state.Snapshot.SchemeDisplayName);
+        Assert.Null(state.Snapshot.SessionDisplayName);
+
+        state.SetSchemeContext("scheme.beta", "Hover Scheme");
+
+        Assert.Equal("scheme.beta", state.Snapshot.SchemeId);
+        Assert.Equal("Hover Scheme", state.Snapshot.SchemeDisplayName);
     }
 
     [Fact]

@@ -16,6 +16,9 @@ public sealed record ShellStateSnapshot(
     string? ProjectId,
     string? SessionId,
     string? SchemeId,
+    string? ProjectDisplayName,
+    string? SessionDisplayName,
+    string? SchemeDisplayName,
     string AutosaveStatus,
     string RunStatus,
     IReadOnlyList<string> Diagnostics)
@@ -37,6 +40,9 @@ public sealed class ApplicationShellState
     private string? _projectId;
     private string? _sessionId;
     private string? _schemeId;
+    private string? _projectDisplayName;
+    private string? _sessionDisplayName;
+    private string? _schemeDisplayName;
     private string _autosaveStatus = "No pending changes";
     private string _runStatus = "Idle";
 
@@ -100,7 +106,10 @@ public sealed class ApplicationShellState
     public void SetProjectContext(
         string? projectId,
         string? sessionId = null,
-        string? schemeId = null)
+        string? schemeId = null,
+        string? projectDisplayName = null,
+        string? sessionDisplayName = null,
+        string? schemeDisplayName = null)
     {
         if (string.IsNullOrWhiteSpace(projectId) &&
             (!string.IsNullOrWhiteSpace(sessionId) || !string.IsNullOrWhiteSpace(schemeId)))
@@ -110,15 +119,42 @@ public sealed class ApplicationShellState
 
         Mutate(() =>
         {
-            _projectId = Normalize(projectId);
-            _sessionId = Normalize(sessionId);
-            _schemeId = Normalize(schemeId);
+            var nextProjectId = Normalize(projectId);
+            var nextSessionId = Normalize(sessionId);
+            var nextSchemeId = Normalize(schemeId);
+            _projectDisplayName = ResolveDisplayName(
+                _projectId,
+                nextProjectId,
+                _projectDisplayName,
+                projectDisplayName);
+            _sessionDisplayName = ResolveDisplayName(
+                _sessionId,
+                nextSessionId,
+                _sessionDisplayName,
+                sessionDisplayName);
+            _schemeDisplayName = ResolveDisplayName(
+                _schemeId,
+                nextSchemeId,
+                _schemeDisplayName,
+                schemeDisplayName);
+            _projectId = nextProjectId;
+            _sessionId = nextSessionId;
+            _schemeId = nextSchemeId;
         });
     }
 
-    public void SetSchemeContext(string? schemeId)
+    public void SetSchemeContext(string? schemeId, string? schemeDisplayName = null)
     {
-        Mutate(() => _schemeId = Normalize(schemeId));
+        Mutate(() =>
+        {
+            var nextSchemeId = Normalize(schemeId);
+            _schemeDisplayName = ResolveDisplayName(
+                _schemeId,
+                nextSchemeId,
+                _schemeDisplayName,
+                schemeDisplayName);
+            _schemeId = nextSchemeId;
+        });
     }
 
     public void SetAutosaveStatus(string status)
@@ -169,10 +205,30 @@ public sealed class ApplicationShellState
         _projectId,
         _sessionId,
         _schemeId,
+        _projectDisplayName,
+        _sessionDisplayName,
+        _schemeDisplayName,
         _autosaveStatus,
         _runStatus,
         _diagnostics.ToArray());
 
     private static string? Normalize(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value;
+
+    private static string? ResolveDisplayName(
+        string? previousId,
+        string? nextId,
+        string? previousDisplayName,
+        string? requestedDisplayName)
+    {
+        if (nextId is null)
+        {
+            return null;
+        }
+
+        var normalized = Normalize(requestedDisplayName);
+        return string.Equals(previousId, nextId, StringComparison.Ordinal)
+            ? normalized ?? previousDisplayName
+            : normalized;
+    }
 }
