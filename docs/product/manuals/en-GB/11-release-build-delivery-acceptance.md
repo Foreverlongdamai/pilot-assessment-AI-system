@@ -92,7 +92,7 @@ Expected external delivery artifacts are:
 ```text
 PilotAssessment-0.1.0-rc.1-win-x64.zip
 PilotAssessment-0.1.0-rc.1-win-x64.zip.sha256
-PilotAssessment-0.1.0-rc.1-delivery.json
+PilotAssessment-0.1.0-rc.1-win-x64.delivery.json
 ```
 
 The delivery JSON records file name/bytes/SHA-256, tag/commit, system identity/counts, documentation/SBOM hashes and pending acceptance without exposing absolute build-machine paths.
@@ -103,7 +103,7 @@ The authoritative acceptance rehearsal extracts the ZIP to a fresh repository-ex
 
 ```powershell
 .\.tools\uv\uv.exe run python tools\release\verify_archive_external.py `
-  dist\releases\PilotAssessment-0.1.0-rc.1-win-x64.zip `
+  --dist dist\releases\PilotAssessment-0.1.0-rc.1-win-x64.zip `
   --verify-editable-source `
   --verify-operator-extension `
   --launch-desktop `

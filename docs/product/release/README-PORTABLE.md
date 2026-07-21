@@ -1,7 +1,8 @@
-# Pilot Assessment System — Portable Engineering Build
+# Pilot Assessment System — Portable Release Candidate
 
-This directory contains the Windows x64 Pilot Assessment System. It is an M8B engineering build,
-not the final M8E release candidate and not a scientifically calibrated pilot-rating product.
+This directory contains Pilot Assessment System `v0.1.0-rc.1` for Windows x64. Its acceptance
+state is `pending`; it is not yet the accepted final release and is not a scientifically calibrated
+pilot-rating product.
 
 ## Start
 
@@ -20,12 +21,12 @@ runtime and backend source.
 ## What is and is not in this package
 
 The package contains the desktop app, private runtimes, editable first-party Python source,
-starter resources, the captured current `system\` model library, desktop source, release tools, a copyable
-operator example, bundled private dependency helper/uv, manifests and generated M8C engineering
+starter resources, the captured current `system\` model library, desktop source, release tools, a
+copyable operator example, bundled private dependency helper/uv, manifests and 24 released DOCX
 manuals. It contains no user project, Session, simulator sample, biometric data, result or artifact.
 
-The generated DOCX catalog is in `docs\documentation-manifest.json`. Until M8E, current manuals
-are explicitly stored under `docs\review\` and must not be represented as final released manuals.
+The generated DOCX catalog is in `docs\documentation-manifest.json`; Chinese and English manuals
+are in `docs\zh-CN\` and `docs\en-GB\`.
 
 User projects remain in the locations selected in the app. UI preferences and recent-project
 links are stored under `%LOCALAPPDATA%\PilotAssessmentSystem` on each Windows account.
@@ -60,8 +61,7 @@ existing backend mechanisms cannot express a new calculation, the active Python 
 `backend\src\pilot_assessment`. Close the app completely before editing and restart it afterward.
 See `backend\README-DEVELOPMENT.md` before changing source.
 
-The dedicated review guide is
-`docs\review\en-GB\PAS-PYTHON-EXT-001_Python-Operator-and-Source-Extension_v0.1.0.docx`.
+The dedicated English guide is under `docs\en-GB\` with document ID `PAS-PYTHON-EXT-001`.
 Local operators register through
 `backend\src\pilot_assessment\evidence\extensions\__init__.py`; their JSON parameter schema uses
 the same generic EvidenceRecipe editor as packaged operators and does not require a new C# page.

@@ -1,4 +1,4 @@
-"""Build the Windows x64 portable Pilot Assessment engineering release."""
+"""Build the tagged Windows x64 Pilot Assessment v0.1.0-rc.1 candidate."""
 
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ import tomllib
 import urllib.request
 import uuid
 import zipfile
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from email.parser import Parser
 from pathlib import Path
@@ -39,6 +40,7 @@ CACHE_ROOT = REPOSITORY_ROOT / "build" / "release-cache"
 DEFAULT_OUTPUT_ROOT = REPOSITORY_ROOT / "dist" / "releases"
 DOCUMENTATION_TOOL_ROOT = REPOSITORY_ROOT / "tools" / "documentation"
 DOCUMENTATION_SOURCE_ROOT = REPOSITORY_ROOT / "docs" / "product" / "manuals"
+RELEASE_SOURCE_ROOT = REPOSITORY_ROOT / "docs" / "product" / "release"
 
 PYTHON_VERSION = "3.11.9"
 PYTHON_EMBED_URL = "https://www.python.org/ftp/python/3.11.9/python-3.11.9-embed-amd64.zip"
@@ -56,6 +58,22 @@ COPY_EXCLUDED_DIRECTORIES = {
 COPY_EXCLUDED_SUFFIXES = {".pyc", ".pyo", ".pdb", ".tmp", ".log"}
 
 
+@dataclass(frozen=True)
+class ReleaseIdentity:
+    """Explicit identity of the M8E release candidate being built."""
+
+    product_version: str
+    release_label: str
+    release_channel: str
+    candidate: str
+    user_acceptance: str
+    documentation_status: str
+
+    @property
+    def package_name(self) -> str:
+        return f"PilotAssessment-{self.product_version}-{self.candidate}-win-x64"
+
+
 class ReleaseBuildError(RuntimeError):
     """Raised when a portable release invariant is not satisfied."""
 
@@ -71,7 +89,7 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument(
         "--skip-archive",
         action="store_true",
-        help="Build and verify the product directory without creating a ZIP.",
+        help="Engineering-only switch; the M8E release candidate rejects it.",
     )
     parser.add_argument(
         "--system-source",
@@ -79,7 +97,63 @@ def _arguments() -> argparse.Namespace:
         required=True,
         help="Saved and closed system directory to capture into this release.",
     )
+    parser.add_argument("--release-label", required=True)
+    parser.add_argument(
+        "--release-channel",
+        required=True,
+        choices=("release-candidate",),
+    )
+    parser.add_argument("--candidate", required=True)
+    parser.add_argument(
+        "--user-acceptance",
+        required=True,
+        choices=("pending",),
+    )
+    parser.add_argument(
+        "--documentation-status",
+        required=True,
+        choices=("released",),
+    )
     return parser.parse_args()
+
+
+def _release_identity(
+    *,
+    product_version: str,
+    release_label: str,
+    release_channel: str,
+    candidate: str,
+    user_acceptance: str,
+    documentation_status: str,
+    skip_archive: bool,
+) -> ReleaseIdentity:
+    expected_label = f"v{product_version}-{candidate}"
+    if product_version != "0.1.0":
+        raise ReleaseBuildError(
+            f"M8E rc.1 requires base product version 0.1.0, got {product_version}"
+        )
+    if release_channel != "release-candidate":
+        raise ReleaseBuildError("M8E rc.1 requires release-channel=release-candidate")
+    if candidate != "rc.1":
+        raise ReleaseBuildError(f"M8E first acceptance candidate must be rc.1, got {candidate}")
+    if release_label != expected_label:
+        raise ReleaseBuildError(
+            f"release label must match product/candidate identity: expected {expected_label}"
+        )
+    if user_acceptance != "pending":
+        raise ReleaseBuildError("release candidate must retain user-acceptance=pending")
+    if documentation_status != "released":
+        raise ReleaseBuildError("release candidate requires 24 released documentation outputs")
+    if skip_archive:
+        raise ReleaseBuildError("release candidate cannot be built with --skip-archive")
+    return ReleaseIdentity(
+        product_version=product_version,
+        release_label=release_label,
+        release_channel=release_channel,
+        candidate=candidate,
+        user_acceptance=user_acceptance,
+        documentation_status=documentation_status,
+    )
 
 
 def _run(
@@ -176,8 +250,8 @@ def _read_product_version() -> str:
     return value
 
 
-def _generate_documentation(product_version: str) -> Path:
-    """Build the current review/released manual set before staging the package."""
+def _generate_documentation(product_version: str, documentation_status: str) -> Path:
+    """Build the explicitly selected manual set before staging the package."""
 
     _run(
         [
@@ -189,7 +263,7 @@ def _generate_documentation(product_version: str) -> Path:
             "python",
             str(DOCUMENTATION_TOOL_ROOT / "build_manuals.py"),
             "--status",
-            "review",
+            documentation_status,
         ],
         echo_output=False,
     )
@@ -206,8 +280,10 @@ def _generate_documentation(product_version: str) -> Path:
         raise ReleaseBuildError("documentation manifest product version differs from the product")
     if catalog.get("product_version") != product_version:
         raise ReleaseBuildError("documentation catalog product version differs from the product")
-    if manifest.get("build_status") != "review":
-        raise ReleaseBuildError("engineering package documentation must be built at review status")
+    if manifest.get("build_status") != documentation_status:
+        raise ReleaseBuildError(
+            "documentation build status differs from the requested release identity"
+        )
     outputs = manifest.get("outputs")
     if not isinstance(outputs, list) or not outputs:
         raise ReleaseBuildError("documentation build produced no review/released manuals")
@@ -223,7 +299,7 @@ def _download_python_embed() -> Path:
         print(f"Downloading {PYTHON_EMBED_URL}", flush=True)
         request = urllib.request.Request(
             PYTHON_EMBED_URL,
-            headers={"User-Agent": "PilotAssessment-M8B0-Builder/0.2"},
+            headers={"User-Agent": "PilotAssessment-M8E-Builder/0.1"},
         )
         with urllib.request.urlopen(request, timeout=120) as response:  # noqa: S310
             archive.write_bytes(response.read())
@@ -423,9 +499,21 @@ def _copy_product_sources(package_root: Path, documentation_root: Path) -> None:
     docs_root = package_root / "docs"
     docs_root.mkdir(parents=True, exist_ok=True)
     for name in ("README-PORTABLE.md", "KNOWN-LIMITATIONS.md"):
-        shutil.copy2(REPOSITORY_ROOT / "docs" / "product" / "release" / name, docs_root / name)
+        shutil.copy2(RELEASE_SOURCE_ROOT / name, docs_root / name)
     _copy_documentation(documentation_root, docs_root)
-    shutil.copy2(docs_root / "README-PORTABLE.md", package_root / "README.txt")
+    _copy_tree(
+        DOCUMENTATION_SOURCE_ROOT / "assets" / "screenshots",
+        docs_root / "assets" / "screenshots",
+    )
+    handoff_files = {
+        "README-CANDIDATE.md": "README-CANDIDATE.md",
+        "RELEASE-NOTES-v0.1.0-rc.1.md": "RELEASE-NOTES.md",
+        "ACCEPTANCE-CHECKLIST-v0.1.0-rc.1.md": "ACCEPTANCE-CHECKLIST.md",
+        "KNOWN-LIMITATIONS.md": "KNOWN-LIMITATIONS.md",
+    }
+    for source_name, destination_name in handoff_files.items():
+        shutil.copy2(RELEASE_SOURCE_ROOT / source_name, package_root / destination_name)
+    shutil.copy2(package_root / "README-CANDIDATE.md", package_root / "README.txt")
 
 
 def _initialize_captured_system(
@@ -669,10 +757,49 @@ def _collect_licenses(package_root: Path) -> list[str]:
     return copied
 
 
-def _git_state() -> dict[str, Any]:
+def _validate_candidate_git_state(
+    *,
+    release_label: str,
+    commit: str,
+    status: str,
+    tag_type: str,
+    peeled_commit: str,
+) -> dict[str, Any]:
+    if status.strip():
+        raise ReleaseBuildError("release candidate source worktree must be clean")
+    if tag_type.strip() != "tag":
+        raise ReleaseBuildError(f"{release_label} must be an annotated Git tag")
+    if peeled_commit.strip() != commit.strip():
+        raise ReleaseBuildError(f"{release_label} does not peel to the current HEAD")
+    if not re.fullmatch(r"[0-9a-f]{40}", commit.strip()):
+        raise ReleaseBuildError("release candidate Git commit is not a full SHA-1 identity")
+    return {
+        "commit": commit.strip(),
+        "dirty": False,
+        "tag": release_label,
+        "tag_type": "annotated",
+        "tag_peels_to_head": True,
+    }
+
+
+def _git_state(release_label: str) -> dict[str, Any]:
     commit = _run(["git", "rev-parse", "HEAD"]).splitlines()[-1]
-    status = _run(["git", "status", "--porcelain"], echo_output=False)
-    return {"commit": commit, "dirty": bool(status.strip())}
+    status = _run(
+        ["git", "status", "--porcelain", "--untracked-files=all"],
+        echo_output=False,
+    )
+    tag_type = _run(["git", "cat-file", "-t", release_label], echo_output=False)
+    peeled_commit = _run(
+        ["git", "rev-parse", f"{release_label}^{{}}"],
+        echo_output=False,
+    )
+    return _validate_candidate_git_state(
+        release_label=release_label,
+        commit=commit,
+        status=status,
+        tag_type=tag_type,
+        peeled_commit=peeled_commit,
+    )
 
 
 def _dotnet_packages(package_root: Path) -> list[dict[str, str]]:
@@ -697,13 +824,13 @@ def _spdx_id(kind: str, name: str, version: str) -> str:
 def _write_sbom(
     package_root: Path,
     *,
-    product_version: str,
+    identity: ReleaseIdentity,
     built_at: str,
     python_packages: list[dict[str, str]],
 ) -> None:
     first_party = {
         "name": "pilot-assessment-system",
-        "version": product_version,
+        "version": identity.product_version,
         "kind": "Product",
     }
     components = [
@@ -738,17 +865,17 @@ def _write_sbom(
         )
     namespace_token = uuid.uuid5(
         uuid.NAMESPACE_URL,
-        f"pilot-assessment:{product_version}:{built_at}",
+        f"pilot-assessment:{identity.release_label}:{built_at}",
     )
     payload = {
         "spdxVersion": "SPDX-2.3",
         "dataLicense": "CC0-1.0",
         "SPDXID": "SPDXRef-DOCUMENT",
-        "name": f"PilotAssessment-{product_version}-win-x64",
+        "name": identity.package_name,
         "documentNamespace": f"https://pilot-assessment.local/spdx/{namespace_token}",
         "creationInfo": {
             "created": built_at,
-            "creators": ["Tool: PilotAssessment-M8B0-Builder-0.2"],
+            "creators": ["Tool: PilotAssessment-M8E-Builder-0.1"],
         },
         "packages": spdx_packages,
         "relationships": relationships,
@@ -829,6 +956,11 @@ def _documentation_release_summary(package_root: Path) -> dict[str, Any]:
     statuses = [str(item.get("status")) for item in outputs if isinstance(item, dict)]
     if len(statuses) != len(outputs):
         raise ReleaseBuildError("documentation manifest contains a non-object output")
+    screenshot_manifest_path = docs_root / "assets" / "screenshots" / "manifest.json"
+    screenshot_manifest = json.loads(screenshot_manifest_path.read_text(encoding="utf-8"))
+    screenshots = screenshot_manifest.get("screenshots")
+    if not isinstance(screenshots, list) or len(screenshots) != 10:
+        raise ReleaseBuildError("release candidate must contain ten registered screenshots")
     return {
         "build_status": manifest.get("build_status"),
         "manifest": "docs/documentation-manifest.json",
@@ -838,13 +970,17 @@ def _documentation_release_summary(package_root: Path) -> dict[str, Any]:
         "generated_output_count": len(outputs),
         "released_output_count": statuses.count("released"),
         "review_output_count": statuses.count("review"),
+        "screenshot_manifest": "docs/assets/screenshots/manifest.json",
+        "screenshot_manifest_sha256": _sha256(screenshot_manifest_path),
+        "candidate_screenshot_count": len(screenshots),
     }
 
 
 def _write_manifests(
     package_root: Path,
     *,
-    product_version: str,
+    identity: ReleaseIdentity,
+    git_state: dict[str, Any],
     license_files: list[str],
     built_at: str,
     capture_report: SystemCaptureReport,
@@ -862,7 +998,7 @@ def _write_manifests(
     _write_json(system_model_baseline_path, system_model_baseline)
     _write_sbom(
         package_root,
-        product_version=product_version,
+        identity=identity,
         built_at=built_at,
         python_packages=python_packages,
     )
@@ -870,10 +1006,15 @@ def _write_manifests(
     dotnet_version = _run(["dotnet", "--version"]).splitlines()[-1]
     uv_version = _run([str(UV), "--version"]).splitlines()[-1]
     payload: dict[str, Any] = {
-        "schema_version": "pilot-assessment-release-manifest-v1",
+        "schema_version": "pilot-assessment-release-manifest-v2",
         "product": "Pilot Assessment System",
-        "product_version": product_version,
-        "build_kind": "m8d-current-system-engineering",
+        "product_version": identity.product_version,
+        "release_channel": identity.release_channel,
+        "release_label": identity.release_label,
+        "candidate": identity.candidate,
+        "user_acceptance": identity.user_acceptance,
+        "documentation_status": identity.documentation_status,
+        "build_kind": "m8e-release-candidate",
         "built_at_utc": built_at,
         "target": {
             "operating_system": "windows",
@@ -899,7 +1040,7 @@ def _write_manifests(
             "python_embedded_sha256": PYTHON_EMBED_SHA256,
             "uv": uv_version,
         },
-        "git": _git_state(),
+        "git": git_state,
         "python_packages": python_packages,
         "documentation": _documentation_release_summary(package_root),
         "source_baseline_sha256": source_baseline["aggregate_sha256"],
@@ -930,11 +1071,56 @@ def _write_manifests(
     _write_checksums(package_root)
 
 
+def _write_delivery_manifest(
+    delivery_path: Path,
+    *,
+    package_root: Path,
+    archive_path: Path,
+    archive_sha256: str,
+) -> dict[str, Any]:
+    release_manifest_path = package_root / "manifest" / "release-manifest.json"
+    sbom_path = package_root / "manifest" / "sbom.spdx.json"
+    release_manifest = json.loads(release_manifest_path.read_text(encoding="utf-8"))
+    payload = {
+        "schema_version": "pilot-assessment-delivery-v1",
+        "product": release_manifest["product"],
+        "product_version": release_manifest["product_version"],
+        "release_channel": release_manifest["release_channel"],
+        "release_label": release_manifest["release_label"],
+        "candidate": release_manifest["candidate"],
+        "user_acceptance": release_manifest["user_acceptance"],
+        "build_kind": release_manifest["build_kind"],
+        "archive": {
+            "file": archive_path.name,
+            "bytes": archive_path.stat().st_size,
+            "sha256": archive_sha256,
+            "sha256_file": f"{archive_path.name}.sha256",
+        },
+        "git": release_manifest["git"],
+        "system_model": release_manifest["system_model"],
+        "documentation": release_manifest["documentation"],
+        "manifests": {
+            "release_manifest": "manifest/release-manifest.json",
+            "release_manifest_sha256": _sha256(release_manifest_path),
+            "sbom": "manifest/sbom.spdx.json",
+            "sbom_sha256": _sha256(sbom_path),
+        },
+        "scientific_status": release_manifest["scientific_status"],
+    }
+    _write_json(delivery_path, payload)
+    return payload
+
+
 def _build(
     output_root: Path,
     *,
     system_source: Path,
     skip_archive: bool,
+    release_label: str,
+    release_channel: str,
+    candidate: str,
+    user_acceptance: str,
+    documentation_status: str,
 ) -> dict[str, Any]:
     required = [
         DESKTOP_PROJECT,
@@ -948,23 +1134,40 @@ def _build(
         DOCUMENTATION_SOURCE_ROOT / "catalog.json",
         DOCUMENTATION_TOOL_ROOT / "build_manuals.py",
         DOCUMENTATION_TOOL_ROOT / "uv.lock",
+        DOCUMENTATION_SOURCE_ROOT / "assets" / "screenshots" / "manifest.json",
+        RELEASE_SOURCE_ROOT / "README-CANDIDATE.md",
+        RELEASE_SOURCE_ROOT / "RELEASE-NOTES-v0.1.0-rc.1.md",
+        RELEASE_SOURCE_ROOT / "ACCEPTANCE-CHECKLIST-v0.1.0-rc.1.md",
+        RELEASE_SOURCE_ROOT / "KNOWN-LIMITATIONS.md",
     ]
     missing = [str(path) for path in required if not path.exists()]
     if missing:
         raise ReleaseBuildError(f"required release inputs are missing: {missing}")
 
     version = _read_product_version()
-    documentation_root = _generate_documentation(version)
-    package_name = f"PilotAssessment-{version}-win-x64"
+    identity = _release_identity(
+        product_version=version,
+        release_label=release_label,
+        release_channel=release_channel,
+        candidate=candidate,
+        user_acceptance=user_acceptance,
+        documentation_status=documentation_status,
+        skip_archive=skip_archive,
+    )
+    git_state = _git_state(identity.release_label)
+    documentation_root = _generate_documentation(version, identity.documentation_status)
+    package_name = identity.package_name
     output_root = output_root.resolve()
     output_root.mkdir(parents=True, exist_ok=True)
     package_root = output_root / package_name
     archive_path = output_root / f"{package_name}.zip"
     archive_hash_path = output_root / f"{package_name}.zip.sha256"
+    delivery_path = output_root / f"{package_name}.delivery.json"
     system_source = _require_external_system_source(system_source, package_root)
     _remove_tree(package_root, output_root)
     _unlink(archive_path, output_root)
     _unlink(archive_hash_path, output_root)
+    _unlink(delivery_path, output_root)
 
     WORK_ROOT.mkdir(parents=True, exist_ok=True)
     publish_root = WORK_ROOT / "desktop-publish"
@@ -986,14 +1189,15 @@ def _build(
     capture_report = capture_current_system(system_source, package_root / "system")
     _initialize_captured_system(
         package_root,
-        product_version=version,
+        product_version=identity.product_version,
         built_at=built_at,
         capture_report=capture_report,
     )
     license_files = _collect_licenses(package_root)
     _write_manifests(
         package_root,
-        product_version=version,
+        identity=identity,
+        git_state=git_state,
         license_files=license_files,
         built_at=built_at,
         capture_report=capture_report,
@@ -1017,30 +1221,38 @@ def _build(
     )
     _remove_tree(verification_root, WORK_ROOT)
 
-    archive_hash = None
-    if not skip_archive:
-        created = shutil.make_archive(
-            str(archive_path.with_suffix("")),
-            "zip",
-            root_dir=output_root,
-            base_dir=package_name,
-        )
-        archive_path = Path(created)
-        archive_hash = _sha256(archive_path)
-        archive_hash_path.write_text(
-            f"{archive_hash}  {archive_path.name}\n",
-            encoding="utf-8",
-            newline="\n",
-        )
+    created = shutil.make_archive(
+        str(archive_path.with_suffix("")),
+        "zip",
+        root_dir=output_root,
+        base_dir=package_name,
+    )
+    archive_path = Path(created)
+    archive_hash = _sha256(archive_path)
+    archive_hash_path.write_text(
+        f"{archive_hash}  {archive_path.name}\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    _write_delivery_manifest(
+        delivery_path,
+        package_root=package_root,
+        archive_path=archive_path,
+        archive_sha256=archive_hash,
+    )
 
     return {
         "package_directory": str(package_root),
         "package_bytes": sum(
             path.stat().st_size for path in package_root.rglob("*") if path.is_file()
         ),
-        "zip": None if skip_archive else str(archive_path),
-        "zip_bytes": None if skip_archive else archive_path.stat().st_size,
+        "release_label": identity.release_label,
+        "user_acceptance": identity.user_acceptance,
+        "zip": str(archive_path),
+        "zip_bytes": archive_path.stat().st_size,
         "zip_sha256": archive_hash,
+        "zip_sha256_file": str(archive_hash_path),
+        "delivery_manifest": str(delivery_path),
         "system_model": {
             "model_library_id": capture_report.model_library_id,
             "model_identity_sha256": capture_report.model_identity_sha256,
@@ -1057,6 +1269,11 @@ def main() -> int:
             args.output_root,
             system_source=args.system_source,
             skip_archive=args.skip_archive,
+            release_label=args.release_label,
+            release_channel=args.release_channel,
+            candidate=args.candidate,
+            user_acceptance=args.user_acceptance,
+            documentation_status=args.documentation_status,
         )
     except (OSError, KeyError, ValueError, subprocess.SubprocessError, zipfile.BadZipFile) as error:
         print(f"Pilot Assessment portable build failed: {error}", file=sys.stderr)

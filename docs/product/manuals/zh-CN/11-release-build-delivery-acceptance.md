@@ -92,7 +92,7 @@ Candidate screenshot capture 后不能再改 UI code；否则 source identity �
 ```text
 PilotAssessment-0.1.0-rc.1-win-x64.zip
 PilotAssessment-0.1.0-rc.1-win-x64.zip.sha256
-PilotAssessment-0.1.0-rc.1-delivery.json
+PilotAssessment-0.1.0-rc.1-win-x64.delivery.json
 ```
 
 Delivery JSON 记录 filename/bytes/SHA-256、tag/commit、system identity/counts、documentation/SBOM hashes 与 pending acceptance，不能暴露 build-machine absolute paths。
@@ -103,7 +103,7 @@ Delivery JSON 记录 filename/bytes/SHA-256、tag/commit、system identity/count
 
 ```powershell
 .\.tools\uv\uv.exe run python tools\release\verify_archive_external.py `
-  dist\releases\PilotAssessment-0.1.0-rc.1-win-x64.zip `
+  --dist dist\releases\PilotAssessment-0.1.0-rc.1-win-x64.zip `
   --verify-editable-source `
   --verify-operator-extension `
   --launch-desktop `

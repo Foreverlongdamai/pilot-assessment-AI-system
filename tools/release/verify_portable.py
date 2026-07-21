@@ -68,6 +68,8 @@ SYSTEM_MODEL_FILES = {
     "system/model-library.sqlite3",
     "system/staging/model-edit/workspace.sqlite3",
 }
+
+
 class PortableVerificationError(RuntimeError):
     """Raised when the portable product violates its release contract."""
 
@@ -135,7 +137,11 @@ def _required_layout(root: Path) -> None:
         "developer/examples/operator-extension/README.md",
         "docs/documentation-manifest.json",
         "docs/source-catalog.json",
-        "docs/review/README.txt",
+        "docs/assets/screenshots/manifest.json",
+        "README-CANDIDATE.md",
+        "RELEASE-NOTES.md",
+        "ACCEPTANCE-CHECKLIST.md",
+        "KNOWN-LIMITATIONS.md",
         "system/system.json",
         "system/model-library.sqlite3",
         "system/staging/model-edit/workspace.sqlite3",
@@ -145,6 +151,62 @@ def _required_layout(root: Path) -> None:
         raise PortableVerificationError(f"portable layout is incomplete: {missing}")
     if not (root / "runtime" / "site-packages").is_dir():
         raise PortableVerificationError("runtime/site-packages is missing")
+
+
+def _verify_release_identity(root: Path) -> dict[str, Any]:
+    manifest = json.loads(
+        (root / "manifest" / "release-manifest.json").read_text(encoding="utf-8")
+    )
+    expected = {
+        "schema_version": "pilot-assessment-release-manifest-v2",
+        "product_version": "0.1.0",
+        "release_channel": "release-candidate",
+        "release_label": "v0.1.0-rc.1",
+        "candidate": "rc.1",
+        "user_acceptance": "pending",
+        "documentation_status": "released",
+        "build_kind": "m8e-release-candidate",
+    }
+    observed = {key: manifest.get(key) for key in expected}
+    if observed != expected:
+        raise PortableVerificationError(
+            f"release candidate identity differs: expected={expected}, actual={observed}"
+        )
+    if root.name != "PilotAssessment-0.1.0-rc.1-win-x64":
+        raise PortableVerificationError("product directory name differs from candidate identity")
+    git = manifest.get("git")
+    if not isinstance(git, dict) or git.get("dirty") is not False:
+        raise PortableVerificationError("release manifest does not prove a clean Git source")
+    if (
+        git.get("tag") != expected["release_label"]
+        or git.get("tag_type") != "annotated"
+        or git.get("tag_peels_to_head") is not True
+        or not isinstance(git.get("commit"), str)
+        or len(git["commit"]) != 40
+    ):
+        raise PortableVerificationError("release manifest tagged Git identity is invalid")
+    scientific = manifest.get("scientific_status")
+    if not isinstance(scientific, dict) or scientific.get("formal_run_authorized") is not False:
+        raise PortableVerificationError("release candidate scientific boundary is missing")
+    for filename in (
+        "README-CANDIDATE.md",
+        "RELEASE-NOTES.md",
+        "ACCEPTANCE-CHECKLIST.md",
+        "KNOWN-LIMITATIONS.md",
+    ):
+        text = (root / filename).read_text(encoding="utf-8")
+        if "v0.1.0-rc.1" not in text or "pending" not in text.lower():
+            raise PortableVerificationError(
+                f"candidate handoff file lacks release/acceptance identity: {filename}"
+            )
+    return {
+        "product_version": expected["product_version"],
+        "release_label": expected["release_label"],
+        "candidate": expected["candidate"],
+        "user_acceptance": expected["user_acceptance"],
+        "git": git,
+        "formal_run_authorized": False,
+    }
 
 
 def _verify_checksums(root: Path, *, ignore_mutable_system: bool = False) -> int:
@@ -205,10 +267,14 @@ def _verify_documentation(root: Path) -> dict[str, Any]:
     product_version = release_manifest.get("product_version")
     if not (product_version == manifest.get("product_version") == catalog.get("product_version")):
         raise PortableVerificationError("documentation and product versions differ")
-    if manifest.get("build_status") != "review":
-        raise PortableVerificationError(
-            "the M8C-0 engineering package must identify its documentation as review"
-        )
+    if manifest.get("build_status") != "released":
+        raise PortableVerificationError("release candidate documentation must be released")
+    if not (
+        manifest.get("release_channel") == catalog.get("release_channel") == "release-candidate"
+        and manifest.get("release_label") == catalog.get("release_label") == "v0.1.0-rc.1"
+        and manifest.get("user_acceptance") == catalog.get("user_acceptance") == "pending"
+    ):
+        raise PortableVerificationError("documentation release-candidate identity differs")
 
     documents = catalog.get("documents")
     outputs = manifest.get("outputs")
@@ -219,6 +285,8 @@ def _verify_documentation(root: Path) -> dict[str, Any]:
     }
     if len(catalog_index) != 12:
         raise PortableVerificationError("documentation catalog must contain 12 logical manuals")
+    if len(outputs) != 24:
+        raise PortableVerificationError("release candidate must contain 24 documentation outputs")
 
     expected_docx: set[str] = set()
     status_counts = {"review": 0, "released": 0}
@@ -274,6 +342,38 @@ def _verify_documentation(root: Path) -> dict[str, Any]:
             f"actual={sorted(actual_docx)}, expected={sorted(expected_docx)}"
         )
 
+    if status_counts != {"review": 0, "released": 24}:
+        raise PortableVerificationError(
+            f"release candidate documentation status counts differ: {status_counts}"
+        )
+
+    screenshot_manifest_path = docs_root / "assets" / "screenshots" / "manifest.json"
+    screenshot_manifest = json.loads(screenshot_manifest_path.read_text(encoding="utf-8"))
+    screenshots = screenshot_manifest.get("screenshots")
+    if not isinstance(screenshots, list) or len(screenshots) != 10:
+        raise PortableVerificationError("release candidate must contain ten screenshots")
+    screenshot_keys: set[tuple[str, str]] = set()
+    for item in screenshots:
+        if not isinstance(item, dict):
+            raise PortableVerificationError("screenshot manifest entry must be an object")
+        key = (str(item.get("screenshot_id")), str(item.get("language")))
+        screenshot_keys.add(key)
+        relative = Path(str(item.get("path", "")))
+        path = (docs_root / relative).resolve()
+        if not path.is_relative_to(docs_root) or not path.is_file():
+            raise PortableVerificationError(f"candidate screenshot is missing: {relative}")
+        if _sha256(path) != item.get("sha256"):
+            raise PortableVerificationError(f"candidate screenshot hash differs: {relative}")
+        if item.get("status") != "release-candidate":
+            raise PortableVerificationError(f"candidate screenshot status differs: {relative}")
+        privacy = item.get("privacy_review")
+        if not isinstance(privacy, dict) or privacy.get("status") != "passed":
+            raise PortableVerificationError(
+                f"candidate screenshot privacy review differs: {relative}"
+            )
+    if len(screenshot_keys) != 10:
+        raise PortableVerificationError("candidate screenshot identities are not unique")
+
     recorded = release_manifest.get("documentation")
     expected_summary = {
         "build_status": manifest.get("build_status"),
@@ -284,6 +384,9 @@ def _verify_documentation(root: Path) -> dict[str, Any]:
         "generated_output_count": len(outputs),
         "released_output_count": status_counts["released"],
         "review_output_count": status_counts["review"],
+        "screenshot_manifest": "docs/assets/screenshots/manifest.json",
+        "screenshot_manifest_sha256": _sha256(screenshot_manifest_path),
+        "candidate_screenshot_count": len(screenshots),
     }
     if recorded != expected_summary:
         raise PortableVerificationError("release manifest documentation summary differs")
@@ -1476,6 +1579,7 @@ def verify(
     if not root.is_dir():
         raise PortableVerificationError(f"package root does not exist: {root}")
     _required_layout(root)
+    release_identity = _verify_release_identity(root)
     checksum_count = _verify_checksums(root)
     documentation = _verify_documentation(root)
     source_count = _verify_source_baseline(root)
@@ -1492,6 +1596,7 @@ def verify(
     desktop = _launch_desktop(root, desktop_timeout) if launch_desktop else None
     return {
         "package_root": str(root),
+        "release_identity": release_identity,
         "checksummed_files": checksum_count,
         "documentation": documentation,
         "backend_source_files": source_count,

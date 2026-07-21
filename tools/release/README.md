@@ -1,44 +1,53 @@
-# Portable release tools
+# M8E release-candidate tools
 
-From the repository root, build the Windows x64 product directory and ZIP with:
+From the tagged, clean repository root, build the Windows x64 candidate with:
 
 ```powershell
 .\.tools\uv\uv.exe run python tools\release\build_portable.py `
-  --system-source .pilot-assessment-local\system
+  --system-source .pilot-assessment-local\system `
+  --release-label v0.1.0-rc.1 `
+  --release-channel release-candidate `
+  --candidate rc.1 `
+  --user-acceptance pending `
+  --documentation-status released
 ```
 
 The builder publishes WinUI/.NET/Windows App SDK self-contained, verifies the pinned official
-CPython embedded ZIP, installs the frozen production dependency closure, copies the single live
-backend source tree, consistently captures the explicitly selected saved current `system/` model
-library, rebuilds a clean edit workspace around it, writes dynamic
-manifests/checksums/SBOM, runs a no-project/two-project headless verification on a disposable copy,
-and creates `dist/releases/PilotAssessment-<version>-win-x64.zip`.
+CPython embedded ZIP, installs the frozen production dependency closure, copies the one active
+first-party Python source tree, captures the explicitly selected saved current `system/`, writes
+checksums/baselines/SBOM, runs a disposable-copy verification, and creates:
 
-The command never guesses a system source and never falls back to a new starter model. If it says
-the source is locked, close the desktop app. If it reports unsaved edits, reopen that software copy
-and choose Save All or Discard All before closing. Integrity, schema, identity or user-owned-row
-failures require selecting or repairing the intended system directory; the builder will not modify
-or replace it automatically.
+- `dist/releases/PilotAssessment-0.1.0-rc.1-win-x64.zip`;
+- its independent `.zip.sha256` file; and
+- `PilotAssessment-0.1.0-rc.1-win-x64.delivery.json`.
 
-Run the stronger local verification, including temporary live-source editing and visible desktop
-startup, with:
+Candidate mode requires an annotated `v0.1.0-rc.1` tag that peels to `HEAD` and a clean worktree.
+It refuses `--skip-archive`, review-status manuals, ambiguous identity and an accepted/final state.
+The command never guesses a system source. If it reports a lock or unsaved edits, close the app
+after choosing Save All or Discard All; the builder does not modify or replace that source.
+
+Run a direct package-directory check with:
 
 ```powershell
-.\.venv\Scripts\python.exe tools\release\verify_portable.py `
-  dist\releases\PilotAssessment-0.1.0-win-x64 `
+.\.tools\uv\uv.exe run python tools\release\verify_portable.py `
+  dist\releases\PilotAssessment-0.1.0-rc.1-win-x64 `
   --verify-editable-source `
+  --verify-operator-extension `
   --launch-desktop
 ```
 
-These are build-machine commands. Product users only unzip the ZIP and run
-`PilotAssessment.Desktop.exe`.
-
-Verify the ZIP after extracting it to a fresh repository-external temporary directory with its
-own private Python:
+Product users only unzip the ZIP and run `PilotAssessment.Desktop.exe`. The stronger delivery gate
+extracts the ZIP to a disposable repository-external directory and uses only its private Python:
 
 ```powershell
-.\.venv\Scripts\python.exe tools\release\verify_archive_external.py `
-  dist\releases\PilotAssessment-0.1.0-win-x64.zip `
+.\.tools\uv\uv.exe run python tools\release\verify_archive_external.py `
+  --dist dist\releases\PilotAssessment-0.1.0-rc.1-win-x64.zip `
   --verify-editable-source `
-  --launch-desktop
+  --verify-operator-extension `
+  --launch-desktop `
+  --restricted-path
 ```
+
+The external verifier checks the delivery JSON/hash, scans 24 DOCX XML payloads for private paths,
+verifies editable source and a new operator, launches the visible desktop, and confirms zero TCP
+listeners. Automated verification leaves `user_acceptance=pending`.
