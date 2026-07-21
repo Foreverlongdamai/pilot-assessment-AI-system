@@ -130,10 +130,15 @@ class RunResultRepository:
             with self.database.transaction() as connection:
                 run = connection.execute(
                     """
-                    SELECT COALESCE(link.current_snapshot_hash, runs.snapshot_hash)
+                    SELECT COALESCE(
+                               link_v2.current_snapshot_hash,
+                               link_v1.current_snapshot_hash,
+                               runs.snapshot_hash
+                           )
                            AS effective_snapshot_hash
                     FROM runs
-                    LEFT JOIN model_run_links AS link ON link.run_id = runs.run_id
+                    LEFT JOIN model_run_links_v2 AS link_v2 ON link_v2.run_id = runs.run_id
+                    LEFT JOIN model_run_links AS link_v1 ON link_v1.run_id = runs.run_id
                     WHERE runs.run_id = ?
                     """,
                     (envelope.run_id,),

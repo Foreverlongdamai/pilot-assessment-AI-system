@@ -25,9 +25,6 @@ public partial class ProjectLauncherViewModel : ObservableObject
     public partial string ProjectName { get; set; } = "Pilot Assessment Project";
 
     [ObservableProperty]
-    public partial string ProjectId { get; set; } = $"project.{Guid.NewGuid():N}";
-
-    [ObservableProperty]
     public partial string CreateRootPath { get; private set; } = string.Empty;
 
     [ObservableProperty]
@@ -55,7 +52,7 @@ public partial class ProjectLauncherViewModel : ObservableObject
 
     public string CurrentProjectText => CurrentProject is null
         ? L("Project_NoOpenProject", "No managed project is open.")
-        : $"{CurrentProject.Name} · {CurrentProject.ProjectId}";
+        : CurrentProject.Name;
 
     public string CurrentProjectRootText => CurrentProjectRoot ??
         L("Project_NoProjectFolder", "No project folder");
@@ -63,7 +60,6 @@ public partial class ProjectLauncherViewModel : ObservableObject
     public bool CanCreate =>
         !IsBusy &&
         !string.IsNullOrWhiteSpace(CreateRootPath) &&
-        !string.IsNullOrWhiteSpace(ProjectId) &&
         !string.IsNullOrWhiteSpace(ProjectName);
 
     public ProjectLauncherViewModel(
@@ -121,7 +117,6 @@ public partial class ProjectLauncherViewModel : ObservableObject
         await CloseForSwitchAsync(CreateRootPath);
         var project = await _gateway.CreateProjectAsync(
             CreateRootPath,
-            ProjectId,
             ProjectName,
             "expert.local");
         await ActivateProjectAsync(project, CreateRootPath);
@@ -156,8 +151,6 @@ public partial class ProjectLauncherViewModel : ObservableObject
     });
 
     partial void OnProjectNameChanged(string value) => CreateProjectCommand.NotifyCanExecuteChanged();
-
-    partial void OnProjectIdChanged(string value) => CreateProjectCommand.NotifyCanExecuteChanged();
 
     partial void OnIsBusyChanged(bool value)
     {
@@ -200,26 +193,25 @@ public partial class ProjectLauncherViewModel : ObservableObject
     {
         CurrentProject = project;
         CurrentProjectRoot = root;
-        _shellState.SetProjectContext(project.ProjectId);
+        _shellState.SetProjectContext(
+            project.ProjectId,
+            schemeId: _schemes?.SelectedScheme?.SchemeId ?? _shellState.Snapshot.SchemeId);
         OnPropertyChanged(nameof(HasOpenProject));
         OnPropertyChanged(nameof(CurrentProjectText));
         OnPropertyChanged(nameof(CurrentProjectRootText));
         CloseProjectCommand.NotifyCanExecuteChanged();
         await TouchRecentAsync(project, root, cancellationToken);
         await _sessions.LoadAsync(project.ProjectId, cancellationToken: cancellationToken);
-        if (_schemes is not null)
-        {
-            await _schemes.LoadAsync(project.ProjectId, cancellationToken);
-        }
     }
 
     private void ClearCurrentProject()
     {
         CurrentProject = null;
         CurrentProjectRoot = null;
+        var selectedSchemeId = _schemes?.SelectedScheme?.SchemeId ?? _shellState.Snapshot.SchemeId;
         _shellState.SetProjectContext(null);
+        _shellState.SetSchemeContext(selectedSchemeId);
         _sessions.Reset();
-        _schemes?.Reset();
         OnPropertyChanged(nameof(HasOpenProject));
         OnPropertyChanged(nameof(CurrentProjectText));
         OnPropertyChanged(nameof(CurrentProjectRootText));

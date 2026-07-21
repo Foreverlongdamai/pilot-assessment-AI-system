@@ -10,6 +10,10 @@
             </ResourceDictionary.MergedDictionaries>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="HighContrast">
+                    <SolidColorBrush x:Key="GraphRawInputFamilyNodeBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+                    <SolidColorBrush x:Key="GraphRawInputFamilyBorderBrush" Color="{ThemeResource SystemColorWindowTextColor}" />
+                    <SolidColorBrush x:Key="GraphRawInputFamilyForegroundBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+                    <SolidColorBrush x:Key="GraphProvenanceEdgeBrush" Color="{ThemeResource SystemColorWindowTextColor}" />
                     <SolidColorBrush x:Key="GraphRawInputNodeBrush" Color="{ThemeResource SystemColorHighlightColor}" />
                     <SolidColorBrush x:Key="GraphEvidenceNodeBrush" Color="{ThemeResource SystemColorHighlightColor}" />
                     <SolidColorBrush x:Key="GraphBnNodeBrush" Color="{ThemeResource SystemColorHighlightColor}" />
@@ -20,7 +24,23 @@
                     <SolidColorBrush x:Key="GraphBlockedStatusBrush" Color="{ThemeResource SystemColorWindowTextColor}" />
                     <SolidColorBrush x:Key="GraphIncompleteStatusBrush" Color="{ThemeResource SystemColorHotlightColor}" />
                 </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="GraphRawInputFamilyNodeBrush" Color="#15803D" />
+                    <SolidColorBrush x:Key="GraphRawInputFamilyBorderBrush" Color="#14532D" />
+                    <SolidColorBrush x:Key="GraphRawInputFamilyForegroundBrush" Color="White" />
+                    <SolidColorBrush x:Key="GraphProvenanceEdgeBrush" Color="#16A34A" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="GraphRawInputFamilyNodeBrush" Color="#16A34A" />
+                    <SolidColorBrush x:Key="GraphRawInputFamilyBorderBrush" Color="#BBF7D0" />
+                    <SolidColorBrush x:Key="GraphRawInputFamilyForegroundBrush" Color="White" />
+                    <SolidColorBrush x:Key="GraphProvenanceEdgeBrush" Color="#4ADE80" />
+                </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
+            <SolidColorBrush x:Key="GraphRawInputFamilyNodeBrush" Color="#15803D" />
+            <SolidColorBrush x:Key="GraphRawInputFamilyBorderBrush" Color="#14532D" />
+            <SolidColorBrush x:Key="GraphRawInputFamilyForegroundBrush" Color="White" />
+            <SolidColorBrush x:Key="GraphProvenanceEdgeBrush" Color="#16A34A" />
             <SolidColorBrush x:Key="GraphRawInputNodeBrush" Color="#2563EB" />
             <SolidColorBrush x:Key="GraphEvidenceNodeBrush" Color="#0D9488" />
             <SolidColorBrush x:Key="GraphBnNodeBrush" Color="#7C3AED" />

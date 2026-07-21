@@ -97,16 +97,18 @@ public sealed class GraphCommandTests
     }
 
     [Fact]
-    public async Task ProjectScopedPasteCopiesOnlySelectedNodeAndRetainsFixedParents()
+    public async Task ModelLibraryScopedPasteCopiesOnlySelectedNodeAndRetainsFixedParents()
     {
         var fixture = new FakeGraphGateway();
         var clipboard = new ModelClipboard();
         var coordinator = new ModelGraphCommandCoordinator(fixture, clipboard);
         var source = fixture.Graph.Nodes.Single(node => node.NodeId == fixture.ActiveEvidenceId);
         var sourceDefinition = Assert.IsType<EvidenceNodeDefinition>(source.Definition);
-        coordinator.Copy(fixture.Graph.ProjectId, [source.NodeId]);
+        coordinator.Copy(fixture.Graph.ModelLibraryId, [source.NodeId]);
 
-        var response = await coordinator.PasteAsync(fixture.Graph.ProjectId, fixture.Graph.Scheme);
+        var response = await coordinator.PasteAsync(
+            fixture.Graph.ModelLibraryId,
+            fixture.Graph.Scheme);
 
         var copied = Assert.Single(response.CopiedNodes);
         Assert.Equal([source.NodeId], fixture.LastBatchCopyNodeIds);

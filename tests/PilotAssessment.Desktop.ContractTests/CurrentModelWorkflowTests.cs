@@ -10,7 +10,7 @@ namespace PilotAssessment.Desktop.ContractTests;
 public sealed class CurrentModelWorkflowTests
 {
     [Fact]
-    public async Task RealSidecar_CurrentModelWorkflowPersistsAcrossReopenWithoutPublish()
+    public async Task RealSidecar_StagedModelWorkflowCommitsAndPersistsWithoutPublish()
     {
         var repositoryRoot = FindRepositoryRoot(AppContext.BaseDirectory);
         var uvPath = Path.Combine(repositoryRoot, ".tools", "uv", "uv.exe");
@@ -24,7 +24,13 @@ public sealed class CurrentModelWorkflowTests
 
         await BuildLightweightBundleAsync(repositoryRoot, uvPath, bundleRoot);
 
-        using var process = new Process { StartInfo = CreateSidecarStartInfo(repositoryRoot, uvPath) };
+        using var process = new Process
+        {
+            StartInfo = CreateSidecarStartInfo(
+                repositoryRoot,
+                uvPath,
+                Path.Combine(temporaryRoot, "system")),
+        };
         Assert.True(process.Start());
         var stderrTask = process.StandardError.ReadToEndAsync();
         await using var client = new JsonRpcClient(
@@ -144,6 +150,15 @@ public sealed class CurrentModelWorkflowTests
             importSession["external_bundle"] = bundleRoot;
             var imported = await CallAsync(client, "session.import", importSession);
             var revisionId = Text(Object(imported, "revision"), "session_revision_id");
+
+            var dirtyStatus = Object(
+                await CallAsync(client, "model.edit.status"),
+                "edit_session");
+            Assert.True(dirtyStatus["dirty"]!.GetValue<bool>());
+            var commit = Mutation($"tx.contract.edit-commit.{Guid.NewGuid():N}");
+            var committed = await CallAsync(client, "model.edit.commit", commit);
+            Assert.False(Object(committed, "edit_session")["dirty"]!.GetValue<bool>());
+
             var currentSchemeResponse = await CallAsync(
                 client,
                 "model.scheme.get",
@@ -339,7 +354,10 @@ public sealed class CurrentModelWorkflowTests
         return document.RootElement.Clone();
     }
 
-    private static ProcessStartInfo CreateSidecarStartInfo(string repositoryRoot, string uvPath)
+    private static ProcessStartInfo CreateSidecarStartInfo(
+        string repositoryRoot,
+        string uvPath,
+        string systemRoot)
     {
         var startInfo = new ProcessStartInfo
         {
@@ -358,6 +376,7 @@ public sealed class CurrentModelWorkflowTests
         {
             startInfo.ArgumentList.Add(argument);
         }
+        startInfo.Environment["PILOT_ASSESSMENT_SYSTEM_ROOT"] = systemRoot;
 
         return startInfo;
     }

@@ -11,6 +11,25 @@ public sealed class TaskSchemeListViewModelTests
     private static readonly DateTime Now = new(2026, 7, 17, 14, 0, 0, DateTimeKind.Utc);
 
     [Fact]
+    public async Task SystemSchemesLoadAndRemainEditableWithoutProjectContext()
+    {
+        var source = Scheme("task-scheme.system", "System task");
+        var gateway = new FakeGateway(
+            [Task.FromResult<IReadOnlyList<TaskScheme>>([source])]);
+        var shell = new ApplicationShellState();
+        var viewModel = new TaskSchemeListViewModel(gateway, shell);
+
+        await viewModel.LoadSystemAsync();
+        var copied = await viewModel.CopySelectedAsync();
+
+        Assert.Null(shell.Snapshot.ProjectId);
+        Assert.True(viewModel.CanMutate);
+        Assert.NotNull(copied);
+        Assert.Equal(2, viewModel.Schemes.Count);
+        Assert.Equal(copied!.SchemeId, shell.Snapshot.SchemeId);
+    }
+
+    [Fact]
     public async Task RapidSelectionChangesContextWithoutWritingAnyScheme()
     {
         var gateway = new FakeGateway([Task.FromResult<IReadOnlyList<TaskScheme>>(
@@ -202,8 +221,8 @@ public sealed class TaskSchemeListViewModelTests
         scheme,
         new ModelGraphSnapshot(
             "model-graph-snapshot",
-            "0.1.0",
-            "project.test",
+            "0.2.0",
+            "model-library.test",
             scheme,
             [],
             [],

@@ -69,9 +69,6 @@
                         Header="{Binding [Project_Name], Source={StaticResource Localization}}"
                             Text="{x:Bind ViewModel.ProjectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBox
-                        Header="{Binding [Project_StableId], Source={StaticResource Localization}}"
-                            Text="{x:Bind ViewModel.ProjectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBox
                         Header="{Binding [Project_Folder], Source={StaticResource Localization}}"
                             IsReadOnly="True"
                         PlaceholderText="{Binding [Project_FolderPlaceholder], Source={StaticResource Localization}}"
@@ -135,7 +132,6 @@
                                     </Grid.ColumnDefinitions>
                                     <StackPanel>
                                         <TextBlock FontWeight="SemiBold" Text="{x:Bind Name}" />
-                                        <TextBlock Opacity="0.65" Text="{x:Bind ProjectId}" />
                                         <TextBlock Opacity="0.65" Text="{x:Bind RootPath}" TextWrapping="Wrap" />
                                     </StackPanel>
                                     <Button

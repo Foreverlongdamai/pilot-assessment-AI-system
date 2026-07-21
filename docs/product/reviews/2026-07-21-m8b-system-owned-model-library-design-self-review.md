@@ -6,7 +6,7 @@
 | 日期 | 2026-07-21 |
 | Artifact | `specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md` |
 | Reviewer | 主代理 inline self-review |
-| 结论 | **Review candidate internally consistent；awaiting user review** |
+| 结论 | **内部一致；2026-07-21 用户批准并进入 M8B-0 实施** |
 
 ## 1. 复核范围
 
@@ -37,6 +37,6 @@
 - system root、owner、project creation、project switching、run freeze、legacy migration、dirty conflict、source identity 和错误状态均有确定语义；
 - M8B 拆为 M8B-0/1/2，实施计划应按这一顺序拆分，不把整个 M8C/M8D/M8E 混入；
 - 验证只使用两个空 project、微型图和 disposable release copy，不引入重型多模态 fixture；
-- 当前仍需用户复核 written spec；在确认前不写生产代码。
+- 用户已明确批准 written spec；D-066–D-071 已正式写入决策记录，M8B-0 可以进入生产代码实施。
 
 未发现开放 P0/P1 设计问题。

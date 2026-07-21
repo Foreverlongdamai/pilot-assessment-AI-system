@@ -24,16 +24,9 @@ public sealed partial class TaskSchemeListItemViewModel : ObservableObject
 
     public string SchemeId => Scheme.SchemeId;
 
-    public string DisplayName => BilingualTextSelector.Select(
-        _localization?.CurrentLanguage,
-        Scheme.NameZh,
-        Scheme.NameEn,
-        Scheme.SchemeId);
+    public string DisplayName => ModelDisplayNameResolver.ForScheme(Scheme);
 
-    public string LocalizedNames => string.Join(
-        " / ",
-        new[] { Scheme.NameZh, Scheme.NameEn }
-            .Where(value => !string.IsNullOrWhiteSpace(value)));
+    public string LocalizedNames => DisplayName;
 
     public string StatusLine => _localization?.Format(
             "Task_StatusLine",
@@ -142,7 +135,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
 
     [ObservableProperty]
     public partial string StatusMessage { get; private set; } =
-        "Open a managed project to load its parallel task schemes.";
+        "Connect to the local backend to load the shared system task schemes.";
 
     public TaskSchemeListViewModel(
         IModelWorkspaceGateway gateway,
@@ -159,7 +152,9 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         SelectedGroupFilter = _allGroupsLabel;
         SelectedSort = _sortNameLabel;
         _localization?.LanguageChanged += OnLanguageChanged;
-        SetStatus("Task_StatusStart", "Open a managed project to load its parallel task schemes.");
+        SetStatus(
+            "Task_StatusStart",
+            "Connect to the local backend to load the shared system task schemes.");
     }
 
     public ObservableCollection<TaskSchemeListItemViewModel> Schemes { get; } = [];
@@ -233,6 +228,9 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         }
     }
 
+    public Task LoadSystemAsync(CancellationToken cancellationToken = default) =>
+        LoadAsync(SystemModelContext.Key, cancellationToken);
+
     public void Reset()
     {
         Interlocked.Increment(ref _contextGeneration);
@@ -241,7 +239,9 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
         Schemes.Clear();
         ResetFilterOptions();
         SelectedScheme = null;
-        SetStatus("Task_StatusStart", "Open a managed project to load its parallel task schemes.");
+        SetStatus(
+            "Task_StatusStart",
+            "Connect to the local backend to load the shared system task schemes.");
         ClearError();
     }
 
@@ -399,11 +399,7 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(HasSelection));
         OnPropertyChanged(nameof(CanMutate));
-        var snapshot = _shellState.Snapshot;
-        if (!string.IsNullOrWhiteSpace(snapshot.ProjectId) && snapshot.ProjectId == _projectId)
-        {
-            _shellState.SetProjectContext(snapshot.ProjectId, snapshot.SessionId, value?.SchemeId);
-        }
+        _shellState.SetSchemeContext(value?.SchemeId);
     }
 
     partial void OnIsBusyChanged(bool value) => OnPropertyChanged(nameof(CanMutate));
@@ -651,14 +647,13 @@ public sealed partial class TaskSchemeListViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(_projectId))
         {
-            throw new InvalidOperationException("Open a managed project first.");
+            throw new InvalidOperationException("Load the system model library first.");
         }
     }
 
     private bool IsCurrentContext(int generation, string projectId) =>
         generation == Volatile.Read(ref _contextGeneration) &&
-        string.Equals(_projectId, projectId, StringComparison.Ordinal) &&
-        string.Equals(_shellState.Snapshot.ProjectId, projectId, StringComparison.Ordinal);
+        string.Equals(_projectId, projectId, StringComparison.Ordinal);
 
     private void BeginBusy()
     {

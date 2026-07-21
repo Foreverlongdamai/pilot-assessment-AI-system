@@ -10,7 +10,7 @@
   <data name="Common_Session" xml:space="preserve"><value>SESSION</value></data>
   <data name="Common_TaskScheme" xml:space="preserve"><value>TASK SCHEME</value></data>
   <data name="Common_Backend" xml:space="preserve"><value>BACKEND</value></data>
-  <data name="Common_Autosave" xml:space="preserve"><value>AUTOSAVE</value></data>
+  <data name="Common_Autosave" xml:space="preserve"><value>STAGED EDITS</value></data>
   <data name="Common_Run" xml:space="preserve"><value>RUN</value></data>
   <data name="Common_Reconnect" xml:space="preserve"><value>Reconnect</value></data>
   <data name="Common_New" xml:space="preserve"><value>New</value></data>
@@ -58,10 +58,10 @@
   <data name="Shell_Connecting" xml:space="preserve"><value>Connecting</value></data>
   <data name="Shell_Ready" xml:space="preserve"><value>Ready</value></data>
   <data name="Shell_Unavailable" xml:space="preserve"><value>Unavailable</value></data>
-  <data name="Shell_NoPendingChanges" xml:space="preserve"><value>No pending changes</value></data>
-  <data name="Shell_PendingChanges" xml:space="preserve"><value>Pending changes</value></data>
-  <data name="Shell_Saving" xml:space="preserve"><value>Saving</value></data>
-  <data name="Shell_Saved" xml:space="preserve"><value>Saved</value></data>
+  <data name="Shell_NoPendingChanges" xml:space="preserve"><value>No staged changes</value></data>
+  <data name="Shell_PendingChanges" xml:space="preserve"><value>Staged changes pending</value></data>
+  <data name="Shell_Saving" xml:space="preserve"><value>Staging</value></data>
+  <data name="Shell_Saved" xml:space="preserve"><value>Staged in project</value></data>
   <data name="Shell_OfflineRetry" xml:space="preserve"><value>Offline / Retry</value></data>
   <data name="Shell_Conflict" xml:space="preserve"><value>Conflict</value></data>
   <data name="Shell_Blocked" xml:space="preserve"><value>Blocked</value></data>
@@ -71,7 +71,7 @@
   <data name="Theme_Light" xml:space="preserve"><value>Light</value></data>
   <data name="Theme_Dark" xml:space="preserve"><value>Dark</value></data>
   <data name="Project_Title" xml:space="preserve"><value>Projects</value></data>
-  <data name="Project_Description" xml:space="preserve"><value>A managed project contains the editable model library, task schemes, imported Session Bundles, runs and results. It can be moved as one folder.</value></data>
+  <data name="Project_Description" xml:space="preserve"><value>A managed project stores imported Session Bundles, runs, results and artifacts. Evidence, BN nodes and task schemes belong to this software copy's shared system model library.</value></data>
   <data name="Project_OperationFailed" xml:space="preserve"><value>Project operation failed</value></data>
   <data name="Project_Status" xml:space="preserve"><value>Project status</value></data>
   <data name="Project_Current" xml:space="preserve"><value>Current project</value></data>
@@ -89,15 +89,15 @@
   <data name="Project_Recent" xml:space="preserve"><value>Recent projects</value></data>
   <data name="Project_RecentDescription" xml:space="preserve"><value>These are local path shortcuts only. No project or Session data is duplicated here.</value></data>
   <data name="Session_Title" xml:space="preserve"><value>Sessions</value></data>
-  <data name="Session_Description" xml:space="preserve"><value>Inspect an external Session Bundle without changing it, then import an exact copy into the current managed project. Large images and time-series stay in managed storage.</value></data>
+  <data name="Session_Description" xml:space="preserve"><value>Inspect a canonical Session Bundle or a simulator raw export without changing it, then create a canonical revision in the current managed project. Missing modalities remain missing.</value></data>
   <data name="Session_OperationFailed" xml:space="preserve"><value>Session operation failed</value></data>
   <data name="Session_Status" xml:space="preserve"><value>Session status</value></data>
-  <data name="Session_Workflow" xml:space="preserve"><value>1. Inspect external source · 2. Import managed copy</value></data>
+  <data name="Session_Workflow" xml:space="preserve"><value>1. Inspect external source · 2. Import managed session</value></data>
   <data name="Session_ExternalFolder" xml:space="preserve"><value>External source folder (never moved or modified)</value></data>
-  <data name="Session_ChooseBundlePlaceholder" xml:space="preserve"><value>Choose a Session Bundle folder</value></data>
-  <data name="Session_ChooseBundle" xml:space="preserve"><value>Choose Session Bundle</value></data>
+  <data name="Session_ChooseBundlePlaceholder" xml:space="preserve"><value>Choose a Session data folder</value></data>
+  <data name="Session_ChooseBundle" xml:space="preserve"><value>Choose Session data</value></data>
   <data name="Session_Inspect" xml:space="preserve"><value>Inspect</value></data>
-  <data name="Session_ImportManaged" xml:space="preserve"><value>Import exact managed copy</value></data>
+  <data name="Session_ImportManaged" xml:space="preserve"><value>Import to managed project</value></data>
   <data name="Session_ManagedSessions" xml:space="preserve"><value>Managed sessions</value></data>
   <data name="Session_SelectedRevision" xml:space="preserve"><value>Selected managed revision</value></data>
   <data name="Session_ManagedPath" xml:space="preserve"><value>Managed bundle path</value></data>
@@ -161,7 +161,9 @@
   <data name="Node_TaskScheme" xml:space="preserve"><value>Task scheme</value></data>
   <data name="Node_SharedUsage" xml:space="preserve"><value>Shared usage</value></data>
   <data name="Node_WindowKey" xml:space="preserve"><value>Window key</value></data>
-  <data name="Node_CanonicalDefinition" xml:space="preserve"><value>Canonical definition</value></data>
+  <data name="Node_TechnicalIdentity" xml:space="preserve"><value>Technical identity</value></data>
+  <data name="Node_NodeId" xml:space="preserve"><value>Node ID</value></data>
+  <data name="Node_CanonicalDefinition" xml:space="preserve"><value>Backend draft definition</value></data>
   <data name="Node_TechnicalStatus" xml:space="preserve"><value>Technical status</value></data>
   <data name="Node_SemanticRevision" xml:space="preserve"><value>Semantic revision</value></data>
   <data name="Node_LayoutRevision" xml:space="preserve"><value>Layout revision</value></data>
@@ -174,15 +176,15 @@
   <data name="Node_KindSubskill" xml:space="preserve"><value>BN · SUB-SKILL</value></data>
   <data name="Node_KindCompetency" xml:space="preserve"><value>BN · COMPETENCY</value></data>
   <data name="Node_OutputSuffix" xml:space="preserve"><value>{0} · output</value></data>
-  <data name="Node_A11y" xml:space="preserve"><value>{0}, {1}, {2}, {3}</value></data>
+  <data name="Node_A11y" xml:space="preserve"><value>{0}, {1}, {2}</value></data>
   <data name="Node_StatusActive" xml:space="preserve"><value>active</value></data>
   <data name="Node_StatusInactive" xml:space="preserve"><value>inactive</value></data>
   <data name="Node_StatusArchived" xml:space="preserve"><value>archived</value></data>
-  <data name="Node_SavePending" xml:space="preserve"><value>Pending · autosave scheduled</value></data>
-  <data name="Node_SaveSaving" xml:space="preserve"><value>Saving…</value></data>
+  <data name="Node_SavePending" xml:space="preserve"><value>Pending · staging scheduled</value></data>
+  <data name="Node_SaveSaving" xml:space="preserve"><value>Staging in project…</value></data>
   <data name="Node_SaveOffline" xml:space="preserve"><value>Offline · Retry available</value></data>
   <data name="Node_SaveConflict" xml:space="preserve"><value>Conflict · choose Reload or Reapply</value></data>
-  <data name="Node_SaveSaved" xml:space="preserve"><value>Saved · rev {0}</value></data>
+  <data name="Node_SaveSaved" xml:space="preserve"><value>Staged in project · draft rev {0}</value></data>
   <data name="Node_ExplicitPending" xml:space="preserve"><value>{0} · explicit state/CPT commit pending</value></data>
   <data name="Dialog_DeactivateTitle" xml:space="preserve"><value>Deactivate node?</value></data>
   <data name="Dialog_DeactivateDescription" xml:space="preserve"><value>Stopping a parent can also stop downstream nodes in this task scheme.</value></data>
@@ -217,6 +219,7 @@
   <data name="Graph_ExtractionEdge" xml:space="preserve"><value>Raw data / extraction</value></data>
   <data name="Graph_ProbabilisticEdge" xml:space="preserve"><value>Probabilistic BN</value></data>
   <data name="Graph_DimMeaning" xml:space="preserve"><value>Dim = not active in this task</value></data>
+  <data name="Graph_PanHint" xml:space="preserve"><value>Drag blank canvas to pan</value></data>
   <data name="Graph_Minimap" xml:space="preserve"><value>MINIMAP</value></data>
   <data name="Graph_NodeHelp" xml:space="preserve"><value>Press Enter to select this complete node. Open its context menu for task activation, copy, connection and editor commands.</value></data>
   <data name="Dialog_CreateNodeButton" xml:space="preserve"><value>Create node</value></data>
@@ -240,7 +243,7 @@
   <data name="Editor_Help" xml:space="preserve"><value>Help</value></data>
   <data name="Editor_EnglishHelp" xml:space="preserve"><value>English help</value></data>
   <data name="Editor_ChineseHelp" xml:space="preserve"><value>Chinese help</value></data>
-  <data name="Raw_ContractDescription" xml:space="preserve"><value>This node declares how one managed Session Bundle resource is exposed to Evidence recipes. Ordinary fields autosave after 350 ms and reconcile with the canonical backend response.</value></data>
+  <data name="Raw_ContractDescription" xml:space="preserve"><value>This node declares how one managed Session Bundle resource is exposed to Evidence recipes. Ordinary fields are staged in the durable backend edit session after 350 ms; the canonical model changes only when Save all is chosen.</value></data>
   <data name="Raw_ContractTitle" xml:space="preserve"><value>Raw Input contract editor</value></data>
   <data name="Raw_InputFamily" xml:space="preserve"><value>Input family</value></data>
   <data name="Raw_ResourceRole" xml:space="preserve"><value>Resource role</value></data>
@@ -283,13 +286,13 @@
   <data name="Operator_OptionalSlotId" xml:space="preserve"><value>Optional slot ID</value></data>
   <data name="Operator_ConnectA11y" xml:space="preserve"><value>Connect declared Evidence recipe ports</value></data>
   <data name="Operator_Connect" xml:space="preserve"><value>Connect</value></data>
-  <data name="Evidence_CanonicalEditor" xml:space="preserve"><value>Canonical Evidence editor</value></data>
+  <data name="Evidence_CanonicalEditor" xml:space="preserve"><value>Evidence editor · staged draft</value></data>
   <data name="Evidence_OperatorUnavailable" xml:space="preserve"><value>Operator unavailable</value></data>
   <data name="Evidence_AnchorName" xml:space="preserve"><value>Anchor/evidence name</value></data>
   <data name="Evidence_AnchorDescription" xml:space="preserve"><value>Anchor/evidence description</value></data>
   <data name="Evidence_RecipeSummary" xml:space="preserve"><value>Recipe documentation summary</value></data>
   <data name="Evidence_RawBindings" xml:space="preserve"><value>Raw Input bindings</value></data>
-  <data name="Evidence_FixedBindings" xml:space="preserve"><value>Fixed canonical bindings</value></data>
+  <data name="Evidence_FixedBindings" xml:space="preserve"><value>Fixed model bindings</value></data>
   <data name="Evidence_FixedBindingsDescription" xml:space="preserve"><value>Add/remove Raw Input extraction edges on the main graph. The backend migrates the complete recipe binding atomically.</value></data>
   <data name="Evidence_RecipeOutputs" xml:space="preserve"><value>Recipe outputs</value></data>
   <data name="Evidence_RecipeGraph" xml:space="preserve"><value>EvidenceRecipe graph</value></data>
@@ -310,7 +313,7 @@
   <data name="Editor_StateId" xml:space="preserve"><value>State ID</value></data>
   <data name="Editor_Label" xml:space="preserve"><value>Label</value></data>
   <data name="Evidence_ProbabilisticParents" xml:space="preserve"><value>Probabilistic parents / CPT</value></data>
-  <data name="Evidence_ProbabilisticDescription" xml:space="preserve"><value>Evidence probabilistic parents are BN nodes. Add/remove/reorder those fixed edges on the main graph; its atomic migration dialog updates this same canonical CPT. The complete row grid below is shared with BN nodes.</value></data>
+  <data name="Evidence_ProbabilisticDescription" xml:space="preserve"><value>Evidence probabilistic parents are BN nodes. Add/remove/reorder those fixed edges on the main graph; its atomic migration dialog updates this same staged CPT. The complete row grid below is shared with BN nodes.</value></data>
   <data name="Evidence_CanonicalBnRelationship" xml:space="preserve"><value>Canonical BN relationship</value></data>
   <data name="Editor_FixedParents" xml:space="preserve"><value>Fixed parents</value></data>
   <data name="Evidence_PreviewTrace" xml:space="preserve"><value>Preview / Trace</value></data>
@@ -318,16 +321,16 @@
   <data name="Evidence_RequestPreview" xml:space="preserve"><value>Request backend preview</value></data>
   <data name="Editor_UsedBySchemes" xml:space="preserve"><value>Used by schemes</value></data>
   <data name="Editor_SharedImpact" xml:space="preserve"><value>Shared node impact</value></data>
-  <data name="Editor_SharedImpactDescription" xml:space="preserve"><value>This is one shared complete node. A canonical edit affects future runs in every listed task scheme; historical RunSnapshots remain immutable.</value></data>
+  <data name="Editor_SharedImpactDescription" xml:space="preserve"><value>This is one shared complete node. Choosing Save all commits the staged edit for future runs in every listed task scheme; historical RunSnapshots remain immutable.</value></data>
   <data name="Editor_History" xml:space="preserve"><value>History</value></data>
   <data name="Editor_HistoryDescription" xml:space="preserve"><value>Canonical change events are read from the backend audit/history journal.</value></data>
-  <data name="Bn_CanonicalEditor" xml:space="preserve"><value>Canonical BN node editor</value></data>
+  <data name="Bn_CanonicalEditor" xml:space="preserve"><value>BN node editor · staged draft</value></data>
   <data name="Bn_OperationBlocked" xml:space="preserve"><value>BN operation blocked</value></data>
   <data name="Bn_NodeRole" xml:space="preserve"><value>BN node role</value></data>
   <data name="Bn_ScientificStatus" xml:space="preserve"><value>Scientific status</value></data>
   <data name="Bn_ReportingMetadata" xml:space="preserve"><value>Reporting metadata JSON</value></data>
   <data name="Bn_SaveBoundary" xml:space="preserve"><value>Save boundary</value></data>
-  <data name="Bn_SaveBoundaryDescription" xml:space="preserve"><value>General text and metadata autosave after 350 ms. State, parent and CPT changes remain explicit atomic backend operations because they also migrate dependent probability tables.</value></data>
+  <data name="Bn_SaveBoundaryDescription" xml:space="preserve"><value>General text and metadata are staged in the durable backend edit session after 350 ms. State, parent and CPT changes remain explicit atomic draft operations because they also migrate dependent probability tables. The canonical model changes only when Save all is chosen.</value></data>
   <data name="Bn_ParentsChildren" xml:space="preserve"><value>Fixed parents / children</value></data>
   <data name="Bn_ParentDirection" xml:space="preserve"><value>Canonical direction: parent → child</value></data>
   <data name="Bn_ParentDirectionDescription" xml:space="preserve"><value>Every visible BN node owns one fixed ordered parent list. Adding, removing or reordering a parent sends one backend operation that migrates the CPT axes atomically.</value></data>
@@ -362,7 +365,7 @@
   <data name="Cpt_ApplyLocally" xml:space="preserve"><value>Apply block locally</value></data>
   <data name="Cpt_ProbabilityBlock" xml:space="preserve"><value>Probability block</value></data>
   <data name="Cpt_BackendGenerator" xml:space="preserve"><value>Backend CPT generator</value></data>
-  <data name="Cpt_GeneratorDescription" xml:space="preserve"><value>Uniform and ranked are backend generators. This UI only sends typed parameters and replaces itself with the canonical returned table.</value></data>
+  <data name="Cpt_GeneratorDescription" xml:space="preserve"><value>Uniform and ranked are backend generators. This UI only sends typed parameters and replaces itself with the returned staged table.</value></data>
   <data name="Cpt_Strategy" xml:space="preserve"><value>Strategy</value></data>
   <data name="Cpt_RankedWeights" xml:space="preserve"><value>Ranked parent weights (optional)</value></data>
   <data name="Cpt_WeakestLink" xml:space="preserve"><value>Weakest link</value></data>
@@ -378,17 +381,34 @@
   <data name="Project_StatusAlreadyOpen" xml:space="preserve"><value>That managed project is already open.</value></data>
   <data name="Project_StatusOpened" xml:space="preserve"><value>Managed project opened; canonical sessions were reloaded from SQLite.</value></data>
   <data name="Project_StatusFailed" xml:space="preserve"><value>The project operation did not complete.</value></data>
-  <data name="Session_StatusStart" xml:space="preserve"><value>Open a managed project to inspect and import a Session Bundle.</value></data>
+  <data name="Session_StatusStart" xml:space="preserve"><value>Open a managed project to inspect and import Session data.</value></data>
   <data name="Session_NotInspected" xml:space="preserve"><value>Not inspected</value></data>
   <data name="Session_NoInspectionReport" xml:space="preserve"><value>No inspection report loaded.</value></data>
   <data name="Session_NoReportLoaded" xml:space="preserve"><value>No report loaded</value></data>
-  <data name="Session_InspectBundle" xml:space="preserve"><value>Inspect Session Bundle</value></data>
+  <data name="Session_InspectBundle" xml:space="preserve"><value>Inspect Session data</value></data>
+  <data name="Session_InspectSource" xml:space="preserve"><value>Inspect Session Data</value></data>
   <data name="Session_StatusSelectionCancelled" xml:space="preserve"><value>Session selection cancelled; nothing changed.</value></data>
   <data name="Session_InspectBeforeImport" xml:space="preserve"><value>Inspect this source before importing it.</value></data>
   <data name="Session_SourceNotInspected" xml:space="preserve"><value>Source not inspected</value></data>
-  <data name="Session_StatusInspectionReadOnly" xml:space="preserve"><value>Inspection is read-only. Import will copy this exact bundle into managed project storage.</value></data>
+  <data name="Session_StatusInspectionReadOnly" xml:space="preserve"><value>Inspection is read-only. Import will create a canonical revision in managed project storage.</value></data>
   <data name="Session_StatusImportReplayed" xml:space="preserve"><value>The existing managed revision was reconciled from the idempotent import receipt.</value></data>
-  <data name="Session_StatusImportComplete" xml:space="preserve"><value>Import complete. The source remains external; the managed revision is an exact project copy.</value></data>
+  <data name="Session_StatusImportComplete" xml:space="preserve"><value>Import complete. The source remains unchanged; a canonical managed revision is ready.</value></data>
+  <data name="Session_SourceKind" xml:space="preserve"><value>Detected source</value></data>
+  <data name="Session_AdapterProfile" xml:space="preserve"><value>Input mapping profile</value></data>
+  <data name="Session_SourceMappingEmpty" xml:space="preserve"><value>Choose a session data folder to inspect its input mapping.</value></data>
+  <data name="Session_SourceCanonical" xml:space="preserve"><value>Canonical Session Bundle</value></data>
+  <data name="Session_ProfileFromManifest" xml:space="preserve"><value>Declared by manifest</value></data>
+  <data name="Session_CanonicalMapping" xml:space="preserve"><value>The existing manifest and checksums will be validated and copied unchanged.</value></data>
+  <data name="Session_SourceSimulatorRaw" xml:space="preserve"><value>Simulator raw export</value></data>
+  <data name="Session_RawMappingSummary" xml:space="preserve"><value>{0} source file(s) mapped; a manifest and checksums will be generated during import.</value></data>
+  <data name="Session_RawInspectionSummary" xml:space="preserve"><value>Simulator raw export · {0} · ready to materialize: {1}</value></data>
+  <data name="Session_RawNoBlockingIssues" xml:space="preserve"><value>No blocking mapping issues. Missing units remain undeclared and raw values use the fixed Evidence extraction rules.</value></data>
+  <data name="Session_RawFilesMapped" xml:space="preserve"><value>{0} file(s) mapped</value></data>
+  <data name="Session_UnitsUndeclaredPassThrough" xml:space="preserve"><value>{0} field(s) have no declared unit; raw values will be used as-is</value></data>
+  <data name="Session_UnitsDeclaredCount" xml:space="preserve"><value>{0} declared unit(s)</value></data>
+  <data name="Session_ModalityMissingNoSynthesis" xml:space="preserve"><value>Not present in this export; no data will be synthesized.</value></data>
+  <data name="Session_ReadyToImport" xml:space="preserve"><value>Ready to import</value></data>
+  <data name="Session_Missing" xml:space="preserve"><value>Missing</value></data>
   <data name="Session_NoManagedRevision" xml:space="preserve"><value>No managed revision selected</value></data>
   <data name="Session_ArtifactBytes" xml:space="preserve"><value>{0} · {1:N0} bytes</value></data>
   <data name="Session_StoredReportUnavailable" xml:space="preserve"><value>Stored report unavailable</value></data>
@@ -417,22 +437,22 @@
   <data name="Modality_Camera_Name" xml:space="preserve"><value>Pilot camera</value></data>
   <data name="Modality_Camera_Family" xml:space="preserve"><value>Pilot image frames</value></data>
   <data name="Modality_Physiology" xml:space="preserve"><value>Physiology P(t)</value></data>
-  <data name="Task_StatusStart" xml:space="preserve"><value>Open a managed project to load its parallel task schemes.</value></data>
-  <data name="Task_StatusLoading" xml:space="preserve"><value>Loading canonical task schemes…</value></data>
-  <data name="Task_StatusLoaded" xml:space="preserve"><value>Loaded {0} canonical task schemes.</value></data>
+  <data name="Task_StatusStart" xml:space="preserve"><value>Connect to the local backend to load the shared system task schemes.</value></data>
+  <data name="Task_StatusLoading" xml:space="preserve"><value>Loading working task schemes…</value></data>
+  <data name="Task_StatusLoaded" xml:space="preserve"><value>Loaded {0} working task schemes.</value></data>
   <data name="Task_StatusLoadFailed" xml:space="preserve"><value>Task schemes could not be loaded.</value></data>
   <data name="Task_StatusCreated" xml:space="preserve"><value>A new parallel task scheme was created.</value></data>
   <data name="Task_StatusCopied" xml:space="preserve"><value>The copied scheme is now a separate editable task.</value></data>
-  <data name="Task_StatusRenamed" xml:space="preserve"><value>The task scheme name was autosaved by the backend.</value></data>
+  <data name="Task_StatusRenamed" xml:space="preserve"><value>The task scheme name was staged by the backend.</value></data>
   <data name="Task_StatusArchived" xml:space="preserve"><value>The task scheme was archived; no other scheme was overwritten.</value></data>
-  <data name="Task_StatusSaving" xml:space="preserve"><value>Saving through the canonical backend…</value></data>
+  <data name="Task_StatusSaving" xml:space="preserve"><value>Staging through the backend edit session…</value></data>
   <data name="Task_StatusChangeFailed" xml:space="preserve"><value>The task-scheme change did not complete.</value></data>
-  <data name="Model_StatusLoading" xml:space="preserve"><value>Loading canonical graph for {0}…</value></data>
-  <data name="Model_GraphSummary" xml:space="preserve"><value>{0} global nodes, {1} canonical edges; {2} active in {3}.</value></data>
+  <data name="Model_StatusLoading" xml:space="preserve"><value>Loading working graph for {0}…</value></data>
+  <data name="Model_GraphSummary" xml:space="preserve"><value>{0} global nodes, {1} model edges; {2} active in {3}.</value></data>
   <data name="Model_StatusLoadFailed" xml:space="preserve"><value>The model graph could not be loaded.</value></data>
-  <data name="Model_StatusCreatingNode" xml:space="preserve"><value>Creating a complete editable node through the canonical backend…</value></data>
+  <data name="Model_StatusCreatingNode" xml:space="preserve"><value>Creating a complete editable node in the backend draft…</value></data>
   <data name="Model_StatusNodeCreatedActive" xml:space="preserve"><value>The new node is active in this task; fixed parents were closed by the backend.</value></data>
-  <data name="Model_StatusNodeSavedInactive" xml:space="preserve"><value>The node was saved globally but could not be activated in this task.</value></data>
+  <data name="Model_StatusNodeSavedInactive" xml:space="preserve"><value>The node was staged globally but could not be activated in this task.</value></data>
   <data name="Model_StatusNodeActivationRepair" xml:space="preserve"><value>The node exists globally; correct its definition or retry task activation.</value></data>
   <data name="Model_StatusNodeCreateFailed" xml:space="preserve"><value>The new node was not created.</value></data>
   <data name="Model_StatusAlreadyActive" xml:space="preserve"><value>This node is already active in the current task.</value></data>
@@ -451,13 +471,13 @@
   <data name="Model_StatusPasting" xml:space="preserve"><value>Copying complete nodes in the backend and retaining their fixed parents…</value></data>
   <data name="Model_StatusPasted" xml:space="preserve"><value>Pasted complete parallel nodes; original nodes and fixed parents were not overwritten.</value></data>
   <data name="Model_StatusPasteFailed" xml:space="preserve"><value>The backend did not paste the copied nodes.</value></data>
-  <data name="Model_StatusSavingLayout" xml:space="preserve"><value>Autosaving graph layout…</value></data>
-  <data name="Model_StatusLayoutSaved" xml:space="preserve"><value>Graph layout saved.</value></data>
-  <data name="Model_StatusLayoutRestored" xml:space="preserve"><value>Canonical layout restored.</value></data>
+  <data name="Model_StatusSavingLayout" xml:space="preserve"><value>Staging graph layout…</value></data>
+  <data name="Model_StatusLayoutSaved" xml:space="preserve"><value>Graph layout staged.</value></data>
+  <data name="Model_StatusLayoutRestored" xml:space="preserve"><value>Backend draft layout restored.</value></data>
   <data name="Model_StatusLayoutConflict" xml:space="preserve"><value>The layout edit conflicted and was restored from the backend.</value></data>
-  <data name="Model_StatusEdgeAdded" xml:space="preserve"><value>The canonical parent edge was added.</value></data>
-  <data name="Model_StatusEdgeRemoved" xml:space="preserve"><value>The canonical parent edge was removed.</value></data>
-  <data name="Model_StatusSavingEdge" xml:space="preserve"><value>Saving the typed edge and its CPT/recipe migration…</value></data>
+  <data name="Model_StatusEdgeAdded" xml:space="preserve"><value>The parent edge was added to the staged draft.</value></data>
+  <data name="Model_StatusEdgeRemoved" xml:space="preserve"><value>The parent edge was removed from the staged draft.</value></data>
+  <data name="Model_StatusSavingEdge" xml:space="preserve"><value>Staging the typed edge and its CPT/recipe migration…</value></data>
   <data name="Model_StatusEdgeFailed" xml:space="preserve"><value>The edge edit was not applied.</value></data>
   <data name="Task_CreateDialog" xml:space="preserve"><value>Create task scheme</value></data>
   <data name="Task_DefaultNewName" xml:space="preserve"><value>New task scheme</value></data>
@@ -497,7 +517,7 @@
   <data name="Evidence_StatusLoaded" xml:space="preserve"><value>Loaded {0} trusted operators, {1} task usages and {2} history events.</value></data>
   <data name="Evidence_StatusLoadFailed" xml:space="preserve"><value>Editor metadata could not be loaded: {0}</value></data>
   <data name="Evidence_StatusBlocked" xml:space="preserve"><value>Evidence operation blocked: {0}</value></data>
-  <data name="Evidence_StatusStatesSaved" xml:space="preserve"><value>Canonical observation states saved; {0} affected CPT definition(s) are explicitly incomplete and repairable.</value></data>
+  <data name="Evidence_StatusStatesSaved" xml:space="preserve"><value>Observation states staged; {0} affected CPT definition(s) are explicitly incomplete and repairable in the draft.</value></data>
   <data name="Evidence_PreviewSelectSession" xml:space="preserve"><value>Select a managed session revision before requesting a preview.</value></data>
   <data name="Evidence_PreviewRequesting" xml:space="preserve"><value>Requesting a backend-frozen node preview snapshot…</value></data>
   <data name="Evidence_PreviewCancelled" xml:space="preserve"><value>Preview cancelled.</value></data>
@@ -507,13 +527,13 @@
   <data name="Evidence_NoParameters" xml:space="preserve"><value>No parameters</value></data>
   <data name="Evidence_AllOperatorsInstalled" xml:space="preserve"><value>All recipe operators are installed.</value></data>
   <data name="Evidence_MissingOperators" xml:space="preserve"><value>Technical run blocker: {0}</value></data>
-  <data name="Cpt_StatusLoaded" xml:space="preserve"><value>CPT loaded from the canonical backend node.</value></data>
+  <data name="Cpt_StatusLoaded" xml:space="preserve"><value>CPT loaded from the backend draft node.</value></data>
   <data name="Cpt_StatusNormalized" xml:space="preserve"><value>Normalized row {0}. Save the CPT rows to commit this change.</value></data>
   <data name="Cpt_StatusPasted" xml:space="preserve"><value>Pasted a {0} × {1} probability block.</value></data>
-  <data name="Cpt_StatusSavingRows" xml:space="preserve"><value>Saving the complete CPT row batch through the Python backend…</value></data>
-  <data name="Cpt_StatusRowsSaved" xml:space="preserve"><value>Canonical CPT rows saved and reconciled.</value></data>
+  <data name="Cpt_StatusSavingRows" xml:space="preserve"><value>Staging the complete CPT row batch through the Python backend…</value></data>
+  <data name="Cpt_StatusRowsSaved" xml:space="preserve"><value>CPT rows staged and reconciled in the draft.</value></data>
   <data name="Cpt_StatusRequestingMaterialization" xml:space="preserve"><value>Requesting {0} CPT materialization from Python…</value></data>
-  <data name="Cpt_StatusMaterialized" xml:space="preserve"><value>Canonical {0} CPT materialized and reconciled.</value></data>
+  <data name="Cpt_StatusMaterialized" xml:space="preserve"><value>{0} CPT materialized and reconciled in the staged draft.</value></data>
   <data name="Cpt_ModeSummary" xml:space="preserve"><value>{0} · {1} rows · {2} child states · {3} required cells</value></data>
   <data name="Cpt_ValidationValid" xml:space="preserve"><value>Local grid is technically valid: {0} rows / {1} cells.</value></data>
   <data name="Cpt_ValidationInvalid" xml:space="preserve"><value>Local grid has {0} technical issue(s): {1}</value></data>
@@ -521,16 +541,16 @@
   <data name="Bn_PosteriorSummary" xml:space="preserve"><value>The canonical arrows show P(child | fixed parents). Posterior/influence is a read-only run result overlay and does not reverse or rewrite these edges. Task 14 displays executed posterior and influence artifacts.</value></data>
   <data name="Bn_StatusLoaded" xml:space="preserve"><value>Loaded {0} fixed parents, {1} children, {2} task usages and {3} history events.</value></data>
   <data name="Bn_StatusReplacingStates" xml:space="preserve"><value>Replacing states and atomically marking every affected CPT incomplete…</value></data>
-  <data name="Bn_StatusStatesSaved" xml:space="preserve"><value>Canonical states saved; {0} node CPT definition(s) are now explicitly incomplete and repairable.</value></data>
-  <data name="Bn_StatusParentAdded" xml:space="preserve"><value>Canonical parent added with atomic CPT migration.</value></data>
-  <data name="Bn_StatusParentRemoved" xml:space="preserve"><value>Canonical parent removed with atomic CPT migration.</value></data>
-  <data name="Bn_StatusParentsReordered" xml:space="preserve"><value>Canonical parent order and CPT axes reordered atomically.</value></data>
+  <data name="Bn_StatusStatesSaved" xml:space="preserve"><value>States staged; {0} node CPT definition(s) are now explicitly incomplete and repairable in the draft.</value></data>
+  <data name="Bn_StatusParentAdded" xml:space="preserve"><value>Parent staged with atomic CPT migration.</value></data>
+  <data name="Bn_StatusParentRemoved" xml:space="preserve"><value>Parent removal staged with atomic CPT migration.</value></data>
+  <data name="Bn_StatusParentsReordered" xml:space="preserve"><value>Parent order and CPT axes reordered atomically in the staged draft.</value></data>
   <data name="Node_TechnicalExecutable" xml:space="preserve"><value>Executable</value></data>
   <data name="Node_TechnicalIncomplete" xml:space="preserve"><value>Incomplete</value></data>
   <data name="Node_TechnicalBlocked" xml:space="preserve"><value>Blocked</value></data>
   <data name="Node_ConflictNewer" xml:space="preserve"><value>The backend has a newer node revision. Reload it or reapply the current editor intent against that revision.</value></data>
-  <data name="Node_ConflictRevision" xml:space="preserve"><value>Canonical revision {0} is current. Reload it or reapply the editor intent.</value></data>
-  <data name="Node_ConflictLoadFailed" xml:space="preserve"><value>The current canonical node could not be loaded: {0}</value></data>
+  <data name="Node_ConflictRevision" xml:space="preserve"><value>Backend draft revision {0} is current. Reload it or reapply the editor intent.</value></data>
+  <data name="Node_ConflictLoadFailed" xml:space="preserve"><value>The current backend draft node could not be loaded: {0}</value></data>
   <data name="Node_EvidenceMetadataError" xml:space="preserve"><value>Evidence editor metadata error · {0}</value></data>
   <data name="Node_BnMetadataError" xml:space="preserve"><value>BN editor metadata error · {0}</value></data>
   <data name="Common_Cancelled" xml:space="preserve"><value>Cancelled</value></data>
@@ -623,4 +643,36 @@
   <data name="Diagnostics_AuditEvents" xml:space="preserve"><value>Recent audit events</value></data>
   <data name="Diagnostics_NoRecoverableRuns" xml:space="preserve"><value>No queued, active or interrupted current-model run requires attention.</value></data>
   <data name="Diagnostics_NoHandshake" xml:space="preserve"><value>No active backend handshake.</value></data>
+  <data name="RawFamily_X_Name" xml:space="preserve"><value>Flight State</value></data>
+  <data name="RawFamily_X_Description" xml:space="preserve"><value>Position, attitude, velocity, acceleration, and other flight states</value></data>
+  <data name="RawFamily_U_Name" xml:space="preserve"><value>Control Input</value></data>
+  <data name="RawFamily_U_Description" xml:space="preserve"><value>Stick, pedal, thrust, and other control inputs</value></data>
+  <data name="RawFamily_I_Name" xml:space="preserve"><value>Visual Input</value></data>
+  <data name="RawFamily_I_Description" xml:space="preserve"><value>VR first-person view and associated visual acquisition</value></data>
+  <data name="RawFamily_G_Name" xml:space="preserve"><value>Gaze and AOI</value></data>
+  <data name="RawFamily_G_Description" xml:space="preserve"><value>Gaze, fixation, stare, AOI, and field-of-view association</value></data>
+  <data name="RawFamily_P_Name" xml:space="preserve"><value>Physiology</value></data>
+  <data name="RawFamily_P_Description" xml:space="preserve"><value>EEG, ECG, and future physiological modalities</value></data>
+  <data name="RawFamily_Kind" xml:space="preserve"><value>RAW INPUT FAMILY</value></data>
+  <data name="RawFamily_A11y" xml:space="preserve"><value>{0}(t) {1}, {2}, {3} source nodes</value></data>
+  <data name="Graph_ProvenanceEdge" xml:space="preserve"><value>Raw-input provenance (display only)</value></data>
+  <data name="Dialog_SaveChangesTitle" xml:space="preserve"><value>Keep this editing session?</value></data>
+  <data name="Dialog_SaveChangesDescription" xml:space="preserve"><value>Your node, edge, CPT, task-scheme, parameter, and layout changes are currently staged in the project. Save all changes to the system model, discard all changes, or cancel closing.</value></data>
+  <data name="Dialog_SaveAndClose" xml:space="preserve"><value>Save all and close</value></data>
+  <data name="Dialog_DiscardAndClose" xml:space="preserve"><value>Discard all and close</value></data>
+  <data name="Dialog_CloseFailedTitle" xml:space="preserve"><value>The application could not close safely</value></data>
+  <data name="Dialog_CloseFailedDescription" xml:space="preserve"><value>Your editing session has been kept open. Resolve the following problem and try again: {0}</value></data>
+  <data name="Model_LayerFilterA11y" xml:space="preserve"><value>Graph layer filter</value></data>
+  <data name="Model_LayerAll" xml:space="preserve"><value>All layers</value></data>
+  <data name="Model_LayerRawFamily" xml:space="preserve"><value>Raw Input Family</value></data>
+  <data name="Model_LayerExtractedData" xml:space="preserve"><value>Extracted Data</value></data>
+  <data name="Model_LayerEvidence" xml:space="preserve"><value>Evidence</value></data>
+  <data name="Model_LayerSubSkill" xml:space="preserve"><value>Sub-skill</value></data>
+  <data name="Model_LayerCompetency" xml:space="preserve"><value>Competency</value></data>
+  <data name="Model_StatusUndoing" xml:space="preserve"><value>Undoing the latest staged change…</value></data>
+  <data name="Model_StatusUndone" xml:space="preserve"><value>The latest staged change was undone.</value></data>
+  <data name="Model_StatusUndoFailed" xml:space="preserve"><value>The staged change could not be undone.</value></data>
+  <data name="Model_StatusRedoing" xml:space="preserve"><value>Restoring the latest undone change…</value></data>
+  <data name="Model_StatusRedone" xml:space="preserve"><value>The latest undone change was restored.</value></data>
+  <data name="Model_StatusRedoFailed" xml:space="preserve"><value>The staged change could not be restored.</value></data>
 </root>

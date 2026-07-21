@@ -25,11 +25,18 @@ from pilot_assessment.contracts.project import (
     SessionSourceKind,
     TransactionReceipt,
 )
+from pilot_assessment.contracts.session_source import (
+    SessionDataSourceKind,
+    SessionSourceInspection,
+)
 from pilot_assessment.ingestion import (
     inspect_ingestion_readiness,
     inspect_loaded_ingestion_readiness,
+    inspect_raw_session,
+    inspect_session_source,
+    materialize_raw_session,
 )
-from pilot_assessment.ingestion.manifest_loader import ManifestLoader
+from pilot_assessment.ingestion.manifest_loader import LoadedManifest, ManifestLoader
 from pilot_assessment.model_library.identity import typed_content_sha256
 from pilot_assessment.persistence.artifacts import ManagedArtifactStore
 from pilot_assessment.persistence.audit import AuditRepository
@@ -173,6 +180,64 @@ class SessionImportService:
 
         return inspect_ingestion_readiness(self._external_root(external_bundle)).report
 
+    def inspect_source(self, external_source: str | Path) -> SessionSourceInspection:
+        """Auto-detect and inspect canonical or simulator-raw session data."""
+
+        return inspect_session_source(self._external_root(external_source))
+
+    def import_source(
+        self,
+        external_source: str | Path,
+        *,
+        inspected_fingerprint: str,
+        transaction_id: str,
+        imported_by: str,
+    ) -> SessionImportResult:
+        """Import an inspected source while preserving legacy bundle import behavior."""
+
+        transaction_id = self._stable_id(transaction_id, "transaction_id")
+        existing = self.database.fetchone(
+            "SELECT method FROM idempotency_transactions WHERE transaction_id = ?",
+            (transaction_id,),
+        )
+        if existing is not None:
+            if existing["method"] == "session.import":
+                return self.import_bundle(
+                    external_source,
+                    transaction_id=transaction_id,
+                    imported_by=imported_by,
+                )
+            return self._import_raw_source(
+                external_source,
+                inspected_fingerprint=inspected_fingerprint,
+                transaction_id=transaction_id,
+                imported_by=imported_by,
+            )
+
+        inspected = self.inspect_source(external_source)
+        if inspected.source_kind is SessionDataSourceKind.CANONICAL_BUNDLE:
+            assert inspected.report is not None
+            if inspected.report.source_snapshot_fingerprint != inspected_fingerprint:
+                raise SessionImportIntegrityError(
+                    "RAW_SOURCE_CHANGED: canonical source changed after inspection"
+                )
+            return self.import_bundle(
+                external_source,
+                transaction_id=transaction_id,
+                imported_by=imported_by,
+            )
+        assert inspected.raw is not None
+        if inspected.raw.source_snapshot_fingerprint != inspected_fingerprint:
+            raise SessionImportIntegrityError(
+                "RAW_SOURCE_CHANGED: raw source changed after inspection"
+            )
+        return self._import_raw_source(
+            external_source,
+            inspected_fingerprint=inspected_fingerprint,
+            transaction_id=transaction_id,
+            imported_by=imported_by,
+        )
+
     def import_bundle(
         self,
         external_bundle: str | Path,
@@ -242,76 +307,177 @@ class SessionImportService:
                     raise SessionImportIntegrityError(
                         "staged Session Bundle readiness fingerprint changed during copy"
                     )
-
-                manifest_hash = self._manifest_hash(staged_inventory)
-                inventory_hash = self._inventory_hash(staged_inventory)
-                bundle_root_hash = self._bundle_root_hash(manifest_hash, inventory_hash)
-                # Keep the directory identity short enough for ordinary Windows path APIs;
-                # the complete 256-bit root identity remains frozen on SessionRevision.
-                revision_id = f"session-revision.{bundle_root_hash[:32]}"
-                session_id = staged_loaded.manifest.session_id
-                final_relative = f"sessions/{session_id}/{revision_id}/bundle"
-                final_bundle = self._project_path(final_relative)
-                now = self._clock()
-
-                readiness_artifact = self.artifacts.put_bytes(
-                    encode_canonical_json(staged_outcome.report.model_dump(mode="json")),
-                    transaction_id=(
-                        "readiness."
-                        + hashlib.sha256(transaction_id.encode("utf-8")).hexdigest()[:32]
-                    ),
-                    media_type="application/json",
-                    schema_id="ingestion-readiness-report-0.1.0",
-                    owner=None,
-                )
-                revision = SessionRevision(
-                    session_revision_id=revision_id,
-                    session_id=session_id,
-                    managed_bundle_path=final_relative,
-                    manifest_hash=manifest_hash,
-                    bundle_root_hash=bundle_root_hash,
-                    file_inventory_hash=inventory_hash,
-                    source_kind=SessionSourceKind.MANAGED_IMPORT,
-                    imported_at=now,
-                    imported_by=imported_by,
-                    ingestion_readiness_ref=readiness_artifact.artifact_id,
-                    synchronization_ref=None,
-                )
-                intent_id = self._record_intent(
-                    transaction_id=transaction_id,
+                return self._finalize_staged_import(
                     staging_relative=staging_relative,
-                    final_relative=final_relative,
-                    bundle_root_hash=bundle_root_hash,
-                    created_at=_utc_text(now),
-                )
-                self._promote_or_reuse(
-                    staging_bundle,
-                    final_bundle,
-                    source_inventory,
-                    bundle_root_hash,
-                )
-                result = self.idempotency.execute(
+                    staging_bundle=staging_bundle,
+                    staged_loaded=staged_loaded,
+                    readiness=staged_outcome.report,
+                    inventory=source_inventory,
                     transaction_id=transaction_id,
+                    imported_by=imported_by,
                     method="session.import",
                     params=params,
-                    mutation=lambda connection: self._register_import(
-                        connection,
-                        revision=revision,
-                        participant_id=staged_loaded.manifest.participant.pseudonymous_id,
-                        inventory=source_inventory,
-                        intent_id=intent_id,
-                        transaction_id=transaction_id,
-                        imported_by=imported_by,
-                    ),
+                    now=self._clock(),
                 )
             except BaseException:
                 self.recover()
                 raise
-            self._prune_empty_parents(
-                staging_bundle.parent,
-                self.root / "staging" / "imports",
+
+    def _import_raw_source(
+        self,
+        external_source: str | Path,
+        *,
+        inspected_fingerprint: str,
+        transaction_id: str,
+        imported_by: str,
+    ) -> SessionImportResult:
+        transaction_id = self._stable_id(transaction_id, "transaction_id")
+        imported_by = self._stable_id(imported_by, "imported_by")
+        source_locator = Path(external_source).expanduser().resolve(strict=False)
+        params = {
+            "project_id": self.project_id,
+            "source_locator_hash": hashlib.sha256(str(source_locator).encode("utf-8")).hexdigest(),
+            "source_snapshot_fingerprint": inspected_fingerprint,
+            "imported_by": imported_by,
+        }
+        if self.database.fetchone(
+            "SELECT 1 FROM idempotency_transactions WHERE transaction_id = ?",
+            (transaction_id,),
+        ):
+            replay = self.idempotency.execute(
+                transaction_id=transaction_id,
+                method="session.source.import",
+                params=params,
+                mutation=self._unexpected_replay_mutation,
             )
-            return self._result_from_receipt(result)
+            return self._result_from_receipt(replay)
+
+        with self._lock:
+            if self.database.fetchone(
+                "SELECT 1 FROM idempotency_transactions WHERE transaction_id = ?",
+                (transaction_id,),
+            ):
+                replay = self.idempotency.execute(
+                    transaction_id=transaction_id,
+                    method="session.source.import",
+                    params=params,
+                    mutation=self._unexpected_replay_mutation,
+                )
+                return self._result_from_receipt(replay)
+            self.recover()
+            try:
+                external_root = self._external_root(external_source)
+                current = inspect_raw_session(external_root)
+                if current.source_snapshot_fingerprint != inspected_fingerprint:
+                    raise SessionImportIntegrityError(
+                        "RAW_SOURCE_CHANGED: raw source changed after inspection"
+                    )
+                staging_relative = f"staging/imports/{transaction_id}/bundle"
+                staging_bundle = self._project_path(staging_relative)
+                now = self._clock()
+                materialized = materialize_raw_session(
+                    external_root,
+                    staging_bundle,
+                    inspection=current,
+                    transaction_id=transaction_id,
+                    created_at=now,
+                )
+                self._require_importable(materialized.readiness)
+                inventory = self._inventory(staging_bundle)
+                return self._finalize_staged_import(
+                    staging_relative=staging_relative,
+                    staging_bundle=staging_bundle,
+                    staged_loaded=materialized.loaded,
+                    readiness=materialized.readiness,
+                    inventory=inventory,
+                    transaction_id=transaction_id,
+                    imported_by=imported_by,
+                    method="session.source.import",
+                    params=params,
+                    now=now,
+                )
+            except BaseException:
+                self.recover()
+                raise
+
+    def _finalize_staged_import(
+        self,
+        *,
+        staging_relative: str,
+        staging_bundle: Path,
+        staged_loaded: LoadedManifest,
+        readiness: IngestionReadinessReport,
+        inventory: tuple[SessionFileRecord, ...],
+        transaction_id: str,
+        imported_by: str,
+        method: str,
+        params: object,
+        now: datetime,
+    ) -> SessionImportResult:
+        manifest_hash = self._manifest_hash(inventory)
+        inventory_hash = self._inventory_hash(inventory)
+        bundle_root_hash = self._bundle_root_hash(manifest_hash, inventory_hash)
+        # Keep the directory identity short enough for ordinary Windows path APIs;
+        # the complete 256-bit root identity remains frozen on SessionRevision.
+        revision_id = f"session-revision.{bundle_root_hash[:32]}"
+        session_id = staged_loaded.manifest.session_id
+        final_relative = f"sessions/{session_id}/{revision_id}/bundle"
+        final_bundle = self._project_path(final_relative)
+
+        readiness_artifact = self.artifacts.put_bytes(
+            encode_canonical_json(readiness.model_dump(mode="json")),
+            transaction_id=(
+                "readiness." + hashlib.sha256(transaction_id.encode("utf-8")).hexdigest()[:32]
+            ),
+            media_type="application/json",
+            schema_id="ingestion-readiness-report-0.1.0",
+            owner=None,
+        )
+        revision = SessionRevision(
+            session_revision_id=revision_id,
+            session_id=session_id,
+            managed_bundle_path=final_relative,
+            manifest_hash=manifest_hash,
+            bundle_root_hash=bundle_root_hash,
+            file_inventory_hash=inventory_hash,
+            source_kind=SessionSourceKind.MANAGED_IMPORT,
+            imported_at=now,
+            imported_by=imported_by,
+            ingestion_readiness_ref=readiness_artifact.artifact_id,
+            synchronization_ref=None,
+        )
+        intent_id = self._record_intent(
+            transaction_id=transaction_id,
+            staging_relative=staging_relative,
+            final_relative=final_relative,
+            bundle_root_hash=bundle_root_hash,
+            created_at=_utc_text(now),
+        )
+        self._promote_or_reuse(
+            staging_bundle,
+            final_bundle,
+            inventory,
+            bundle_root_hash,
+        )
+        result = self.idempotency.execute(
+            transaction_id=transaction_id,
+            method=method,
+            params=params,
+            mutation=lambda connection: self._register_import(
+                connection,
+                revision=revision,
+                participant_id=staged_loaded.manifest.participant.pseudonymous_id,
+                inventory=inventory,
+                intent_id=intent_id,
+                transaction_id=transaction_id,
+                imported_by=imported_by,
+            ),
+        )
+        self._prune_empty_parents(
+            staging_bundle.parent,
+            self.root / "staging" / "imports",
+        )
+        return self._result_from_receipt(result)
 
     def get(self, session_id: str) -> SessionRecord:
         session_id = self._stable_id(session_id, "session_id")

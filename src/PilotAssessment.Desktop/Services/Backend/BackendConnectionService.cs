@@ -51,7 +51,7 @@ public sealed class BackendConnectionService : IAsyncDisposable
                     await previous.DisposeAsync().ConfigureAwait(false);
                 }
 
-                var options = DevelopmentBackendLocator.Locate();
+                var options = BackendRuntimeLocator.Locate();
                 var host = await SidecarProcessHost.StartAsync(options, cancellationToken)
                     .ConfigureAwait(false);
                 host.DiagnosticLineReceived += OnDiagnosticLineReceived;

@@ -507,6 +507,7 @@ def _profile_units(
             column.canonical_name: column.unit
             for column in profile.columns
             if column.canonical_name in stream.primary_table.columns
+            and column.unit != "unknown_raw"
         }
     table_profile: TableProfile | None = None
     if isinstance(profile, TableProfile):

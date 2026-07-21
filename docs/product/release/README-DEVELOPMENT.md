@@ -1,0 +1,40 @@
+# Editing the live Python backend
+
+The running first-party backend is exactly:
+
+```text
+backend\src\pilot_assessment\
+```
+
+There is no installed `pilot-assessment-system` wheel and no per-project Python overlay. Changes to
+this tree apply globally to this extracted software copy after the desktop app is fully closed and
+restarted.
+
+## Choose the least invasive modification
+
+1. Change Evidence/BN/CPT/task parameters and graph structure in the front end whenever the
+   existing operators and inference engine can express the requirement.
+2. Edit or add an operator under `backend\src\pilot_assessment\evidence` only when a genuinely new
+   extraction mechanism is needed. Register it in the existing operator registry and expose a
+   parameter schema so the front end can render its form.
+3. Edit core ingestion, synchronization, persistence, protocol or inference modules only when the
+   platform contract itself must change.
+
+## Safe source workflow
+
+1. Close `PilotAssessment.Desktop.exe` and confirm its private `python.exe` child has stopped.
+2. Copy the whole software directory as a rollback point, or keep the original ZIP.
+3. Edit ordinary `.py` and JSON resource files with any local text editor or IDE.
+4. Preserve public DTO/schema compatibility unless you also update both Python and C# protocol
+   contracts.
+5. Restart the desktop app and inspect Diagnostics before using the changed mechanism.
+6. Run a small representative Session before relying on a new operator or core change.
+
+The original hashes are in `manifest\source-baseline.json`. A hash difference is evidence of a
+local modification, not an automatic reason to block the software.
+
+The C#/WinUI source delivered for reference is under `developer\desktop-source`. C# changes require
+a new desktop build with the .NET SDK and Windows development tools; Python changes do not.
+
+The full extension and maintenance manuals are M8C deliverables. This file is the minimum M8B-0
+operational contract.

@@ -206,7 +206,7 @@ class CurrentRunPreflightService:
 
     def get(self, preflight_id: str) -> CurrentModelRunPreflightReport:
         row = self.database.fetchone(
-            "SELECT * FROM model_run_preflights WHERE current_preflight_id = ?",
+            "SELECT * FROM model_run_preflights_v2 WHERE current_preflight_id = ?",
             (preflight_id,),
         )
         if row is None:
@@ -250,7 +250,8 @@ class CurrentRunPreflightService:
                 )
             active_nodes.append(node)
         row = self.database.fetchone(
-            "SELECT legacy_preflight_id FROM model_run_preflights WHERE current_preflight_id = ?",
+            "SELECT legacy_preflight_id FROM model_run_preflights_v2 "
+            "WHERE current_preflight_id = ?",
             (preflight_id,),
         )
         if row is None:
@@ -363,7 +364,7 @@ class CurrentRunPreflightService:
             with self.database.transaction() as connection:
                 existing = connection.execute(
                     """
-                    SELECT * FROM model_run_preflights
+                    SELECT * FROM model_run_preflights_v2
                     WHERE current_preflight_id = ? OR current_preflight_hash = ?
                     """,
                     (report.preflight_id, report.preflight_hash),
@@ -376,7 +377,7 @@ class CurrentRunPreflightService:
                     return
                 connection.execute(
                     """
-                    INSERT INTO model_run_preflights(
+                    INSERT INTO model_run_preflights_v2(
                         current_preflight_id, current_preflight_hash,
                         scheme_id, scheme_semantic_revision, scheme_content_hash,
                         report_json, legacy_preflight_id, legacy_preflight_hash, created_at

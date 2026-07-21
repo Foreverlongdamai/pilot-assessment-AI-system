@@ -327,13 +327,13 @@ def _node_diff(
 
 
 class CurrentModelWorkspaceService:
-    """Technical node workspace for one open managed project."""
+    """Technical node workspace for one software-copy model library."""
 
     def __init__(
         self,
         repository: SqliteModelWorkspaceRepository,
         *,
-        project_id: str,
+        model_library_id: str,
         operator_registry: OperatorRegistry,
         source_catalog: SourceCatalog,
         clock: Clock = _utc_now,
@@ -341,7 +341,7 @@ class CurrentModelWorkspaceService:
         node_id_factory: Callable[[ModelNodeKind], str] | None = None,
     ) -> None:
         self.repository = repository
-        self.project_id = project_id
+        self.model_library_id = model_library_id
         self.operator_registry = operator_registry
         self.source_catalog = source_catalog
         self._clock = clock
@@ -410,13 +410,13 @@ class CurrentModelWorkspaceService:
         nodes = tuple(sorted(self.repository.list_nodes(), key=lambda item: item.node_id))
         edges = _all_resolvable_edges(nodes)
         return ModelGraphSnapshot(
-            project_id=self.project_id,
+            model_library_id=self.model_library_id,
             scheme=scheme,
             nodes=nodes,
             edges=edges,
             generated_at=self._clock(),
             graph_hash=model_graph_semantic_hash(
-                self.project_id,
+                self.model_library_id,
                 scheme,
                 nodes,
                 edges,

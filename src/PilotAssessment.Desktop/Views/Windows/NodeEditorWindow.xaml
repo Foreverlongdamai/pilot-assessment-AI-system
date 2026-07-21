@@ -22,10 +22,6 @@
                     AutomationProperties.HeadingLevel="Level1"
                     Style="{ThemeResource TitleTextBlockStyle}"
                     Text="{Binding [Node_Header], Source={StaticResource Localization}}" />
-                <TextBlock
-                    x:Name="NodeIdentityText"
-                    Opacity="0.68"
-                    TextWrapping="Wrap" />
             </StackPanel>
             <StackPanel Grid.Column="1" HorizontalAlignment="Right" Spacing="3">
                 <TextBlock
@@ -68,16 +64,32 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TextBlock Opacity="0.66" Text="{Binding [Node_TaskScheme], Source={StaticResource Localization}}" />
                         <TextBlock x:Name="TaskSchemeText" Grid.Column="1" TextWrapping="Wrap" />
                         <TextBlock Grid.Row="1" Opacity="0.66" Text="{Binding [Node_SharedUsage], Source={StaticResource Localization}}" />
                         <TextBlock x:Name="SharedUsageText" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" />
-                        <TextBlock Grid.Row="2" Opacity="0.66" Text="{Binding [Node_WindowKey], Source={StaticResource Localization}}" />
-                        <TextBlock x:Name="WindowKeyText" Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" />
                     </Grid>
                 </StackPanel>
+
+                <Expander
+                    Header="{Binding [Node_TechnicalIdentity], Source={StaticResource Localization}}"
+                    IsExpanded="False">
+                    <Grid Padding="0,8,0,0" ColumnSpacing="16" RowSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Opacity="0.66" Text="{Binding [Node_NodeId], Source={StaticResource Localization}}" />
+                        <TextBlock x:Name="NodeIdentityText" Grid.Column="1" FontFamily="Consolas" TextWrapping="Wrap" />
+                        <TextBlock Grid.Row="1" Opacity="0.66" Text="{Binding [Node_WindowKey], Source={StaticResource Localization}}" />
+                        <TextBlock x:Name="WindowKeyText" Grid.Row="1" Grid.Column="1" FontFamily="Consolas" TextWrapping="Wrap" />
+                    </Grid>
+                </Expander>
 
                 <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
 

@@ -8,10 +8,14 @@ import pytest
 
 import pilot_assessment.persistence.sessions as session_persistence
 from pilot_assessment.contracts.ingestion import ReadinessDisposition
+from pilot_assessment.contracts.session import StreamStatus
+from pilot_assessment.contracts.session_source import SessionDataSourceKind
 from pilot_assessment.ingestion.manifest_loader import ManifestLoader
+from pilot_assessment.ingestion.profiles import CsvProfile, load_builtin_profiles
 from pilot_assessment.persistence.artifacts import ManagedArtifactStore
 from pilot_assessment.persistence.project import ProjectStore
 from pilot_assessment.persistence.sessions import (
+    SessionImportIntegrityError,
     SessionImportPathError,
     SessionImportService,
 )
@@ -43,6 +47,30 @@ def _snapshot(root: Path) -> dict[str, bytes]:
         path.relative_to(root).as_posix(): path.read_bytes()
         for path in sorted(candidate for candidate in root.rglob("*") if candidate.is_file())
     }
+
+
+def _raw_source(tmp_path: Path) -> Path:
+    root = tmp_path / "external-raw"
+    (root / "streams").mkdir(parents=True)
+    (root / "annotations").mkdir()
+    profile = load_builtin_profiles()["cranfield-simulator-combined-csv-raw-v0.1"]
+    assert isinstance(profile, CsvProfile)
+    headers = [column.source_header for column in profile.columns]
+    rows: list[str] = []
+    for index in range(6):
+        values = ["0" for _ in headers]
+        values[headers.index("Simulation time")] = f"{index / 100:.2f}"
+        values[headers.index("Control_Mode")] = "1"
+        values[headers.index("Time Delay s")] = "0.2"
+        values[headers.index("Lon Frequency rad/s")] = "8"
+        values[headers.index("Long Damping")] = "0.8"
+        rows.append(",".join(values))
+    (root / "streams" / "simulator.csv").write_text(
+        ",".join(headers) + "\n" + "\n".join(rows) + "\n",
+        encoding="utf-8",
+        newline="",
+    )
+    return root
 
 
 def test_external_inspect_is_read_only(
@@ -168,5 +196,71 @@ def test_import_rejects_undeclared_reparse_style_escape(
             )
         assert project.database.fetchone("SELECT COUNT(*) FROM sessions")[0] == 0
         assert outside.read_bytes() == b"outside"
+    finally:
+        project.close()
+
+
+def test_raw_source_import_materializes_and_registers_managed_bundle(tmp_path: Path) -> None:
+    external = _raw_source(tmp_path)
+    original = _snapshot(external)
+    project = _project(tmp_path)
+    service = _service(project)
+    try:
+        inspected = service.inspect_source(external)
+        assert inspected.source_kind is SessionDataSourceKind.SIMULATOR_RAW
+        assert inspected.raw is not None
+
+        imported = service.import_source(
+            external,
+            inspected_fingerprint=inspected.raw.source_snapshot_fingerprint,
+            transaction_id="tx.session-raw-first",
+            imported_by="expert.one",
+        )
+
+        managed = service.managed_bundle_path(imported.revision.session_revision_id)
+        loaded = ManifestLoader().load(managed)
+        assert imported.replayed is False
+        assert _snapshot(external) == original
+        assert loaded.manifest.streams["X"].status is StreamStatus.PRESENT
+        assert loaded.manifest.streams["U"].units == {}
+        assert loaded.manifest.streams["G"].status is StreamStatus.MISSING
+        assert (managed / "_pilot_assessment" / "annotations" / "events.json").is_file()
+        assert not (managed / "streams" / "gaze").exists()
+        assert service.verify_managed_revision(imported.revision.session_revision_id) == (
+            imported.revision
+        )
+
+        shutil.rmtree(external)
+        replay = service.import_source(
+            external,
+            inspected_fingerprint=inspected.raw.source_snapshot_fingerprint,
+            transaction_id="tx.session-raw-first",
+            imported_by="expert.one",
+        )
+        assert replay.replayed is True
+        assert replay.session == imported.session
+        assert replay.revision == imported.revision
+    finally:
+        project.close()
+
+
+def test_raw_source_import_rejects_stale_inspection(tmp_path: Path) -> None:
+    external = _raw_source(tmp_path)
+    project = _project(tmp_path)
+    service = _service(project)
+    try:
+        inspected = service.inspect_source(external)
+        assert inspected.raw is not None
+        csv_path = external / "streams" / "simulator.csv"
+        csv_path.write_bytes(csv_path.read_bytes() + b"\n")
+
+        with pytest.raises(SessionImportIntegrityError, match="RAW_SOURCE_CHANGED"):
+            service.import_source(
+                external,
+                inspected_fingerprint=inspected.raw.source_snapshot_fingerprint,
+                transaction_id="tx.session-raw-changed",
+                imported_by="expert.one",
+            )
+        assert project.database.fetchone("SELECT COUNT(*) FROM sessions")[0] == 0
     finally:
         project.close()

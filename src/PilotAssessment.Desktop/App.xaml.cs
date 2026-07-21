@@ -67,6 +67,8 @@ public partial class App : Application
             services.GetRequiredService<ModelWorkspaceClient>());
         builder.Services.AddSingleton<IBayesianNodeEditorGateway>(services =>
             services.GetRequiredService<ModelWorkspaceClient>());
+        builder.Services.AddSingleton<IModelEditSessionGateway>(services =>
+            services.GetRequiredService<ModelWorkspaceClient>());
         builder.Services.AddSingleton<RunClient>();
         builder.Services.AddSingleton<IRunGateway>(services =>
             services.GetRequiredService<RunClient>());
@@ -108,9 +110,11 @@ public partial class App : Application
                 return;
             }
 
+            var schemes = _applicationHost.Services.GetRequiredService<TaskSchemeListViewModel>();
+            await schemes.LoadSystemAsync();
             var projects = _applicationHost.Services.GetRequiredService<ProjectLauncherViewModel>();
             var restored = await projects.InitializeAsync(restoreLastProject: true);
-            if (!restored && shell.CurrentDestination is not ("project" or "diagnostics"))
+            if (!restored && shell.CurrentDestination is "session" or "runs" or "results")
             {
                 window.NavigateTo("project");
             }

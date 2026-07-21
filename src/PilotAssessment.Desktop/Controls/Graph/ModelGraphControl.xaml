@@ -8,8 +8,13 @@
     Loaded="OnLoaded"
     Unloaded="OnUnloaded">
     <Grid Background="{ThemeResource LayerFillColorAltBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <ScrollViewer
             x:Name="GraphScrollViewer"
+            Grid.Row="0"
             HorizontalScrollBarVisibility="Auto"
             HorizontalScrollMode="Enabled"
             MaxZoomFactor="2.5"
@@ -21,12 +26,21 @@
             <Grid
                 x:Name="GraphSurface"
                 Width="{x:Bind ViewModel.ExtentWidth, Mode=OneWay}"
-                Height="{x:Bind ViewModel.ExtentHeight, Mode=OneWay}">
+                Height="{x:Bind ViewModel.ExtentHeight, Mode=OneWay}"
+                Background="Transparent"
+                PointerCanceled="OnGraphPointerCanceled"
+                PointerMoved="OnGraphPointerMoved"
+                PointerPressed="OnGraphPointerPressed"
+                PointerReleased="OnGraphPointerReleased">
                 <Canvas
                     x:Name="EdgeLayer"
                     Width="{x:Bind ViewModel.ExtentWidth, Mode=OneWay}"
                     Height="{x:Bind ViewModel.ExtentHeight, Mode=OneWay}"
                     IsHitTestVisible="False" />
+                <Canvas
+                    x:Name="FamilyNodeLayer"
+                    Width="{x:Bind ViewModel.ExtentWidth, Mode=OneWay}"
+                    Height="{x:Bind ViewModel.ExtentHeight, Mode=OneWay}" />
                 <ItemsRepeater
                     x:Name="NodeRepeater"
                     ItemsSource="{x:Bind ViewModel.Nodes}"
@@ -74,28 +88,62 @@
         </Border>
 
         <Border
-            Margin="14"
-            Padding="10,8"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Bottom"
+            Grid.Row="1"
+            Margin="0"
+            Padding="12,8"
+            HorizontalAlignment="Stretch"
             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-            CornerRadius="8">
-            <StackPanel Spacing="5">
-                <TextBlock FontSize="11" FontWeight="SemiBold" Text="{Binding [Graph_EdgeLegend], Source={StaticResource Localization}}" />
-                <StackPanel Orientation="Horizontal" Spacing="7">
-                    <Rectangle
-                        Width="28"
-                        Height="2"
-                        Fill="{ThemeResource GraphExtractionEdgeBrush}"
-                        StrokeDashArray="3,2" />
-                    <TextBlock FontSize="11" Text="{Binding [Graph_ExtractionEdge], Source={StaticResource Localization}}" />
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="0,1,0,0">
+            <ScrollViewer
+                HorizontalScrollBarVisibility="Auto"
+                HorizontalScrollMode="Auto"
+                VerticalScrollBarVisibility="Disabled"
+                VerticalScrollMode="Disabled">
+                <StackPanel Orientation="Horizontal" Spacing="18">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="11"
+                        FontWeight="SemiBold"
+                        Text="{Binding [Graph_EdgeLegend], Source={StaticResource Localization}}" />
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <Rectangle
+                            Width="28"
+                            Height="2"
+                            VerticalAlignment="Center"
+                            Fill="{ThemeResource GraphProvenanceEdgeBrush}"
+                            StrokeDashArray="2,2" />
+                        <TextBlock VerticalAlignment="Center" FontSize="11" Text="{Binding [Graph_ProvenanceEdge], Source={StaticResource Localization}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <Rectangle
+                            Width="28"
+                            Height="2"
+                            VerticalAlignment="Center"
+                            Fill="{ThemeResource GraphExtractionEdgeBrush}"
+                            StrokeDashArray="3,2" />
+                        <TextBlock VerticalAlignment="Center" FontSize="11" Text="{Binding [Graph_ExtractionEdge], Source={StaticResource Localization}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <Rectangle
+                            Width="28"
+                            Height="2"
+                            VerticalAlignment="Center"
+                            Fill="{ThemeResource GraphProbabilisticEdgeBrush}" />
+                        <TextBlock VerticalAlignment="Center" FontSize="11" Text="{Binding [Graph_ProbabilisticEdge], Source={StaticResource Localization}}" />
+                    </StackPanel>
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="10"
+                        Opacity="0.68"
+                        Text="{Binding [Graph_DimMeaning], Source={StaticResource Localization}}" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="10"
+                        Opacity="0.68"
+                        Text="{Binding [Graph_PanHint], Source={StaticResource Localization}}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="7">
-                    <Rectangle Width="28" Height="2" Fill="{ThemeResource GraphProbabilisticEdgeBrush}" />
-                    <TextBlock FontSize="11" Text="{Binding [Graph_ProbabilisticEdge], Source={StaticResource Localization}}" />
-                </StackPanel>
-                <TextBlock FontSize="10" Opacity="0.62" Text="{Binding [Graph_DimMeaning], Source={StaticResource Localization}}" />
-            </StackPanel>
+            </ScrollViewer>
         </Border>
 
         <Border

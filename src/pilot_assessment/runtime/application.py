@@ -1,4 +1,4 @@
-"""Single composition root for one open, portable assessment project."""
+"""Composition root for one optional user project bound to the shared system model."""
 
 from __future__ import annotations
 
@@ -6,123 +6,58 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Self
-from uuid import uuid4
 
-from pilot_assessment.contracts.model_components import (
-    ComponentKind,
-    SourceDescriptor,
-)
-from pilot_assessment.evidence.builtins import register_builtin_operators
 from pilot_assessment.evidence.registry import OperatorRegistry
-from pilot_assessment.model_library.profile import (
-    LoadedModelProfile,
-    load_hover_starter_package,
-)
-from pilot_assessment.model_library.repository import (
-    LibraryQuery,
-    component_kind,
-    component_record_id,
-)
 from pilot_assessment.model_library.service import ModelLibraryService
 from pilot_assessment.model_library.sources import SourceCatalog
+from pilot_assessment.model_workspace.edit_session import ModelEditSessionManager
 from pilot_assessment.model_workspace.execution import CurrentModelExecutionMaterializer
-from pilot_assessment.model_workspace.migration import (
-    CURRENT_HOVER_STARTER_SEED_ID,
-    CurrentStarterSeedResult,
-    seed_current_starter,
-)
+from pilot_assessment.model_workspace.legacy_import import LegacyModelImportResult
 from pilot_assessment.model_workspace.service import CurrentModelWorkspaceService
-from pilot_assessment.persistence.artifacts import (
-    ArtifactRecoveryReport,
-    ManagedArtifactStore,
-)
+from pilot_assessment.persistence.artifacts import ArtifactRecoveryReport, ManagedArtifactStore
 from pilot_assessment.persistence.audit import AuditRepository
-from pilot_assessment.persistence.database import Clock, ProjectDatabase
+from pilot_assessment.persistence.database import Clock
 from pilot_assessment.persistence.draft_repository import (
     SqliteSchemeDraftRepository,
     SqliteWorkspaceUnitOfWork,
 )
 from pilot_assessment.persistence.model_repository import SqliteComponentLibraryRepository
-from pilot_assessment.persistence.model_workspace_repository import (
-    SqliteModelWorkspaceRepository,
-)
 from pilot_assessment.persistence.project import ProjectStore
-from pilot_assessment.persistence.sessions import (
-    SessionImportService,
-    SessionRecoveryReport,
-)
+from pilot_assessment.persistence.sessions import SessionImportService, SessionRecoveryReport
 from pilot_assessment.persistence.transactions import IdempotencyStore
 from pilot_assessment.runtime.coordinator import RunCoordinator
 from pilot_assessment.runtime.current_preflight import CurrentRunPreflightService
 from pilot_assessment.runtime.pipeline import AssessmentPipeline, RunResultRepository
 from pilot_assessment.runtime.preflight import RunPreflightService
 from pilot_assessment.runtime.repository import AssessmentRunRecord, RunRepository
-from pilot_assessment.runtime.sources import (
-    RuntimeSourceProviderRegistry,
-    register_hover_source_providers,
+from pilot_assessment.runtime.sources import RuntimeSourceProviderRegistry
+from pilot_assessment.runtime.system_application import (
+    CURRENT_HOVER_STARTER_SEED_ID,
+    HOVER_STARTER_SEED_ID,
+    CurrentStarterSeedResult,
+    RuntimeCompositionError,
+    StarterSeedError,
+    StarterSeedResult,
+    SystemApplication,
+    UuidComponentIdFactory,
 )
+from pilot_assessment.runtime.system_execution import SystemSchemeExecutionMaterializer
 from pilot_assessment.schemes.service import SchemeWorkspaceService
-
-HOVER_STARTER_SEED_ID = "starter.hover.package.0.1.0"
-
-
-class RuntimeCompositionError(RuntimeError):
-    """Raised when one application graph cannot share a coherent project boundary."""
-
-
-class StarterSeedError(RuntimeCompositionError):
-    """Raised when an existing seed marker or exact starter record is inconsistent."""
 
 
 def _utc_now() -> datetime:
     return datetime.now(UTC)
 
 
-def _utc_text(value: datetime) -> str:
-    if value.tzinfo is None or value.utcoffset() is None:
-        raise StarterSeedError("starter seed timestamp must be timezone-aware")
-    return value.astimezone(UTC).isoformat().replace("+00:00", "Z")
-
-
-@dataclass(frozen=True, slots=True)
-class StarterSeedResult:
-    seed_id: str
-    manifest_hash: str
-    applied: bool
-    inserted_records: int
-    total_records: int
-
-
-@dataclass(frozen=True, slots=True)
-class _ServiceClock:
-    read: Clock = field(repr=False)
-
-    def now(self) -> datetime:
-        return self.read()
-
-
-class UuidComponentIdFactory:
-    """Generate opaque new component IDs without task- or node-specific branching."""
-
-    def new_id(self, kind: ComponentKind) -> str:
-        return f"{kind.value}.{uuid4().hex}"
-
-
 @dataclass(slots=True)
 class ProjectApplication:
-    """All durable domain services for the single currently open project."""
+    """Session/run services for one project using one injected system model owner."""
 
     project: ProjectStore
+    system: SystemApplication
     components: SqliteComponentLibraryRepository
-    drafts: SqliteSchemeDraftRepository
-    unit_of_work: SqliteWorkspaceUnitOfWork
-    model_library: ModelLibraryService
-    schemes: SchemeWorkspaceService
-    current_model: CurrentModelWorkspaceService
     execution_materializer: CurrentModelExecutionMaterializer
-    operator_registry: OperatorRegistry
-    source_provider_registry: RuntimeSourceProviderRegistry
-    source_catalog: SourceCatalog
+    system_execution: SystemSchemeExecutionMaterializer
     artifacts: ManagedArtifactStore
     sessions: SessionImportService
     runs: RunRepository
@@ -133,14 +68,10 @@ class ProjectApplication:
     coordinator: RunCoordinator
     audit: AuditRepository
     idempotency: IdempotencyStore
-    starter_scheme_id: str
-    current_starter_scheme_id: str
-    seed_result: StarterSeedResult
-    current_seed_result: CurrentStarterSeedResult
     artifact_recovery: ArtifactRecoveryReport
     session_recovery: SessionRecoveryReport
     run_recovery: tuple[AssessmentRunRecord, ...]
-    _starter_profile: LoadedModelProfile = field(repr=False)
+    legacy_model_import: LegacyModelImportResult
     _clock: Clock = field(repr=False)
     _closed: bool = field(default=False, init=False, repr=False)
 
@@ -149,11 +80,13 @@ class ProjectApplication:
         cls,
         root: str | Path,
         *,
+        system: SystemApplication,
         project_id: str,
         name: str,
         created_at: datetime,
         clock: Clock = _utc_now,
     ) -> Self:
+        cls._require_system(system)
         project = ProjectStore.create(
             root,
             project_id=project_id,
@@ -162,7 +95,7 @@ class ProjectApplication:
             clock=clock,
         )
         try:
-            return cls._compose(project, clock=clock)
+            return cls._compose(project, system=system, clock=clock)
         except BaseException:
             project.close()
             raise
@@ -172,18 +105,32 @@ class ProjectApplication:
         cls,
         root: str | Path,
         *,
+        system: SystemApplication,
         clock: Clock = _utc_now,
     ) -> Self:
+        cls._require_system(system)
         project = ProjectStore.open(root, clock=clock)
         try:
-            return cls._compose(project, clock=clock)
+            return cls._compose(project, system=system, clock=clock)
         except BaseException:
             project.close()
             raise
 
+    @staticmethod
+    def _require_system(system: SystemApplication) -> None:
+        if system.closed:
+            raise RuntimeCompositionError("project cannot bind a closed system application")
+
     @classmethod
-    def _compose(cls, project: ProjectStore, *, clock: Clock) -> Self:
+    def _compose(
+        cls,
+        project: ProjectStore,
+        *,
+        system: SystemApplication,
+        clock: Clock,
+    ) -> Self:
         database = project.database
+        legacy_model_import = system.legacy_model_importer.import_project(project)
         artifacts = ManagedArtifactStore(project.root, database, clock=clock)
         audit = AuditRepository(database)
         idempotency = IdempotencyStore(database, audit, clock=clock)
@@ -199,57 +146,16 @@ class ProjectApplication:
         session_recovery = sessions.recover()
 
         components = SqliteComponentLibraryRepository(database)
-        profile = load_hover_starter_package()
-        seed_result = _seed_profile(
-            database,
-            components,
-            profile,
-            recorded_at=clock(),
-        )
-        source_catalog = _source_catalog_from_repository(components)
-        operator_registry = OperatorRegistry()
-        register_builtin_operators(operator_registry)
-        source_provider_registry = RuntimeSourceProviderRegistry()
-        register_hover_source_providers(source_provider_registry)
-        drafts = SqliteSchemeDraftRepository(database, clock=clock)
-        unit_of_work = SqliteWorkspaceUnitOfWork(
-            database,
-            components,
-            drafts,
-        )
-        service_clock = _ServiceClock(clock)
-        ids = UuidComponentIdFactory()
-        model_library = ModelLibraryService(
-            components,
-            clock=service_clock,
-            ids=ids,
-        )
-        schemes = SchemeWorkspaceService(
-            components,
-            drafts,
-            unit_of_work,
-            source_catalog=source_catalog,
-            operator_registry=operator_registry,
-            clock=service_clock,
-            ids=ids,
-        )
-        current_model = CurrentModelWorkspaceService(
-            SqliteModelWorkspaceRepository(database),
-            project_id=project.descriptor.project_id,
-            operator_registry=operator_registry,
-            source_catalog=source_catalog,
-            clock=clock,
-        )
-        current_seed_result = seed_current_starter(
-            profile,
-            current_model,
-            recorded_at=clock(),
-            seed_id=CURRENT_HOVER_STARTER_SEED_ID,
-        )
         execution_materializer = CurrentModelExecutionMaterializer(
             database,
             components,
-            current_model,
+            system.current_model,
+            clock=clock,
+        )
+        system_execution = SystemSchemeExecutionMaterializer(
+            database,
+            components,
+            system.components,
             clock=clock,
         )
         runs = RunRepository(database)
@@ -258,13 +164,14 @@ class ProjectApplication:
             database,
             components,
             sessions,
-            source_catalog=source_catalog,
-            operator_registry=operator_registry,
+            source_catalog=system.source_catalog,
+            operator_registry=system.operator_registry,
             clock=clock,
+            scheme_materializer=system_execution,
         )
         current_preflight = CurrentRunPreflightService(
             database,
-            current_model,
+            system.current_model,
             execution_materializer,
             preflight,
             runs,
@@ -276,22 +183,16 @@ class ProjectApplication:
             artifacts,
             preflight,
             results,
-            operator_registry=operator_registry,
-            source_provider_registry=source_provider_registry,
+            operator_registry=system.operator_registry,
+            source_provider_registry=system.source_provider_registry,
         )
         coordinator = RunCoordinator(runs, pipeline, clock=clock)
         return cls(
             project=project,
+            system=system,
             components=components,
-            drafts=drafts,
-            unit_of_work=unit_of_work,
-            model_library=model_library,
-            schemes=schemes,
-            current_model=current_model,
             execution_materializer=execution_materializer,
-            operator_registry=operator_registry,
-            source_provider_registry=source_provider_registry,
-            source_catalog=source_catalog,
+            system_execution=system_execution,
             artifacts=artifacts,
             sessions=sessions,
             runs=runs,
@@ -302,14 +203,10 @@ class ProjectApplication:
             coordinator=coordinator,
             audit=audit,
             idempotency=idempotency,
-            starter_scheme_id=profile.scheme.scheme_version_id,
-            current_starter_scheme_id=current_seed_result.scheme_id,
-            seed_result=seed_result,
-            current_seed_result=current_seed_result,
             artifact_recovery=artifact_recovery,
             session_recovery=session_recovery,
             run_recovery=run_recovery,
-            _starter_profile=profile,
+            legacy_model_import=legacy_model_import,
             _clock=clock,
         )
 
@@ -317,27 +214,63 @@ class ProjectApplication:
     def closed(self) -> bool:
         return self._closed
 
-    def initialize_starter(self) -> StarterSeedResult:
-        """Idempotently verify or install the ordinary editable starter records."""
+    # Transitional read-only service aliases keep project callers source-compatible while
+    # ownership is unambiguously held and closed by SystemApplication.
+    @property
+    def current_model(self) -> CurrentModelWorkspaceService:
+        return self.system.current_model
 
-        if self._closed:
-            raise RuntimeCompositionError("project application is closed")
-        result = _seed_profile(
-            self.project.database,
-            self.components,
-            self._starter_profile,
-            recorded_at=self._clock(),
-        )
-        current_result = seed_current_starter(
-            self._starter_profile,
-            self.current_model,
-            recorded_at=self._clock(),
-            seed_id=CURRENT_HOVER_STARTER_SEED_ID,
-        )
-        self.seed_result = result
-        self.current_seed_result = current_result
-        self.current_starter_scheme_id = current_result.scheme_id
-        return result
+    @property
+    def editable_model(self) -> CurrentModelWorkspaceService:
+        return self.system.editable_model
+
+    @property
+    def model_edits(self) -> ModelEditSessionManager:
+        return self.system.model_edits
+
+    @property
+    def model_library(self) -> ModelLibraryService:
+        return self.system.model_library
+
+    @property
+    def drafts(self) -> SqliteSchemeDraftRepository:
+        return self.system.drafts
+
+    @property
+    def unit_of_work(self) -> SqliteWorkspaceUnitOfWork:
+        return self.system.unit_of_work
+
+    @property
+    def schemes(self) -> SchemeWorkspaceService:
+        return self.system.schemes
+
+    @property
+    def operator_registry(self) -> OperatorRegistry:
+        return self.system.operator_registry
+
+    @property
+    def source_provider_registry(self) -> RuntimeSourceProviderRegistry:
+        return self.system.source_provider_registry
+
+    @property
+    def source_catalog(self) -> SourceCatalog:
+        return self.system.source_catalog
+
+    @property
+    def starter_scheme_id(self) -> str:
+        return self.system.starter_scheme_id
+
+    @property
+    def current_starter_scheme_id(self) -> str:
+        return self.system.current_starter_scheme_id
+
+    @property
+    def seed_result(self) -> StarterSeedResult:
+        return self.system.seed_result
+
+    @property
+    def current_seed_result(self) -> CurrentStarterSeedResult:
+        return self.system.current_seed_result
 
     def close(self) -> None:
         if self._closed:
@@ -353,90 +286,14 @@ class ProjectApplication:
         self.close()
 
 
-def _seed_profile(
-    database: ProjectDatabase,
-    components: SqliteComponentLibraryRepository,
-    profile: LoadedModelProfile,
-    *,
-    recorded_at: datetime,
-) -> StarterSeedResult:
-    inserted = 0
-    applied = False
-    with database.transaction() as connection:
-        marker = connection.execute(
-            "SELECT seed_hash FROM project_seed_markers WHERE seed_id = ?",
-            (HOVER_STARTER_SEED_ID,),
-        ).fetchone()
-        if marker is not None:
-            if marker["seed_hash"] != profile.manifest_hash:
-                raise StarterSeedError("Hover starter seed marker hash does not match the package")
-        else:
-            for item in profile.library_items:
-                kind = component_kind(item)
-                record_id = component_record_id(item)
-                exists = connection.execute(
-                    "SELECT 1 FROM library_records WHERE kind = ? AND record_id = ?",
-                    (kind.value, record_id),
-                ).fetchone()
-                if exists is None:
-                    components.add_in_transaction(
-                        connection,
-                        item,
-                        recorded_at=recorded_at,
-                    )
-                    inserted += 1
-                elif components.get_exact(kind, record_id) != item:
-                    raise StarterSeedError(
-                        f"existing starter identity conflicts with {kind.value}:{record_id}"
-                    )
-            connection.execute(
-                """
-                INSERT INTO project_seed_markers(seed_id, seed_hash, applied_at)
-                VALUES (?, ?, ?)
-                """,
-                (
-                    HOVER_STARTER_SEED_ID,
-                    profile.manifest_hash,
-                    _utc_text(recorded_at),
-                ),
-            )
-            applied = True
-
-    for item in profile.library_items:
-        kind = component_kind(item)
-        record_id = component_record_id(item)
-        if components.get_exact(kind, record_id) != item:
-            raise StarterSeedError(
-                f"persisted starter record does not match {kind.value}:{record_id}"
-            )
-    return StarterSeedResult(
-        seed_id=HOVER_STARTER_SEED_ID,
-        manifest_hash=profile.manifest_hash,
-        applied=applied,
-        inserted_records=inserted,
-        total_records=len(profile.library_items),
-    )
-
-
-def _source_catalog_from_repository(
-    components: SqliteComponentLibraryRepository,
-) -> SourceCatalog:
-    records = components.list_records(LibraryQuery(kind=ComponentKind.SOURCE_DESCRIPTOR))
-    descriptors = tuple(
-        record.item for record in records if isinstance(record.item, SourceDescriptor)
-    )
-    if len(descriptors) != len(records):
-        raise RuntimeCompositionError("source-descriptor query returned another component kind")
-    return SourceCatalog(descriptors)
-
-
 __all__ = [
-    "HOVER_STARTER_SEED_ID",
     "CURRENT_HOVER_STARTER_SEED_ID",
+    "HOVER_STARTER_SEED_ID",
     "CurrentStarterSeedResult",
     "ProjectApplication",
     "RuntimeCompositionError",
     "StarterSeedError",
     "StarterSeedResult",
+    "SystemApplication",
     "UuidComponentIdFactory",
 ]

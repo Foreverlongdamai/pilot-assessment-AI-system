@@ -34,7 +34,7 @@ public sealed partial class BnStateEditItem : ObservableObject
 
 public sealed record BnNodeOptionItem(string NodeId, ModelNodeKind NodeKind, string DisplayName)
 {
-    public string Label => $"{DisplayName} · {NodeId}";
+    public string Label => DisplayName;
 }
 
 public sealed record CptColumnHeaderItem(int ColumnIndex, string StateId);
@@ -794,8 +794,8 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
         Replace(Children, graph.Edges
             .Where(edge => edge.EdgeKind is ModelGraphEdgeKind.Probabilistic && edge.Parent.NodeId == _canonicalNode.NodeId)
             .Select(edge => byId.TryGetValue(edge.Child.NodeId, out var child)
-                ? $"{DisplayName(child)} · {child.NodeId}"
-                : edge.Child.NodeId));
+                ? DisplayName(child)
+                : ModelDisplayNameResolver.HumanizeIdentifier(edge.Child.NodeId, "Pilot Skill")));
         SelectedParent = Parents.FirstOrDefault();
         SelectedParentCandidate = ParentCandidates.FirstOrDefault();
     }
@@ -856,15 +856,14 @@ public sealed partial class BnNodeEditorViewModel : ObservableObject
     }
 
     private BnNodeOptionItem Option(ModelNode? node, ModelNodeRef reference) =>
-        new(reference.NodeId, reference.NodeKind, node is null ? reference.NodeId : DisplayName(node));
+        new(
+            reference.NodeId,
+            reference.NodeKind,
+            node is null
+                ? ModelDisplayNameResolver.HumanizeIdentifier(reference.NodeId, "Pilot Skill")
+                : DisplayName(node));
 
-    private string DisplayName(ModelNode node) => BilingualTextSelector.SelectShortOrFull(
-        _localization?.CurrentLanguage,
-        node.ShortNameZh,
-        node.ShortNameEn,
-        node.NameZh,
-        node.NameEn,
-        node.NodeId);
+    private static string DisplayName(ModelNode node) => ModelDisplayNameResolver.ForNode(node);
 
     private void RefreshUsageAndHistory()
     {

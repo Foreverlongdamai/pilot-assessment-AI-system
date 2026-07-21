@@ -51,7 +51,7 @@ def _workspace(
     database = ProjectDatabase.connect(path, clock=lambda: NOW)
     service = CurrentModelWorkspaceService(
         SqliteModelWorkspaceRepository(database),
-        project_id="project.test",
+        model_library_id="model-library.test",
         operator_registry=operator_registry(),
         source_catalog=_catalog(nodes),
         clock=lambda: NOW,
@@ -92,7 +92,7 @@ def test_scheme_create_copy_and_graph_snapshot_share_nodes_without_publish_state
         assert created.semantic_revision == 0
         assert len(created.graph.nodes) == 7
         assert len(created.graph.edges) == 6
-        assert created.graph.project_id == "project.test"
+        assert created.graph.model_library_id == "model-library.test"
         assert not hasattr(created.scheme, "published")
         assert not hasattr(created.scheme, "draft")
 
@@ -240,7 +240,7 @@ def test_scheme_archive_history_undo_and_redo_are_durable(tmp_path: Path) -> Non
     try:
         durable = CurrentModelWorkspaceService(
             SqliteModelWorkspaceRepository(reopened),
-            project_id="project.test",
+            model_library_id="model-library.test",
             operator_registry=operator_registry(),
             source_catalog=_catalog(seven_node_graph()[0]),
             clock=lambda: NOW,

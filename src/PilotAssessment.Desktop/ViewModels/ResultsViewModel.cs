@@ -300,7 +300,7 @@ public partial class ResultsViewModel : ObservableObject
 
         BuildProvenance(selection.Run, result, loadedArtifacts);
         ResultSummaryText =
-            $"{result.ResultId} · {EvidenceRows.Count} Evidence · {PosteriorRows.Count} posterior variables · {Artifacts.Count} artifacts";
+            $"{EvidenceRows.Count} Evidence · {PosteriorRows.Count} posterior variables · {Artifacts.Count} artifacts";
         ScientificStatusText = LocalizeScientificStatus(result.ScientificStatus);
         CoverageText = result.CoverageRefs.Length == 0
             ? L("Results_NoCoverageArtifacts", "No separate coverage artifact was emitted for this run.")
@@ -332,11 +332,7 @@ public partial class ResultsViewModel : ObservableObject
     private Dictionary<string, string> BuildNodeNames(AssessmentRunV2 run) =>
         run.Snapshot.ActiveNodes.ToDictionary(
             node => node.NodeId,
-            node => BilingualTextSelector.Select(
-                _localization?.CurrentLanguage ?? "en-US",
-                node.NameZh,
-                node.NameEn,
-                node.NodeId),
+            node => ModelDisplayNameResolver.ForNode(node, preferShort: false),
             StringComparer.Ordinal);
 
     private void BuildProvenance(
@@ -403,16 +399,12 @@ public partial class ResultsViewModel : ObservableObject
 
     private ResultRunItemViewModel BuildRunItem(AssessmentRunV2 run, string resultId)
     {
-        var schemeName = BilingualTextSelector.Select(
-            _localization?.CurrentLanguage ?? "en-US",
-            run.Snapshot.Scheme.NameZh,
-            run.Snapshot.Scheme.NameEn,
-            run.Snapshot.Scheme.SchemeId);
+        var schemeName = ModelDisplayNameResolver.ForScheme(run.Snapshot.Scheme);
         return new ResultRunItemViewModel(
             run,
             resultId,
-            $"{schemeName} · {resultId}",
-            $"{run.FinishedAt?.ToLocalTime():g} · snapshot {run.Snapshot.SnapshotHash}");
+            schemeName,
+            $"{run.FinishedAt?.ToLocalTime():g} · {run.Snapshot.ActiveNodes.Length} nodes");
     }
 
     private void ClearResult()
@@ -565,7 +557,9 @@ public partial class ResultsViewModel : ObservableObject
     private static string ResolveName(
         string nodeId,
         IReadOnlyDictionary<string, string> nodeNames) =>
-        nodeNames.TryGetValue(nodeId, out var name) ? name : nodeId;
+        nodeNames.TryGetValue(nodeId, out var name)
+            ? name
+            : ModelDisplayNameResolver.HumanizeIdentifier(nodeId, "Model Result");
 
     private sealed record ArtifactDescriptor(string Role, ArtifactIdRef Reference);
 

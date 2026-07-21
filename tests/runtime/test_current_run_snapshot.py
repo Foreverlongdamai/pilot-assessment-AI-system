@@ -7,6 +7,7 @@ from pathlib import Path
 from pilot_assessment.contracts.model_workspace import EvidenceNodeDefinition
 from pilot_assessment.contracts.run import AssessmentRunV2, RunPurpose, RunState
 from pilot_assessment.runtime import ProjectApplication
+from tests.runtime.system_support import open_test_system
 
 NOW = datetime(2026, 7, 17, 16, 30, tzinfo=UTC)
 
@@ -18,8 +19,10 @@ def test_current_run_freezes_nodes_executes_and_survives_later_shared_node_edit(
     external = tmp_path / "external"
     shutil.copytree(m4_workflow_bundle, external)
     project_root = tmp_path / "project"
+    system = open_test_system(tmp_path / "system", clock=lambda: NOW)
     application = ProjectApplication.create(
         project_root,
+        system=system,
         project_id="project.current-run",
         name="Current run",
         created_at=NOW,
@@ -128,11 +131,13 @@ def test_current_run_freezes_nodes_executes_and_survives_later_shared_node_edit(
             )
             == completed
         )
-        assert application.project.database.fetchone("SELECT COUNT(*) FROM model_run_links")[0] == 2
+        assert (
+            application.project.database.fetchone("SELECT COUNT(*) FROM model_run_links_v2")[0] == 2
+        )
     finally:
         application.close()
 
-    reopened = ProjectApplication.open(project_root, clock=lambda: NOW)
+    reopened = ProjectApplication.open(project_root, system=system, clock=lambda: NOW)
     try:
         replay = reopened.runs.get("run.current.first")
         assert isinstance(replay, AssessmentRunV2)
@@ -142,3 +147,4 @@ def test_current_run_freezes_nodes_executes_and_survives_later_shared_node_edit(
         assert reopened.results.get_by_run(replay.run_id).snapshot_hash == first_snapshot_hash
     finally:
         reopened.close()
+        system.close()

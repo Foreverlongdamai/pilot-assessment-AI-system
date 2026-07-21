@@ -104,16 +104,23 @@
 | Posterior inference | Evidence 被观察后，由完整 BN joint distribution 计算 `P(Sub-skill/Competency | observations)`；信息可逆于部分 canonical arrows 传播。 |
 | Virtual evidence | M5 用显式、版本化 soft scorer 或 dependence-strength mixing 表达的 likelihood observation；不得因所谓原始数据质量向均匀分布收缩。 |
 | Model bundle | 历史/导入导出格式：一个可重放模型及 dependency closure。M7 最终可移植格式应保存完整 ModelNodes、TaskSchemes 与兼容 identities，不等于应用安装包。 |
-| Autosaved draft | M4R/M5 legacy UI 术语。M7 已取消 Draft/Published 双态，直接 autosave current node/scheme。 |
+| Model edit session | D-056 的项目级技术事务工作区：一次应用会话内的节点、边、CPT、任务方案和布局修改先持久写入独立 SQLite；它不是可切换、可发布的业务版本。 |
+| Staged change / 暂存修改 | 已由 Python backend 接收、校验并持久保存在 model edit session 中，但尚未通过“保存全部”写入 canonical workspace 的修改。 |
+| Save all / 保存全部 | 主窗口关闭时把 edit session 相对基线的最终差异在一个 canonical transaction 中提交；同一对象的多次会话内修改折叠为一次最终 revision 变化。 |
+| Discard all / 放弃全部 | 丢弃当前 edit session，使 canonical workspace 保持不变；不同于删除节点或回滚历史 RunSnapshot。 |
+| Five-layer canvas | D-057 的理解型投影：`Raw Input Family -> Extracted Data -> Evidence -> Sub-skill -> Competency`；它不改变底层三类 canonical 节点、两类 edge 或 BN 生成方向。 |
+| Semantic display name | D-058 的普通界面英文名称：优先读取 canonical English name；缺失时从 typed source、EvidenceRecipe anchor、BN reporting metadata/role 或 task binding 确定性推导。不得使用随机 ID/hash 或“未命名”占位符。 |
+| Technical identity | `node_id`、`scheme_id`、run/result/artifact ID、revision 与 hash 等精确身份；继续用于持久化、协议、复现和诊断，但普通工作界面不把它当作对象名称。 |
+| Autosaved draft | M4R/M5 legacy UI 术语。M7 没有 Draft/Published 业务双态；D-056 的 model edit session 只是一项关闭时统一保存/放弃的技术事务。 |
 | Draft | 历史 UI 术语；不得用于 M7 正常任务侧栏。 |
 | Applied revision | M4R/M5 历史术语；M7 不要求 apply，历史不可变运行由 RunSnapshot 保证。 |
 | Scheme draft | M5/M6 历史术语；M7 使用 current TaskScheme。 |
 | Applied recipe revision | M4R 对单个 EvidenceRecipe 保存的不可变 snapshot、content hash、parent/diff、作者、时间与可选 note；M5 将它保留为 EvidenceVersion migration lineage，不把它冒充 `AssessmentSchemeVersion`。 |
 | Published revision | 旧文档/UI 术语；M7 正常 UI 不显示、不要求，也不得附加人工审批、golden 或 per-edit test 语义。 |
 | Technical validation | 只检查 schema、引用、DAG、operator/type/unit/parameter、formula/scorer 与 BN CPT 是否可执行；不判断算法、Anchor mapping 或 CPT 是否科学合理。 |
-| semantic_revision | Current ModelNode/TaskScheme 每次原子语义修改后递增的乐观并发 revision；不是任务可选版本。 |
+| semantic_revision | Edit session 内每次原子草稿操作可递增其工作 revision；Save all 时同一 canonical ModelNode/TaskScheme 的最终语义差异只递增一次正式 revision。它不是任务可选版本。 |
 | layout_revision | 节点位置、缩放、分组等显示布局的乐观 revision；变化不改变 computation hash。 |
-| technical_status | Current node/scheme 的 `complete`、`configuration_incomplete` 或 stable technical error 状态；任何状态都可 autosave，只有技术可执行状态可 run。 |
+| technical_status | Current node/scheme 的 `complete`、`configuration_incomplete` 或 stable technical error 状态；任何状态都可暂存并保存，只有 clean canonical workspace 中技术可执行的方案可 run。 |
 | revision_lifecycle | M4R/M5 legacy immutable record 的生命周期；M7 current node 通常使用 active/archived，历史 run 由 RunSnapshot 保持。 |
 | observation_mode | M5 的 hard、virtual 或 omitted 绑定方式，表示某条 AnchorResult 如何进入 BN；M4 不按技术诊断把 computed evidence 改为 omitted。 |
 | ready / ready_partial / blocked (M4) | `ready` 表示所有适用 anchor 均 computed；`ready_partial` 表示 inventory 完整但有 missing/config/dependency/error；`blocked` 只表示有效 request 之后的 plan/registry/DAG/global inventory/atomic commit 失败。pre-request rejection 不生成 M4 disposition/report。 |
@@ -122,6 +129,9 @@
 | revision_id | M4R/legacy 中标识不可变 recipe/model revision 的稳定 ID；M5 新合同分别使用 component version ID 与 scheme version ID。 |
 | Sidecar | 由 Windows 前端启动和管理的本地 Python 后端进程。 |
 | JSON-RPC / JSONL | 每行一个 JSON-RPC 2.0 消息的 stdio 进程协议。 |
+| Simulator raw session source | 模拟器直接导出的只读目录，最小只需 `streams/` 与 `annotations/`；它不是 canonical Bundle，导入时由系统在受管 staging 中物化。 |
+| Canonical Session Bundle | 含 manifest、七类 modality descriptors、annotation/reference、checksum 与时间合同的项目内部／标准交换单元。raw source 导入后和原生标准 Bundle 都收敛到这一合同。 |
+| Undeclared unit pass-through | D-061 的单位处理：source/profile 未声明单位时保持 null/空 object，不询问、不猜测、不换算，原始数值按固定 adapter/Evidence 方法运行，并记录 `unit_handling=undeclared-pass-through-v1`。 |
 | TPX | O8 使用的 task performance composite。M4R `starter.o8` 从 O1/O5 score 组合的 recipe 只作 legacy migration/replay；M5 active starter 使用同一 concept 下从 raw/session/task sources 计算的并行 compliant version。两者不要求 provisional 数值等价。 |
 | Engineering verified / Software verified | 某个明确里程碑的软件按其设计合同执行，并通过该里程碑规定的 fresh tests、static/schema/build/package gates；它是里程碑范围内的工程结论，不表示完整产品、后续里程碑或科学有效性已经完成。 |
 | formal_run_authorized | 是否允许创建 `purpose=assessment` 的显式状态。M1–M5 的 ingestion、alignment、Evidence、scheme preview 和 inference 工程通过都不能自动把它设为 true；M6 preflight 只有在 technical disposition ready、输入非 synthetic 且 exact reporting policy 显式声明授权时才设为 true。当前 starter/synthetic 流程仍为 false，`purpose=software_test` 可在 ready 且 false 时运行。 |

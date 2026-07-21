@@ -12,10 +12,10 @@ namespace PilotAssessment.Desktop.ViewModels;
 public sealed partial class ModelStudioViewModel : ObservableObject
 {
     public const string AllGroups = "All groups";
-    public const string AllTags = "All tags";
 
     private readonly ModelGraphCommandCoordinator _commands;
     private readonly TaskSchemeListViewModel _schemes;
+    private readonly IModelEditSessionGateway _editSession;
     private readonly ApplicationShellState _shellState;
     private readonly ILocalizationLookup _localization;
     private readonly HashSet<string> _selectedNodeIds = new(StringComparer.Ordinal);
@@ -25,14 +25,15 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     private ModelGraphSnapshot? _snapshot;
     private CancellationTokenSource? _layoutDebounce;
     private string _allGroupsLabel = AllGroups;
-    private string _allTagsLabel = AllTags;
     private string _viewActiveOnlyLabel = "Active only";
     private string _viewActiveInactiveLabel = "Active + inactive";
     private string _viewAllLabel = "All global nodes";
-    private string _kindAllLabel = "All node kinds";
-    private string _kindRawLabel = "Raw Input";
-    private string _kindEvidenceLabel = "Evidence";
-    private string _kindBnLabel = "BN";
+    private string _layerAllLabel = "All layers";
+    private string _layerRawFamilyLabel = "Raw Input Family";
+    private string _layerExtractedDataLabel = "Extracted Data";
+    private string _layerEvidenceLabel = "Evidence";
+    private string _layerSubSkillLabel = "Sub-skill";
+    private string _layerCompetencyLabel = "Competency";
     private string _activationAllLabel = "All activation states";
     private string _activationActiveLabel = "Active";
     private string _activationInactiveLabel = "Inactive";
@@ -44,16 +45,13 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     public partial string SelectedViewMode { get; set; } = "Active + inactive";
 
     [ObservableProperty]
-    public partial string SelectedKind { get; set; } = "All node kinds";
+    public partial string SelectedLayer { get; set; } = "All layers";
 
     [ObservableProperty]
     public partial string SelectedActivation { get; set; } = "All activation states";
 
     [ObservableProperty]
     public partial string SelectedGroup { get; set; } = AllGroups;
-
-    [ObservableProperty]
-    public partial string SelectedTag { get; set; } = AllTags;
 
     [ObservableProperty]
     public partial bool IsMultiSelect { get; set; }
@@ -86,20 +84,20 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     public ModelStudioViewModel(
         ModelGraphCommandCoordinator commands,
         TaskSchemeListViewModel schemes,
+        IModelEditSessionGateway editSession,
         ApplicationShellState shellState,
         ILocalizationLookup localization)
     {
         _commands = commands;
         _schemes = schemes;
+        _editSession = editSession;
         _shellState = shellState;
         _localization = localization;
         RefreshLocalizedOptions();
         AvailableGroups.Add(_allGroupsLabel);
-        AvailableTags.Add(_allTagsLabel);
         SelectedGroup = _allGroupsLabel;
-        SelectedTag = _allTagsLabel;
         SelectedViewMode = _viewActiveInactiveLabel;
-        SelectedKind = _kindAllLabel;
+        SelectedLayer = _layerAllLabel;
         SelectedActivation = _activationAllLabel;
         StatusMessage = L("Model_ChooseTaskScheme");
         SelectedNodeSummary = L("Model_NoNodeSelected");
@@ -111,13 +109,15 @@ public sealed partial class ModelStudioViewModel : ObservableObject
 
     public ObservableCollection<GraphEdgeProjection> Edges { get; } = [];
 
-    public ObservableCollection<string> AvailableGroups { get; } = [];
+    public ObservableCollection<GraphRawInputFamilyProjection> RawInputFamilies { get; } = [];
 
-    public ObservableCollection<string> AvailableTags { get; } = [];
+    public ObservableCollection<GraphProvenanceEdgeProjection> ProvenanceEdges { get; } = [];
+
+    public ObservableCollection<string> AvailableGroups { get; } = [];
 
     public ObservableCollection<string> ViewModes { get; } = [];
 
-    public ObservableCollection<string> KindOptions { get; } = [];
+    public ObservableCollection<string> LayerOptions { get; } = [];
 
     public ObservableCollection<string> ActivationOptions { get; } = [];
 
@@ -130,8 +130,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         _selectedNodeIds.OrderBy(nodeId => nodeId, StringComparer.Ordinal).ToArray();
 
     public bool CanPaste =>
-        _shellState.Snapshot.ProjectId is { } projectId &&
-        _commands.CanPaste(projectId);
+        _commands.CanPaste(SystemModelContext.Key);
 
     public event EventHandler<ModelNodeOpenRequestedEventArgs>? NodeEditorRequested;
 
@@ -160,7 +159,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(schemeId);
         var generation = Interlocked.Increment(ref _loadGeneration);
-        var projectId = _shellState.Snapshot.ProjectId;
+        var projectId = SystemModelContext.Key;
         BeginBusy();
         ClearError();
         StatusMessage = F("Model_StatusLoading", schemeId);
@@ -168,8 +167,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         {
             var graph = await _commands.GetGraphAsync(schemeId, cancellationToken);
             if (generation != Volatile.Read(ref _loadGeneration) ||
-                _shellState.Snapshot.ProjectId != projectId ||
-                _schemes.SelectedScheme?.SchemeId != schemeId)
+                !IsCurrentContext(projectId, schemeId))
             {
                 return;
             }
@@ -491,18 +489,12 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         ArgumentNullException.ThrowIfNull(nodeIds);
         var names = RequireSnapshot().Nodes.ToDictionary(
             node => node.NodeId,
-            node => BilingualTextSelector.SelectShortOrFull(
-                _localization.CurrentLanguage,
-                node.ShortNameZh,
-                node.ShortNameEn,
-                node.NameZh,
-                node.NameEn,
-                node.NodeId),
+            node => ModelDisplayNameResolver.ForNode(node),
             StringComparer.Ordinal);
         return nodeIds
             .Select(nodeId => names.TryGetValue(nodeId, out var name)
-                ? $"{name} ({nodeId})"
-                : nodeId)
+                ? name
+                : ModelDisplayNameResolver.HumanizeIdentifier(nodeId, "Model Item"))
             .ToArray();
     }
 
@@ -563,8 +555,8 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         ArgumentNullException.ThrowIfNull(node);
         _pendingLayouts[node.NodeId] = new NodeLayout(
             node.NodeId,
-            Math.Max(GraphProjection.NodeDiameter / 2, x),
-            Math.Max(GraphProjection.NodeDiameter / 2, y));
+            Math.Max(GraphProjection.NodeDiameter / 2, x - node.LayoutOffsetX),
+            Math.Max(GraphProjection.NodeDiameter / 2, y - node.LayoutOffsetY));
         Reproject();
         var previous = Interlocked.Exchange(ref _layoutDebounce, new CancellationTokenSource());
         previous?.Cancel();
@@ -624,6 +616,49 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                 SetError(error, L("Model_StatusLayoutConflict"));
             }
 
+            return false;
+        }
+        finally
+        {
+            EndBusy();
+        }
+    }
+
+    public Task<bool> UndoEditAsync(CancellationToken cancellationToken = default) =>
+        MoveEditHistoryAsync(redo: false, cancellationToken);
+
+    public Task<bool> RedoEditAsync(CancellationToken cancellationToken = default) =>
+        MoveEditHistoryAsync(redo: true, cancellationToken);
+
+    private async Task<bool> MoveEditHistoryAsync(
+        bool redo,
+        CancellationToken cancellationToken)
+    {
+        var projectId = RequireProjectId();
+        BeginBusy();
+        ClearError();
+        StatusMessage = L(redo ? "Model_StatusRedoing" : "Model_StatusUndoing");
+        try
+        {
+            _ = redo
+                ? await _editSession.RedoEditAsync("expert.desktop", cancellationToken)
+                : await _editSession.UndoEditAsync("expert.desktop", cancellationToken);
+            await _schemes.LoadAsync(projectId, cancellationToken);
+            if (_schemes.SelectedScheme is { } selected)
+            {
+                await LoadGraphAsync(selected.SchemeId, cancellationToken);
+            }
+
+            StatusMessage = L(redo ? "Model_StatusRedone" : "Model_StatusUndone");
+            return true;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception error)
+        {
+            SetError(error, L(redo ? "Model_StatusRedoFailed" : "Model_StatusUndoFailed"));
             return false;
         }
         finally
@@ -786,12 +821,10 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     private ModelGraphSnapshot RequireSnapshot() =>
         _snapshot ?? throw new InvalidOperationException("Load a task model graph first.");
 
-    private string RequireProjectId() =>
-        _shellState.Snapshot.ProjectId ??
-        throw new InvalidOperationException("Open a managed project first.");
+    private static string RequireProjectId() => SystemModelContext.Key;
 
     private bool IsCurrentContext(string projectId, string schemeId) =>
-        string.Equals(_shellState.Snapshot.ProjectId, projectId, StringComparison.Ordinal) &&
+        string.Equals(SystemModelContext.Key, projectId, StringComparison.Ordinal) &&
         string.Equals(_schemes.SelectedScheme?.SchemeId, schemeId, StringComparison.Ordinal);
 
     private void ApplyCanonicalGraph(
@@ -830,7 +863,11 @@ public sealed partial class ModelStudioViewModel : ObservableObject
 
         var nodes = result.Nodes
             .Select(node => _pendingLayouts.TryGetValue(node.NodeId, out var layout)
-                ? node with { X = layout.X, Y = layout.Y }
+                ? node with
+                {
+                    X = layout.X + node.LayoutOffsetX,
+                    Y = layout.Y + node.LayoutOffsetY,
+                }
                 : node)
             .ToArray();
         var byId = nodes.ToDictionary(node => node.NodeId, StringComparer.Ordinal);
@@ -841,14 +878,34 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                 Child = byId[edge.Child.NodeId],
             })
             .ToArray();
+        var provenanceEdges = result.ProvenanceEdges
+            .Select(edge => edge with { Child = byId[edge.Child.NodeId] })
+            .ToArray();
         var radius = GraphProjection.NodeDiameter / 2;
+        var familyRadius = GraphProjection.RawInputFamilyDiameter / 2;
+        var familyMaxX = result.RawInputFamilies.Count == 0
+            ? 0
+            : result.RawInputFamilies.Max(node => node.X) + familyRadius;
+        var familyMaxY = result.RawInputFamilies.Count == 0
+            ? 0
+            : result.RawInputFamilies.Max(node => node.Y) + familyRadius;
         var width = Math.Max(
             GraphProjection.MinimumExtentWidth,
-            nodes.Max(node => node.X) + radius + GraphProjection.CanvasPadding);
+            Math.Max(
+                nodes.Max(node => node.X) + radius,
+                familyMaxX) + GraphProjection.CanvasPadding);
         var height = Math.Max(
             GraphProjection.MinimumExtentHeight,
-            nodes.Max(node => node.Y) + radius + GraphProjection.CanvasPadding);
-        return new GraphProjectionResult(nodes, edges, width, height);
+            Math.Max(
+                nodes.Max(node => node.Y) + radius,
+                familyMaxY) + GraphProjection.CanvasPadding);
+        return new GraphProjectionResult(
+            nodes,
+            edges,
+            result.RawInputFamilies,
+            provenanceEdges,
+            width,
+            height);
     }
 
     private void BeginBusy()
@@ -874,13 +931,11 @@ public sealed partial class ModelStudioViewModel : ObservableObject
 
     partial void OnSelectedViewModeChanged(string value) => Reproject();
 
-    partial void OnSelectedKindChanged(string value) => Reproject();
+    partial void OnSelectedLayerChanged(string value) => Reproject();
 
     partial void OnSelectedActivationChanged(string value) => Reproject();
 
     partial void OnSelectedGroupChanged(string value) => Reproject();
-
-    partial void OnSelectedTagChanged(string value) => Reproject();
 
     partial void OnIsMultiSelectChanged(bool value)
     {
@@ -916,10 +971,9 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     private void OnLanguageChanged(object? sender, EventArgs args)
     {
         var viewMode = ParseViewMode(SelectedViewMode);
-        var nodeKind = ParseKind(SelectedKind);
+        var layer = ParseLayer(SelectedLayer);
         var activation = ParseActivation(SelectedActivation);
         var groupWasAll = SelectedGroup == _allGroupsLabel;
-        var tagWasAll = SelectedTag == _allTagsLabel;
 
         RefreshLocalizedOptions();
         SelectedViewMode = viewMode switch
@@ -928,12 +982,14 @@ public sealed partial class ModelStudioViewModel : ObservableObject
             GraphViewMode.AllGlobalNodes => _viewAllLabel,
             _ => _viewActiveInactiveLabel,
         };
-        SelectedKind = nodeKind switch
+        SelectedLayer = layer switch
         {
-            ModelNodeKind.RawInput => _kindRawLabel,
-            ModelNodeKind.Evidence => _kindEvidenceLabel,
-            ModelNodeKind.Bn => _kindBnLabel,
-            _ => _kindAllLabel,
+            GraphDisplayLayer.RawInputFamily => _layerRawFamilyLabel,
+            GraphDisplayLayer.ExtractedData => _layerExtractedDataLabel,
+            GraphDisplayLayer.Evidence => _layerEvidenceLabel,
+            GraphDisplayLayer.SubSkill => _layerSubSkillLabel,
+            GraphDisplayLayer.Competency => _layerCompetencyLabel,
+            _ => _layerAllLabel,
         };
         SelectedActivation = activation switch
         {
@@ -942,7 +998,6 @@ public sealed partial class ModelStudioViewModel : ObservableObject
             _ => _activationAllLabel,
         };
         SelectedGroup = groupWasAll ? _allGroupsLabel : SelectedGroup;
-        SelectedTag = tagWasAll ? _allTagsLabel : SelectedTag;
         if (_snapshot is not null)
         {
             RefreshFilterOptions(_snapshot);
@@ -966,20 +1021,30 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     private void RefreshLocalizedOptions()
     {
         _allGroupsLabel = _localization["Task_AllGroups"];
-        _allTagsLabel = _localization["Task_AllTags"];
         _viewActiveOnlyLabel = _localization["Model_ViewActiveOnly"];
         _viewActiveInactiveLabel = _localization["Model_ViewActiveInactive"];
         _viewAllLabel = _localization["Model_ViewAll"];
-        _kindAllLabel = _localization["Model_KindAll"];
-        _kindRawLabel = _localization["Model_KindRaw"];
-        _kindEvidenceLabel = _localization["Model_KindEvidence"];
-        _kindBnLabel = _localization["Model_KindBn"];
+        _layerAllLabel = _localization["Model_LayerAll"];
+        _layerRawFamilyLabel = _localization["Model_LayerRawFamily"];
+        _layerExtractedDataLabel = _localization["Model_LayerExtractedData"];
+        _layerEvidenceLabel = _localization["Model_LayerEvidence"];
+        _layerSubSkillLabel = _localization["Model_LayerSubSkill"];
+        _layerCompetencyLabel = _localization["Model_LayerCompetency"];
         _activationAllLabel = _localization["Model_ActivationAll"];
         _activationActiveLabel = _localization["Common_Active"];
         _activationInactiveLabel = _localization["Common_Inactive"];
 
         Replace(ViewModes, [_viewActiveOnlyLabel, _viewActiveInactiveLabel, _viewAllLabel]);
-        Replace(KindOptions, [_kindAllLabel, _kindRawLabel, _kindEvidenceLabel, _kindBnLabel]);
+        Replace(
+            LayerOptions,
+            [
+                _layerAllLabel,
+                _layerRawFamilyLabel,
+                _layerExtractedDataLabel,
+                _layerEvidenceLabel,
+                _layerSubSkillLabel,
+                _layerCompetencyLabel,
+            ]);
         Replace(ActivationOptions, [_activationAllLabel, _activationActiveLabel, _activationInactiveLabel]);
     }
 
@@ -998,6 +1063,15 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         _localization["Node_OutputSuffix"],
         _localization["Node_A11y"]);
 
+    private GraphRawInputFamilyLabels CreateRawInputFamilyLabels() => new(
+        new(_localization["RawFamily_X_Name"], _localization["RawFamily_X_Description"]),
+        new(_localization["RawFamily_U_Name"], _localization["RawFamily_U_Description"]),
+        new(_localization["RawFamily_I_Name"], _localization["RawFamily_I_Description"]),
+        new(_localization["RawFamily_G_Name"], _localization["RawFamily_G_Description"]),
+        new(_localization["RawFamily_P_Name"], _localization["RawFamily_P_Description"]),
+        _localization["RawFamily_Kind"],
+        _localization["RawFamily_A11y"]);
+
     private void Reproject()
     {
         if (_snapshot is null)
@@ -1011,15 +1085,17 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                 new GraphProjectionOptions(
                     ParseViewMode(SelectedViewMode),
                     SearchText,
-                    ParseKind(SelectedKind),
+                    ParseLayer(SelectedLayer),
                     SelectedGroup == _allGroupsLabel ? null : SelectedGroup,
-                    SelectedTag == _allTagsLabel ? null : SelectedTag,
                     ParseActivation(SelectedActivation),
                     _selectedNodeIds,
                     _localization.CurrentLanguage,
-                    CreateGraphLabels())));
+                    CreateGraphLabels(),
+                    CreateRawInputFamilyLabels())));
         Replace(Nodes, result.Nodes);
         Replace(Edges, result.Edges);
+        Replace(RawInputFamilies, result.RawInputFamilies);
+        Replace(ProvenanceEdges, result.ProvenanceEdges);
         ExtentWidth = result.ExtentWidth;
         ExtentHeight = result.ExtentHeight;
         ProjectionVersion++;
@@ -1028,17 +1104,11 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     private void RefreshFilterOptions(ModelGraphSnapshot graph)
     {
         var selectedGroup = SelectedGroup;
-        var selectedTag = SelectedTag;
         ReplaceOptions(
             AvailableGroups,
             _allGroupsLabel,
             graph.Nodes.Select(node => node.Group).OfType<string>());
-        ReplaceOptions(
-            AvailableTags,
-            _allTagsLabel,
-            graph.Nodes.SelectMany(node => node.Tags));
         SelectedGroup = AvailableGroups.Contains(selectedGroup) ? selectedGroup : _allGroupsLabel;
-        SelectedTag = AvailableTags.Contains(selectedTag) ? selectedTag : _allTagsLabel;
     }
 
     private void ClearGraph(string status)
@@ -1050,6 +1120,8 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         debounce?.Dispose();
         Nodes.Clear();
         Edges.Clear();
+        RawInputFamilies.Clear();
+        ProvenanceEdges.Clear();
         _selectedNodeIds.Clear();
         ExtentWidth = GraphProjection.MinimumExtentWidth;
         ExtentHeight = GraphProjection.MinimumExtentHeight;
@@ -1075,7 +1147,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
             var nodeId = _selectedNodeIds.Single();
             var node = _snapshot.Nodes.First(item => item.NodeId == nodeId);
             SelectedNodeSummary =
-                $"{BilingualTextSelector.SelectShortOrFull(_localization.CurrentLanguage, node.ShortNameZh, node.ShortNameEn, node.NameZh, node.NameEn, node.NodeId)} " +
+                $"{ModelDisplayNameResolver.ForNode(node)} " +
                 $"• {DisplayNodeKind(node.NodeKind)} • {DisplayTechnicalStatus(node.TechnicalStatus)}";
             return;
         }
@@ -1087,10 +1159,7 @@ public sealed partial class ModelStudioViewModel : ObservableObject
     {
         AvailableGroups.Clear();
         AvailableGroups.Add(_allGroupsLabel);
-        AvailableTags.Clear();
-        AvailableTags.Add(_allTagsLabel);
         SelectedGroup = _allGroupsLabel;
-        SelectedTag = _allTagsLabel;
     }
 
     private void ClearError()
@@ -1125,11 +1194,13 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         _ => GraphViewMode.ActiveAndInactive,
     };
 
-    private ModelNodeKind? ParseKind(string value) => value switch
+    private GraphDisplayLayer? ParseLayer(string value) => value switch
     {
-        var item when item == _kindRawLabel => ModelNodeKind.RawInput,
-        var item when item == _kindEvidenceLabel => ModelNodeKind.Evidence,
-        var item when item == _kindBnLabel => ModelNodeKind.Bn,
+        var item when item == _layerRawFamilyLabel => GraphDisplayLayer.RawInputFamily,
+        var item when item == _layerExtractedDataLabel => GraphDisplayLayer.ExtractedData,
+        var item when item == _layerEvidenceLabel => GraphDisplayLayer.Evidence,
+        var item when item == _layerSubSkillLabel => GraphDisplayLayer.SubSkill,
+        var item when item == _layerCompetencyLabel => GraphDisplayLayer.Competency,
         _ => null,
     };
 
@@ -1140,11 +1211,8 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         _ => null,
     };
 
-    private string DisplaySchemeName(TaskScheme scheme) => BilingualTextSelector.Select(
-        _localization.CurrentLanguage,
-        scheme.NameZh,
-        scheme.NameEn,
-        scheme.SchemeId);
+    private static string DisplaySchemeName(TaskScheme scheme) =>
+        ModelDisplayNameResolver.ForScheme(scheme);
 
     private static void Replace<T>(ObservableCollection<T> target, IEnumerable<T> values)
     {

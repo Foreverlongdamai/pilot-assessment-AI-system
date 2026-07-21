@@ -1,5 +1,37 @@
 namespace PilotAssessment.Desktop.Core.Contracts;
 
+public sealed record ModelEditSessionStatus(
+    string ContractId,
+    string ContractVersion,
+    string SessionId,
+    string ModelLibraryId,
+    string BaseFingerprint,
+    int Cursor,
+    int LatestSequence,
+    bool Dirty,
+    bool CanUndo,
+    bool CanRedo,
+    int ChangeCount,
+    bool Recovered);
+
+public sealed record ModelEditSessionStatusResponse(
+    ModelEditSessionStatus EditSession,
+    string TraceId);
+
+public sealed record ModelEditSessionMutationRequest(
+    string Actor,
+    string TransactionId);
+
+public sealed record ModelEditSessionMutationResponse(
+    ModelEditSessionStatus EditSession,
+    string TransactionId,
+    string AuditEventId,
+    bool Replayed,
+    string TraceId,
+    string[]? ChangedNodeIds = null,
+    string[]? ChangedSchemeIds = null,
+    int? DiscardedChangeCount = null);
+
 public sealed record TaskSchemeListResponse(
     IReadOnlyList<TaskScheme> Schemes,
     string TraceId);

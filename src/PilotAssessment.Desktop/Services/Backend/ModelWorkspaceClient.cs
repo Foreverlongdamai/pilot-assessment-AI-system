@@ -11,7 +11,8 @@ public sealed class ModelWorkspaceClient :
     IModelWorkspaceGateway,
     IModelGraphGateway,
     IModelNodeEditorGateway,
-    IBayesianNodeEditorGateway
+    IBayesianNodeEditorGateway,
+    IModelEditSessionGateway
 {
     private readonly BackendConnectionService _backend;
 
@@ -19,6 +20,36 @@ public sealed class ModelWorkspaceClient :
     {
         _backend = backend;
     }
+
+    public async Task<ModelEditSessionStatus> GetEditStatusAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var response = await InvokeAsync(
+            "model.edit.status",
+            PilotAssessmentJsonContext.Default.ModelEditSessionStatusResponse,
+            cancellationToken);
+        return response.EditSession;
+    }
+
+    public Task<ModelEditSessionMutationResponse> UndoEditAsync(
+        string actor,
+        CancellationToken cancellationToken = default) =>
+        MutateEditSessionAsync("model.edit.undo", "edit-undo", actor, cancellationToken);
+
+    public Task<ModelEditSessionMutationResponse> RedoEditAsync(
+        string actor,
+        CancellationToken cancellationToken = default) =>
+        MutateEditSessionAsync("model.edit.redo", "edit-redo", actor, cancellationToken);
+
+    public Task<ModelEditSessionMutationResponse> CommitEditAsync(
+        string actor,
+        CancellationToken cancellationToken = default) =>
+        MutateEditSessionAsync("model.edit.commit", "edit-commit", actor, cancellationToken);
+
+    public Task<ModelEditSessionMutationResponse> DiscardEditAsync(
+        string actor,
+        CancellationToken cancellationToken = default) =>
+        MutateEditSessionAsync("model.edit.discard", "edit-discard", actor, cancellationToken);
 
     public async Task<IReadOnlyList<TaskScheme>> ListSchemesAsync(
         CancellationToken cancellationToken = default)
@@ -540,6 +571,22 @@ public sealed class ModelWorkspaceClient :
 
     private JsonRpcClient Client => _backend.Client
         ?? throw new InvalidOperationException("The local assessment backend is not connected.");
+
+    private Task<ModelEditSessionMutationResponse> MutateEditSessionAsync(
+        string method,
+        string operation,
+        string actor,
+        CancellationToken cancellationToken)
+    {
+        var transactionId = NewTransactionId(operation);
+        return MutateAsync(
+            method,
+            transactionId,
+            new ModelEditSessionMutationRequest(actor, transactionId),
+            PilotAssessmentJsonContext.Default.ModelEditSessionMutationRequest,
+            PilotAssessmentJsonContext.Default.ModelEditSessionMutationResponse,
+            cancellationToken);
+    }
 
     private Task<TaskSchemeMutationResponse> MutateAsync<TRequest>(
         string method,

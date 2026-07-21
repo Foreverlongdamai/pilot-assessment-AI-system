@@ -1,7 +1,7 @@
 {
   "contract_id": "model-graph-snapshot",
-  "contract_version": "0.1.0",
-  "project_id": "project.alpha",
+  "contract_version": "0.2.0",
+  "model_library_id": "model-library.alpha",
   "scheme": {
     "contract_id": "task-scheme",
     "contract_version": "0.1.0",

@@ -249,8 +249,8 @@ public sealed class BnNodeEditorTests
             now);
         return new ModelGraphSnapshot(
             "model-graph-snapshot",
-            "0.1.0",
-            "project.test",
+            "0.2.0",
+            "model-library.test",
             scheme,
             nodes,
             edges ?? [],

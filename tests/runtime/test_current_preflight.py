@@ -6,6 +6,7 @@ from pathlib import Path
 
 from pilot_assessment.contracts.run import RunPurpose, TechnicalDisposition
 from pilot_assessment.runtime import ProjectApplication
+from tests.runtime.system_support import open_test_system
 
 NOW = datetime(2026, 7, 17, 16, 0, tzinfo=UTC)
 
@@ -16,8 +17,10 @@ def test_current_preflight_materializes_once_and_does_not_edit_current_objects(
 ) -> None:
     external = tmp_path / "external"
     shutil.copytree(m4_workflow_bundle, external)
+    system = open_test_system(tmp_path / "system", clock=lambda: NOW)
     application = ProjectApplication.create(
         tmp_path / "project",
+        system=system,
         project_id="project.current-preflight",
         name="Current preflight",
         created_at=NOW,
@@ -54,12 +57,12 @@ def test_current_preflight_materializes_once_and_does_not_edit_current_objects(
         assert application.current_preflight.get(report.preflight_id) == report
         assert (
             application.project.database.fetchone(
-                "SELECT COUNT(*) FROM model_execution_materializations"
+                "SELECT COUNT(*) FROM model_execution_materializations_v2"
             )[0]
             == 1
         )
         assert (
-            application.project.database.fetchone("SELECT COUNT(*) FROM model_run_preflights")[0]
+            application.project.database.fetchone("SELECT COUNT(*) FROM model_run_preflights_v2")[0]
             == 1
         )
 
@@ -72,7 +75,7 @@ def test_current_preflight_materializes_once_and_does_not_edit_current_objects(
         assert repeated == report
         assert (
             application.project.database.fetchone(
-                "SELECT COUNT(*) FROM model_execution_materializations"
+                "SELECT COUNT(*) FROM model_execution_materializations_v2"
             )[0]
             == 1
         )
@@ -95,7 +98,10 @@ def test_current_preflight_materializes_once_and_does_not_edit_current_objects(
         assert preview.purpose is RunPurpose.PREVIEW
         assert preview.scheme == scheme_before
         assert application.project.database.fetchone("SELECT COUNT(*) FROM runs")[0] == 0
-        assert application.project.database.fetchone("SELECT COUNT(*) FROM model_run_links")[0] == 0
+        assert (
+            application.project.database.fetchone("SELECT COUNT(*) FROM model_run_links_v2")[0] == 0
+        )
         assert application.current_model.get_scheme(scheme_before.scheme_id) == scheme_before
     finally:
         application.close()
+        system.close()

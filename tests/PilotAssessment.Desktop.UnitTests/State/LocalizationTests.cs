@@ -22,12 +22,12 @@ public sealed class LocalizationTests
     }
 
     [Theory]
-    [InlineData("zh-CN", "中文名", "English", "中文名")]
+    [InlineData("zh-CN", "中文名", "English", "English")]
     [InlineData("en-US", "中文名", "English", "English")]
-    [InlineData("zh-CN", null, "English", "English [EN fallback]")]
-    [InlineData("en-US", "中文名", null, "中文名 [中文回退]")]
-    [InlineData("en-US", null, null, "node.test [ID fallback]")]
-    public void BilingualSelectionUsesVisibleFallbackMarkers(
+    [InlineData("zh-CN", null, "English", "English")]
+    [InlineData("en-US", "中文名", null, "Test")]
+    [InlineData("en-US", null, null, "Test")]
+    public void LegacyBilingualSelectionUsesEnglishWithoutFallbackMarkers(
         string language,
         string? chinese,
         string? english,
@@ -78,7 +78,7 @@ public sealed class LocalizationTests
             node.NodeId);
 
         Assert.Equal("Precision", english);
-        Assert.Equal("精度", chinese);
+        Assert.Equal("Precision", chinese);
         Assert.Equal(identityBefore, Identity(node));
     }
 

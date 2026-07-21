@@ -45,6 +45,19 @@ public partial class SessionExplorerViewModel : ObservableObject
     public partial IngestionReadinessReport? InspectionReport { get; private set; }
 
     [ObservableProperty]
+    public partial SessionSourceInspectionResponse? SourceInspection { get; private set; }
+
+    [ObservableProperty]
+    public partial string SourceKindText { get; private set; } = "Not inspected";
+
+    [ObservableProperty]
+    public partial string SourceProfileText { get; private set; } = "Not available";
+
+    [ObservableProperty]
+    public partial string SourceMappingText { get; private set; } =
+        "Choose a session data folder to inspect its input mapping.";
+
+    [ObservableProperty]
     public partial bool IsBusy { get; private set; }
 
     [ObservableProperty]
@@ -84,7 +97,9 @@ public partial class SessionExplorerViewModel : ObservableObject
 
     public bool CanImport =>
         CanInspect &&
-        InspectionReport is { CanContinueToSynchronization: true } &&
+        SourceInspection is not null &&
+        (SourceInspection.Report is { CanContinueToSynchronization: true } ||
+         SourceInspection.Raw is { CanMaterialize: true }) &&
         string.Equals(_inspectedSourcePath, SourceBundlePath, StringComparison.OrdinalIgnoreCase);
 
     public SessionExplorerViewModel(
@@ -125,6 +140,12 @@ public partial class SessionExplorerViewModel : ObservableObject
         SourceBundlePath = string.Empty;
         _inspectedSourcePath = null;
         InspectionReport = null;
+        SourceInspection = null;
+        SourceKindText = L("Session_NotInspected", "Not inspected");
+        SourceProfileText = L("Session_NotAvailable", "Not available");
+        SourceMappingText = L(
+            "Session_SourceMappingEmpty",
+            "Choose a session data folder to inspect its input mapping.");
         ClearSelection();
         ClearError();
         InspectionSummary = L("Session_NotInspected", "Not inspected");
@@ -170,7 +191,7 @@ public partial class SessionExplorerViewModel : ObservableObject
     private async Task ChooseSessionBundleAsync()
     {
         var selected = await _folderPicker.PickFolderAsync(
-            L("Session_InspectBundle", "Inspect Session Bundle"));
+            L("Session_InspectSource", "Inspect Session Data"));
         if (string.IsNullOrWhiteSpace(selected))
         {
             SetStatus("Session_StatusSelectionCancelled", "Session selection cancelled; nothing changed.");
@@ -181,7 +202,13 @@ public partial class SessionExplorerViewModel : ObservableObject
         if (!string.Equals(_inspectedSourcePath, selected, StringComparison.OrdinalIgnoreCase))
         {
             InspectionReport = null;
+            SourceInspection = null;
             _inspectedSourcePath = null;
+            SourceKindText = L("Session_NotInspected", "Not inspected");
+            SourceProfileText = L("Session_NotAvailable", "Not available");
+            SourceMappingText = L(
+                "Session_SourceMappingEmpty",
+                "Choose a session data folder to inspect its input mapping.");
             InspectionSummary = L("Session_NotInspected", "Not inspected");
             InspectionIssues = L("Session_InspectBeforeImport", "Inspect this source before importing it.");
             ShowUnknownModalities("Session_SourceNotInspected", "Source not inspected");
@@ -193,12 +220,12 @@ public partial class SessionExplorerViewModel : ObservableObject
     private Task InspectSessionAsync() => RunBusyAsync(async () =>
     {
         var source = SourceBundlePath;
-        var report = await _gateway.InspectSessionAsync(source);
+        var inspected = await _gateway.InspectSessionSourceAsync(source);
         _inspectedSourcePath = source;
-        ApplyReport(report);
+        ApplySourceInspection(inspected);
         SetStatus(
             "Session_StatusInspectionReadOnly",
-            "Inspection is read-only. Import will copy this exact bundle into managed project storage.");
+            "Inspection is read-only. Import will create a canonical revision in managed project storage.");
     });
 
     [RelayCommand(CanExecute = nameof(CanImport))]
@@ -207,9 +234,15 @@ public partial class SessionExplorerViewModel : ObservableObject
         var projectId = ProjectId
             ?? throw new InvalidOperationException("A managed project must be open before import.");
         var source = SourceBundlePath;
-        var inspected = InspectionReport
-            ?? throw new InvalidOperationException("Inspect the Session Bundle before import.");
-        var imported = await _gateway.ImportSessionAsync(source, "expert.local");
+        var inspected = SourceInspection
+            ?? throw new InvalidOperationException("Inspect the Session data before import.");
+        var fingerprint = inspected.Report?.SourceSnapshotFingerprint
+            ?? inspected.Raw?.SourceSnapshotFingerprint
+            ?? throw new InvalidOperationException("The Session source inspection has no fingerprint.");
+        var imported = await _gateway.ImportSessionSourceAsync(
+            source,
+            fingerprint,
+            "expert.local");
         await LoadCoreAsync(
             projectId,
             imported.Session.SessionId,
@@ -222,13 +255,13 @@ public partial class SessionExplorerViewModel : ObservableObject
                 "The imported canonical session revision was not present after reconciliation.");
         }
 
-        _inspectedSourcePath = source;
-        ApplyReport(inspected);
+        _inspectedSourcePath = null;
+        SourceInspection = null;
         SetStatus(
             imported.Replayed ? "Session_StatusImportReplayed" : "Session_StatusImportComplete",
             imported.Replayed
                 ? "The existing managed revision was reconciled from the idempotent import receipt."
-                : "Import complete. The source remains external; the managed revision is an exact project copy.");
+                : "Import complete. The source remains unchanged; a canonical managed revision is ready.");
     });
 
     [RelayCommand(CanExecute = nameof(HasProject))]
@@ -359,6 +392,104 @@ public partial class SessionExplorerViewModel : ObservableObject
         NotifyCommandStates();
     }
 
+    private void ApplySourceInspection(SessionSourceInspectionResponse inspected)
+    {
+        SourceInspection = inspected;
+        if (inspected.Report is not null)
+        {
+            SourceKindText = L("Session_SourceCanonical", "Canonical Session Bundle");
+            SourceProfileText = L("Session_ProfileFromManifest", "Declared by manifest");
+            SourceMappingText = L(
+                "Session_CanonicalMapping",
+                "The existing manifest and checksums will be validated and copied unchanged.");
+            ApplyReport(inspected.Report);
+            return;
+        }
+
+        var raw = inspected.Raw
+            ?? throw new InvalidOperationException("The raw source inspection payload is missing.");
+        InspectionReport = null;
+        SourceKindText = L("Session_SourceSimulatorRaw", "Simulator raw export");
+        SourceProfileText = raw.DetectedProfileId;
+        SourceMappingText = F(
+            "Session_RawMappingSummary",
+            "{0} source file(s) mapped; a manifest and checksums will be generated during import.",
+            raw.Files.Count);
+        InspectionSummary = F(
+            "Session_RawInspectionSummary",
+            "Simulator raw export · {0} · ready to materialize: {1}",
+            raw.DetectedProfileId,
+            raw.CanMaterialize);
+        var warnings = raw.Warnings
+            .Select(issue => $"{issue.Severity}: {issue.Message} — {issue.Remediation}")
+            .ToArray();
+        InspectionIssues = warnings.Length == 0
+            ? L(
+                "Session_RawNoBlockingIssues",
+                "No blocking mapping issues. Missing units remain undeclared and raw values use the fixed Evidence extraction rules.")
+            : string.Join(Environment.NewLine, warnings);
+
+        Modalities.Clear();
+        foreach (var (id, name, family) in ModalityDefinitions())
+        {
+            if (!raw.ModalityProposals.TryGetValue(id, out var proposal))
+            {
+                Modalities.Add(new ModalityStatusItem(
+                    id,
+                    name,
+                    family,
+                    "undeclared",
+                    "unknown",
+                    L("Session_NoCanonicalStream", "No canonical stream result"),
+                    false));
+                continue;
+            }
+
+            var undeclaredFields = raw.FieldMappings.Count(mapping =>
+                string.Equals(mapping.Modality, id, StringComparison.Ordinal) &&
+                mapping.DeclaredUnit is null);
+            string detail;
+            if (proposal.Status is StreamStatus.Present)
+            {
+                detail = F(
+                    "Session_RawFilesMapped",
+                    "{0} file(s) mapped",
+                    proposal.Paths.Count);
+                if (undeclaredFields > 0)
+                {
+                    detail += " · " + F(
+                        "Session_UnitsUndeclaredPassThrough",
+                        "{0} field(s) have no declared unit; raw values will be used as-is",
+                        undeclaredFields);
+                }
+                else if (proposal.DeclaredUnits.Count > 0)
+                {
+                    detail += " · " + F(
+                        "Session_UnitsDeclaredCount",
+                        "{0} declared unit(s)",
+                        proposal.DeclaredUnits.Count);
+                }
+            }
+            else
+            {
+                detail = L(
+                    "Session_ModalityMissingNoSynthesis",
+                    "Not present in this export; no data will be synthesized.");
+            }
+            Modalities.Add(new ModalityStatusItem(
+                id,
+                name,
+                family,
+                proposal.Status.ToString(),
+                proposal.Status is StreamStatus.Present
+                    ? L("Session_ReadyToImport", "Ready to import")
+                    : L("Session_Missing", "Missing"),
+                detail,
+                proposal.Status is StreamStatus.Present));
+        }
+        NotifyCommandStates();
+    }
+
     private void ClearSelection()
     {
         SelectedSession = null;
@@ -471,6 +602,11 @@ public partial class SessionExplorerViewModel : ObservableObject
     {
         StatusMessage = _localization?.Format(_statusKey, _statusArguments) ?? StatusMessage;
         UpdateRevisionText(SelectedRevision);
+        if (SourceInspection is not null)
+        {
+            ApplySourceInspection(SourceInspection);
+            return;
+        }
         if (InspectionReport is not null)
         {
             ApplyReport(InspectionReport);

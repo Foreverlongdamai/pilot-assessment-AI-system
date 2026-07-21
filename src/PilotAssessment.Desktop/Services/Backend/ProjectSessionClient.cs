@@ -18,7 +18,6 @@ public sealed class ProjectSessionClient : IProjectSessionGateway
 
     public async Task<ProjectDescriptor> CreateProjectAsync(
         string root,
-        string projectId,
         string name,
         string actor,
         CancellationToken cancellationToken = default)
@@ -28,7 +27,7 @@ public sealed class ProjectSessionClient : IProjectSessionGateway
             transactionId,
             (stableTransactionId, token) => InvokeAsync(
                 "project.create",
-                new ProjectCreateRequest(stableTransactionId, actor, root, projectId, name),
+                new ProjectCreateRequest(stableTransactionId, actor, root, null, name),
                 PilotAssessmentJsonContext.Default.ProjectCreateRequest,
                 PilotAssessmentJsonContext.Default.ProjectMutationResponse,
                 token),
@@ -57,21 +56,21 @@ public sealed class ProjectSessionClient : IProjectSessionGateway
             cancellationToken);
     }
 
-    public async Task<IngestionReadinessReport> InspectSessionAsync(
-        string externalBundle,
+    public Task<SessionSourceInspectionResponse> InspectSessionSourceAsync(
+        string externalSource,
         CancellationToken cancellationToken = default)
     {
-        var response = await InvokeAsync(
-            "session.inspect",
-            new SessionInspectRequest(externalBundle),
-            PilotAssessmentJsonContext.Default.SessionInspectRequest,
-            PilotAssessmentJsonContext.Default.SessionInspectResponse,
+        return InvokeAsync(
+            "session.source.inspect",
+            new SessionSourceInspectRequest(externalSource),
+            PilotAssessmentJsonContext.Default.SessionSourceInspectRequest,
+            PilotAssessmentJsonContext.Default.SessionSourceInspectionResponse,
             cancellationToken);
-        return response.Report;
     }
 
-    public Task<SessionImportResponse> ImportSessionAsync(
-        string externalBundle,
+    public Task<SessionImportResponse> ImportSessionSourceAsync(
+        string externalSource,
+        string inspectedFingerprint,
         string actor,
         CancellationToken cancellationToken = default)
     {
@@ -79,9 +78,13 @@ public sealed class ProjectSessionClient : IProjectSessionGateway
         return IdempotentRequestRetry.ExecuteAsync(
             transactionId,
             (stableTransactionId, token) => InvokeAsync(
-                "session.import",
-                new SessionImportRequest(stableTransactionId, actor, externalBundle),
-                PilotAssessmentJsonContext.Default.SessionImportRequest,
+                "session.source.import",
+                new SessionSourceImportRequest(
+                    stableTransactionId,
+                    actor,
+                    externalSource,
+                    inspectedFingerprint),
+                PilotAssessmentJsonContext.Default.SessionSourceImportRequest,
                 PilotAssessmentJsonContext.Default.SessionImportResponse,
                 token),
             cancellationToken: cancellationToken);

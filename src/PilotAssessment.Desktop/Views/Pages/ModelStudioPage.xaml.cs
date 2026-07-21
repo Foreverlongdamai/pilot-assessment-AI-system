@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Media;
 using PilotAssessment.Desktop.Controls.Graph;
 using PilotAssessment.Desktop.Core.Contracts;
 using PilotAssessment.Desktop.Core.State;
+using PilotAssessment.Desktop.Services.Windowing;
 using PilotAssessment.Desktop.ViewModels;
 
 namespace PilotAssessment.Desktop.Views.Pages;
@@ -129,6 +130,50 @@ public sealed partial class ModelStudioPage : Page
         if (await RequireSelectedNodeAsync() is { } node)
         {
             await DeactivateWithConfirmationAsync(node);
+        }
+    }
+
+    private async void OnUndoAccelerator(
+        KeyboardAccelerator sender,
+        KeyboardAcceleratorInvokedEventArgs args)
+    {
+        if (IsTextEditingFocused())
+        {
+            args.Handled = false;
+            return;
+        }
+
+        args.Handled = true;
+        try
+        {
+            await App.Services.GetRequiredService<NodeWindowRegistry>().FlushAllEditsAsync();
+            await ViewModel.UndoEditAsync();
+        }
+        catch (Exception error)
+        {
+            await ShowCommandErrorAsync(error);
+        }
+    }
+
+    private async void OnRedoAccelerator(
+        KeyboardAccelerator sender,
+        KeyboardAcceleratorInvokedEventArgs args)
+    {
+        if (IsTextEditingFocused())
+        {
+            args.Handled = false;
+            return;
+        }
+
+        args.Handled = true;
+        try
+        {
+            await App.Services.GetRequiredService<NodeWindowRegistry>().FlushAllEditsAsync();
+            await ViewModel.RedoEditAsync();
+        }
+        catch (Exception error)
+        {
+            await ShowCommandErrorAsync(error);
         }
     }
 

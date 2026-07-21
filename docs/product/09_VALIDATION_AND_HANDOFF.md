@@ -2,12 +2,12 @@
 
 | 字段 | 值 |
 |---|---|
-| 设计版本 | v0.4 complete-node/task-activation validation baseline |
-| 当前软件状态 | in_progress（M1/M2/M3、M4R、M5 与 M6 engineering verified；M7 WinUI 与 M8 packaging 尚未完成，starter/synthetic `formal_run_authorized=false`） |
+| 设计版本 | v0.6 staged-edit/five-layer validation baseline |
+| 当前软件状态 | in_progress（M1–M7 engineering verified；M7 user acceptance pending；M8 只有 pre-UAT 候选大纲且未实施；starter/synthetic `formal_run_authorized=false`） |
 | 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 
-> **当前权威补充：** M5/M6 工程测试只证明已实现平台、built-in operators、recipe/inference executor、legacy exact version/publish/replay 和 protocol 映射按合同工作；它不评判专家 recipe、Anchor、阈值或 CPT 是否科学合理，也不证明 M7 新语义已实现。M7 current node/scheme autosave 不设发布门，run preflight 只执行最小技术校验并自动冻结 RunSnapshot。继续使用小型平台不变量和手算 BN，不建立重型多模态 fixtures。详见 [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)。
+> **当前权威补充：** M5/M6/M7 工程测试只证明已实现平台、built-in operators、recipe/inference executor、persistence/protocol、current-node/task-activation 和 WinUI 映射按合同工作；它不评判专家 recipe、Anchor、阈值或 CPT 是否科学合理，也不能替代用户亲自验收 M7。M7 编辑先进入后端持久 edit session，不设业务发布门；主窗口关闭时统一保存或放弃。dirty 草稿禁止 preview/preflight/run，clean canonical workspace 的 run preflight 只执行最小技术校验并自动冻结 RunSnapshot。继续使用小型平台不变量和手算 BN，不建立重型多模态 fixtures。M8 当前只有不可执行的 pre-UAT 候选大纲；正常模型编辑继续走前端，现有方法不足时才直接修改发布目录中的全局 Python backend source。详见 [M7 基础规格](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)、[D-056/D-057 修订](./specs/2026-07-18-m7-staged-edit-session-and-five-layer-canvas-amendment.md) 与 [M8 候选大纲](./specs/2026-07-18-m8-productization-editable-python-documentation-and-handoff-outline.md)。
 
 M5 的 D-040 migration smoke 已对全部 M4R recipe source bindings 执行 generic provenance closure：旧 `starter.o8` 因 Evidence observation input 被保留但拒绝 active import，新 raw/session/task-derived TPX parallel version 可执行。该 smoke 不比较两版 provisional 数值，也没有按 O8 ID 写特判。
 
@@ -147,7 +147,7 @@ M5 已按 [实施计划](plans/2026-07-16-m5-shared-versioned-model-library-and-
 
 Ruff lint、264-file format check、`ty check src`、32 份双目录 Schema 再生成与 `git diff --check` 均通过。Task 12 将计划中的裸 `ty check` 修正为仓库自 M2 起统一采用的 production-source boundary `ty check src`；测试目录包含刻意构造的动态 JSON/Polars 负例，不属于静态类型交付合同。
 
-fresh `uv build` 生成 652,665-byte wheel（SHA-256 `91992f5e7b741a1e50f5dd2366c9b008f7756f845f7ae9d76a70c05e35235c96`）和 481,987-byte sdist（SHA-256 `e70f593c331e629cf0bb5c02afb1f23244a7ad4f0d42a5f5f2ce56284d663ee9`）。仓库外 `uv pip --target` 安装后的 import origin 位于临时安装目录；wheel manifest 精确枚举 13 个 Hover JSON resources，加载结果为 15 个 BN concepts/versions、18 个 Evidence versions/bindings、33 个 CPT，并成功编译 33-variable inference plan。该段是 M5 当时的完成门；M6 persistence/sidecar 现已另行验证，M7 WinUI、M8 packaging 与科学有效性仍未完成。
+fresh `uv build` 生成 652,665-byte wheel（SHA-256 `91992f5e7b741a1e50f5dd2366c9b008f7756f845f7ae9d76a70c05e35235c96`）和 481,987-byte sdist（SHA-256 `e70f593c331e629cf0bb5c02afb1f23244a7ad4f0d42a5f5f2ce56284d663ee9`）。仓库外 `uv pip --target` 安装后的 import origin 位于临时安装目录；wheel manifest 精确枚举 13 个 Hover JSON resources，加载结果为 15 个 BN concepts/versions、18 个 Evidence versions/bindings、33 个 CPT，并成功编译 33-variable inference plan。该段是 M5 当时的完成门；M6 persistence/sidecar 与 M7 WinUI 现已另行工程验证，M7 用户验收、M8 产品化与科学有效性仍未完成。
 
 ### 2.10 M6 Local Runtime / Persistence / Sidecar 验证状态（2026-07-16）
 
@@ -165,15 +165,15 @@ fresh wheel 已在仓库外临时目录安装，并通过 packaged schema、proj
 | EvidenceRecipe engine | 任意合法 recipe 可 compile/execute/trace，非法连接精确定位；差表现仍可形成 computed U | representative recipe tests + 一个轻量 editable vertical-slice smoke |
 | Expert recipes | 系统忠实保存和执行专家定义；不判断其科学合理性 | preview 与用户检查，不设 per-edit pytest/golden gate |
 | BN/CPT | 图合法、概率正确、缺失可边缘化 | hand-computable BN tests |
-| Graph editor | 前后端一一对应、失败原子回滚 | .NET/Python contract + UI tests |
-| Current model + history | node/scheme autosave 可恢复、activation closure 正确、RunSnapshot 不可变且历史 run 可重现 | autosave/undo/copy/cascade/run-snapshot replay tests |
+| Graph editor | 五层投影正确，前后端一一对应，草稿 mutation 和最终 commit 失败均原子回滚 | .NET/Python contract + UI tests |
+| Current model + history | edit session 可恢复、全局 undo/redo 正确、Save all 折叠 revision、Discard 不改 canonical、activation closure 正确、RunSnapshot 不可变且历史 run 可重现 | staged-edit/undo/copy/cascade/run-snapshot replay tests |
 | Runtime | framing、取消、错误、崩溃恢复 | protocol fault-injection |
 | Results | posterior、coverage、trace 和版本完整 | golden result snapshots |
 | Privacy | 导出和日志默认脱敏 | privacy inspection tests |
 
 ## 4. Recipe、Graph 与 CPT 保存/运行技术门槛
 
-Current ModelNode/TaskScheme 始终可以自动保存，即使 `configuration_incomplete`。每个原子 operation 只校验它自身必须保持的结构不变量；只有 preview/run preflight 才要求所选 active closure 整体技术可执行：
+Current ModelNode/TaskScheme 始终可以暂存到后端 edit session，即使 `configuration_incomplete`。每个草稿原子 operation 只校验它自身必须保持的结构不变量；Save all 原子更新 canonical workspace。只有 clean canonical workspace 的 preview/run preflight 才要求所选 active closure 整体技术可执行：
 
 - recipe/node/edge/port/output/Anchor binding 唯一且可解析；
 - 无 self-loop、duplicate edge 或 directed cycle；
@@ -188,7 +188,7 @@ Current ModelNode/TaskScheme 始终可以自动保存，即使 `configuration_in
 - scorer 能产生合同规定的 evidence output，selected model 可以编译为 executable plan；
 - semantic/layout revision、diff、作者、时间和 content identity 可自动生成；run.start 可冻结完整 RunSnapshot。
 
-以下内容不是 autosave/preview/run gate：文献支持、专家共识、参数校准、单调性偏好、starter-template 等价、preview 表现，以及任何人工 reviewer/waiver。系统可以显示 warning，但不能以此阻止专家保存或运行技术上可执行的方案。
+以下内容不是 staging/Save all/preview/run gate：文献支持、专家共识、参数校准、单调性偏好、starter-template 等价、preview 表现，以及任何人工 reviewer/waiver。系统可以显示 warning，但不能以此阻止专家保存或运行技术上可执行的方案；dirty edit session 本身是明确的运行事务 blocker，用户必须先保存全部或放弃全部。
 
 ## 5. 科学校准路线
 
@@ -364,4 +364,4 @@ PilotAssessment/
 - reference trajectory、phase/event annotation 的生产方式需与实验团队确认；
 - shared-evidence 多 parent CPT 会指数增长；v0.1 已设 parent/row/cell/size 硬上限，但数值仍需性能基准和专家审查后才能提高；
 - WinUI 图编辑控件选型和无障碍支持需原型验证；
-- 后端 M1/M2/M3 已有合同、directory-bundle loader、JSON Schema、版本化 adapters/bindings、deterministic multimodal software fixtures、`IngestionReadinessReport`、native-rate `AlignedSession`/`SynchronizationReport` 和自动化测试。旧 M4 Task 0–28 的 `AnchorResultV2`、binding/catalog/runtime、15 个 plugins、共享 primitives 与三个 providers 作为迁移资产保留；M4R 的 EvidenceRecipe/OperatorDefinition、generic executor、operators、starter catalog 与 recipe revision service，M5 的 linked global model library、scheme workspace、CPT/inference，以及 M6 的 durable project/session/artifact/run persistence 与 stdio sidecar 均已完成。WinUI 仍须在 M7 实现。因此当前状态为 M1/M2/M3/M4R/M5/M6 engineering verified、starter/synthetic `formal_run_authorized=false`；现有证据不构成科学有效性声明。
+- M1–M7 的合同、ingestion/synchronization、editable Evidence、BN、受管项目、sidecar 和 WinUI expert workspace 均已通过各自工程门；M7 用户手工验收仍待完成。M8 便携发布、直接可编辑的 Python backend source layout、DOCX 文档体系、项目备份迁移和 clean-machine handoff 尚未实施。starter/synthetic `formal_run_authorized=false`；现有证据不构成科学有效性声明。

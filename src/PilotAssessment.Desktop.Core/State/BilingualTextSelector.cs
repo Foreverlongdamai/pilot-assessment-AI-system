@@ -64,15 +64,11 @@ public abstract class ObservableLocalizationLookup : ILocalizationLookup, INotif
 }
 
 /// <summary>
-/// Selects localized model metadata without changing the canonical model object.
-/// Missing translations remain visible through an explicit fallback marker.
+/// Compatibility selector for legacy bilingual records. Current model content is
+/// presented in canonical English and never exposes fallback markers to users.
 /// </summary>
 public static class BilingualTextSelector
 {
-    public const string EnglishFallbackMarker = " [EN fallback]";
-    public const string ChineseFallbackMarker = " [中文回退]";
-    public const string IdentifierFallbackMarker = " [ID fallback]";
-
     public static string Select(
         string? language,
         string? textZh,
@@ -80,36 +76,10 @@ public static class BilingualTextSelector
         string stableIdentifier)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(stableIdentifier);
-        var preferChinese = ObservableLocalizationLookup
-            .NormalizeLanguage(language)
-            .StartsWith("zh", StringComparison.OrdinalIgnoreCase);
-
-        if (preferChinese)
-        {
-            if (!string.IsNullOrWhiteSpace(textZh))
-            {
-                return textZh.Trim();
-            }
-
-            if (!string.IsNullOrWhiteSpace(textEn))
-            {
-                return textEn.Trim() + EnglishFallbackMarker;
-            }
-        }
-        else
-        {
-            if (!string.IsNullOrWhiteSpace(textEn))
-            {
-                return textEn.Trim();
-            }
-
-            if (!string.IsNullOrWhiteSpace(textZh))
-            {
-                return textZh.Trim() + ChineseFallbackMarker;
-            }
-        }
-
-        return stableIdentifier + IdentifierFallbackMarker;
+        _ = language;
+        _ = textZh;
+        return FirstNonBlank(textEn) ??
+               ModelDisplayNameResolver.HumanizeIdentifier(stableIdentifier, "Model Item");
     }
 
     public static string SelectShortOrFull(

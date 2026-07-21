@@ -19,7 +19,11 @@ public sealed partial class ModelGraphControl : UserControl
 {
     private const double MinimapWidth = 180;
     private const double MinimapHeight = 110;
+    private const double PanDragThreshold = 4;
     private Rectangle? _viewportIndicator;
+    private uint? _panPointerId;
+    private GraphViewportPanOrigin _panOrigin;
+    private bool _panMoved;
 
     public ModelGraphControl()
     {
@@ -45,6 +49,7 @@ public sealed partial class ModelGraphControl : UserControl
     {
         ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
         ActualThemeChanged -= OnActualThemeChanged;
+        ResetPan();
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs args)
@@ -94,6 +99,93 @@ public sealed partial class ModelGraphControl : UserControl
         UpdateViewportIndicator();
     }
 
+    private void OnGraphPointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs args)
+    {
+        var point = args.GetCurrentPoint(GraphScrollViewer);
+        if (!point.Properties.IsLeftButtonPressed || IsCanonicalNodeSource(args.OriginalSource))
+        {
+            return;
+        }
+
+        _panPointerId = args.Pointer.PointerId;
+        _panOrigin = new GraphViewportPanOrigin(
+            point.Position.X,
+            point.Position.Y,
+            GraphScrollViewer.HorizontalOffset,
+            GraphScrollViewer.VerticalOffset);
+        _panMoved = false;
+        GraphSurface.CapturePointer(args.Pointer);
+    }
+
+    private void OnGraphPointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs args)
+    {
+        if (_panPointerId != args.Pointer.PointerId)
+        {
+            return;
+        }
+
+        var point = args.GetCurrentPoint(GraphScrollViewer);
+        var deltaX = point.Position.X - _panOrigin.PointerX;
+        var deltaY = point.Position.Y - _panOrigin.PointerY;
+        if (!_panMoved && Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY)) < PanDragThreshold)
+        {
+            return;
+        }
+
+        _panMoved = true;
+        var target = GraphViewportPan.Calculate(
+            _panOrigin,
+            point.Position.X,
+            point.Position.Y,
+            GraphScrollViewer.ScrollableWidth,
+            GraphScrollViewer.ScrollableHeight);
+        _ = GraphScrollViewer.ChangeView(target.Horizontal, target.Vertical, null, true);
+        args.Handled = true;
+    }
+
+    private void OnGraphPointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs args)
+    {
+        if (_panPointerId != args.Pointer.PointerId)
+        {
+            return;
+        }
+
+        GraphSurface.ReleasePointerCapture(args.Pointer);
+        args.Handled = _panMoved;
+        ResetPan();
+    }
+
+    private void OnGraphPointerCanceled(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs args)
+    {
+        if (_panPointerId == args.Pointer.PointerId)
+        {
+            GraphSurface.ReleasePointerCapture(args.Pointer);
+            ResetPan();
+        }
+    }
+
+    private bool IsCanonicalNodeSource(object? source)
+    {
+        var current = source as DependencyObject;
+        while (current is not null && current != GraphSurface)
+        {
+            if (current is GraphNodeButton)
+            {
+                return true;
+            }
+
+            current = VisualTreeHelper.GetParent(current);
+        }
+
+        return false;
+    }
+
+    private void ResetPan()
+    {
+        _panPointerId = null;
+        _panMoved = false;
+    }
+
     private void SetZoom(float requested)
     {
         var target = Math.Clamp(requested, 0.25f, 2.5f);
@@ -103,12 +195,82 @@ public sealed partial class ModelGraphControl : UserControl
     private void RenderGraphLayers()
     {
         EdgeLayer.Children.Clear();
+        FamilyNodeLayer.Children.Clear();
+        foreach (var edge in ViewModel.ProvenanceEdges)
+        {
+            RenderProvenanceEdge(edge);
+        }
+
         foreach (var edge in ViewModel.Edges)
         {
             RenderEdge(edge);
         }
 
+        foreach (var family in ViewModel.RawInputFamilies)
+        {
+            var control = new RawInputFamilyNode { Node = family };
+            Canvas.SetLeft(control, family.X - (family.Diameter / 2));
+            Canvas.SetTop(control, family.Y - (family.Diameter / 2));
+            FamilyNodeLayer.Children.Add(control);
+        }
+
         RenderMinimap();
+    }
+
+    private void RenderProvenanceEdge(GraphProvenanceEdgeProjection edge)
+    {
+        var start = new Point(edge.Parent.X, edge.Parent.Y);
+        var end = new Point(edge.Child.X, edge.Child.Y);
+        var deltaX = end.X - start.X;
+        var deltaY = end.Y - start.Y;
+        var length = Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY));
+        if (length < 1)
+        {
+            return;
+        }
+
+        var unitX = deltaX / length;
+        var unitY = deltaY / length;
+        var lineStart = new Point(
+            start.X + (unitX * (GraphProjection.RawInputFamilyDiameter / 2)),
+            start.Y + (unitY * (GraphProjection.RawInputFamilyDiameter / 2)));
+        var lineEnd = new Point(
+            end.X - (unitX * ((GraphProjection.NodeDiameter / 2) + 5)),
+            end.Y - (unitY * ((GraphProjection.NodeDiameter / 2) + 5)));
+        var brush = edge.IsActive
+            ? ResolveBrush("GraphProvenanceEdgeBrush", ColorHelper.FromArgb(255, 22, 163, 74))
+            : ResolveBrush("GraphInactiveEdgeBrush", ColorHelper.FromArgb(255, 107, 114, 128));
+        var opacity = edge.IsActive ? 0.78 : 0.28;
+        var line = new Line
+        {
+            X1 = lineStart.X,
+            Y1 = lineStart.Y,
+            X2 = lineEnd.X,
+            Y2 = lineEnd.Y,
+            Stroke = brush,
+            StrokeThickness = edge.IsActive ? 1.8 : 1.1,
+            StrokeDashArray = [4, 4],
+            Opacity = opacity,
+        };
+        EdgeLayer.Children.Add(line);
+
+        const double arrowLength = 9;
+        const double arrowWidth = 4.5;
+        var baseX = lineEnd.X - (unitX * arrowLength);
+        var baseY = lineEnd.Y - (unitY * arrowLength);
+        var perpendicularX = -unitY;
+        var perpendicularY = unitX;
+        EdgeLayer.Children.Add(new Polygon
+        {
+            Fill = brush,
+            Opacity = opacity,
+            Points =
+            [
+                lineEnd,
+                new Point(baseX + (perpendicularX * arrowWidth), baseY + (perpendicularY * arrowWidth)),
+                new Point(baseX - (perpendicularX * arrowWidth), baseY - (perpendicularY * arrowWidth)),
+            ],
+        });
     }
 
     private void RenderEdge(GraphEdgeProjection edge)
@@ -185,6 +347,36 @@ public sealed partial class ModelGraphControl : UserControl
                 Opacity = edge.IsActive ? 0.75 : 0.24,
             };
             MinimapCanvas.Children.Add(line);
+        }
+
+        foreach (var edge in ViewModel.ProvenanceEdges)
+        {
+            var line = new Line
+            {
+                X1 = edge.Parent.X * scale,
+                Y1 = edge.Parent.Y * scale,
+                X2 = edge.Child.X * scale,
+                Y2 = edge.Child.Y * scale,
+                Stroke = edge.IsActive
+                    ? ResolveBrush("GraphProvenanceEdgeBrush", ColorHelper.FromArgb(255, 22, 163, 74))
+                    : ResolveBrush("GraphInactiveEdgeBrush", ColorHelper.FromArgb(255, 107, 114, 128)),
+                StrokeThickness = edge.IsActive ? 0.9 : 0.45,
+                Opacity = edge.IsActive ? 0.68 : 0.2,
+            };
+            MinimapCanvas.Children.Add(line);
+        }
+
+        foreach (var family in ViewModel.RawInputFamilies)
+        {
+            var dot = new Ellipse
+            {
+                Width = 6,
+                Height = 6,
+                Fill = ResolveBrush("GraphRawInputFamilyNodeBrush", ColorHelper.FromArgb(255, 21, 128, 61)),
+            };
+            Canvas.SetLeft(dot, (family.X * scale) - (dot.Width / 2));
+            Canvas.SetTop(dot, (family.Y * scale) - (dot.Height / 2));
+            MinimapCanvas.Children.Add(dot);
         }
 
         foreach (var node in ViewModel.Nodes)

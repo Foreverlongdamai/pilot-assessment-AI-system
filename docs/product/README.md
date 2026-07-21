@@ -2,9 +2,9 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 设计基线 | 产品 v0.5 complete-node/task-activation expert designer；D-031–D-053 已获用户确认 |
-| 基线日期 | 2026-07-17 |
-| 产品阶段 | M1/M2/M3、M4R、M5、M6 与完整 M7 已工程验证；M7A current-model/automatic-snapshot 后端和 M7B Tasks 1–15 WinUI 专家工作区已完成，覆盖受管 project/session、并列 task schemes、global active/dim 模型图、节点/边与任务激活编辑、多独立节点浮窗、Raw Input/Evidence/BN/CPT、持久 autosave/reconciliation/conflict、即时双语、backend-owned preflight/run/cancel/recovery/result/trace/diagnostics、accessibility、viewport culling 与真实 sidecar completion gate；M8 packaging 尚未设计；starter/synthetic `formal_run_authorized=false` |
+| 设计基线 | 产品 v0.8 portable engineering distribution；D-031–D-071 已获用户确认 |
+| 基线日期 | 2026-07-21 |
+| 产品阶段 | M1/M2/M3、M4R、M5、M6、M7、M8A 与 **M8B-0 engineering gate 已通过**。**M7 用户手工验收仍未完成，并可能继续返修；D-055 尚待实施；M8B-1/M8B-2、M8C–M8E 未完成。** starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -16,6 +16,18 @@
 2026-07-17 M7B Task 14 已完成真实运行与结果工作区。专家从当前 managed session revision + current task scheme 执行技术预检后即可直接运行，不需要 Publish；Python 后端自动冻结 immutable RunSnapshot，并唯一负责 Evidence/BN/CPT/run 计算。WinUI 展示单调进度、取消/重启恢复、Evidence D/A/U、Observation、BN posterior、只读 inference influence、provenance、受管 artifact references 与 diagnostics；canonical BN edges 和 inference influence 不混淆。fresh gate 为 focused Unit `6/6`、desktop Unit `81/81`、Contract `3/3`、localization `8/8`、real-sidecar Python `2/2`、x64 Debug build `0 warning / 0 error`。可见受管案例得到 `18` Evidence、`4` posterior variables、`39` artifact references，并在应用重启后恢复同一 snapshot/result；科学状态仍明确为 `not_supported / engineering workflow only`。下一项是 Task 15 completion gate。
 
 2026-07-17 M7B Task 15 已关闭 M7 工程完成门，代码/测试提交为 `d1dbdd2`。fresh gate 为 desktop Unit `84/84`、real-sidecar Contract `4/4`、x64 Debug build `0 warning / 0 error`；1,000-node in-memory UI projection 在 `1280 × 720` buffered viewport realization `40` 个节点且满足 `<2 s`。可见应用自动恢复同一 immutable result，完成 light/dark/system、键盘焦点、screen-reader headings/live status、`1920/1279/959` logical-width responsive layout，以及主窗口和 ECG/EEG 两个非模态编辑器三窗并存；运行中的应用、`uv`、Python 与 console host 合计 TCP listener 为 `0`。M7 只宣告工程工作区完成；M8 最终分发、真实 exporter/device 适配和领域专家科学校准仍未完成。
+
+2026-07-18 用户明确要求先亲自验收 M7，并预期验收后仍可能修改。因此 M7 当前准确状态是 **engineering verified / user acceptance pending**。本轮只保存 [M8 pre-UAT 候选设计大纲](specs/2026-07-18-m8-productization-editable-python-documentation-and-handoff-outline.md) 和 [阶段路线图](plans/2026-07-18-m8-pre-uat-implementation-outline.md)；没有实施 M8、没有新增正式 D-编号，也没有生成发布包。M8 v0.2 候选进一步明确：正常参数/Evidence/BN/task 修改继续在前端完成；只有现有方法无法达到新目标时，专家才直接编辑发布目录中唯一活动的 Python backend source tree，重启后对该系统副本全局生效，不要求 plugin package 或源码编辑 UI。
+
+2026-07-18 用户进一步确认 D-056/D-057，取代旧 autosave 的正式提交时机：节点、边、CPT、任务方案和布局先进入由 Python 管理的持久 edit-session SQLite；主窗口关闭时统一选择“保存全部并关闭／放弃全部并关闭／取消”。dirty 草稿明确阻止 preview/preflight/run；Ctrl+Z/Ctrl+Y 操作全局草稿历史。M8B-0 已将该 edit session 的 owner 从 project 提升为软件副本 `system/`，交互语义不变。主画布的唯一五层分类为 `Raw Input Family -> Extracted Data -> Evidence -> Sub-skill -> Competency`，非输入族筛选不再固定显示五个绿色根，BN 生成箭头仍保持 `Competency -> Sub-skill -> Evidence`。该返修仍等待用户实际操作验收。
+
+2026-07-18 用户进一步确认 D-058/D-059：普通产品界面只显示由节点/方案实际语义确定的英文名称，随机 ID/hash 仅留在诊断、溯源、artifact、frozen snapshot 与折叠技术身份区域；所有 fallback marker 从发布界面移除。桌面应用改用统一的原创极简 eVTOL 评估图标，并从项目内 1024 px master 确定性派生全部 Windows assets。该返修不修改 Python canonical model 或任何 Evidence/BN/CPT 计算；D-055 的单字段 contract/database 迁移仍是独立待办。
+
+2026-07-20 用户确认 D-060/D-061：Session Import 统一识别 canonical Bundle 与只有 `streams/`/`annotations/` 的 simulator raw source。raw source 始终只读，后端在项目 staging 中生成 canonical manifest、checksum 与 annotations，再进入既有受管 revision 流程；缺失模态保持 missing，不生成合成数据。源/profile 未声明单位时不询问、不猜测、不换算，数值按固定 adapter/Evidence 方法透传并记录 provenance。Python、JSON-RPC、C# contract、ViewModel 和 WinUI 页面均已实现，用户手工验收仍待完成。
+
+2026-07-20 用户进一步授权执行既定 M8 路线并开始打包。D-062–D-065 与 M8A 正式规格已经实现：发布脚本生成 Windows x64 unpackaged self-contained 产品目录和 ZIP，包含 WinUI/.NET/Windows App SDK、私有 CPython、production dependencies 与唯一活动的完整第一方 backend source；不包含用户 project/session/result。最终 ZIP 已在仓库外解压验证自动 sidecar、visible desktop、live-source edit/restart、checksums 和零 TCP listener。M8A 仅是 engineering build；M8B–M8E、M7 最终用户验收和科学校准仍未完成。
+
+2026-07-21 用户批准 D-066–D-071 与 [M8B system-owned model library 规格](specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)。M8B-0 已按 [实施计划](plans/2026-07-21-m8b0-system-model-ownership-implementation-plan.md) 完成工程实现：current ModelNode/TaskScheme/edit session 的 owner 从单个 project 提升为每套解压软件副本的 `system/`；Model Studio 可在无 project 时工作；Project 只保存 Session、不可变 RunSnapshot/materialization、result 和 artifacts；legacy project-local 模型采用确定性、幂等、无覆盖导入。新 portable ZIP 已携带 clean starter system baseline，并完成双项目共享与旧运行快照隔离验证。精确命令、hash 与边界见 [M8B-0 Verification](reviews/2026-07-21-m8b0-system-model-ownership-verification.md)。
 
 ## 1. 文档用途
 
@@ -38,6 +50,23 @@
 | 2.1 | [M7 Implementation Roadmap](plans/2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) | 开发、审查者 | 当前实施顺序：M7A 后端 current-model 迁移后再做 M7B WinUI；定义跨阶段门与轻量验证边界 |
 | 2.2 | [M7A Current Model Runtime Implementation Plan](plans/2026-07-17-m7a-current-model-runtime-implementation-plan.md) | 后端开发、审查者 | 12 个 INLINE 任务：完整节点、任务激活、SQLite v2、自动快照、sidecar 与 legacy replay |
 | 2.3 | [M7B WinUI Expert Designer Implementation Plan](plans/2026-07-17-m7b-winui-expert-designer-implementation-plan.md) | Windows 前端、审查者 | 15 个 INLINE 任务：sidecar client、active/dim 画布、多浮窗、编辑器、双语与 run/results |
+| 2.4 | [M7 Raw-Input Provenance and Single-Language Amendment](specs/2026-07-18-m7-raw-input-provenance-and-single-language-model-content-amendment.md) | 专家、产品、前后端 | D-054/D-055：五个统一绿色的 X/U/I/G/P 画布投影及只读溯源；界面本地化与单一英文模型内容分离 |
+| 2.4.1 | [M7 Raw Input Family Provenance Canvas Plan](plans/2026-07-18-m7-raw-input-family-provenance-canvas-implementation-plan.md) | Windows 前端、审查者 | 已实现并可见验证：绿色输入族 lane、typed provenance、可逆布局偏移和 minimap |
+| 2.4.2 | [M7 Single-Language Canonical Content Plan](plans/2026-07-18-m7-single-language-canonical-content-implementation-plan.md) | 前后端、审查者 | 待实施：旧 bilingual contract/UI 迁移为单一英文 canonical 模型内容 |
+| 2.5 | [M7 Staged Edit Session and Five-Layer Canvas Amendment](specs/2026-07-18-m7-staged-edit-session-and-five-layer-canvas-amendment.md) | 专家、产品、前后端 | D-056/D-057：后端持久草稿、关闭时统一保存/放弃/取消、全局 undo/redo、五层画布与 dirty run guard |
+| 2.5.1 | [M7 Staged Edit Session and Five-Layer Canvas Plan](plans/2026-07-18-m7-staged-edit-session-and-five-layer-canvas-implementation-plan.md) | 前后端、审查者 | 已实现并工程验证：edit-session SQLite、`model.edit.*`、五层投影、长按拖动与关闭事务 |
+| 2.6 | [M7 Human-readable UI and eVTOL Branding Amendment](specs/2026-07-18-m7-human-readable-ui-and-evtol-branding-amendment.md) | 专家、产品、Windows 前端 | D-058/D-059：语义英文名称、普通界面 ID 分层、无 fallback marker 与统一 eVTOL 图标 |
+| 2.6.1 | [M7 Human-readable UI and eVTOL Branding Plan](plans/2026-07-18-m7-human-readable-ui-and-evtol-branding-implementation-plan.md) | Windows 前端、审查者 | INLINE 返修：统一名称解析、Results/graph/node window 展示收口、图标派生与启动验证 |
+| 2.7 | [M7 Simulator Raw Session Import Adapter Amendment](specs/2026-07-20-m7-simulator-raw-session-import-adapter-design.md) | 产品、数据、前后端 | D-060/D-061：raw source 受管物化、缺失模态与未声明单位原值透传 |
+| 2.7.1 | [M7 Simulator Raw Session Import Adapter Plan](plans/2026-07-20-m7-simulator-raw-session-import-adapter-implementation-plan.md) | 开发、审查者 | INLINE 实施：source contracts、materializer、persistence、RPC、WinUI 与轻量验证 |
+| 2.8 | [M8 Productization Design Outline](specs/2026-07-18-m8-productization-editable-python-documentation-and-handoff-outline.md) | 产品、交付、维护者 | **已批准路线图：** 便携分发、前端 canonical 编辑、直接可改的全局 Python backend、分类文档/DOCX、备份迁移与交付边界；M8A 已完成 |
+| 2.8.1 | [M8 Implementation Roadmap](plans/2026-07-18-m8-pre-uat-implementation-outline.md) | 产品、开发、审查者 | M8A–M8E 阶段关系、M7 UAT/M8E 门与当前执行点 |
+| 2.9 | [M8A Portable Windows Release Design](specs/2026-07-20-m8a-portable-windows-release-design.md) | 产品、交付、维护者 | 已实现：Windows x64 self-contained ZIP、私有 Python、唯一活动 backend source、用户数据隔离与发布元数据 |
+| 2.9.1 | [M8A Implementation Plan](plans/2026-07-20-m8a-portable-windows-release-implementation-plan.md) | 开发、审查者 | 已完成：portable-first locator、publish profile、builder、外部 verifier 与交付收口 |
+| 2.9.2 | [M8A Verification](reviews/2026-07-20-m8a-portable-windows-release-verification.md) | 用户、交付、审查者 | 最终 ZIP 的精确路径、大小、hash、仓库外运行、可编辑源码、内容隔离、回归结果和残余限制 |
+| 2.10 | [M8B System-Owned Model Library and Editable Backend Provenance Design](specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md) | 产品、专家、前后端、交付 | 当前 ownership 权威：software-copy `system/`、project/run 边界、legacy import，以及 M8B-1/2 source/operator 后续边界 |
+| 2.10.1 | [M8B-0 System Model Ownership Implementation Plan](plans/2026-07-21-m8b0-system-model-ownership-implementation-plan.md) | 开发、审查者 | 已完成：system store、无 project Model Studio、双项目共享、exact run materialization、legacy import 与 portable rebuild |
+| 2.10.2 | [M8B-0 Verification](reviews/2026-07-21-m8b0-system-model-ownership-verification.md) | 用户、交付、审查者 | focused tests、双项目快照隔离、桌面构建、仓库外 ZIP 启动、system baseline 与用户数据隔离证据 |
 | 3 | [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) | 专家、产品、前后端 | 已实现的后端基础与历史 identity/publish 语义；冲突处由 M7 规格取代 |
 | 4 | [M5 Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) | 开发、审查者 | 已完成：inline 任务、合同冻结、O8 迁移、轻量验证与完成门 |
 | 5 | [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) | 前后端、交付、审查者 | 已实现：受管项目、SQLite、artifact、run lifecycle 与 JSON-RPC sidecar |
@@ -77,14 +106,14 @@
 
 - `docs/product/` 根目录中的编号文档、`DECISIONS.md` 和 `GLOSSARY.md` 是当前产品基线；
 - `docs/product/specs/` 保存单个里程碑或子系统的状态受控设计合同，只有标记为“已批准”的规格才进入实施；
-- `docs/product/plans/` 保存从已批准规格派生的实施步骤、选择性测试策略、验证命令和提交边界，计划不能覆盖 `DECISIONS.md` 或已批准规格；完成后继续保留，作为产品如何实现和验证的移交证据。
+- `docs/product/plans/` 主要保存从已批准规格派生的实施步骤、选择性测试策略、验证命令和提交边界；若因上游尚待用户验收而保存 pre-UAT 路线图，必须在标题、metadata 和正文开头同时标为 `Candidate / 不可执行`。计划不能覆盖 `DECISIONS.md` 或已批准规格；完成后继续保留，作为产品如何实现和验证的移交证据。
 - `docs/product/reviews/` 保存规格、计划和实现检查点的复核 ledger；它不取代正式决策、测试或 Git 历史。
 
 ## 3. 权威性规则
 
 发生冲突时按以下优先级处理：
 
-1. [M7 WinUI Expert Designer and Task Activation Workspace Design](specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)、本目录中状态为“当前”的正式产品文档与后续决策；
+1. [M7 WinUI Expert Designer and Task Activation Workspace Design](specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)、[D-056/D-057 修订](specs/2026-07-18-m7-staged-edit-session-and-five-layer-canvas-amendment.md)、本目录中状态为“当前”的正式产品文档与后续决策；
 2. 历史 RunSnapshot、已发布 legacy scheme/component records 及其 exact hashes；
 3. 产品代码与自动化测试，用于说明“目前已实现什么”，不能覆盖已确认但尚未实施的新产品目标；
 4. 研究阶段的 PPT、讨论稿和历史说明。
@@ -100,12 +129,12 @@
 - `export_pending/missing/invalid/not_applicable` 是 M1–M3 的 stream 生命周期或结构状态；M4 AnchorResult v0.2 的非 computed 状态固定为 `missing_input/not_applicable/not_computable/dependency_missing/extractor_error`，M4 不生成 `invalid_quality`。
 - M4 假定进入它的 aligned input 已满足上游结构合同，不判断原始采集“质量够不够好”，也不因 coverage、gap、噪声、幅值、生理范围或差表现过滤 evidence；这些技术统计只进入 diagnostics/provenance。
 - 全局节点库中的每个可见 Evidence/BN `ModelNode` 只有一个当前完整定义；若算法、parents、states、CPT 或语义不同，就创建另一个节点。内部 revision/history 不作为任务侧可选版本。
-- 每个 `TaskScheme` 是并列、自动保存、可直接运行的节点激活集合；切换任务只改变 active/dim 与执行 closure，不替换节点内部定义。
-- 高层工作区只显示 Raw Input、Evidence、BN Node 三类节点；`Raw/task source → Evidence` 是 data/extraction edge，Raw Input 不属于 BN；probabilistic edge 才表示 `P(child | parents)`。
+- 每个 `TaskScheme` 是并列、可自由编辑的节点激活集合；修改先进入项目内的后端持久草稿，选择“保存全部”后才更新正式模型。切换任务只改变 active/dim 与执行 closure，不替换节点内部定义。
+- 主画布只使用 `Raw Input Family -> Extracted Data -> Evidence -> Sub-skill -> Competency` 五个理解层；底层执行合同仍严格区分 Raw Input、Evidence、BN Node 三类 canonical 节点以及 extraction/probabilistic 两类 edge。
 - Hover starter 的 canonical BN 生成方向为 Competency → Sub-skill → Evidence；评估时由 observed evidence 计算 competency posterior。只读 inference overlay 可以显示反向信息影响，但不得反转已存 BN edges。
 - 通用引擎允许专家建立其他合法 DAG，但必须通过新的完整节点或明确修改后的节点定义表达，不是同一图的显示反转。
-- 专家通过前端决定模型内容；后端维护 canonical state、最小技术校验、CPT 原子迁移、持久化和执行一致性，但不拥有科学内容决定权。
-- 正常 UI 取消 Draft/Published/Apply/Publish；每次 run 自动冻结 exact managed session、当前 TaskScheme active closure、完整节点定义、recipes/operators、CPT 与 hashes 为 immutable RunSnapshot。
+- 专家通过前端决定模型内容；后端维护持久草稿、正式 canonical state、最小技术校验、CPT 原子迁移、持久化和执行一致性，但不拥有科学内容决定权。
+- 正常 UI 取消业务 Draft/Published/Apply/Publish；一次应用编辑会话在关闭时统一保存或放弃。只有 clean canonical workspace 可以 run，每次 run 自动冻结 exact managed session、当前 TaskScheme active closure、完整节点定义、recipes/operators、CPT 与 hashes 为 immutable RunSnapshot。
 - 软件测试通过与科学有效性成立是两个独立结论。
 - 当前 repository-external 2,902-row simulator CSV 只是一次随意飞行产生的采集格式样例，仅用于接口、解析、时间和软件 E2E；它不是标准轨迹、任务 ground truth、专家 phase annotation 或能力证据。围绕它生成的 reference/annotations/biometrics 也只是 synthetic fixtures。
 
@@ -117,7 +146,7 @@
 
 M6 completion gate 也已关闭：受管 project/session/artifact、SQLite component/draft/run persistence、idempotency/audit、exact technical preflight、dynamic Evidence→Observation→BN pipeline、single-worker progress/cancel/recovery，以及无网络端口的 JSON-RPC/JSONL stdio sidecar 均已实现。轻量纵向闭环证明 external bundle 删除后仍可从受管副本运行，整个 project 换目录重开后 exact scheme/result/artifact 仍可回放。
 
-2026-07-17 用户确认 D-047–D-053：M7 改用完整独立节点、全局节点库、任务激活集合、默认只复制节点且复用 fixed parents、启用 parent closure、停用 parent 前级联确认、多浮动节点窗口、双语模型元数据，以及“autosave current scheme + automatic immutable RunSnapshot”。M7A 已实现 global current nodes、TaskScheme activation/copy/cascade、atomic edge/state/CPT edits、autosave history/undo/redo、current preflight/run snapshot、legacy replay 和完整 `model.*` sidecar surface；M7B Tasks 1–15 已建立并工程验证正式 WinUI 专家工作区。C# 只构造 typed intent 和只读投影，Python 后端继续负责 canonical state 与全部 Evidence/BN/CPT/run 计算。M8 最终打包与科学验证仍未完成，starter/synthetic `formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
+2026-07-17 用户确认 D-047–D-053：M7 改用完整独立节点、全局节点库、任务激活集合、默认只复制节点且复用 fixed parents、启用 parent closure、停用 parent 前级联确认、多浮动节点窗口以及 automatic immutable RunSnapshot。M7A/M7B 原工程工作区已完成。2026-07-18 的 D-056/D-057 又把原“每次 autosave 立即写正式模型”取代为 backend-managed staged edit session，并把主画布收口为五层理解投影；C# 仍只构造 typed intent 和只读投影，Python 后端负责草稿/canonical 事务与全部 Evidence/BN/CPT/run 计算。D-055 单一英文 canonical 模型内容尚待实施。M8A 已完成首个 portable engineering package；M8B–M8E 和科学验证仍未完成，starter/synthetic `formal_run_authorized=false`。完整状态见 [11_IMPLEMENTATION_STATUS.md](11_IMPLEMENTATION_STATUS.md)。
 
 2026-07-16 另以 repository-external 的 2,902-row 格式样例 X/U 和工程合成 I/G/EEG/ECG/pilot-camera 跑通一次完整 M6 software-test：ingestion/preflight ready、18/18 Evidence computed、exact BN inference completed、39 个结果/追踪工件成功回读且 sidecar stderr 为空。该运行继续标记 `scientific_status=not_supported`；它验证真实产品接口与计算流水线，不验证样例飞行、starter algorithms、阈值或 CPT 的科学正确性。详见 [Captured-Format Multimodal Software Demo](specs/2026-07-16-external-multimodal-session-demo-design.md)。
 
@@ -125,7 +154,7 @@ M6 completion gate 也已关闭：受管 project/session/artifact、SQLite compo
 
 - 修改跨文档口径时，先更新 [DECISIONS.md](DECISIONS.md)，再更新受影响文档。
 - 任何 run 或导出结果必须保存 exact immutable RunSnapshot 与 content hashes；不得依赖会继续变化的 current scheme/node 状态来重放历史。
-- 参数、公式、计算图、拓扑、激活集合或 CPT 修改直接自动保存到 current node/scheme；无需 Draft/Published/Apply/Publish、人工审批或 per-edit 工程测试。
-- 不在前端执行任意 Python。普通新 Anchor 使用 existing operators/EvidenceRecipe；只有新增 operator library 不具备的能力才安装受控 operator plugin。
+- 参数、公式、计算图、拓扑、激活集合或 CPT 修改自动暂存到后端 edit session；主窗口关闭时统一保存全部或放弃全部。无需业务 Draft/Published/Apply/Publish、人工审批或 per-edit 工程测试。
+- 不在前端执行任意 Python。普通新 Anchor 使用 existing operators/EvidenceRecipe；只有现有 operator library 无法表达新的计算机制时，扩展开发者才直接修改发布副本中公开的第一方 Python operator/core 源码，完成技术验证后重启该系统副本。首个 M8 不要求 plugin package。
 - 示例中的数值必须标注为“默认工程值”“文献直接支持”或“专家校准值”之一。
 - 每次设计基线发布前重新执行 [09_VALIDATION_AND_HANDOFF.md](09_VALIDATION_AND_HANDOFF.md) 中的文档自检。

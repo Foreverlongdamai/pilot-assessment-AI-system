@@ -286,7 +286,7 @@ public sealed partial class NodeEditorWindow : Window
         NodeNameText.Text = displayName;
         NodeIdentityText.Text = _canonicalNode.NodeId;
         NodeKindText.Text = DisplayKind(_canonicalNode.NodeKind);
-        TaskSchemeText.Text = $"{_schemeDisplayName} ({_key.SchemeId})";
+        TaskSchemeText.Text = _schemeDisplayName;
         SharedUsageText.Text = _sharedSchemeCount == 1
             ? _localization["Node_UsedByOne"]
             : _localization.Format("Node_UsedByMany", _sharedSchemeCount);
@@ -631,13 +631,8 @@ public sealed partial class NodeEditorWindow : Window
         return result;
     }
 
-    private string PrimaryName(ModelNode node) => BilingualTextSelector.SelectShortOrFull(
-        _localization.CurrentLanguage,
-        node.ShortNameZh,
-        node.ShortNameEn,
-        node.NameZh,
-        node.NameEn,
-        node.NodeId);
+    private static string PrimaryName(ModelNode node) =>
+        ModelDisplayNameResolver.ForNode(node, preferShort: false);
 
     private string DisplayKind(ModelNodeKind kind) => kind switch
     {

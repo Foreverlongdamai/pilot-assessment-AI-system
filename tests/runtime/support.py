@@ -45,7 +45,7 @@ def minimal_o1_scheme(
 ) -> AssessmentSchemeVersion:
     """Build a test-only one-Evidence projection of the editable starter scheme."""
 
-    starter = application.components.get_exact(
+    starter = application.system.components.get_exact(
         ComponentKind.ASSESSMENT_SCHEME_VERSION,
         application.starter_scheme_id,
     )
@@ -54,7 +54,7 @@ def minimal_o1_scheme(
         item
         for reference in starter.evidence_versions
         if isinstance(
-            item := application.components.get_exact(reference.kind, reference.version_id),
+            item := application.system.components.get_exact(reference.kind, reference.version_id),
             EvidenceVersion,
         )
         and item.recipe.anchor.anchor_id == "O1"
@@ -63,7 +63,7 @@ def minimal_o1_scheme(
         item
         for reference in starter.evidence_binding_versions
         if isinstance(
-            item := application.components.get_exact(reference.kind, reference.version_id),
+            item := application.system.components.get_exact(reference.kind, reference.version_id),
             EvidenceBindingVersion,
         )
         and item.evidence_version_id.version_id == evidence.evidence_version_id
@@ -72,7 +72,7 @@ def minimal_o1_scheme(
         item.bn_node_version_id: item
         for reference in starter.bn_node_versions
         if isinstance(
-            item := application.components.get_exact(reference.kind, reference.version_id),
+            item := application.system.components.get_exact(reference.kind, reference.version_id),
             BnNodeVersion,
         )
     }
@@ -100,7 +100,7 @@ def minimal_o1_scheme(
         for reference in starter.cpt_versions
         if reference.version_id in selected_cpt_ids
         and isinstance(
-            item := application.components.get_exact(reference.kind, reference.version_id),
+            item := application.system.components.get_exact(reference.kind, reference.version_id),
             CptVersion,
         )
     )

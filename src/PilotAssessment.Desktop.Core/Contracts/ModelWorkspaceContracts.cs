@@ -593,7 +593,7 @@ public sealed record ModelGraphEdge(
 public sealed record ModelGraphSnapshot(
     string ContractId,
     string ContractVersion,
-    string ProjectId,
+    string ModelLibraryId,
     TaskScheme Scheme,
     ModelNode[] Nodes,
     ModelGraphEdge[] Edges,

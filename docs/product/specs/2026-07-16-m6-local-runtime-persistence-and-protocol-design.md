@@ -11,6 +11,8 @@
 
 > **2026-07-17 适用性修订：** M6 的 managed project、SQLite、artifact、idempotency、audit、run lifecycle 与 stdio sidecar 继续作为当前基础；其 scheme draft/publish 和“run 只接受 published scheme”是已实现的兼容层，不是 M7 的最终产品交互。M7 必须扩展为 current ModelNode/TaskScheme autosave、activation closure 和 run-start automatic RunSnapshot，同时保持旧 run/published records 可回放。详见 [M7 WinUI Expert Designer and Task Activation Workspace Design](./2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)。
 
+> **2026-07-21 M8B-0 ownership 修订：** 本规格 §2.2、§4.1 及其他把 current ModelNode、TaskScheme、current scheme/edit session 描述为 project-owned 的文字，只保留为 legacy project 迁移与历史回放说明。当前 canonical 模型 owner 是每套解压软件副本的 `system/model-library.sqlite3`；project 只拥有 Session、不可变 RunSnapshot/materialization、result 与 artifacts。M6 的 project/session/run、SQLite、artifact、idempotency、audit 和 stdio sidecar 基础继续有效。详见 [M8B System-Owned Model Library and Editable Backend Provenance Design](./2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)。
+
 ## 1. 目的
 
 M6 把 M5 已验证的 transport-neutral、进程内建模后端变成可以被 Windows
@@ -199,6 +201,8 @@ RunResultEnvelope
 ## 6. Managed Session Import
 
 ### 6.1 Inspect 与 import 分离
+
+> **2026-07-20 适用性修订：** 本节原流程描述的是已经包含 `manifest.json` 的 canonical Bundle 分支。D-060 新增统一 `session.source.inspect/import`：若用户选择的是只有 `streams/` 与 `annotations/` 的 simulator raw source，系统先在受管 staging 中生成 canonical Bundle，再从下述校验、hash、promotion、SQLite 与 audit 公共路径继续；外部 raw source 仍保持只读。D-061 进一步规定未声明单位不要求用户补填、不猜测、不换算。
 
 `session.inspect` 对用户选择的外部目录执行现有 M1/M2 只读检查，不创建 session ID，
 不复制文件，也不把外部绝对路径写入数据库。

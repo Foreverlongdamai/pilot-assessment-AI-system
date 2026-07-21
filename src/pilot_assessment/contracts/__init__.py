@@ -202,6 +202,17 @@ from pilot_assessment.contracts.session import (
     TaskDefinition,
     TaskReference,
 )
+from pilot_assessment.contracts.session_source import (
+    RawAnnotationMapping,
+    RawFieldMapping,
+    RawModalityProposal,
+    RawRequiredInput,
+    RawSessionInspection,
+    RawSourceFile,
+    SessionDataSourceKind,
+    SessionSourceInspection,
+    UnitProvenance,
+)
 from pilot_assessment.contracts.synchronization import (
     BLOCKING_SYNCHRONIZATION_ERROR_CODES,
     MAX_SESSION_END_NS_V0_1,
@@ -223,6 +234,7 @@ from pilot_assessment.contracts.synchronization import (
     TaskReferenceSynchronizationResult,
     TemporalArtifactMetrics,
 )
+from pilot_assessment.contracts.system import ProductVersion, SystemDescriptor
 
 __all__ = [
     "AssessmentSchemeVersion",
@@ -348,10 +360,17 @@ __all__ = [
     "PrimaryValue",
     "PrivacyDefinition",
     "ProjectDescriptor",
+    "ProductVersion",
     "Provenance",
     "QualitySummary",
     "ReadinessDisposition",
     "RawModality",
+    "RawAnnotationMapping",
+    "RawFieldMapping",
+    "RawModalityProposal",
+    "RawRequiredInput",
+    "RawSessionInspection",
+    "RawSourceFile",
     "RawInputFamily",
     "RawInputNodeDefinition",
     "RawResourceRole",
@@ -381,6 +400,8 @@ __all__ = [
     "SchemeDraft",
     "Sha256Digest",
     "SessionManifest",
+    "SessionDataSourceKind",
+    "SessionSourceInspection",
     "SessionLifecycle",
     "SessionRecord",
     "SessionRevision",
@@ -402,6 +423,7 @@ __all__ = [
     "StreamReadinessResult",
     "SyntheticSourceProvenance",
     "StreamStatus",
+    "SystemDescriptor",
     "StreamSynchronizationResult",
     "StrictContractModel",
     "SynchronizationDisposition",
@@ -420,6 +442,7 @@ __all__ = [
     "TransactionReceipt",
     "TransactionStatus",
     "UnitInterval",
+    "UnitProvenance",
     "VariableState",
     "VersionLineage",
     "Viewport",

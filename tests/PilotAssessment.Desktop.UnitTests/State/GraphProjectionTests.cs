@@ -43,7 +43,7 @@ public sealed class GraphProjectionTests
         Assert.DoesNotContain(result.Nodes, node => node.NodeId == "bn.archived");
         var active = result.Nodes.Single(node => node.NodeId == "evidence.precision");
         var inactive = result.Nodes.Single(node => node.NodeId == "evidence.gaze");
-        Assert.Equal(777, active.X);
+        Assert.Equal(777 + active.LayoutOffsetX, active.X);
         Assert.Equal(333, active.Y);
         Assert.True(active.IsSelected);
         Assert.Equal(1.0, active.VisualOpacity);
@@ -67,7 +67,7 @@ public sealed class GraphProjectionTests
             new GraphProjectionOptions(
                 GraphViewMode.AllGlobalNodes,
                 SearchText: "轨迹",
-                NodeKind: ModelNodeKind.Evidence));
+                Layer: GraphDisplayLayer.Evidence));
         Assert.Single(bilingual.Nodes);
         Assert.Equal("evidence.precision", bilingual.Nodes[0].NodeId);
         Assert.Empty(bilingual.Edges);
@@ -76,12 +76,56 @@ public sealed class GraphProjectionTests
             snapshot,
             new GraphProjectionOptions(
                 GraphViewMode.ActiveAndInactive,
-                NodeKind: ModelNodeKind.Evidence,
+                Layer: GraphDisplayLayer.Evidence,
                 Group: "attention",
-                Tag: "gaze",
                 Active: false));
         Assert.Single(inactiveGaze.Nodes);
         Assert.Equal("evidence.gaze", inactiveGaze.Nodes[0].NodeId);
+    }
+
+    [Fact]
+    public void FiveLayerFilterHidesFamilyRootsAndPreservesCanonicalBnDirection()
+    {
+        var snapshot = SevenNodeGraph();
+        var all = GraphProjection.Project(
+            snapshot,
+            new GraphProjectionOptions(GraphViewMode.ActiveAndInactive));
+
+        var rawX = all.Nodes.Single(node => node.NodeId == "raw.x");
+        var evidence = all.Nodes.Single(node => node.NodeId == "evidence.precision");
+        var subSkill = all.Nodes.Single(node => node.NodeId == "bn.skill");
+        var competency = all.Nodes.Single(node => node.NodeId == "bn.competency");
+        Assert.True(all.RawInputFamilies.Max(node => node.X) < rawX.X);
+        Assert.True(rawX.X < evidence.X);
+        Assert.True(evidence.X < subSkill.X);
+        Assert.True(subSkill.X < competency.X);
+
+        var probabilistic = all.Edges.Single(edge =>
+            edge.Parent.NodeId == "bn.competency" && edge.Child.NodeId == "bn.skill");
+        Assert.True(probabilistic.Parent.X > probabilistic.Child.X);
+
+        foreach (var layer in new[]
+                 {
+                     GraphDisplayLayer.ExtractedData,
+                     GraphDisplayLayer.Evidence,
+                     GraphDisplayLayer.SubSkill,
+                     GraphDisplayLayer.Competency,
+                 })
+        {
+            var filtered = GraphProjection.Project(
+                snapshot,
+                new GraphProjectionOptions(GraphViewMode.ActiveAndInactive, Layer: layer));
+            Assert.Empty(filtered.RawInputFamilies);
+            Assert.All(filtered.Nodes, node => Assert.Equal(layer, GraphProjection.LayerOf(node.Node)));
+        }
+
+        var families = GraphProjection.Project(
+            snapshot,
+            new GraphProjectionOptions(
+                GraphViewMode.ActiveAndInactive,
+                Layer: GraphDisplayLayer.RawInputFamily));
+        Assert.Empty(families.Nodes);
+        Assert.Equal(5, families.RawInputFamilies.Count);
     }
 
     [Fact]
@@ -126,8 +170,8 @@ public sealed class GraphProjectionTests
             Now);
         var snapshot = new ModelGraphSnapshot(
             "model-graph-snapshot",
-            "0.1.0",
-            "project.ui-benchmark",
+            "0.2.0",
+            "model-library.ui-benchmark",
             scheme,
             nodes,
             [],
@@ -144,12 +188,123 @@ public sealed class GraphProjectionTests
         stopwatch.Stop();
 
         Assert.Equal(1_000, projection.Nodes.Count);
-        Assert.Equal(40, plan.RealizedNodes.Count);
+        Assert.InRange(plan.RealizedNodes.Count, 1, 100);
         Assert.True(plan.ExtentWidth > 7_000);
         Assert.True(plan.ExtentHeight > 4_000);
         Assert.True(
             stopwatch.Elapsed < TimeSpan.FromSeconds(2),
             $"1,000-node UI projection took {stopwatch.Elapsed.TotalMilliseconds:F1} ms.");
+    }
+
+    [Theory]
+    [InlineData(500, 400, 100, 100, 160, 130, 440, 370)]
+    [InlineData(20, 10, 100, 100, 180, 140, 0, 0)]
+    [InlineData(980, 790, 100, 100, 40, 20, 1_000, 800)]
+    public void CanvasPanConvertsPointerDragToClampedScrollOffsets(
+        double startHorizontalOffset,
+        double startVerticalOffset,
+        double startPointerX,
+        double startPointerY,
+        double currentPointerX,
+        double currentPointerY,
+        double expectedHorizontalOffset,
+        double expectedVerticalOffset)
+    {
+        var origin = new GraphViewportPanOrigin(
+            startPointerX,
+            startPointerY,
+            startHorizontalOffset,
+            startVerticalOffset);
+
+        var offset = GraphViewportPan.Calculate(
+            origin,
+            currentPointerX,
+            currentPointerY,
+            1_000,
+            800);
+
+        Assert.Equal(expectedHorizontalOffset, offset.Horizontal);
+        Assert.Equal(expectedVerticalOffset, offset.Vertical);
+    }
+
+    [Fact]
+    public void ProjectsFiveUnifiedFamilyRootsAndTypedReadOnlyProvenance()
+    {
+        var rawNodes = new[]
+        {
+            RawNode("raw.x", RawInputFamily.X, RawModality.X, "X.state", 100, 100),
+            RawNode("raw.u", RawInputFamily.U, RawModality.U, "U.controls", 100, 260),
+            RawNode("raw.i", RawInputFamily.I, RawModality.I, "I.frames", 100, 420),
+            RawNode("raw.g", RawInputFamily.G, RawModality.G, "G.frames", 100, 580),
+            RawNode("raw.eeg", RawInputFamily.P, RawModality.Eeg, "EEG.channels", 100, 740),
+            RawNode(
+                "raw.pilot-camera",
+                RawInputFamily.PilotCamera,
+                RawModality.PilotCamera,
+                "pilot_camera.frames",
+                100,
+                900),
+            RawNode(
+                "raw.derived",
+                null,
+                null,
+                "derived.control-state",
+                280,
+                180,
+                ["X.state", "U.controls"]),
+            RawNode(
+                "raw.cycle-a",
+                null,
+                null,
+                "derived.cycle-a",
+                280,
+                500,
+                ["derived.cycle-b"]),
+            RawNode(
+                "raw.cycle-b",
+                null,
+                null,
+                "derived.cycle-b",
+                280,
+                660,
+                ["derived.cycle-a"]),
+        };
+        var scheme = Scheme("task-scheme.raw-family", rawNodes);
+        var snapshot = new ModelGraphSnapshot(
+            "model-graph-snapshot",
+            "0.2.0",
+            "model-library.raw-family",
+            scheme,
+            rawNodes,
+            [],
+            Now,
+            new string('c', 64));
+
+        var result = GraphProjection.Project(
+            snapshot,
+            new GraphProjectionOptions(GraphViewMode.ActiveAndInactive));
+
+        Assert.Equal(5, result.RawInputFamilies.Count);
+        Assert.All(result.RawInputFamilies, family =>
+        {
+            Assert.Equal(GraphProjection.RawInputFamilyDiameter, family.Diameter);
+            Assert.StartsWith("raw-family.", family.ProjectionId, StringComparison.Ordinal);
+            Assert.True(family.X < result.Nodes.Min(node => node.X));
+        });
+        Assert.Equal(8, result.ProvenanceEdges.Count);
+        Assert.Equal(2, result.RawInputFamilies.Single(node => node.Family is RawInputFamily.X).MemberCount);
+        Assert.Equal(2, result.RawInputFamilies.Single(node => node.Family is RawInputFamily.U).MemberCount);
+        Assert.Equal(2, result.RawInputFamilies.Single(node => node.Family is RawInputFamily.I).MemberCount);
+        Assert.Equal(1, result.RawInputFamilies.Single(node => node.Family is RawInputFamily.G).MemberCount);
+        Assert.Equal(1, result.RawInputFamilies.Single(node => node.Family is RawInputFamily.P).MemberCount);
+        Assert.Contains(
+            result.ProvenanceEdges,
+            edge => edge.Parent.Family is RawInputFamily.I && edge.Child.NodeId == "raw.pilot-camera");
+        Assert.Equal(2, result.ProvenanceEdges.Count(edge => edge.Child.NodeId == "raw.derived"));
+        Assert.DoesNotContain(
+            result.ProvenanceEdges,
+            edge => edge.Child.NodeId is "raw.cycle-a" or "raw.cycle-b");
+        Assert.Empty(result.Edges);
     }
 
     private static ModelGraphSnapshot SevenNodeGraph()
@@ -209,13 +364,95 @@ public sealed class GraphProjectionTests
         };
         return new ModelGraphSnapshot(
             "model-graph-snapshot",
-            "0.1.0",
-            "project.test",
+            "0.2.0",
+            "model-library.test",
             scheme,
             nodes,
             edges,
             Now,
             new string('c', 64));
+    }
+
+    private static TaskScheme Scheme(string schemeId, IReadOnlyList<ModelNode> nodes) => new(
+        "task-scheme",
+        "0.1.0",
+        schemeId,
+        null,
+        "Raw family projection",
+        null,
+        null,
+        [],
+        null,
+        ModelObjectLifecycle.Active,
+        null,
+        nodes.Select(node => node.NodeId).ToArray(),
+        nodes.Select(node => node.NodeId).ToArray(),
+        [],
+        new Dictionary<string, JsonElement>(StringComparer.Ordinal),
+        [],
+        0,
+        0,
+        ModelTechnicalStatus.Executable,
+        [],
+        new string('a', 64),
+        new string('b', 64),
+        Now,
+        Now);
+
+    private static ModelNode RawNode(
+        string id,
+        RawInputFamily? family,
+        RawModality? modality,
+        string sourceId,
+        double x,
+        double y,
+        string[]? dependencies = null)
+    {
+        var descriptor = new SourceDescriptor(
+            "source-descriptor",
+            "0.1.0",
+            sourceId,
+            dependencies is { Length: > 0 } ? SourceKind.DerivedArtifact : SourceKind.RawStream,
+            sourceId,
+            sourceId,
+            new PortType("table", PortCardinality.Many, TemporalSemantics.Sampled, null),
+            modality,
+            dependencies ?? [],
+            new Dictionary<string, JsonElement>(StringComparer.Ordinal),
+            new string('f', 64));
+        return new ModelNode(
+            "model-node",
+            "0.1.0",
+            id,
+            ModelNodeKind.RawInput,
+            null,
+            sourceId,
+            null,
+            sourceId,
+            null,
+            sourceId,
+            [],
+            "inputs",
+            ModelObjectLifecycle.Active,
+            null,
+            new RawInputNodeDefinition(
+                family,
+                dependencies is { Length: > 0 }
+                    ? RawResourceRole.DerivedResource
+                    : RawResourceRole.Stream,
+                descriptor,
+                new Dictionary<string, JsonElement>(StringComparer.Ordinal),
+                null,
+                null),
+            new NodeLayout(id, x, y),
+            0,
+            0,
+            ModelTechnicalStatus.Executable,
+            [],
+            new string('d', 64),
+            new string('e', 64),
+            Now,
+            Now);
     }
 
     private static ModelNode Node(

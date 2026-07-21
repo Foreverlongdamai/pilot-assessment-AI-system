@@ -6,12 +6,12 @@
 
 | 当前适用性 | 决策 | 解释 |
 |---|---|---|
-| 当前通用基线 | D-001、D-003、D-005–D-007、D-009–D-014、D-016–D-022、D-024 的 no-quality-mixing 原则、D-027 的 raw-driven 原则、D-028、D-030–D-032、D-034–D-035、D-037–D-044、D-045 的 transaction/idempotency 原则、D-046 的 exact snapshot/recovery 原则、D-047–D-053 | 继续约束通用产品、合同或运行语义；其中 D-007 的“后端权威”只指 canonical state/execution，不表示后端决定科学内容 |
+| 当前通用基线 | D-001、D-003、D-005–D-007、D-009–D-014、D-016–D-022、D-024 的 no-quality-mixing 原则、D-027 的 raw-driven 原则、D-028、D-030–D-032、D-034–D-035、D-037–D-044、D-045 的 transaction/idempotency 原则、D-046 的 exact snapshot/recovery 原则、D-047–D-071 | 继续约束通用产品、合同或运行语义；其中 D-007 的“后端权威”只指 canonical state/execution，不表示后端决定科学内容 |
 | Starter/reference 范围 | D-002、D-004、D-015、D-024 的具体默认权重、D-029 的 fixed resource inventory | 只描述 `reference-model-v0.1` / Hover starter 或已发布 legacy resource，不构成 generic engine 的任务、数量、拓扑或算法限制 |
-| 已被部分取代、限定或转为历史实现 | D-008、D-023、D-033、D-036，以及 D-045/D-046 中要求 publish/published scheme 的措辞 | 不可变运行历史、typed DAG、最小技术校验、幂等事务与 exact snapshot 仍有效；当前节点身份、任务激活、自动保存和 run 语义由 D-047–D-053 取代。M5/M6 version/draft/publish 实现只用于迁移和旧 run replay |
+| 已被部分取代、限定或转为历史实现 | D-008、D-023、D-033、D-036，D-041/D-042/D-048/D-056 中把 current model/edit session 表述为 project-owned 的部分，D-045/D-046 中要求 publish/published scheme 的措辞，以及 D-051/D-053/D-054 的即时 canonical autosave／输入族始终显示细节 | 不可变运行历史、typed DAG、最小技术校验、幂等事务与 exact snapshot 仍有效；current model ownership 由 D-066–D-070 提升为 software-copy system scope。M5/M6 version/draft/publish 和 legacy project-local model 实现只用于迁移和旧 run replay |
 | 历史完成门 | D-025、D-026，以及 D-027 中 fixed-18 测试范围 | 只记录旧 M4 Task 0–28 的工程过程，不再定义 M4R/M5 的完成条件或专家每次修改的测试义务 |
 
-若单条决策正文与该索引或更晚决策冲突，以明确列出的后续决策为准。D-031–D-040 保留专家可设计、三类节点/两类边和 BN 语义基础；D-047–D-053 定义当前完整节点、任务激活、自动保存和不可变运行快照方向。历史材料继续保留用于迁移、回放和说明路线演进。
+若单条决策正文与该索引或更晚决策冲突，以明确列出的后续决策为准。D-031–D-040 保留专家可设计、三类节点/两类边和 BN 语义基础；D-047–D-059 定义当前完整节点、任务激活、会话暂存、不可变运行快照、五层输入投影、模型内容语言、显示身份与品牌方向；D-060–D-065 定义 raw session 与首个便携交付；D-066–D-071 定义每套软件副本唯一 system model、project/run 边界、legacy 合并和 source identity。历史材料继续保留用于迁移、回放和说明路线演进。
 
 ## D-001：产品提供可配置参考模型，而非最终航空标准
 
@@ -383,20 +383,149 @@
 ## D-051：取消 Draft/Published/Apply/Publish 正常流程；每次运行自动冻结快照
 
 - 状态：已接受
+- 当前适用性：取消业务 Draft/Published/Apply/Publish、并列 TaskScheme 和每次运行冻结快照继续有效；“每次 autosave 立即成为 canonical current object”的提交时机被 D-056 取代。
 - 决策：所有 TaskSchemes 都是并列、autosaved、freely editable、directly runnable 的 current objects。正常 UI 只显示 saving/saved/save failed/configuration incomplete，不提供 Draft/Published 或 Apply/Publish gate。技术可执行的当前 scheme 可直接 run；`run.start` 先冻结 exact managed session、scheme activation closure、完整 node definitions、recipes/operators/scorers、parents、states、CPTs、runtime parameters 与 hashes 为 immutable `RunSnapshot`。后续编辑只影响未来 runs。
 - 理由：任务方案本身就是长期并列的工作对象，额外发布状态没有产品价值，反而妨碍专家自由修改。可重放性真正需要的是每次运行锁定精确输入，而不是强迫用户管理发布版本。
 - 影响：D-033、D-036 的 apply/publish 交互以及 D-045/D-046 中 published-scheme 前提被取代。Append-only change journal、undo/redo、optimistic revision、content hash、历史 run snapshot 和旧 published records 继续保留。Incomplete 方案可保存但 run preflight 会阻止技术上不可执行的运行。
 
-## D-052：M7 使用任务侧栏、亮暗全局画布、多浮动节点窗口和双语模型元数据
+## D-052：M7 使用任务侧栏、亮暗全局画布、多浮动节点窗口和即时界面语言切换
 
 - 状态：已接受
-- 决策：Model Studio 左侧直接切换/复制任务方案；圆形节点以 type 区分颜色，active 明亮、inactive 变暗且仍可点击/复制；点击节点打开可移动、缩放、最大化的非模态独立窗口，允许多个窗口和多显示器并排编辑。顶部 `中文 | EN` 即时切换；系统 UI 用 WinUI resources，节点/方案的 bilingual name/description 存在后端。
+- 决策：Model Studio 左侧直接切换/复制任务方案；圆形节点以 type 区分颜色，active 明亮、inactive 变暗且仍可点击/复制；点击节点打开可移动、缩放、最大化的非模态独立窗口，允许多个窗口和多显示器并排编辑。顶部 `中文 | EN` 即时切换，系统 UI 使用 WinUI resources。最初要求后端保存 bilingual model metadata 的部分已被 D-055 取代。
 - 理由：专家需要在大量节点和多个任务之间直观比较、复制和修改，固定 Inspector、单窗口或只显示 active 子图都不足以支持该工作流。
 - 影响：浮动窗口显示 canonical autosave state、usage、recipe/CPT、preview/trace 和 history；语言切换不得改变 ID、hash 或计算。
 
 ## D-053：前端修改必须落到后端 canonical definitions，M7 先迁移 M5/M6 编辑语义
 
 - 状态：已接受
+- 当前适用性：typed backend operation、Python execution authority、C# 不复制算法和普通编辑不改 `.py` 继续有效；每次 mutation 立即写 canonical definitions 的提交时机被 D-056 改为先写 backend-managed edit session、关闭时统一提交。
 - 决策：所有前端 node/edge/recipe/parameter/state/CPT/scheme edits 都调用 typed backend operations，并以后端 response 作为 canonical state；C# 不复制算法，UI 也不改写 `.py` 源文件。通用 Python engine 执行 persisted EvidenceRecipe/CPT definitions；只有 operator library 缺少新能力时才新增 trusted Python operator。M7 实施先新增 current ModelNode/TaskScheme persistence、activation closure、autosave/current-scheme run API，再开发 WinUI 页面。
 - 理由：用户要求前端展示的每个可修改部分都真实改变后端计算，同时普通专家编辑不能变成 Python 发布流程。现有 M5/M6 draft/publish API 无法完整表达 D-047–D-052，必须显式迁移而不是在前端伪装。
 - 影响：M1–M4R 数据/recipe/operator、M5 BN inference 和 M6 managed project/artifact/stdio 基础继续复用；旧 component versions、published schemes 和 runs 保持可读/回放，正常 M7 UI 不再调用 publish。权威规格见 [M7 WinUI Expert Designer and Task Activation Workspace Design](specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)。
+
+## D-054：画布使用五个统一绿色的原始输入族投影节点和只读来源连线
+
+- 状态：已接受
+- 当前适用性：五个绿色 projection roots、typed provenance 和非 canonical 语义继续有效；“固定显示”和统一 canonical lane offset 的展示细节被 D-057 取代。
+- 决策：Model Studio 在所有 canonical nodes 左侧固定显示 `X(t)`、`U(t)`、`I(t)`、`G(t)`、`P(t)` 五个较大的 Raw Input Family projection nodes。五个节点统一使用 theme-aware 绿色，与其他节点类别区分；`X/U/I/G/P` 符号和当前界面语言下的 UI 标签区分具体输入族。现有细粒度 Raw Input nodes 依据 typed family/raw modality/source dependencies 显示到族节点的只读 provenance links；`pilot_camera` 在画布投影中归入 I，但 backend modality 身份不改变。
+- 理由：专家需要从左到右直接看清“原始输入 → 细粒度输入/Evidence → Sub-skill → Aggregate competency”的来源关系，同时不能把概览入口误当成第二套可执行数据定义。
+- 影响：族节点和 provenance links 仅属于前端确定性投影，不创建 `ModelNode`/`ModelGraphEdge`，不参与 task activation、graph hash、CPT、RunSnapshot 或推理；canonical layout 只在渲染时整体右移，不写回持久化坐标。
+
+## D-055：界面本地化与专家模型内容分离，模型内容统一保存英文
+
+- 状态：已接受
+- 决策：应用菜单、按钮、字段标题、提示、状态、对话框和错误信息由 WinUI resources 随 `中文 | EN` 完整切换。节点、任务方案、Evidence/BN/operator 的名称、描述、help text 等专家定义内容只保存一份英文 canonical value，不再并排保存或编辑中英两份。语言切换不改写模型内容，也不产生 backend mutation、revision 或 hash 变化。
+- 理由：中文/英文切换是软件界面能力，不应把同一科学模型拆成两套易失配的数据；统一英文模型内容也更适合跨任务复用、源码扩展和后续交付。
+- 影响：当前 contracts/UI 需要迁移到单字段模型，并保留旧 v0.1 bilingual records 的兼容读取或一次性迁移；既有不可变 RunSnapshot 按原合同继续回放。D-052 的 bilingual model metadata 部分被本决策取代。
+
+## D-056：一次应用会话的模型修改先写后端持久草稿，关闭时统一保存或放弃
+
+- 状态：已接受
+- 决策：打开项目后，所有 ModelNode、edge、CPT、TaskScheme、activation 和 layout 修改先通过原有 typed operations 写入由 Python backend 管理的独立持久 edit-session SQLite，不实时覆盖 canonical workspace。主窗口关闭时，若有改动只提供“保存全部并关闭／放弃全部并关闭／取消”：保存使用一个原子 canonical transaction；放弃保持 canonical 逐字不变；取消返回应用。节点浮动窗口关闭只 flush 草稿。Ctrl+Z/Ctrl+Y 操作全局 edit-session history。dirty session 下 preview/preflight/run 必须先明确解决草稿。
+- 理由：专家需要自由试改并在一次工作完成后统一决定是否保留，不能因为字段离焦、拖拽或 debounce 就永久改动系统；同时草稿仍需由后端持久保存和验证，以支持崩溃恢复、跨窗口一致性和不丢编辑。
+- 影响：这不是重新引入业务 Draft/Published/Publish。D-051 的无发布工作流和 RunSnapshot 继续有效；D-053 的 backend operation/Python execution authority 继续有效，但 canonical 提交时机改为明确的 Save all。详细规格见 [M7 Staged Edit Session and Five-Layer Canvas Amendment](specs/2026-07-18-m7-staged-edit-session-and-five-layer-canvas-amendment.md)。
+
+## D-057：主画布只使用五个理解层并固定从左到右投影
+
+- 状态：已接受
+- 决策：Model Studio 的唯一顶层层级为 `Raw Input Family -> Extracted Data -> Evidence -> Sub-skill -> Competency`。五个 X/U/I/G/P 绿色大圆属于第一层；现有细粒度 Raw Input nodes 属于第二层；Evidence 属于第三层；非 aggregate BN 属于第四层；AggregateCompetency BN 属于第五层。层级筛选只显示“全部”和这五类，选择非 Raw Input Family 层时不强制显示五个根；`evidence.O1` 等技术 tag 不再是主画布顶层分类。
+- 理由：专家需要先按计算抽象层理解大量节点，而不是按内部类型或细粒度标签筛选；固定层级也能稳定呈现原始输入到能力结果的完整工作流。
+- 影响：物理布局从左到右，但 canonical BN 生成方向仍为 `Competency -> Sub-skill -> Evidence`，概率箭头允许从右指向左，绝不能反转 parent/CPT/DAG。每层使用可逆 render-only offset，筛选不改变保存坐标；operator 仍不进入主画布。
+
+## D-058：普通产品界面只呈现语义英文名称，技术身份按层展示
+
+- 状态：已接受
+- 决策：Model Studio、任务侧栏、普通 Runs/Results 列表和节点窗口标题只显示简洁英文模型名称，不拼接 `node_id`、`scheme_id`、UUID 或 hash，也不显示“未命名节点”与 `[EN fallback]` / `[中文回退]` / `[ID fallback]`。英文名称缺失时，前端按 typed source、EvidenceRecipe anchor、BN reporting metadata/role 或 task binding 确定性生成与对象实际作用对应的英文名称。Diagnostics、Provenance、Artifacts、frozen snapshot 和默认折叠的 Technical identity 区域继续保留 exact ID/hash。
+- 理由：稳定技术身份对持久化、复现和诊断必不可少，但把随机标识当作普通名称会显著降低产品成熟度和专家可读性；名称解析必须使用已有模型语义，而不是用随机 ID 或模糊占位符掩盖缺失内容。
+- 影响：该规则是只读 presentation projection，不改变 canonical identity、revision、hash 或 RunSnapshot。D-055 的单字段 canonical contract 迁移仍需单独完成；本决策先关闭所有可见 fallback marker 和普通界面 ID 泄漏。
+
+## D-059：桌面产品使用统一的原创极简 eVTOL 评估图标
+
+- 状态：已接受
+- 决策：Pilot Assessment Desktop 使用深海军蓝圆角底板、白色俯视四旋翼 eVTOL 与中央评估网络节点组成的原创无文字图标。一个项目内 1024 px RGBA master 确定性派生 ICO、Square、Store、Splash、Wide 和 unplated Windows assets。
+- 理由：一致且小尺寸可辨识的产品标记能替代模板图标，明确软件的 eVTOL 与评估定位；单一 master 可避免任务栏、窗口、启动和发布资产漂移。
+- 影响：图标资产只改变产品品牌呈现，不改变功能、协议、数据、科学模型或发布边界。派生脚本保存在仓库中，M8 打包继续复用同一 master。
+
+## D-060：模拟器原始导出在受管 staging 中物化为 canonical Session Bundle
+
+- 状态：已接受
+- 决策：模拟器可以只导出只读的 `streams/` 与 `annotations/`。前端统一选择 session 数据目录，后端自动区分 canonical Bundle 与 simulator raw source；raw source 在项目 staging 中复制原始文件、生成 canonical annotations、`manifest.json` 与 checksums，通过既有 M1/M2 校验后原子提升为受管 `SessionRevision`。已有 canonical Bundle 继续走 byte-preserving exact-copy 分支。缺失模态只记录为 `missing`，不得合成传感器数据。
+- 理由：manifest 是系统内部和标准交换合同，不应成为模拟器导出器或普通用户的手工负担；同时受管 materialization 保持项目可迁移、外部源可删除和历史运行可重放。
+- 影响：新增统一的 `session.source.inspect/import` 协议与 source fingerprint stale-check；raw source 始终只读，系统生成内容只写入项目 staging/managed storage。运行继续只读取 exact managed revision，不直接依赖外部目录。
+
+## D-061：未声明单位保持未声明并按固定 adapter/Evidence 规则原值透传
+
+- 状态：已接受
+- 决策：原始文件和可信 adapter profile 都未声明字段单位时，系统不要求用户输入、不根据数值猜测、也不做隐式换算。生成 manifest 时 stream `units` 保持空 object、字段 `declared_unit` 保持 null；数值仍按已匹配的固定 adapter mapping 进入现有 EvidenceRecipe/operator。provenance 记录 `unit_handling=undeclared-pass-through-v1`。
+- 理由：当前目标是接收模拟器实际导出并运行既定 Evidence 提取方法，而不是把单位补录或数据质量研究转嫁给普通用户。虚构单位会比明确留空更危险。
+- 影响：缺失单位不进入 `required_user_inputs`、不阻止 inspect/import，也不在 WinUI 中出现单位填写控件。由此产生的结果只证明固定 starter 工作流可执行，不证明单位语义、Evidence 算法或科学结论正确；未来可信 profile 若明确单位，可在新 profile 中声明并执行显式版本化换算。
+
+## D-062：M8 首个交付采用 Windows x64 unpackaged self-contained 便携目录
+
+- 状态：已接受
+- 决策：首个产品交付为 Windows x64 ZIP；解压后直接运行 `PilotAssessment.Desktop.exe`。桌面端同时携带 self-contained .NET 与 Windows App SDK 文件，目标机不要求 Visual Studio、.NET SDK 或预装 Windows App Runtime。首阶段不使用 MSIX、安装器、自动更新或 single-file。
+- 理由：用户要求把后端运行环境、代码和前端打包为可迁移系统，并让其他 Windows 用户解压后直接使用。
+- 影响：发布构建固定 `win-x64`、`WindowsPackageType=None`、`.NET self-contained` 与 `WindowsAppSDKSelfContained=true`；最终干净机器验证保留到 M8E。
+
+## D-063：Portable runtime 优先运行包内 private Python 与唯一活动 backend source
+
+- 状态：已接受
+- 决策：产品模式优先从 `AppContext.BaseDirectory` 定位 `runtime/python/python.exe`、`runtime/site-packages` 与 `backend/src/pilot_assessment`；`backend/src/pilot_assessment` 是发布副本唯一活动的第一方 Python tree，不安装隐藏的项目 wheel 或第二份源码。只有 portable layout 不存在时才回退到仓库 `.tools/uv/uv.exe` 开发模式。
+- 理由：产品必须离开仓库运行，同时满足专家直接修改发布副本 Python 源码、重启后全局生效的自由度要求。
+- 影响：普通 Evidence/BN/CPT/task 参数仍通过前端编辑；新增底层计算机制或 core 修改可直接改 live `.py`。source baseline 用于说明和恢复，不得仅因本地修改阻止启动。
+
+## D-064：通用产品包只包含系统，不包含任何用户或测试 Session 数据
+
+- 状态：已接受
+- 决策：产品 ZIP 只包含桌面端、private runtime、完整第一方 backend source、starter resources、必要开发源码、发布工具、文档和清单。用户 project、SQLite、Session、X/U/I/G/EEG/ECG/camera、运行结果、artifact、偏好、日志、repository-external 样例与临时 synthetic 数据全部排除。
+- 理由：系统需要可迁移到不同 Windows 设备，而每个使用者应自行选择要评估的 Session；数据不是产品本体。
+- 影响：发布 pipeline 必须执行路径、扩展名、缓存、绝对私有路径和内容扫描；用户项目继续保存到用户选择的位置，SQLite 不作为单独服务启动。
+
+## D-065：M8A 工程包可记录 dirty source，M8E 正式候选必须来自 clean tagged source
+
+- 状态：已接受
+- 决策：为包含当前尚未提交的 M7 用户返修，M8A engineering build 可以从 dirty working tree 构建，但 `release-manifest.json` 必须明确记录 commit 与 dirty 状态。M8E release candidate 必须来自 clean、可追溯 source，并重新执行完整交付验收。
+- 理由：当前优先目标是尽早验证真实打包链，不应因历史工作树尚未分批提交而阻塞 M8A，也不能把不可复现工程包冒充正式发布。
+- 影响：M8A ZIP 可以交给用户本机验收，但不得标记为 final release candidate。
+
+## D-066：每套软件副本在 `system/` 中拥有唯一 canonical 模型库
+
+- 状态：已接受
+- 决策：一套解压后的 `PilotAssessment/` 只拥有一个 `system/model-library.sqlite3`，其中保存全部 current ModelNode、EvidenceRecipe、BN parent/state/CPT、TaskScheme、activation 和 layout。它不放入用户 project，也不静默迁移到 `%LOCALAPPDATA%`。复制整套软件目录会复制当前 system model，两个副本随后独立演化。
+- 理由：用户要求所有 project 共享同一套可自由编辑的 Evidence/BN/任务方案，同时保留“复制整套软件即可形成平行系统分支”的直观迁移方式。
+- 影响：D-041、D-042、D-048、D-056 中把 current model 或 edit session 写成 project-owned 的措辞被本决策取代；starter 仍是可修改工程模板，不是科学真值。
+
+## D-067：`SystemApplication` 先于 project 启动，Model Studio 无 project 可用
+
+- 状态：已接受
+- 决策：sidecar 启动时先打开 system locator/database、current-model workspace、持久 edit session、operator/source registries 与 starter seed。所有 `model.*`、`operator.*` 和兼容 model-library RPC 绑定 `SystemApplication`。`ProjectApplication` 为可选上下文，只拥有 Session、Run、Result、artifact 与项目恢复。
+- 理由：模型设计是产品系统能力，不应要求先创建一个虚假的用户 project；project 的存在只由评估数据和运行历史决定。
+- 影响：关闭或切换 project 不关闭 system model，也不清空 dirty model edit session；Session/Run/Result 页面无 project 时禁用，Model Studio 继续工作。
+
+## D-068：run 从 system current state 冻结 exact model 到 project，不再依赖 project-local current model
+
+- 状态：已接受
+- 决策：preflight 同时锁定 project 的 exact SessionRevision 与 system 的 clean TaskScheme、active ModelNode closure、operator/source/runtime identities；run start 前执行 stale-check，然后把完整模型执行副本和 RunSnapshot 写入目标 project。pipeline 只读取冻结副本，历史运行不重新解析为当前 system model。
+- 理由：全局模型需要随专家修改而立即服务未来运行，但任何后续修改都不能改写已经完成的评估证据和结果。
+- 影响：新 project 不 seed editable model；`RunRepository.create_current()` 不再查询 project-local `model_nodes/task_schemes`。project 移动后仍可读取旧 run，而新 run 使用当前软件副本的 system model。
+
+## D-069：legacy project-local 模型只读保留并以确定性、事务化、无覆盖规则合并
+
+- 状态：已接受
+- 决策：打开 legacy project 时按 canonical fingerprint 幂等导入 system store。相同 ID/hash 复用，缺失 ID 原样导入，相同 ID/不同内容生成确定性 imported ID，并且只改写明确 typed references；任一校验失败整笔回滚。原 project tables/bytes 不删除、不覆盖。
+- 理由：旧项目可能包含用户已经修改的节点、CPT、方案或未提交草稿，必须迁移而不能静默丢弃，也不能覆盖另一项目先导入的 system 对象。
+- 影响：最多自动恢复一套 legacy dirty edit session；若 system 已有 dirty session，第二套草稿原样保留并返回 recoverable conflict，等待用户显式处理。
+
+## D-070：一套软件副本只有一个 system writer，project 生命周期不改变 system edit session
+
+- 状态：已接受
+- 决策：`system/` 使用 software-copy-scoped single-writer lock；一个 WinUI 主进程及其多个节点浮窗共享同一 sidecar/edit session。第二个主进程不得并发写同一 system store。project create/open/close/switch 不自动 Save、Discard 或替换 system 草稿；仍只在主应用关闭时提供“保存全部／放弃全部／取消”。
+- 理由：SQLite 串行事务不足以表达两个独立 UI 会话的全局 undo/redo 和关闭决策；单 writer 能保持专家可理解的会话语义，而不引入审批或发布流程。
+- 影响：应用目录必须可写；锁冲突和不可写目录必须给出稳定错误，不得静默选择另一套隐藏模型库。
+
+## D-071：源码/模型 baseline 偏离只记录，运行身份对应当前进程真实加载的代码
+
+- 状态：已接受
+- 决策：system model 和公开 `backend/src` 都允许用户直接修改；与出厂 baseline 不同只标记 `locally_modified`，不审批、不阻止启动或运行。sidecar 启动冻结 `loaded_source_identity`；若当前进程启动后磁盘源码或 dependency lock 又变化，新 run 以 `runtime_restart_required` 阻止，避免记录的 hash 与已加载实现不一致。语法/import/contract 错误必须真实失败，不得加载隐藏 baseline。
+- 理由：产品要为专家自由设计模型和底层算法服务，同时必须能准确回答某次 run 实际使用了哪套代码，而不能用磁盘最新内容冒充进程已加载内容。
+- 影响：完整 source/runtime/operator identity、source snapshot artifact 与新增 operator 闭环在 M8B-1/M8B-2 实现；D-063 的唯一活动 source tree 继续有效。

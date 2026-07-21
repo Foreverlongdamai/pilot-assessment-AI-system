@@ -9,7 +9,7 @@
 
 本设计明确取消“v0 只读拓扑”边界。前端允许在集成画布中编辑 extraction 与 BN 两种图语义；每次用户意图直接自动保存到 current node/scheme，后端 canonical definition 才是模型事实来源。正常 M7 交互不再使用 Draft/Published/Apply/Publish；每次运行自动冻结 immutable RunSnapshot。
 
-> **当前权威与适用性：** [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)。本文件后续段落保留 BN transaction、CPT migration 和早期画布细节；凡涉及同 concept 并行版本选择、scheme draft、apply/publish、固定 Inspector 或与 M7 完整节点/任务激活/多浮窗语义冲突的内容均为历史材料，不得用于新实施。
+> **当前权威与适用性：** 画布交互以 [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) 为基础，模型 ownership 以 [M8B System-Owned Model Library and Editable Backend Provenance Design](./specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md) 为准。current ModelNode、TaskScheme 和 edit session 属于每套软件副本的 `system/`，Model Studio 无需 project；project 只承载 Session 与不可变运行历史。本文件后续段落保留 BN transaction、CPT migration 和早期画布细节；凡涉及 project-owned current model、同 concept 并行版本选择、scheme draft、apply/publish、固定 Inspector 或与 M7/M8B 当前语义冲突的内容均为历史材料，不得用于新实施。
 
 ## 2. 用户体验
 

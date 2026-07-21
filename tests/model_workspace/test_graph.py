@@ -186,9 +186,9 @@ def test_semantic_and_layout_hashes_are_deterministic_and_separate() -> None:
     assert task_scheme_layout_hash(moved_scheme) != task_scheme_layout_hash(scheme)
 
     edges = project_model_edges(nodes)
-    first = model_graph_semantic_hash("project.alpha", scheme, nodes, edges)
+    first = model_graph_semantic_hash("model-library.alpha", scheme, nodes, edges)
     second = model_graph_semantic_hash(
-        "project.alpha",
+        "model-library.alpha",
         scheme,
         tuple(reversed(nodes)),
         tuple(reversed(edges)),

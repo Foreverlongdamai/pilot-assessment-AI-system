@@ -493,7 +493,7 @@ class CurrentModelExecutionMaterializer:
             raise CurrentExecutionMaterializationError("active closure contains an archived node")
         edges = project_model_edges(active_nodes, node_ids=scheme.computed_active_closure)
         semantic_graph_hash = model_graph_semantic_hash(
-            self.workspace.project_id,
+            self.workspace.model_library_id,
             scheme,
             active_nodes,
             edges,
@@ -517,7 +517,7 @@ class CurrentModelExecutionMaterializer:
             },
         )
         existing = self.database.fetchone(
-            "SELECT * FROM model_execution_materializations WHERE graph_hash = ?",
+            "SELECT * FROM model_execution_materializations_v2 WHERE graph_hash = ?",
             (graph_hash,),
         )
         if existing is not None:
@@ -559,7 +559,7 @@ class CurrentModelExecutionMaterializer:
                         )
                 connection.execute(
                     """
-                    INSERT INTO model_execution_materializations(
+                    INSERT INTO model_execution_materializations_v2(
                         graph_hash, scheme_id, scheme_semantic_revision,
                         scheme_content_hash, legacy_scheme_version_id,
                         legacy_scheme_content_hash, materialization_json, created_at
@@ -584,7 +584,7 @@ class CurrentModelExecutionMaterializer:
 
     def get(self, graph_hash: str) -> CurrentExecutionMaterialization:
         row = self.database.fetchone(
-            "SELECT * FROM model_execution_materializations WHERE graph_hash = ?",
+            "SELECT * FROM model_execution_materializations_v2 WHERE graph_hash = ?",
             (graph_hash,),
         )
         if row is None:

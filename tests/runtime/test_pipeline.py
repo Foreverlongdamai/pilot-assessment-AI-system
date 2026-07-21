@@ -15,6 +15,7 @@ from pilot_assessment.runtime import (
     RunResultNotFoundError,
 )
 from tests.runtime.support import minimal_o1_scheme
+from tests.runtime.system_support import open_test_system
 
 NOW = datetime(2026, 7, 16, 12, 0, tzinfo=UTC)
 
@@ -31,8 +32,10 @@ def test_pipeline_executes_one_dynamic_evidence_to_bn_and_persists_exact_result(
     external = tmp_path / "external"
     shutil.copytree(m4_workflow_bundle, external)
     external_manifest = (external / "manifest.json").read_bytes()
+    system = open_test_system(tmp_path / "system", clock=lambda: NOW)
     application = ProjectApplication.create(
         tmp_path / "project",
+        system=system,
         project_id="project.pipeline",
         name="Pipeline project",
         created_at=NOW,
@@ -51,7 +54,7 @@ def test_pipeline_executes_one_dynamic_evidence_to_bn_and_persists_exact_result(
             name="Pipeline O1 software smoke",
             created_at=NOW,
         )
-        application.components.add(scheme, recorded_at=NOW)
+        application.system.components.add(scheme, recorded_at=NOW)
         prepared = application.preflight.prepare(
             session_revision_id=imported.revision.session_revision_id,
             scheme_version_id=scheme.scheme_version_id,
@@ -151,3 +154,4 @@ def test_pipeline_executes_one_dynamic_evidence_to_bn_and_persists_exact_result(
         )
     finally:
         application.close()
+        system.close()

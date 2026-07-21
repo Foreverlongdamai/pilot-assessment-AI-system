@@ -13,12 +13,12 @@ from pilot_assessment.contracts.run import (
 )
 from pilot_assessment.persistence.database import encode_canonical_json
 from pilot_assessment.runtime import ProjectApplication
-from pilot_assessment.runtime.preflight import RunPreflightService
 from pilot_assessment.runtime.sources import (
     RuntimeSourceResolver,
     SourceResolutionContext,
     SourceResolutionStatus,
 )
+from tests.runtime.system_support import open_test_system
 
 NOW = datetime(2026, 7, 16, 12, 0, tzinfo=UTC)
 
@@ -29,8 +29,10 @@ def test_preflight_locks_dynamic_closure_allows_bad_performance_and_blocks_forma
 ) -> None:
     external = tmp_path / "external-bundle"
     shutil.copytree(m4_workflow_bundle, external)
+    system = open_test_system(tmp_path / "system", clock=lambda: NOW)
     application = ProjectApplication.create(
         tmp_path / "project",
+        system=system,
         project_id="project.alpha",
         name="Alpha project",
         created_at=NOW,
@@ -42,14 +44,8 @@ def test_preflight_locks_dynamic_closure_allows_bad_performance_and_blocks_forma
             transaction_id="tx.preflight-session",
             imported_by="expert.one",
         )
-        service = RunPreflightService(
-            application.project.database,
-            application.components,
-            application.sessions,
-            source_catalog=application.source_catalog,
-            operator_registry=application.operator_registry,
-            clock=lambda: NOW,
-        )
+        application.system_execution.ensure_available(application.starter_scheme_id)
+        service = application.preflight
         ready = service.prepare(
             session_revision_id=imported.revision.session_revision_id,
             scheme_version_id=application.starter_scheme_id,
@@ -134,3 +130,4 @@ def test_preflight_locks_dynamic_closure_allows_bad_performance_and_blocks_forma
         assert service.get(ready.report.preflight_id) == ready
     finally:
         application.close()
+        system.close()

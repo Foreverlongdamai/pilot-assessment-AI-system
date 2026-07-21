@@ -9,6 +9,7 @@ from pilot_assessment.contracts.run import RunPurpose, RunState
 from pilot_assessment.runtime import ProjectApplication
 from pilot_assessment.schemes.operations import CloneComponentVersion, MoveLayoutNode
 from tests.runtime.support import minimal_o1_scheme
+from tests.runtime.system_support import open_test_system
 
 NOW = datetime(2026, 7, 16, 22, 0, tzinfo=UTC)
 
@@ -22,8 +23,10 @@ def test_managed_project_survives_source_deletion_and_directory_move(
     moved_root = tmp_path / "moved-assessment-project"
     shutil.copytree(m4_workflow_bundle, external_bundle)
 
+    system = open_test_system(tmp_path / "system", clock=lambda: NOW)
     application = ProjectApplication.create(
         project_root,
+        system=system,
         project_id="project.m6-vertical-slice",
         name="M6 managed vertical slice",
         created_at=NOW,
@@ -58,7 +61,7 @@ def test_managed_project_survives_source_deletion_and_directory_move(
             name="M6 portable O1 foundation",
             created_at=NOW,
         )
-        application.components.add(foundation, recorded_at=NOW)
+        application.system.components.add(foundation, recorded_at=NOW)
         draft = application.schemes.create_draft_from_scheme(
             foundation.scheme_version_id,
             draft_id="draft.m6-portable",
@@ -134,7 +137,7 @@ def test_managed_project_survives_source_deletion_and_directory_move(
     project_root.rename(moved_root)
     assert not project_root.exists()
 
-    reopened = ProjectApplication.open(moved_root, clock=lambda: NOW)
+    reopened = ProjectApplication.open(moved_root, system=system, clock=lambda: NOW)
     try:
         assert reopened.project.descriptor.project_id == "project.m6-vertical-slice"
         assert reopened.sessions.verify_managed_revision(imported_revision_id).managed_bundle_path
@@ -157,3 +160,4 @@ def test_managed_project_survives_source_deletion_and_directory_move(
         assert rebased_draft.candidate_components == ()
     finally:
         reopened.close()
+        system.close()

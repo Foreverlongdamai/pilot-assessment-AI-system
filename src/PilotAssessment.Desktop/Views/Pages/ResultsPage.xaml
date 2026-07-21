@@ -97,10 +97,7 @@
                                             <ColumnDefinition Width="130" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <StackPanel>
-                                            <TextBlock FontWeight="SemiBold" Text="{x:Bind DisplayName}" />
-                                            <TextBlock Opacity="0.62" Text="{x:Bind NodeId}" TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
+                                        <TextBlock FontWeight="SemiBold" Text="{x:Bind DisplayName}" TextWrapping="Wrap" />
                                         <TextBlock Grid.Column="1" Text="{x:Bind CalculationStatus}" />
                                         <TextBlock Grid.Column="2" FontFamily="Consolas" Text="{x:Bind PrimaryValue}" />
                                         <TextBlock Grid.Column="3" FontWeight="SemiBold" Text="{x:Bind DauState}" />
@@ -147,10 +144,7 @@
                                         <ColumnDefinition Width="100" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel>
-                                        <TextBlock FontWeight="SemiBold" Text="{x:Bind DisplayName}" />
-                                        <TextBlock Opacity="0.62" Text="{x:Bind NodeId}" TextTrimming="CharacterEllipsis" />
-                                    </StackPanel>
+                                    <TextBlock FontWeight="SemiBold" Text="{x:Bind DisplayName}" TextWrapping="Wrap" />
                                     <TextBlock Grid.Column="1" Text="{x:Bind TopState}" />
                                     <TextBlock Grid.Column="2" Text="{x:Bind L1Change}" />
                                     <TextBlock Grid.Column="3" Text="{x:Bind Distribution}" TextWrapping="Wrap" />

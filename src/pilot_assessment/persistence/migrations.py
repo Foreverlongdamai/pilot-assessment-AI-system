@@ -5,7 +5,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 
-LATEST_SCHEMA_VERSION = 3
+LATEST_SCHEMA_VERSION = 5
 
 _BOOTSTRAP_SCHEMA = """
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -495,6 +495,93 @@ MIGRATIONS = (
             (
                 "CREATE INDEX model_starter_mappings_current_idx "
                 "ON model_starter_mappings(current_object_kind, current_object_id)"
+            ),
+        ),
+    ),
+    Migration(
+        version=4,
+        name="m8b_system_model_project_snapshots_v4",
+        statements=(
+            """
+            CREATE TABLE model_execution_materializations_v2 (
+                graph_hash TEXT PRIMARY KEY,
+                scheme_id TEXT NOT NULL,
+                scheme_semantic_revision INTEGER NOT NULL CHECK (
+                    scheme_semantic_revision >= 0
+                ),
+                scheme_content_hash TEXT NOT NULL,
+                legacy_scheme_version_id TEXT NOT NULL,
+                legacy_scheme_content_hash TEXT NOT NULL,
+                materialization_json BLOB NOT NULL,
+                created_at TEXT NOT NULL
+            )
+            """,
+            (
+                "CREATE INDEX model_execution_materializations_v2_scheme_idx "
+                "ON model_execution_materializations_v2(scheme_id, scheme_semantic_revision)"
+            ),
+            """
+            CREATE TABLE model_run_preflights_v2 (
+                current_preflight_id TEXT PRIMARY KEY,
+                current_preflight_hash TEXT NOT NULL UNIQUE,
+                scheme_id TEXT NOT NULL,
+                scheme_semantic_revision INTEGER NOT NULL CHECK (
+                    scheme_semantic_revision >= 0
+                ),
+                scheme_content_hash TEXT NOT NULL,
+                report_json BLOB NOT NULL,
+                legacy_preflight_id TEXT NOT NULL,
+                legacy_preflight_hash TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (legacy_preflight_id)
+                    REFERENCES run_preflights(preflight_id) ON DELETE RESTRICT
+            )
+            """,
+            (
+                "CREATE INDEX model_run_preflights_v2_scheme_idx "
+                "ON model_run_preflights_v2(scheme_id, scheme_semantic_revision)"
+            ),
+            """
+            CREATE TABLE model_run_links_v2 (
+                run_id TEXT PRIMARY KEY,
+                current_preflight_id TEXT NOT NULL,
+                current_snapshot_hash TEXT NOT NULL UNIQUE,
+                current_snapshot_json BLOB NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (run_id) REFERENCES runs(run_id) ON DELETE RESTRICT,
+                FOREIGN KEY (current_preflight_id)
+                    REFERENCES model_run_preflights_v2(current_preflight_id) ON DELETE RESTRICT
+            )
+            """,
+            (
+                "CREATE INDEX model_run_links_v2_preflight_idx "
+                "ON model_run_links_v2(current_preflight_id)"
+            ),
+        ),
+    ),
+    Migration(
+        version=5,
+        name="m8b_legacy_system_model_import_receipts_v5",
+        statements=(
+            """
+            CREATE TABLE legacy_system_model_import_receipts (
+                import_fingerprint TEXT PRIMARY KEY,
+                source_project_id TEXT NOT NULL,
+                canonical_fingerprint TEXT NOT NULL,
+                legacy_edit_fingerprint TEXT,
+                node_mapping_json BLOB NOT NULL,
+                scheme_mapping_json BLOB NOT NULL,
+                inserted_node_count INTEGER NOT NULL CHECK (inserted_node_count >= 0),
+                inserted_scheme_count INTEGER NOT NULL CHECK (inserted_scheme_count >= 0),
+                reused_node_count INTEGER NOT NULL CHECK (reused_node_count >= 0),
+                reused_scheme_count INTEGER NOT NULL CHECK (reused_scheme_count >= 0),
+                dirty_edit_recovered INTEGER NOT NULL CHECK (dirty_edit_recovered IN (0, 1)),
+                imported_at TEXT NOT NULL
+            )
+            """,
+            (
+                "CREATE INDEX legacy_system_model_import_receipts_project_idx "
+                "ON legacy_system_model_import_receipts(source_project_id, imported_at)"
             ),
         ),
     ),

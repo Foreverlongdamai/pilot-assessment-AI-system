@@ -14,12 +14,13 @@ from pilot_assessment.contracts.model_workspace import (
 )
 from pilot_assessment.model_library.profile import load_hover_starter_package
 from pilot_assessment.model_library.repository import component_kind, component_record_id
-from pilot_assessment.runtime import ProjectApplication
+from pilot_assessment.runtime import SystemApplication
+from tests.runtime.system_support import open_test_system
 
 NOW = datetime(2026, 7, 17, 15, 0, tzinfo=UTC)
 
 
-def _raw_by_source(application: ProjectApplication) -> dict[str, RawInputNodeDefinition]:
+def _raw_by_source(application: SystemApplication) -> dict[str, RawInputNodeDefinition]:
     result: dict[str, RawInputNodeDefinition] = {}
     for node in application.current_model.list_nodes():
         if isinstance(node.definition, RawInputNodeDefinition):
@@ -35,15 +36,9 @@ def test_hover_starter_materializes_complete_current_nodes_once_and_reopens(
         (component_kind(item), component_record_id(item), item.model_dump(mode="json"))
         for item in profile.library_items
     )
-    root = tmp_path / "project"
+    root = tmp_path / "system"
 
-    application = ProjectApplication.create(
-        root,
-        project_id="project.hover-migration",
-        name="Hover migration",
-        created_at=NOW,
-        clock=lambda: NOW,
-    )
+    application = open_test_system(root, clock=lambda: NOW)
     try:
         seed = application.current_seed_result
         nodes = application.current_model.list_nodes()
@@ -82,7 +77,7 @@ def test_hover_starter_materializes_complete_current_nodes_once_and_reopens(
         assert raw["derived.flight-error"].family is None
         assert raw["derived.flight-error"].resource_role is RawResourceRole.DERIVED_RESOURCE
 
-        rows = application.project.database.fetchall(
+        rows = application.store.database.fetchall(
             """
             SELECT legacy_kind, legacy_record_id, current_object_kind,
                    current_object_id, seed_hash
@@ -108,7 +103,7 @@ def test_hover_starter_materializes_complete_current_nodes_once_and_reopens(
     finally:
         application.close()
 
-    reopened = ProjectApplication.open(root, clock=lambda: NOW)
+    reopened = open_test_system(root, clock=lambda: NOW)
     try:
         assert reopened.current_seed_result.applied is False
         assert reopened.current_seed_result.mapping_count == len(profile.library_items)
@@ -130,13 +125,7 @@ def test_hover_starter_materializes_complete_current_nodes_once_and_reopens(
 def test_every_evidence_binding_resolves_to_raw_nodes_and_exact_recipe_sources(
     tmp_path: Path,
 ) -> None:
-    application = ProjectApplication.create(
-        tmp_path / "project",
-        project_id="project.hover-bindings",
-        name="Hover bindings",
-        created_at=NOW,
-        clock=lambda: NOW,
-    )
+    application = open_test_system(tmp_path / "system", clock=lambda: NOW)
     try:
         nodes = {node.node_id: node for node in application.current_model.list_nodes()}
         for node in nodes.values():

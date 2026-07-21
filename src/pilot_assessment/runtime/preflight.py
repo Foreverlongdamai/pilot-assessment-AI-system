@@ -8,7 +8,7 @@ from collections.abc import Mapping
 from datetime import UTC, datetime
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as package_version
-from typing import Literal
+from typing import Literal, Protocol
 
 from pydantic import JsonValue, ValidationError, field_validator, model_validator
 
@@ -65,6 +65,10 @@ from pilot_assessment.synchronization.models import SynchronizationOutcome
 from pilot_assessment.synchronization.service import synchronize_bundle
 
 ZERO_HASH = "0" * 64
+
+
+class SchemeExecutionMaterializer(Protocol):
+    def ensure_available(self, scheme_version_id: str) -> AssessmentSchemeVersion: ...
 
 
 class RunPreflightError(RuntimeError):
@@ -331,6 +335,7 @@ class RunPreflightService:
         source_catalog: SourceCatalog,
         operator_registry: OperatorRegistry,
         clock: Clock,
+        scheme_materializer: SchemeExecutionMaterializer | None = None,
     ) -> None:
         self.database = database
         self.components = components
@@ -338,6 +343,7 @@ class RunPreflightService:
         self.source_catalog = source_catalog
         self.operator_registry = operator_registry
         self.clock = clock
+        self.scheme_materializer = scheme_materializer
         self._synchronization_cache: dict[str, SynchronizationOutcome] = {}
 
     def prepare(
@@ -348,6 +354,8 @@ class RunPreflightService:
         purpose: RunPurpose,
         runtime_parameters: Mapping[str, JsonValue],
     ) -> PreparedRunPreflight:
+        if self.scheme_materializer is not None:
+            self.scheme_materializer.ensure_available(scheme_version_id)
         diagnostics: list[RunDiagnostic] = []
         revision = self.sessions.get_revision(session_revision_id)
         session_ref = SessionRevisionRef(

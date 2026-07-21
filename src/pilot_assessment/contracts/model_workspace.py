@@ -554,8 +554,8 @@ class ModelGraphEdge(StrictContractModel):
 
 class ModelGraphSnapshot(StrictContractModel):
     contract_id: Literal["model-graph-snapshot"] = "model-graph-snapshot"
-    contract_version: Literal["0.1.0"] = "0.1.0"
-    project_id: StableId
+    contract_version: Literal["0.2.0"] = "0.2.0"
+    model_library_id: StableId
     scheme: TaskScheme
     nodes: tuple[ModelNode, ...]
     edges: tuple[ModelGraphEdge, ...]

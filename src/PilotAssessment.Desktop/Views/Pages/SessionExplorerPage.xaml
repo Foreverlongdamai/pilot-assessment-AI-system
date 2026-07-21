@@ -60,6 +60,24 @@
                             Height="26"
                             IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
                     </StackPanel>
+                    <Grid ColumnSpacing="18">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="3">
+                            <TextBlock Opacity="0.65" Text="{Binding [Session_SourceKind], Source={StaticResource Localization}}" />
+                            <TextBlock FontWeight="SemiBold" Text="{x:Bind ViewModel.SourceKindText, Mode=OneWay}" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="3">
+                            <TextBlock Opacity="0.65" Text="{Binding [Session_AdapterProfile], Source={StaticResource Localization}}" />
+                            <TextBlock FontWeight="SemiBold" Text="{x:Bind ViewModel.SourceProfileText, Mode=OneWay}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock
+                        Opacity="0.72"
+                        Text="{x:Bind ViewModel.SourceMappingText, Mode=OneWay}"
+                        TextWrapping="Wrap" />
                     <TextBlock FontWeight="SemiBold" Text="{x:Bind ViewModel.InspectionSummary, Mode=OneWay}" />
                     <TextBlock
                         Opacity="0.72"

@@ -6,6 +6,7 @@ import hashlib
 import json
 import math
 import mimetypes
+import os
 import sqlite3
 from collections.abc import Callable, Mapping, Sequence
 from contextlib import suppress
@@ -15,6 +16,7 @@ from enum import Enum
 from importlib.resources import files
 from pathlib import Path
 from typing import TypeAlias, cast
+from uuid import uuid4
 
 from pydantic import BaseModel, JsonValue, ValidationError
 
@@ -45,13 +47,23 @@ from pilot_assessment.contracts.model_workspace import (
 from pilot_assessment.contracts.project import AuditEvent
 from pilot_assessment.contracts.run import RunPurpose, RunState
 from pilot_assessment.evidence.registry import OperatorRegistryError
+from pilot_assessment.ingestion.raw_session import RawSessionError
 from pilot_assessment.model_library.repository import (
     ComponentHashMismatchError,
     ComponentLibraryError,
     LibraryItemNotFoundError,
     LibraryQuery,
 )
+from pilot_assessment.model_workspace.edit_session import (
+    ModelEditSessionConflictError,
+    ModelEditSessionDirtyError,
+    ModelEditSessionHistoryBoundaryError,
+)
 from pilot_assessment.model_workspace.execution import CurrentExecutionMaterializationError
+from pilot_assessment.model_workspace.legacy_import import (
+    LegacyModelImportConflictError,
+    LegacyModelImportError,
+)
 from pilot_assessment.model_workspace.service import (
     CurrentActivationConflict,
     CurrentDeactivationImpactConflict,
@@ -83,6 +95,7 @@ from pilot_assessment.persistence.sessions import (
     SessionNotFoundError,
     SessionRevisionNotFoundError,
 )
+from pilot_assessment.persistence.system import SystemStoreError, SystemStoreLockedError
 from pilot_assessment.persistence.transactions import (
     MutationResult,
     TransactionReuseMismatchError,
@@ -107,6 +120,7 @@ from pilot_assessment.runtime.repository import (
     RunRepositoryError,
     RunTransitionError,
 )
+from pilot_assessment.runtime.system_application import SystemApplication
 from pilot_assessment.schemes.operations import (
     AddBayesianDependency,
     AddExistingComponent,
@@ -165,6 +179,8 @@ _BASE_METHOD_NAMES = (
     "project.close",
     "session.inspect",
     "session.import",
+    "session.source.inspect",
+    "session.source.import",
     "session.list",
     "session.get",
     "session.report.get",
@@ -233,6 +249,11 @@ _CURRENT_MODEL_METHOD_NAMES = (
     "model.cpt.validate",
     "model.cpt.materialize",
     "model.cpt.update",
+    "model.edit.status",
+    "model.edit.undo",
+    "model.edit.redo",
+    "model.edit.commit",
+    "model.edit.discard",
     "model.preview.node",
     "model.preview.scheme",
     "model.run.list",
@@ -247,6 +268,60 @@ _COMPATIBILITY_MODEL_METHOD_NAMES = tuple(
     or method in {"graph.snapshot.get", "graph.operations.apply", "run.preflight", "run.start"}
 )
 _METHOD_NAMES = (*_BASE_METHOD_NAMES, *_CURRENT_MODEL_METHOD_NAMES)
+
+_MODEL_EDIT_MUTATION_METHODS = frozenset(
+    {
+        "model.node.create",
+        "model.node.copy",
+        "model.node.update",
+        "model.node.archive",
+        "model.node.undo",
+        "model.node.redo",
+        "model.node.states.replace",
+        "model.scheme.create",
+        "model.scheme.copy",
+        "model.scheme.update",
+        "model.scheme.archive",
+        "model.scheme.activate",
+        "model.scheme.deactivate",
+        "model.scheme.undo",
+        "model.scheme.redo",
+        "model.graph.batch.apply",
+        "model.edge.add",
+        "model.edge.remove",
+        "model.edge.reorder",
+        "model.layout.update",
+        "model.cpt.materialize",
+        "model.cpt.update",
+    }
+)
+
+_SYSTEM_COMPATIBILITY_MUTATION_METHODS = frozenset(
+    {
+        "scheme.draft.create",
+        "scheme.draft.discard",
+        "scheme.draft.publish",
+        "graph.operations.apply",
+        "graph.undo",
+        "graph.redo",
+        "layout.update",
+    }
+)
+
+_PROJECT_REQUIRED_METHOD_NAMES = frozenset(
+    method
+    for method in _METHOD_NAMES
+    if method.startswith(("session.", "model.preview.", "model.run.", "result."))
+    or method
+    in {
+        "project.get",
+        "run.preflight",
+        "run.start",
+        "run.status",
+        "run.events.list",
+        "run.cancel",
+    }
+)
 
 
 def _utc_now() -> datetime:
@@ -568,18 +643,35 @@ def _diff_values(left: JsonValue, right: JsonValue, path: str = "") -> list[Json
 
 
 class SidecarMethods:
-    """Own one optional project and expose transport-only adapters for it."""
+    """Own one system model and one optional project; expose transport adapters."""
 
     def __init__(
         self,
         *,
         clock: Callable[[], datetime] = _utc_now,
         notification_sink: RunNotificationSink | None = None,
+        system_root: str | Path | None = None,
     ) -> None:
         self.clock = clock
         self.notification_sink = notification_sink
+        self.system = SystemApplication.open_or_create(
+            self._resolve_system_root(system_root),
+            clock=clock,
+        )
         self.application: ProjectApplication | None = None
         self.shutdown_requested = False
+
+    @staticmethod
+    def _resolve_system_root(explicit: str | Path | None) -> Path:
+        if explicit is not None:
+            return Path(explicit).expanduser().resolve()
+        configured = os.environ.get("PILOT_ASSESSMENT_SYSTEM_ROOT")
+        if configured:
+            return Path(configured).expanduser().resolve()
+        working_root = Path.cwd().resolve()
+        if (working_root / "pyproject.toml").is_file():
+            return working_root / ".pilot-assessment-local" / "system"
+        return working_root / "system"
 
     @property
     def registered_methods(self) -> tuple[str, ...]:
@@ -589,19 +681,22 @@ class SidecarMethods:
         for method_name in _METHOD_NAMES:
             attribute = "_" + method_name.replace(".", "_")
             handler = cast(RpcMethodHandler, getattr(self, attribute))
-            dispatcher.register(method_name, self._guard(handler))
+            dispatcher.register(method_name, self._guard(method_name, handler))
 
     def close(self) -> None:
         if self.application is not None:
             self.application.close()
             self.application = None
+        self.system.close()
 
-    def _guard(self, handler: RpcMethodHandler) -> RpcMethodHandler:
+    def _guard(self, method_name: str, handler: RpcMethodHandler) -> RpcMethodHandler:
         def guarded(
             params: dict[str, JsonValue],
             context: RpcRequestContext,
         ) -> Mapping[str, JsonValue]:
             try:
+                if method_name in _PROJECT_REQUIRED_METHOD_NAMES:
+                    self._project_app()
                 return handler(params, context)
             except JsonRpcFault:
                 raise
@@ -613,11 +708,46 @@ class SidecarMethods:
     @staticmethod
     def _mapped_error(error: Exception, context: RpcRequestContext) -> JsonRpcFault:
         transaction_id = context.transaction_id
+        if isinstance(error, LegacyModelImportConflictError):
+            return DomainRpcError(
+                DomainErrorCode.MODEL_EDIT_SESSION_CONFLICT,
+                str(error),
+                recoverable=True,
+                transaction_id=transaction_id,
+            )
+        if isinstance(error, LegacyModelImportError):
+            return DomainRpcError(
+                DomainErrorCode.PROJECT_RECOVERY_FAILED,
+                str(error),
+                recoverable=False,
+                transaction_id=transaction_id,
+            )
         if isinstance(error, TransactionReuseMismatchError):
             return DomainRpcError(
                 DomainErrorCode.TRANSACTION_REUSE_MISMATCH,
                 str(error),
                 recoverable=False,
+                transaction_id=transaction_id,
+            )
+        if isinstance(error, ModelEditSessionConflictError):
+            return DomainRpcError(
+                DomainErrorCode.MODEL_EDIT_SESSION_CONFLICT,
+                str(error),
+                recoverable=True,
+                transaction_id=transaction_id,
+            )
+        if isinstance(error, ModelEditSessionHistoryBoundaryError):
+            return DomainRpcError(
+                DomainErrorCode.MODEL_EDIT_SESSION_HISTORY_BOUNDARY,
+                str(error),
+                recoverable=True,
+                transaction_id=transaction_id,
+            )
+        if isinstance(error, ModelEditSessionDirtyError):
+            return DomainRpcError(
+                DomainErrorCode.MODEL_EDIT_SESSION_DIRTY,
+                str(error),
+                recoverable=True,
                 transaction_id=transaction_id,
             )
         if isinstance(error, CurrentObjectNotFoundError):
@@ -735,6 +865,16 @@ class SidecarMethods:
                 DomainErrorCode.MANAGED_SESSION_CHANGED,
                 str(error),
                 recoverable=False,
+            )
+        if isinstance(error, RawSessionError):
+            detail = error.error
+            return DomainRpcError(
+                detail.error_code,
+                detail.message,
+                recoverable=detail.recoverable,
+                transaction_id=transaction_id,
+                path=detail.field_or_path,
+                diagnostics=_jsonable(detail.diagnostics),
             )
         if isinstance(error, SessionImportError):
             return DomainRpcError(
@@ -870,6 +1010,18 @@ class SidecarMethods:
                 str(error),
                 recoverable=True,
             )
+        if isinstance(error, SystemStoreLockedError):
+            return DomainRpcError(
+                DomainErrorCode.SYSTEM_MODEL_LOCKED,
+                str(error),
+                recoverable=True,
+            )
+        if isinstance(error, SystemStoreError):
+            return DomainRpcError(
+                DomainErrorCode.SYSTEM_MODEL_UNAVAILABLE,
+                str(error),
+                recoverable=False,
+            )
         if isinstance(
             error,
             (
@@ -884,7 +1036,7 @@ class SidecarMethods:
             return InvalidParamsFault(str(error))
         raise error
 
-    def _app(self) -> ProjectApplication:
+    def _project_app(self) -> ProjectApplication:
         if self.application is None or self.application.closed:
             raise DomainRpcError(
                 DomainErrorCode.PROJECT_NOT_OPEN,
@@ -892,6 +1044,13 @@ class SidecarMethods:
                 recoverable=True,
             )
         return self.application
+
+    def _app(self) -> ProjectApplication:
+        """Return the project facade, or the model owner when no project is open."""
+
+        if self.application is not None and not self.application.closed:
+            return self.application
+        return cast(ProjectApplication, self.system)
 
     def _attach(self, application: ProjectApplication) -> None:
         self.application = application
@@ -932,8 +1091,17 @@ class SidecarMethods:
             raise InvalidParamsFault("transaction_id context mismatch", path="/transaction_id")
         audit_digest = hashlib.sha256(f"{method}\0{transaction_id}".encode()).hexdigest()
 
-        def apply(_connection: sqlite3.Connection) -> MutationResult:
+        is_model_edit = method in _MODEL_EDIT_MUTATION_METHODS
+        is_system_mutation = is_model_edit or method in _SYSTEM_COMPATIBILITY_MUTATION_METHODS
+
+        def apply(connection: sqlite3.Connection) -> MutationResult:
             response = _json_object(mutation(), "mutation response")
+            if is_model_edit:
+                self.system.model_edits.capture_checkpoint(
+                    connection,
+                    transaction_id=transaction_id,
+                    method=method,
+                )
             event = AuditEvent(
                 audit_event_id=f"audit.{audit_digest[:32]}",
                 event_type=method,
@@ -946,7 +1114,13 @@ class SidecarMethods:
             )
             return MutationResult(response_payload=response, audit_event=event)
 
-        outcome = app.idempotency.execute(
+        if is_model_edit:
+            idempotency = self.system.model_edits.idempotency
+        elif is_system_mutation:
+            idempotency = self.system.idempotency
+        else:
+            idempotency = app.idempotency
+        outcome = idempotency.execute(
             transaction_id=transaction_id,
             method=method,
             params=params,
@@ -971,6 +1145,8 @@ class SidecarMethods:
             ]
         return {
             "state": "busy" if active_runs else "ready",
+            "system_ready": not self.system.closed,
+            "model_library_id": self.system.model_library_id,
             "project_open": app is not None and not app.closed,
             "project_id": None if app is None or app.closed else app.project.descriptor.project_id,
             "active_run_ids": active_runs,
@@ -1010,24 +1186,24 @@ class SidecarMethods:
         if context.transaction_id != params["transaction_id"]:
             raise InvalidParamsFault("transaction_id context mismatch", path="/transaction_id")
         root = Path(_required_str(params, "root")).expanduser().resolve()
-        project_id = _required_str(params, "project_id")
+        requested_project_id = _optional_str(params, "project_id")
         name = _required_str(params, "name")
         if self.application is None:
-            application = (
-                ProjectApplication.open(root, clock=self.clock)
-                if (root / "project.json").is_file()
-                else ProjectApplication.create(
+            if (root / "project.json").is_file():
+                application = ProjectApplication.open(root, system=self.system, clock=self.clock)
+            else:
+                application = ProjectApplication.create(
                     root,
-                    project_id=project_id,
+                    system=self.system,
+                    project_id=requested_project_id or f"project.{uuid4().hex}",
                     name=name,
                     created_at=self.clock(),
                     clock=self.clock,
                 )
-            )
             if (
-                application.project.descriptor.project_id != project_id
-                or application.project.descriptor.name != name
-            ):
+                requested_project_id is not None
+                and application.project.descriptor.project_id != requested_project_id
+            ) or application.project.descriptor.name != name:
                 application.close()
                 raise DomainRpcError(
                     DomainErrorCode.PROJECT_ALREADY_EXISTS,
@@ -1036,10 +1212,14 @@ class SidecarMethods:
                     transaction_id=context.transaction_id,
                 )
             self._attach(application)
-        app = self._app()
+        app = self._project_app()
+        project_id = app.project.descriptor.project_id
         if (
             app.project.root != root
-            or app.project.descriptor.project_id != project_id
+            or (
+                requested_project_id is not None
+                and app.project.descriptor.project_id != requested_project_id
+            )
             or app.project.descriptor.name != name
         ):
             raise DomainRpcError(
@@ -1056,7 +1236,10 @@ class SidecarMethods:
             subject_kind="project",
             subject_id=project_id,
             audit_details={"project_id": project_id},
-            mutation=lambda: {"project": _jsonable(app.project.descriptor)},
+            mutation=lambda: {
+                "project": _jsonable(app.project.descriptor),
+                "legacy_model_import": _jsonable(app.legacy_model_import),
+            },
         )
 
     def _project_open(self, params, _context) -> RpcResult:
@@ -1069,7 +1252,7 @@ class SidecarMethods:
                     recoverable=True,
                 )
             return {"project": _jsonable(self.application.project.descriptor)}
-        application = ProjectApplication.open(root, clock=self.clock)
+        application = ProjectApplication.open(root, system=self.system, clock=self.clock)
         self._attach(application)
         return {
             "project": _jsonable(application.project.descriptor),
@@ -1077,6 +1260,7 @@ class SidecarMethods:
                 "artifacts": _jsonable(application.artifact_recovery),
                 "sessions": _jsonable(application.session_recovery),
                 "interrupted_runs": [run.run_id for run in application.run_recovery],
+                "legacy_model_import": _jsonable(application.legacy_model_import),
             },
         }
 
@@ -1098,6 +1282,25 @@ class SidecarMethods:
     def _session_import(self, params, _context) -> RpcResult:
         result = self._app().sessions.import_bundle(
             _required_str(params, "external_bundle"),
+            transaction_id=_required_str(params, "transaction_id"),
+            imported_by=_required_str(params, "actor"),
+        )
+        return {
+            "session": _jsonable(result.session),
+            "revision": _jsonable(result.revision),
+            "transaction_id": result.receipt.transaction_id,
+            "audit_event_id": result.receipt.audit_event_id,
+            "replayed": result.replayed,
+        }
+
+    def _session_source_inspect(self, params, _context) -> RpcResult:
+        inspected = self._app().sessions.inspect_source(_required_str(params, "external_source"))
+        return _json_object(inspected, "session source inspection")
+
+    def _session_source_import(self, params, _context) -> RpcResult:
+        result = self._app().sessions.import_source(
+            _required_str(params, "external_source"),
+            inspected_fingerprint=_required_str(params, "inspected_fingerprint"),
             transaction_id=_required_str(params, "transaction_id"),
             imported_by=_required_str(params, "actor"),
         )
@@ -1536,11 +1739,11 @@ class SidecarMethods:
     # responses; they never duplicate Evidence, CPT or BN calculations.
 
     def _model_node_list(self, params, _context) -> RpcResult:
-        nodes = self._app().current_model.list_nodes(lifecycle=_model_lifecycle(params))
+        nodes = self._app().editable_model.list_nodes(lifecycle=_model_lifecycle(params))
         return {"nodes": [_jsonable(node) for node in nodes]}
 
     def _model_node_get(self, params, _context) -> RpcResult:
-        node = self._app().current_model.get_node(_required_str(params, "node_id"))
+        node = self._app().editable_model.get_node(_required_str(params, "node_id"))
         return {"node": _jsonable(node)}
 
     def _model_node_create(self, params, context) -> RpcResult:
@@ -1557,7 +1760,7 @@ class SidecarMethods:
             subject_id=node.node_id,
             audit_details={"node_kind": node.node_kind.value},
             mutation=lambda: _json_object(
-                app.current_model.create_node(
+                app.editable_model.create_node(
                     node,
                     transaction_id=transaction_id,
                     actor_id=actor,
@@ -1580,7 +1783,7 @@ class SidecarMethods:
             subject_id=source_node_id,
             audit_details={"source_node_id": source_node_id},
             mutation=lambda: _json_object(
-                app.current_model.copy_node(
+                app.editable_model.copy_node(
                     source_node_id,
                     transaction_id=transaction_id,
                     actor_id=actor,
@@ -1610,7 +1813,7 @@ class SidecarMethods:
                 "expected_layout_revision": layout_revision,
             },
             mutation=lambda: _json_object(
-                app.current_model.update_node(
+                app.editable_model.update_node(
                     node,
                     expected_semantic_revision=semantic_revision,
                     expected_layout_revision=layout_revision,
@@ -1636,7 +1839,7 @@ class SidecarMethods:
             subject_id=node_id,
             audit_details={"expected_semantic_revision": revision},
             mutation=lambda: _json_object(
-                app.current_model.archive_node(
+                app.editable_model.archive_node(
                     node_id,
                     expected_semantic_revision=revision,
                     transaction_id=transaction_id,
@@ -1647,11 +1850,11 @@ class SidecarMethods:
         )
 
     def _model_node_usage_list(self, params, _context) -> RpcResult:
-        usages = self._app().current_model.node_usage_list(_required_str(params, "node_id"))
+        usages = self._app().editable_model.node_usage_list(_required_str(params, "node_id"))
         return {"usages": [_jsonable(usage) for usage in usages]}
 
     def _model_node_history_list(self, params, _context) -> RpcResult:
-        events = self._app().current_model.node_history(_required_str(params, "node_id"))
+        events = self._app().editable_model.node_history(_required_str(params, "node_id"))
         return {"events": [_jsonable(event) for event in events]}
 
     def _model_node_undo(self, params, context) -> RpcResult:
@@ -1674,7 +1877,7 @@ class SidecarMethods:
         actor = _required_str(params, "actor")
         transaction_id = _required_str(params, "transaction_id")
         operation = (
-            app.current_model.undo_node if direction == "undo" else app.current_model.redo_node
+            app.editable_model.undo_node if direction == "undo" else app.editable_model.redo_node
         )
         method = f"model.node.{direction}"
         return self._mutate(
@@ -1730,7 +1933,7 @@ class SidecarMethods:
             subject_id=node_id,
             audit_details={"affected_node_ids": sorted(revisions)},
             mutation=lambda: _json_object(
-                app.current_model.replace_node_states(
+                app.editable_model.replace_node_states(
                     node_id,
                     states,
                     outcome=_required_str(params, "outcome"),
@@ -1743,11 +1946,11 @@ class SidecarMethods:
         )
 
     def _model_scheme_list(self, params, _context) -> RpcResult:
-        schemes = self._app().current_model.list_schemes(lifecycle=_model_lifecycle(params))
+        schemes = self._app().editable_model.list_schemes(lifecycle=_model_lifecycle(params))
         return {"schemes": [_jsonable(scheme) for scheme in schemes]}
 
     def _model_scheme_get(self, params, _context) -> RpcResult:
-        scheme = self._app().current_model.get_scheme(_required_str(params, "scheme_id"))
+        scheme = self._app().editable_model.get_scheme(_required_str(params, "scheme_id"))
         return {"scheme": _jsonable(scheme)}
 
     def _model_scheme_create(self, params, context) -> RpcResult:
@@ -1764,7 +1967,7 @@ class SidecarMethods:
             subject_id=scheme.scheme_id,
             audit_details={},
             mutation=lambda: _json_object(
-                app.current_model.create_scheme(
+                app.editable_model.create_scheme(
                     scheme,
                     transaction_id=transaction_id,
                     actor_id=actor,
@@ -1788,7 +1991,7 @@ class SidecarMethods:
             subject_id=new_scheme_id,
             audit_details={"source_scheme_id": source_scheme_id},
             mutation=lambda: _json_object(
-                app.current_model.copy_scheme(
+                app.editable_model.copy_scheme(
                     source_scheme_id,
                     new_scheme_id=new_scheme_id,
                     name_zh=_optional_str(params, "name_zh"),
@@ -1819,7 +2022,7 @@ class SidecarMethods:
                 "expected_layout_revision": layout_revision,
             },
             mutation=lambda: _json_object(
-                app.current_model.update_scheme(
+                app.editable_model.update_scheme(
                     scheme,
                     expected_semantic_revision=semantic_revision,
                     expected_layout_revision=layout_revision,
@@ -1845,7 +2048,7 @@ class SidecarMethods:
             subject_id=scheme_id,
             audit_details={"expected_semantic_revision": revision},
             mutation=lambda: _json_object(
-                app.current_model.archive_scheme(
+                app.editable_model.archive_scheme(
                     scheme_id,
                     expected_semantic_revision=revision,
                     transaction_id=transaction_id,
@@ -1871,7 +2074,7 @@ class SidecarMethods:
             subject_id=scheme_id,
             audit_details={"requested_node_id": node_id},
             mutation=lambda: _json_object(
-                app.current_model.activate_node(
+                app.editable_model.activate_node(
                     scheme_id,
                     node_id,
                     expected_semantic_revision=revision,
@@ -1883,7 +2086,7 @@ class SidecarMethods:
         )
 
     def _model_scheme_deactivation_preview(self, params, _context) -> RpcResult:
-        impact = self._app().current_model.preview_deactivation(
+        impact = self._app().editable_model.preview_deactivation(
             _required_str(params, "scheme_id"),
             _required_str(params, "node_id"),
         )
@@ -1906,7 +2109,7 @@ class SidecarMethods:
             subject_id=scheme_id,
             audit_details={"requested_node_id": node_id, "impact_hash": impact_hash},
             mutation=lambda: _json_object(
-                app.current_model.deactivate_node(
+                app.editable_model.deactivate_node(
                     scheme_id,
                     node_id,
                     expected_semantic_revision=revision,
@@ -1919,7 +2122,7 @@ class SidecarMethods:
         )
 
     def _model_scheme_history_list(self, params, _context) -> RpcResult:
-        events = self._app().current_model.scheme_history(_required_str(params, "scheme_id"))
+        events = self._app().editable_model.scheme_history(_required_str(params, "scheme_id"))
         return {"events": [_jsonable(event) for event in events]}
 
     def _model_scheme_undo(self, params, context) -> RpcResult:
@@ -1942,7 +2145,9 @@ class SidecarMethods:
         actor = _required_str(params, "actor")
         transaction_id = _required_str(params, "transaction_id")
         operation = (
-            app.current_model.undo_scheme if direction == "undo" else app.current_model.redo_scheme
+            app.editable_model.undo_scheme
+            if direction == "undo"
+            else app.editable_model.redo_scheme
         )
         method = f"model.scheme.{direction}"
         return self._mutate(
@@ -1969,7 +2174,7 @@ class SidecarMethods:
         )
 
     def _model_graph_get(self, params, _context) -> RpcResult:
-        graph = self._app().current_model.graph_snapshot(_required_str(params, "scheme_id"))
+        graph = self._app().editable_model.graph_snapshot(_required_str(params, "scheme_id"))
         return {"graph": _jsonable(graph)}
 
     def _model_graph_batch_apply(self, params, context) -> RpcResult:
@@ -2031,7 +2236,7 @@ class SidecarMethods:
                 "layout_count": len(layout_updates),
             },
             mutation=lambda: _json_object(
-                app.current_model.apply_graph_batch(
+                app.editable_model.apply_graph_batch(
                     scheme_id,
                     copy_node_ids=copy_node_ids,
                     activate_node_ids=activate_node_ids,
@@ -2056,7 +2261,7 @@ class SidecarMethods:
 
         def mutate() -> Mapping[str, JsonValue]:
             if edge_kind == "probabilistic":
-                result = app.current_model.add_probabilistic_edge(
+                result = app.editable_model.add_probabilistic_edge(
                     child_node_id,
                     parent_node_id,
                     strategy=_required_str(params, "strategy"),
@@ -2065,7 +2270,7 @@ class SidecarMethods:
                     actor_id=actor,
                 )
             elif edge_kind == "extraction":
-                result = app.current_model.add_extraction_edge(
+                result = app.editable_model.add_extraction_edge(
                     child_node_id,
                     parent_node_id,
                     _required_str(params, "recipe_input_binding_id"),
@@ -2110,7 +2315,7 @@ class SidecarMethods:
                         "parent_node_id is required for a probabilistic edge",
                         path="/parent_node_id",
                     )
-                result = app.current_model.remove_probabilistic_edge(
+                result = app.editable_model.remove_probabilistic_edge(
                     child_node_id,
                     parent_node_id,
                     strategy=_required_str(params, "strategy"),
@@ -2123,7 +2328,7 @@ class SidecarMethods:
                     actor_id=actor,
                 )
             elif edge_kind == "extraction":
-                result = app.current_model.remove_extraction_edge(
+                result = app.editable_model.remove_extraction_edge(
                     child_node_id,
                     _required_str(params, "recipe_input_binding_id"),
                     EvidenceRecipe.model_validate(
@@ -2170,7 +2375,7 @@ class SidecarMethods:
             subject_id=child_node_id,
             audit_details={"ordered_parent_node_ids": list(parent_ids)},
             mutation=lambda: _json_object(
-                app.current_model.reorder_probabilistic_parents(
+                app.editable_model.reorder_probabilistic_parents(
                     child_node_id,
                     parent_ids,
                     expected_semantic_revision=revision,
@@ -2185,8 +2390,8 @@ class SidecarMethods:
         app = self._app()
         node_id = _required_str(params, "node_id")
         return {
-            "validation": _jsonable(app.current_model.validate_current_cpt(node_id)),
-            "editor": _jsonable(app.current_model.current_cpt_editor(node_id)),
+            "validation": _jsonable(app.editable_model.validate_current_cpt(node_id)),
+            "editor": _jsonable(app.editable_model.current_cpt_editor(node_id)),
         }
 
     def _model_cpt_materialize(self, params, context) -> RpcResult:
@@ -2204,7 +2409,7 @@ class SidecarMethods:
             subject_id=node_id,
             audit_details={"strategy": _required_str(params, "strategy")},
             mutation=lambda: _json_object(
-                app.current_model.materialize_current_cpt(
+                app.editable_model.materialize_current_cpt(
                     node_id,
                     strategy=_required_str(params, "strategy"),
                     weights=_number_tuple(params.get("weights"), "weights"),
@@ -2240,7 +2445,7 @@ class SidecarMethods:
             subject_id=node_id,
             audit_details={"row_count": len(rows)},
             mutation=lambda: _json_object(
-                app.current_model.update_cpt_rows(
+                app.editable_model.update_cpt_rows(
                     node_id,
                     rows,
                     expected_semantic_revision=revision,
@@ -2251,8 +2456,58 @@ class SidecarMethods:
             ),
         )
 
+    @staticmethod
+    def _model_edit_response(app: ProjectApplication, outcome) -> RpcResult:
+        response = dict(outcome.receipt.response_payload or {})
+        response["edit_session"] = _jsonable(app.model_edits.status())
+        response["transaction_id"] = outcome.receipt.transaction_id
+        response["audit_event_id"] = outcome.receipt.audit_event_id
+        response["replayed"] = outcome.replayed
+        return response
+
+    def _model_edit_status(self, _params, _context) -> RpcResult:
+        return {"edit_session": _jsonable(self._app().model_edits.status())}
+
+    def _model_edit_undo(self, params, context) -> RpcResult:
+        transaction_id = _required_str(params, "transaction_id")
+        actor = _required_str(params, "actor")
+        if context.transaction_id != transaction_id:
+            raise InvalidParamsFault("transaction_id context mismatch", path="/transaction_id")
+        app = self._app()
+        outcome = app.model_edits.undo(transaction_id=transaction_id, actor_id=actor)
+        return self._model_edit_response(app, outcome)
+
+    def _model_edit_redo(self, params, context) -> RpcResult:
+        transaction_id = _required_str(params, "transaction_id")
+        actor = _required_str(params, "actor")
+        if context.transaction_id != transaction_id:
+            raise InvalidParamsFault("transaction_id context mismatch", path="/transaction_id")
+        app = self._app()
+        outcome = app.model_edits.redo(transaction_id=transaction_id, actor_id=actor)
+        return self._model_edit_response(app, outcome)
+
+    def _model_edit_commit(self, params, context) -> RpcResult:
+        transaction_id = _required_str(params, "transaction_id")
+        actor = _required_str(params, "actor")
+        if context.transaction_id != transaction_id:
+            raise InvalidParamsFault("transaction_id context mismatch", path="/transaction_id")
+        app = self._app()
+        outcome = app.model_edits.commit(transaction_id=transaction_id, actor_id=actor)
+        return self._model_edit_response(app, outcome)
+
+    def _model_edit_discard(self, params, context) -> RpcResult:
+        transaction_id = _required_str(params, "transaction_id")
+        actor = _required_str(params, "actor")
+        if context.transaction_id != transaction_id:
+            raise InvalidParamsFault("transaction_id context mismatch", path="/transaction_id")
+        app = self._app()
+        outcome = app.model_edits.discard(transaction_id=transaction_id, actor_id=actor)
+        return self._model_edit_response(app, outcome)
+
     def _model_preview_node(self, params, context) -> RpcResult:
-        preview = self._app().current_preflight.preview_node(
+        app = self._app()
+        app.model_edits.require_clean_for_run()
+        preview = app.current_preflight.preview_node(
             session_revision_id=_required_str(params, "session_revision_id"),
             scheme_id=_required_str(params, "scheme_id"),
             node_id=_required_str(params, "node_id"),
@@ -2265,7 +2520,9 @@ class SidecarMethods:
         return {"preview": _jsonable(preview)}
 
     def _model_preview_scheme(self, params, context) -> RpcResult:
-        preview = self._app().current_preflight.preview(
+        app = self._app()
+        app.model_edits.require_clean_for_run()
+        preview = app.current_preflight.preview(
             session_revision_id=_required_str(params, "session_revision_id"),
             scheme_id=_required_str(params, "scheme_id"),
             runtime_parameters=_mapping(
@@ -2296,7 +2553,9 @@ class SidecarMethods:
         return {"runs": items}
 
     def _model_run_preflight(self, params, _context) -> RpcResult:
-        report = self._app().current_preflight.prepare(
+        app = self._app()
+        app.model_edits.require_clean_for_run()
+        report = app.current_preflight.prepare(
             session_revision_id=_required_str(params, "session_revision_id"),
             scheme_id=_required_str(params, "scheme_id"),
             purpose=RunPurpose(_required_str(params, "purpose")),
@@ -2309,6 +2568,7 @@ class SidecarMethods:
 
     def _model_run_start(self, params, context) -> RpcResult:
         app = self._app()
+        app.model_edits.require_clean_for_run()
         preflight_id = _required_str(params, "preflight_id")
         run_id = _required_str(params, "run_id")
         expected_revision = _required_int(params, "expected_scheme_revision")
@@ -2464,12 +2724,17 @@ class SidecarMethods:
             subject_id=_optional_str(params, "subject_id"),
             transaction_id=_optional_str(params, "transaction_id"),
         )
-        events = self._app().audit.list_events(
-            query,
-            limit=_optional_int(params, "limit", default=100),
-            offset=_optional_int(params, "offset", default=0),
+        limit = _optional_int(params, "limit", default=100)
+        offset = _optional_int(params, "offset", default=0)
+        fetch_limit = limit + offset
+        events = list(self.system.audit.list_events(query, limit=fetch_limit, offset=0))
+        if self.application is not None and not self.application.closed:
+            events.extend(self.application.audit.list_events(query, limit=fetch_limit, offset=0))
+        events.sort(
+            key=lambda event: (event.occurred_at, event.audit_event_id),
+            reverse=True,
         )
-        return {"events": [_jsonable(event) for event in events]}
+        return {"events": [_jsonable(event) for event in events[offset : offset + limit]]}
 
 
 __all__ = ["SidecarMethods"]

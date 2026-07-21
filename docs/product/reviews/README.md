@@ -15,7 +15,8 @@
 
 ## 当前记录入口
 
+- [M8B-0 System Model Ownership Verification](2026-07-21-m8b0-system-model-ownership-verification.md) — system store、双项目共享、旧 run 隔离、legacy import、portable baseline 与仓库外桌面启动的 fresh engineering gate；不关闭 M8B-1/2、M7 UAT 或科学校准。
 - [M8B-0 Implementation Plan Self-Review](2026-07-21-m8b0-implementation-plan-self-review.md) — 核对 system ownership 实施顺序、双项目/快照验证、legacy migration 与 M8B-1/2 停止边界；计划已获用户批准并进入实施。
-- [M8B System-Owned Model Library Design Self-Review](2026-07-21-m8b-system-owned-model-library-design-self-review.md) — 核对 software-copy system store、project data boundary、legacy migration、exact RunSnapshot 与 loaded-source provenance；等待用户复核 written spec。
+- [M8B System-Owned Model Library Design Self-Review](2026-07-21-m8b-system-owned-model-library-design-self-review.md) — 核对 software-copy system store、project data boundary、legacy migration、exact RunSnapshot 与 loaded-source provenance；written spec 已获用户批准。
 - [M8A Portable Windows Release Verification](2026-07-20-m8a-portable-windows-release-verification.md) — 最终 ZIP 的仓库外解压、私有 Python/sidecar、可编辑唯一活动源码、无 TCP listener、内容隔离、checksums 与回归验证；关闭 M8A engineering gate，不代表整个 M8 完成。
 - [M8 Pre-UAT Outline Self-Review](2026-07-18-m8-outline-self-review.md) — 核对 M7 user-acceptance gate、前端正常编辑与全局 Python source editing 的双层边界、M8 非实施状态以及对 26514/42010/Diátaxis/C4 的轻量使用。

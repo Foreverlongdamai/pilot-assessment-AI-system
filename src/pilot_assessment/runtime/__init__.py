@@ -74,6 +74,11 @@ from pilot_assessment.runtime.sources import (
     SourceUnavailableError,
     register_hover_source_providers,
 )
+from pilot_assessment.runtime.system_application import SystemApplication
+from pilot_assessment.runtime.system_execution import (
+    SystemSchemeExecutionMaterializer,
+    SystemSchemeMaterializationError,
+)
 
 __all__ = [
     "CURRENT_HOVER_STARTER_SEED_ID",
@@ -90,6 +95,9 @@ __all__ = [
     "RuntimeCompositionError",
     "StarterSeedError",
     "StarterSeedResult",
+    "SystemApplication",
+    "SystemSchemeExecutionMaterializer",
+    "SystemSchemeMaterializationError",
     "CurrentStarterSeedResult",
     "CurrentRunPreflightBlockedError",
     "CurrentRunPreflightError",

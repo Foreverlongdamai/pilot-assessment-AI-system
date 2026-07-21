@@ -19,7 +19,6 @@ public sealed class NodeWindowRegistry : IDisposable
     private readonly CanonicalObjectStore<ModelNode> _canonicalNodes;
     private readonly SessionExplorerViewModel _sessions;
     private readonly ILocalizationLookup _localization;
-    private string? _projectId;
     private bool _disposed;
 
     public NodeWindowRegistry(
@@ -44,21 +43,31 @@ public sealed class NodeWindowRegistry : IDisposable
         _canonicalNodes = canonicalNodes;
         _sessions = sessions;
         _localization = localization;
-        _projectId = shellState.Snapshot.ProjectId;
         _modelStudio.NodeEditorRequested += OnNodeEditorRequested;
         _modelStudio.CanonicalGraphChanged += OnCanonicalGraphChanged;
-        _shellState.Changed += OnShellStateChanged;
         _shell.ThemeChanged += OnThemeChanged;
         _localization.LanguageChanged += OnLanguageChanged;
     }
 
     public int OpenWindowCount => _windows.Count;
 
-    public async Task CloseAllAsync(CancellationToken cancellationToken = default)
+    public async Task FlushAllEditsAsync(CancellationToken cancellationToken = default)
     {
         var snapshot = _windows.Snapshot();
         await Task.WhenAll(snapshot.Select(entry =>
             entry.Value.FlushAutosaveAsync(cancellationToken)));
+        if (!await _modelStudio.FlushPendingLayoutAsync(cancellationToken))
+        {
+            throw new InvalidOperationException(
+                "Pending model layout changes could not be written to the edit session.");
+        }
+
+        await _placements.FlushAsync(cancellationToken);
+    }
+
+    public async Task CloseAllWindowsAsync(CancellationToken cancellationToken = default)
+    {
+        var snapshot = _windows.Snapshot();
         foreach (var entry in snapshot)
         {
             _placements.Remember(entry.Key, entry.Value.CurrentPlacement);
@@ -66,6 +75,12 @@ public sealed class NodeWindowRegistry : IDisposable
         }
 
         await _placements.FlushAsync(cancellationToken);
+    }
+
+    public async Task CloseAllAsync(CancellationToken cancellationToken = default)
+    {
+        await FlushAllEditsAsync(cancellationToken);
+        await CloseAllWindowsAsync(cancellationToken);
     }
 
     public void Dispose()
@@ -78,16 +93,16 @@ public sealed class NodeWindowRegistry : IDisposable
         _disposed = true;
         _modelStudio.NodeEditorRequested -= OnNodeEditorRequested;
         _modelStudio.CanonicalGraphChanged -= OnCanonicalGraphChanged;
-        _shellState.Changed -= OnShellStateChanged;
         _shell.ThemeChanged -= OnThemeChanged;
         _localization.LanguageChanged -= OnLanguageChanged;
     }
 
     private void OnNodeEditorRequested(object? sender, ModelNodeOpenRequestedEventArgs args)
     {
-        var projectId = _shellState.Snapshot.ProjectId
-            ?? throw new InvalidOperationException("Open a managed project before opening a node editor.");
-        var key = new NodeWindowKey(projectId, args.SchemeId, args.Node.NodeId);
+        var key = new NodeWindowKey(
+            SystemModelContext.Key,
+            args.SchemeId,
+            args.Node.NodeId);
         var schemeDisplayName = DisplayScheme(args.SchemeId);
         var sharedSchemeCount = _schemes.CountCurrentSchemesUsingNode(args.Node.NodeId);
         var window = _windows.OpenOrFocus(
@@ -147,8 +162,7 @@ public sealed class NodeWindowRegistry : IDisposable
         var nodesById = graph.Nodes.ToDictionary(node => node.NodeId, StringComparer.Ordinal);
         foreach (var entry in _windows.Snapshot())
         {
-            if (!string.Equals(entry.Key.ProjectId, graph.ProjectId, StringComparison.Ordinal) ||
-                !nodesById.TryGetValue(entry.Key.NodeId, out var node))
+            if (!nodesById.TryGetValue(entry.Key.NodeId, out var node))
             {
                 continue;
             }
@@ -157,24 +171,6 @@ public sealed class NodeWindowRegistry : IDisposable
                 node,
                 DisplayScheme(entry.Key.SchemeId),
                 _schemes.CountCurrentSchemesUsingNode(node.NodeId));
-        }
-    }
-
-    private void OnShellStateChanged(object? sender, EventArgs args)
-    {
-        var currentProjectId = _shellState.Snapshot.ProjectId;
-        var previousProjectId = _projectId;
-        _projectId = currentProjectId;
-        if (previousProjectId is null ||
-            string.Equals(previousProjectId, currentProjectId, StringComparison.Ordinal))
-        {
-            return;
-        }
-
-        foreach (var entry in _windows.Snapshot()
-                     .Where(entry => entry.Key.ProjectId == previousProjectId))
-        {
-            entry.Value.Close();
         }
     }
 
@@ -198,12 +194,8 @@ public sealed class NodeWindowRegistry : IDisposable
     {
         var scheme = _schemes.FindScheme(schemeId);
         return scheme is null
-            ? schemeId
-            : BilingualTextSelector.Select(
-                _localization.CurrentLanguage,
-                scheme.NameZh,
-                scheme.NameEn,
-                schemeId);
+            ? ModelDisplayNameResolver.HumanizeIdentifier(schemeId, "Assessment Scheme")
+            : ModelDisplayNameResolver.ForScheme(scheme);
     }
 
     private async Task FlushPlacementSafelyAsync()

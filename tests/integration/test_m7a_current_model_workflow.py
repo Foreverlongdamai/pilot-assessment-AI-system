@@ -84,7 +84,7 @@ def test_m7a_current_model_sidecar_workflow_is_editable_portable_and_snapshot_sa
     tmp_path: Path,
     m4_workflow_bundle: Path,
 ) -> None:
-    methods = SidecarMethods(clock=lambda: NOW)
+    methods = SidecarMethods(clock=lambda: NOW, system_root=tmp_path / "system")
     rpc = _Rpc(methods)
     project_root = tmp_path / "m7a-project"
     current_run_id = "run.m7a-current"
@@ -224,6 +224,11 @@ def test_m7a_current_model_sidecar_workflow_is_editable_portable_and_snapshot_sa
                 expected_semantic_revision=edited["semantic_revision"],
             ),
         )["node"]
+        committed = rpc.call(
+            "model.edit.commit",
+            _mutation("tx.m7a-model-edit-commit"),
+        )
+        assert committed["edit_session"]["dirty"] is False
 
         imported = rpc.call(
             "session.import",
@@ -288,6 +293,10 @@ def test_m7a_current_model_sidecar_workflow_is_editable_portable_and_snapshot_sa
                 node=shared,
                 expected_semantic_revision=shared["semantic_revision"],
             ),
+        )
+        rpc.call(
+            "model.edit.commit",
+            _mutation("tx.m7a-future-model-edit-commit"),
         )
         future = rpc.call(
             "model.run.preflight",

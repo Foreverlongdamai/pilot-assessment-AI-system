@@ -18,7 +18,6 @@ public interface IProjectSessionGateway
 {
     Task<ProjectDescriptor> CreateProjectAsync(
         string root,
-        string projectId,
         string name,
         string actor,
         CancellationToken cancellationToken = default);
@@ -29,12 +28,13 @@ public interface IProjectSessionGateway
 
     Task CloseProjectAsync(CancellationToken cancellationToken = default);
 
-    Task<IngestionReadinessReport> InspectSessionAsync(
-        string externalBundle,
+    Task<SessionSourceInspectionResponse> InspectSessionSourceAsync(
+        string externalSource,
         CancellationToken cancellationToken = default);
 
-    Task<SessionImportResponse> ImportSessionAsync(
-        string externalBundle,
+    Task<SessionImportResponse> ImportSessionSourceAsync(
+        string externalSource,
+        string inspectedFingerprint,
         string actor,
         CancellationToken cancellationToken = default);
 

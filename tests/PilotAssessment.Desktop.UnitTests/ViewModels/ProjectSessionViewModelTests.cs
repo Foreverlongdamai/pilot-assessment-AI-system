@@ -88,7 +88,39 @@ public sealed class ProjectSessionViewModelTests
             "sessions/session.alpha/session-revision.abc/bundle",
             sessions.ManagedBundlePathText);
         Assert.Equal(@"C:\external\session-bundle", gateway.LastImportedSource);
-        Assert.Contains("exact project copy", sessions.StatusMessage);
+        Assert.Contains("canonical managed revision", sessions.StatusMessage);
+    }
+
+    [Fact]
+    public async Task RawInspectionAllowsImportWhenControlUnitsAreUndeclared()
+    {
+        var raw = CreateRawInspection();
+        var gateway = new FakeGateway
+        {
+            SourceInspection = new SessionSourceInspectionResponse(
+                "0.1.0",
+                SessionDataSourceKind.SimulatorRaw,
+                null,
+                raw,
+                "trace.raw"),
+        };
+        var sessions = new SessionExplorerViewModel(
+            gateway,
+            new FakePicker(),
+            new ApplicationShellState());
+        await sessions.LoadAsync("project.alpha");
+        sessions.SourceBundlePath = @"C:\external\raw-session";
+
+        await sessions.InspectSessionCommand.ExecuteAsync(null);
+
+        Assert.True(sessions.CanImport);
+        Assert.Equal("Simulator raw export", sessions.SourceKindText);
+        Assert.Contains("fixed Evidence extraction", sessions.InspectionIssues);
+        var controls = sessions.Modalities.Single(item => item.Modality == "U");
+        Assert.True(controls.IsAvailable);
+        Assert.Contains("raw values", controls.Detail);
+        Assert.DoesNotContain(raw.FieldMappings, mapping =>
+            mapping.DeclaredUnit is not null && mapping.CanonicalField == "control.yaw_raw");
     }
 
     [Fact]
@@ -234,6 +266,49 @@ public sealed class ProjectSessionViewModelTests
             new string('f', 64));
     }
 
+    private static RawSessionInspection CreateRawInspection()
+    {
+        var proposals = new Dictionary<string, RawModalityProposal>(StringComparer.Ordinal);
+        foreach (var modality in new[] { "X", "U", "I", "G", "EEG", "ECG", "pilot_camera" })
+        {
+            var present = modality is "X" or "U";
+            proposals[modality] = new RawModalityProposal(
+                modality,
+                present ? StreamStatus.Present : StreamStatus.Missing,
+                present ? ["streams/simulator.csv"] : [],
+                present ? "csv" : "unavailable",
+                present
+                    ? "cranfield-simulator-combined-csv-raw-v0.1"
+                    : $"{modality.ToLowerInvariant()}-missing-v0.1",
+                present ? "simulator-clock" : $"{modality.ToLowerInvariant()}-clock",
+                present ? 100.0 : null,
+                new Dictionary<string, string>(),
+                "undeclared-pass-through-v1");
+        }
+
+        return new RawSessionInspection(
+            "0.1.0",
+            new string('a', 64),
+            "cranfield-simulator-combined-csv-raw-v0.1",
+            ["cranfield-simulator-combined-csv-raw-v0.1"],
+            [new RawSourceFile("streams/simulator.csv", 128, new string('b', 64))],
+            [new RawFieldMapping(
+                "streams/simulator.csv",
+                "Pilot Yaw",
+                "control.yaw_raw",
+                "U",
+                "f64",
+                null,
+                UnitProvenance.Undeclared,
+                "measurement",
+                "resolved")],
+            proposals,
+            [],
+            [],
+            [],
+            true);
+    }
+
     private sealed class FakePicker(params string?[] selections) : IProjectFolderPicker
     {
         private readonly Queue<string?> _selections = new(selections);
@@ -268,6 +343,7 @@ public sealed class ProjectSessionViewModelTests
     {
         public ProjectDescriptor Project { get; init; } = CreateProject();
         public IngestionReadinessReport Inspection { get; init; } = CreateReport();
+        public SessionSourceInspectionResponse? SourceInspection { get; init; }
         public StoredIngestionReport StoredReport { get; init; } =
             new("session-revision.none", null, false, null);
         public SessionImportResponse? ImportResponse { get; init; }
@@ -280,7 +356,6 @@ public sealed class ProjectSessionViewModelTests
 
         public Task<ProjectDescriptor> CreateProjectAsync(
             string root,
-            string projectId,
             string name,
             string actor,
             CancellationToken cancellationToken = default) => Task.FromResult(Project);
@@ -299,16 +374,23 @@ public sealed class ProjectSessionViewModelTests
             return Task.CompletedTask;
         }
 
-        public Task<IngestionReadinessReport> InspectSessionAsync(
-            string externalBundle,
-            CancellationToken cancellationToken = default) => Task.FromResult(Inspection);
+        public Task<SessionSourceInspectionResponse> InspectSessionSourceAsync(
+            string externalSource,
+            CancellationToken cancellationToken = default) => Task.FromResult(
+                SourceInspection ?? new SessionSourceInspectionResponse(
+                    "0.1.0",
+                    SessionDataSourceKind.CanonicalBundle,
+                    Inspection,
+                    null,
+                    "trace.inspect"));
 
-        public Task<SessionImportResponse> ImportSessionAsync(
-            string externalBundle,
+        public Task<SessionImportResponse> ImportSessionSourceAsync(
+            string externalSource,
+            string inspectedFingerprint,
             string actor,
             CancellationToken cancellationToken = default)
         {
-            LastImportedSource = externalBundle;
+            LastImportedSource = externalSource;
             _imported = true;
             return Task.FromResult(ImportResponse
                 ?? throw new InvalidOperationException("No fake import response configured."));

@@ -120,7 +120,7 @@
                 </NavigationViewItem>
                 <NavigationViewItem
                     Content="{Binding [Nav_ModelStudio], Source={StaticResource Localization}}"
-                    IsEnabled="{x:Bind ViewModel.CanUseDomainCommands, Mode=OneWay}"
+                    IsEnabled="{x:Bind ViewModel.IsBackendReady, Mode=OneWay}"
                     Tag="model">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE943;" />
@@ -144,7 +144,7 @@
                 </NavigationViewItem>
                 <NavigationViewItem
                     Content="{Binding [Nav_Library], Source={StaticResource Localization}}"
-                    IsEnabled="{x:Bind ViewModel.CanUseDomainCommands, Mode=OneWay}"
+                    IsEnabled="{x:Bind ViewModel.IsBackendReady, Mode=OneWay}"
                     Tag="library">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE8F1;" />

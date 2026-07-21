@@ -16,24 +16,10 @@ public sealed class SidecarContractTests
         var repositoryRoot = FindRepositoryRoot(AppContext.BaseDirectory);
         var uvPath = Path.Combine(repositoryRoot, ".tools", "uv", "uv.exe");
         Assert.True(File.Exists(uvPath), $"Repository uv executable was not found at {uvPath}");
-
-        var startInfo = new ProcessStartInfo
-        {
-            FileName = uvPath,
-            WorkingDirectory = repositoryRoot,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardInput = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            StandardInputEncoding = new UTF8Encoding(false, true),
-            StandardOutputEncoding = new UTF8Encoding(false, true),
-            StandardErrorEncoding = new UTF8Encoding(false, true),
-        };
-        foreach (var argument in new[] { "run", "python", "-m", "pilot_assessment.sidecar" })
-        {
-            startInfo.ArgumentList.Add(argument);
-        }
+        var systemRoot = Path.Combine(
+            Path.GetTempPath(),
+            $"pilot-assessment-contract-system-{Guid.NewGuid():N}");
+        var startInfo = CreateSidecarStartInfo(repositoryRoot, uvPath, systemRoot);
 
         using var process = new Process { StartInfo = startInfo };
         Assert.True(process.Start());
@@ -97,6 +83,11 @@ public sealed class SidecarContractTests
                 process.Kill(entireProcessTree: true);
                 await process.WaitForExitAsync();
             }
+
+            if (Directory.Exists(systemRoot))
+            {
+                Directory.Delete(systemRoot, recursive: true);
+            }
         }
     }
 
@@ -108,7 +99,10 @@ public sealed class SidecarContractTests
         var projectRoot = Path.Combine(
             Path.GetTempPath(),
             $"pilot-assessment-m7b-contract-{Guid.NewGuid():N}");
-        var startInfo = CreateSidecarStartInfo(repositoryRoot, uvPath);
+        var systemRoot = Path.Combine(
+            Path.GetTempPath(),
+            $"pilot-assessment-contract-system-{Guid.NewGuid():N}");
+        var startInfo = CreateSidecarStartInfo(repositoryRoot, uvPath, systemRoot);
 
         using var process = new Process { StartInfo = startInfo };
         Assert.True(process.Start());
@@ -317,6 +311,11 @@ public sealed class SidecarContractTests
             {
                 Directory.Delete(projectRoot, recursive: true);
             }
+
+            if (Directory.Exists(systemRoot))
+            {
+                Directory.Delete(systemRoot, recursive: true);
+            }
         }
     }
 
@@ -332,7 +331,10 @@ public sealed class SidecarContractTests
         element.Deserialize(type)
         ?? throw new JsonException($"The sidecar response for {typeof(T).Name} was empty.");
 
-    private static ProcessStartInfo CreateSidecarStartInfo(string repositoryRoot, string uvPath)
+    private static ProcessStartInfo CreateSidecarStartInfo(
+        string repositoryRoot,
+        string uvPath,
+        string systemRoot)
     {
         Assert.True(File.Exists(uvPath), $"Repository uv executable was not found at {uvPath}");
         var startInfo = new ProcessStartInfo
@@ -352,6 +354,7 @@ public sealed class SidecarContractTests
         {
             startInfo.ArgumentList.Add(argument);
         }
+        startInfo.Environment["PILOT_ASSESSMENT_SYSTEM_ROOT"] = systemRoot;
 
         return startInfo;
     }

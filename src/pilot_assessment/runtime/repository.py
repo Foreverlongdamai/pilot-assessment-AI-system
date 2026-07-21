@@ -188,7 +188,7 @@ class RunRepository:
                     return restored
 
                 preflight = connection.execute(
-                    "SELECT * FROM model_run_preflights WHERE current_preflight_id = ?",
+                    "SELECT * FROM model_run_preflights_v2 WHERE current_preflight_id = ?",
                     (current_preflight_id,),
                 ).fetchone()
                 if preflight is None:
@@ -233,33 +233,6 @@ class RunRepository:
                     raise RunIntegrityError(
                         "current snapshot differs from the exact prepared scheme/node lock"
                     )
-                scheme_row = connection.execute(
-                    """
-                    SELECT semantic_revision, content_hash FROM task_schemes
-                    WHERE scheme_id = ?
-                    """,
-                    (snapshot.scheme.scheme_id,),
-                ).fetchone()
-                if scheme_row is None or (
-                    int(scheme_row["semantic_revision"]) != snapshot.scheme.semantic_revision
-                    or scheme_row["content_hash"] != snapshot.scheme.content_hash
-                ):
-                    raise RunIntegrityError("current scheme changed before run creation")
-                for node in snapshot.active_nodes:
-                    node_row = connection.execute(
-                        """
-                        SELECT semantic_revision, content_hash FROM model_nodes
-                        WHERE node_id = ?
-                        """,
-                        (node.node_id,),
-                    ).fetchone()
-                    if node_row is None or (
-                        int(node_row["semantic_revision"]) != node.semantic_revision
-                        or node_row["content_hash"] != node.content_hash
-                    ):
-                        raise RunIntegrityError(
-                            f"current node {node.node_id!r} changed before run creation"
-                        )
                 legacy = connection.execute(
                     "SELECT preflight_hash FROM run_preflights WHERE preflight_id = ?",
                     (preflight["legacy_preflight_id"],),
@@ -291,7 +264,7 @@ class RunRepository:
                 )
                 connection.execute(
                     """
-                    INSERT INTO model_run_links(
+                    INSERT INTO model_run_links_v2(
                         run_id, current_preflight_id, current_snapshot_hash,
                         current_snapshot_json, created_at
                     ) VALUES (?, ?, ?, ?, ?)
@@ -630,9 +603,16 @@ class RunRepository:
         ):
             raise RunIntegrityError("stored run snapshot identity columns disagree")
         link = self.database.fetchone(
-            "SELECT * FROM model_run_links WHERE run_id = ?",
+            "SELECT * FROM model_run_links_v2 WHERE run_id = ?",
             (row["run_id"],),
         )
+        preflight_table = "model_run_preflights_v2"
+        if link is None:
+            link = self.database.fetchone(
+                "SELECT * FROM model_run_links WHERE run_id = ?",
+                (row["run_id"],),
+            )
+            preflight_table = "model_run_preflights"
         run_model: type[AssessmentRun] | type[AssessmentRunV2] = AssessmentRun
         resolved_snapshot: RunSnapshotRecord = snapshot
         if link is not None:
@@ -643,10 +623,8 @@ class RunRepository:
             except (ValueError, ValidationError) as error:
                 raise RunIntegrityError("stored current run snapshot JSON is invalid") from error
             current_preflight = self.database.fetchone(
-                """
-                SELECT current_preflight_hash FROM model_run_preflights
-                WHERE current_preflight_id = ?
-                """,
+                f"SELECT current_preflight_hash FROM {preflight_table} "
+                "WHERE current_preflight_id = ?",
                 (link["current_preflight_id"],),
             )
             if (

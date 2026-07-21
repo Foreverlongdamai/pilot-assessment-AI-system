@@ -9,6 +9,8 @@
     <Page.KeyboardAccelerators>
         <KeyboardAccelerator Key="C" Modifiers="Control" Invoked="OnCopyAccelerator" />
         <KeyboardAccelerator Key="V" Modifiers="Control" Invoked="OnPasteAccelerator" />
+        <KeyboardAccelerator Key="Z" Modifiers="Control" Invoked="OnUndoAccelerator" />
+        <KeyboardAccelerator Key="Y" Modifiers="Control" Invoked="OnRedoAccelerator" />
         <KeyboardAccelerator Key="Delete" Invoked="OnDeleteAccelerator" />
     </Page.KeyboardAccelerators>
     <Grid>
@@ -59,10 +61,10 @@
                             ItemsSource="{x:Bind ViewModel.ViewModes}"
                             SelectedItem="{x:Bind ViewModel.SelectedViewMode, Mode=TwoWay}" />
                         <ComboBox
-                            Width="135"
-                            AutomationProperties.Name="{Binding [Model_KindFilterA11y], Source={StaticResource Localization}}"
-                            ItemsSource="{x:Bind ViewModel.KindOptions}"
-                            SelectedItem="{x:Bind ViewModel.SelectedKind, Mode=TwoWay}" />
+                            Width="160"
+                            AutomationProperties.Name="{Binding [Model_LayerFilterA11y], Source={StaticResource Localization}}"
+                            ItemsSource="{x:Bind ViewModel.LayerOptions}"
+                            SelectedItem="{x:Bind ViewModel.SelectedLayer, Mode=TwoWay}" />
                         <ComboBox
                             Width="155"
                             AutomationProperties.Name="{Binding [Model_ActivationFilterA11y], Source={StaticResource Localization}}"
@@ -73,11 +75,6 @@
                             AutomationProperties.Name="{Binding [Model_GroupFilterA11y], Source={StaticResource Localization}}"
                             ItemsSource="{x:Bind ViewModel.AvailableGroups}"
                             SelectedItem="{x:Bind ViewModel.SelectedGroup, Mode=TwoWay}" />
-                        <ComboBox
-                            Width="125"
-                            AutomationProperties.Name="{Binding [Model_TagFilterA11y], Source={StaticResource Localization}}"
-                            ItemsSource="{x:Bind ViewModel.AvailableTags}"
-                            SelectedItem="{x:Bind ViewModel.SelectedTag, Mode=TwoWay}" />
                     </StackPanel>
                 </ScrollViewer>
                 <CommandBar

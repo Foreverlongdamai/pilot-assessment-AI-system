@@ -9,17 +9,20 @@ from pilot_assessment.model_library.repository import LibraryQuery
 from pilot_assessment.model_workspace.execution import CurrentModelExecutionMaterializer
 from pilot_assessment.model_workspace.service import CurrentModelWorkspaceService
 from pilot_assessment.runtime import CurrentRunPreflightService, ProjectApplication
+from tests.runtime.system_support import open_test_system
 
-NOW = datetime(2026, 7, 16, 12, 0, tzinfo=UTC)
+NOW = datetime(2026, 7, 21, 12, 0, tzinfo=UTC)
 
 
-def test_application_composes_services_seeds_once_and_reopens_after_project_move(
+def test_system_owns_model_once_while_project_moves_without_a_model_copy(
     tmp_path: Path,
 ) -> None:
-    root = tmp_path / "project"
     profile = load_hover_starter_package()
+    system = open_test_system(tmp_path / "system", clock=lambda: NOW)
+    root = tmp_path / "project"
     application = ProjectApplication.create(
         root,
+        system=system,
         project_id="project.alpha",
         name="Alpha project",
         created_at=NOW,
@@ -27,47 +30,40 @@ def test_application_composes_services_seeds_once_and_reopens_after_project_move
     )
     try:
         expected_count = len(profile.library_items)
-        assert application.seed_result.applied is True
-        assert application.current_seed_result.applied is True
-        assert application.seed_result.manifest_hash == profile.manifest_hash
-        assert len(application.components.list_records()) == expected_count
-        assert len(application.operator_registry.catalog()) > 0
-        assert len(application.source_catalog) == len(profile.source_catalog)
-        assert set(application.source_provider_registry.source_ids()) == {
+        assert system.seed_result.applied is True
+        assert system.current_seed_result.applied is True
+        assert system.seed_result.manifest_hash == profile.manifest_hash
+        assert len(system.components.list_records()) == expected_count
+        assert len(application.components.list_records()) == 0
+        assert application.project.database.fetchone("SELECT COUNT(*) FROM model_nodes")[0] == 0
+        assert application.project.database.fetchone("SELECT COUNT(*) FROM task_schemes")[0] == 0
+        assert len(system.operator_registry.catalog()) > 0
+        assert len(system.source_catalog) == len(profile.source_catalog)
+        assert set(system.source_provider_registry.source_ids()) == {
             descriptor.source_id for descriptor in profile.source_catalog.descriptors()
         }
-        assert application.starter_scheme_id == profile.scheme.scheme_version_id
-        assert application.run_recovery == ()
-        assert application.runs.list_runs() == ()
-        assert application.preflight.operator_registry is application.operator_registry
-        assert application.pipeline.results is application.results
+        assert application.system is system
+        assert application.current_model is system.current_model
         assert isinstance(application.current_model, CurrentModelWorkspaceService)
-        assert isinstance(
-            application.execution_materializer,
-            CurrentModelExecutionMaterializer,
-        )
+        assert isinstance(application.execution_materializer, CurrentModelExecutionMaterializer)
         assert isinstance(application.current_preflight, CurrentRunPreflightService)
-        assert application.current_model.repository.database is application.project.database
+        assert application.current_model.repository.database is system.store.database
         assert len(application.current_model.list_nodes()) == 53
         assert len(application.current_model.list_schemes()) == 1
 
-        repeated = application.initialize_starter()
+        repeated = system.initialize_starter()
         assert repeated.applied is False
-        assert len(application.components.list_records()) == expected_count
-        assert (
-            application.project.database.fetchone("SELECT COUNT(*) FROM project_seed_markers")[0]
-            == 2
-        )
+        assert len(system.components.list_records()) == expected_count
 
-        draft = application.schemes.create_draft_from_scheme(
-            application.starter_scheme_id,
+        draft = system.schemes.create_draft_from_scheme(
+            system.starter_scheme_id,
             draft_id="draft.persisted",
             author_id="expert.one",
         )
-        assert application.drafts.get("draft.persisted") == draft
+        assert system.drafts.get("draft.persisted") == draft
         assert (
             len(
-                application.components.list_records(
+                system.components.list_records(
                     LibraryQuery(kind=ComponentKind.ASSESSMENT_SCHEME_VERSION)
                 )
             )
@@ -78,26 +74,21 @@ def test_application_composes_services_seeds_once_and_reopens_after_project_move
 
     moved = tmp_path / "moved-project"
     root.rename(moved)
-    reopened = ProjectApplication.open(moved, clock=lambda: NOW)
+    reopened = ProjectApplication.open(moved, system=system, clock=lambda: NOW)
     try:
         assert reopened.project.root == moved.resolve()
         assert reopened.drafts.get("draft.persisted") == draft
         assert (
-            reopened.components.get_exact(
+            system.components.get_exact(
                 ComponentKind.ASSESSMENT_SCHEME_VERSION,
                 profile.scheme.scheme_version_id,
             )
             == profile.scheme
         )
-        assert reopened.seed_result.applied is False
-        assert reopened.current_seed_result.applied is False
-        assert isinstance(reopened.current_model, CurrentModelWorkspaceService)
+        assert len(reopened.components.list_records()) == 0
+        assert reopened.project.database.fetchone("SELECT COUNT(*) FROM model_nodes")[0] == 0
         assert len(reopened.current_model.list_nodes()) == 53
         assert len(reopened.current_model.list_schemes()) == 1
-        assert reopened.initialize_starter().applied is False
-        assert len(reopened.components.list_records()) == expected_count
-        assert (
-            reopened.project.database.fetchone("SELECT COUNT(*) FROM project_seed_markers")[0] == 2
-        )
     finally:
         reopened.close()
+        system.close()

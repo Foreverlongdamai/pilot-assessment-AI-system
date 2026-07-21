@@ -6,6 +6,8 @@
 
 **Architecture:** M7 is split into M7A and M7B. M7A owns canonical `ModelNode`/`TaskScheme` state, dependency closure, atomic node/CPT edits, automatic immutable run snapshots, compatibility materialization and JSON-RPC methods. M7B owns process hosting, typed transport, task navigation, the active/dim graph, floating node editors, autosave/conflict UX, bilingual resources and run/result presentation. M7B never reimplements Evidence or BN calculation logic.
 
+> **2026-07-18 applicability note:** Tasks 1–15 below remain historical implementation evidence. D-056/D-057 now insert a backend-managed durable edit session before canonical state, move canonical commit to the main-window Save all choice, add global undo/redo and replace the old graph filter/lane semantics with the five-layer canvas. See the [approved amendment](../specs/2026-07-18-m7-staged-edit-session-and-five-layer-canvas-amendment.md) and its [completed implementation plan](2026-07-18-m7-staged-edit-session-and-five-layer-canvas-implementation-plan.md).
+
 **Tech Stack:** Python 3.11, Pydantic 2, SQLite, existing M4R/M5/M6 runtime, JSON-RPC 2.0 over JSONL stdio, C#/.NET 10, WinUI 3, Windows App SDK, CommunityToolkit.Mvvm, Microsoft.Extensions.Hosting, System.Text.Json source generation, xUnit.
 
 ---
@@ -205,3 +207,5 @@ M7A and M7B have passed their gates. Completion handoff records:
 3. record any changed product semantics in `DECISIONS.md` before changing the specifications;
 4. keep starter/synthetic runs marked scientifically unsupported;
 5. M8 planning may now begin, but no M8 packaging implementation or scientific-validity claim is implied by M7 completion.
+
+**2026-07-18 user-acceptance clarification:** the completion above is the M7 engineering gate, not the user's final acceptance of the actual product workflow. The user will manually exercise M7 and may request M7 repairs. M8 therefore remains limited to a non-executable pre-UAT outline until that acceptance and any required repairs are closed.

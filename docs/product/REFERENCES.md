@@ -7,6 +7,15 @@
 - 18-node mapping、O2/O4/H4/H5 命名和删除 H6：由项目负责人于 2026-07-10 确认，并完整固化在 [04_REFERENCE_MODEL_V0_1.md](04_REFERENCE_MODEL_V0_1.md)。
 - 初始阈值与旧 slide 14/16 只作为设计演进证据；当前文档中的公式、状态和版本规则优先。完整研究工作区若存在，可在 outputs/ai_system_framework_reading/rendered/ 中查阅旧渲染图。
 
+## Documentation and architecture references
+
+以下资料只用于 M8 文档信息架构与架构表达，不构成产品认证或对标准正文的替代：
+
+- [ISO/IEC/IEEE 26514:2022 — Design and development of information for users](https://www.iso.org/standard/77451.html)：参考用户信息的受众、任务、结构、内容和维护原则。
+- [ISO/IEC/IEEE 42010:2022 — Architecture description](https://www.iso.org/standard/74393.html)：参考 stakeholder、concern、viewpoint 和 architecture view 的表达。
+- [Diátaxis](https://diataxis.fr/)：区分 tutorial、how-to、reference 与 explanation。
+- [C4 model diagrams](https://c4model.com/diagrams)：以 system context/container 为主、按价值添加 component 的架构图层级。
+
 ## R1 Perfect et al. 2015
 
 Perfect, P., Jump, M., & White, M. D. (2015). Methods to Assess the Handling Qualities Requirements for Personal Aerial Vehicles. *Journal of Guidance, Control, and Dynamics, 38*(11), 2161–2172. DOI: 10.2514/1.G000862.

@@ -92,7 +92,7 @@ def rehash_task_scheme(scheme: TaskScheme) -> TaskScheme:
 
 
 def model_graph_semantic_hash(
-    project_id: str,
+    model_library_id: str,
     scheme: TaskScheme,
     nodes: Iterable[ModelNode],
     edges: Iterable[ModelGraphEdge],
@@ -102,7 +102,7 @@ def model_graph_semantic_hash(
     ordered_nodes = tuple(sorted(nodes, key=lambda item: item.node_id))
     ordered_edges = tuple(sorted(edges, key=lambda item: item.edge_id))
     payload = {
-        "project_id": project_id,
+        "model_library_id": model_library_id,
         "scheme_id": scheme.scheme_id,
         "scheme_content_hash": task_scheme_semantic_hash(scheme),
         "nodes": [
@@ -115,7 +115,7 @@ def model_graph_semantic_hash(
         ],
         "edges": [edge.model_dump(mode="json") for edge in ordered_edges],
     }
-    return typed_content_sha256("model-graph-semantic", "0.1.0", payload)
+    return typed_content_sha256("model-graph-semantic", "0.2.0", payload)
 
 
 __all__ = [

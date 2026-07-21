@@ -116,6 +116,11 @@ public sealed class ApplicationShellState
         });
     }
 
+    public void SetSchemeContext(string? schemeId)
+    {
+        Mutate(() => _schemeId = Normalize(schemeId));
+    }
+
     public void SetAutosaveStatus(string status)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(status);

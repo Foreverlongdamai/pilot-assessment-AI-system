@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import queue
 import subprocess
 import sys
@@ -10,7 +11,9 @@ from pathlib import Path
 
 
 class SidecarProcess:
-    def __init__(self) -> None:
+    def __init__(self, system_root: Path) -> None:
+        environment = os.environ.copy()
+        environment["PILOT_ASSESSMENT_SYSTEM_ROOT"] = str(system_root)
         self.process = subprocess.Popen(
             [sys.executable, "-m", "pilot_assessment.sidecar"],
             stdin=subprocess.PIPE,
@@ -19,6 +22,7 @@ class SidecarProcess:
             text=True,
             encoding="utf-8",
             bufsize=1,
+            env=environment,
         )
         assert self.process.stdin is not None
         assert self.process.stdout is not None
@@ -109,7 +113,7 @@ def test_stdio_sidecar_supports_the_managed_edit_and_assessment_loop(
     tmp_path: Path,
     m4_workflow_bundle: Path,
 ) -> None:
-    sidecar = SidecarProcess()
+    sidecar = SidecarProcess(tmp_path / "system")
     project_root = tmp_path / "stdio-project"
     try:
         hello = sidecar.call(
@@ -163,6 +167,11 @@ def test_stdio_sidecar_supports_the_managed_edit_and_assessment_loop(
             ),
         )
         assert current_edit["node"]["semantic_revision"] == 1
+        committed_edit = sidecar.call(
+            "model.edit.commit",
+            _mutation("tx.subprocess-current-edit-commit"),
+        )
+        assert committed_edit["edit_session"]["dirty"] is False
 
         operators = sidecar.call("operator.catalog.list")["operators"]
         assert operators

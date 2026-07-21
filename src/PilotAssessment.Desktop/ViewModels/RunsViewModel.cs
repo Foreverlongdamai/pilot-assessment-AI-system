@@ -353,15 +353,11 @@ public partial class RunsViewModel : ObservableObject
 
     private RunListItemViewModel BuildRunItem(AssessmentRunV2 run, string? resultId)
     {
-        var schemeName = BilingualTextSelector.Select(
-            _localization?.CurrentLanguage ?? "en-US",
-            run.Snapshot.Scheme.NameZh,
-            run.Snapshot.Scheme.NameEn,
-            run.Snapshot.Scheme.SchemeId);
+        var schemeName = ModelDisplayNameResolver.ForScheme(run.Snapshot.Scheme);
         return new RunListItemViewModel(
             run,
             resultId,
-            $"{schemeName} · {run.RunId}",
+            schemeName,
             $"{LocalizeState(run.State)} · {LocalizeStage(run.Stage)}",
             $"{run.RequestedAt.ToLocalTime():g} · rev {run.Snapshot.Scheme.SemanticRevision} · {run.Snapshot.ActiveNodes.Length} nodes");
     }
@@ -447,14 +443,9 @@ public partial class RunsViewModel : ObservableObject
 
         foreach (var node in run.Snapshot.ActiveNodes)
         {
-            var name = BilingualTextSelector.Select(
-                _localization?.CurrentLanguage ?? "en-US",
-                node.NameZh,
-                node.NameEn,
-                node.NodeId);
             FrozenNodes.Add(new FrozenNodeItemViewModel(
                 node.NodeId,
-                name,
+                ModelDisplayNameResolver.ForNode(node, preferShort: false),
                 node.NodeKind.ToString(),
                 node.SemanticRevision.ToString(),
                 node.ContentHash));

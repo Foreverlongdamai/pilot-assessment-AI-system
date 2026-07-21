@@ -40,7 +40,7 @@ public sealed class ContractSerializationTests
             "operator-definition.json",
             PilotAssessmentJsonContext.Default.OperatorDefinition);
 
-        Assert.Equal("project.alpha", graph.ProjectId);
+        Assert.Equal("model-library.alpha", graph.ModelLibraryId);
         Assert.Equal(["raw.x"], graph.Scheme.ComputedActiveClosure);
         Assert.Equal("41b97e6b379f1d744d0b63a1937fcffd1044d31dddeb67cf6f41adb1b2e7eb2a", graph.GraphHash);
         Assert.Equal(["/name_en"], change.Diff.ChangedPaths);
@@ -115,6 +115,69 @@ public sealed class ContractSerializationTests
     }
 
     [Fact]
+    public void RawSessionInspection_PreservesUndeclaredUnitWithoutUserInput()
+    {
+        const string json = """
+            {
+              "contract_version": "0.1.0",
+              "source_kind": "simulator_raw",
+              "report": null,
+              "raw": {
+                "contract_version": "0.1.0",
+                "source_snapshot_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "detected_profile_id": "cranfield-simulator-combined-csv-raw-v0.1",
+                "profile_candidates": ["cranfield-simulator-combined-csv-raw-v0.1"],
+                "files": [{
+                  "relative_path": "streams/simulator.csv",
+                  "byte_size": 128,
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }],
+                "field_mappings": [{
+                  "source_path": "streams/simulator.csv",
+                  "source_field": "Pilot Yaw",
+                  "canonical_field": "control.yaw_raw",
+                  "modality": "U",
+                  "physical_dtype": "f64",
+                  "declared_unit": null,
+                  "unit_provenance": "undeclared",
+                  "timestamp_role": "measurement",
+                  "resolution_status": "resolved"
+                }],
+                "modality_proposals": {
+                  "U": {
+                    "modality": "U",
+                    "status": "present",
+                    "paths": ["streams/simulator.csv"],
+                    "format": "csv",
+                    "schema_id": "cranfield-simulator-combined-csv-raw-v0.1",
+                    "clock_id": "simulator-clock",
+                    "sample_rate_hz": 100.0,
+                    "declared_units": {},
+                    "unit_handling": "undeclared-pass-through-v1"
+                  }
+                },
+                "annotation_mappings": [],
+                "required_user_inputs": [],
+                "warnings": [],
+                "can_materialize": true
+              },
+              "trace_id": "trace.raw"
+            }
+            """;
+
+        var inspected = JsonSerializer.Deserialize(
+            json,
+            PilotAssessmentJsonContext.Default.SessionSourceInspectionResponse);
+
+        Assert.NotNull(inspected);
+        Assert.Equal(SessionDataSourceKind.SimulatorRaw, inspected.SourceKind);
+        Assert.True(inspected.Raw!.CanMaterialize);
+        Assert.Empty(inspected.Raw.RequiredUserInputs);
+        Assert.Null(inspected.Raw.FieldMappings[0].DeclaredUnit);
+        Assert.Equal(UnitProvenance.Undeclared, inspected.Raw.FieldMappings[0].UnitProvenance);
+    }
+
+    [Fact]
     public void CurrentRunFixtures_RoundTripFrozenSnapshotAndArtifactReferences()
     {
         var preflight = ReadFixture(
@@ -143,6 +206,45 @@ public sealed class ContractSerializationTests
             "run-result-envelope.json",
             result,
             PilotAssessmentJsonContext.Default.RunResultEnvelope);
+    }
+
+    [Fact]
+    public void ModelEditSessionResponse_DeserializesOptionalCommitDetails()
+    {
+        const string json = """
+            {
+              "edit_session": {
+                "contract_id": "model-edit-session-status",
+                "contract_version": "0.2.0",
+                "session_id": "model-edit-session.1",
+                "model_library_id": "model-library.alpha",
+                "base_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "cursor": 0,
+                "latest_sequence": 0,
+                "dirty": false,
+                "can_undo": false,
+                "can_redo": false,
+                "change_count": 0,
+                "recovered": false
+              },
+              "transaction_id": "tx.edit.commit",
+              "audit_event_id": "audit.edit.commit",
+              "replayed": false,
+              "trace_id": "trace.edit.commit",
+              "changed_node_ids": ["evidence.precision"],
+              "changed_scheme_ids": ["scheme.hover"]
+            }
+            """;
+
+        var response = JsonSerializer.Deserialize(
+            json,
+            PilotAssessmentJsonContext.Default.ModelEditSessionMutationResponse);
+
+        Assert.NotNull(response);
+        Assert.False(response.EditSession.Dirty);
+        Assert.Equal(["evidence.precision"], response.ChangedNodeIds!);
+        Assert.Equal(["scheme.hover"], response.ChangedSchemeIds!);
+        Assert.Null(response.DiscardedChangeCount);
     }
 
     [Fact]

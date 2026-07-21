@@ -4,7 +4,7 @@
 |---|---|
 | 里程碑 | M8B — System-Owned Model Library and Editable Backend Source |
 | 日期 | 2026-07-21 |
-| 状态 | **Review candidate；核心存储方案已由用户选择方案 1** |
+| 状态 | **Approved；2026-07-21 用户批准按方案 1 实施** |
 | 上游 | M7 current-model workspace；M8A portable Windows release |
 | 取代口径 | “global model library” 不再表示单个 project 内全局，而表示单个解压软件副本内全局 |
 | 科学状态 | Starter Evidence、BN、CPT 与任务方案仍为工程模板；`formal_run_authorized=false` |
@@ -449,18 +449,18 @@ M8B 拆为三个连续、可独立验证的内部阶段：
 
 M8B 完成不表示 M8C/M8D/M8E、M7 用户最终验收或专家科学校准完成。
 
-## 20. 候选决策
+## 20. 已接受决策
 
-以下口径在用户确认本书面规格后写入 `DECISIONS.md`：
+以下口径已在用户确认本书面规格后写入 `DECISIONS.md`：
 
-| 候选 ID | 决策 |
+| 决策 ID | 决策 |
 |---|---|
-| C-M8B-01 | 每套解压软件副本在 `system/` 中拥有唯一 canonical ModelNode/TaskScheme 库；不使用 `%LOCALAPPDATA%` 或 project-local current model |
-| C-M8B-02 | SystemApplication 在 project 之前启动，Model Studio 无 project 可用；ProjectApplication 只拥有 Session/Run/Result/artifact |
-| C-M8B-03 | run 从 system current state 冻结 exact model closure 和 source identities 到 project RunSnapshot，之后只执行 snapshot |
-| C-M8B-04 | legacy project-local model 自动、事务化、无覆盖合并；dirty draft 恢复为 system dirty edit session |
-| C-M8B-05 | source/model baseline 偏离只记录，不审批、不阻止；语法/import/contract 错误不得静默回退 |
-| C-M8B-06 | 项目切换不切换 system model/edit session；复制整套软件才形成并列 system/source 分支 |
+| D-066 | 每套解压软件副本在 `system/` 中拥有唯一 canonical ModelNode/TaskScheme 库；不使用 `%LOCALAPPDATA%` 或 project-local current model |
+| D-067 | SystemApplication 在 project 之前启动，Model Studio 无 project 可用；ProjectApplication 只拥有 Session/Run/Result/artifact |
+| D-068 | run 从 system current state 冻结 exact model closure 和 source identities 到 project RunSnapshot，之后只执行 snapshot |
+| D-069 | legacy project-local model自动、事务化、无覆盖合并；dirty draft 恢复为 system dirty edit session |
+| D-070 | 项目切换不切换 system model/edit session；一套软件副本只有一个 system writer |
+| D-071 | source/model baseline 偏离只记录；loaded-source/disk drift 不一致时要求重启，不静默回退 |
 
 ## 21. 受影响文档
 

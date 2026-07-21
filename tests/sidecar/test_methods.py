@@ -66,10 +66,70 @@ def _mutation(transaction_id: str, **params) -> dict:
     }
 
 
+def test_system_model_is_browsable_and_editable_without_an_open_project(
+    tmp_path: Path,
+) -> None:
+    methods = SidecarMethods(clock=lambda: NOW, system_root=tmp_path / "system")
+    rpc = RpcHarness(methods)
+    try:
+        status = rpc.call("runtime.status")
+        assert status["system_ready"] is True
+        assert status["project_open"] is False
+        assert status["project_id"] is None
+
+        base = rpc.call("model.scheme.list")["schemes"][0]
+        graph = rpc.call("model.graph.get", {"scheme_id": base["scheme_id"]})["graph"]
+        assert graph["model_library_id"] == status["model_library_id"]
+        assert len(graph["nodes"]) == 53
+
+        copied = rpc.call(
+            "model.scheme.copy",
+            _mutation(
+                "tx.no-project-copy",
+                source_scheme_id=base["scheme_id"],
+                new_scheme_id="task-scheme.no-project-copy",
+                name_en="No-project editable copy",
+            ),
+        )["scheme"]
+        assert copied["scheme_id"] == "task-scheme.no-project-copy"
+        assert rpc.call("model.edit.status")["edit_session"]["dirty"] is True
+
+        rpc.call("model.edit.discard", _mutation("tx.no-project-discard"))
+        assert rpc.call("model.edit.status")["edit_session"]["dirty"] is False
+        project_only = rpc.call_error("session.list", {})
+        assert project_only["data"]["error_code"] == "PROJECT_NOT_OPEN"
+    finally:
+        methods.close()
+
+
+def test_project_create_generates_stable_id_when_client_only_supplies_name_and_folder(
+    tmp_path: Path,
+) -> None:
+    methods = SidecarMethods(clock=lambda: NOW, system_root=tmp_path / "system")
+    rpc = RpcHarness(methods)
+    request = _mutation(
+        "tx.generated-project-id",
+        root=str(tmp_path / "generated-id-project"),
+        name="Generated ID project",
+    )
+    try:
+        created = rpc.call("project.create", request)
+        project_id = created["project"]["project_id"]
+        assert project_id.startswith("project.")
+        assert len(project_id) > len("project.")
+
+        rpc.call("project.close")
+        replayed = rpc.call("project.create", request)
+        assert replayed["project"]["project_id"] == project_id
+        assert replayed["replayed"] is True
+    finally:
+        methods.close()
+
+
 def test_methods_expose_durable_expert_editing_with_idempotent_mutations(
     tmp_path: Path,
 ) -> None:
-    methods = SidecarMethods(clock=lambda: NOW)
+    methods = SidecarMethods(clock=lambda: NOW, system_root=tmp_path / "system")
     rpc = RpcHarness(methods)
     project_root = tmp_path / "managed-project"
     try:
@@ -212,7 +272,7 @@ def test_methods_expose_durable_expert_editing_with_idempotent_mutations(
 def test_current_workspace_methods_return_canonical_state_and_idempotent_retries(
     tmp_path: Path,
 ) -> None:
-    methods = SidecarMethods(clock=lambda: NOW)
+    methods = SidecarMethods(clock=lambda: NOW, system_root=tmp_path / "system")
     rpc = RpcHarness(methods)
     try:
         rpc.call(

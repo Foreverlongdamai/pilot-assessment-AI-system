@@ -1,10 +1,10 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0.5 complete-node/task-activation expert-designer 基线。M1–M3、M4R、M5 与 M6 已工程验证；D-047–D-053 已修订 M7 为完整节点、任务激活、autosave current scheme 与 automatic RunSnapshot。该新语义尚未实现；M8 packaging 仍放在最后；starter/synthetic `formal_run_authorized=false`。
-**日期：** 2026-07-17
+**文档状态：** 产品 v0.8 portable expert-designer 基线。M1–M7、M8A 与 M8B-0 已工程验证；M7 用户手工验收、D-055、M8B-1/M8B-2 与 M8C–M8E 尚未完成；starter/synthetic `formal_run_authorized=false`。
+**日期：** 2026-07-21
 **适用目录：** `pilot_assessment_system/`
 
-> **当前权威：** [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)。M5/M6 规格准确记录已实现的 version/draft/publish backend，但冲突处只作为 migration/replay 基础。本总览中出现的 Hover、18 Anchor、11 sub-skills、4 competencies 与默认公式/CPT 均指 starter template，不限制任务、方案或节点数量。
+> **当前权威：** M7 交互见 [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)，模型 ownership 与 project/run 分层见 [M8B System-Owned Model Library and Editable Backend Provenance Design](./specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)。M5/M6 的 version/draft/publish 和 project-local current-model 文字只作为 migration/replay 基础。本总览中出现的 Hover、18 Anchor、11 sub-skills、4 competencies 与默认公式/CPT 均指 starter template，不限制任务、方案或节点数量。
 
 ## 1. 产品目的
 
@@ -49,7 +49,7 @@
 - 复制、切换和编辑并列 TaskSchemes；
 - 比较节点定义，并从历史 RunSnapshots 重放结果。
 
-Starter 节点可在 project 中直接编辑，也可先复制为任务专用节点。所有编辑自动保存到后端 canonical objects，并经过最小结构、概率和兼容性验证；不需要 Draft/Published/Apply/Publish。
+Starter 节点可在 software-copy system model library 中直接编辑，也可先复制为任务专用节点。所有编辑进入 system-owned staged edit session，并在“保存全部”时提交到后端 canonical objects；只经过最小结构、概率和兼容性验证，不需要 Draft/Published/Apply/Publish。
 
 ### 2.4 数据与模型分离
 
@@ -89,7 +89,7 @@ M1–M3 负责文件完整性、schema、类型和时间合同检查，并可以
 
 | 角色 | 主要任务 | 权限边界 |
 |---|---|---|
-| 评估员／教员 | 导入 session、检查数据、运行评估、解释 posterior 和证据链 | 可运行和导出；是否可编辑模型由 project 权限决定 |
+| 评估员／教员 | 导入 session、检查数据、运行评估、解释 posterior 和证据链 | 可运行和导出；模型编辑作用于当前软件副本的 system model library |
 | 领域专家 | 审查 Evidence、能力结构、BN 拓扑和 CPT | 可直接编辑/复制 current nodes 与 TaskSchemes；不能改写历史 RunSnapshot |
 | 数据研究人员 | 检查 stream、同步技术诊断、phase/event annotation 和数据 coverage | 可修正 session metadata；原始数据保持只读 |
 | 系统开发者 | 维护插件、协议、数据适配器和软件测试 | 代码变更不自动成为科学模型批准 |
@@ -99,15 +99,15 @@ M1–M3 负责文件完整性、schema、类型和时间合同检查，并可以
 
 ## 5. 完整工作流
 
-1. 用户从 Windows 应用创建或打开 assessment project。
-2. WinUI 应用启动随安装包部署的 Python sidecar，并完成协议、版本和能力握手。
+1. 用户启动 Windows 应用；WinUI 自动启动随安装包部署的 Python sidecar，打开当前软件副本的 system model library，并完成协议、版本和能力握手。
+2. 用户可以不打开 project 直接进入 Model Studio；需要导入 Session 或运行评估时，再创建或打开 assessment project。
 3. 用户选择 session bundle 目录或压缩包。
 4. 后端读取 manifest，并依次执行 M1 integrity 与 M2 content/adapter 检查，显示每个 stream 的 `present`、`export_pending`、`missing`、`invalid` 或 `not_applicable` 状态。
 5. M2 输出 `IngestionReadinessReport`；它只决定 source artifact 能否进入同步，始终 `formal_run_authorized=false`。
 6. M3 用同一文件 snapshot 构造 `SynchronizationInput`，按 native rate 映射原始行并追加 aligned time/flags，不插值或重采样；输出内部 `AlignedSession` 与公共 `SynchronizationReport`。
 7. 用户在 Session Explorer 中同步查看 X/U 曲线、随头动的第一视角 VR scene、gaze/AOI、驾驶员图像、EEG 和 ECG。
 8. 用户在左侧选择 Base/Hover/Straight 等 current `TaskScheme`，或复制现有方案创建新的并列方案。
-9. 领域专家在 active/dim 全局画布中启用、停用、创建、复制或编辑完整 Evidence/BN nodes；每个用户意图自动保存。启用 child 自动补齐 fixed parents；停用有 active downstream 的 parent 时先确认级联影响。
+9. 领域专家在 active/dim 全局画布中启用、停用、创建、复制或编辑 software-copy system library 中的完整 Evidence/BN nodes；修改先进入持久 staged edit session，并在关闭前由用户统一保存或放弃。启用 child 自动补齐 fixed parents；停用有 active downstream 的 parent 时先确认级联影响。
 10. 用户点击节点打开可同时并排的独立浮动窗口，编辑 extraction bindings、recipe operators/参数/scorer、probabilistic BN parents、states 和 CPT；用户可随时对当前 session preview。
 11. 用户直接从当前技术可执行的 TaskScheme 启动评估。Run Preflight 检查 managed inputs、任务前提、active closure、compiled recipe/BN plan 与 operator/engine compatibility；通过后 sidecar 自动冻结 immutable RunSnapshot。它不按飞行表现或原始信号数值过滤 evidence。
 12. Windows 前端显示运行进度，并允许取消。
@@ -131,10 +131,14 @@ M1–M3 负责文件完整性、schema、类型和时间合同检查，并可以
     └──────────────┬──────────────────────┬───────────────────┘
                    │                      │
        ┌───────────▼──────────┐  ┌────────▼──────────────────┐
-       │ Session Bundles       │  │ Project Runtime Store     │
-       │ 原始/派生多模态数据   │  │ components/schemes/runs   │
-       │ manifest + checksums  │  │ nodes/schemes/snapshots   │
-       └──────────────────────┘  └───────────────────────────┘
+       │ System Model Store    │  │ Project Runtime Store     │
+       │ ModelNodes/TaskSchemes│  │ Session/RunSnapshot       │
+       │ CPT/edit session      │  │ result/artifacts          │
+       └───────────┬──────────┘  └────────▲──────────────────┘
+                   │ exact clean closure  │ immutable copy/run
+                   └──────────────────────┘
+
+Session Bundle 作为外部输入，经受管导入复制到 Project Runtime Store；它不进入 System Model Store。不同 project 共享同一软件副本的 current system model，但各自保留自己的 Session、运行和不可变历史。
 
 ### 6.1 Windows WinUI
 
@@ -159,13 +163,13 @@ Assessment Core 保留 transport-neutral command service，未来可以增加 lo
 
 ### 6.4 Global Node Library and TaskSchemes
 
-当前目标是全局库保存完整 Raw Input/Evidence/BN ModelNodes，方案层保存 current TaskSchemes 的 explicit selection、computed closure、task bindings 和 layout；每次 run 自动冻结 exact definitions。M6 Project runtime store 已持久化 legacy drafts、published versions、runs、artifacts 和 operation history；M7 必须在保留旧 replay 的同时新增 current node/scheme 表面。
+每套软件副本的 `system/model-library.sqlite3` 保存完整 Raw Input/Evidence/BN ModelNodes，以及 current TaskSchemes 的 explicit selection、computed closure、task bindings、CPT 和 layout；`system/staging/model-edit/` 保存跨 project 生命周期的 staged edit session。每次 run 从 clean system state 锁定 exact closure，并把不可变执行副本和 RunSnapshot 写入目标 project。Project database 不再 seed 或持有可继续编辑的 current model；legacy project-local 模型只读保留并可按确定性、幂等、无覆盖规则导入 system store。
 
 ## 7. 前端产品区域
 
 | 区域 | 核心职责 |
 |---|---|
-| Project Launcher | project、最近 task scheme、session/run |
+| Project Launcher | 创建/打开只承载 Session、run、result 和 artifacts 的 project |
 | Session Import | bundle 导入、接口发现、stream 状态和修复建议 |
 | Session Explorer | 多模态同步播放、phase/event 和上游技术诊断检查 |
 | Model Library | 浏览完整 Evidence/BN nodes、lineage、tags、archive 和被哪些 schemes 使用 |
@@ -229,7 +233,7 @@ v0 完成必须同时满足：
 3. 可验证时间同步、phase/event 和 baseline。
 4. 可通过 canonical EvidenceRecipe 和 operators 计算当前 model workspace 声明的 Anchor。
 5. 可在 integrated workspace 查看三类节点和两类边，切换/复制任务方案，以 active/dim 显示全局图，并通过多个浮动窗口编辑 Evidence recipe/参数/scorer 与 BN topology/state/CPT。
-6. Current nodes/schemes 自动保存且无需 publish；每次离线推理自动冻结 RunSnapshot 并输出可追溯结果。
+6. Current nodes/schemes 由 software-copy system library 持有，staged edits 可统一保存/放弃且无需 publish；每次离线推理把 exact model closure 冻结到目标 project 的 RunSnapshot 并输出可追溯结果。
 7. 证据不足时不会产生虚假确定性评分或诊断。
 8. 软件验证状态与科学验证状态在 UI 和导出文件中明确分开。
 
@@ -241,6 +245,7 @@ v0 完成必须同时满足：
 - [M3 实施计划](./plans/2026-07-12-m3-native-time-synchronization-implementation-plan.md)
 - [Expert-Editable Evidence and Assessment Model Design](./specs/2026-07-15-expert-editable-evidence-and-model-design.md)（EvidenceRecipe/operator 与 expert-designer 原则；旧 apply 交互已被 M7 取代）
 - [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)（当前完整节点/任务激活/RunSnapshot 权威）
+- [M8B System-Owned Model Library and Editable Backend Provenance Design](./specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)（当前 system model ownership、project/run 边界与 editable backend provenance 权威）
 - [M5 Shared Versioned Model Library and Bayesian Workspace Design](./specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md)（已实现后端基础与历史 identity/publish 语义）
 - [M4 Anchor Calculation and Evidence Availability 规格](./specs/2026-07-13-m4-anchor-evidence-availability-design.md)（Task 0–28 历史/迁移规格）
 - [M4 Anchor Calculation and Evidence Availability 原实施计划](./plans/2026-07-13-m4-anchor-evidence-availability-implementation-plan.md)（历史上已批准，现已被取代且不得执行）

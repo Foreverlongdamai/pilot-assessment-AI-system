@@ -6,6 +6,14 @@ from pilot_assessment.ingestion.manifest_loader import (
     ManifestLoaderLimits,
     ManifestLoadError,
 )
+from pilot_assessment.ingestion.raw_session import (
+    RawMaterializationResult,
+    RawSessionError,
+    detect_session_source,
+    inspect_raw_session,
+    inspect_session_source,
+    materialize_raw_session,
+)
 from pilot_assessment.ingestion.readiness import (
     IngestionReadinessOutcome,
     build_default_registry,
@@ -24,4 +32,10 @@ __all__ = [
     "inspect_ingestion_readiness",
     "inspect_loaded_ingestion_readiness",
     "source_snapshot_fingerprint",
+    "RawMaterializationResult",
+    "RawSessionError",
+    "detect_session_source",
+    "inspect_raw_session",
+    "inspect_session_source",
+    "materialize_raw_session",
 ]
