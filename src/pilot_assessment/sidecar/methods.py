@@ -1544,7 +1544,16 @@ class SidecarMethods:
         kind = _component_kind(params)
         if kind in _CONCEPT_KINDS:
             raise InvalidParamsFault("kind must identify a version", path="/kind")
-        item = self._app().model_library.get_exact(kind, _required_str(params, "version_id"))
+        app = self._app()
+        version_id = _required_str(params, "version_id")
+        try:
+            item = app.model_library.get_exact(kind, version_id)
+        except LibraryItemNotFoundError:
+            # Current-model runs compile a frozen compatibility closure into the
+            # project execution library.  Those immutable records deliberately do
+            # not become editable system-model versions, but result projection must
+            # still be able to resolve their lineage back to current ModelNode IDs.
+            item = app.components.get_exact(kind, version_id)
         return {"version": _jsonable(item)}
 
     def _component_version_diff(self, params, _context) -> RpcResult:

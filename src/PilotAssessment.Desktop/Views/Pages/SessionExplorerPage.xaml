@@ -107,9 +107,8 @@
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="contracts:SessionCollectionItem">
                                     <StackPanel Padding="4">
-                                        <TextBlock FontWeight="SemiBold" Text="{x:Bind Session.SessionId}" />
-                                        <TextBlock Opacity="0.65" Text="{x:Bind Session.ParticipantId}" />
-                                        <TextBlock Opacity="0.65" Text="{x:Bind Session.CurrentSessionRevisionId}" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock FontWeight="SemiBold" Text="{Binding [Session_ManagedSessionItem], Source={StaticResource Localization}}" />
+                                        <TextBlock Opacity="0.65" Text="{x:Bind Session.CreatedAt}" />
                                     </StackPanel>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
@@ -131,7 +130,10 @@
                             SelectionChanged="OnRevisionSelectionChanged">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate x:DataType="contracts:SessionRevision">
-                                    <TextBlock Text="{x:Bind SessionRevisionId}" />
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="{Binding [Common_Revision], Source={StaticResource Localization}}" />
+                                        <TextBlock Text="{x:Bind ImportedAt}" />
+                                    </StackPanel>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>

@@ -14,7 +14,10 @@ public sealed record ResultRunItemViewModel(
     AssessmentRunV3 Run,
     string ResultId,
     string Title,
-    string DetailText);
+    string DetailText)
+{
+    public override string ToString() => $"{Title} · {DetailText}";
+}
 
 public sealed record ResultArtifactItemViewModel(
     string Role,
@@ -299,8 +302,12 @@ public partial class ResultsViewModel : ObservableObject
         }
 
         BuildProvenance(selection.Run, result, loadedArtifacts);
-        ResultSummaryText =
-            $"{EvidenceRows.Count} Evidence · {PosteriorRows.Count} posterior variables · {Artifacts.Count} artifacts";
+        ResultSummaryText = F(
+            "Results_ResultSummaryText",
+            "{0} Evidence · {1} posterior variables · {2} artifacts",
+            EvidenceRows.Count,
+            PosteriorRows.Count,
+            Artifacts.Count);
         ScientificStatusText = LocalizeScientificStatus(result.ScientificStatus);
         CoverageText = result.CoverageRefs.Length == 0
             ? L("Results_NoCoverageArtifacts", "No separate coverage artifact was emitted for this run.")
@@ -404,7 +411,11 @@ public partial class ResultsViewModel : ObservableObject
             run,
             resultId,
             schemeName,
-            $"{run.FinishedAt?.ToLocalTime():g} · {run.Snapshot.ActiveNodes.Length} nodes");
+            F(
+                "Results_RunDetail",
+                "{0:g} · {1} active nodes",
+                run.FinishedAt?.ToLocalTime(),
+                run.Snapshot.ActiveNodes.Length));
     }
 
     private void ClearResult()
@@ -493,9 +504,12 @@ public partial class ResultsViewModel : ObservableObject
 
     private void SetError(Exception error)
     {
+        System.Diagnostics.Debug.WriteLine(error);
         HasError = true;
-        ErrorMessage = error.Message;
-        StatusMessage = error.Message;
+        ErrorMessage = L(
+            "Results_StatusLoadFailed",
+            "Result data could not be loaded. Open Diagnostics for technical details.");
+        StatusMessage = ErrorMessage;
     }
 
     private void ClearError()
@@ -543,6 +557,9 @@ public partial class ResultsViewModel : ObservableObject
         var value = _localization[key];
         return value.StartsWith("⟦", StringComparison.Ordinal) ? fallback : value;
     }
+
+    private string F(string key, string fallback, params object?[] args) =>
+        string.Format(L(key, fallback), args);
 
     private static string ComponentKey(ComponentIdRef component) =>
         $"{component.Kind}:{component.VersionId}";

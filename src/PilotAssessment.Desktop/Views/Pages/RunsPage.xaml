@@ -163,18 +163,13 @@
                                 <DataTemplate x:DataType="vm:FrozenNodeItemViewModel">
                                     <Grid Padding="4" ColumnSpacing="10">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="190" />
-                                            <ColumnDefinition Width="100" />
-                                            <ColumnDefinition Width="70" />
                                             <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="110" />
+                                            <ColumnDefinition Width="90" />
                                         </Grid.ColumnDefinitions>
-                                        <StackPanel>
-                                            <TextBlock FontWeight="SemiBold" Text="{x:Bind Name}" />
-                                            <TextBlock Opacity="0.62" Text="{x:Bind NodeId}" TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
+                                        <TextBlock FontWeight="SemiBold" Text="{x:Bind Name}" TextTrimming="CharacterEllipsis" />
                                         <TextBlock Grid.Column="1" Text="{x:Bind Kind}" />
                                         <TextBlock Grid.Column="2" Text="{x:Bind Revision}" />
-                                        <TextBlock Grid.Column="3" FontFamily="Consolas" Text="{x:Bind ContentHash}" TextTrimming="CharacterEllipsis" />
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>

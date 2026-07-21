@@ -86,7 +86,10 @@ public sealed record SessionRevision(
     DateTime ImportedAt,
     string ImportedBy,
     string IngestionReadinessRef,
-    string? SynchronizationRef);
+    string? SynchronizationRef)
+{
+    public override string ToString() => $"Revision · {ImportedAt:g}";
+}
 
 public sealed record ArtifactIdRef(string ArtifactId, string Sha256);
 

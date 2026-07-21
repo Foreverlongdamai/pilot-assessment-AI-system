@@ -110,13 +110,19 @@ public sealed record EvidenceResultProjection(
     string CalculationStatus,
     string PrimaryValue,
     string DauState,
-    string Score);
+    string Score)
+{
+    public override string ToString() => $"{DisplayName} · {CalculationStatus} · {DauState} · {Score}";
+}
 
 public sealed record ObservationProjection(
     string NodeId,
     string DisplayName,
     ObservationKind Kind,
-    string Value);
+    string Value)
+{
+    public override string ToString() => $"{DisplayName} · {Kind} · {Value}";
+}
 
 public sealed record PosteriorProjection(
     string NodeId,
@@ -124,7 +130,10 @@ public sealed record PosteriorProjection(
     string TopState,
     double TopProbability,
     double L1Change,
-    string Distribution);
+    string Distribution)
+{
+    public override string ToString() => $"{DisplayName} · {TopState} · {TopProbability:P1}";
+}
 
 public sealed record InfluenceProjection(
     string EdgeId,
@@ -132,7 +141,10 @@ public sealed record InfluenceProjection(
     string QueriedNode,
     double L1Delta,
     string MethodId,
-    string CanonicalPath);
+    string CanonicalPath)
+{
+    public override string ToString() => $"{ObservedNode} → {QueriedNode} · {L1Delta:G4}";
+}
 
 public static class RunResultProjector
 {

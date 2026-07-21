@@ -15,7 +15,10 @@ public sealed record ModalityStatusItem(
     string DeclaredStatus,
     string Readiness,
     string Detail,
-    bool IsAvailable);
+    bool IsAvailable)
+{
+    public override string ToString() => $"{DisplayName} · {DeclaredStatus} · {Readiness}";
+}
 
 public partial class SessionExplorerViewModel : ObservableObject
 {
@@ -113,6 +116,16 @@ public partial class SessionExplorerViewModel : ObservableObject
         _shellState = shellState;
         _localization = localization;
         _localization?.LanguageChanged += OnLanguageChanged;
+        SourceKindText = L("Session_NotInspected", "Not inspected");
+        SourceProfileText = L("Session_NotAvailable", "Not available");
+        SourceMappingText = L(
+            "Session_SourceMappingEmpty",
+            "Choose a session data folder to inspect its input mapping.");
+        InspectionSummary = L("Session_NotInspected", "Not inspected");
+        InspectionIssues = L("Session_NoInspectionReport", "No inspection report loaded.");
+        ManagedBundlePathText = L("Session_NoManagedRevision", "No managed revision selected");
+        ReadinessArtifactText = L("Session_NotAvailable", "Not available");
+        SynchronizationArtifactText = L("Session_NotGenerated", "Not generated");
         SetStatus("Session_StatusStart", "Open a managed project to inspect and import a Session Bundle.");
         ShowUnknownModalities("Session_NoReportLoaded", "No report loaded");
     }
@@ -305,11 +318,10 @@ public partial class SessionExplorerViewModel : ObservableObject
             }
 
             ReadinessArtifactText = stored.Artifact is null
-                ? revision.IngestionReadinessRef
+                ? L("Session_ArtifactAvailable", "Available")
                 : F(
                     "Session_ArtifactBytes",
-                    "{0} · {1:N0} bytes",
-                    stored.Artifact.ArtifactId,
+                    "Verified · {0:N0} bytes",
                     stored.Artifact.ByteSize);
             if (stored.Report is not null)
             {
@@ -344,10 +356,11 @@ public partial class SessionExplorerViewModel : ObservableObject
         _unknownModalityDetail = null;
         InspectionSummary = F(
             "Session_ReportSummary",
-            "{0} · session {1} · formal run authorized: {2}",
-            report.Disposition,
-            report.SessionId,
-            report.FormalRunAuthorized);
+            "{0} · formal run authorized: {1}",
+            LocalizeReadinessDisposition(report.Disposition),
+            report.FormalRunAuthorized
+                ? L("Common_Yes", "Yes")
+                : L("Common_No", "No"));
         var issues = report.GlobalIssues
             .Concat(report.StreamResults.Values.SelectMany(result => result.Issues))
             .Select(issue => $"{issue.Severity}: {issue.Message} — {issue.Remediation}")
@@ -365,8 +378,8 @@ public partial class SessionExplorerViewModel : ObservableObject
                     id,
                     name,
                     family,
-                    "undeclared",
-                    "unknown",
+                    L("Session_StatusUndeclared", "Undeclared"),
+                    L("Session_StatusUnknown", "Unknown"),
                     L("Session_NoCanonicalStream", "No canonical stream result"),
                     false));
                 continue;
@@ -384,8 +397,8 @@ public partial class SessionExplorerViewModel : ObservableObject
                 id,
                 name,
                 family,
-                result.DeclaredStatus.ToString(),
-                result.Readiness.ToString(),
+                LocalizeStreamStatus(result.DeclaredStatus),
+                LocalizeStreamReadiness(result.Readiness),
                 detail,
                 result.Readiness is StreamReadiness.Ready));
         }
@@ -438,8 +451,8 @@ public partial class SessionExplorerViewModel : ObservableObject
                     id,
                     name,
                     family,
-                    "undeclared",
-                    "unknown",
+                    L("Session_StatusUndeclared", "Undeclared"),
+                    L("Session_StatusUnknown", "Unknown"),
                     L("Session_NoCanonicalStream", "No canonical stream result"),
                     false));
                 continue;
@@ -480,7 +493,7 @@ public partial class SessionExplorerViewModel : ObservableObject
                 id,
                 name,
                 family,
-                proposal.Status.ToString(),
+                LocalizeStreamStatus(proposal.Status),
                 proposal.Status is StreamStatus.Present
                     ? L("Session_ReadyToImport", "Ready to import")
                     : L("Session_Missing", "Missing"),
@@ -508,11 +521,13 @@ public partial class SessionExplorerViewModel : ObservableObject
     {
         ManagedBundlePathText = revision is null
             ? L("Session_NoManagedRevision", "No managed revision selected")
-            : revision.ManagedBundlePath;
-        ReadinessArtifactText = revision?.IngestionReadinessRef ??
-            L("Session_NotAvailable", "Not available");
-        SynchronizationArtifactText = revision?.SynchronizationRef ??
-            L("Session_NotGenerated", "Not generated");
+            : L("Session_ManagedCopyReady", "Stored inside this project");
+        ReadinessArtifactText = revision is null
+            ? L("Session_NotAvailable", "Not available")
+            : L("Session_ArtifactAvailable", "Available");
+        SynchronizationArtifactText = revision?.SynchronizationRef is null
+            ? L("Session_NotGenerated", "Not generated")
+            : L("Session_ArtifactAvailable", "Available");
     }
 
     private void ShowUnknownModalities(string detailKey, string fallback)
@@ -523,9 +538,40 @@ public partial class SessionExplorerViewModel : ObservableObject
         foreach (var (id, name, family) in ModalityDefinitions())
         {
             Modalities.Add(new ModalityStatusItem(
-                id, name, family, "unknown", "not loaded", detail, false));
+                id,
+                name,
+                family,
+                L("Session_StatusUnknown", "Unknown"),
+                L("Session_ReadinessNotLoaded", "Not loaded"),
+                detail,
+                false));
         }
     }
+
+    private string LocalizeReadinessDisposition(ReadinessDisposition disposition) => disposition switch
+    {
+        ReadinessDisposition.Ready => L("Session_ReadinessReady", "Ready"),
+        ReadinessDisposition.ReadyPartial => L("Session_ReadinessReadyPartial", "Ready with missing modalities"),
+        _ => L("Session_ReadinessBlocked", "Blocked"),
+    };
+
+    private string LocalizeStreamStatus(StreamStatus status) => status switch
+    {
+        StreamStatus.Present => L("Session_StatusPresent", "Present"),
+        StreamStatus.ExportPending => L("Session_StatusExportPending", "Export pending"),
+        StreamStatus.Missing => L("Session_StatusMissing", "Missing"),
+        StreamStatus.Invalid => L("Session_StatusInvalid", "Invalid"),
+        _ => L("Session_StatusNotApplicable", "Not applicable"),
+    };
+
+    private string LocalizeStreamReadiness(StreamReadiness readiness) => readiness switch
+    {
+        StreamReadiness.Ready => L("Session_ReadinessReady", "Ready"),
+        StreamReadiness.Unavailable => L("Session_ReadinessUnavailable", "Unavailable"),
+        StreamReadiness.Invalid => L("Session_StatusInvalid", "Invalid"),
+        StreamReadiness.Unsupported => L("Session_ReadinessUnsupported", "Unsupported"),
+        _ => L("Session_StatusNotApplicable", "Not applicable"),
+    };
 
     private async Task RunBusyAsync(Func<Task> operation)
     {

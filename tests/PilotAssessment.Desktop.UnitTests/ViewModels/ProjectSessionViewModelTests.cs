@@ -84,9 +84,9 @@ public sealed class ProjectSessionViewModelTests
         Assert.Equal("session.alpha", sessions.SelectedSession!.Session.SessionId);
         Assert.Equal("session-revision.abc", sessions.SelectedRevision!.SessionRevisionId);
         Assert.Equal("session.alpha", shell.Snapshot.SessionId);
-        Assert.Equal(
-            "sessions/session.alpha/session-revision.abc/bundle",
-            sessions.ManagedBundlePathText);
+        Assert.Equal("Stored inside this project", sessions.ManagedBundlePathText);
+        Assert.DoesNotContain("session.alpha", sessions.InspectionSummary, StringComparison.Ordinal);
+        Assert.DoesNotContain("artifact.readiness", sessions.ReadinessArtifactText, StringComparison.Ordinal);
         Assert.Equal(@"C:\external\session-bundle", gateway.LastImportedSource);
         Assert.Contains("canonical managed revision", sessions.StatusMessage);
     }

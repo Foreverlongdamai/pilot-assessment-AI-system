@@ -103,7 +103,7 @@
   <data name="Session_ImportManaged" xml:space="preserve"><value>Import to managed project</value></data>
   <data name="Session_ManagedSessions" xml:space="preserve"><value>Managed sessions</value></data>
   <data name="Session_SelectedRevision" xml:space="preserve"><value>Selected managed revision</value></data>
-  <data name="Session_ManagedPath" xml:space="preserve"><value>Managed bundle path</value></data>
+  <data name="Session_ManagedPath" xml:space="preserve"><value>Managed storage</value></data>
   <data name="Session_IngestionArtifact" xml:space="preserve"><value>Ingestion readiness artifact</value></data>
   <data name="Session_SyncArtifact" xml:space="preserve"><value>Synchronization report artifact</value></data>
   <data name="Session_PathBoundary" xml:space="preserve"><value>The external source path above and this managed path are intentionally distinct. Product installation files never contain user Session data.</value></data>
@@ -410,13 +410,29 @@
   <data name="Session_ReadyToImport" xml:space="preserve"><value>Ready to import</value></data>
   <data name="Session_Missing" xml:space="preserve"><value>Missing</value></data>
   <data name="Session_NoManagedRevision" xml:space="preserve"><value>No managed revision selected</value></data>
-  <data name="Session_ArtifactBytes" xml:space="preserve"><value>{0} · {1:N0} bytes</value></data>
+  <data name="Session_ArtifactBytes" xml:space="preserve"><value>Verified · {0:N0} bytes</value></data>
+  <data name="Session_ArtifactAvailable" xml:space="preserve"><value>Available</value></data>
+  <data name="Session_ManagedCopyReady" xml:space="preserve"><value>Stored inside this project</value></data>
+  <data name="Session_ManagedSessionItem" xml:space="preserve"><value>Managed Session</value></data>
+  <data name="Session_ReadinessReady" xml:space="preserve"><value>Ready</value></data>
+  <data name="Session_ReadinessReadyPartial" xml:space="preserve"><value>Ready with missing modalities</value></data>
+  <data name="Session_ReadinessBlocked" xml:space="preserve"><value>Blocked</value></data>
+  <data name="Session_ReadinessUnavailable" xml:space="preserve"><value>Unavailable</value></data>
+  <data name="Session_ReadinessUnsupported" xml:space="preserve"><value>Unsupported</value></data>
+  <data name="Session_ReadinessNotLoaded" xml:space="preserve"><value>Not loaded</value></data>
+  <data name="Session_StatusPresent" xml:space="preserve"><value>Present</value></data>
+  <data name="Session_StatusExportPending" xml:space="preserve"><value>Export pending</value></data>
+  <data name="Session_StatusMissing" xml:space="preserve"><value>Missing</value></data>
+  <data name="Session_StatusInvalid" xml:space="preserve"><value>Invalid</value></data>
+  <data name="Session_StatusNotApplicable" xml:space="preserve"><value>Not applicable</value></data>
+  <data name="Session_StatusUndeclared" xml:space="preserve"><value>Undeclared</value></data>
+  <data name="Session_StatusUnknown" xml:space="preserve"><value>Unknown</value></data>
   <data name="Session_StoredReportUnavailable" xml:space="preserve"><value>Stored report unavailable</value></data>
   <data name="Session_StoredReportReferenceOnly" xml:space="preserve"><value>Stored report is reference-only</value></data>
   <data name="Session_ReferencePreserved" xml:space="preserve"><value>The canonical artifact reference is preserved; no large payload was loaded.</value></data>
   <data name="Session_ReportNotInline" xml:space="preserve"><value>Report not loaded inline</value></data>
   <data name="Session_StoredReportLoadFailed" xml:space="preserve"><value>Stored report could not be loaded</value></data>
-  <data name="Session_ReportSummary" xml:space="preserve"><value>{0} · session {1} · formal run authorized: {2}</value></data>
+  <data name="Session_ReportSummary" xml:space="preserve"><value>{0} · formal run authorized: {1}</value></data>
   <data name="Session_NoIngestionIssues" xml:space="preserve"><value>No ingestion issues reported.</value></data>
   <data name="Session_NoCanonicalStream" xml:space="preserve"><value>No canonical stream result</value></data>
   <data name="Session_Rows" xml:space="preserve"><value>{0:N0} rows</value></data>
@@ -561,12 +577,12 @@
   <data name="Runs_Start" xml:space="preserve"><value>Start run</value></data>
   <data name="Runs_Purpose" xml:space="preserve"><value>Purpose</value></data>
   <data name="Runs_CurrentInput" xml:space="preserve"><value>Selected managed input and current task scheme</value></data>
-  <data name="Runs_PreflightIdentity" xml:space="preserve"><value>Preflight identity</value></data>
+  <data name="Runs_PreflightIdentity" xml:space="preserve"><value>Technical preflight status</value></data>
   <data name="Runs_ScientificBoundary" xml:space="preserve"><value>Scientific boundary</value></data>
   <data name="Runs_PreflightDiagnostics" xml:space="preserve"><value>Exact technical preflight diagnostics</value></data>
   <data name="Runs_History" xml:space="preserve"><value>Durable current-model runs</value></data>
   <data name="Runs_FrozenSnapshot" xml:space="preserve"><value>Frozen run snapshot</value></data>
-  <data name="Runs_FrozenNodes" xml:space="preserve"><value>Frozen complete nodes and content hashes</value></data>
+  <data name="Runs_FrozenNodes" xml:space="preserve"><value>Frozen active nodes</value></data>
   <data name="Runs_PurposePreview" xml:space="preserve"><value>Preview</value></data>
   <data name="Runs_PurposeSoftwareTest" xml:space="preserve"><value>Software test</value></data>
   <data name="Runs_PurposeAssessment" xml:space="preserve"><value>Assessment</value></data>
@@ -577,6 +593,7 @@
   <data name="Runs_StatusStarted" xml:space="preserve"><value>Assessment run started from the frozen current scheme; no Publish step was used.</value></data>
   <data name="Runs_StatusCancellationRequested" xml:space="preserve"><value>Cancellation was requested and reconciled with the canonical backend run.</value></data>
   <data name="Runs_NoSessionRevision" xml:space="preserve"><value>No managed Session revision selected</value></data>
+  <data name="Runs_ManagedSessionSelection" xml:space="preserve"><value>Managed Session · revision imported {0:g}</value></data>
   <data name="Runs_NoScheme" xml:space="preserve"><value>No current task scheme selected</value></data>
   <data name="Runs_PreflightNotRun" xml:space="preserve"><value>Preflight not run</value></data>
   <data name="Runs_ScientificUnknown" xml:space="preserve"><value>Scientific status will be shown after preflight.</value></data>
@@ -584,6 +601,8 @@
   <data name="Runs_ScientificSynthetic" xml:space="preserve"><value>Engineering / synthetic run: useful for workflow verification, not a validated pilot assessment.</value></data>
   <data name="Runs_ScientificNotAuthorized" xml:space="preserve"><value>Engineering run: formal assessment is not authorized. Technical execution remains available.</value></data>
   <data name="Runs_NoFrozenSnapshot" xml:space="preserve"><value>No frozen run snapshot selected.</value></data>
+  <data name="Runs_FrozenSnapshotSummary" xml:space="preserve"><value>{0} · scheme revision {1} · {2} active nodes</value></data>
+  <data name="Runs_RunDetail" xml:space="preserve"><value>{0:g} · revision {1} · {2} active nodes</value></data>
   <data name="Runs_Idle" xml:space="preserve"><value>Idle</value></data>
   <data name="Runs_Ready" xml:space="preserve"><value>Ready</value></data>
   <data name="Runs_Blocked" xml:space="preserve"><value>Blocked</value></data>
@@ -622,6 +641,9 @@
   <data name="Results_NoCurrentResults" xml:space="preserve"><value>No completed current-model result is stored in this project yet.</value></data>
   <data name="Results_ArtifactOpened" xml:space="preserve"><value>The verified managed artifact was selected in Windows Explorer.</value></data>
   <data name="Results_StatusLoaded" xml:space="preserve"><value>Result artifacts were verified by the backend and projected read-only.</value></data>
+  <data name="Results_ResultSummaryText" xml:space="preserve"><value>{0} Evidence · {1} posterior variables · {2} artifacts</value></data>
+  <data name="Results_RunDetail" xml:space="preserve"><value>{0:g} · {1} active nodes</value></data>
+  <data name="Results_StatusLoadFailed" xml:space="preserve"><value>Result data could not be loaded. Open Diagnostics for technical details.</value></data>
   <data name="Results_NoCoverageArtifacts" xml:space="preserve"><value>No separate coverage artifact was emitted for this run.</value></data>
   <data name="Results_CoverageArtifacts" xml:space="preserve"><value>{0} verified coverage artifact(s) are available below.</value></data>
   <data name="Results_NoResultLoaded" xml:space="preserve"><value>No result loaded.</value></data>

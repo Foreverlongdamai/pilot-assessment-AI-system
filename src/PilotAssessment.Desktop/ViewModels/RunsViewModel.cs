@@ -22,6 +22,7 @@ public sealed record RunListItemViewModel(
 {
     public string RunId => Run.RunId;
     public bool HasResult => !string.IsNullOrWhiteSpace(ResultId);
+    public override string ToString() => $"{Title} · {StateText} · {DetailText}";
 }
 
 public sealed record FrozenNodeItemViewModel(
@@ -29,7 +30,10 @@ public sealed record FrozenNodeItemViewModel(
     string Name,
     string Kind,
     string Revision,
-    string ContentHash);
+    string ContentHash)
+{
+    public override string ToString() => $"{Name} · {Kind} · {Revision}";
+}
 
 public partial class RunsViewModel : ObservableObject
 {
@@ -302,7 +306,7 @@ public partial class RunsViewModel : ObservableObject
         RefreshRunPresentation();
         if (runEvent.State is RunState.Completed or RunState.Failed or RunState.Cancelled or RunState.Interrupted)
         {
-            StatusMessage = $"{LocalizeState(runEvent.State)} · {runEvent.Message}";
+            StatusMessage = $"{LocalizeState(runEvent.State)} · {LocalizeStage(runEvent.Stage)}";
             _ = ReconcileTerminalRunAsync(runEvent.RunId);
         }
     }
@@ -362,7 +366,12 @@ public partial class RunsViewModel : ObservableObject
             resultId,
             schemeName,
             $"{LocalizeState(run.State)} · {LocalizeStage(run.Stage)}",
-            $"{run.RequestedAt.ToLocalTime():g} · rev {run.Snapshot.Scheme.SemanticRevision} · {run.Snapshot.ActiveNodes.Length} nodes");
+            F(
+                "Runs_RunDetail",
+                "{0:g} · revision {1} · {2} active nodes",
+                run.RequestedAt.ToLocalTime(),
+                run.Snapshot.Scheme.SemanticRevision,
+                run.Snapshot.ActiveNodes.Length));
     }
 
     private void ReplacePreflightDiagnostics(IEnumerable<RunDiagnostic> diagnostics)
@@ -405,11 +414,16 @@ public partial class RunsViewModel : ObservableObject
 
     private void RefreshSelectionText()
     {
-        var revision = _sessions.SelectedRevision?.SessionRevisionId
-            ?? L("Runs_NoSessionRevision", "No managed Session revision selected");
+        var revision = _sessions.SelectedRevision;
+        var managedInput = revision is null
+            ? L("Runs_NoSessionRevision", "No managed Session revision selected")
+            : F(
+                "Runs_ManagedSessionSelection",
+                "Managed Session · revision imported {0:g}",
+                revision.ImportedAt.ToLocalTime());
         var scheme = _schemes.SelectedScheme?.DisplayName
             ?? L("Runs_NoScheme", "No current task scheme selected");
-        SelectionText = $"{revision}  ·  {scheme}";
+        SelectionText = $"{managedInput}  ·  {scheme}";
     }
 
     private void RefreshPreflightPresentation()
@@ -417,7 +431,7 @@ public partial class RunsViewModel : ObservableObject
         var report = _workspace.Preflight;
         PreflightStatusText = report is null
             ? L("Runs_PreflightNotRun", "Preflight not run")
-            : $"{LocalizeDisposition(report.TechnicalDisposition)} · {report.PreflightId} · {report.PreflightHash}";
+            : LocalizeDisposition(report.TechnicalDisposition);
         ScientificBannerText = report switch
         {
             null => L("Runs_ScientificUnknown", "Scientific status will be shown after preflight."),
@@ -455,8 +469,12 @@ public partial class RunsViewModel : ObservableObject
                 node.ContentHash));
         }
 
-        FrozenSnapshotText =
-            $"{run.RunId} · snapshot {run.Snapshot.SnapshotHash} · scheme rev {run.Snapshot.Scheme.SemanticRevision} · {run.Snapshot.ActiveNodes.Length} nodes";
+        FrozenSnapshotText = F(
+            "Runs_FrozenSnapshotSummary",
+            "{0} · scheme revision {1} · {2} active nodes",
+            ModelDisplayNameResolver.ForScheme(run.Snapshot.Scheme),
+            run.Snapshot.Scheme.SemanticRevision,
+            run.Snapshot.ActiveNodes.Length);
         FrozenSourceText = run.Snapshot.BackendSourceIdentity is null
             ? L(
                 "Runs_LegacySourceIdentity",
@@ -472,9 +490,7 @@ public partial class RunsViewModel : ObservableObject
             : run.State is RunState.Completed ? 100 : 0;
         IsProgressIndeterminate = _workspace.TotalUnits <= 0 &&
             run.State is RunState.Queued or RunState.Running or RunState.Cancelling;
-        ProgressText = string.IsNullOrWhiteSpace(_workspace.ProgressMessage)
-            ? $"{LocalizeState(run.State)} · {LocalizeStage(run.Stage)}"
-            : $"{LocalizeState(run.State)} · {LocalizeStage(run.Stage)} · {_workspace.ProgressMessage}";
+        ProgressText = $"{LocalizeState(run.State)} · {LocalizeStage(run.Stage)}";
         _shellState.SetRunStatus($"{LocalizeState(run.State)} · {LocalizeStage(run.Stage)}");
         NotifyCommandStates();
     }
@@ -627,4 +643,7 @@ public partial class RunsViewModel : ObservableObject
         var value = _localization[key];
         return value.StartsWith("⟦", StringComparison.Ordinal) ? fallback : value;
     }
+
+    private string F(string key, string fallback, params object?[] args) =>
+        string.Format(L(key, fallback), args);
 }

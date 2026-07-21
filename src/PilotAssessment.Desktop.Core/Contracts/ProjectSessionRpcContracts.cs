@@ -152,7 +152,10 @@ public sealed record SessionSourceImportRequest(
 
 public sealed record SessionCollectionItem(
     SessionRecord Session,
-    IReadOnlyList<SessionRevision> Revisions);
+    IReadOnlyList<SessionRevision> Revisions)
+{
+    public override string ToString() => $"Managed Session · {Session.CreatedAt:g}";
+}
 
 public sealed record SessionListResponse(
     IReadOnlyList<SessionCollectionItem> Sessions,

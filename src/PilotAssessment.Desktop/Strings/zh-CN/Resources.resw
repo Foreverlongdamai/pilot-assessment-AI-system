@@ -103,7 +103,7 @@
   <data name="Session_ImportManaged" xml:space="preserve"><value>导入受管项目</value></data>
   <data name="Session_ManagedSessions" xml:space="preserve"><value>受管会话</value></data>
   <data name="Session_SelectedRevision" xml:space="preserve"><value>选中的受管修订</value></data>
-  <data name="Session_ManagedPath" xml:space="preserve"><value>受管 Bundle 路径</value></data>
+  <data name="Session_ManagedPath" xml:space="preserve"><value>受管存储</value></data>
   <data name="Session_IngestionArtifact" xml:space="preserve"><value>导入就绪性产物</value></data>
   <data name="Session_SyncArtifact" xml:space="preserve"><value>时间同步报告产物</value></data>
   <data name="Session_PathBoundary" xml:space="preserve"><value>上方外部来源路径与此受管路径有意保持分离。产品安装文件永远不会包含用户 Session 数据。</value></data>
@@ -410,13 +410,29 @@
   <data name="Session_ReadyToImport" xml:space="preserve"><value>可导入</value></data>
   <data name="Session_Missing" xml:space="preserve"><value>缺失</value></data>
   <data name="Session_NoManagedRevision" xml:space="preserve"><value>未选择受管修订</value></data>
-  <data name="Session_ArtifactBytes" xml:space="preserve"><value>{0} · {1:N0} 字节</value></data>
+  <data name="Session_ArtifactBytes" xml:space="preserve"><value>已验证 · {0:N0} 字节</value></data>
+  <data name="Session_ArtifactAvailable" xml:space="preserve"><value>可用</value></data>
+  <data name="Session_ManagedCopyReady" xml:space="preserve"><value>已存储在当前项目内</value></data>
+  <data name="Session_ManagedSessionItem" xml:space="preserve"><value>受管 Session</value></data>
+  <data name="Session_ReadinessReady" xml:space="preserve"><value>就绪</value></data>
+  <data name="Session_ReadinessReadyPartial" xml:space="preserve"><value>缺失部分模态但可继续</value></data>
+  <data name="Session_ReadinessBlocked" xml:space="preserve"><value>已阻断</value></data>
+  <data name="Session_ReadinessUnavailable" xml:space="preserve"><value>不可用</value></data>
+  <data name="Session_ReadinessUnsupported" xml:space="preserve"><value>不受支持</value></data>
+  <data name="Session_ReadinessNotLoaded" xml:space="preserve"><value>尚未载入</value></data>
+  <data name="Session_StatusPresent" xml:space="preserve"><value>已提供</value></data>
+  <data name="Session_StatusExportPending" xml:space="preserve"><value>等待导出</value></data>
+  <data name="Session_StatusMissing" xml:space="preserve"><value>缺失</value></data>
+  <data name="Session_StatusInvalid" xml:space="preserve"><value>无效</value></data>
+  <data name="Session_StatusNotApplicable" xml:space="preserve"><value>不适用</value></data>
+  <data name="Session_StatusUndeclared" xml:space="preserve"><value>未声明</value></data>
+  <data name="Session_StatusUnknown" xml:space="preserve"><value>未知</value></data>
   <data name="Session_StoredReportUnavailable" xml:space="preserve"><value>存储的报告不可用</value></data>
   <data name="Session_StoredReportReferenceOnly" xml:space="preserve"><value>存储的报告仅有引用</value></data>
   <data name="Session_ReferencePreserved" xml:space="preserve"><value>规范产物引用已保留；没有载入大型数据载荷。</value></data>
   <data name="Session_ReportNotInline" xml:space="preserve"><value>报告未内联载入</value></data>
   <data name="Session_StoredReportLoadFailed" xml:space="preserve"><value>无法载入已存储报告</value></data>
-  <data name="Session_ReportSummary" xml:space="preserve"><value>{0} · Session {1} · 正式运行授权：{2}</value></data>
+  <data name="Session_ReportSummary" xml:space="preserve"><value>{0} · 正式运行授权：{1}</value></data>
   <data name="Session_NoIngestionIssues" xml:space="preserve"><value>未报告导入问题。</value></data>
   <data name="Session_NoCanonicalStream" xml:space="preserve"><value>没有规范数据流结果</value></data>
   <data name="Session_Rows" xml:space="preserve"><value>{0:N0} 行</value></data>
@@ -561,12 +577,12 @@
   <data name="Runs_Start" xml:space="preserve"><value>开始运行</value></data>
   <data name="Runs_Purpose" xml:space="preserve"><value>运行用途</value></data>
   <data name="Runs_CurrentInput" xml:space="preserve"><value>所选受管输入与当前任务方案</value></data>
-  <data name="Runs_PreflightIdentity" xml:space="preserve"><value>预检标识</value></data>
+  <data name="Runs_PreflightIdentity" xml:space="preserve"><value>技术预检状态</value></data>
   <data name="Runs_ScientificBoundary" xml:space="preserve"><value>科学边界</value></data>
   <data name="Runs_PreflightDiagnostics" xml:space="preserve"><value>精确技术预检诊断</value></data>
   <data name="Runs_History" xml:space="preserve"><value>持久化的当前模型运行</value></data>
   <data name="Runs_FrozenSnapshot" xml:space="preserve"><value>冻结运行快照</value></data>
-  <data name="Runs_FrozenNodes" xml:space="preserve"><value>冻结完整节点与内容哈希</value></data>
+  <data name="Runs_FrozenNodes" xml:space="preserve"><value>冻结的启用节点</value></data>
   <data name="Runs_PurposePreview" xml:space="preserve"><value>预览</value></data>
   <data name="Runs_PurposeSoftwareTest" xml:space="preserve"><value>软件测试</value></data>
   <data name="Runs_PurposeAssessment" xml:space="preserve"><value>评估</value></data>
@@ -577,6 +593,7 @@
   <data name="Runs_StatusStarted" xml:space="preserve"><value>已从冻结的当前方案开始评估运行；未经过发布步骤。</value></data>
   <data name="Runs_StatusCancellationRequested" xml:space="preserve"><value>已请求取消，并与后端规范运行状态完成对齐。</value></data>
   <data name="Runs_NoSessionRevision" xml:space="preserve"><value>未选择受管 Session 修订</value></data>
+  <data name="Runs_ManagedSessionSelection" xml:space="preserve"><value>受管 Session · 修订导入于 {0:g}</value></data>
   <data name="Runs_NoScheme" xml:space="preserve"><value>未选择当前任务方案</value></data>
   <data name="Runs_PreflightNotRun" xml:space="preserve"><value>尚未执行预检</value></data>
   <data name="Runs_ScientificUnknown" xml:space="preserve"><value>预检后将显示科学状态。</value></data>
@@ -584,6 +601,8 @@
   <data name="Runs_ScientificSynthetic" xml:space="preserve"><value>工程／合成运行：可验证工作流，但不是经过验证的飞行员评估。</value></data>
   <data name="Runs_ScientificNotAuthorized" xml:space="preserve"><value>工程运行：尚未授权正式评估，但仍可执行技术计算。</value></data>
   <data name="Runs_NoFrozenSnapshot" xml:space="preserve"><value>未选择冻结运行快照。</value></data>
+  <data name="Runs_FrozenSnapshotSummary" xml:space="preserve"><value>{0} · 方案修订 {1} · {2} 个启用节点</value></data>
+  <data name="Runs_RunDetail" xml:space="preserve"><value>{0:g} · 修订 {1} · {2} 个启用节点</value></data>
   <data name="Runs_Idle" xml:space="preserve"><value>空闲</value></data>
   <data name="Runs_Ready" xml:space="preserve"><value>就绪</value></data>
   <data name="Runs_Blocked" xml:space="preserve"><value>已阻止</value></data>
@@ -622,6 +641,9 @@
   <data name="Results_NoCurrentResults" xml:space="preserve"><value>该项目尚未存储已完成的当前模型结果。</value></data>
   <data name="Results_ArtifactOpened" xml:space="preserve"><value>已在文件资源管理器中选中经验证的受管工件。</value></data>
   <data name="Results_StatusLoaded" xml:space="preserve"><value>结果工件已由后端验证，并以只读方式投影。</value></data>
+  <data name="Results_ResultSummaryText" xml:space="preserve"><value>{0} 个 Evidence · {1} 个后验变量 · {2} 个工件</value></data>
+  <data name="Results_RunDetail" xml:space="preserve"><value>{0:g} · {1} 个启用节点</value></data>
+  <data name="Results_StatusLoadFailed" xml:space="preserve"><value>无法载入结果数据。请打开“诊断”查看技术细节。</value></data>
   <data name="Results_NoCoverageArtifacts" xml:space="preserve"><value>本次运行没有生成独立覆盖度工件。</value></data>
   <data name="Results_CoverageArtifacts" xml:space="preserve"><value>下方提供 {0} 个经验证的覆盖度工件。</value></data>
   <data name="Results_NoResultLoaded" xml:space="preserve"><value>未加载结果。</value></data>

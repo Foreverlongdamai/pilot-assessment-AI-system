@@ -325,6 +325,27 @@ def test_stdio_sidecar_supports_the_managed_edit_and_assessment_loop(
             time.sleep(0.05)
         assert current_terminal is not None
         assert current_terminal["run"]["state"] == "completed"
+        execution_scheme_ref = current_started["run"]["snapshot"]["execution_snapshot"][
+            "scheme_ref"
+        ]
+        execution_scheme = sidecar.call(
+            "component.version.get",
+            {
+                "kind": execution_scheme_ref["kind"],
+                "version_id": execution_scheme_ref["version_id"],
+            },
+        )["version"]
+        evidence_ref = execution_scheme["evidence_versions"][0]
+        execution_evidence = sidecar.call(
+            "component.version.get",
+            {
+                "kind": evidence_ref["kind"],
+                "version_id": evidence_ref["version_id"],
+            },
+        )["version"]
+        assert execution_evidence["lineage"]["source_version_ids"][0].startswith(
+            "model-node.evidence."
+        )
         assert (
             sidecar.call("result.get", {"run_id": current_run_id})["result"]["snapshot_hash"]
             == current_started["run"]["snapshot"]["snapshot_hash"]
