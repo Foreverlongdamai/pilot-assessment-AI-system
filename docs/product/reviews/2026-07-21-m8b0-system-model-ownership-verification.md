@@ -7,7 +7,7 @@
 | 范围 | software-copy system model ownership、project/run 隔离、legacy import、无 project Model Studio 与 portable baseline |
 | 实施依据 | [M8B Design](../specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)、[M8B-0 Plan](../plans/2026-07-21-m8b0-system-model-ownership-implementation-plan.md)、D-066–D-071 |
 | 结论 | **Engineering verified** |
-| 最终 source baseline | 构建后填写 |
+| 最终 source baseline | Git `7c0587478161e796b6b450d642fe28ce6d66b4f0`；release manifest `git.dirty=false` |
 
 ## 1. 结论边界
 
@@ -76,13 +76,11 @@ git diff --check
 
 ## 4. Portable artifact
 
-最终 clean-commit rebuild 后填写：
-
 | 字段 | 最终值 |
 |---|---|
 | ZIP | `dist/releases/PilotAssessment-0.1.0-win-x64.zip` |
-| Bytes | 构建后填写 |
-| SHA-256 | 构建后填写 |
+| Bytes | `235,308,789` |
+| SHA-256 | `b2bdc2ef54831e9abc01d6e9ed6b006b5c9bb5d1b632c4a68128f232a4b119ea` |
 | Build kind | `m8b0-engineering` |
 | Checksummed files | `4,270` |
 | Public backend source files | `287` |
@@ -100,7 +98,7 @@ git diff --check
   --verify-editable-source --launch-desktop
 ```
 
-最终 clean-commit rebuild 后再次执行。验收条件：
+该命令已对最终 clean-commit rebuild 再次执行，返回 `status: PASS`。实际观察到 private Python import 位于仓库外解压目录的 `backend/src/pilot_assessment/__init__.py`，editable source marker 为 `0.1.0+m8b0-live-source-smoke`，桌面窗口句柄非零，且 packaged sidecar PID 来自同一解压目录。验收条件与结果：
 
 - 在仓库外临时目录解压；
 - 包内 private Python 从公开 `backend/src/pilot_assessment` 导入；
