@@ -33,8 +33,9 @@ USER_OWNED_SYSTEM_TABLES = (
     "run_results",
     "model_run_preflights_v2",
     "model_run_links_v2",
-    "legacy_system_model_import_receipts",
 )
+
+SOURCE_LOCAL_SYSTEM_TABLES = ("legacy_system_model_import_receipts",)
 
 _MODEL_TABLES = (
     ("model_nodes", "node_id"),
@@ -498,7 +499,11 @@ def capture_current_system(
             target_database = sqlite3.connect(destination / SYSTEM_DATABASE_NAME)
             try:
                 source_database.backup(target_database)
+                target_database.execute("PRAGMA secure_delete = ON")
+                for table in SOURCE_LOCAL_SYSTEM_TABLES:
+                    target_database.execute(f"DELETE FROM {table}")
                 target_database.commit()
+                target_database.execute("VACUUM")
             finally:
                 target_database.close()
                 source_database.close()
@@ -517,6 +522,7 @@ __all__ = [
     "SYSTEM_FORMAT_VERSION",
     "SYSTEM_LOCATOR_NAME",
     "SYSTEM_LOCK_NAME",
+    "SOURCE_LOCAL_SYSTEM_TABLES",
     "USER_OWNED_SYSTEM_TABLES",
     "SystemCaptureError",
     "SystemCaptureReport",

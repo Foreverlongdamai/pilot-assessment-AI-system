@@ -219,6 +219,55 @@ def test_inspection_rejects_user_owned_rows(tmp_path: Path) -> None:
         inspect_system_source(root)
 
 
+def test_capture_omits_legacy_import_receipt_without_mutating_source(
+    tmp_path: Path,
+) -> None:
+    _, capture_current_system, _ = _capture_api()
+    source = _create_closed_system(tmp_path / "system")
+    database = sqlite3.connect(source / "model-library.sqlite3")
+    try:
+        database.execute(
+            """
+            INSERT INTO legacy_system_model_import_receipts(
+                import_fingerprint, source_project_id, canonical_fingerprint,
+                legacy_edit_fingerprint, node_mapping_json, scheme_mapping_json,
+                inserted_node_count, inserted_scheme_count, reused_node_count,
+                reused_scheme_count, dirty_edit_recovered, imported_at
+            ) VALUES (?, ?, ?, NULL, ?, ?, 1, 1, 0, 0, 0, ?)
+            """,
+            (
+                "a" * 64,
+                "project.source-local",
+                "b" * 64,
+                b"{}",
+                b"{}",
+                NOW.isoformat(),
+            ),
+        )
+        database.commit()
+        database.execute("PRAGMA wal_checkpoint(TRUNCATE)").fetchall()
+    finally:
+        database.close()
+
+    target = tmp_path / "captured-system"
+    capture_current_system(source, target)
+
+    source_database = sqlite3.connect(source / "model-library.sqlite3")
+    target_database = sqlite3.connect(target / "model-library.sqlite3")
+    try:
+        assert source_database.execute(
+            "SELECT COUNT(*) FROM legacy_system_model_import_receipts"
+        ).fetchone() == (1,)
+        assert target_database.execute(
+            "SELECT COUNT(*) FROM legacy_system_model_import_receipts"
+        ).fetchone() == (0,)
+    finally:
+        source_database.close()
+        target_database.close()
+    assert b"project.source-local" in (source / "model-library.sqlite3").read_bytes()
+    assert b"project.source-local" not in (target / "model-library.sqlite3").read_bytes()
+
+
 def test_inspection_rejects_future_schema(tmp_path: Path) -> None:
     SystemCaptureError, _, inspect_system_source = _capture_api()
     root = _create_closed_system(tmp_path / "future-system")

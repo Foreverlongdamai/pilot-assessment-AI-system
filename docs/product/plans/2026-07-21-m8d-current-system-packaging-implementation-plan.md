@@ -186,8 +186,9 @@ USER_OWNED_SYSTEM_TABLES = (
     "run_results",
     "model_run_preflights_v2",
     "model_run_links_v2",
-    "legacy_system_model_import_receipts",
 )
+
+SOURCE_LOCAL_SYSTEM_TABLES = ("legacy_system_model_import_receipts",)
 
 
 class SystemCaptureError(RuntimeError):
@@ -203,7 +204,7 @@ The module must:
 5. require `PRAGMA integrity_check == ('ok',)` and an empty `PRAGMA foreign_key_check`;
 6. require contiguous schema migrations no newer than `5`, system schema no newer than `1`, locator/database identity agreement and `clean_shutdown=1`;
 7. compute the exact edit-session dirty state by reproducing the revision-excluding `_workspace_fingerprint` byte contract from each row's `canonical_json`, and require the canonical revision-aware fingerprint to equal `base_fingerprint`;
-8. reject non-zero user-owned row counts;
+8. reject non-zero project/session/run/result/artifact owner row counts; allow the source-local legacy import receipt but securely delete and compact it from the captured target without changing the source;
 9. compute model identity from ordered `(kind, id, content_hash, layout_hash)` rows;
 10. use `sqlite3.Connection.backup()` to create the destination canonical database while holding the source writer lock;
 11. copy canonical locator bytes, create only the target staging directory, and remove a newly created target on any failure;
@@ -211,7 +212,9 @@ The module must:
 
 - [x] **Step 4: Add deterministic refusal tests**
 
-Add four small tests:
+Add five small tests: the four refusal cases below plus one capture case proving a
+legacy import receipt is absent (including raw SQLite bytes) from the target while
+the source receipt remains unchanged.
 
 ```python
 def create_closed_system(root: Path) -> Path:

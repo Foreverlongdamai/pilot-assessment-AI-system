@@ -89,6 +89,8 @@ M8D 必须删除这一静默回退。发布成功只能表示“明确选定的 
 
 构建器在持有 source lock 时使用 SQLite consistency mechanism 创建目标 canonical database，而不是在数据库可能变化时做无保护的字节复制。目标包创建一套与 copied canonical state 对齐的 clean edit workspace；不需要把原软件副本的 undo/redo 历史、lock handle 或 transient files 交给下一位用户。
 
+`legacy_system_model_import_receipts` 是旧 project 模型迁入 system 时留下的源软件本地迁移收据，不是 Evidence、BN、CPT 或任务方案定义。它可能包含旧 project ID，因此允许它存在于被选中的 source system，但捕获过程必须在目标 SQLite 中安全清除并压实该表，同时保持 source 完全不变。真正的 project/session/run/result/artifact owner tables 仍必须为空；不得以此放宽用户数据边界。
+
 这项内部一致复制只是 release staging mechanism，不是面向用户的备份产品，也不产生 `.paprojbackup`。
 
 ### 5.3 任意模型规模
