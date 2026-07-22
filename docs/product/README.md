@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | 产品 v0.1.0-rc.3 portable expert-designer release candidate 修订；D-031–D-087 已获用户确认 |
 | 基线日期 | 2026-07-21 |
-| 产品阶段 | M1–M8E engineering history 保持完整；RC.1/RC.2 用户验收均为 `changes-required`。RC.2 的 `app/` 根布局证据保留；D-084–D-087 的 RC.3 Assessment/图标/删除/拖动修订正在完成新候选验证，starter/synthetic `formal_run_authorized=false` |
+| 产品阶段 | M1–M8E engineering history 保持完整；RC.1/RC.2 用户验收均为 `changes-required`。annotated RC.3 已完成 Assessment/图标/删除/拖动返修及仓库外工程验证，当前 `user_acceptance=pending`；starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -38,6 +38,8 @@
 2026-07-21 用户完成 RC.1 的首项独立验收并给出 `changes-required`：产品根目录暴露 94 个文件夹和 374 个文件。D-082/D-083 与 [RC.2 Portable Root Layout Amendment](specs/2026-07-21-rc2-portable-root-layout-amendment.md) 冻结新口径：RC.1 不可变，RC.2 将完整 WinUI/.NET runtime 收纳到 `app/`，根目录只提供 `PilotAssessment.exe` 一个启动入口，并显式保留八个语义目录。clean annotated `v0.1.0-rc.2` 现已构建并通过仓库外 restricted-PATH 验证，精确证据见 [RC.2 Verification](reviews/2026-07-21-rc2-portable-root-layout-verification.md)；用户验收重新保持 `pending`。
 
 2026-07-21 用户继续验收 RC.2 并给出 `changes-required`：Assessment 用途被错误阻止、发布任务栏图标缺失、没有明确的全局删除节点、长按拖动无可见移动。D-084–D-087 与 [RC.3 Run and Model Studio Amendment](specs/2026-07-21-rc3-run-and-model-studio-acceptance-amendment.md) 将四项修订放入新 RC.3；RC.2 tag/package/evidence 不改写。
+
+2026-07-21 annotated `v0.1.0-rc.3` 已完成 full source、24 份 DOCX / 281 页 render、tagged portable build、仓库外 restricted-PATH、Assessment completed run、可编辑源码/operator 扩展和真实 WinUI 启动验证。精确 commit、hash 和边界见 [RC.3 Verification](reviews/2026-07-21-v0.1.0-rc.3-verification.md)；当前仍为 `user_acceptance=pending`。
 
 ## 1. 文档用途
 

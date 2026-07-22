@@ -60,7 +60,7 @@ Competency --probability--> Sub-skill --probability--> Evidence
 7. **技术预检并运行**：后端检查 active closure、输入依赖、EvidenceRecipe 和 BN/CPT 的技术可执行性，然后从当前 Session 与方案自动冻结 immutable `RunSnapshot`。选择“评估”用途不会因为 `formal_run_authorized=false` 被技术阻止；系统以 warning 和 engineering-only provenance 保留科学边界。
 8. **查看结果与追溯**：界面显示 Evidence 的 D/A/U 或 likelihood、sub-skill/competency posterior、缺失 Evidence、inference influence、trace 和 artifacts。以后修改模型不会改变历史 RunSnapshot 和结果。
 
-RC.2 的便携发布根目录专门保持为可读的产品结构：
+RC.3 的便携发布根目录专门保持为可读的产品结构：
 
 ```text
 PilotAssessment.exe   # 唯一启动器
@@ -231,7 +231,7 @@ Session Import 现在同时接受两种目录：已经包含 `manifest.json` 的
 | M8B-2 Python Operator Extension Handoff | 已工程实现；普通源码扩展入口、私有依赖 add/remove/sync、通用参数表单、轻量 extension/run 与 source snapshot 闭环已验证，M8B complete |
 | M8C-0 Documentation Infrastructure | 已工程实现；12 类 catalog/schema、固定工具链、C4 assets、确定性 DOCX、三份 review 手册与 portable verifier 已通过 |
 | M8D Current-System Packaging / Portability / Diagnostics | 已工程实现；builder 显式捕获已保存并关闭的 current system，动态验证模型身份/规模，完整 project 目录复制后可 reopen/replay，Diagnostics 展示 system/project compatibility；专用 backup/restore 已取消 |
-| M8C-1 / M8E / RC.3 | RC.1 与 RC.2 用户验收均为 **`changes-required`**。RC.2 已把根目录收敛为 **8 directories / 2 files / 1 launcher**；D-084–D-087 的 RC.3 修复 Assessment 技术运行、发布图标、全局删除节点和按住拖动，当前正在完成新候选的文档与外部验证 |
+| M8C-1 / M8E / RC.3 | RC.1 与 RC.2 用户验收均为 **`changes-required`**。RC.3 保持 **8 directories / 2 files / 1 launcher**，修复 Assessment 技术运行、发布图标、全局删除节点和按住拖动，并已通过 tagged build 与仓库外 restricted-PATH 工程验证；当前等待用户独立验收 |
 
 M7–M8E 的详细 fresh test、build、package 与外部验证数字保存在 [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md) 及对应 review records 中。最终候选使用 `54` nodes / `2` schemes，且构建前后源 system identity 和文件 hash 不变；这些数字只证明工程工作流，不能替代用户亲自验收。
 

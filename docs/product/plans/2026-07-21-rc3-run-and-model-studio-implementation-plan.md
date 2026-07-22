@@ -28,7 +28,7 @@
 
 - [x] Resolve window icon through an absolute executable-relative path.
 - [x] Copy the icon asset to build and publish output.
-- [ ] Prove the asset exists in the final package and inspect the live taskbar/window presentation.
+- [x] Prove the asset exists in the final package and inspect the live taskbar/window presentation.
 
 ## Task 5 — Documentation and release evidence
 
@@ -36,7 +36,7 @@
 - [x] Rebuild and render all 24 DOCX manuals; inspect every rendered page.
 - [x] Capture or register UI evidence against the final tracked UI source identity.
 - [x] Run Python, C#, schema, style and documentation gates.
-- [ ] Run the final tagged release/package gates.
-- [ ] Create a clean annotated `v0.1.0-rc.3`, build the ZIP and verify it outside the repository
+- [x] Run the final tagged release/package gates.
+- [x] Create a clean annotated `v0.1.0-rc.3`, build the ZIP and verify it outside the repository
       with restricted `PATH`, Assessment execution and the published desktop/icon payload.
-- [ ] Push the commit and annotated tag; keep RC.3 `user_acceptance=pending`.
+- [x] Push the source/evidence commits and annotated tag; keep RC.3 `user_acceptance=pending`.
