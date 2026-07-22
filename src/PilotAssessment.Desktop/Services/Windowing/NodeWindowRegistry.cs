@@ -65,6 +65,28 @@ public sealed class NodeWindowRegistry : IDisposable
         await _placements.FlushAsync(cancellationToken);
     }
 
+    public async Task RefreshAfterModelSaveAsync(CancellationToken cancellationToken = default)
+    {
+        await _schemes.LoadSystemAsync(cancellationToken);
+        if (_schemes.HasError)
+        {
+            throw new InvalidOperationException(
+                $"The saved task schemes could not be reloaded: {_schemes.ErrorMessage}");
+        }
+
+        if (_schemes.SelectedScheme is not { } selected)
+        {
+            return;
+        }
+
+        await _modelStudio.LoadGraphAsync(selected.SchemeId, cancellationToken);
+        if (_modelStudio.HasError)
+        {
+            throw new InvalidOperationException(
+                $"The saved model graph could not be reloaded: {_modelStudio.ErrorMessage}");
+        }
+    }
+
     public async Task CloseAllWindowsAsync(CancellationToken cancellationToken = default)
     {
         var snapshot = _windows.Snapshot();

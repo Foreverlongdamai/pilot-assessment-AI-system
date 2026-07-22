@@ -21,8 +21,9 @@ the directories selected by each user and are not part of this product package.
 ## Editing and extension
 
 Routine Evidence, BN, parent, state, CPT, recipe, parameter and task-activation changes belong in
-Model Studio. Save All commits the staged global model for this software copy; Discard All or
-closing with “No” abandons the staged changes.
+Model Studio. **Save all** on the main toolbar or `Ctrl+S` commits the staged global model while
+the application remains open. The close dialog still offers save, discard or cancel when changes
+remain.
 
 When the existing operator catalog cannot express a genuinely new computation, close the app,
 edit the exposed Python source, and restart. The bilingual manuals under `docs/en-GB/` and

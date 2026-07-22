@@ -3,6 +3,7 @@ using System.Text.Json.Serialization.Metadata;
 
 using PilotAssessment.Desktop.Core.Contracts;
 using PilotAssessment.Desktop.Core.Protocol;
+using PilotAssessment.Desktop.Core.State;
 using PilotAssessment.Desktop.Core.ViewModels;
 
 namespace PilotAssessment.Desktop.Services.Backend;
@@ -15,10 +16,14 @@ public sealed class ModelWorkspaceClient :
     IModelEditSessionGateway
 {
     private readonly BackendConnectionService _backend;
+    private readonly ApplicationShellState _shellState;
 
-    public ModelWorkspaceClient(BackendConnectionService backend)
+    public ModelWorkspaceClient(
+        BackendConnectionService backend,
+        ApplicationShellState shellState)
     {
         _backend = backend;
+        _shellState = shellState;
     }
 
     public async Task<ModelEditSessionStatus> GetEditStatusAsync(
@@ -606,13 +611,14 @@ public sealed class ModelWorkspaceClient :
             cancellationToken);
     }
 
-    private Task<TaskSchemeMutationResponse> MutateAsync<TRequest>(
+    private async Task<TaskSchemeMutationResponse> MutateAsync<TRequest>(
         string method,
         string transactionId,
         TRequest request,
         JsonTypeInfo<TRequest> requestType,
-        CancellationToken cancellationToken) =>
-        IdempotentRequestRetry.ExecuteAsync(
+        CancellationToken cancellationToken)
+    {
+        var response = await IdempotentRequestRetry.ExecuteAsync(
             transactionId,
             (_, token) => InvokeAsync(
                 method,
@@ -621,18 +627,28 @@ public sealed class ModelWorkspaceClient :
                 PilotAssessmentJsonContext.Default.TaskSchemeMutationResponse,
                 token),
             cancellationToken: cancellationToken);
+        _shellState.SetAutosaveStatus("Pending changes");
+        return response;
+    }
 
-    private Task<TResponse> MutateAsync<TRequest, TResponse>(
+    private async Task<TResponse> MutateAsync<TRequest, TResponse>(
         string method,
         string transactionId,
         TRequest request,
         JsonTypeInfo<TRequest> requestType,
         JsonTypeInfo<TResponse> responseType,
-        CancellationToken cancellationToken) =>
-        IdempotentRequestRetry.ExecuteAsync(
+        CancellationToken cancellationToken)
+    {
+        var response = await IdempotentRequestRetry.ExecuteAsync(
             transactionId,
             (_, token) => InvokeAsync(method, request, requestType, responseType, token),
             cancellationToken: cancellationToken);
+        _shellState.SetAutosaveStatus(
+            response is ModelEditSessionMutationResponse editSession && !editSession.EditSession.Dirty
+                ? "No pending changes"
+                : "Pending changes");
+        return response;
+    }
 
     private async Task<TResponse> InvokeAsync<TRequest, TResponse>(
         string method,

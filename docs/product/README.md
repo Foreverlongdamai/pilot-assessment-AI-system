@@ -2,9 +2,9 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 设计基线 | 产品 v0.1.0-rc.3 portable expert-designer release candidate 修订；D-031–D-087 已获用户确认 |
-| 基线日期 | 2026-07-21 |
-| 产品阶段 | M1–M8E engineering history 保持完整；RC.1/RC.2 用户验收均为 `changes-required`。annotated RC.3 已完成 Assessment/图标/删除/拖动返修及仓库外工程验证，当前 `user_acceptance=pending`；starter/synthetic `formal_run_authorized=false` |
+| 设计基线 | 产品 v0.1.0-rc.3 历史候选及其后续 UAT 返修；D-031–D-088 已获用户确认 |
+| 基线日期 | 2026-07-22 |
+| 产品阶段 | M1–M8E engineering history 保持完整；RC.1/RC.2 用户验收均为 `changes-required`。annotated RC.3 已完成工程验证并保持不可变；D-088 主动“保存全部”已在后续 `main` 实现并验证，但尚未建立新 tagged candidate；starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -19,7 +19,7 @@
 
 2026-07-18 用户明确要求先亲自验收 M7，并预期验收后仍可能修改。因此 M7 当前准确状态是 **engineering verified / user acceptance pending**。本轮只保存 [M8 pre-UAT 候选设计大纲](specs/2026-07-18-m8-productization-editable-python-documentation-and-handoff-outline.md) 和 [阶段路线图](plans/2026-07-18-m8-pre-uat-implementation-outline.md)；没有实施 M8、没有新增正式 D-编号，也没有生成发布包。M8 v0.2 候选进一步明确：正常参数/Evidence/BN/task 修改继续在前端完成；只有现有方法无法达到新目标时，专家才直接编辑发布目录中唯一活动的 Python backend source tree，重启后对该系统副本全局生效，不要求 plugin package 或源码编辑 UI。
 
-2026-07-18 用户进一步确认 D-056/D-057，取代旧 autosave 的正式提交时机：节点、边、CPT、任务方案和布局先进入由 Python 管理的持久 edit-session SQLite；主窗口关闭时统一选择“保存全部并关闭／放弃全部并关闭／取消”。dirty 草稿明确阻止 preview/preflight/run；Ctrl+Z/Ctrl+Y 操作全局草稿历史。M8B-0 已将该 edit session 的 owner 从 project 提升为软件副本 `system/`，交互语义不变。主画布的唯一五层分类为 `Raw Input Family -> Extracted Data -> Evidence -> Sub-skill -> Competency`，非输入族筛选不再固定显示五个绿色根，BN 生成箭头仍保持 `Competency -> Sub-skill -> Evidence`。该返修仍等待用户实际操作验收。
+2026-07-18 用户进一步确认 D-056/D-057，取代旧 autosave 的正式提交时机：节点、边、CPT、任务方案和布局先进入由 Python 管理的持久 edit-session SQLite；主窗口关闭时统一选择“保存全部并关闭／放弃全部并关闭／取消”。dirty 草稿明确阻止 preview/preflight/run；Ctrl+Z/Ctrl+Y 操作全局草稿历史。M8B-0 已将该 edit session 的 owner 从 project 提升为软件副本 `system/`。2026-07-22 D-088 又增加主工具栏“保存全部”和 `Ctrl+S`，允许保持软件打开并主动提交同一 edit session；关闭提示仍作为兜底。主画布的唯一五层分类为 `Raw Input Family -> Extracted Data -> Evidence -> Sub-skill -> Competency`，非输入族筛选不再固定显示五个绿色根，BN 生成箭头仍保持 `Competency -> Sub-skill -> Evidence`。该返修仍等待用户实际操作验收。
 
 2026-07-18 用户进一步确认 D-058/D-059：普通产品界面只显示由节点/方案实际语义确定的英文名称，随机 ID/hash 仅留在诊断、溯源、artifact、frozen snapshot 与折叠技术身份区域；所有 fallback marker 从发布界面移除。桌面应用改用统一的原创极简 eVTOL 评估图标，并从项目内 1024 px master 确定性派生全部 Windows assets。**该段是 2026-07-18 历史检查点**：当时 D-055 的单字段 contract/database 迁移仍是独立待办；后续已在 M8E 完成。
 
@@ -134,6 +134,7 @@
 | 34 | [Autonomous Review Ledger](reviews/2026-07-13-autonomous-review-ledger.md) | 维护者、审查者 | 保存历史复核与关闭证据 |
 | 35 | [Captured-Format Multimodal Software Demo](specs/2026-07-16-external-multimodal-session-demo-design.md) | 开发、数据、审查者 | 已执行：格式样例 X/U + 合成缺失模态经完整 M6 后端运行；仅证明软件闭环 |
 | 36 | [Captured-Format Multimodal Software Demo Plan](plans/2026-07-16-external-multimodal-session-demo-implementation-plan.md) | 开发、接手者 | 已完成：轻量生成、真实故障定位、18/18 Evidence、BN 推理与结果路径 |
+| 37 | [Active Save All Verification](reviews/2026-07-22-active-save-all-verification.md) | 前端、维护者、验收者 | D-088：主动保存、状态语义、提交后刷新、轻量回归与可见 Windows 验证 |
 
 ### 2.1 文档目录的职责
 
@@ -162,12 +163,12 @@
 - `export_pending/missing/invalid/not_applicable` 是 M1–M3 的 stream 生命周期或结构状态；M4 AnchorResult v0.2 的非 computed 状态固定为 `missing_input/not_applicable/not_computable/dependency_missing/extractor_error`，M4 不生成 `invalid_quality`。
 - M4 假定进入它的 aligned input 已满足上游结构合同，不判断原始采集“质量够不够好”，也不因 coverage、gap、噪声、幅值、生理范围或差表现过滤 evidence；这些技术统计只进入 diagnostics/provenance。
 - 全局节点库中的每个可见 Evidence/BN `ModelNode` 只有一个当前完整定义；若算法、parents、states、CPT 或语义不同，就创建另一个节点。内部 revision/history 不作为任务侧可选版本。
-- 每个 `TaskScheme` 是并列、可自由编辑的节点激活集合；修改先进入项目内的后端持久草稿，选择“保存全部”后才更新正式模型。切换任务只改变 active/dim 与执行 closure，不替换节点内部定义。
+- 每个 `TaskScheme` 是并列、可自由编辑的节点激活集合；修改先进入软件副本 `system/` 的后端持久草稿，选择“保存全部”后才更新正式模型。切换任务只改变 active/dim 与执行 closure，不替换节点内部定义。
 - 主画布只使用 `Raw Input Family -> Extracted Data -> Evidence -> Sub-skill -> Competency` 五个理解层；底层执行合同仍严格区分 Raw Input、Evidence、BN Node 三类 canonical 节点以及 extraction/probabilistic 两类 edge。
 - Hover starter 的 canonical BN 生成方向为 Competency → Sub-skill → Evidence；评估时由 observed evidence 计算 competency posterior。只读 inference overlay 可以显示反向信息影响，但不得反转已存 BN edges。
 - 通用引擎允许专家建立其他合法 DAG，但必须通过新的完整节点或明确修改后的节点定义表达，不是同一图的显示反转。
 - 专家通过前端决定模型内容；后端维护持久草稿、正式 canonical state、最小技术校验、CPT 原子迁移、持久化和执行一致性，但不拥有科学内容决定权。
-- 正常 UI 取消业务 Draft/Published/Apply/Publish；一次应用编辑会话在关闭时统一保存或放弃。只有 clean canonical workspace 可以 run，每次 run 自动冻结 exact managed session、当前 TaskScheme active closure、完整节点定义、recipes/operators、CPT 与 hashes 为 immutable RunSnapshot。
+- 正常 UI 取消业务 Draft/Published/Apply/Publish；一次应用编辑会话可通过主工具栏“保存全部”或 `Ctrl+S` 主动提交，关闭时仍可统一保存或放弃。只有 clean canonical workspace 可以 run，每次 run 自动冻结 exact managed session、当前 TaskScheme active closure、完整节点定义、recipes/operators、CPT 与 hashes 为 immutable RunSnapshot。
 - 软件测试通过与科学有效性成立是两个独立结论。
 - 当前 repository-external 2,902-row simulator CSV 只是一次随意飞行产生的采集格式样例，仅用于接口、解析、时间和软件 E2E；它不是标准轨迹、任务 ground truth、专家 phase annotation 或能力证据。围绕它生成的 reference/annotations/biometrics 也只是 synthetic fixtures。
 
@@ -187,7 +188,7 @@ M6 completion gate 也已关闭：受管 project/session/artifact、SQLite compo
 
 - 修改跨文档口径时，先更新 [DECISIONS.md](DECISIONS.md)，再更新受影响文档。
 - 任何 run 或导出结果必须保存 exact immutable RunSnapshot 与 content hashes；不得依赖会继续变化的 current scheme/node 状态来重放历史。
-- 参数、公式、计算图、拓扑、激活集合或 CPT 修改自动暂存到后端 edit session；主窗口关闭时统一保存全部或放弃全部。无需业务 Draft/Published/Apply/Publish、人工审批或 per-edit 工程测试。
+- 参数、公式、计算图、拓扑、激活集合或 CPT 修改自动暂存到后端 edit session；可随时用主工具栏“保存全部”或 `Ctrl+S` 原子提交，关闭时仍可统一保存或放弃。无需业务 Draft/Published/Apply/Publish、人工审批或 per-edit 工程测试。
 - 不在前端执行任意 Python。普通新 Anchor 使用 existing operators/EvidenceRecipe；只有现有 operator library 无法表达新的计算机制时，扩展开发者才直接修改发布副本中公开的第一方 Python operator/core 源码，完成技术验证后重启该系统副本。首个 M8 不要求 plugin package。
 - 示例中的数值必须标注为“默认工程值”“文献直接支持”或“专家校准值”之一。
 - 每次设计基线发布前重新执行 [09_VALIDATION_AND_HANDOFF.md](09_VALIDATION_AND_HANDOFF.md) 中的文档自检。

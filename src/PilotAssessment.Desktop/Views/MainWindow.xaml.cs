@@ -1,6 +1,7 @@
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 
 using PilotAssessment.Desktop.Core.State;
 using PilotAssessment.Desktop.Core.ViewModels;
@@ -16,6 +17,8 @@ public sealed partial class MainWindow : Window
     private readonly NodeWindowRegistry _nodeWindows;
     private readonly IModelEditSessionGateway _editSession;
     private readonly ILocalizationLookup _localization;
+    private readonly ApplicationShellState _shellState;
+    private readonly SemaphoreSlim _editSessionOperationGate = new(1, 1);
     private bool _closeApproved;
     private bool _shutdownInProgress;
 
@@ -24,13 +27,15 @@ public sealed partial class MainWindow : Window
         NavigationService navigation,
         NodeWindowRegistry nodeWindows,
         IModelEditSessionGateway editSession,
-        ILocalizationLookup localization)
+        ILocalizationLookup localization,
+        ApplicationShellState shellState)
     {
         ViewModel = viewModel;
         _navigation = navigation;
         _nodeWindows = nodeWindows;
         _editSession = editSession;
         _localization = localization;
+        _shellState = shellState;
         InitializeComponent();
 
         ExtendsContentIntoTitleBar = true;
@@ -83,6 +88,64 @@ public sealed partial class MainWindow : Window
         };
     }
 
+    private async void OnSaveAllClick(object sender, RoutedEventArgs args) =>
+        await SaveAllChangesAsync();
+
+    private async void OnSaveAllAccelerator(
+        KeyboardAccelerator sender,
+        KeyboardAcceleratorInvokedEventArgs args)
+    {
+        args.Handled = true;
+        await SaveAllChangesAsync();
+    }
+
+    private async Task SaveAllChangesAsync()
+    {
+        if (_shutdownInProgress || !ViewModel.IsBackendReady ||
+            !await _editSessionOperationGate.WaitAsync(0))
+        {
+            return;
+        }
+
+        var committed = false;
+        try
+        {
+            _shellState.SetAutosaveStatus("Committing");
+            await _nodeWindows.FlushAllEditsAsync();
+            var status = await _editSession.GetEditStatusAsync();
+            if (!status.Dirty)
+            {
+                _shellState.SetAutosaveStatus("No pending changes");
+                return;
+            }
+
+            await _editSession.CommitEditAsync("expert.desktop");
+            committed = true;
+            _shellState.SetAutosaveStatus("Saved");
+            await _nodeWindows.RefreshAfterModelSaveAsync();
+        }
+        catch (Exception error)
+        {
+            if (committed)
+            {
+                _shellState.SetAutosaveStatus("Saved");
+                _shellState.AppendDiagnostic(
+                    $"The model was saved, but the desktop view could not refresh: {error.Message}");
+                await ShowSaveRefreshFailureAsync(error);
+            }
+            else
+            {
+                _shellState.SetAutosaveStatus("Offline / Retry");
+                _shellState.AppendDiagnostic($"Save all failed: {error.Message}");
+                await ShowSaveFailureAsync(error);
+            }
+        }
+        finally
+        {
+            _editSessionOperationGate.Release();
+        }
+    }
+
     private async void OnAppWindowClosing(AppWindow sender, AppWindowClosingEventArgs args)
     {
         if (_closeApproved)
@@ -97,6 +160,7 @@ public sealed partial class MainWindow : Window
         }
 
         _shutdownInProgress = true;
+        await _editSessionOperationGate.WaitAsync();
         try
         {
             await _nodeWindows.FlushAllEditsAsync();
@@ -119,6 +183,10 @@ public sealed partial class MainWindow : Window
         {
             _shutdownInProgress = false;
             await ShowCloseFailureAsync(error);
+        }
+        finally
+        {
+            _editSessionOperationGate.Release();
         }
     }
 
@@ -155,6 +223,34 @@ public sealed partial class MainWindow : Window
             Title = _localization["Dialog_CloseFailedTitle"],
             Content = string.Format(
                 _localization["Dialog_CloseFailedDescription"],
+                error.Message),
+            CloseButtonText = _localization["Task_Close"],
+        };
+        await dialog.ShowAsync();
+    }
+
+    private async Task ShowSaveFailureAsync(Exception error)
+    {
+        var dialog = new ContentDialog
+        {
+            XamlRoot = RootGrid.XamlRoot,
+            Title = _localization["Dialog_SaveFailedTitle"],
+            Content = string.Format(
+                _localization["Dialog_SaveFailedDescription"],
+                error.Message),
+            CloseButtonText = _localization["Task_Close"],
+        };
+        await dialog.ShowAsync();
+    }
+
+    private async Task ShowSaveRefreshFailureAsync(Exception error)
+    {
+        var dialog = new ContentDialog
+        {
+            XamlRoot = RootGrid.XamlRoot,
+            Title = _localization["Dialog_SaveRefreshFailedTitle"],
+            Content = string.Format(
+                _localization["Dialog_SaveRefreshFailedDescription"],
                 error.Message),
             CloseButtonText = _localization["Task_Close"],
         };

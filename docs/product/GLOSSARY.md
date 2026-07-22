@@ -106,14 +106,14 @@
 | Posterior inference | Evidence 被观察后，由完整 BN joint distribution 计算 `P(Sub-skill/Competency | observations)`；信息可逆于部分 canonical arrows 传播。 |
 | Virtual evidence | M5 用显式、版本化 soft scorer 或 dependence-strength mixing 表达的 likelihood observation；不得因所谓原始数据质量向均匀分布收缩。 |
 | Model bundle | 历史/导入导出格式：一个可重放模型及 dependency closure。M7 最终可移植格式应保存完整 ModelNodes、TaskSchemes 与兼容 identities，不等于应用安装包。 |
-| Model edit session | D-056 的项目级技术事务工作区：一次应用会话内的节点、边、CPT、任务方案和布局修改先持久写入独立 SQLite；它不是可切换、可发布的业务版本。 |
+| Model edit session | D-056/D-067 的软件副本 `system/` 级技术事务工作区：一次应用会话内的节点、边、CPT、任务方案和布局修改先持久写入独立 SQLite；它不是可切换、可发布的业务版本，也不属于当前 user project。 |
 | Staged change / 暂存修改 | 已由 Python backend 接收、校验并持久保存在 model edit session 中，但尚未通过“保存全部”写入 canonical workspace 的修改。 |
-| Save all / 保存全部 | 主窗口关闭时把 edit session 相对基线的最终差异在一个 canonical transaction 中提交；同一对象的多次会话内修改折叠为一次最终 revision 变化。 |
+| Save all / 保存全部 | 在主工具栏点击“保存全部”、按 `Ctrl+S`，或关闭时选择“保存全部并关闭”，把 edit session 相对基线的最终差异在一个 canonical transaction 中提交；同一对象的多次会话内修改折叠为一次最终 revision 变化。主动保存不会关闭软件。 |
 | Discard all / 放弃全部 | 丢弃当前 edit session，使 canonical workspace 保持不变；不同于删除节点或回滚历史 RunSnapshot。 |
 | Five-layer canvas | D-057 的理解型投影：`Raw Input Family -> Extracted Data -> Evidence -> Sub-skill -> Competency`；它不改变底层三类 canonical 节点、两类 edge 或 BN 生成方向。 |
 | Semantic display name | D-058 的普通界面英文名称：优先读取 canonical English name；缺失时从 typed source、EvidenceRecipe anchor、BN reporting metadata/role 或 task binding 确定性推导。不得使用随机 ID/hash 或“未命名”占位符。 |
 | Technical identity | `node_id`、`scheme_id`、run/result/artifact ID、revision 与 hash 等精确身份；继续用于持久化、协议、复现和诊断，但普通工作界面不把它当作对象名称。 |
-| Autosaved draft | M4R/M5 legacy UI 术语。M7 没有 Draft/Published 业务双态；D-056 的 model edit session 只是一项关闭时统一保存/放弃的技术事务。 |
+| Autosaved draft | M4R/M5 legacy UI 术语。M7 没有 Draft/Published 业务双态；D-056/D-088 的 model edit session 是一项可主动保存、并在关闭时兜底保存/放弃的技术事务。 |
 | Draft | 历史 UI 术语；不得用于 M7 正常任务侧栏。 |
 | Applied revision | M4R/M5 历史术语；M7 不要求 apply，历史不可变运行由 RunSnapshot 保证。 |
 | Scheme draft | M5/M6 历史术语；M7 使用 current TaskScheme。 |

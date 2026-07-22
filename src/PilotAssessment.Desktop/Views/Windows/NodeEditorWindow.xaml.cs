@@ -608,7 +608,7 @@ public sealed partial class NodeEditorWindow : Window
         AutosavePhase.OfflineRetry => "Offline / Retry",
         AutosavePhase.Conflict => "Conflict",
         AutosavePhase.Blocked => "Blocked",
-        _ => "Saved",
+        _ => "Pending changes",
     };
 
     private static IReadOnlyList<DisplayWorkArea> GetDisplayWorkAreas()

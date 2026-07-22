@@ -130,6 +130,76 @@ public sealed class AccessibilitySurfaceTests
             StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void MainWindowExposesAccessibleAtomicSaveAllAndControlS()
+    {
+        var root = FindRepositoryRoot(AppContext.BaseDirectory);
+        var mainWindow = Load(root, "src/PilotAssessment.Desktop/Views/MainWindow.xaml");
+        var saveButton = Assert.Single(
+            mainWindow.Descendants(Presentation + "AppBarButton"),
+            element => Attribute(element, "Label") ==
+                "{Binding [Common_SaveAll], Source={StaticResource Localization}}");
+        Assert.Equal("OnSaveAllClick", Attribute(saveButton, "Click"));
+        Assert.Equal(
+            "{Binding [A11y_SaveAllChanges], Source={StaticResource Localization}}",
+            Attribute(saveButton, "AutomationProperties.Name"));
+
+        var accelerator = Assert.Single(
+            mainWindow.Descendants(Presentation + "KeyboardAccelerator"),
+            element => Attribute(element, "Key") == "S");
+        Assert.Equal("Control", Attribute(accelerator, "Modifiers"));
+        Assert.Equal("OnSaveAllAccelerator", Attribute(accelerator, "Invoked"));
+
+        var mainWindowCode = File.ReadAllText(Path.Combine(
+            root,
+            "src",
+            "PilotAssessment.Desktop",
+            "Views",
+            "MainWindow.xaml.cs"));
+        Assert.Contains("FlushAllEditsAsync", mainWindowCode, StringComparison.Ordinal);
+        Assert.Contains("if (!status.Dirty)", mainWindowCode, StringComparison.Ordinal);
+        Assert.Contains("CommitEditAsync(\"expert.desktop\")", mainWindowCode, StringComparison.Ordinal);
+        Assert.Contains("RefreshAfterModelSaveAsync", mainWindowCode, StringComparison.Ordinal);
+        Assert.Contains(
+            "SetAutosaveStatus(\"Committing\")",
+            mainWindowCode,
+            StringComparison.Ordinal);
+
+        var registryCode = File.ReadAllText(Path.Combine(
+            root,
+            "src",
+            "PilotAssessment.Desktop",
+            "Services",
+            "Windowing",
+            "NodeWindowRegistry.cs"));
+        Assert.Contains("LoadSystemAsync", registryCode, StringComparison.Ordinal);
+        Assert.Contains("LoadGraphAsync", registryCode, StringComparison.Ordinal);
+
+        var workspaceClientCode = File.ReadAllText(Path.Combine(
+            root,
+            "src",
+            "PilotAssessment.Desktop",
+            "Services",
+            "Backend",
+            "ModelWorkspaceClient.cs"));
+        Assert.Contains(
+            "SetAutosaveStatus(\"Pending changes\")",
+            workspaceClientCode,
+            StringComparison.Ordinal);
+
+        var editorCode = File.ReadAllText(Path.Combine(
+            root,
+            "src",
+            "PilotAssessment.Desktop",
+            "Views",
+            "Windows",
+            "NodeEditorWindow.xaml.cs"));
+        Assert.Contains(
+            "_ => \"Pending changes\"",
+            editorCode,
+            StringComparison.Ordinal);
+    }
+
     private static string? Attribute(XElement element, string localName) =>
         element.Attributes().FirstOrDefault(attribute => attribute.Name.LocalName == localName)?.Value;
 

@@ -642,3 +642,10 @@
 - 决策：窗口图标从 `AppContext.BaseDirectory/Assets/AppIcon.ico` 解析绝对路径，资产同时复制到 build/publish。节点通过 handled-events-too 接收 Button 已处理的 pointer 事件；按住主键并移动至少 4 px 即在稳定坐标系中跟随指针，不再依赖容易失效的驻留计时器，release 时只提交一次 layout delta。
 - 理由：相对路径会在根 launcher + `app/` 的发布布局下随工作目录漂移；WinUI Button 会处理 pointer 事件，且以移动元素自身为坐标原点会抵消可见位移。
 - 影响：release verifier 必须检查发布图标资产；drag 只修改 staged layout，不改变 node semantic hash、parents、EvidenceRecipe 或 CPT。
+
+## D-088：系统模型支持保持软件打开的主动“保存全部”
+
+- 状态：已接受
+- 决策：主窗口工具栏提供“保存全部”，并提供 `Ctrl+S`。操作先 flush 全部浮动节点窗口、参数/CPT 表单、画布 pending layout 与窗口 placement，再检查 software-owned model edit session；dirty 时调用既有 `model.edit.commit` 原子提交，随后重新加载系统任务方案和当前网络图，软件及浮动编辑窗口保持打开。任何成功写入 edit session 的节点、边、CPT、任务方案或布局操作都把状态显示为“有待确认的暂存修改”；commit 完成后显示“已保存到系统模型”。clean 时不产生空提交；提交失败保留暂存内容并允许重试。关闭时原有“保存全部并关闭／放弃全部并关闭／取消”继续作为兜底，主动保存与关闭事务互斥，不能并发提交。
+- 理由：专家会长时间连续编辑 Evidence、BN、CPT 与任务方案，不应为了让模型正式落盘而反复关闭软件；复用同一个后端 commit 事务可以增加便利性而不产生第二套保存语义。
+- 影响：本决策扩展 D-056/D-057 的提交入口，不恢复业务 Draft/Publish 状态，也不把模型保存到 user project。保存后的模型对该软件副本的全部项目和未来 run 生效；历史 immutable RunSnapshot、result 与 artifact 不受影响。

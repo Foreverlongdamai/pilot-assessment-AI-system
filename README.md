@@ -56,7 +56,7 @@ Competency --probability--> Sub-skill --probability--> Evidence
 3. **导入 Session**：选择 canonical Session Bundle，或模拟器直接导出的 `streams/` + `annotations/` 目录。后端只读检查来源，并复制/物化到项目受管存储。
 4. **选择任务方案**：从左侧选择 Base、Hover、Straight 等 `TaskScheme`，或复制现有方案建立新任务。画布以亮/暗显示当前任务启用和未启用的节点与边。
 5. **设计或调整评估模型**：在画布中创建、复制、连接、停用或全局删除 Evidence/BN 节点；按住节点并拖动可调整布局，点击节点后在独立浮动窗口修改 recipe、operator 参数、parents、states 和 CPT。
-6. **保存系统模型**：修改先进入 `system/staging/model-edit/`；关闭软件时选择“保存全部并关闭”才原子写入当前 canonical system model，也可以放弃全部更改或取消关闭。
+6. **保存系统模型**：修改先进入 `system/staging/model-edit/`；工作过程中可随时点击主工具栏“保存全部”或按 `Ctrl+S`，原子写入当前 canonical system model 而不关闭软件。若仍有暂存修改，关闭时还可以选择“保存全部并关闭”、放弃全部更改或取消关闭。
 7. **技术预检并运行**：后端检查 active closure、输入依赖、EvidenceRecipe 和 BN/CPT 的技术可执行性，然后从当前 Session 与方案自动冻结 immutable `RunSnapshot`。选择“评估”用途不会因为 `formal_run_authorized=false` 被技术阻止；系统以 warning 和 engineering-only provenance 保留科学边界。
 8. **查看结果与追溯**：界面显示 Evidence 的 D/A/U 或 likelihood、sub-skill/competency posterior、缺失 Evidence、inference influence、trace 和 artifacts。以后修改模型不会改变历史 RunSnapshot 和结果。
 

@@ -12,6 +12,9 @@
     </Window.SystemBackdrop>
 
     <Grid x:Name="RootGrid" Loaded="OnRootLoaded">
+        <Grid.KeyboardAccelerators>
+            <KeyboardAccelerator Key="S" Modifiers="Control" Invoked="OnSaveAllAccelerator" />
+        </Grid.KeyboardAccelerators>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -66,6 +69,16 @@
                     </StackPanel>
                 </ScrollViewer>
             </CommandBar.Content>
+            <AppBarButton
+                x:Name="SaveAllButton"
+                AutomationProperties.Name="{Binding [A11y_SaveAllChanges], Source={StaticResource Localization}}"
+                Click="OnSaveAllClick"
+                IsEnabled="{x:Bind ViewModel.IsBackendReady, Mode=OneWay}"
+                Label="{Binding [Common_SaveAll], Source={StaticResource Localization}}">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE74E;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
             <AppBarButton
                 AutomationProperties.Name="{Binding [A11y_ReconnectBackend], Source={StaticResource Localization}}"
                 Command="{x:Bind ViewModel.ReconnectCommand}"

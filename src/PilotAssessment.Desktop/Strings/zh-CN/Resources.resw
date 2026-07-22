@@ -64,7 +64,8 @@
   <data name="Shell_NoPendingChanges" xml:space="preserve"><value>无暂存修改</value></data>
   <data name="Shell_PendingChanges" xml:space="preserve"><value>有待确认的暂存修改</value></data>
   <data name="Shell_Saving" xml:space="preserve"><value>正在暂存</value></data>
-  <data name="Shell_Saved" xml:space="preserve"><value>已暂存到项目</value></data>
+  <data name="Shell_Committing" xml:space="preserve"><value>正在保存系统模型</value></data>
+  <data name="Shell_Saved" xml:space="preserve"><value>已保存到系统模型</value></data>
   <data name="Shell_OfflineRetry" xml:space="preserve"><value>离线 / 可重试</value></data>
   <data name="Shell_Conflict" xml:space="preserve"><value>发生冲突</value></data>
   <data name="Shell_Blocked" xml:space="preserve"><value>操作受阻</value></data>
@@ -704,10 +705,16 @@
   <data name="RawFamily_Kind" xml:space="preserve"><value>原始输入族</value></data>
   <data name="RawFamily_A11y" xml:space="preserve"><value>{0}(t) {1}，{2}，{3} 个来源节点</value></data>
   <data name="Graph_ProvenanceEdge" xml:space="preserve"><value>原始输入溯源（仅展示）</value></data>
+  <data name="Common_SaveAll" xml:space="preserve"><value>保存全部</value></data>
+  <data name="A11y_SaveAllChanges" xml:space="preserve"><value>保存所有暂存的模型修改</value></data>
   <data name="Dialog_SaveChangesTitle" xml:space="preserve"><value>是否保留本次编辑？</value></data>
-  <data name="Dialog_SaveChangesDescription" xml:space="preserve"><value>本次对节点、边、CPT、任务方案、参数和布局的修改目前暂存在项目中。你可以把全部修改保存到系统模型、放弃全部修改，或取消关闭。</value></data>
+  <data name="Dialog_SaveChangesDescription" xml:space="preserve"><value>本次对节点、边、CPT、任务方案、参数和布局的修改目前暂存在这套软件副本中。你可以把全部修改保存到系统模型、放弃全部修改，或取消关闭。</value></data>
   <data name="Dialog_SaveAndClose" xml:space="preserve"><value>保存全部并关闭</value></data>
   <data name="Dialog_DiscardAndClose" xml:space="preserve"><value>放弃全部并关闭</value></data>
+  <data name="Dialog_SaveFailedTitle" xml:space="preserve"><value>无法保存修改</value></data>
+  <data name="Dialog_SaveFailedDescription" xml:space="preserve"><value>暂存的编辑内容仍然保留。请解决以下问题，然后再次点击“保存全部”：{0}</value></data>
+  <data name="Dialog_SaveRefreshFailedTitle" xml:space="preserve"><value>已经保存，但界面无法刷新</value></data>
+  <data name="Dialog_SaveRefreshFailedDescription" xml:space="preserve"><value>系统模型已经成功保存。请重新连接或重开软件来刷新可见网络图。详细信息：{0}</value></data>
   <data name="Dialog_CloseFailedTitle" xml:space="preserve"><value>软件无法安全关闭</value></data>
   <data name="Dialog_CloseFailedDescription" xml:space="preserve"><value>本次编辑仍保留且软件保持打开。请解决以下问题后重试：{0}</value></data>
   <data name="Model_LayerFilterA11y" xml:space="preserve"><value>画布层级筛选</value></data>

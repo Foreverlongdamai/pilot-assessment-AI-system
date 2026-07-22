@@ -233,6 +233,7 @@ public partial class ShellViewModel : ObservableObject
     {
         "Pending changes" => _localization["Shell_PendingChanges"],
         "Saving" => _localization["Shell_Saving"],
+        "Committing" => _localization["Shell_Committing"],
         "Saved" => _localization["Shell_Saved"],
         "Offline / Retry" => _localization["Shell_OfflineRetry"],
         "Conflict" => _localization["Shell_Conflict"],

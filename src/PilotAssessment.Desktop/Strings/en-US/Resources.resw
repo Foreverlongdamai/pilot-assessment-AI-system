@@ -64,7 +64,8 @@
   <data name="Shell_NoPendingChanges" xml:space="preserve"><value>No staged changes</value></data>
   <data name="Shell_PendingChanges" xml:space="preserve"><value>Staged changes pending</value></data>
   <data name="Shell_Saving" xml:space="preserve"><value>Staging</value></data>
-  <data name="Shell_Saved" xml:space="preserve"><value>Staged in project</value></data>
+  <data name="Shell_Committing" xml:space="preserve"><value>Saving system model</value></data>
+  <data name="Shell_Saved" xml:space="preserve"><value>Saved to system model</value></data>
   <data name="Shell_OfflineRetry" xml:space="preserve"><value>Offline / Retry</value></data>
   <data name="Shell_Conflict" xml:space="preserve"><value>Conflict</value></data>
   <data name="Shell_Blocked" xml:space="preserve"><value>Blocked</value></data>
@@ -704,10 +705,16 @@
   <data name="RawFamily_Kind" xml:space="preserve"><value>RAW INPUT FAMILY</value></data>
   <data name="RawFamily_A11y" xml:space="preserve"><value>{0}(t) {1}, {2}, {3} source nodes</value></data>
   <data name="Graph_ProvenanceEdge" xml:space="preserve"><value>Raw-input provenance (display only)</value></data>
+  <data name="Common_SaveAll" xml:space="preserve"><value>Save all</value></data>
+  <data name="A11y_SaveAllChanges" xml:space="preserve"><value>Save all staged model changes</value></data>
   <data name="Dialog_SaveChangesTitle" xml:space="preserve"><value>Keep this editing session?</value></data>
-  <data name="Dialog_SaveChangesDescription" xml:space="preserve"><value>Your node, edge, CPT, task-scheme, parameter, and layout changes are currently staged in the project. Save all changes to the system model, discard all changes, or cancel closing.</value></data>
+  <data name="Dialog_SaveChangesDescription" xml:space="preserve"><value>Your node, edge, CPT, task-scheme, parameter, and layout changes are currently staged in this software copy. Save all changes to the system model, discard all changes, or cancel closing.</value></data>
   <data name="Dialog_SaveAndClose" xml:space="preserve"><value>Save all and close</value></data>
   <data name="Dialog_DiscardAndClose" xml:space="preserve"><value>Discard all and close</value></data>
+  <data name="Dialog_SaveFailedTitle" xml:space="preserve"><value>The changes could not be saved</value></data>
+  <data name="Dialog_SaveFailedDescription" xml:space="preserve"><value>Your staged editing session is still available. Resolve the following problem and try Save all again: {0}</value></data>
+  <data name="Dialog_SaveRefreshFailedTitle" xml:space="preserve"><value>Saved, but the view could not refresh</value></data>
+  <data name="Dialog_SaveRefreshFailedDescription" xml:space="preserve"><value>The system model was saved successfully. Reconnect or reopen the application to refresh the visible graph. Details: {0}</value></data>
   <data name="Dialog_CloseFailedTitle" xml:space="preserve"><value>The application could not close safely</value></data>
   <data name="Dialog_CloseFailedDescription" xml:space="preserve"><value>Your editing session has been kept open. Resolve the following problem and try again: {0}</value></data>
   <data name="Model_LayerFilterA11y" xml:space="preserve"><value>Graph layer filter</value></data>
