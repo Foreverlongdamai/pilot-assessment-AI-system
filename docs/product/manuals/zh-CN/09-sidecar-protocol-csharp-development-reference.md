@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-PYTHON-CORE-001", "PAS-RELEASE-001", "PAS-PORTABILITY-001"]
 support = "记录 UI action、protocol/method version、transaction ID、trace ID、stderr diagnostic 与可复现状态。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.3"
+release_label = "v0.1.0-rc.4"
 user_acceptance = "pending"
 +++
 

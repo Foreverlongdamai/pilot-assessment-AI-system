@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001"]
 support = "报告编辑器问题前，记录节点名称、节点类型、任务方案、edit-session 状态和稳定错误码。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.3"
+release_label = "v0.1.0-rc.4"
 user_acceptance = "pending"
 +++
 
@@ -105,11 +105,13 @@ EvidenceRecipe 是由已注册 operators 组合出的声明式计算。Operator 
 模型修改进入一个 durable system-level edit session，不写入当前 user project，也不会逐字段立即提交。
 
 - `Ctrl+Z` 撤销最新 staged command；条件允许时可 redo；
-- “保存全部”以原子方式提交全部暂存模型，供所有 project 的未来 run 使用；
+- 主工具栏“保存全部”或 `Ctrl+S` 会先 flush 浮动编辑器与 pending layout，再原子提交全部暂存模型；软件保持打开，所有 project 的未来 run 使用新模型；
 - “放弃全部”恢复到上次已保存模型；
 - 有更改时关闭会询问保存并关闭、放弃并关闭或取消。
 
 如果保存遇到 stale optimistic revision，应 reload 或 rebase，不应覆盖并发保存状态。创建 run 前必须保持 clean saved model，使 snapshot 唯一明确。
+
+普通节点和五个绿色 Raw Input Family 根都可以按住主键拖动；松手后应停留在新位置。绿色根只保存为当前任务方案的 display-only layout，不会成为 ModelNode 或进入 Evidence/BN/CPT/RunSnapshot。
 
 ## 8. 科学审查职责
 

@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-EVALUATOR-001", "PAS-EXPERT-EVIDENCE-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001"]
 support = "Retain the product version, stable error ID, Diagnostics summary and a privacy-safe description of the affected project when reporting a problem."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.3"
+release_label = "v0.1.0-rc.4"
 user_acceptance = "pending"
 +++
 
@@ -191,7 +191,7 @@ If source files change on disk after the Python process has started, the system 
 
 ## 12. Current status and scientific boundary
 
-At this document version, the M1–M8E engineering history remains complete. Independent user acceptance marked both RC.1 and RC.2 `changes-required`; the D-084 to D-087 interaction corrections enter `v0.1.0-rc.3`. After engineering verification RC.3 still has `user_acceptance=pending`. The starter model retains `formal_run_authorized=false`, while a technically ready Assessment-purpose run may execute with a not-authorized warning.
+At this document version, the M1–M8E engineering history remains complete. Independent user acceptance marked RC.1, RC.2 and RC.3 `changes-required`. RC.4 preserves D-084 to D-087 and adds D-088 active Save All plus D-089 persistent normal-node and Raw Input Family dragging. After engineering verification RC.4 still has `user_acceptance=pending`. The starter model retains `formal_run_authorized=false`, while a technically ready Assessment-purpose run may execute with a not-authorized warning.
 
 Every starter/synthetic run remains `formal_run_authorized=false`. The product demonstrates that contracts, editing, persistence, inference and provenance can operate end to end. It does not prove that current Anchors/Evidence, task structure, thresholds or CPTs assess pilot competency accurately. Domain experts will design, calibrate and validate the scientific method within this framework.
 

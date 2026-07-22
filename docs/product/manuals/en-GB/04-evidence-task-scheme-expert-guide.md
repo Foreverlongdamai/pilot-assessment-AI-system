@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001"]
 support = "Before reporting an editor defect, record the node name, node kind, task scheme, edit-session state and stable error code."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.3"
+release_label = "v0.1.0-rc.4"
 user_acceptance = "pending"
 +++
 
@@ -105,11 +105,13 @@ Edges are derived from complete-node fixed parents and scheme activation. A sche
 Model edits are staged in one durable system-level edit session. They are not written into the current user project and are not committed one field at a time.
 
 - `Ctrl+Z` undoes the latest staged command; redo restores it when available.
-- **Save all** atomically commits the staged model for future runs in every project.
+- Main-toolbar **Save All** or `Ctrl+S` first flushes floating editors and pending layout, then atomically commits the staged model while the software stays open; future runs in every project use the new model.
 - **Discard all** restores the last saved model.
 - Closing with changes asks whether to save and close, discard and close, or cancel.
 
 If a save detects a stale optimistic revision, reload or rebase rather than overwriting a concurrent saved state. Run creation requires a clean saved model so its snapshot is unambiguous.
+
+Normal nodes and the five green Raw Input Family roots can all be dragged with the held primary button and must remain at the released position. Green roots are stored only as display layout for the current task scheme; they never become ModelNodes or enter Evidence/BN/CPT/RunSnapshot semantics.
 
 ## 8. Scientific review responsibility
 

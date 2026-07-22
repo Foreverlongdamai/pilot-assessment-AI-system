@@ -8,13 +8,13 @@ document_version = "0.1.0"
 status = "released"
 audience = ["maintainer", "release"]
 information_types = ["tutorial", "how-to", "reference"]
-scope = "Building, externally verifying and handing off the Windows x64 v0.1.0-rc.3 candidate without claiming final user acceptance."
+scope = "Building, externally verifying and handing off the Windows x64 v0.1.0-rc.4 candidate without claiming final user acceptance."
 prerequisites = ["Clean source checkout at the intended annotated tag", "Explicit saved current system model", "Windows x64 build environment"]
 scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-QUICKSTART-001", "PAS-PORTABILITY-001", "PAS-PYTHON-CORE-001"]
 support = "Retain the delivery JSON, ZIP hash, tag/commit, build log, verification evidence and signed-off acceptance checklist."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.3"
+release_label = "v0.1.0-rc.4"
 user_acceptance = "pending"
 +++
 
@@ -28,15 +28,15 @@ This manual applies to:
 |---|---|
 | Product version | `0.1.0` |
 | Release channel | `release-candidate` |
-| Candidate | `rc.3` |
-| Release label/tag | `v0.1.0-rc.3` |
+| Candidate | `rc.4` |
+| Release label/tag | `v0.1.0-rc.4` |
 | User acceptance | `pending` |
 | Scientific status | `engineering-only` |
 | Formal assessment | `formal_run_authorized=false` for the supplied starter |
 
 An engineering-verified candidate is not the final accepted `v0.1.0`. The user must operate and inspect this exact ZIP before acceptance can be recorded. Documentation-only corrections may be recorded explicitly; code/model changes require a new candidate identity.
 
-RC.3 corrects Assessment technical execution, the taskbar icon, global node deletion and held-pointer drag. Model Studio is an affected surface and its Chinese and English screenshots must be recaptured from the final UI source. Visually unchanged screens may be explicitly recorded as reused from RC.2; they must not be represented as newly captured images.
+RC.4 preserves Assessment technical execution, the taskbar icon and global node deletion, and corrects active Save All, normal-node snapback and non-draggable green Raw Input Family roots. Screenshots whose static surface remains truthful may be explicitly recorded as reused from RC.3. Save and drag are interactions and require real WinUI runtime evidence rather than inference from a static image.
 
 ## 2. Release inputs
 
@@ -72,7 +72,7 @@ It contains no user project, Session, result, biometric data, test fixture, cach
 3. Build all 24 DOCX files and render every page for visual inspection.
 4. Run focused backend, schema, documentation, release, C# unit/contract and x64 Release gates.
 5. Confirm `git status --short` is empty.
-6. Create the annotated `v0.1.0-rc.3` tag and prove it peels to `HEAD`.
+6. Create the annotated `v0.1.0-rc.4` tag and prove it peels to `HEAD`.
 
 Do not edit UI code after candidate screenshot capture. Any such change invalidates screenshot source identity and requires recapture.
 
@@ -83,9 +83,9 @@ From the tagged repository root, with the desktop application closed:
 ```powershell
 .\.tools\uv\uv.exe run python tools\release\build_portable.py `
   --system-source .pilot-assessment-local\system `
-  --release-label v0.1.0-rc.3 `
+  --release-label v0.1.0-rc.4 `
   --release-channel release-candidate `
-  --candidate rc.3 `
+  --candidate rc.4 `
   --user-acceptance pending `
   --documentation-status released
 ```
@@ -93,9 +93,9 @@ From the tagged repository root, with the desktop application closed:
 Expected external delivery artifacts are:
 
 ```text
-PilotAssessment-0.1.0-rc.3-win-x64.zip
-PilotAssessment-0.1.0-rc.3-win-x64.zip.sha256
-PilotAssessment-0.1.0-rc.3-win-x64.delivery.json
+PilotAssessment-0.1.0-rc.4-win-x64.zip
+PilotAssessment-0.1.0-rc.4-win-x64.zip.sha256
+PilotAssessment-0.1.0-rc.4-win-x64.delivery.json
 ```
 
 The delivery JSON records file name/bytes/SHA-256, tag/commit, system identity/counts, documentation/SBOM hashes and pending acceptance without exposing absolute build-machine paths.
@@ -106,7 +106,7 @@ The authoritative acceptance rehearsal extracts the ZIP to a fresh repository-ex
 
 ```powershell
 .\.tools\uv\uv.exe run python tools\release\verify_archive_external.py `
-  --dist dist\releases\PilotAssessment-0.1.0-rc.3-win-x64.zip `
+  --dist dist\releases\PilotAssessment-0.1.0-rc.4-win-x64.zip `
   --verify-editable-source `
   --verify-operator-extension `
   --launch-desktop `

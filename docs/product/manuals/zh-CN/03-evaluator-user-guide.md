@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-SESSION-001", "PAS-EXPERT-EVIDENCE-001", "PAS-PORTABILITY-001"]
 support = "报告问题时提供发布标签、简洁 project 名称、run 状态、稳定错误码和不含隐私的 Diagnostics 摘要。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.3"
+release_label = "v0.1.0-rc.4"
 user_acceptance = "pending"
 +++
 

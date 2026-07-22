@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-ARCH-001", "PAS-EVALUATOR-001", "PAS-SESSION-001", "PAS-PORTABILITY-001"]
 support = "记录发布标签、可见错误消息和 Diagnostics 摘要；除非经过授权的支持流程明确要求，不要发送原始生理或 Session 数据。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.3"
+release_label = "v0.1.0-rc.4"
 user_acceptance = "pending"
 +++
 
@@ -29,7 +29,7 @@ user_acceptance = "pending"
 ## 2. 完整解压
 
 1. 如果交付目录同时提供 `.sha256`，先校验 ZIP。
-2. 把整个压缩包解压到较短且可写的本地路径，例如 `D:\PilotAssessment-0.1.0-rc.3`。
+2. 把整个压缩包解压到较短且可写的本地路径，例如 `D:\PilotAssessment-0.1.0-rc.4`。
 3. 保持根目录中的 `app\`、`backend\`、`system\`、`runtime\`、`developer\`、`docs\`、`licenses\` 与 `manifest\` 不变，不要单独移动启动器或 `app\` 中的文件。
 4. 不要覆盖已经修改过的旧软件副本；解压到并列新目录，以便保留旧副本的 Python 源码和 `system\`。
 
@@ -39,7 +39,7 @@ user_acceptance = "pending"
 
 双击产品根目录唯一的启动器 `PilotAssessment.exe`。启动器会从 `app\` 打开 WinUI 桌面载荷；前端随后自动启动一个本地 Python sidecar 子进程。JSON-RPC 只通过 stdin/stdout 传输，不监听 TCP 端口。SQLite 是由 Python 进程直接读写的嵌入式文件数据库，不是需要单独启动的程序。
 
-正常关闭前端时，sidecar 会一起退出。如果当前有系统模型修改尚处于暂存状态，关闭对话框会询问“保存全部更改并关闭”“放弃全部更改并关闭”或“取消关闭”。保存或导入进行中时不要强行结束进程。
+正常关闭前端时，sidecar 会一起退出。工作过程中可随时点击主工具栏“保存全部”或按 `Ctrl+S`，在不关闭软件的情况下提交全部模型与布局修改。如果关闭时仍有暂存修改，对话框会询问“保存全部更改并关闭”“放弃全部更改并关闭”或“取消关闭”。保存或导入进行中时不要强行结束进程。
 
 ## 4. 创建第一个项目
 

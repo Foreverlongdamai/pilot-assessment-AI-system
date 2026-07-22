@@ -1,6 +1,6 @@
 # Pilot Assessment System — Portable Release Candidate
 
-This directory contains Pilot Assessment System `v0.1.0-rc.3` for Windows x64. Its acceptance
+This directory contains Pilot Assessment System `v0.1.0-rc.4` for Windows x64. Its acceptance
 state is `pending`; it is not yet the accepted final release and is not a scientifically calibrated
 pilot-rating product.
 
@@ -61,6 +61,10 @@ Normal Evidence, BN, CPT and task-scheme edits should be made in the graphical i
 existing backend mechanisms cannot express a new calculation, the active Python source is under
 `backend\src\pilot_assessment`. Close the app completely before editing and restart it afterward.
 See `backend\README-DEVELOPMENT.md` before changing source.
+
+Use **Save All** or `Ctrl+S` to commit staged model and layout changes while keeping the software
+open. Normal nodes and the five green Raw Input Family roots can be dragged; their released
+positions are saved through the same system-wide edit session.
 
 The dedicated English guide is under `docs\en-GB\` with document ID `PAS-PYTHON-EXT-001`.
 Local operators register through

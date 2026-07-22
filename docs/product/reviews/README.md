@@ -15,6 +15,9 @@
 
 ## 当前记录入口
 
+- [`v0.1.0-rc.3` User Acceptance Result](2026-07-22-v0.1.0-rc.3-user-acceptance-result.md) — 用户在真实 Windows 操作中给出 `changes-required`：缺少保持软件打开的主动 Save All、普通节点松手回弹、五个绿色 Raw Input Family 根不可拖动；历史 RC.3 身份不改写，修订进入 RC.4。
+- [Active Save All Verification](2026-07-22-active-save-all-verification.md) 与 [Node Drag Persistence Verification](2026-07-22-node-drag-persistence-verification.md) — D-088/D-089 在 RC.3 后 `main` 上的源码、轻量回归、真实 WinUI 保存/重启和拖拽证据；它们由 RC.4 重新打包，不冒充 RC.3 产物。
+- [`v0.1.0-rc.3` Release Candidate Verification](2026-07-21-v0.1.0-rc.3-verification.md) — RC.3 的 historical full engineering gate；后续用户验收为 `changes-required`，本记录不被改写。
 - [`v0.1.0-rc.2` Portable Root Layout Verification](2026-07-21-rc2-portable-root-layout-verification.md) — clean tag、8 directories / 2 files / 1 launcher、manifest v3、24 DOCX、ZIP/checksum，以及仓库外 restricted-PATH 的 launcher→desktop→sidecar、editable source、operator extension 和 run 证据；RC.2 保持 `user_acceptance=pending`。
 - [`v0.1.0-rc.1` User Acceptance Result](2026-07-21-v0.1.0-rc.1-user-acceptance-result.md) — 用户在 Windows 上给出 `changes-required`：根目录 94 folders / 374 files，要求 desktop payload 进入 `app/`、根目录只留一个启动器；RC.1 保持不可变，修订进入 RC.2。
 - [M8E `v0.1.0-rc.1` Release Candidate Verification](2026-07-21-m8e-release-candidate-verification.md) — clean annotated tag、fresh Python/.NET/docs/release gates、current-system 前后不变性、最终 ZIP/SBOM/checksum、restricted-PATH 仓库外 editable-source/operator/run/desktop 验证；关闭 M8E engineering gate，保留 `user_acceptance=pending` 与 `formal_run_authorized=false`。

@@ -656,3 +656,17 @@
 - 决策：所有可拖拽图节点使用不随节点移动的 XamlRoot 坐标，并在主键按下时锁定本次拖拽的 projection 对象；正常 release 与 WinUI pointer-cancel 共用一次性完成路径，不能在 `ItemsRepeater` 虚拟化清空绑定后重新取目标。五个绿色 Raw Input Family 根 `raw-family.X/U/I/G/P` 同样可拖动，其坐标作为当前 TaskScheme 的 display-only `layout_overrides` 暂存、保存和复制；它们不是 ModelNode、不能成为 Evidence/BN 父节点，也不进入计算闭包。
 - 理由：真实 WinUI 复现证明普通节点的视觉位移会在松手时回弹，因为移动中的元素被当作坐标系且虚拟化会令 release 时的 `Node` 绑定变为 null；五个 family 根原先只是固定 Canvas 展示控件，没有 pointer handler 或后端布局目标。仅保留临时 RenderTransform 不能形成可保存的专家画布。
 - 影响：普通节点与绿色 family 根在松手后立即停留于新位置，350 ms debounce 后写入 software-owned edit session，主动“保存全部”后进入 system model；切换/复制任务方案各自保留布局。变更只递增 scheme layout revision，不改变 node semantic hash、EvidenceRecipe、BN/CPT、激活闭包或历史 immutable RunSnapshot。
+
+## D-090：RC.3 用户验收为 `changes-required`；D-088/D-089 进入 RC.4
+
+- 状态：已接受
+- 决策：`v0.1.0-rc.3` 的独立用户验收记录为 `changes-required`。其 annotated tag、commit、历史验证记录和候选身份保持不可变；运行中主动“保存全部”、普通节点松手不回弹以及五个绿色 Raw Input Family 根可拖动并持久化统一进入新的 `v0.1.0-rc.4`，且 RC.4 的 `user_acceptance` 从 `pending` 开始。本机 `dist/releases` 仅作为可再生发布缓存，可以按用户要求删除旧二进制产物并只保留最新 RC.4；该清理不得删除或移动历史 Git 标签与审查记录。
+- 理由：RC.3 的自动工程 gate 不能替代真实桌面验收。把 tag 后的 D-088/D-089 源码修复混入同名 ZIP 会破坏候选身份和验收对象的一一对应；同时保留多个约 300 MB 的本地旧包没有产品价值，历史身份已经由 Git 和审查记录保存。
+- 影响：RC.4 必须重新生成候选文档、manifest、ZIP、checksum、delivery record 与外部验证证据，并实际验证根启动器、Save All、canonical node 和 Raw Input Family layout persistence。RC.1–RC.3 的历史结论仍可追溯，但不再作为当前可交付二进制留在本机 `dist/releases`。
+
+## D-091：Model Studio 工具栏只保留直接动作，并显式本地化 Tooltip
+
+- 状态：已接受
+- 决策：Model Studio 折叠式工具栏隐藏祖先级 `KeyboardAccelerator` 的自动 placement，并为新建、详情、启用、停用、删除、复制和粘贴七个保留动作分别绑定与当前界面语言一致的显式 Tooltip。移除反馈不明确的“多选模式”和“清除选择”两个末尾工具栏按钮；复制/粘贴、节点右键菜单的“加入/移出当前选择”以及底层多节点选择能力继续保留。
+- 理由：真实 UI 中 Page 级首个快捷键 `Ctrl+C` 被 WinUI 的折叠按钮 Tooltip 机制错误显示在全部工具栏按钮上；末尾两个仅在特定选择状态下产生效果的图标没有清晰反馈，增加了学习成本。复制与粘贴是用户明确要求的核心操作，不能随末尾选择控件一起删除。
+- 影响：鼠标悬停只显示实际动作名称，不再把无关按钮描述成 `Ctrl+C`；工具栏更简洁，但不改变 Python 后端、ModelNode/TaskScheme、剪贴板语义、Evidence/BN/CPT 或历史 RunSnapshot。

@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:PilotAssessment.Desktop.Controls"
     xmlns:graph="using:PilotAssessment.Desktop.Controls.Graph"
+    KeyboardAcceleratorPlacementMode="Hidden"
     Loaded="OnPageLoaded">
     <Page.KeyboardAccelerators>
         <KeyboardAccelerator Key="C" Modifiers="Control" Invoked="OnCopyAccelerator" />
@@ -82,7 +83,10 @@
                     Background="Transparent"
                     DefaultLabelPosition="Collapsed"
                     IsDynamicOverflowEnabled="True">
-                    <AppBarButton Icon="Add" Label="{Binding [Model_NewNode], Source={StaticResource Localization}}">
+                    <AppBarButton
+                        Icon="Add"
+                        Label="{Binding [Model_NewNode], Source={StaticResource Localization}}"
+                        ToolTipService.ToolTip="{Binding [Model_NewNode], Source={StaticResource Localization}}">
                         <AppBarButton.Flyout>
                             <MenuFlyout>
                                 <MenuFlyoutItem Click="OnCreateRawInputClick" Text="{Binding [Model_NewRawInput], Source={StaticResource Localization}}" />
@@ -95,18 +99,33 @@
                         AutomationProperties.Name="{Binding [Model_OpenDetailsA11y], Source={StaticResource Localization}}"
                         Click="OnOpenSelectionClick"
                         Icon="OpenFile"
-                        Label="{Binding [Model_OpenDetails], Source={StaticResource Localization}}" />
-                    <AppBarButton Click="OnActivateSelectionClick" Icon="Accept" Label="{Binding [Model_Activate], Source={StaticResource Localization}}" />
-                    <AppBarButton Click="OnDeactivateSelectionClick" Icon="Remove" Label="{Binding [Model_Deactivate], Source={StaticResource Localization}}" />
-                    <AppBarButton Click="OnDeleteSelectionClick" Icon="Delete" Label="{Binding [Model_DeleteNode], Source={StaticResource Localization}}" />
-                    <AppBarButton Click="OnCopySelectionClick" Icon="Copy" Label="{Binding [Common_Copy], Source={StaticResource Localization}}" />
-                    <AppBarButton Click="OnPasteClick" Icon="Paste" Label="{Binding [Model_Paste], Source={StaticResource Localization}}" />
-                    <AppBarToggleButton
-                        AutomationProperties.Name="{Binding [Model_MultiSelectA11y], Source={StaticResource Localization}}"
-                        Icon="SelectAll"
-                        IsChecked="{x:Bind ViewModel.IsMultiSelect, Mode=TwoWay}"
-                        Label="{Binding [Model_MultiSelect], Source={StaticResource Localization}}" />
-                    <AppBarButton Click="OnClearSelectionClick" Icon="Clear" Label="{Binding [Model_ClearSelection], Source={StaticResource Localization}}" />
+                        Label="{Binding [Model_OpenDetails], Source={StaticResource Localization}}"
+                        ToolTipService.ToolTip="{Binding [Model_OpenDetails], Source={StaticResource Localization}}" />
+                    <AppBarButton
+                        Click="OnActivateSelectionClick"
+                        Icon="Accept"
+                        Label="{Binding [Model_Activate], Source={StaticResource Localization}}"
+                        ToolTipService.ToolTip="{Binding [Model_Activate], Source={StaticResource Localization}}" />
+                    <AppBarButton
+                        Click="OnDeactivateSelectionClick"
+                        Icon="Remove"
+                        Label="{Binding [Model_Deactivate], Source={StaticResource Localization}}"
+                        ToolTipService.ToolTip="{Binding [Model_Deactivate], Source={StaticResource Localization}}" />
+                    <AppBarButton
+                        Click="OnDeleteSelectionClick"
+                        Icon="Delete"
+                        Label="{Binding [Model_DeleteNode], Source={StaticResource Localization}}"
+                        ToolTipService.ToolTip="{Binding [Model_DeleteNode], Source={StaticResource Localization}}" />
+                    <AppBarButton
+                        Click="OnCopySelectionClick"
+                        Icon="Copy"
+                        Label="{Binding [Common_Copy], Source={StaticResource Localization}}"
+                        ToolTipService.ToolTip="{Binding [Common_Copy], Source={StaticResource Localization}}" />
+                    <AppBarButton
+                        Click="OnPasteClick"
+                        Icon="Paste"
+                        Label="{Binding [Model_Paste], Source={StaticResource Localization}}"
+                        ToolTipService.ToolTip="{Binding [Model_Paste], Source={StaticResource Localization}}" />
                 </CommandBar>
             </Grid>
 

@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001", "PAS-RELEASE-001"]
 support = "恢复前保留原始 ZIP、release hash、Diagnostics 摘要与不含隐私的目录清单。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.3"
+release_label = "v0.1.0-rc.4"
 user_acceptance = "pending"
 +++
 

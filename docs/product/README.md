@@ -2,9 +2,9 @@
 
 | 字段 | 当前值 |
 |---|---|
-| 设计基线 | 产品 v0.1.0-rc.3 历史候选及其后续 UAT 返修；D-031–D-088 已获用户确认 |
+| 设计基线 | 产品 v0.1.0-rc.4 acceptance amendment；D-031–D-091 已获用户确认 |
 | 基线日期 | 2026-07-22 |
-| 产品阶段 | M1–M8E engineering history 保持完整；RC.1/RC.2 用户验收均为 `changes-required`。annotated RC.3 已完成工程验证并保持不可变；D-088 主动“保存全部”与 D-089 节点/Raw Input Family 拖拽持久化已在后续 `main` 实现并验证，但尚未建立新 tagged candidate；starter/synthetic `formal_run_authorized=false` |
+| 产品阶段 | M1–M8E engineering history 保持完整；RC.1/RC.2/RC.3 用户验收均为 `changes-required`。D-088 主动“保存全部”、D-089 节点/Raw Input Family 拖拽持久化和 D-091 工具栏提示收口进入 RC.4；新 tagged candidate 正在执行轻量差异验证，`user_acceptance=pending`；starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -39,7 +39,9 @@
 
 2026-07-21 用户继续验收 RC.2 并给出 `changes-required`：Assessment 用途被错误阻止、发布任务栏图标缺失、没有明确的全局删除节点、长按拖动无可见移动。D-084–D-087 与 [RC.3 Run and Model Studio Amendment](specs/2026-07-21-rc3-run-and-model-studio-acceptance-amendment.md) 将四项修订放入新 RC.3；RC.2 tag/package/evidence 不改写。
 
-2026-07-21 annotated `v0.1.0-rc.3` 已完成 full source、24 份 DOCX / 281 页 render、tagged portable build、仓库外 restricted-PATH、Assessment completed run、可编辑源码/operator 扩展和真实 WinUI 启动验证。精确 commit、hash 和边界见 [RC.3 Verification](reviews/2026-07-21-v0.1.0-rc.3-verification.md)；当前仍为 `user_acceptance=pending`。
+2026-07-21 annotated `v0.1.0-rc.3` 已完成 full source、24 份 DOCX / 281 页 render、tagged portable build、仓库外 restricted-PATH、Assessment completed run、可编辑源码/operator 扩展和真实 WinUI 启动验证。精确 commit、hash 和边界见 [RC.3 Verification](reviews/2026-07-21-v0.1.0-rc.3-verification.md)。2026-07-22 用户独立验收随后确认主动保存缺失、普通节点松手回弹和绿色 Raw Input Family 不可拖动，因此 RC.3 结论改为 `changes-required`，历史工程证据保持不变。
+
+2026-07-22 D-088/D-089 已在 `main` 完成并通过可见 WinUI 复测；D-090 与 [RC.4 Amendment](specs/2026-07-22-rc4-save-and-drag-acceptance-amendment.md) 将它们纳入 `v0.1.0-rc.4`。D-091 又将 Model Studio 工具栏收口为七个有效动作，为每个动作绑定本地化 Tooltip，并移除反馈不明确的多选/清空按钮。按用户要求，RC.4 只执行差异功能、包完整性和真实启动的轻量验证，不重复全仓/逐页验收；新候选从 `user_acceptance=pending` 开始。
 
 ## 1. 文档用途
 
@@ -100,6 +102,9 @@
 | 2.15 | [RC.3 Run and Model Studio Acceptance Amendment](specs/2026-07-21-rc3-run-and-model-studio-acceptance-amendment.md) | 产品、用户、前后端、交付 | D-084–D-087：Assessment 执行/科学状态分离、发布图标、全局删除节点与长按拖动 |
 | 2.15.1 | [RC.3 Implementation Plan](plans/2026-07-21-rc3-run-and-model-studio-implementation-plan.md) | 开发、交付、审查者 | INLINE 修复、轻量回归、DOCX/截图、新 clean tag 与仓库外验证 |
 | 2.15.2 | [RC.2 User Acceptance Result](reviews/2026-07-21-v0.1.0-rc.2-user-acceptance-result.md) | 用户、产品、交付 | RC.2 `changes-required` 的四项事实与不可变候选边界 |
+| 2.16 | [RC.4 Active Save and Persistent Drag Amendment](specs/2026-07-22-rc4-save-and-drag-acceptance-amendment.md) | 产品、用户、前后端、交付 | D-088–D-091：主动 Save All、canonical/raw-family 拖拽持久化、工具栏提示收口与 RC.4 身份 |
+| 2.16.1 | [RC.4 Implementation Plan](plans/2026-07-22-rc4-save-and-drag-implementation-plan.md) | 开发、交付、审查者 | INLINE 轻量差异验证、tagged build、旧本地产物清理和真实启动 |
+| 2.16.2 | [RC.3 User Acceptance Result](reviews/2026-07-22-v0.1.0-rc.3-user-acceptance-result.md) | 用户、产品、交付 | RC.3 `changes-required` 的三项编辑事实与不可变候选边界 |
 | 3 | [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) | 专家、产品、前后端 | 已实现的后端基础与历史 identity/publish 语义；冲突处由 M7 规格取代 |
 | 4 | [M5 Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) | 开发、审查者 | 已完成：inline 任务、合同冻结、O8 迁移、轻量验证与完成门 |
 | 5 | [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) | 前后端、交付、审查者 | 已实现：受管项目、SQLite、artifact、run lifecycle 与 JSON-RPC sidecar |

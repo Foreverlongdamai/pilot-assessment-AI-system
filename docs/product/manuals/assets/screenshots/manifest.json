@@ -2,11 +2,11 @@
   "schema_version": "pilot-assessment-screenshot-manifest-v1",
   "product_version": "0.1.0",
   "release_channel": "release-candidate",
-  "release_label": "v0.1.0-rc.3",
+  "release_label": "v0.1.0-rc.4",
   "user_acceptance": "pending",
-  "reused_from_release_label": "v0.1.0-rc.2",
-  "reuse_reason": "RC.3 reuses privacy-reviewed unaffected screens; the Model Studio pair is recaptured after the delete and drag correction.",
-  "ui_source_tree_sha256": "c75682021ab54b74b331b4c602f13b4a7be7f7625855464849845c90b406b85a",
+  "reused_from_release_label": "v0.1.0-rc.3",
+  "reuse_reason": "RC.4 reuses privacy-reviewed static screens from RC.3; active Save All, persistent drag and toolbar hints are verified as live interactions or focused UI contracts.",
+  "ui_source_tree_sha256": "ff3df364cc99e7c2be292791a2094e0d3cc08c115d5d61c00cb9b944c1613854",
   "screenshots": [
     {
       "screenshot_id": "ui-project-launcher",
@@ -26,8 +26,8 @@
         "reviewer": "Codex M8E release review",
         "reviewed_at": "2026-07-21T18:39:31.900745Z"
       },
-      "reused_from_release_label": "v0.1.0-rc.2",
-      "reuse_reason": "RC.3 reuses privacy-reviewed unaffected screens; the Model Studio pair is recaptured after the delete and drag correction."
+      "reused_from_release_label": "v0.1.0-rc.3",
+      "reuse_reason": "RC.4 reuses privacy-reviewed static screens from RC.3; active Save All, persistent drag and toolbar hints are verified as live interactions or focused UI contracts."
     },
     {
       "screenshot_id": "ui-project-launcher",
@@ -47,8 +47,8 @@
         "reviewer": "Codex M8E release review",
         "reviewed_at": "2026-07-21T18:39:31.900745Z"
       },
-      "reused_from_release_label": "v0.1.0-rc.2",
-      "reuse_reason": "RC.3 reuses privacy-reviewed unaffected screens; the Model Studio pair is recaptured after the delete and drag correction."
+      "reused_from_release_label": "v0.1.0-rc.3",
+      "reuse_reason": "RC.4 reuses privacy-reviewed static screens from RC.3; active Save All, persistent drag and toolbar hints are verified as live interactions or focused UI contracts."
     },
     {
       "screenshot_id": "ui-five-layer-model-studio",
@@ -58,17 +58,17 @@
       "caption": "五层模型画布与任务方案切换",
       "alt_text": "中文模型工作室，从左到右显示原始输入、提取数据、Evidence、子技能和聚合能力。",
       "status": "release-candidate",
-      "sha256": "1271d562fadfd0d0428c2d1c0f0cc9da3ee714609ab2e66303886804e06e8c13",
+      "sha256": "aa7dce693b108ad2a794081090e9c099e16429f97be996b47c0920a5ae2769d7",
       "width": 1426,
       "height": 746,
-      "captured_at": "2026-07-21T23:30:18.910531Z",
-      "ui_source_tree_sha256": "c75682021ab54b74b331b4c602f13b4a7be7f7625855464849845c90b406b85a",
+      "captured_at": "2026-07-22T10:18:03.359690Z",
+      "ui_source_tree_sha256": "ff3df364cc99e7c2be292791a2094e0d3cc08c115d5d61c00cb9b944c1613854",
       "privacy_review": {
         "status": "passed",
-        "reviewer": "Codex RC.3 desktop acceptance review",
-        "reviewed_at": "2026-07-21T23:30:18.910531Z"
+        "reviewer": "Codex RC.4 lightweight UI review",
+        "reviewed_at": "2026-07-22T10:18:03.359690Z"
       },
-      "captured_for_release_label": "v0.1.0-rc.3"
+      "captured_for_release_label": "v0.1.0-rc.4"
     },
     {
       "screenshot_id": "ui-five-layer-model-studio",
@@ -78,17 +78,17 @@
       "caption": "Five-layer model canvas and task-scheme switching",
       "alt_text": "English Model Studio showing Raw Input, Extracted Data, Evidence, Sub-skill and Competency from left to right.",
       "status": "release-candidate",
-      "sha256": "fdbf62dfc25a1439e4e7d741874e73028829da3714ddb7d50241f116844d67b5",
+      "sha256": "432ea265d4c3c8f0db2534b407e17cd6bfecee7db2c320a94dd2307756cb49e1",
       "width": 1426,
       "height": 746,
-      "captured_at": "2026-07-21T23:30:18.910531Z",
-      "ui_source_tree_sha256": "c75682021ab54b74b331b4c602f13b4a7be7f7625855464849845c90b406b85a",
+      "captured_at": "2026-07-22T10:18:03.359690Z",
+      "ui_source_tree_sha256": "ff3df364cc99e7c2be292791a2094e0d3cc08c115d5d61c00cb9b944c1613854",
       "privacy_review": {
         "status": "passed",
-        "reviewer": "Codex RC.3 desktop acceptance review",
-        "reviewed_at": "2026-07-21T23:30:18.910531Z"
+        "reviewer": "Codex RC.4 lightweight UI review",
+        "reviewed_at": "2026-07-22T10:18:03.359690Z"
       },
-      "captured_for_release_label": "v0.1.0-rc.3"
+      "captured_for_release_label": "v0.1.0-rc.4"
     },
     {
       "screenshot_id": "ui-evidence-node-editor",
@@ -108,8 +108,8 @@
         "reviewer": "Codex M8E release review",
         "reviewed_at": "2026-07-21T18:39:31.900745Z"
       },
-      "reused_from_release_label": "v0.1.0-rc.2",
-      "reuse_reason": "RC.3 reuses privacy-reviewed unaffected screens; the Model Studio pair is recaptured after the delete and drag correction."
+      "reused_from_release_label": "v0.1.0-rc.3",
+      "reuse_reason": "RC.4 reuses privacy-reviewed static screens from RC.3; active Save All, persistent drag and toolbar hints are verified as live interactions or focused UI contracts."
     },
     {
       "screenshot_id": "ui-evidence-node-editor",
@@ -129,8 +129,8 @@
         "reviewer": "Codex M8E release review",
         "reviewed_at": "2026-07-21T18:39:31.900745Z"
       },
-      "reused_from_release_label": "v0.1.0-rc.2",
-      "reuse_reason": "RC.3 reuses privacy-reviewed unaffected screens; the Model Studio pair is recaptured after the delete and drag correction."
+      "reused_from_release_label": "v0.1.0-rc.3",
+      "reuse_reason": "RC.4 reuses privacy-reviewed static screens from RC.3; active Save All, persistent drag and toolbar hints are verified as live interactions or focused UI contracts."
     },
     {
       "screenshot_id": "ui-bn-cpt-editor",
@@ -150,8 +150,8 @@
         "reviewer": "Codex M8E release review",
         "reviewed_at": "2026-07-21T18:39:31.900745Z"
       },
-      "reused_from_release_label": "v0.1.0-rc.2",
-      "reuse_reason": "RC.3 reuses privacy-reviewed unaffected screens; the Model Studio pair is recaptured after the delete and drag correction."
+      "reused_from_release_label": "v0.1.0-rc.3",
+      "reuse_reason": "RC.4 reuses privacy-reviewed static screens from RC.3; active Save All, persistent drag and toolbar hints are verified as live interactions or focused UI contracts."
     },
     {
       "screenshot_id": "ui-bn-cpt-editor",
@@ -171,8 +171,8 @@
         "reviewer": "Codex M8E release review",
         "reviewed_at": "2026-07-21T18:39:31.900745Z"
       },
-      "reused_from_release_label": "v0.1.0-rc.2",
-      "reuse_reason": "RC.3 reuses privacy-reviewed unaffected screens; the Model Studio pair is recaptured after the delete and drag correction."
+      "reused_from_release_label": "v0.1.0-rc.3",
+      "reuse_reason": "RC.4 reuses privacy-reviewed static screens from RC.3; active Save All, persistent drag and toolbar hints are verified as live interactions or focused UI contracts."
     },
     {
       "screenshot_id": "ui-run-results-diagnostics",
@@ -192,8 +192,8 @@
         "reviewer": "Codex M8E release review",
         "reviewed_at": "2026-07-21T18:39:31.900745Z"
       },
-      "reused_from_release_label": "v0.1.0-rc.2",
-      "reuse_reason": "RC.3 reuses privacy-reviewed unaffected screens; the Model Studio pair is recaptured after the delete and drag correction."
+      "reused_from_release_label": "v0.1.0-rc.3",
+      "reuse_reason": "RC.4 reuses privacy-reviewed static screens from RC.3; active Save All, persistent drag and toolbar hints are verified as live interactions or focused UI contracts."
     },
     {
       "screenshot_id": "ui-run-results-diagnostics",
@@ -213,8 +213,8 @@
         "reviewer": "Codex M8E release review",
         "reviewed_at": "2026-07-21T18:39:31.900745Z"
       },
-      "reused_from_release_label": "v0.1.0-rc.2",
-      "reuse_reason": "RC.3 reuses privacy-reviewed unaffected screens; the Model Studio pair is recaptured after the delete and drag correction."
+      "reused_from_release_label": "v0.1.0-rc.3",
+      "reuse_reason": "RC.4 reuses privacy-reviewed static screens from RC.3; active Save All, persistent drag and toolbar hints are verified as live interactions or focused UI contracts."
     }
   ]
 }

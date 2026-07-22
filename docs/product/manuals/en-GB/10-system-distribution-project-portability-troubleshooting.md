@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001", "PAS-RELEASE-001"]
 support = "Retain the original ZIP, release hash, Diagnostics summary and a privacy-safe directory inventory before attempting recovery."
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.3"
+release_label = "v0.1.0-rc.4"
 user_acceptance = "pending"
 +++
 

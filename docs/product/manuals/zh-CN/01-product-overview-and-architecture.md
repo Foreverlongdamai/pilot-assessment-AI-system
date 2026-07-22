@@ -14,7 +14,7 @@ scientific_status = "engineering-only"
 related_documents = ["PAS-QUICKSTART-001", "PAS-EVALUATOR-001", "PAS-EXPERT-EVIDENCE-001", "PAS-EXPERT-BN-001", "PAS-SESSION-001", "PAS-PYTHON-EXT-001"]
 support = "遇到问题时保留产品版本、错误 ID、Diagnostics 摘要和对应 project 的脱敏说明。"
 release_channel = "release-candidate"
-release_label = "v0.1.0-rc.3"
+release_label = "v0.1.0-rc.4"
 user_acceptance = "pending"
 +++
 
@@ -191,7 +191,7 @@ backend/src/pilot_assessment/
 
 ## 12. 当前状态与科学边界
 
-截至本手册版本，M1–M8E 的工程历史保持完整。RC.1 与 RC.2 的独立用户验收均为 `changes-required`；D-084–D-087 的交互修订进入 `v0.1.0-rc.3`。RC.3 完成工程验证后仍保持 `user_acceptance=pending`，starter model 继续记录 `formal_run_authorized=false`，但技术 ready 的 Assessment 用途可以执行并显示未授权 warning。
+截至本手册版本，M1–M8E 的工程历史保持完整。RC.1、RC.2 与 RC.3 的独立用户验收均为 `changes-required`；RC.4 保留 D-084–D-087，并加入 D-088 主动“保存全部”和 D-089 普通节点/Raw Input Family 拖拽持久化。RC.4 完成工程验证后仍保持 `user_acceptance=pending`，starter model 继续记录 `formal_run_authorized=false`，但技术 ready 的 Assessment 用途可以执行并显示未授权 warning。
 
 所有 starter/synthetic 运行都保持 `formal_run_authorized=false`。本产品可以证明数据合同、编辑、持久化、推理和追溯工作流能够运行，但不能证明当前 Anchor/Evidence、任务结构、阈值或 CPT 能准确评价飞行员能力。最终科学方法由领域专家在该框架中设计、校准和验证。
 

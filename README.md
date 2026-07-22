@@ -60,7 +60,7 @@ Competency --probability--> Sub-skill --probability--> Evidence
 7. **技术预检并运行**：后端检查 active closure、输入依赖、EvidenceRecipe 和 BN/CPT 的技术可执行性，然后从当前 Session 与方案自动冻结 immutable `RunSnapshot`。选择“评估”用途不会因为 `formal_run_authorized=false` 被技术阻止；系统以 warning 和 engineering-only provenance 保留科学边界。
 8. **查看结果与追溯**：界面显示 Evidence 的 D/A/U 或 likelihood、sub-skill/competency posterior、缺失 Evidence、inference influence、trace 和 artifacts。以后修改模型不会改变历史 RunSnapshot 和结果。
 
-RC.3 的便携发布根目录专门保持为可读的产品结构：
+RC.4 的便携发布根目录继续保持为可读的产品结构：
 
 ```text
 PilotAssessment.exe   # 唯一启动器
@@ -231,32 +231,33 @@ Session Import 现在同时接受两种目录：已经包含 `manifest.json` 的
 | M8B-2 Python Operator Extension Handoff | 已工程实现；普通源码扩展入口、私有依赖 add/remove/sync、通用参数表单、轻量 extension/run 与 source snapshot 闭环已验证，M8B complete |
 | M8C-0 Documentation Infrastructure | 已工程实现；12 类 catalog/schema、固定工具链、C4 assets、确定性 DOCX、三份 review 手册与 portable verifier 已通过 |
 | M8D Current-System Packaging / Portability / Diagnostics | 已工程实现；builder 显式捕获已保存并关闭的 current system，动态验证模型身份/规模，完整 project 目录复制后可 reopen/replay，Diagnostics 展示 system/project compatibility；专用 backup/restore 已取消 |
-| M8C-1 / M8E / RC.3 | RC.1 与 RC.2 用户验收均为 **`changes-required`**。RC.3 保持 **8 directories / 2 files / 1 launcher**，修复 Assessment 技术运行、发布图标、全局删除节点和按住拖动，并已通过 tagged build 与仓库外 restricted-PATH 工程验证；当前等待用户独立验收 |
+| M8C-1 / M8E / RC.4 | RC.1、RC.2 与 RC.3 用户验收均为 **`changes-required`**。RC.4 保留 **8 directories / 2 files / 1 launcher** 及 RC.3 的 Assessment、图标和全局删除修订，并加入运行中“保存全部”、普通节点松手不回弹、绿色 Raw Input Family 拖拽持久化及准确的本地化工具栏提示；当前执行轻量 tagged candidate 构建 |
 
 M7–M8E 的详细 fresh test、build、package 与外部验证数字保存在 [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md) 及对应 review records 中。最终候选使用 `54` nodes / `2` schemes，且构建前后源 system identity 和文件 hash 不变；这些数字只证明工程工作流，不能替代用户亲自验收。
 
-当前 18 个 Evidence、11 个 sub-skills、4 个 competencies 和 Hover BN 都只是 `starter_template` / `engineering_default`。通用代码、schema、API、UI 和测试不得依赖这些数量、名称或连接。RC.1 与 RC.2 已被用户标记为 `changes-required`；新 RC.3 必须重新保持 `user_acceptance=pending`，而 starter 的 `formal_run_authorized=false` 作为科学状态不再阻止技术 ready 的 Assessment run。
+当前 18 个 Evidence、11 个 sub-skills、4 个 competencies 和 Hover BN 都只是 `starter_template` / `engineering_default`。通用代码、schema、API、UI 和测试不得依赖这些数量、名称或连接。RC.1、RC.2 与 RC.3 已被用户标记为 `changes-required`；新 RC.4 必须重新保持 `user_acceptance=pending`，而 starter 的 `formal_run_authorized=false` 作为科学状态不再阻止技术 ready 的 Assessment run。
 
 ## 从这里开始阅读
 
-1. [RC.3 Run and Model Studio Amendment](docs/product/specs/2026-07-21-rc3-run-and-model-studio-acceptance-amendment.md)、[Implementation Plan](docs/product/plans/2026-07-21-rc3-run-and-model-studio-implementation-plan.md) 与 [RC.2 User Acceptance Result](docs/product/reviews/2026-07-21-v0.1.0-rc.2-user-acceptance-result.md) — Assessment 运行、图标、删除和拖动的当前修订权威。
-2. [M8E Final Release Candidate Design](docs/product/specs/2026-07-21-m8e-final-release-candidate-and-handoff-design.md)、[Implementation Plan](docs/product/plans/2026-07-21-m8e-final-release-candidate-implementation-plan.md) 与 [Verification](docs/product/reviews/2026-07-21-m8e-release-candidate-verification.md) — `v0.1.0-rc.1`、D-055、M8C-1、candidate screenshots、标签、两层验收证据和历史交付的执行权威与实测结果。
-3. [M8D Current-System Packaging, Project Portability and Diagnostics Design](docs/product/specs/2026-07-21-m8d-current-system-packaging-project-portability-and-diagnostics-design.md)、[Implementation Plan](docs/product/plans/2026-07-21-m8d-current-system-packaging-implementation-plan.md) 与 [Verification](docs/product/reviews/2026-07-21-m8d-current-system-packaging-verification.md) — 当前发布 system、project 目录迁移、diagnostics 和取消 backup/restore 的权威边界与 fresh evidence。
-4. [M8C Documentation System Design](docs/product/specs/2026-07-21-m8c-documentation-system-design.md)、[M8C-0 Plan](docs/product/plans/2026-07-21-m8c0-documentation-infrastructure-implementation-plan.md) 与 [Verification](docs/product/reviews/2026-07-21-m8c0-documentation-infrastructure-verification.md) — 当前文档 catalog、DOCX pipeline、状态门和发布集成权威。
-5. [M8B System-Owned Model Library Design](docs/product/specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)、[M8B-2 Plan](docs/product/plans/2026-07-21-m8b2-python-operator-extension-handoff-implementation-plan.md) 与 [Verification](docs/product/reviews/2026-07-21-m8b2-python-operator-extension-verification.md) — 当前 system/project/run ownership、可编辑 Python、operator 扩展、loaded backend identity 与历史 source snapshot 权威。
-6. [M7 Human-readable UI and eVTOL Branding Amendment](docs/product/specs/2026-07-18-m7-human-readable-ui-and-evtol-branding-amendment.md) — 当前语义名称、技术身份展示层级和桌面品牌资产修订。
-7. [M7 Simulator Raw Session Import Adapter Amendment](docs/product/specs/2026-07-20-m7-simulator-raw-session-import-adapter-design.md) 与 [Implementation Plan](docs/product/plans/2026-07-20-m7-simulator-raw-session-import-adapter-implementation-plan.md) — 当前 canonical/raw 统一导入、受管 materialization 与未声明单位透传规则。
-8. [M7 Staged Edit Session and Five-Layer Canvas Amendment](docs/product/specs/2026-07-18-m7-staged-edit-session-and-five-layer-canvas-amendment.md) — 当前保存边界、全局 undo/redo、五层画布和 dirty-run 权威修订。
-9. [M7 WinUI Expert Designer and Task Activation Workspace Design](docs/product/specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) — 完整节点、任务激活、多浮窗与 RunSnapshot 基础设计；ownership 冲突处由 M8B 取代。
-10. [M7 Human-readable UI Plan](docs/product/plans/2026-07-18-m7-human-readable-ui-and-evtol-branding-implementation-plan.md)、[M7 Staged Edit Session Plan](docs/product/plans/2026-07-18-m7-staged-edit-session-and-five-layer-canvas-implementation-plan.md) 与 [M7 Implementation Roadmap](docs/product/plans/2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) — 当前返修实现与历史 M7A/M7B 执行顺序。
-11. [M8 Pre-UAT Design Outline](docs/product/specs/2026-07-18-m8-productization-editable-python-documentation-and-handoff-outline.md) 与 [M8 Pre-UAT Implementation Outline](docs/product/plans/2026-07-18-m8-pre-uat-implementation-outline.md) — M8A–M8D 的阶段关系和 M8E 候选后独立用户验收边界。
-12. [产品设计文档中心](docs/product/README.md) — 全部正式文档、阅读顺序与权威规则。
-13. [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md) — 真实代码状态、迁移缺口、验证证据和下一步。
-14. [M5 Shared Versioned Model Library and Bayesian Workspace Design](docs/product/specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) — 已实现后端基础与历史 identity/publish 语义。
-15. [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](docs/product/specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) — 已实现的持久化、运行生命周期与本地协议规格。
-16. [产品总览](docs/product/01_PRODUCT_OVERVIEW.md) — 用户、工作流和总体架构；ownership 冲突处以 M8B 为准。
-17. [Expert-Editable Evidence and Assessment Model Design](docs/product/specs/2026-07-15-expert-editable-evidence-and-model-design.md) — M4R–M8 expert-designer 重基线。
-18. [Decisions](docs/product/DECISIONS.md) 与 [Glossary](docs/product/GLOSSARY.md) — 已锁定口径和术语。
+1. [RC.4 Active Save and Persistent Drag Amendment](docs/product/specs/2026-07-22-rc4-save-and-drag-acceptance-amendment.md)、[Implementation Plan](docs/product/plans/2026-07-22-rc4-save-and-drag-implementation-plan.md) 与 [RC.3 User Acceptance Result](docs/product/reviews/2026-07-22-v0.1.0-rc.3-user-acceptance-result.md) — 主动保存、普通节点/绿色输入根拖拽持久化和当前候选身份的权威。
+2. [RC.3 Run and Model Studio Amendment](docs/product/specs/2026-07-21-rc3-run-and-model-studio-acceptance-amendment.md)、[Implementation Plan](docs/product/plans/2026-07-21-rc3-run-and-model-studio-implementation-plan.md) 与 [RC.2 User Acceptance Result](docs/product/reviews/2026-07-21-v0.1.0-rc.2-user-acceptance-result.md) — Assessment 运行、图标、删除和首轮拖动修订的历史权威。
+3. [M8E Final Release Candidate Design](docs/product/specs/2026-07-21-m8e-final-release-candidate-and-handoff-design.md)、[Implementation Plan](docs/product/plans/2026-07-21-m8e-final-release-candidate-implementation-plan.md) 与 [Verification](docs/product/reviews/2026-07-21-m8e-release-candidate-verification.md) — `v0.1.0-rc.1`、D-055、M8C-1、candidate screenshots、标签、两层验收证据和历史交付的执行权威与实测结果。
+4. [M8D Current-System Packaging, Project Portability and Diagnostics Design](docs/product/specs/2026-07-21-m8d-current-system-packaging-project-portability-and-diagnostics-design.md)、[Implementation Plan](docs/product/plans/2026-07-21-m8d-current-system-packaging-implementation-plan.md) 与 [Verification](docs/product/reviews/2026-07-21-m8d-current-system-packaging-verification.md) — 当前发布 system、project 目录迁移、diagnostics 和取消 backup/restore 的权威边界与 fresh evidence。
+5. [M8C Documentation System Design](docs/product/specs/2026-07-21-m8c-documentation-system-design.md)、[M8C-0 Plan](docs/product/plans/2026-07-21-m8c0-documentation-infrastructure-implementation-plan.md) 与 [Verification](docs/product/reviews/2026-07-21-m8c0-documentation-infrastructure-verification.md) — 当前文档 catalog、DOCX pipeline、状态门和发布集成权威。
+6. [M8B System-Owned Model Library Design](docs/product/specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)、[M8B-2 Plan](docs/product/plans/2026-07-21-m8b2-python-operator-extension-handoff-implementation-plan.md) 与 [Verification](docs/product/reviews/2026-07-21-m8b2-python-operator-extension-verification.md) — 当前 system/project/run ownership、可编辑 Python、operator 扩展、loaded backend identity 与历史 source snapshot 权威。
+7. [M7 Human-readable UI and eVTOL Branding Amendment](docs/product/specs/2026-07-18-m7-human-readable-ui-and-evtol-branding-amendment.md) — 当前语义名称、技术身份展示层级和桌面品牌资产修订。
+8. [M7 Simulator Raw Session Import Adapter Amendment](docs/product/specs/2026-07-20-m7-simulator-raw-session-import-adapter-design.md) 与 [Implementation Plan](docs/product/plans/2026-07-20-m7-simulator-raw-session-import-adapter-implementation-plan.md) — 当前 canonical/raw 统一导入、受管 materialization 与未声明单位透传规则。
+9. [M7 Staged Edit Session and Five-Layer Canvas Amendment](docs/product/specs/2026-07-18-m7-staged-edit-session-and-five-layer-canvas-amendment.md) — 当前保存边界、全局 undo/redo、五层画布和 dirty-run 权威修订。
+10. [M7 WinUI Expert Designer and Task Activation Workspace Design](docs/product/specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md) — 完整节点、任务激活、多浮窗与 RunSnapshot 基础设计；ownership 冲突处由 M8B 取代。
+11. [M7 Human-readable UI Plan](docs/product/plans/2026-07-18-m7-human-readable-ui-and-evtol-branding-implementation-plan.md)、[M7 Staged Edit Session Plan](docs/product/plans/2026-07-18-m7-staged-edit-session-and-five-layer-canvas-implementation-plan.md) 与 [M7 Implementation Roadmap](docs/product/plans/2026-07-17-m7-winui-expert-designer-implementation-roadmap.md) — 当前返修实现与历史 M7A/M7B 执行顺序。
+12. [M8 Pre-UAT Design Outline](docs/product/specs/2026-07-18-m8-productization-editable-python-documentation-and-handoff-outline.md) 与 [M8 Pre-UAT Implementation Outline](docs/product/plans/2026-07-18-m8-pre-uat-implementation-outline.md) — M8A–M8D 的阶段关系和 M8E 候选后独立用户验收边界。
+13. [产品设计文档中心](docs/product/README.md) — 全部正式文档、阅读顺序与权威规则。
+14. [Implementation Status](docs/product/11_IMPLEMENTATION_STATUS.md) — 真实代码状态、迁移缺口、验证证据和下一步。
+15. [M5 Shared Versioned Model Library and Bayesian Workspace Design](docs/product/specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) — 已实现后端基础与历史 identity/publish 语义。
+16. [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](docs/product/specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) — 已实现的持久化、运行生命周期与本地协议规格。
+17. [产品总览](docs/product/01_PRODUCT_OVERVIEW.md) — 用户、工作流和总体架构；ownership 冲突处以 M8B 为准。
+18. [Expert-Editable Evidence and Assessment Model Design](docs/product/specs/2026-07-15-expert-editable-evidence-and-model-design.md) — M4R–M8 expert-designer 重基线。
+19. [Decisions](docs/product/DECISIONS.md) 与 [Glossary](docs/product/GLOSSARY.md) — 已锁定口径和术语。
 
 ## 目录
 

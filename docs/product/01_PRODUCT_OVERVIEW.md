@@ -1,10 +1,10 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0.1.0-rc.3 portable expert-designer candidate 修订中。RC.1/RC.2 用户验收均为 `changes-required`；RC.2 根布局工程证据保持有效，D-084–D-087 的 RC.3 修订正在完成候选验证；starter/synthetic `formal_run_authorized=false`，但技术 ready 的 Assessment 用途可运行并显示 warning。
+**文档状态：** 产品 v0.1.0-rc.4 portable expert-designer candidate 构建中。RC.1/RC.2/RC.3 用户验收均为 `changes-required`；历史工程证据保持有效，D-088/D-089 的主动保存与拖拽持久化及 D-091 的 Model Studio 工具栏提示收口进入 RC.4；starter/synthetic `formal_run_authorized=false`，但技术 ready 的 Assessment 用途可运行并显示 warning。
 **日期：** 2026-07-21
 **适用目录：** `pilot_assessment_system/`
 
-> **当前权威：** RC.3 的 Assessment、图标、删除与拖动见 [RC.3 Run and Model Studio Amendment](./specs/2026-07-21-rc3-run-and-model-studio-acceptance-amendment.md)，portable 根布局与启动见 [RC.2 Portable Root Layout Amendment](./specs/2026-07-21-rc2-portable-root-layout-amendment.md)，M7 交互见 [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)，模型 ownership 与 project/run 分层见 [M8B System-Owned Model Library and Editable Backend Provenance Design](./specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)，文档生产与状态门见 [M8C Documentation System Design](./specs/2026-07-21-m8c-documentation-system-design.md)。M5/M6 的 version/draft/publish 和 project-local current-model 文字只作为 migration/replay 基础。本总览中出现的 Hover、18 Anchor、11 sub-skills、4 competencies 与默认公式/CPT 均指 starter template，不限制任务、方案或节点数量。
+> **当前权威：** RC.4 的主动保存与拖拽持久化见 [RC.4 Active Save and Persistent Drag Amendment](./specs/2026-07-22-rc4-save-and-drag-acceptance-amendment.md)，RC.3 的 Assessment、图标和删除见 [RC.3 Run and Model Studio Amendment](./specs/2026-07-21-rc3-run-and-model-studio-acceptance-amendment.md)，portable 根布局与启动见 [RC.2 Portable Root Layout Amendment](./specs/2026-07-21-rc2-portable-root-layout-amendment.md)，M7 交互见 [M7 WinUI Expert Designer and Task Activation Workspace Design](./specs/2026-07-17-m7-winui-expert-designer-and-task-activation-workspace-design.md)，模型 ownership 与 project/run 分层见 [M8B System-Owned Model Library and Editable Backend Provenance Design](./specs/2026-07-21-m8b-system-owned-model-library-and-editable-backend-provenance-design.md)，文档生产与状态门见 [M8C Documentation System Design](./specs/2026-07-21-m8c-documentation-system-design.md)。M5/M6 的 version/draft/publish 和 project-local current-model 文字只作为 migration/replay 基础。本总览中出现的 Hover、18 Anchor、11 sub-skills、4 competencies 与默认公式/CPT 均指 starter template，不限制任务、方案或节点数量。
 
 ## 1. 产品目的
 
