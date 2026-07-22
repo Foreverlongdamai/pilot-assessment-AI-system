@@ -21,12 +21,12 @@
 - [x] Run focused Save All/drag/toolbar C# tests, the focused Python layout contract, touched-file lint,
       x64 Release build and documentation identity/structure validation; do not repeat the full
       repository or rendered-page acceptance matrix.
-- [ ] Commit clean source and create annotated `v0.1.0-rc.4` at that exact commit.
-- [ ] Remove obsolete local `dist/releases` artifacts and build only RC.4.
-- [ ] Verify ZIP/hash/privacy/root layout outside the repository with restricted `PATH` and one
+- [x] Commit clean source and create annotated `v0.1.0-rc.4` at that exact commit.
+- [x] Remove obsolete local `dist/releases` artifacts and build only RC.4.
+- [x] Verify ZIP/hash/privacy/root layout outside the repository with restricted `PATH` and one
       visible desktop launch. Reuse preserved editable-source/operator/run evidence instead of
       repeating those acceptance exercises.
-- [ ] Record exact hashes/counts, push source and tag, and leave the new local release ready for
+- [x] Record exact hashes/counts, push source and tag, and leave the new local release ready for
       independent user acceptance.
 
 ## Stop conditions

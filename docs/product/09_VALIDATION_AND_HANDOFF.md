@@ -3,7 +3,7 @@
 | 字段 | 值 |
 |---|---|
 | 设计版本 | v0.8 portable/documentation engineering baseline |
-| 当前软件状态 | `RC.4 lightweight candidate build in progress / user_acceptance=pending`（M1–M8E engineering history preserved；RC.1/RC.2/RC.3 user acceptance=`changes-required`；starter/synthetic `formal_run_authorized=false`） |
+| 当前软件状态 | `RC.4 lightweight engineering verified / user_acceptance=pending`（M1–M8E engineering history preserved；RC.1/RC.2/RC.3 user acceptance=`changes-required`；starter/synthetic `formal_run_authorized=false`） |
 | 当前科学状态 | 参考评估模型为 engineering_default；synthetic fixture 为 not_supported |
 | 目的 | 定义验证门槛、证据、交付物和接手方式 |
 

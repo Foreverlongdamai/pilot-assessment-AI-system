@@ -15,6 +15,7 @@
 
 ## 当前记录入口
 
+- [`v0.1.0-rc.4` Lightweight Release Candidate Verification](2026-07-22-v0.1.0-rc.4-lightweight-verification.md) — annotated tag、D-088/D-089/D-091 聚焦回归、双语 Model Studio 截图、24 份 DOCX、唯一 RC.4 ZIP、restricted-PATH 仓库外真实启动与精确 hash；工程结论 `PASS`，用户验收仍为 `pending`。
 - [`v0.1.0-rc.3` User Acceptance Result](2026-07-22-v0.1.0-rc.3-user-acceptance-result.md) — 用户在真实 Windows 操作中给出 `changes-required`：缺少保持软件打开的主动 Save All、普通节点松手回弹、五个绿色 Raw Input Family 根不可拖动；历史 RC.3 身份不改写，修订进入 RC.4。
 - [Active Save All Verification](2026-07-22-active-save-all-verification.md) 与 [Node Drag Persistence Verification](2026-07-22-node-drag-persistence-verification.md) — D-088/D-089 在 RC.3 后 `main` 上的源码、轻量回归、真实 WinUI 保存/重启和拖拽证据；它们由 RC.4 重新打包，不冒充 RC.3 产物。
 - [`v0.1.0-rc.3` Release Candidate Verification](2026-07-21-v0.1.0-rc.3-verification.md) — RC.3 的 historical full engineering gate；后续用户验收为 `changes-required`，本记录不被改写。

@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | 产品 v0.1.0-rc.4 acceptance amendment；D-031–D-091 已获用户确认 |
 | 基线日期 | 2026-07-22 |
-| 产品阶段 | M1–M8E engineering history 保持完整；RC.1/RC.2/RC.3 用户验收均为 `changes-required`。D-088 主动“保存全部”、D-089 节点/Raw Input Family 拖拽持久化和 D-091 工具栏提示收口进入 RC.4；新 tagged candidate 正在执行轻量差异验证，`user_acceptance=pending`；starter/synthetic `formal_run_authorized=false` |
+| 产品阶段 | M1–M8E engineering history 保持完整；RC.1/RC.2/RC.3 用户验收均为 `changes-required`。D-088 主动“保存全部”、D-089 节点/Raw Input Family 拖拽持久化和 D-091 工具栏提示收口已进入 RC.4；annotated tag、ZIP、hash、隐私扫描与仓库外 restricted-PATH 启动已通过轻量工程验证，`user_acceptance=pending`；starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -41,7 +41,7 @@
 
 2026-07-21 annotated `v0.1.0-rc.3` 已完成 full source、24 份 DOCX / 281 页 render、tagged portable build、仓库外 restricted-PATH、Assessment completed run、可编辑源码/operator 扩展和真实 WinUI 启动验证。精确 commit、hash 和边界见 [RC.3 Verification](reviews/2026-07-21-v0.1.0-rc.3-verification.md)。2026-07-22 用户独立验收随后确认主动保存缺失、普通节点松手回弹和绿色 Raw Input Family 不可拖动，因此 RC.3 结论改为 `changes-required`，历史工程证据保持不变。
 
-2026-07-22 D-088/D-089 已在 `main` 完成并通过可见 WinUI 复测；D-090 与 [RC.4 Amendment](specs/2026-07-22-rc4-save-and-drag-acceptance-amendment.md) 将它们纳入 `v0.1.0-rc.4`。D-091 又将 Model Studio 工具栏收口为七个有效动作，为每个动作绑定本地化 Tooltip，并移除反馈不明确的多选/清空按钮。按用户要求，RC.4 只执行差异功能、包完整性和真实启动的轻量验证，不重复全仓/逐页验收；新候选从 `user_acceptance=pending` 开始。
+2026-07-22 D-088/D-089 已在 `main` 完成并通过可见 WinUI 复测；D-090 与 [RC.4 Amendment](specs/2026-07-22-rc4-save-and-drag-acceptance-amendment.md) 将它们纳入 `v0.1.0-rc.4`。D-091 又将 Model Studio 工具栏收口为七个有效动作，为每个动作绑定本地化 Tooltip，并移除反馈不明确的多选/清空按钮。按用户要求，RC.4 只执行差异功能、包完整性和真实启动的轻量验证，不重复全仓/逐页验收；该门已通过，精确结果见 [RC.4 Lightweight Verification](reviews/2026-07-22-v0.1.0-rc.4-lightweight-verification.md)，候选继续保持 `user_acceptance=pending`。
 
 ## 1. 文档用途
 
@@ -141,6 +141,7 @@
 | 36 | [Captured-Format Multimodal Software Demo Plan](plans/2026-07-16-external-multimodal-session-demo-implementation-plan.md) | 开发、接手者 | 已完成：轻量生成、真实故障定位、18/18 Evidence、BN 推理与结果路径 |
 | 37 | [Active Save All Verification](reviews/2026-07-22-active-save-all-verification.md) | 前端、维护者、验收者 | D-088：主动保存、状态语义、提交后刷新、轻量回归与可见 Windows 验证 |
 | 38 | [Node Drag Persistence Verification](reviews/2026-07-22-node-drag-persistence-verification.md) | 前端、后端、维护者、验收者 | D-089：稳定拖拽目标、松手持久化、五个 Raw Input Family 展示布局与可见 Windows 验证 |
+| 39 | [RC.4 Lightweight Release Candidate Verification](reviews/2026-07-22-v0.1.0-rc.4-lightweight-verification.md) | 用户、交付、维护者 | D-088/D-089/D-091 聚焦回归、双语截图、ZIP/hash/privacy/root-layout 与仓库外真实启动 |
 
 ### 2.1 文档目录的职责
 

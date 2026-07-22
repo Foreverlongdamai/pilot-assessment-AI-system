@@ -1,6 +1,6 @@
 # eVTOL 飞行员训练评估系统：产品总览
 
-**文档状态：** 产品 v0.1.0-rc.4 portable expert-designer candidate 构建中。RC.1/RC.2/RC.3 用户验收均为 `changes-required`；历史工程证据保持有效，D-088/D-089 的主动保存与拖拽持久化及 D-091 的 Model Studio 工具栏提示收口进入 RC.4；starter/synthetic `formal_run_authorized=false`，但技术 ready 的 Assessment 用途可运行并显示 warning。
+**文档状态：** 产品 v0.1.0-rc.4 portable expert-designer candidate 已通过轻量工程验证，`user_acceptance=pending`。RC.1/RC.2/RC.3 用户验收均为 `changes-required`；历史工程证据保持有效，D-088/D-089 的主动保存与拖拽持久化及 D-091 的 Model Studio 工具栏提示收口已进入 RC.4；starter/synthetic `formal_run_authorized=false`，但技术 ready 的 Assessment 用途可运行并显示 warning。
 **日期：** 2026-07-21
 **适用目录：** `pilot_assessment_system/`
 
