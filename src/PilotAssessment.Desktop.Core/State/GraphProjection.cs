@@ -231,7 +231,11 @@ public static class GraphProjection
         var rawInputLabels = options.RawInputFamilyLabels ?? GraphRawInputFamilyLabels.English;
         var showRawInputFamilies = options.Layer is null or GraphDisplayLayer.RawInputFamily;
         var familyNodes = showRawInputFamilies
-            ? ProjectRawInputFamilies(projectedNodes, familyMembership, rawInputLabels)
+            ? ProjectRawInputFamilies(
+                projectedNodes,
+                familyMembership,
+                rawInputLabels,
+                overrideLayouts)
             : [];
         var familyIndex = familyNodes.ToDictionary(node => node.Family);
         var provenanceEdges = projectedNodes
@@ -381,7 +385,8 @@ public static class GraphProjection
     private static GraphRawInputFamilyProjection[] ProjectRawInputFamilies(
         IReadOnlyList<GraphNodeProjection> projectedNodes,
         IReadOnlyDictionary<string, IReadOnlySet<RawInputFamily>> membership,
-        GraphRawInputFamilyLabels labels)
+        GraphRawInputFamilyLabels labels,
+        IReadOnlyDictionary<string, NodeLayout> layoutOverrides)
     {
         var families = new[]
         {
@@ -401,15 +406,17 @@ public static class GraphProjection
             var memberCount = projectedNodes.Count(node =>
                 membership.GetValueOrDefault(node.NodeId, EmptyFamilies).Contains(family));
             var symbol = family.ToString();
+            var projectionId = $"raw-family.{symbol}";
+            var layout = layoutOverrides.GetValueOrDefault(projectionId);
             return new GraphRawInputFamilyProjection(
-                $"raw-family.{symbol}",
+                projectionId,
                 family,
                 symbol,
                 label.DisplayName,
                 label.Description,
                 labels.KindLabel,
-                x,
-                firstY + (index * step),
+                layout?.X ?? x,
+                layout?.Y ?? firstY + (index * step),
                 memberCount,
                 string.Format(labels.AutomationFormat, symbol, label.DisplayName, labels.KindLabel, memberCount));
         }).ToArray();

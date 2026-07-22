@@ -159,3 +159,28 @@ def test_graph_batch_applies_copy_activation_and_layout_with_one_canonical_diff(
         assert result.graph.scheme == result.scheme
     finally:
         database.close()
+
+
+def test_graph_batch_persists_raw_family_display_layout_without_a_model_node(
+    tmp_path: Path,
+) -> None:
+    database, service, _ = _workspace(tmp_path / "project.sqlite3")
+    try:
+        base = _create_base(service)
+
+        result = service.apply_graph_batch(
+            base.scheme_id,
+            layout_updates=(NodeLayout(node_id="raw-family.X", x=310.0, y=270.0),),
+            expected_semantic_revision=base.semantic_revision,
+            expected_layout_revision=base.layout_revision,
+            transaction_id="tx.graph.raw-family-layout",
+            actor_id="expert.one",
+        )
+
+        assert result.scheme.semantic_revision == base.semantic_revision
+        assert result.scheme.layout_revision == base.layout_revision + 1
+        assert NodeLayout(node_id="raw-family.X", x=310.0, y=270.0) in (
+            result.scheme.layout_overrides
+        )
+    finally:
+        database.close()

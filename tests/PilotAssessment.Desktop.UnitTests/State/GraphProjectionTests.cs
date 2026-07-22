@@ -305,6 +305,38 @@ public sealed class GraphProjectionTests
         Assert.Empty(result.Edges);
     }
 
+    [Fact]
+    public void SchemeLayoutOverrideMovesRawInputFamilyAndItsProvenanceOrigin()
+    {
+        var rawNodes = new[]
+        {
+            RawNode("raw.x", RawInputFamily.X, RawModality.X, "X.state", 100, 100),
+        };
+        var scheme = Scheme("task-scheme.raw-family-layout", rawNodes) with
+        {
+            LayoutOverrides = [new NodeLayout("raw-family.X", 310, 270)],
+        };
+        var snapshot = new ModelGraphSnapshot(
+            "model-graph-snapshot",
+            "0.3.0",
+            "model-library.raw-family-layout",
+            scheme,
+            rawNodes,
+            [],
+            Now,
+            new string('c', 64));
+
+        var result = GraphProjection.Project(
+            snapshot,
+            new GraphProjectionOptions(GraphViewMode.ActiveAndInactive));
+
+        var family = result.RawInputFamilies.Single(node => node.Family is RawInputFamily.X);
+        Assert.Equal(310, family.X);
+        Assert.Equal(270, family.Y);
+        var provenance = Assert.Single(result.ProvenanceEdges);
+        Assert.Same(family, provenance.Parent);
+    }
+
     private static ModelGraphSnapshot SevenNodeGraph()
     {
         var nodes = new[]

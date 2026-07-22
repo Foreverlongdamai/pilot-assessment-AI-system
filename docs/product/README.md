@@ -4,7 +4,7 @@
 |---|---|
 | 设计基线 | 产品 v0.1.0-rc.3 历史候选及其后续 UAT 返修；D-031–D-088 已获用户确认 |
 | 基线日期 | 2026-07-22 |
-| 产品阶段 | M1–M8E engineering history 保持完整；RC.1/RC.2 用户验收均为 `changes-required`。annotated RC.3 已完成工程验证并保持不可变；D-088 主动“保存全部”已在后续 `main` 实现并验证，但尚未建立新 tagged candidate；starter/synthetic `formal_run_authorized=false` |
+| 产品阶段 | M1–M8E engineering history 保持完整；RC.1/RC.2 用户验收均为 `changes-required`。annotated RC.3 已完成工程验证并保持不可变；D-088 主动“保存全部”与 D-089 节点/Raw Input Family 拖拽持久化已在后续 `main` 实现并验证，但尚未建立新 tagged candidate；starter/synthetic `formal_run_authorized=false` |
 | 运行范围 | Windows 本地、离线 session 评估 |
 | 科学状态 | 参考模型待领域专家校准与验证 |
 | 权威范围 | pilot_assessment_system 的产品设计与实现约束 |
@@ -135,6 +135,7 @@
 | 35 | [Captured-Format Multimodal Software Demo](specs/2026-07-16-external-multimodal-session-demo-design.md) | 开发、数据、审查者 | 已执行：格式样例 X/U + 合成缺失模态经完整 M6 后端运行；仅证明软件闭环 |
 | 36 | [Captured-Format Multimodal Software Demo Plan](plans/2026-07-16-external-multimodal-session-demo-implementation-plan.md) | 开发、接手者 | 已完成：轻量生成、真实故障定位、18/18 Evidence、BN 推理与结果路径 |
 | 37 | [Active Save All Verification](reviews/2026-07-22-active-save-all-verification.md) | 前端、维护者、验收者 | D-088：主动保存、状态语义、提交后刷新、轻量回归与可见 Windows 验证 |
+| 38 | [Node Drag Persistence Verification](reviews/2026-07-22-node-drag-persistence-verification.md) | 前端、后端、维护者、验收者 | D-089：稳定拖拽目标、松手持久化、五个 Raw Input Family 展示布局与可见 Windows 验证 |
 
 ### 2.1 文档目录的职责
 

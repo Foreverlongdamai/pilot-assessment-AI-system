@@ -649,3 +649,10 @@
 - 决策：主窗口工具栏提供“保存全部”，并提供 `Ctrl+S`。操作先 flush 全部浮动节点窗口、参数/CPT 表单、画布 pending layout 与窗口 placement，再检查 software-owned model edit session；dirty 时调用既有 `model.edit.commit` 原子提交，随后重新加载系统任务方案和当前网络图，软件及浮动编辑窗口保持打开。任何成功写入 edit session 的节点、边、CPT、任务方案或布局操作都把状态显示为“有待确认的暂存修改”；commit 完成后显示“已保存到系统模型”。clean 时不产生空提交；提交失败保留暂存内容并允许重试。关闭时原有“保存全部并关闭／放弃全部并关闭／取消”继续作为兜底，主动保存与关闭事务互斥，不能并发提交。
 - 理由：专家会长时间连续编辑 Evidence、BN、CPT 与任务方案，不应为了让模型正式落盘而反复关闭软件；复用同一个后端 commit 事务可以增加便利性而不产生第二套保存语义。
 - 影响：本决策扩展 D-056/D-057 的提交入口，不恢复业务 Draft/Publish 状态，也不把模型保存到 user project。保存后的模型对该软件副本的全部项目和未来 run 生效；历史 immutable RunSnapshot、result 与 artifact 不受影响。
+
+## D-089：拖拽在按下时锁定目标；五个 Raw Input Family 根保存为任务方案展示布局
+
+- 状态：已接受
+- 决策：所有可拖拽图节点使用不随节点移动的 XamlRoot 坐标，并在主键按下时锁定本次拖拽的 projection 对象；正常 release 与 WinUI pointer-cancel 共用一次性完成路径，不能在 `ItemsRepeater` 虚拟化清空绑定后重新取目标。五个绿色 Raw Input Family 根 `raw-family.X/U/I/G/P` 同样可拖动，其坐标作为当前 TaskScheme 的 display-only `layout_overrides` 暂存、保存和复制；它们不是 ModelNode、不能成为 Evidence/BN 父节点，也不进入计算闭包。
+- 理由：真实 WinUI 复现证明普通节点的视觉位移会在松手时回弹，因为移动中的元素被当作坐标系且虚拟化会令 release 时的 `Node` 绑定变为 null；五个 family 根原先只是固定 Canvas 展示控件，没有 pointer handler 或后端布局目标。仅保留临时 RenderTransform 不能形成可保存的专家画布。
+- 影响：普通节点与绿色 family 根在松手后立即停留于新位置，350 ms debounce 后写入 software-owned edit session，主动“保存全部”后进入 system model；切换/复制任务方案各自保留布局。变更只递增 scheme layout revision，不改变 node semantic hash、EvidenceRecipe、BN/CPT、激活闭包或历史 immutable RunSnapshot。

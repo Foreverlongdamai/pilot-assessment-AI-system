@@ -620,6 +620,24 @@ public sealed partial class ModelStudioViewModel : ObservableObject
         _ = SaveLayoutAfterDelayAsync(_layoutDebounce.Token);
     }
 
+    public void QueueRawInputFamilyLayoutUpdate(
+        GraphRawInputFamilyProjection node,
+        double x,
+        double y)
+    {
+        ArgumentNullException.ThrowIfNull(node);
+        var radius = GraphProjection.RawInputFamilyDiameter / 2;
+        _pendingLayouts[node.ProjectionId] = new NodeLayout(
+            node.ProjectionId,
+            Math.Max(radius, x),
+            Math.Max(radius, y));
+        Reproject();
+        var previous = Interlocked.Exchange(ref _layoutDebounce, new CancellationTokenSource());
+        previous?.Cancel();
+        previous?.Dispose();
+        _ = SaveLayoutAfterDelayAsync(_layoutDebounce.Token);
+    }
+
     public async Task<bool> FlushPendingLayoutAsync(CancellationToken cancellationToken = default)
     {
         var debounce = Interlocked.Exchange(ref _layoutDebounce, null);
@@ -912,7 +930,8 @@ public sealed partial class ModelStudioViewModel : ObservableObject
 
     private GraphProjectionResult ApplyPendingLayouts(GraphProjectionResult result)
     {
-        if (_pendingLayouts.Count == 0 || result.Nodes.Count == 0)
+        if (_pendingLayouts.Count == 0 ||
+            (result.Nodes.Count == 0 && result.RawInputFamilies.Count == 0))
         {
             return result;
         }
@@ -927,6 +946,12 @@ public sealed partial class ModelStudioViewModel : ObservableObject
                 : node)
             .ToArray();
         var byId = nodes.ToDictionary(node => node.NodeId, StringComparer.Ordinal);
+        var families = result.RawInputFamilies
+            .Select(node => _pendingLayouts.TryGetValue(node.ProjectionId, out var layout)
+                ? node with { X = layout.X, Y = layout.Y }
+                : node)
+            .ToArray();
+        var familiesById = families.ToDictionary(node => node.ProjectionId, StringComparer.Ordinal);
         var edges = result.Edges
             .Select(edge => edge with
             {
@@ -935,30 +960,34 @@ public sealed partial class ModelStudioViewModel : ObservableObject
             })
             .ToArray();
         var provenanceEdges = result.ProvenanceEdges
-            .Select(edge => edge with { Child = byId[edge.Child.NodeId] })
+            .Select(edge => edge with
+            {
+                Parent = familiesById[edge.Parent.ProjectionId],
+                Child = byId[edge.Child.NodeId],
+            })
             .ToArray();
         var radius = GraphProjection.NodeDiameter / 2;
         var familyRadius = GraphProjection.RawInputFamilyDiameter / 2;
-        var familyMaxX = result.RawInputFamilies.Count == 0
+        var familyMaxX = families.Length == 0
             ? 0
-            : result.RawInputFamilies.Max(node => node.X) + familyRadius;
-        var familyMaxY = result.RawInputFamilies.Count == 0
+            : families.Max(node => node.X) + familyRadius;
+        var familyMaxY = families.Length == 0
             ? 0
-            : result.RawInputFamilies.Max(node => node.Y) + familyRadius;
+            : families.Max(node => node.Y) + familyRadius;
         var width = Math.Max(
             GraphProjection.MinimumExtentWidth,
             Math.Max(
-                nodes.Max(node => node.X) + radius,
+                nodes.Length == 0 ? 0 : nodes.Max(node => node.X) + radius,
                 familyMaxX) + GraphProjection.CanvasPadding);
         var height = Math.Max(
             GraphProjection.MinimumExtentHeight,
             Math.Max(
-                nodes.Max(node => node.Y) + radius,
+                nodes.Length == 0 ? 0 : nodes.Max(node => node.Y) + radius,
                 familyMaxY) + GraphProjection.CanvasPadding);
         return new GraphProjectionResult(
             nodes,
             edges,
-            result.RawInputFamilies,
+            families,
             provenanceEdges,
             width,
             height);

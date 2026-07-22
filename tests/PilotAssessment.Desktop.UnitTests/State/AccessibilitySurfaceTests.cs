@@ -100,15 +100,33 @@ public sealed class AccessibilitySurfaceTests
             "Controls",
             "Graph",
             "GraphNodeButton.xaml.cs"));
-        Assert.Contains("args.GetCurrentPoint(this)", nodeCode, StringComparison.Ordinal);
+        Assert.DoesNotContain("args.GetCurrentPoint(this)", nodeCode, StringComparison.Ordinal);
+        Assert.Contains("GetStablePointerPosition(args)", nodeCode, StringComparison.Ordinal);
+        Assert.Contains("_dragNode = Node;", nodeCode, StringComparison.Ordinal);
+        Assert.Contains("var node = _dragNode;", nodeCode, StringComparison.Ordinal);
         Assert.Contains(
             "AddHandler(PointerMovedEvent",
             nodeCode,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "OnPointerCanceled(object sender, PointerRoutedEventArgs args)\n        => CompleteDrag",
+            nodeCode.Replace("\r\n", "\n", StringComparison.Ordinal),
             StringComparison.Ordinal);
         Assert.DoesNotContain(
             "DragHoldDuration",
             nodeCode,
             StringComparison.Ordinal);
+
+        var rawFamilyCode = File.ReadAllText(Path.Combine(
+            root,
+            "src",
+            "PilotAssessment.Desktop",
+            "Controls",
+            "Graph",
+            "RawInputFamilyNode.xaml.cs"));
+        Assert.Contains("RawInputFamilyDragCompleted", rawFamilyCode, StringComparison.Ordinal);
+        Assert.Contains("GetStablePointerPosition(args)", rawFamilyCode, StringComparison.Ordinal);
+        Assert.Contains("_dragNode = Node;", rawFamilyCode, StringComparison.Ordinal);
 
         var page = Load(
             root,

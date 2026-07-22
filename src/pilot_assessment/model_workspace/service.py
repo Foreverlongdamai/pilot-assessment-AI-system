@@ -82,6 +82,10 @@ from pilot_assessment.persistence.model_workspace_repository import (
     SqliteModelWorkspaceRepository,
 )
 
+_RAW_INPUT_FAMILY_LAYOUT_IDS = frozenset(
+    {"raw-family.X", "raw-family.U", "raw-family.I", "raw-family.G", "raw-family.P"}
+)
+
 _NODE_BOOKKEEPING_FIELDS: Final[frozenset[str]] = frozenset(
     {
         "semantic_revision",
@@ -1767,11 +1771,20 @@ class CurrentModelWorkspaceService:
                 )
                 before_nodes = self.repository.list_nodes()
                 before_index = {node.node_id: node for node in before_nodes}
-                for node_id in (*copy_node_ids, *activate_node_ids, *layout_ids):
+                for node_id in (*copy_node_ids, *activate_node_ids):
                     if node_id not in before_index:
                         raise CurrentActivationConflict(
                             "model.batch_node_missing",
                             f"batch node {node_id!r} does not resolve",
+                        )
+                for layout_id in layout_ids:
+                    if (
+                        layout_id not in before_index
+                        and layout_id not in _RAW_INPUT_FAMILY_LAYOUT_IDS
+                    ):
+                        raise CurrentActivationConflict(
+                            "model.batch_node_missing",
+                            f"batch layout target {layout_id!r} does not resolve",
                         )
 
                 candidates = before_nodes

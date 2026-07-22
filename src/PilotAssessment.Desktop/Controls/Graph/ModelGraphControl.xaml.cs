@@ -68,8 +68,18 @@ public sealed partial class ModelGraphControl : UserControl
     private void OnNodeCommandRequested(object sender, GraphNodeCommandEventArgs args) =>
         NodeCommandRequested?.Invoke(this, args);
 
-    private void OnNodeDragCompleted(object sender, GraphNodeDragCompletedEventArgs args) =>
+    private void OnNodeDragCompleted(object sender, GraphNodeDragCompletedEventArgs args)
+    {
         ViewModel.QueueLayoutUpdate(
+            args.Node,
+            args.Node.X + args.DeltaX,
+            args.Node.Y + args.DeltaY);
+    }
+
+    private void OnRawInputFamilyDragCompleted(
+        object? sender,
+        RawInputFamilyDragCompletedEventArgs args) =>
+        ViewModel.QueueRawInputFamilyLayoutUpdate(
             args.Node,
             args.Node.X + args.DeltaX,
             args.Node.Y + args.DeltaY);
@@ -169,7 +179,7 @@ public sealed partial class ModelGraphControl : UserControl
         var current = source as DependencyObject;
         while (current is not null && current != GraphSurface)
         {
-            if (current is GraphNodeButton)
+            if (current is GraphNodeButton or RawInputFamilyNode)
             {
                 return true;
             }
@@ -209,6 +219,7 @@ public sealed partial class ModelGraphControl : UserControl
         foreach (var family in ViewModel.RawInputFamilies)
         {
             var control = new RawInputFamilyNode { Node = family };
+            control.RawInputFamilyDragCompleted += OnRawInputFamilyDragCompleted;
             Canvas.SetLeft(control, family.X - (family.Diameter / 2));
             Canvas.SetTop(control, family.Y - (family.Diameter / 2));
             FamilyNodeLayer.Children.Add(control);

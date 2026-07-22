@@ -15,6 +15,7 @@ public sealed partial class GraphNodeButton : UserControl
 {
     private readonly TranslateTransform _dragTransform = new();
     private Windows.Foundation.Point _dragStart;
+    private GraphNodeProjection? _dragNode;
     private uint? _dragPointerId;
     private bool _dragMoved;
     private bool _suppressClick;
@@ -137,14 +138,15 @@ public sealed partial class GraphNodeButton : UserControl
 
     private void OnPointerPressed(object sender, PointerRoutedEventArgs args)
     {
-        var point = args.GetCurrentPoint(this);
+        var point = args.GetCurrentPoint(XamlRoot?.Content as UIElement ?? this);
         if (!point.Properties.IsLeftButtonPressed)
         {
             return;
         }
 
         _dragPointerId = args.Pointer.PointerId;
-        _dragStart = point.Position;
+        _dragNode = Node;
+        _dragStart = GetStablePointerPosition(args);
         _dragMoved = false;
         NodeButton.CapturePointer(args.Pointer);
     }
@@ -156,7 +158,7 @@ public sealed partial class GraphNodeButton : UserControl
             return;
         }
 
-        var current = args.GetCurrentPoint(this).Position;
+        var current = GetStablePointerPosition(args);
         var x = current.X - _dragStart.X;
         var y = current.Y - _dragStart.Y;
         var distance = Math.Sqrt((x * x) + (y * y));
@@ -172,19 +174,36 @@ public sealed partial class GraphNodeButton : UserControl
     }
 
     private void OnPointerReleased(object sender, PointerRoutedEventArgs args)
+        => CompleteDrag(args, releasePointer: true);
+
+    private void OnPointerCanceled(object sender, PointerRoutedEventArgs args)
+        => CompleteDrag(args, releasePointer: false);
+
+    private void CompleteDrag(PointerRoutedEventArgs args, bool releasePointer)
     {
         if (_dragPointerId != args.Pointer.PointerId)
         {
             return;
         }
 
-        NodeButton.ReleasePointerCapture(args.Pointer);
-        if (_dragMoved && Node is not null)
+        var moved = _dragMoved;
+        var node = _dragNode;
+        var deltaX = _dragTransform.X;
+        var deltaY = _dragTransform.Y;
+        _dragPointerId = null;
+        _dragNode = null;
+        _dragMoved = false;
+        if (releasePointer)
+        {
+            NodeButton.ReleasePointerCapture(args.Pointer);
+        }
+
+        if (moved && node is not null)
         {
             _suppressClick = true;
             NodeDragCompleted?.Invoke(
                 this,
-                new GraphNodeDragCompletedEventArgs(Node, _dragTransform.X, _dragTransform.Y));
+                new GraphNodeDragCompletedEventArgs(node, deltaX, deltaY));
             args.Handled = true;
             _ = DispatcherQueue.TryEnqueue(
                 DispatcherQueuePriority.Low,
@@ -194,7 +213,8 @@ public sealed partial class GraphNodeButton : UserControl
         ResetDrag();
     }
 
-    private void OnPointerCanceled(object sender, PointerRoutedEventArgs args) => ResetDrag();
+    private Windows.Foundation.Point GetStablePointerPosition(PointerRoutedEventArgs args) =>
+        args.GetCurrentPoint(XamlRoot?.Content as UIElement ?? this).Position;
 
     private void RaiseInvoked(bool forceAdditive)
     {
@@ -215,6 +235,7 @@ public sealed partial class GraphNodeButton : UserControl
     private void ResetDrag()
     {
         _dragPointerId = null;
+        _dragNode = null;
         _dragMoved = false;
         _dragTransform.X = 0;
         _dragTransform.Y = 0;
