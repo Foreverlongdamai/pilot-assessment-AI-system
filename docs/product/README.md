@@ -45,6 +45,8 @@
 
 2026-07-30 用户批准 [GitHub README Public Narrative Design](specs/2026-07-30-github-readme-public-narrative-design.md)：仓库入口采用“问题与价值优先”的公开叙事，先解释汽车驾驶、模拟驾驶教练、VTOL/Powered-lift 与两项 2015 PAV 操纵品质研究，再说明本项目怎样在吕老师指导下把 VR 多模态数据组织为 Evidence 和可编辑 BN 技能评估。两项 2015 论文准确归属于 Perfect、Jump 和 White；Lu 等 2016 着陆轨迹研究保留为相关脉络而非通用技能模型的直接基础。最终稳定产品计划通过 GitHub Releases 提供 portable ZIP、hash 和手册；RC.4 仍为 `user_acceptance=pending`，本轮不提前公开或重新标记候选。
 
+2026-07-30 用户随后要求立即补全空白的 Releases 页面。[RC.4 GitHub Prerelease Publication Amendment](specs/2026-07-30-rc4-github-prerelease-publication-amendment.md) 只取代上一段“不上传”的范围约束：已验证的原始 RC.4 ZIP 未重建、tag 未移动、验收状态未改变；它与 `.sha256`、delivery JSON 已作为公开 GitHub prerelease 发布。GitHub API 返回 `draft=false / prerelease=true`、3 个完整资产及与本地一致的 ZIP SHA-256；精确证据见 [publication verification](reviews/2026-07-30-v0.1.0-rc.4-github-prerelease-publication-verification.md)。
+
 ## 1. 文档用途
 
 本目录是产品交付、开发、审查和后续专家配置的统一入口。它回答五类问题：
@@ -109,6 +111,9 @@
 | 2.16.2 | [RC.3 User Acceptance Result](reviews/2026-07-22-v0.1.0-rc.3-user-acceptance-result.md) | 用户、产品、交付 | RC.3 `changes-required` 的三项编辑事实与不可变候选边界 |
 | 2.17 | [GitHub README Public Narrative Design](specs/2026-07-30-github-readme-public-narrative-design.md) | 一般读者、研究人员、产品、维护者 | 已批准：问题/价值优先叙事、汽车与 powered-lift 对照、两项 2015 PAV 研究归属、VR 评估工作流和未来公开下载边界 |
 | 2.17.1 | [GitHub README Public Narrative Implementation Plan](plans/2026-07-30-github-readme-public-narrative-implementation-plan.md) | 文档、维护者、审查者 | INLINE：补齐公开来源、重构仓库入口、保持工程/科学边界并执行 Markdown 链接自审 |
+| 2.17.2 | [RC.4 GitHub Prerelease Publication Amendment](specs/2026-07-30-rc4-github-prerelease-publication-amendment.md) | 用户、产品、交付、维护者 | 后续批准：在不重建、不移动 tag、不改变 pending 状态的前提下，把 RC.4 及 checksum/provenance 作为公开 prerelease 提供下载 |
+| 2.17.3 | [RC.4 GitHub Prerelease Publication Plan](plans/2026-07-30-rc4-github-prerelease-publication-plan.md) | 交付、维护者、审查者 | INLINE：本地身份核验、draft upload、API digest gate、公开 prerelease、README 直达下载与审计记录 |
+| 2.17.4 | [RC.4 GitHub Prerelease Publication Verification](reviews/2026-07-30-v0.1.0-rc.4-github-prerelease-publication-verification.md) | 用户、交付、审查者 | 公开 URL、release ID、3 个 asset size/digest、匿名 API 查询、README 入口和 pending/scientific 边界证据 |
 | 3 | [M5 Shared Versioned Model Library and Bayesian Workspace Design](specs/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-design.md) | 专家、产品、前后端 | 已实现的后端基础与历史 identity/publish 语义；冲突处由 M7 规格取代 |
 | 4 | [M5 Implementation Plan](plans/2026-07-16-m5-shared-versioned-model-library-and-bayesian-workspace-implementation-plan.md) | 开发、审查者 | 已完成：inline 任务、合同冻结、O8 迁移、轻量验证与完成门 |
 | 5 | [M6 Local Runtime, Durable Persistence and Sidecar Protocol Design](specs/2026-07-16-m6-local-runtime-persistence-and-protocol-design.md) | 前后端、交付、审查者 | 已实现：受管项目、SQLite、artifact、run lifecycle 与 JSON-RPC sidecar |

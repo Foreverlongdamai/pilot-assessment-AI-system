@@ -94,7 +94,18 @@ flowchart LR
 
 最终稳定版计划通过本项目的 [GitHub Releases](https://github.com/Foreverlongdamai/pilot-assessment-AI-system/releases) 提供下载。每个正式版本将包含 Windows 便携 ZIP、SHA-256 校验值、版本说明、快速启动说明和完整手册。用户解压后即可启动软件；发布包内包含前端、私有 Python 运行环境、可编辑后端源码、全局模型库和开发扩展材料，不包含开发者或其他用户的 Project、Session、RunSnapshot、结果与 artifacts。
 
-当前 `v0.1.0-rc.4` 仍是 **engineering candidate / user acceptance pending**，尚不能称为经过用户验收或科学验证的最终公开产品。当前仓库若保持 private，外部用户也无法匿名访问其中的 Release；面向所有人发布前，需要由仓库所有者明确将仓库设为 public，或选择独立的公开发行仓库。
+### 当前可下载版本
+
+**[下载 Pilot Assessment System v0.1.0-rc.4 for Windows x64](https://github.com/Foreverlongdamai/pilot-assessment-AI-system/releases/download/v0.1.0-rc.4/PilotAssessment-0.1.0-rc.4-win-x64.zip)**
+
+- [查看版本说明和全部附件](https://github.com/Foreverlongdamai/pilot-assessment-AI-system/releases/tag/v0.1.0-rc.4)
+- [下载 SHA-256 校验文件](https://github.com/Foreverlongdamai/pilot-assessment-AI-system/releases/download/v0.1.0-rc.4/PilotAssessment-0.1.0-rc.4-win-x64.zip.sha256)
+- [下载 delivery manifest](https://github.com/Foreverlongdamai/pilot-assessment-AI-system/releases/download/v0.1.0-rc.4/PilotAssessment-0.1.0-rc.4-win-x64.delivery.json)
+- ZIP SHA-256：`a5fe85b6ce24dab76acff1d6b840a9fa2b5498e7f511ebb56d228db1c422f7f4`
+
+下载后把 ZIP **完整解压**到普通可写文件夹，再双击根目录唯一的 `PilotAssessment.exe`。不需要另外安装或手动启动 Python、SQLite、Visual Studio 或 .NET SDK。
+
+当前 `v0.1.0-rc.4` 已作为公开 **prerelease** 提供体验，但仍是 **engineering candidate / user acceptance pending**，尚不能称为经过用户验收或科学验证的最终稳定产品。后续通过用户验收并完成必要修订后，正式 `v0.1.0` 将继续发布在同一位置。
 
 ## 总体架构与计算逻辑
 
