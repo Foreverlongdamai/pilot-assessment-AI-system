@@ -1,10 +1,83 @@
 # Pilot Assessment System
 
-面向飞行训练领域专家的 Windows 本地评估模型设计与运行系统：把多模态仿真 session 转换为可观测 Evidence，再用专家可编辑的 Bayesian Network 推断飞行员的 sub-skill 与 competency 后验分布。
+> **把 VR 飞行训练中的多模态行为数据，转化为可解释、可修改、可追溯的飞行技能评估。**
 
-本项目对应课题 **Development of AI-Based System for Evaluating eVTOL Pilot Training Effectiveness**。它首先是一套让专家设计评估方法的平台，不是一套已经证明科学有效的固定评分标准。
+本项目对应课题 **Development of AI-Based System for Evaluating eVTOL Pilot Training Effectiveness**。我们希望构建一套 Windows 本地软件，让研究人员和飞行训练专家能够利用一次 VR 仿真飞行中的飞行状态、操纵输入、视觉、眼动、EEG、ECG 等信息，理解飞行员完成任务时表现出了哪些技能、哪些方面仍需要训练。
 
-## 这款软件用来做什么
+它不是一个只输出总分的黑箱，也不是一套已经证明科学有效的固定评分标准。它首先是一套供专家设计、运行和持续修改评估方法的平台。
+
+## 为什么要做这个项目
+
+一次飞行任务是否完成，只回答了“结果有没有达到要求”，却未必能解释：
+
+- 飞行员是在稳定控制，还是通过频繁而剧烈的修正勉强完成任务；
+- 扰动发生后是否及时发现、是否查看了正确的仪表或视野区域、用了多久恢复；
+- 轨迹、操纵、注意分配和生理反应分别提供了什么证据；
+- 表现较差究竟对应轨迹控制、程序遵守、情境监控还是压力调节；
+- 换成 Hover、直线保持、着陆或其他任务后，原有评价指标是否仍然合适。
+
+传统人工评估具有不可替代的专业价值，但连续仿真数据的数量和模态越来越多，仅靠回看曲线、录像和单次总分很难稳定复用同一套判断逻辑。本项目希望把专家的判断过程明确表示为：**任务定义 → 可观测 Evidence → 概率化技能推断 → 可追溯结果**。专家仍然决定评什么、怎样算、怎样解释；软件负责让这些规则能够被保存、运行、比较和修改。
+
+## 相邻领域现在怎样训练和评估
+
+下面是用于帮助理解本项目的代表性实例，不是对所有国家、机构或机型训练制度的完整概括。
+
+| 领域 | 典型训练与评估方式 | 对本项目的启发 |
+|---|---|---|
+| 汽车驾驶 | 学员通常在教练指导下学习并练习，随后分别接受知识、危险感知和实际道路驾驶评估。以英国为例，理论考试包含选择题和危险感知；实际考试观察车辆安全知识、一般与独立驾驶、倒车操作以及驾驶错误。[理论考试](https://www.gov.uk/theory-test/multiple-choice-questions) · [危险感知](https://www.gov.uk/theory-test/hazard-perception-test) · [实际驾驶考试](https://www.gov.uk/driving-test/what-happens-during-test) | 复杂能力需要放到具体情境中观察，既看任务结果，也看危险识别、操作过程和错误模式。 |
+| 汽车模拟训练研究 | 智能模拟器正在成为补充方向。例如 2024 年的 Virtual Driving Instructor 将模拟器、规则/学习型 agents、知识图谱和 Bayesian student model 结合，用于追踪技能和提供个性化反馈；这是研究与部署案例，并非普遍的驾照认证流程。[AAAI 2024 原始论文](https://ojs.aaai.org/index.php/AAAI/article/view/30315) | 连续仿真数据可以先形成行为证据，再汇入较高层的技能模型，并向学员和教员解释。 |
+| VTOL / Powered-lift | 飞行训练通常由教员围绕规定任务进行教学和练习，再由评价人员观察实际表现。以 FAA Powered-Lift ACS 为例，标准按 Areas of Operation 和 Tasks 组织，并结合 Knowledge、Risk Management 和 Skill；具体训练还需要适用于机型和运行场景的课程与指导。[FAA Powered-Lift ACS](https://www.faa.gov/training_testing/testing/acs/private_pl_acs_13.pdf) · [FAA AC 194-2](https://www.faa.gov/regulations_policies/advisory_circulars/index.cfm/go/document.information/documentID/1042955) | 评估应以飞行任务为上下文，不同任务可以使用不同证据、技能结构和标准；软件不能取代教员、考官或认证程序。 |
+| PAV 操纵品质研究 | 2015 年的两项 PAV 研究让具有不同飞行经验、包括 flight-naive 的参与者执行典型任务，并结合期望/可接受任务边界、客观任务表现、操纵活动和主观工作负荷研究飞行器响应形式。[Methods paper](https://doi.org/10.2514/1.G000862) · [Handling-qualities paper](https://livrepository.liverpool.ac.uk/2039159/) | 一次任务不能只看是否完成；轨迹精度、操纵补偿、工作负荷和任务环境应作为互补证据。 |
+
+这些方法已经解决了“用什么任务训练”“怎样观察一次表现”“怎样判断是否达到标准”等重要问题。仍然需要继续解决的是：VR 仿真能够产生密集的多模态数据，但数据本身并不会自动成为飞行员能力。必须由专家明确哪些观测算 Evidence、如何针对任务计算、以及它们怎样共同支持对技能的判断。
+
+## 研究基础：从 2015 年 PAV 研究向前一步
+
+本项目在吕老师指导下，沿着 HELIFLIGHT / PAV 操纵品质研究脉络继续推进。最直接的方法基础是 Philip Perfect、Michael Jump 和 Mark D. White 于 2015 年发表的两项研究：
+
+1. [*Methods to Assess the Handling Qualities Requirements for Personal Aerial Vehicles*](https://doi.org/10.2514/1.G000862)；
+2. [*Handling Qualities Requirements for Future Personal Aerial Vehicles*](https://doi.org/10.2514/1.G001073)。
+
+两项研究的重要启发包括：使用 mission task elements 构造有明确目标和边界的任务；同时观察任务精度 `P`、操纵工作量 `W`、综合任务表现 `TPX` 和 NASA-TLX 等互补信息；并研究 flight-naive 或经验不同的参与者能否安全、精确且重复地完成任务。
+
+但这两项工作的主要研究对象是 **PAV 的操纵品质与响应形式**，并不是一套通用的飞行员能力评估系统。本项目要向前推进一步：把原先用于比较飞行器、响应形式和轨迹表现的多源数据，组织成能够解释飞行员训练表现的 Evidence，并进一步连接到 sub-skill 与 aggregate competency。
+
+吕老师等人在 2016 年发表的 [*Development of Occupant-Preferred Landing Profiles for Personal Aerial Vehicles*](https://doi.org/10.2514/1.G001608) 延续了相关试验平台和指标脉络，但更集中于着陆轨迹的自然感、舒适性、工作负荷与偏好。因此它是本项目的重要相关研究，而不是通用技能评估结构最直接的基础。
+
+这里继承的是一种**以任务为中心、同时使用多类证据**的方法，而不是把论文中的数值、阈值或指标直接宣布为飞行员能力真值。当前系统中的 Evidence、阈值、CPT 和能力结构仍需领域专家校准与验证。
+
+## 我们想怎样在 VR 中评估飞行技能
+
+一次完整的评估可以理解为七步：
+
+1. **定义任务**：专家为 Hover、直线保持、着陆等任务声明阶段、事件、期望轨迹、允许区间和 AOI；
+2. **记录行为**：VR 仿真器同步输出 X(t) 飞行状态、U(t) 操纵输入、I(t) 第一视角画面、G(t) gaze/AOI、P(t) EEG/ECG，以及可选 pilot-camera；
+3. **提取 Evidence**：可编辑的 EvidenceRecipe 和 operators 计算轨迹偏差、恢复时间、操纵活动、特定事件期间的 AOI dwell、生理变化等可观测证据；
+4. **选择任务网络**：当前 TaskScheme 只启用该任务真正需要的 Evidence、sub-skills、competencies 和连接；
+5. **进行概率推断**：把已观测 Evidence 输入专家设计的静态 Bayesian Network，得到 sub-skill 和 aggregate competency 的 posterior distribution；
+6. **解释结果**：结果不仅显示评分，还保留使用了哪些输入、recipe、参数、operator、父节点和 CPT；
+7. **继续改进模型**：专家可以复制或新建节点、修改计算规则和网络结构，再为其他任务形成并列且互不覆盖的方案。
+
+```mermaid
+flowchart LR
+    T["VR task definition<br/>reference · phases · events · AOI"] --> R
+    X["X(t)<br/>flight state"] --> R["Evidence extraction<br/>editable recipes + operators"]
+    U["U(t)<br/>control input"] --> R
+    I["I(t)<br/>VR scene / pilot camera"] --> R
+    G["G(t)<br/>gaze / fixation / AOI"] --> R
+    P["P(t)<br/>EEG / ECG"] --> R
+    R --> E["Observed Evidence"]
+    S["TaskScheme<br/>active model selection"] -.-> E
+    S -.-> B["Expert-authored Bayesian Network"]
+    E --> B
+    B --> K["Sub-skill posterior"]
+    K --> C["Aggregate competency posterior"]
+    C --> O["Traceable result<br/>evidence · CPT · snapshot · artifacts"]
+```
+
+如果某种模态没有采集，依赖它的 Evidence 会明确标记为 missing；其余可以计算的 Evidence 仍然继续参与评估。相反，轨迹飞得差、操纵剧烈或反应异常属于有效的负面表现，应当形成相应 Evidence，而不是被当成“坏数据”过滤掉。
+
+## 这款软件把上述构想落成什么
 
 传统评估程序常把“读取数据、计算指标、能力评分”写成一套固定代码。只要飞行任务、Evidence 定义或能力结构改变，就要重新改程序。本系统把这些内容拆成可编辑的系统模型，让领域专家能够在同一套 Windows 软件中完成以下工作：
 
@@ -16,6 +89,12 @@
 - 执行评估并追溯每项结果使用的数据、EvidenceRecipe、operator、参数、BN/CPT 和源码身份。
 
 因此，本产品的核心不是“给出一套永远不变的飞行员分数”，而是提供一套可视化、可追溯、可扩展的**评估系统设计器与执行环境**。当前 Hover、18 个 Evidence、11 个 sub-skills、4 个 competencies、阈值和 CPT 只是可运行的初始模板，后续应由领域专家持续修改和扩充。
+
+## 最终产品的下载与体验
+
+最终稳定版计划通过本项目的 [GitHub Releases](https://github.com/Foreverlongdamai/pilot-assessment-AI-system/releases) 提供下载。每个正式版本将包含 Windows 便携 ZIP、SHA-256 校验值、版本说明、快速启动说明和完整手册。用户解压后即可启动软件；发布包内包含前端、私有 Python 运行环境、可编辑后端源码、全局模型库和开发扩展材料，不包含开发者或其他用户的 Project、Session、RunSnapshot、结果与 artifacts。
+
+当前 `v0.1.0-rc.4` 仍是 **engineering candidate / user acceptance pending**，尚不能称为经过用户验收或科学验证的最终公开产品。当前仓库若保持 private，外部用户也无法匿名访问其中的 Release；面向所有人发布前，需要由仓库所有者明确将仓库设为 public，或选择独立的公开发行仓库。
 
 ## 总体架构与计算逻辑
 

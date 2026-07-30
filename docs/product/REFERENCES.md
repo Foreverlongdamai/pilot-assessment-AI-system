@@ -91,3 +91,41 @@ Mislevy, R. J., Almond, R. G., Yan, D., & Steinberg, L. S. (2000). *Bayes Nets i
 
 - [ERIC full-text PDF](https://files.eric.ed.gov/fulltext/ED443881.pdf)
 - 本设计用途：区分从 work product/session 中提取 observable evidence 的 evidence rules 与用 `P(observable evidence | proficiency/task variables)` 解释证据的 probability model，并由观测反推 proficiency posterior。
+
+## R10 Perfect et al. 2015 — companion PAV study
+
+Perfect, P., Jump, M., & White, M. D. (2015). Handling Qualities Requirements for Future Personal Aerial Vehicles. *Journal of Guidance, Control, and Dynamics, 38*(12), 2386–2398. DOI: 10.2514/1.G001073.
+
+- [DOI](https://doi.org/10.2514/1.G001073)
+- [AIAA publisher](https://arc.aiaa.org/doi/10.2514/1.G001073)
+- [University of Liverpool repository](https://livrepository.liverpool.ac.uk/2039159/)
+- 本设计用途：flight-naive participants、PAV response types、mission-task-element performance，以及安全、精确且可重复操纵所需的 handling-qualities context。
+- 署名边界：本论文与 R1 均由 Perfect、Jump 和 White 署名；本项目在吕老师指导下承接这一研究脉络，但不能把两篇 2015 论文写成吕老师署名成果。
+
+## R11 UK road-driver training and testing context
+
+Driver and Vehicle Standards Agency / GOV.UK. Official car theory, hazard-perception, and practical-driving-test guidance.
+
+- [Theory test: multiple-choice questions](https://www.gov.uk/theory-test/multiple-choice-questions)
+- [Theory test: hazard perception](https://www.gov.uk/theory-test/hazard-perception-test)
+- [Practical driving test: what happens during the test](https://www.gov.uk/driving-test/what-happens-during-test)
+- [Practical driving test: marking, faults and results](https://readytopass.campaign.gov.uk/driving-test/driving-test-marking-faults-results/)
+- 本设计用途：作为普通读者容易理解的官方实例，说明驾驶评估怎样结合知识、危险感知、真实任务表现和考官记录；它不是世界各地驾驶培训制度的统一描述。
+
+## R12 Rehm et al. 2024
+
+Rehm, J., Reshodko, I., Børresen, S. Z., & Gundersen, O. E. (2024). The Virtual Driving Instructor: Multi-Agent System Collaborating via Knowledge Graph for Scalable Driver Education. *Proceedings of the AAAI Conference on Artificial Intelligence, 38*(21), 22806–22814. DOI: 10.1609/aaai.v38i21.30315.
+
+- [DOI and AAAI proceedings record](https://ojs.aaai.org/index.php/AAAI/article/view/30315)
+- [Open conference PDF](https://ojs.aaai.org/index.php/AAAI/article/download/30315/32330)
+- 本设计用途：模拟器、事件/时序数据、知识图谱、Bayesian student model 与个性化反馈相结合的相邻领域实例。
+- 使用边界：这是已部署的智能驾驶教学研究案例，不代表驾驶执照考试已经普遍采用 Bayesian assessment。
+
+## R13 FAA powered-lift training and certification context
+
+Federal Aviation Administration. *Private Pilot for Powered-Lift Category Airman Certification Standards* and AC 194-2, *Pilot Training and Certification for Powered-Lift Operations*.
+
+- [Private Pilot for Powered-Lift Category ACS](https://www.faa.gov/training_testing/testing/acs/private_pl_acs_13.pdf)
+- [AC 194-2 document page](https://www.faa.gov/regulations_policies/advisory_circulars/index.cfm/go/document.information/documentID/1042955)
+- [Powered-lift pilot certification and operations final-rule page](https://www.faa.gov/newsroom/integration-powered-lift-pilot-certification-and-operations-miscellaneous-amendments)
+- 本设计用途：以官方实例说明 powered-lift 训练/评价按 Areas of Operation 和 Tasks 组织，并结合 Knowledge、Risk Management 与 Skill；不表示本产品获得 FAA 认可，也不表示本产品能替代教员、考官、批准课程或认证程序。
