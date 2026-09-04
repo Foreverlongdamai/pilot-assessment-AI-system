@@ -30,6 +30,26 @@ public sealed class GraphCommandTests
     }
 
     [Fact]
+    public void DraftFactoryUsesCanonicalOrderedDauStateVocabulary()
+    {
+        var evidence = Draft(ModelNodeKind.Evidence, "New evidence");
+        var definition = Assert.IsType<EvidenceNodeDefinition>(evidence.Definition);
+        string[] expectedStateIds = ["unacceptable", "adequate", "desired"];
+
+        Assert.Equal(
+            expectedStateIds,
+            definition.OrderedObservationStates.Select(state => state.StateId));
+        Assert.Equal(expectedStateIds, definition.Cpt.ChildStateIds);
+        Assert.Equal(
+            expectedStateIds.Order(StringComparer.Ordinal),
+            definition.ObservationMapping.Keys.Order(StringComparer.Ordinal));
+        Assert.All(expectedStateIds, stateId =>
+            Assert.Equal(
+                stateId,
+                definition.ObservationMapping[stateId].GetProperty("state_id").GetString()));
+    }
+
+    [Fact]
     public async Task ActivationUsesBackendClosureAndKeepsOtherSchemeIsolated()
     {
         var fixture = new FakeGraphGateway();

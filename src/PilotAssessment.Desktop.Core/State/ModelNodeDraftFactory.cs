@@ -14,7 +14,7 @@ public static class ModelNodeDraftFactory
 {
     private const string ComponentContractVersion = "0.1.0";
     private const string CurrentModelContractVersion = "0.2.0";
-    private static readonly string[] DauStateIds = ["desired", "adequate", "undesired"];
+    private static readonly string[] DauStateIds = ["unacceptable", "adequate", "desired"];
     private static readonly string[] BnStateIds = ["low", "medium", "high"];
 
     public static ModelNode Create(ModelNodeDraftRequest request)
@@ -125,7 +125,7 @@ public static class ModelNodeDraftFactory
             new Dictionary<string, double>(StringComparer.Ordinal) { ["X"] = 1.0 },
             ModelScientificStatus.ExpertDefined,
             Provenance("blank_expert_evidence"),
-            "Connect Raw Input sources, design the operator graph and configure observation scoring." );
+            "Connect Raw Input sources, design the operator graph and configure observation scoring.");
     }
 
     private static BnNodeDefinition CreateBnDefinition(string nodeId)
@@ -143,7 +143,7 @@ public static class ModelNodeDraftFactory
             ModelScientificStatus.ExpertDefined,
             EmptyElements(),
             Provenance("blank_expert_bn"),
-            "Configure fixed probabilistic parents, state semantics and the CPT." );
+            "Configure fixed probabilistic parents, state semantics and the CPT.");
     }
 
     private static NodeCpt IncompleteCpt(ModelNodeRef child, string[] stateIds) => new(
