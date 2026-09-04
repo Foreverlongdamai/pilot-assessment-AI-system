@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import math
-from bisect import bisect_left, bisect_right
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from types import MappingProxyType
@@ -30,6 +29,7 @@ from pilot_assessment.contracts.evidence_recipe import (
 from pilot_assessment.evidence.builtins.signal import (
     NumericSample,
     SignalSeries,
+    sample_signal_value,
     signal_series,
 )
 from pilot_assessment.evidence.operators import OperatorExecutionContext
@@ -416,28 +416,14 @@ def _reference_value(
     alignment: object,
     max_gap_ns: int,
 ) -> float | None:
-    times = tuple(sample.t_ns for sample in reference.samples)
-    index = bisect_left(times, t_ns)
-    if index < len(reference.samples) and reference.samples[index].t_ns == t_ns:
-        return reference.samples[index].value
-    if alignment == "exact":
-        return None
-    if alignment == "left_hold":
-        left_index = bisect_right(times, t_ns) - 1
-        if left_index < 0 or t_ns - times[left_index] > max_gap_ns:
-            return None
-        return reference.samples[left_index].value
-    if alignment == "linear":
-        if index == 0 or index == len(reference.samples):
-            return None
-        left = reference.samples[index - 1]
-        right = reference.samples[index]
-        gap = right.t_ns - left.t_ns
-        if gap > max_gap_ns:
-            return None
-        ratio = (t_ns - left.t_ns) / gap
-        return left.value + ratio * (right.value - left.value)
-    raise FlightOperatorError("reference alignment is not supported")
+    if alignment not in ("exact", "left_hold", "linear"):
+        raise FlightOperatorError("reference alignment is not supported")
+    return sample_signal_value(
+        reference,
+        t_ns,
+        alignment=alignment,
+        max_gap_ns=max_gap_ns,
+    )
 
 
 class TargetErrorOperator:

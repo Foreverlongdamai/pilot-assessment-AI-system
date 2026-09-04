@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import math
 import statistics
+from bisect import bisect_left, bisect_right
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from types import MappingProxyType
 from typing import cast
 
 from pydantic import JsonValue
@@ -22,6 +24,7 @@ from pilot_assessment.contracts.evidence_recipe import (
     TemporalSemantics,
     TraceCapability,
 )
+from pilot_assessment.evidence.builtins.temporal import event_records
 from pilot_assessment.evidence.operators import OperatorExecutionContext
 from pilot_assessment.evidence.registry import OperatorRegistry
 
@@ -119,7 +122,11 @@ def signal_series(value: object) -> SignalSeries:
     )
 
 
-def _port(port_id: str, value_type: str) -> OperatorPortDefinition:
+def _port(
+    port_id: str,
+    value_type: str,
+    temporal_semantics: TemporalSemantics = TemporalSemantics.SAMPLED,
+) -> OperatorPortDefinition:
     return OperatorPortDefinition(
         port_id=port_id,
         name=port_id.replace("_", " ").title(),
@@ -127,7 +134,7 @@ def _port(port_id: str, value_type: str) -> OperatorPortDefinition:
         port_type=PortType(
             value_type=value_type,
             cardinality=PortCardinality.ONE,
-            temporal_semantics=TemporalSemantics.SAMPLED,
+            temporal_semantics=temporal_semantics,
             unit=None,
         ),
     )
@@ -155,6 +162,7 @@ def _definition(
     *,
     inputs: tuple[OperatorPortDefinition, ...],
     output_type: str,
+    output_temporal: TemporalSemantics = TemporalSemantics.SAMPLED,
     parameter_schema: dict[str, JsonValue],
     parameter_ui: tuple[ParameterUiDefinition, ...],
 ) -> OperatorDefinition:
@@ -166,7 +174,7 @@ def _definition(
         description=f"Reusable editable {operator_id} operator.",
         pseudocode=None,
         input_ports=inputs,
-        output_ports=(_port("value", output_type),),
+        output_ports=(_port("value", output_type, output_temporal),),
         parameter_schema=parameter_schema,
         parameter_ui=parameter_ui,
         trace_capability=TraceCapability.FULL,
@@ -291,6 +299,90 @@ def detrend_definition() -> OperatorDefinition:
         },
         parameter_ui=(_ui("/method", "Detrend method", ParameterControlKind.SELECT),),
     )
+
+
+def sample_at_event_definition() -> OperatorDefinition:
+    return _definition(
+        "signal.sample-at-event",
+        inputs=(
+            _port("signal", "signal_series"),
+            _port("events", "event_collection", TemporalSemantics.POINT),
+        ),
+        output_type="named_numbers",
+        output_temporal=TemporalSemantics.MIXED,
+        parameter_schema={
+            "type": "object",
+            "properties": {
+                "alignment": {
+                    "type": "string",
+                    "enum": ["exact", "left_hold", "linear"],
+                },
+                "max_gap_ns": {"type": "integer", "minimum": 0},
+                "no_sample_policy": {
+                    "type": "string",
+                    "enum": ["omit", "error"],
+                },
+                "multiple_event_policy": {
+                    "type": "string",
+                    "enum": ["all", "first", "last", "error"],
+                },
+            },
+            "required": [
+                "alignment",
+                "max_gap_ns",
+                "no_sample_policy",
+                "multiple_event_policy",
+            ],
+            "additionalProperties": False,
+        },
+        parameter_ui=(
+            _ui("/alignment", "Alignment", ParameterControlKind.SELECT),
+            _ui("/max_gap_ns", "Maximum gap", ParameterControlKind.NUMBER, unit="ns"),
+            _ui("/no_sample_policy", "No-sample policy", ParameterControlKind.SELECT),
+            _ui(
+                "/multiple_event_policy",
+                "Multiple-event policy",
+                ParameterControlKind.SELECT,
+            ),
+        ),
+    )
+
+
+def sample_signal_value(
+    signal: SignalSeries,
+    t_ns: int,
+    *,
+    alignment: object,
+    max_gap_ns: int,
+) -> float | None:
+    """Sample a signal at one timestamp using the shared bounded alignment rules."""
+
+    _strict_time(t_ns, "sample time")
+    _strict_time(max_gap_ns, "max_gap_ns")
+    if alignment not in ("exact", "left_hold", "linear"):
+        raise SignalOperatorError("signal alignment is not supported")
+
+    times = tuple(sample.t_ns for sample in signal.samples)
+    index = bisect_left(times, t_ns)
+    if index < len(signal.samples) and signal.samples[index].t_ns == t_ns:
+        return signal.samples[index].value
+    if alignment == "exact":
+        return None
+    if alignment == "left_hold":
+        left_index = bisect_right(times, t_ns) - 1
+        if left_index < 0 or t_ns - times[left_index] > max_gap_ns:
+            return None
+        return signal.samples[left_index].value
+
+    if index == 0 or index == len(signal.samples):
+        return None
+    left = signal.samples[index - 1]
+    right = signal.samples[index]
+    gap = right.t_ns - left.t_ns
+    if gap > max_gap_ns:
+        return None
+    ratio = (t_ns - left.t_ns) / gap
+    return left.value + ratio * (right.value - left.value)
 
 
 class FieldSelectOperator:
@@ -499,6 +591,57 @@ class DetrendOperator:
         }
 
 
+class SampleAtEventOperator:
+    operator_id = "signal.sample-at-event"
+    implementation_version = _VERSION
+    implementation_ref = "builtin.signal.sample-at-event"
+
+    def execute(
+        self,
+        inputs: Mapping[str, object],
+        parameters: Mapping[str, JsonValue],
+        context: OperatorExecutionContext,
+    ) -> Mapping[str, object]:
+        del context
+        source = signal_series(inputs.get("signal"))
+        events = event_records(inputs.get("events"))
+        alignment = parameters.get("alignment")
+        max_gap_ns = _strict_time(parameters.get("max_gap_ns"), "max_gap_ns")
+        no_sample_policy = parameters.get("no_sample_policy")
+        multiple_event_policy = parameters.get("multiple_event_policy")
+
+        if alignment not in ("exact", "left_hold", "linear"):
+            raise SignalOperatorError("signal alignment is not supported")
+        if no_sample_policy not in ("omit", "error"):
+            raise SignalOperatorError("no-sample policy is not supported")
+        if multiple_event_policy == "all":
+            selected_events = events
+        elif multiple_event_policy == "first":
+            selected_events = events[:1]
+        elif multiple_event_policy == "last":
+            selected_events = events[-1:]
+        elif multiple_event_policy == "error":
+            if len(events) > 1:
+                raise SignalOperatorError("multiple events are not allowed")
+            selected_events = events
+        else:
+            raise SignalOperatorError("multiple-event policy is not supported")
+
+        values: dict[str, float] = {}
+        for event in selected_events:
+            value = sample_signal_value(
+                source,
+                event.t_ns,
+                alignment=alignment,
+                max_gap_ns=max_gap_ns,
+            )
+            if value is not None:
+                values[event.event_id] = value
+            elif no_sample_policy == "error":
+                raise SignalOperatorError(f"event {event.event_id!r} has no aligned signal sample")
+        return {"value": MappingProxyType(values)}
+
+
 def register_signal_operators(registry: OperatorRegistry) -> None:
     registry.register(field_select_definition(), FieldSelectOperator())
     registry.register(channel_select_definition(), ChannelSelectOperator())
@@ -506,6 +649,7 @@ def register_signal_operators(registry: OperatorRegistry) -> None:
     registry.register(difference_definition(), DifferenceOperator())
     registry.register(smooth_definition(), SmoothOperator())
     registry.register(detrend_definition(), DetrendOperator())
+    registry.register(sample_at_event_definition(), SampleAtEventOperator())
 
 
 __all__ = [
@@ -514,10 +658,13 @@ __all__ = [
     "DifferenceOperator",
     "FieldSelectOperator",
     "NumericSample",
+    "SampleAtEventOperator",
     "SignalOperatorError",
     "SignalSeries",
     "SmoothOperator",
     "UnitConvertOperator",
     "register_signal_operators",
+    "sample_at_event_definition",
+    "sample_signal_value",
     "signal_series",
 ]

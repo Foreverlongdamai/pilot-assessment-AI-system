@@ -144,6 +144,6 @@ def test_system_composition_registers_extensions_before_freezing_operator_identi
     )
     try:
         assert application.operator_registry.definition(_OPERATOR_ID, _VERSION) == _definition()
-        assert application.source_provenance.loaded_identity.operator_catalog.operator_count == 46
+        assert application.source_provenance.loaded_identity.operator_catalog.operator_count == 47
     finally:
         application.close()

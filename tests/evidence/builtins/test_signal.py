@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import math
+from types import MappingProxyType
 
 import pytest
 
+import pilot_assessment.evidence.builtins.signal as signal_builtins
 from pilot_assessment.evidence.builtins.signal import (
     ChannelSelectOperator,
     DetrendOperator,
     DifferenceOperator,
     FieldSelectOperator,
+    NumericSample,
     SignalSeries,
     SmoothOperator,
     UnitConvertOperator,
@@ -21,6 +24,7 @@ from pilot_assessment.evidence.builtins.statistics import (
     PooledRatioOperator,
     RmsOperator,
 )
+from pilot_assessment.evidence.builtins.temporal import EventRecord
 from pilot_assessment.evidence.operators import OperatorExecutionContext
 
 
@@ -31,6 +35,182 @@ def _context() -> OperatorExecutionContext:
         node_id="signal",
         binding_values={},
     )
+
+
+def _sample_parameters(
+    *,
+    alignment: str = "exact",
+    max_gap_ns: int = 0,
+    no_sample_policy: str = "error",
+    multiple_event_policy: str = "all",
+) -> dict[str, object]:
+    return {
+        "alignment": alignment,
+        "max_gap_ns": max_gap_ns,
+        "no_sample_policy": no_sample_policy,
+        "multiple_event_policy": multiple_event_policy,
+    }
+
+
+def test_sample_at_event_definition_declares_point_input_and_named_number_output() -> None:
+    definition = signal_builtins.sample_at_event_definition()
+
+    ports = {port.port_id: port.port_type for port in definition.input_ports}
+    assert ports["signal"].value_type == "signal_series"
+    assert ports["signal"].temporal_semantics.value == "sampled"
+    assert ports["events"].value_type == "event_collection"
+    assert ports["events"].temporal_semantics.value == "point"
+    output = definition.output_ports[0].port_type
+    assert output.value_type == "named_numbers"
+    assert output.temporal_semantics.value == "mixed"
+    assert definition.parameter_schema["properties"] == {
+        "alignment": {"type": "string", "enum": ["exact", "left_hold", "linear"]},
+        "max_gap_ns": {"type": "integer", "minimum": 0},
+        "no_sample_policy": {"type": "string", "enum": ["omit", "error"]},
+        "multiple_event_policy": {
+            "type": "string",
+            "enum": ["all", "first", "last", "error"],
+        },
+    }
+
+
+def test_sample_at_event_returns_an_immutable_event_id_mapping_for_exact_samples() -> None:
+    signal = SignalSeries(
+        "corridor-position",
+        "m",
+        (NumericSample(0, -5.0), NumericSample(2_000_000_000, 7.0)),
+    )
+    events = (
+        EventRecord("onset-late", "decel-onset", 2_000_000_000),
+        EventRecord("onset-early", "decel-onset", 0),
+    )
+
+    values = signal_builtins.SampleAtEventOperator().execute(
+        {"signal": signal, "events": events},
+        _sample_parameters(),
+        _context(),
+    )["value"]
+
+    assert isinstance(values, MappingProxyType)
+    assert dict(values) == {"onset-early": -5.0, "onset-late": 7.0}
+
+
+@pytest.mark.parametrize(
+    ("alignment", "expected"),
+    [
+        ("left_hold", {"event-1": 0.0, "event-3": 4.0}),
+        ("linear", {"event-1": 2.0, "event-3": 6.0}),
+    ],
+)
+def test_sample_at_event_reuses_bounded_signal_alignment(
+    alignment: str,
+    expected: dict[str, float],
+) -> None:
+    signal = SignalSeries(
+        "corridor-position",
+        "m",
+        (
+            NumericSample(0, 0.0),
+            NumericSample(2_000_000_000, 4.0),
+            NumericSample(4_000_000_000, 8.0),
+        ),
+    )
+    events = (
+        EventRecord("event-3", "onset", 3_000_000_000),
+        EventRecord("event-1", "onset", 1_000_000_000),
+    )
+
+    values = signal_builtins.SampleAtEventOperator().execute(
+        {"signal": signal, "events": events},
+        _sample_parameters(alignment=alignment, max_gap_ns=2_000_000_000),
+        _context(),
+    )["value"]
+
+    assert dict(values) == expected
+
+
+def test_sample_at_event_applies_omit_or_error_when_max_gap_rejects_a_sample() -> None:
+    signal = SignalSeries(
+        "corridor-position",
+        "m",
+        (NumericSample(0, 0.0), NumericSample(2_000_000_000, 4.0)),
+    )
+    events = (
+        EventRecord("exact", "onset", 0),
+        EventRecord("gap", "onset", 1_000_000_000),
+    )
+
+    omitted = signal_builtins.SampleAtEventOperator().execute(
+        {"signal": signal, "events": events},
+        _sample_parameters(
+            alignment="linear",
+            max_gap_ns=1_999_999_999,
+            no_sample_policy="omit",
+        ),
+        _context(),
+    )["value"]
+
+    assert dict(omitted) == {"exact": 0.0}
+    with pytest.raises(signal_builtins.SignalOperatorError, match="gap.*aligned signal sample"):
+        signal_builtins.SampleAtEventOperator().execute(
+            {"signal": signal, "events": events},
+            _sample_parameters(
+                alignment="linear",
+                max_gap_ns=1_999_999_999,
+                no_sample_policy="error",
+            ),
+            _context(),
+        )
+
+
+@pytest.mark.parametrize(
+    ("policy", "expected"),
+    [
+        ("first", {"event-a": 0.0}),
+        ("last", {"event-c": 2.0}),
+    ],
+)
+def test_sample_at_event_selects_multiple_events_in_canonical_time_order(
+    policy: str,
+    expected: dict[str, float],
+) -> None:
+    signal = SignalSeries(
+        "corridor-position",
+        "m",
+        (
+            NumericSample(0, 0.0),
+            NumericSample(1, 1.0),
+            NumericSample(2, 2.0),
+        ),
+    )
+    events = (
+        EventRecord("event-c", "onset", 2),
+        EventRecord("event-a", "onset", 0),
+        EventRecord("event-b", "onset", 1),
+    )
+
+    values = signal_builtins.SampleAtEventOperator().execute(
+        {"signal": signal, "events": events},
+        _sample_parameters(multiple_event_policy=policy),
+        _context(),
+    )["value"]
+
+    assert dict(values) == expected
+
+
+def test_sample_at_event_can_reject_multiple_events() -> None:
+    signal = SignalSeries("corridor-position", "m", (NumericSample(0, 0.0),))
+    events = (
+        EventRecord("event-a", "onset", 0),
+        EventRecord("event-b", "onset", 0),
+    )
+
+    with pytest.raises(signal_builtins.SignalOperatorError, match="multiple events"):
+        signal_builtins.SampleAtEventOperator().execute(
+            {"signal": signal, "events": events},
+            _sample_parameters(multiple_event_policy="error"),
+            _context(),
+        )
 
 
 def test_field_channel_and_transform_operators_share_one_signal_interface() -> None:

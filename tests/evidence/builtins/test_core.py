@@ -67,6 +67,7 @@ def test_builtin_catalog_is_generic_and_deterministically_ordered() -> None:
         "signal.detrend",
         "signal.difference",
         "signal.field-select",
+        "signal.sample-at-event",
         "signal.smooth",
         "signal.unit-convert",
         "statistics.count",

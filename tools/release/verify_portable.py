@@ -1395,9 +1395,9 @@ def _verify_operator_extension(root: Path) -> dict[str, Any]:
             if hello.get("state") != "ready":
                 raise PortableVerificationError("pre-edit extension sidecar did not become ready")
             before = _sidecar_call(old_process, "catalog-before", "operator.catalog.list")
-            if len(before.get("operators", [])) != 45:
+            if len(before.get("operators", [])) != 46:
                 raise PortableVerificationError(
-                    "clean operator catalog does not contain 45 entries"
+                    "clean operator catalog does not contain 46 entries"
                 )
 
             registration, original_registration, extension_target = _install_example_extension(root)
@@ -1439,7 +1439,7 @@ def _verify_operator_extension(root: Path) -> dict[str, Any]:
             ),
             None,
         )
-        if len(operators) != 46 or extension is None:
+        if len(operators) != 47 or extension is None:
             raise PortableVerificationError("restarted catalog omitted the example extension")
         if extension.get("implementation_source") != "trusted_extension":
             raise PortableVerificationError("example extension has the wrong implementation source")
@@ -1459,8 +1459,8 @@ def _verify_operator_extension(root: Path) -> dict[str, Any]:
 
         vertical = _run_extension_recipe_and_assessment(root)
         if (
-            vertical.get("operator_count") != 46
-            or vertical.get("source_operator_count") != 46
+            vertical.get("operator_count") != 47
+            or vertical.get("source_operator_count") != 47
             or vertical.get("recipe_value") != 2.75
             or vertical.get("recipe_state") != "desired"
             or vertical.get("recipe_trace_operator") != "extension.example.scalar-offset"
