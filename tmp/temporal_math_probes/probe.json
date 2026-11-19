@@ -1,0 +1,169 @@
+{
+  "checks": [
+    "row sums",
+    "stationary CPT",
+    "semigroup",
+    "zero-time duplicate semantics"
+  ],
+  "tau_sweep": [
+    {
+      "tau_s": 1,
+      "dt": 0.1,
+      "before": 99.9999982654823,
+      "bad_min": 99.99996415125898,
+      "first_recovery": 99.9999862085135,
+      "final": 99.99999999999788,
+      "first_bad_log_bf": -2.995732273553991
+    },
+    {
+      "tau_s": 1,
+      "dt": 0.01,
+      "before": 99.99999863716059,
+      "bad_min": 99.99997170856814,
+      "first_recovery": 99.99998914309468,
+      "final": 99.99999999999869,
+      "first_bad_log_bf": -2.9957322735539913
+    },
+    {
+      "tau_s": 3,
+      "dt": 0.1,
+      "before": 99.91349107320265,
+      "bad_min": 95.58716197609839,
+      "first_recovery": 99.03149040841953,
+      "final": 99.99653605922664,
+      "first_bad_log_bf": -2.995732273553991
+    },
+    {
+      "tau_s": 3,
+      "dt": 0.01,
+      "before": 99.91660526230588,
+      "bad_min": 95.65460540461136,
+      "first_recovery": 99.05599622723483,
+      "final": 99.99677503790333,
+      "first_bad_log_bf": -2.995732273553991
+    },
+    {
+      "tau_s": 5,
+      "dt": 0.1,
+      "before": 99.1885649305668,
+      "bad_min": 58.13370074193423,
+      "first_recovery": 88.85998870620418,
+      "final": 99.6882261581857,
+      "first_bad_log_bf": -2.9957322735539913
+    },
+    {
+      "tau_s": 5,
+      "dt": 0.01,
+      "before": 99.20205526074261,
+      "bad_min": 58.217129390591644,
+      "first_recovery": 88.94078122563938,
+      "final": 99.69745163013673,
+      "first_bad_log_bf": -2.995732273553991
+    },
+    {
+      "tau_s": 10,
+      "dt": 0.1,
+      "before": 95.59731745631653,
+      "bad_min": 18.441615995230528,
+      "first_recovery": 54.69354254841042,
+      "final": 88.553479576193,
+      "first_bad_log_bf": -2.9957322735539913
+    },
+    {
+      "tau_s": 10,
+      "dt": 0.01,
+      "before": 95.62520291381594,
+      "bad_min": 18.42823007910259,
+      "first_recovery": 54.72751985689646,
+      "final": 88.6541993042632,
+      "first_bad_log_bf": -2.9957322735539913
+    },
+    {
+      "tau_s": 20,
+      "dt": 0.1,
+      "before": 90.11348513015636,
+      "bad_min": 10.075194183148419,
+      "first_recovery": 34.48483109355335,
+      "final": 54.47173097266144,
+      "first_bad_log_bf": -2.995732273553991
+    },
+    {
+      "tau_s": 20,
+      "dt": 0.01,
+      "before": 90.1392385244817,
+      "bad_min": 10.066628953575378,
+      "first_recovery": 34.48518197670148,
+      "final": 54.555504019284044,
+      "first_bad_log_bf": -2.995732273553991
+    }
+  ],
+  "long_duration_saturation": [
+    {
+      "duration": 60,
+      "before": 99.1885649305668,
+      "bad_min": 58.13370074193423,
+      "final": 99.6882261581857
+    },
+    {
+      "duration": 600,
+      "before": 99.9999999999999,
+      "bad_min": 99.999999999998,
+      "final": 100.0
+    },
+    {
+      "duration": 3600,
+      "before": 100.0,
+      "bad_min": 100.0,
+      "final": 100.0
+    }
+  ],
+  "same_state_sampling_convergence": [
+    {
+      "dt": 1,
+      "score": 99.13927339737491,
+      "posterior": [
+        0.0009046975951416732,
+        0.015405136862218359,
+        0.9836901655426399
+      ]
+    },
+    {
+      "dt": 0.1,
+      "score": 99.19773572598811,
+      "posterior": [
+        0.0009006196830464879,
+        0.014244046114144914,
+        0.9848553342028086
+      ]
+    },
+    {
+      "dt": 0.01,
+      "score": 99.20296381695223,
+      "posterior": [
+        0.0009006639812547625,
+        0.01413939569844604,
+        0.9849599403202992
+      ]
+    },
+    {
+      "dt": 0.001,
+      "score": 99.20348062491308,
+      "posterior": [
+        0.0009006729273886501,
+        0.014129041646961282,
+        0.9849702854256501
+      ]
+    }
+  ],
+  "same_counts_different_order": [
+    {
+      "name": "clustered",
+      "score": 15.02661019921732
+    },
+    {
+      "name": "interleaved",
+      "score": 0.00015807774928210263
+    }
+  ],
+  "semantics": "Fixed S, stationary first observation, CTMC subsequent conditional likelihood. All illustrative, uncalibrated."
+}

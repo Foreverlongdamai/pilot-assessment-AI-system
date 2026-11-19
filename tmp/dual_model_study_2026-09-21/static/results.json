@@ -1,0 +1,6109 @@
+{
+  "metadata": {
+    "generated_utc": "2026-09-21T16:23:01.250952+00:00",
+    "python_executable": "C:\\Users\\long\\Desktop\\CranfieldOffer\\proj\\pilot_assessment_system\\.venv\\Scripts\\python.exe",
+    "python_version": "3.11.15",
+    "numpy_version": "2.3.5",
+    "scipy_version": "1.17.1",
+    "cpu_only": true,
+    "interpretation": "Synthetic mathematical behavior only; no accuracy/calibration claim.",
+    "observed_order": [
+      "D",
+      "A",
+      "U"
+    ],
+    "latent_order": [
+      "L",
+      "M",
+      "H"
+    ],
+    "predictive_grade_order": [
+      "U",
+      "A",
+      "D"
+    ],
+    "latent_and_predictive_scores": [
+      0.0,
+      50.0,
+      100.0
+    ],
+    "fractional_effective_counts_allowed_for_sensitivity": true,
+    "script_sha256": "bc9983ab19a7c10b3be1819c0a90976ec268072e3309acda5b68736cbf725f81",
+    "measured_wall_seconds": 0.05734070000471547,
+    "process_seconds_including_imports_before_write": 0.8984486999979708
+  },
+  "prior": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+  ],
+  "CPTs_rows_LMH_columns_DAU": {
+    "baseline": [
+      [
+        0.1,
+        0.25,
+        0.65
+      ],
+      [
+        0.35,
+        0.63,
+        0.02
+      ],
+      [
+        0.9,
+        0.099,
+        0.001
+      ]
+    ],
+    "stricter": [
+      [
+        0.005,
+        0.045,
+        0.95
+      ],
+      [
+        0.05,
+        0.9,
+        0.05
+      ],
+      [
+        0.95,
+        0.045,
+        0.005
+      ]
+    ],
+    "flatter": [
+      [
+        0.21666666666666667,
+        0.29166666666666663,
+        0.4916666666666667
+      ],
+      [
+        0.3416666666666667,
+        0.4816666666666667,
+        0.17666666666666667
+      ],
+      [
+        0.6166666666666667,
+        0.21616666666666667,
+        0.16716666666666666
+      ]
+    ],
+    "stricter_MLR": [
+      [
+        0.001,
+        0.049,
+        0.95
+      ],
+      [
+        0.05,
+        0.9,
+        0.05
+      ],
+      [
+        0.95,
+        0.049,
+        0.001
+      ]
+    ],
+    "flatter_MLR": [
+      [
+        0.19490713173322144,
+        0.3081752342437308,
+        0.49691763402304784
+      ],
+      [
+        0.3874937915775261,
+        0.5198774752958903,
+        0.09262873312658358
+      ],
+      [
+        0.7326029801253062,
+        0.24297692053718348,
+        0.024420099337510208
+      ]
+    ]
+  },
+  "CPT_monotone_likelihood_ratio_audits": {
+    "baseline": {
+      "satisfies_monotone_likelihood_ratio": true,
+      "violations": []
+    },
+    "stricter": {
+      "satisfies_monotone_likelihood_ratio": false,
+      "violations": [
+        {
+          "lower_row": "L",
+          "higher_row": "M",
+          "good_grade": "D",
+          "bad_grade": "A",
+          "left_product": 0.00225,
+          "right_product": 0.0045000000000000005
+        },
+        {
+          "lower_row": "M",
+          "higher_row": "H",
+          "good_grade": "A",
+          "bad_grade": "U",
+          "left_product": 0.00225,
+          "right_product": 0.0045000000000000005
+        }
+      ]
+    },
+    "flatter": {
+      "satisfies_monotone_likelihood_ratio": false,
+      "violations": [
+        {
+          "lower_row": "L",
+          "higher_row": "M",
+          "good_grade": "D",
+          "bad_grade": "A",
+          "left_product": 0.09965277777777777,
+          "right_product": 0.10436111111111111
+        },
+        {
+          "lower_row": "M",
+          "higher_row": "H",
+          "good_grade": "A",
+          "bad_grade": "U",
+          "left_product": 0.03818944444444444,
+          "right_product": 0.08051861111111111
+        }
+      ]
+    },
+    "stricter_MLR": {
+      "satisfies_monotone_likelihood_ratio": true,
+      "violations": []
+    },
+    "flatter_MLR": {
+      "satisfies_monotone_likelihood_ratio": true,
+      "violations": []
+    }
+  },
+  "fixed_cases_DAU": {
+    "pureD": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "pureA": [
+      0.0,
+      1.0,
+      0.0
+    ],
+    "pureU": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "90D_10A": [
+      0.9,
+      0.1,
+      0.0
+    ],
+    "70D_30A": [
+      0.7,
+      0.3,
+      0.0
+    ],
+    "70D_20A_10U": [
+      0.7,
+      0.2,
+      0.1
+    ],
+    "50D_50U": [
+      0.5,
+      0.0,
+      0.5
+    ],
+    "20D_70A_10U": [
+      0.2,
+      0.7,
+      0.1
+    ],
+    "45D_45A_10U": [
+      0.45,
+      0.45,
+      0.1
+    ],
+    "60D_38A_02U": [
+      0.6,
+      0.38,
+      0.02
+    ]
+  },
+  "runtime_baseline_verification": {
+    "runtime_source": "C:\\Users\\long\\Desktop\\CranfieldOffer\\proj\\pilot_assessment_system\\src\\pilot_assessment\\scene_assessment\\demo_quantification.py",
+    "source_sha256": "14e075c6fbe4bdd734aead607f1269f3b094b238143fffb6c772836c24c911b1",
+    "runtime_function": "distribution_posterior",
+    "runtime_evidence_strength": 3.0,
+    "max_probability_difference": 3.3306690738754696e-16,
+    "max_score_difference": 1.4210854715202004e-14,
+    "raw_count_repetition_factors": [
+      1,
+      10,
+      1000
+    ],
+    "repeat_max_probability_difference": 3.3306690738754696e-16
+  },
+  "schemes": {
+    "independent_N10_baseline": {
+      "family": "independent_effective_exposure",
+      "strength_or_N": 10,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            2.867745110135324e-10,
+            7.910810684121135e-05,
+            0.9999208916063844
+          ],
+          "latent_EAP": 99.9960445659805
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            9.681720457058876e-05,
+            0.9999031736141246,
+            9.181304650842877e-09
+          ],
+          "latent_EAP": 49.9951595988367
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            0.9999999999999991,
+            7.606176347471833e-16,
+            7.427906589327953e-29
+          ],
+          "latent_EAP": 3.80308817373666e-14
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            6.509690681319443e-09,
+            0.0012929248800834512,
+            0.9987070686102263
+          ],
+          "latent_EAP": 99.9353531050268
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            2.500115813644359e-06,
+            0.25741749508213485,
+            0.7425800048020518
+          ],
+          "latent_EAP": 87.12887523431192
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            0.00041457872900822204,
+            0.5211959673759758,
+            0.4783894538950159
+          ],
+          "latent_EAP": 73.89874375830038
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            0.999985514536908,
+            1.4484954183631197e-05,
+            5.089082284698292e-10
+          ],
+          "latent_EAP": 0.0007242986000044068
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            0.004094128221993198,
+            0.9959050926668845,
+            7.791111213856079e-07
+          ],
+          "latent_EAP": 49.795332544456365
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            0.0018035280426548688,
+            0.9973513309554449,
+            0.0008451410018997024
+          ],
+          "latent_EAP": 49.95208064796222
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            2.855297634526675e-05,
+            0.8770109875456003,
+            0.12296045947805487
+          ],
+          "latent_EAP": 56.1465953250855
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 788,
+        "mixed_saturation_counts_by_component": {
+          "L": 580,
+          "M": 174,
+          "H": 34
+        },
+        "mixed_max_component_probability": 0.9999999999999982,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.0,
+              0.02,
+              0.98
+            ],
+            "probabilities": [
+              0.9999999999999982,
+              1.8357907217483872e-15,
+              2.254177663565268e-28
+            ],
+            "score": 9.17895360874419e-14
+          },
+          "M": {
+            "r_DAU": [
+              0.22,
+              0.78,
+              0.0
+            ],
+            "probabilities": [
+              4.700064351942478e-05,
+              0.9999486994424253,
+              4.299914055397634e-06
+            ],
+            "score": 49.9978649635268
+          },
+          "H": {
+            "r_DAU": [
+              0.98,
+              0.02,
+              0.0
+            ],
+            "probabilities": [
+              5.355799154753473e-10,
+              0.00013834747117374806,
+              0.9998616519932464
+            ],
+            "score": 99.99308257288332
+          }
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 5.37586543500753e-14,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 6.233167249998156e-15,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 5.999182160007346e-14,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            6.509690681319443e-09,
+            0.0012929248800834512,
+            0.9987070686102263
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            5.355799154753473e-10,
+            0.00013834747117374806,
+            0.9998616519932464
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            3.919080654064227e-10,
+            0.00010461594789583271,
+            0.9998953836601963
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            2.958728038292453e-10,
+            8.13502357388842e-05,
+            0.9999186494683882
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            2.876716067659041e-10,
+            7.932951060481449e-05,
+            0.9999206702017234
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            2.867745110135324e-10,
+            7.910810684121135e-05,
+            0.9999208916063844
+          ]
+        }
+      ]
+    },
+    "independent_N100_baseline": {
+      "family": "independent_effective_exposure",
+      "strength_or_N": 100,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            3.7648619495990854e-96,
+            9.606241290593354e-42,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            7.243457592496423e-41,
+            1.0,
+            4.260538698863768e-81
+          ],
+          "latent_EAP": 50.0
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            1.0,
+            6.48132653448722e-152,
+            5.112865117028705e-282
+          ],
+          "latent_EAP": 3.24066326724361e-150
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            1.3842747309651653e-82,
+            1.322366049317919e-29,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            1.871362312861157e-55,
+            2.5057469302932254e-05,
+            0.9999749425306962
+          ],
+          "latent_EAP": 99.99874712653477
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            7.11899598505214e-32,
+            0.702035475116731,
+            0.29796452488327113
+          ],
+          "latent_EAP": 64.89822624416367
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            1.0,
+            4.066625396801176e-49,
+            1.1653533791594245e-93
+          ],
+          "latent_EAP": 2.033312698400588e-47
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            1.3785891879638675e-24,
+            1.0,
+            8.586467001259522e-62
+          ],
+          "latent_EAP": 50.0
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            3.738929521836852e-28,
+            1.0,
+            1.9090179142846465e-31
+          ],
+          "latent_EAP": 50.0
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            1.3380227878777989e-45,
+            0.999999997065018,
+            2.9349751481011066e-09
+          ],
+          "latent_EAP": 50.00000014674841
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 1262,
+        "mixed_saturation_counts_by_component": {
+          "L": 743,
+          "M": 414,
+          "H": 105
+        },
+        "mixed_max_component_probability": 1.0,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.0,
+              0.02,
+              0.98
+            ],
+            "probabilities": [
+              1.0,
+              4.347421067599237e-148,
+              3.3875165124110467e-277
+            ],
+            "score": 2.173710533799619e-146
+          },
+          "M": {
+            "r_DAU": [
+              0.0,
+              0.88,
+              0.12
+            ],
+            "probabilities": [
+              6.597095074189609e-18,
+              1.0,
+              4.587423391070549e-87
+            ],
+            "score": 50.0
+          },
+          "H": {
+            "r_DAU": [
+              0.8,
+              0.16,
+              0.04
+            ],
+            "probabilities": [
+              2.234239350859287e-59,
+              1.776022458202513e-15,
+              1.0
+            ],
+            "score": 100.00000000000009
+          }
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": -2.8421709430404007e-13,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": -3.126388037344441e-13,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": -3.126388037344441e-13,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            1.3842747309651653e-82,
+            1.322366049317919e-29,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            1.9446600979334167e-93,
+            2.572249734010157e-39,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            8.556504430907022e-95,
+            1.5719303930061738e-40,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            5.14521809616549e-96,
+            1.2704028901241258e-41,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            3.884315781368442e-96,
+            9.878529231259316e-42,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            3.7648619495990854e-96,
+            9.606241290593354e-42,
+            1.0
+          ]
+        }
+      ]
+    },
+    "independent_N10000_baseline": {
+      "family": "independent_effective_exposure",
+      "strength_or_N": 10000,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "latent_EAP": 50.0
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "latent_EAP": 0.0
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            0.0,
+            1.0,
+            6.033235076252027e-38
+          ],
+          "latent_EAP": 50.0
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "latent_EAP": 0.0
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "latent_EAP": 50.0
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "latent_EAP": 50.0
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "latent_EAP": 50.0
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 1323,
+        "mixed_saturation_counts_by_component": {
+          "L": 764,
+          "M": 444,
+          "H": 115
+        },
+        "mixed_max_component_probability": 1.0,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.0,
+              0.02,
+              0.98
+            ],
+            "probabilities": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "score": 0.0
+          },
+          "M": {
+            "r_DAU": [
+              0.0,
+              0.8,
+              0.2
+            ],
+            "probabilities": [
+              3.650864422391674e-188,
+              1.0,
+              0.0
+            ],
+            "score": 50.0
+          },
+          "H": {
+            "r_DAU": [
+              0.68,
+              0.28,
+              0.04
+            ],
+            "probabilities": [
+              0.0,
+              3.986844131520222e-19,
+              1.0
+            ],
+            "score": 100.0
+          }
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.0,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.0,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.0,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    "fixed_k0.5_baseline": {
+      "family": "normalized_fixed_strength",
+      "strength_or_N": 0.5,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            0.17033370452904237,
+            0.3186651818838306,
+            0.5110011135871271
+          ],
+          "latent_EAP": 67.03337045290424
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            0.310874119075617,
+            0.49349736487221796,
+            0.19562851605216508
+          ],
+          "latent_EAP": 44.2377198488274
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            0.8232927086967016,
+            0.1444150944798896,
+            0.032292196823408774
+          ],
+          "latent_EAP": 10.449974406335357
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            0.18496011758357744,
+            0.3403915259863733,
+            0.47464835643004927
+          ],
+          "latent_EAP": 64.48441194232359
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            0.21465524908447653,
+            0.3822745710245112,
+            0.40307017989101235
+          ],
+          "latent_EAP": 59.420746540326796
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            0.259640503934417,
+            0.3709728657227165,
+            0.36938663034286645
+          ],
+          "latent_EAP": 55.48730632042247
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            0.5219514306363741,
+            0.299003493893729,
+            0.17904507546989684
+          ],
+          "latent_EAP": 32.85468224167613
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            0.33695805117763095,
+            0.4434847223769029,
+            0.2195572264454661
+          ],
+          "latent_EAP": 44.129958763391755
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            0.2999290960125935,
+            0.41129635637043177,
+            0.28877454761697474
+          ],
+          "latent_EAP": 49.44227258021906
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            0.2383290836754797,
+            0.3995257042066573,
+            0.36214521211786305
+          ],
+          "latent_EAP": 56.19080642211917
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 0,
+        "mixed_saturation_counts_by_component": {
+          "L": 0,
+          "M": 0,
+          "H": 0
+        },
+        "mixed_max_component_probability": 0.8164771418491331,
+        "mixed_saturation_examples": {
+          "L": null,
+          "M": null,
+          "H": null
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.4188039893623987,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.11482728677366438,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.5336312761360631,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            0.18496011758357744,
+            0.3403915259863733,
+            0.47464835643004927
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            0.17323713427520998,
+            0.32303407656293237,
+            0.5037287891618576
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            0.17178385476809094,
+            0.32085072767178124,
+            0.5073654175601279
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            0.17047857500303057,
+            0.31888382810440435,
+            0.510637596892565
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            0.17034819011154717,
+            0.318687047384674,
+            0.5109647625037789
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            0.17033370452904237,
+            0.3186651818838306,
+            0.5110011135871271
+          ]
+        }
+      ]
+    },
+    "fixed_k1_baseline": {
+      "family": "normalized_fixed_strength",
+      "strength_or_N": 1,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            0.07407407407407411,
+            0.2592592592592592,
+            0.6666666666666666
+          ],
+          "latent_EAP": 79.62962962962962
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            0.25536261491317674,
+            0.6435137895812054,
+            0.10112359550561797
+          ],
+          "latent_EAP": 42.28804902962207
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            0.9687034277198211,
+            0.02980625931445604,
+            0.0014903129657228029
+          ],
+          "latent_EAP": 1.6393442622950822
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            0.0911379568606885,
+            0.3086743784332214,
+            0.6001876647060902
+          ],
+          "latent_EAP": 75.45248539227009
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            0.1299124773778223,
+            0.41202034169808627,
+            0.45806718092409127
+          ],
+          "latent_EAP": 66.40773517731344
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            0.19741444438878897,
+            0.4030123258987636,
+            0.3995732297124475
+          ],
+          "latent_EAP": 60.10793926618293
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            0.6916419770803127,
+            0.22697273205309335,
+            0.08138529086659406
+          ],
+          "latent_EAP": 19.48716568931407
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            0.31677698454061753,
+            0.5487307166793709,
+            0.13449229878001143
+          ],
+          "latent_EAP": 40.88576571196969
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            0.26263963784666927,
+            0.4938929171910719,
+            0.24346744496225886
+          ],
+          "latent_EAP": 49.041390355779484
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            0.16342215533463403,
+            0.4592469692318079,
+            0.377330875433558
+          ],
+          "latent_EAP": 60.695436004946195
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 0,
+        "mixed_saturation_counts_by_component": {
+          "L": 0,
+          "M": 0,
+          "H": 0
+        },
+        "mixed_max_component_probability": 0.9658826853436756,
+        "mixed_saturation_examples": {
+          "L": null,
+          "M": null,
+          "H": null
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.14954347206704455,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.02082027681122689,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.17036374887827144,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            0.0911379568606885,
+            0.3086743784332214,
+            0.6001876647060902
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            0.07732731916074892,
+            0.26887328191278,
+            0.6537993989264711
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            0.07569022605833606,
+            0.26404695991041893,
+            0.660262814031245
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            0.07423473898291652,
+            0.25973624801015305,
+            0.6660290130069305
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            0.07409013102234059,
+            0.2593069400998332,
+            0.6666029288778261
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            0.07407407407407411,
+            0.2592592592592592,
+            0.6666666666666666
+          ]
+        }
+      ]
+    },
+    "fixed_k3_baseline": {
+      "family": "normalized_fixed_strength",
+      "strength_or_N": 3,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            0.0012938702895034784,
+            0.055474688662461545,
+            0.9432314410480349
+          ],
+          "latent_EAP": 97.09687853792657
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            0.05859910471293979,
+            0.9377619415140129,
+            0.003638953773047089
+          ],
+          "latent_EAP": 47.25199245300536
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            0.9999708665747711,
+            2.9129784005819516e-05,
+            3.641223000727433e-09
+          ],
+          "latent_EAP": 0.0014568533225910484
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            0.003072625913131673,
+            0.11937505119869303,
+            0.8775523228881753
+          ],
+          "latent_EAP": 93.72398484875218
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            0.013031465808571278,
+            0.41571591274527314,
+            0.5712526214461555
+          ],
+          "latent_EAP": 77.91105778187921
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            0.05618076552366265,
+            0.4779757484783899,
+            0.46584348599794745
+          ],
+          "latent_EAP": 70.48313602371424
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            0.9643479359731879,
+            0.034080878447257455,
+            0.0015711855795543885
+          ],
+          "latent_EAP": 1.8611624803183116
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            0.15938036241360257,
+            0.8284222675566262,
+            0.012197370029771051
+          ],
+          "latent_EAP": 42.640850380808416
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            0.11839166335432254,
+            0.787297194576629,
+            0.09431114206904809
+          ],
+          "latent_EAP": 48.79597393573626
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            0.02816757170610042,
+            0.6251086423714737,
+            0.3467237859224261
+          ],
+          "latent_EAP": 65.92781071081629
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 247,
+        "mixed_saturation_counts_by_component": {
+          "L": 247,
+          "M": 0,
+          "H": 0
+        },
+        "mixed_max_component_probability": 0.9999620520242627,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.0,
+              0.02,
+              0.98
+            ],
+            "probabilities": [
+              0.9999620520242627,
+              3.7942895547346346e-05,
+              5.080190075316534e-09
+            ],
+            "score": 0.001897652796374849
+          },
+          "M": null,
+          "H": null
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.00044079947378380057,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 3.7867386322503306e-05,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.0004786668601063039,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            0.003072625913131673,
+            0.11937505119869303,
+            0.8775523228881753
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            0.0015445149946671773,
+            0.06492862588178597,
+            0.9335268591235469
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            0.0014139368727380994,
+            0.060028035144255115,
+            0.9385580279830069
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            0.0013054260468701418,
+            0.0559150096731003,
+            0.9427795642800296
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            0.001295021468314069,
+            0.05551857376116712,
+            0.9431864047705187
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            0.0012938702895034784,
+            0.055474688662461545,
+            0.9432314410480349
+          ]
+        }
+      ]
+    },
+    "fixed_k8_baseline": {
+      "family": "normalized_fixed_strength",
+      "strength_or_N": 8,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            2.3218426480139534e-08,
+            0.0005228500319966195,
+            0.999477126749577
+          ],
+          "latent_EAP": 99.97385517655754
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            0.0006145094305653298,
+            0.9993851189571699,
+            3.71612265172225e-07
+          ],
+          "latent_EAP": 49.96929310908501
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            0.9999999999991962,
+            8.034023767010653e-13,
+            3.13829053398854e-23
+          ],
+          "latent_EAP": 4.0170118838191555e-11
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            2.813048324511098e-07,
+            0.004870656976478713,
+            0.9951290617186888
+          ],
+          "latent_EAP": 99.75643902069281
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            2.930157889988818e-05,
+            0.29993929680161174,
+            0.7000314016194883
+          ],
+          "latent_EAP": 85.00010500202941
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            0.001711368584311328,
+            0.5162484731319945,
+            0.48204015828369373
+          ],
+          "latent_EAP": 74.0164394849691
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            0.999865476249699,
+            0.00013448700022971314,
+            3.675007115814864e-08
+          ],
+          "latent_EAP": 0.006728025018601471
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            0.012184978295523053,
+            0.9878021577311502,
+            1.286397332686962e-05
+          ],
+          "latent_EAP": 49.39139428389019
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            0.006332121478170409,
+            0.9902148969866678,
+            0.003452981535161634
+          ],
+          "latent_EAP": 49.856043002849546
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            0.00021284840770970868,
+            0.8278531864139915,
+            0.17193396517829915
+          ],
+          "latent_EAP": 58.5860558385295
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 682,
+        "mixed_saturation_counts_by_component": {
+          "L": 536,
+          "M": 126,
+          "H": 20
+        },
+        "mixed_max_component_probability": 0.9999999999983746,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.0,
+              0.02,
+              0.98
+            ],
+            "probabilities": [
+              0.9999999999983746,
+              1.6257678703612523e-12,
+              7.627645727534703e-23
+            ],
+            "score": 8.128839352569027e-11
+          },
+          "M": {
+            "r_DAU": [
+              0.22,
+              0.78,
+              0.0
+            ],
+            "probabilities": [
+              0.0003447696290721603,
+              0.9996043425588931,
+              5.088781203469723e-05
+            ],
+            "score": 49.985305909148124
+          },
+          "H": {
+            "r_DAU": [
+              0.98,
+              0.02,
+              0.0
+            ],
+            "probabilities": [
+              3.826064730869881e-08,
+              0.0008174663180939654,
+              0.9991824954212589
+            ],
+            "score": 99.9591228580306
+          }
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 4.1118274687498715e-11,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 4.386848789982624e-12,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 4.550512347748134e-11,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            2.813048324511098e-07,
+            0.004870656976478713,
+            0.9951290617186888
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            3.826064730869881e-08,
+            0.0008174663180939654,
+            0.9991824954212589
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            2.980572376568537e-08,
+            0.0006537784884213412,
+            0.9993461917058548
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            2.3805649108888817e-08,
+            0.0005346665847106172,
+            0.9994653096096403
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            2.3276491210204028e-08,
+            0.0005240198451458858,
+            0.9994759568783628
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            2.3218426480139534e-08,
+            0.0005228500319966195,
+            0.999477126749577
+          ]
+        }
+      ]
+    },
+    "fixed_k30_baseline": {
+      "family": "normalized_fixed_strength",
+      "strength_or_N": 30,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            2.3589824875914308e-29,
+            4.95183365676611e-13,
+            0.9999999999995044
+          ],
+          "latent_EAP": 99.9999999999752
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            9.077866183890027e-13,
+            0.9999999999990923,
+            7.741753770884163e-25
+          ],
+          "latent_EAP": 49.99999999995461
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            1.0,
+            4.4004710748323946e-46,
+            4.098258050933861e-85
+          ],
+          "latent_EAP": 2.2002355374161972e-44
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            2.769278834610056e-25,
+            2.1697290626306793e-09,
+            0.9999999978302707
+          ],
+          "latent_EAP": 99.99999989151353
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            3.663751710964079e-17,
+            0.039990776108586666,
+            0.9600092238914119
+          ],
+          "latent_EAP": 98.00046119457052
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            2.838170396979971e-10,
+            0.5639239752362613,
+            0.43607602447992044
+          ],
+          "latent_EAP": 71.8038012098051
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            1.0,
+            3.039276769382293e-15,
+            1.3180664083793978e-28
+          ],
+          "latent_EAP": 1.5196383846912782e-13
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            6.947529991640258e-08,
+            0.9999999305247005,
+            4.787891734145671e-19
+          ],
+          "latent_EAP": 49.99999652623502
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            5.913221956547952e-09,
+            0.9999999934783048,
+            6.084753628086797e-10
+          ],
+          "latent_EAP": 49.999999734762774
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            3.4414683376405945e-14,
+            0.9972515613083622,
+            0.0027484386916016004
+          ],
+          "latent_EAP": 50.13742193457827
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 1128,
+        "mixed_saturation_counts_by_component": {
+          "L": 700,
+          "M": 345,
+          "H": 83
+        },
+        "mixed_max_component_probability": 1.0,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.0,
+              0.02,
+              0.98
+            ],
+            "probabilities": [
+              1.0,
+              6.186848931563007e-45,
+              1.1454191145201415e-83
+            ],
+            "score": 3.0934244657815037e-43
+          },
+          "M": {
+            "r_DAU": [
+              0.26,
+              0.74,
+              0.0
+            ],
+            "probabilities": [
+              7.001276809887785e-14,
+              0.999999999999929,
+              2.2756315687142754e-15
+            ],
+            "score": 49.999999999996675
+          },
+          "H": {
+            "r_DAU": [
+              0.98,
+              0.02,
+              0.0
+            ],
+            "probabilities": [
+              1.5369265427246765e-28,
+              2.6490730796744044e-12,
+              0.9999999999973506
+            ],
+            "score": 99.99999999986751
+          }
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 2.873400912039884e-43,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 6.739606546529821e-44,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 3.547361566692866e-43,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            2.769278834610056e-25,
+            2.1697290626306793e-09,
+            0.9999999978302707
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            1.5369265427246765e-28,
+            2.6490730796744044e-12,
+            0.9999999999973506
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            6.021281258175037e-29,
+            1.1453283038140595e-12,
+            0.9999999999988542
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            2.590723929439677e-29,
+            5.38495950727272e-13,
+            0.9999999999994618
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            2.3811916929086267e-29,
+            4.993530269339363e-13,
+            0.9999999999995008
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            2.3589824875914308e-29,
+            4.95183365676611e-13,
+            0.9999999999995044
+          ]
+        }
+      ]
+    },
+    "fixed_k3_stricter": {
+      "family": "CPT_one_factor_at_fixed_k3",
+      "strength_or_N": 3,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            1.4577257350254047e-07,
+            0.00014577257350254045,
+            0.9998540816539239
+          ],
+          "latent_EAP": 99.99269679406751
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            0.00012496875781054754,
+            0.9997500624843789,
+            0.00012496875781054754
+          ],
+          "latent_EAP": 50.0
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            0.9998540816539239,
+            0.00014577257350254045,
+            1.4577257350254047e-07
+          ],
+          "latent_EAP": 0.007303205932477276
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            7.030543513031955e-07,
+            0.0008655614368847632,
+            0.999133735508764
+          ],
+          "latent_EAP": 99.95665162272064
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            1.590470603919786e-05,
+            0.029679230910532543,
+            0.9703048643834284
+          ],
+          "latent_EAP": 98.51444798386947
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            7.718837433053424e-05,
+            0.024240624905655764,
+            0.9756821867200138
+          ],
+          "latent_EAP": 98.78024991728417
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            0.41984531461275726,
+            0.16030937077448473,
+            0.41984531461275726
+          ],
+          "latent_EAP": 49.999999999999964
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            0.0011184682756629632,
+            0.9934833220332776,
+            0.005398209691059695
+          ],
+          "latent_EAP": 50.213987070769846
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            0.001288401707354419,
+            0.6804805329744694,
+            0.31823106531817613
+          ],
+          "latent_EAP": 65.84713318054108
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            9.228513050148153e-05,
+            0.14845017356351825,
+            0.8514575413059802
+          ],
+          "latent_EAP": 92.56826280877392
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 321,
+        "mixed_saturation_counts_by_component": {
+          "L": 93,
+          "M": 135,
+          "H": 93
+        },
+        "mixed_max_component_probability": 0.999800026641837,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.02,
+              0.0,
+              0.98
+            ],
+            "probabilities": [
+              0.999800026641837,
+              0.00019969976655429363,
+              2.7359160882223713e-07
+            ],
+            "score": 0.010012347488596906
+          },
+          "M": {
+            "r_DAU": [
+              0.0,
+              0.98,
+              0.02
+            ],
+            "probabilities": [
+              0.00017846905551853224,
+              0.9996912629553512,
+              0.00013026798913037173
+            ],
+            "score": 49.9975899466806
+          },
+          "H": {
+            "r_DAU": [
+              0.98,
+              0.0,
+              0.02
+            ],
+            "probabilities": [
+              2.7359160882223713e-07,
+              0.00019969976655429363,
+              0.999800026641837
+            ],
+            "score": 99.98998765251142
+          }
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 399,
+            "minimum_score_delta": -0.5138697607171991,
+            "worst_examples": [
+              {
+                "before_DAU": [
+                  0.5,
+                  0.48,
+                  0.02
+                ],
+                "after_DAU": [
+                  0.5,
+                  0.5,
+                  0.0
+                ],
+                "before_probabilities": [
+                  0.00025686741407008066,
+                  0.5087061538125313,
+                  0.49103697877339847
+                ],
+                "after_probabilities": [
+                  0.00018354024356009572,
+                  0.5191302033678955,
+                  0.48068625638854434
+                ],
+                "before_score": 74.53900556796641,
+                "after_score": 74.02513580724921,
+                "delta_score": -0.5138697607171991
+              },
+              {
+                "before_DAU": [
+                  0.5,
+                  0.46,
+                  0.04
+                ],
+                "after_DAU": [
+                  0.5,
+                  0.48000000000000004,
+                  0.02
+                ],
+                "before_probabilities": [
+                  0.0003593240995759585,
+                  0.4982614733240387,
+                  0.5013792025763854
+                ],
+                "after_probabilities": [
+                  0.00025686741407008066,
+                  0.5087061538125317,
+                  0.49103697877339847
+                ],
+                "before_score": 75.05099392384047,
+                "after_score": 74.53900556796643,
+                "delta_score": -0.5119883558740383
+              }
+            ]
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 399,
+            "minimum_score_delta": -0.513869760717192,
+            "worst_examples": [
+              {
+                "before_DAU": [
+                  0.0,
+                  0.5,
+                  0.5
+                ],
+                "after_DAU": [
+                  0.02,
+                  0.48,
+                  0.5
+                ],
+                "before_probabilities": [
+                  0.48068625638854434,
+                  0.5191302033678955,
+                  0.00018354024356009572
+                ],
+                "after_probabilities": [
+                  0.49103697877339847,
+                  0.5087061538125317,
+                  0.00025686741407008066
+                ],
+                "before_score": 25.974864192750786,
+                "after_score": 25.460994432033594,
+                "delta_score": -0.513869760717192
+              },
+              {
+                "before_DAU": [
+                  0.02,
+                  0.48,
+                  0.5
+                ],
+                "after_DAU": [
+                  0.04,
+                  0.45999999999999996,
+                  0.5
+                ],
+                "before_probabilities": [
+                  0.49103697877339847,
+                  0.5087061538125317,
+                  0.00025686741407008066
+                ],
+                "after_probabilities": [
+                  0.5013792025763854,
+                  0.49826147332403825,
+                  0.00035932409957595816
+                ],
+                "before_score": 25.460994432033594,
+                "after_score": 24.94900607615951,
+                "delta_score": -0.5119883558740845
+              }
+            ]
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.0027091415560960286,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 798
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            7.030543513031955e-07,
+            0.0008655614368847632,
+            0.999133735508764
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            1.9969808779018525e-07,
+            0.00020817841902671244,
+            0.9997916218828855
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            1.706184800877682e-07,
+            0.00017420353703934257,
+            0.9998256258444806
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            1.4808495662957557e-07,
+            0.00014839321102751312,
+            0.9998514587040159
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            1.460021778616913e-07,
+            0.00014603254131791558,
+            0.9998538214565043
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            1.4577257350254047e-07,
+            0.00014577257350254045,
+            0.9998540816539239
+          ]
+        }
+      ]
+    },
+    "fixed_k3_flatter": {
+      "family": "CPT_one_factor_at_fixed_k3",
+      "strength_or_N": 3,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            0.0357438466122049,
+            0.14016281590576773,
+            0.8240933374820275
+          ],
+          "latent_EAP": 89.41747454349114
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            0.1691787641006489,
+            0.7619478188807718,
+            0.06887341701857924
+          ],
+          "latent_EAP": 44.984732645896514
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            0.9210673783354991,
+            0.04273098942640222,
+            0.03620163223809843
+          ],
+          "latent_EAP": 5.756712695129954
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            0.04908183468418588,
+            0.19514934599901848,
+            0.7557688193167955
+          ],
+          "latent_EAP": 85.33434923163048
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            0.08363965991040632,
+            0.3418913721936539,
+            0.5744689678959397
+          ],
+          "latent_EAP": 74.54146539927666
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            0.11082294845592448,
+            0.28667696632502027,
+            0.6025000852190553
+          ],
+          "latent_EAP": 74.58385683815654
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            0.4204411572664314,
+            0.17932744459912012,
+            0.4002313981344488
+          ],
+          "latent_EAP": 48.989512043400886
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            0.22248403377251214,
+            0.6167879458687802,
+            0.16072802035870767
+          ],
+          "latent_EAP": 46.91219932930977
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            0.17668667515896488,
+            0.47315546649259854,
+            0.3501578583484367
+          ],
+          "latent_EAP": 58.6735591594736
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            0.10917160154181513,
+            0.41291227467851827,
+            0.47791612377966647
+          ],
+          "latent_EAP": 68.43722611189256
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 0,
+        "mixed_saturation_counts_by_component": {
+          "L": 0,
+          "M": 0,
+          "H": 0
+        },
+        "mixed_max_component_probability": 0.915730830514829,
+        "mixed_saturation_examples": {
+          "L": null,
+          "M": null,
+          "H": null
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 63,
+            "minimum_score_delta": -0.10330551149210976,
+            "worst_examples": [
+              {
+                "before_DAU": [
+                  0.86,
+                  0.12,
+                  0.02
+                ],
+                "after_DAU": [
+                  0.86,
+                  0.13999999999999999,
+                  0.0
+                ],
+                "before_probabilities": [
+                  0.05830154753955984,
+                  0.21271090340733745,
+                  0.7289875490531029
+                ],
+                "after_probabilities": [
+                  0.055247634112788525,
+                  0.2208848404907216,
+                  0.7238675253964897
+                ],
+                "before_score": 83.53430007567717,
+                "after_score": 83.43099456418506,
+                "delta_score": -0.10330551149210976
+              },
+              {
+                "before_DAU": [
+                  0.88,
+                  0.1,
+                  0.02
+                ],
+                "after_DAU": [
+                  0.88,
+                  0.12000000000000001,
+                  0.0
+                ],
+                "before_probabilities": [
+                  0.05496490325014965,
+                  0.19998258606187527,
+                  0.745052510687975
+                ],
+                "after_probabilities": [
+                  0.05210802675553317,
+                  0.20775615372785797,
+                  0.7401358195166087
+                ],
+                "before_score": 84.50438037189126,
+                "after_score": 84.40138963805377,
+                "delta_score": -0.10299073383748691
+              }
+            ]
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.29122510757409614,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.6337028922943873,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 63
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            0.04908183468418588,
+            0.19514934599901848,
+            0.7557688193167955
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            0.038168584226227514,
+            0.15008612139581126,
+            0.8117452943779614
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            0.036941053628695125,
+            0.14505819963480887,
+            0.818000746736496
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            0.03586220659185475,
+            0.14064642000631403,
+            0.823491373401831
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            0.03575566902624104,
+            0.14021111714166629,
+            0.8240332138320928
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            0.0357438466122049,
+            0.14016281590576773,
+            0.8240933374820275
+          ]
+        }
+      ]
+    },
+    "fixed_k3_stricter_MLR": {
+      "family": "CPT_one_factor_at_fixed_k3",
+      "strength_or_N": 3,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            1.166180756657515e-09,
+            0.0001457725945821895,
+            0.9998542262392371
+          ],
+          "latent_EAP": 99.99271125365283
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            0.00016133201495136643,
+            0.9996773359700972,
+            0.00016133201495136643
+          ],
+          "latent_EAP": 50.0
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            0.9998542262392371,
+            0.0001457725945821895,
+            1.166180756657515e-09
+          ],
+          "latent_EAP": 0.007288746347185141
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            9.115482719583595e-09,
+            0.0008437477206908554,
+            0.9991562431638266
+          ],
+          "latent_EAP": 99.9578117024172
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            5.428093736248227e-07,
+            0.027550287440601673,
+            0.9724491697500247
+          ],
+          "latent_EAP": 98.62243134703256
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            4.205231228776105e-06,
+            0.036849251218569384,
+            0.9631465435502016
+          ],
+          "latent_EAP": 98.15711691594862
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            0.15951546179023662,
+            0.6809690764195272,
+            0.15951546179023662
+          ],
+          "latent_EAP": 50.00000000000003
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            0.0005102549216504287,
+            0.9954985377902456,
+            0.003991207288104384
+          ],
+          "latent_EAP": 50.17404761832272
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            0.00018267530997088659,
+            0.7553112584605847,
+            0.24450606622944435
+          ],
+          "latent_EAP": 62.21616954597367
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            5.610410998098133e-06,
+            0.14839811981255652,
+            0.8515962697764452
+          ],
+          "latent_EAP": 92.57953296827235
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 309,
+        "mixed_saturation_counts_by_component": {
+          "L": 73,
+          "M": 163,
+          "H": 73
+        },
+        "mixed_max_component_probability": 0.9997928805289515,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.0,
+              0.02,
+              0.98
+            ],
+            "probabilities": [
+              0.9997928805289515,
+              0.00020711771149430934,
+              1.7595541644645278e-09
+            ],
+            "score": 0.010356061530131914
+          },
+          "M": {
+            "r_DAU": [
+              0.0,
+              0.98,
+              0.02
+            ],
+            "probabilities": [
+              0.00022922561938967448,
+              0.9996188597022054,
+              0.0001519146784048986
+            ],
+            "score": 49.99613445295076
+          },
+          "H": {
+            "r_DAU": [
+              0.98,
+              0.02,
+              0.0
+            ],
+            "probabilities": [
+              1.7595541644645278e-09,
+              0.00020711771149430934,
+              0.9997928805289515
+            ],
+            "score": 99.98964393846987
+          }
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.0006412764308691976,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.0006412764308549364,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.003708591613801709,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            9.115482719583595e-09,
+            0.0008437477206908554,
+            0.9991562431638266
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            1.7595541644645278e-09,
+            0.00020711771149430934,
+            0.9997928805289515
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            1.4324696275906308e-09,
+            0.00017375916792656244,
+            0.9998262393996038
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            1.1904137093094078e-09,
+            0.00014835533276389383,
+            0.9998516434768223
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            1.168581688129489e-09,
+            0.00014602883231689109,
+            0.9998539699991015
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            1.166180756657515e-09,
+            0.0001457725945821895,
+            0.9998542262392371
+          ]
+        }
+      ]
+    },
+    "fixed_k3_flatter_MLR": {
+      "family": "CPT_one_factor_at_fixed_k3",
+      "strength_or_N": 3,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            0.016139068033377658,
+            0.12682051339709527,
+            0.8570404185695271
+          ],
+          "latent_EAP": 92.04506752680747
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            0.15896034330523598,
+            0.7631301134148372,
+            0.0779095432799266
+          ],
+          "latent_EAP": 45.947459998734516
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            0.9934473869153962,
+            0.006434707622616251,
+            0.00011790546198753417
+          ],
+          "latent_EAP": 0.33352592732956593
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            0.023970117924644506,
+            0.17930033447421492,
+            0.7967295476011405
+          ],
+          "latent_EAP": 88.6379714838248
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            0.04807667297246528,
+            0.3258705276200713,
+            0.6260527994074634
+          ],
+          "latent_EAP": 78.8988063217499
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            0.09838735075218703,
+            0.3443954137238965,
+            0.5572172355239162
+          ],
+          "latent_EAP": 72.94149423858644
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            0.766287890251429,
+            0.17287789388261474,
+            0.06083421586595635
+          ],
+          "latent_EAP": 14.727316280726372
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            0.23363919882739947,
+            0.6392388674934201,
+            0.12712193367918062
+          ],
+          "latent_EAP": 44.67413674258907
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            0.17093694584189797,
+            0.5289976210846857,
+            0.30006543307341627
+          ],
+          "latent_EAP": 56.45642436157591
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            0.07377971512694455,
+            0.41710847052086353,
+            0.5091118143521919
+          ],
+          "latent_EAP": 71.76660496126236
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 8,
+        "mixed_saturation_counts_by_component": {
+          "L": 8,
+          "M": 0,
+          "H": 0
+        },
+        "mixed_max_component_probability": 0.9925237790166235,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.0,
+              0.02,
+              0.98
+            ],
+            "probabilities": [
+              0.9925237790166235,
+              0.007337082191131563,
+              0.0001391387922448245
+            ],
+            "score": 0.3807679887810606
+          },
+          "M": null,
+          "H": null
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.04724206145149468,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.0049668337227682935,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.05220889517426297,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            0.023970117924644506,
+            0.17930033447421492,
+            0.7967295476011405
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            0.017502634415215632,
+            0.1361866230761465,
+            0.8463107425086379
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            0.016808946954395228,
+            0.13143515714507809,
+            0.8517558959005266
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            0.016204999968303685,
+            0.12727587396705364,
+            0.8565191260646426
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            0.016145650748376702,
+            0.12686598870303334,
+            0.85698836054859
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            0.016139068033377658,
+            0.12682051339709527,
+            0.8570404185695271
+          ]
+        }
+      ]
+    },
+    "independent_N100_stricter": {
+      "family": "CPT_one_factor_at_independent_N100",
+      "strength_or_N": 100,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            1.3324162010917068e-228,
+            1.332416201091797e-128,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            7.888609052210354e-131,
+            1.0,
+            7.888609052210354e-131
+          ],
+          "latent_EAP": 50.0
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            1.0,
+            1.332416201091797e-128,
+            1.3324162010917068e-228
+          ],
+          "latent_EAP": 6.6620810054589855e-127
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            8.169132011861149e-206,
+            8.365191180145589e-103,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            3.070774554970617e-160,
+            3.2972190717468313e-51,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            1.882712225929514e-137,
+            3.219940499752888e-54,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            0.49999999999999906,
+            5.7715167007722745e-15,
+            0.49999999999999906
+          ],
+          "latent_EAP": 50.00000000000019
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            5.193215122156385e-99,
+            1.0,
+            3.1839946004956447e-76
+          ],
+          "latent_EAP": 50.0
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            1.742553836760329e-91,
+            0.9999999999900524,
+            9.944025698609841e-12
+          ],
+          "latent_EAP": 50.000000000497025
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            6.796591135605147e-133,
+            5.175159960413381e-26,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 1282,
+        "mixed_saturation_counts_by_component": {
+          "L": 353,
+          "M": 576,
+          "H": 353
+        },
+        "mixed_max_component_probability": 1.0,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.0,
+              0.02,
+              0.98
+            ],
+            "probabilities": [
+              1.0,
+              1.924008994376559e-123,
+              4.810022485941327e-224
+            ],
+            "score": 9.620044971882794e-122
+          },
+          "M": {
+            "r_DAU": [
+              0.0,
+              0.56,
+              0.44
+            ],
+            "probabilities": [
+              2.5555164727357664e-17,
+              1.0,
+              1.3877787807815221e-117
+            ],
+            "score": 50.0
+          },
+          "H": {
+            "r_DAU": [
+              0.52,
+              0.04,
+              0.44
+            ],
+            "probabilities": [
+              5.888045974722195e-19,
+              5.116025884341131e-18,
+              1.0
+            ],
+            "score": 100.0
+          }
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 91,
+            "minimum_score_delta": -16.62104281721686,
+            "worst_examples": [
+              {
+                "before_DAU": [
+                  0.48,
+                  0.3,
+                  0.22
+                ],
+                "after_DAU": [
+                  0.48,
+                  0.32,
+                  0.2
+                ],
+                "before_probabilities": [
+                  3.9066833417166257e-60,
+                  0.30912124909975774,
+                  0.6908787509002366
+                ],
+                "after_probabilities": [
+                  5.614839195167226e-65,
+                  0.6415421054441105,
+                  0.3584578945558916
+                ],
+                "before_score": 84.54393754501154,
+                "after_score": 67.92289472779468,
+                "delta_score": -16.62104281721686
+              },
+              {
+                "before_DAU": [
+                  0.5,
+                  0.46,
+                  0.04
+                ],
+                "after_DAU": [
+                  0.5,
+                  0.48000000000000004,
+                  0.02
+                ],
+                "before_probabilities": [
+                  8.300643289874619e-106,
+                  0.44820546510175313,
+                  0.5517945348982605
+                ],
+                "after_probabilities": [
+                  9.806922686007992e-111,
+                  0.7646546633371945,
+                  0.23534533666281549
+                ],
+                "before_score": 77.5897267449137,
+                "after_score": 61.76726683314127,
+                "delta_score": -15.822459911772434
+              }
+            ]
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 91,
+            "minimum_score_delta": -16.621042817217635,
+            "worst_examples": [
+              {
+                "before_DAU": [
+                  0.2,
+                  0.32,
+                  0.48
+                ],
+                "after_DAU": [
+                  0.22,
+                  0.3,
+                  0.48
+                ],
+                "before_probabilities": [
+                  0.3584578945558916,
+                  0.6415421054441105,
+                  5.614839195167226e-65
+                ],
+                "after_probabilities": [
+                  0.6908787509002366,
+                  0.30912124909975774,
+                  3.9066833417166257e-60
+                ],
+                "before_score": 32.07710527220552,
+                "after_score": 15.456062454987887,
+                "delta_score": -16.621042817217635
+              },
+              {
+                "before_DAU": [
+                  0.02,
+                  0.48,
+                  0.5
+                ],
+                "after_DAU": [
+                  0.04,
+                  0.45999999999999996,
+                  0.5
+                ],
+                "before_probabilities": [
+                  0.23534533666281549,
+                  0.7646546633371945,
+                  9.806922686007992e-111
+                ],
+                "after_probabilities": [
+                  0.5517945348982605,
+                  0.44820546510174036,
+                  8.300643289874382e-106
+                ],
+                "before_score": 38.232733166859724,
+                "after_score": 22.410273255087017,
+                "delta_score": -15.822459911772707
+              }
+            ]
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": -4.689582056016661e-13,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 182
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            8.169132011861149e-206,
+            8.365191180145589e-103,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            4.810022485941327e-224,
+            1.924008994376559e-123,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            2.5315907820741687e-226,
+            5.0631815641486904e-126,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            2.2517245601607206e-228,
+            2.4133386285214534e-128,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            1.4041950596320255e-228,
+            1.4139620086587306e-128,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            1.3324162010917068e-228,
+            1.332416201091797e-128,
+            1.0
+          ]
+        }
+      ]
+    },
+    "independent_N100_flatter": {
+      "family": "CPT_one_factor_at_independent_N100",
+      "strength_or_N": 100,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            3.751136120099014e-46,
+            2.2657589223286432e-26,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            1.636894136322072e-22,
+            1.0,
+            1.6003439514321855e-35
+          ],
+          "latent_EAP": 50.0
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            1.0,
+            3.5349634575089697e-45,
+            1.4056969554982458e-47
+          ],
+          "latent_EAP": 1.7815386983094672e-43
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            2.6165393328343766e-40,
+            2.5076735298680775e-20,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            1.2730813075609068e-28,
+            3.0717479424812626e-08,
+            0.9999999692825274
+          ],
+          "latent_EAP": 99.99999846412672
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            3.0838003855731374e-25,
+            1.769523135241095e-11,
+            0.9999999999823075
+          ],
+          "latent_EAP": 99.99999999911552
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            0.8378144097395576,
+            3.871379333855963e-13,
+            0.1621855902600547
+          ],
+          "latent_EAP": 16.218559026024828
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            1.7328690587287006e-15,
+            1.0,
+            3.4029633417721245e-20
+          ],
+          "latent_EAP": 50.0
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            5.495140937260127e-15,
+            0.9999561488014447,
+            4.385119854591312e-05
+          ],
+          "latent_EAP": 50.002192559926826
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            4.1875292575589694e-22,
+            0.007589763661744014,
+            0.9924102363382531
+          ],
+          "latent_EAP": 99.62051181691251
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 1178,
+        "mixed_saturation_counts_by_component": {
+          "L": 503,
+          "M": 357,
+          "H": 318
+        },
+        "mixed_max_component_probability": 1.0,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.0,
+              0.02,
+              0.98
+            ],
+            "probabilities": [
+              1.0,
+              7.466839533971611e-44,
+              6.67940419408731e-47
+            ],
+            "score": 3.740099171179893e-42
+          },
+          "M": {
+            "r_DAU": [
+              0.0,
+              0.9,
+              0.1
+            ],
+            "probabilities": [
+              6.883035996555451e-16,
+              1.0,
+              2.778066753176448e-32
+            ],
+            "score": 50.0
+          },
+          "H": {
+            "r_DAU": [
+              0.66,
+              0.02,
+              0.32
+            ],
+            "probabilities": [
+              1.8698994922408738e-15,
+              3.4555295120250665e-16,
+              1.0
+            ],
+            "score": 100.00000000000001
+          }
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 241,
+            "minimum_score_delta": -17.818392273847095,
+            "worst_examples": [
+              {
+                "before_DAU": [
+                  0.56,
+                  0.4,
+                  0.04
+                ],
+                "after_DAU": [
+                  0.56,
+                  0.42000000000000004,
+                  0.02
+                ],
+                "before_probabilities": [
+                  3.007166805477606e-19,
+                  0.31036530652219085,
+                  0.6896346934778071
+                ],
+                "after_probabilities": [
+                  3.0583311674502704e-20,
+                  0.6667331519991281,
+                  0.3332668480008676
+                ],
+                "before_score": 84.48173467389026,
+                "after_score": 66.66334240004316,
+                "delta_score": -17.818392273847095
+              },
+              {
+                "before_DAU": [
+                  0.44,
+                  0.3,
+                  0.26
+                ],
+                "after_DAU": [
+                  0.44,
+                  0.32,
+                  0.24000000000000002
+                ],
+                "before_probabilities": [
+                  7.808905646058202e-05,
+                  0.37551428597698017,
+                  0.6244076249665601
+                ],
+                "after_probabilities": [
+                  7.16480680485184e-06,
+                  0.7277675085650884,
+                  0.2722253266281086
+                ],
+                "before_score": 81.21647679550502,
+                "after_score": 63.61090809106528,
+                "delta_score": -17.605568704439733
+              }
+            ]
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 247,
+            "minimum_score_delta": -1.1537961915459007,
+            "worst_examples": [
+              {
+                "before_DAU": [
+                  0.28,
+                  0.4,
+                  0.32
+                ],
+                "after_DAU": [
+                  0.30000000000000004,
+                  0.38,
+                  0.32
+                ],
+                "before_probabilities": [
+                  0.4835601754079664,
+                  0.5164398084823363,
+                  1.610969718351299e-08
+                ],
+                "after_probabilities": [
+                  0.5066363320413245,
+                  0.4933634190465424,
+                  2.489121351007069e-07
+                ],
+                "before_score": 25.82199203508653,
+                "after_score": 24.66819584354063,
+                "delta_score": -1.1537961915459007
+              },
+              {
+                "before_DAU": [
+                  0.3,
+                  0.38,
+                  0.32
+                ],
+                "after_DAU": [
+                  0.32,
+                  0.36,
+                  0.32
+                ],
+                "before_probabilities": [
+                  0.5066363320413245,
+                  0.4933634190465354,
+                  2.4891213510070336e-07
+                ],
+                "after_probabilities": [
+                  0.5296824578430013,
+                  0.4703137043934042,
+                  3.837763588583888e-06
+                ],
+                "before_score": 24.668195843540282,
+                "after_score": 23.51606899602907,
+                "delta_score": -1.1521268475112123
+              }
+            ]
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": -2.4158453015843406e-13,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 488
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            2.6165393328343766e-40,
+            2.5076735298680775e-20,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            5.531917729971054e-45,
+            3.6645880262351295e-25,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            1.4405199203867628e-45,
+            9.112119960306108e-26,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            4.291394778257086e-46,
+            2.604079698831276e-26,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            3.8019498890916875e-46,
+            2.297511829500001e-26,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            3.751136120099014e-46,
+            2.2657589223286432e-26,
+            1.0
+          ]
+        }
+      ]
+    },
+    "independent_N100_stricter_MLR": {
+      "family": "CPT_one_factor_at_independent_N100",
+      "strength_or_N": 100,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            1.6890381970677275e-298,
+            1.332416201091797e-128,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            3.9387376905829e-127,
+            1.0,
+            3.9387376905829e-127
+          ],
+          "latent_EAP": 50.0
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            1.0,
+            1.332416201091797e-128,
+            1.6890381970677275e-298
+          ],
+          "latent_EAP": 6.6620810054589855e-127
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            1.0112895603690892e-268,
+            3.5697697772396363e-103,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            3.6253307087105605e-209,
+            2.5623639501997627e-52,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            2.170619412260244e-179,
+            5.726332541051397e-48,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            9.75393440940724e-22,
+            1.0,
+            9.75393440940724e-22
+          ],
+          "latent_EAP": 50.0
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            2.112933671551104e-110,
+            1.0,
+            1.2650914393182066e-80
+          ],
+          "latent_EAP": 50.0
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            2.8300655248989536e-121,
+            1.0,
+            4.7002685928185417e-17
+          ],
+          "latent_EAP": 50.00000000000001
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            1.9589840195648222e-173,
+            5.0873107793817566e-26,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 1291,
+        "mixed_saturation_counts_by_component": {
+          "L": 285,
+          "M": 721,
+          "H": 285
+        },
+        "mixed_max_component_probability": 1.0,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.0,
+              0.02,
+              0.98
+            ],
+            "probabilities": [
+              1.0,
+              1.6227064613129892e-123,
+              1.5243569728536732e-292
+            ],
+            "score": 8.113532306564947e-122
+          },
+          "M": {
+            "r_DAU": [
+              0.0,
+              0.56,
+              0.44
+            ],
+            "probabilities": [
+              3.009943856519668e-15,
+              1.0,
+              2.8755423108619355e-146
+            ],
+            "score": 50.0
+          },
+          "H": {
+            "r_DAU": [
+              0.56,
+              0.4,
+              0.04
+            ],
+            "probabilities": [
+              1.4400332666459609e-155,
+              5.59159284407135e-15,
+              1.0
+            ],
+            "score": 100.00000000000028
+          }
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": -4.405364961712621e-13,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": -5.115907697472721e-13,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": -5.115907697472721e-13,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            1.0112895603690892e-268,
+            3.5697697772396363e-103,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            1.5243569728536732e-292,
+            1.6227064613129892e-123,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            1.6045862872141846e-295,
+            4.649860620136658e-126,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            3.352832299681982e-298,
+            2.3928744236937366e-128,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            1.808908948446757e-298,
+            1.41275842214804e-128,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            1.6890381970677275e-298,
+            1.332416201091797e-128,
+            1.0
+          ]
+        }
+      ]
+    },
+    "independent_N100_flatter_MLR": {
+      "family": "CPT_one_factor_at_independent_N100",
+      "strength_or_N": 100,
+      "cases": {
+        "pureD": {
+          "latent_posterior_LMH": [
+            3.1326000057347356e-58,
+            2.1857815986607715e-28,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "pureA": {
+          "latent_posterior_LMH": [
+            1.9483786291786133e-23,
+            1.0,
+            9.255550127733705e-34
+          ],
+          "latent_EAP": 50.0
+        },
+        "pureU": {
+          "latent_posterior_LMH": [
+            1.0,
+            1.1120685392913897e-73,
+            1.400560105663687e-131
+          ],
+          "latent_EAP": 5.560342696456948e-72
+        },
+        "90D_10A": {
+          "latent_posterior_LMH": [
+            1.8995099025155407e-51,
+            2.564518670370365e-22,
+            1.0
+          ],
+          "latent_EAP": 100.0
+        },
+        "70D_30A": {
+          "latent_posterior_LMH": [
+            6.984169920552096e-38,
+            3.5302386425201794e-10,
+            0.999999999646974
+          ],
+          "latent_EAP": 99.99999998234858
+        },
+        "70D_20A_10U": {
+          "latent_posterior_LMH": [
+            7.891461878979942e-26,
+            1.0824982967039173e-07,
+            0.9999998917501701
+          ],
+          "latent_EAP": 99.9999945875085
+        },
+        "50D_50U": {
+          "latent_posterior_LMH": [
+            1.0,
+            2.7855867490179803e-22,
+            2.1144547890125374e-37
+          ],
+          "latent_EAP": 1.3927933745089923e-20
+        },
+        "20D_70A_10U": {
+          "latent_posterior_LMH": [
+            2.6879292324941415e-15,
+            1.0,
+            4.1550593610501676e-24
+          ],
+          "latent_EAP": 50.0
+        },
+        "45D_45A_10U": {
+          "latent_posterior_LMH": [
+            4.4266382580897286e-17,
+            0.9999999938045221,
+            6.1954802848813415e-09
+          ],
+          "latent_EAP": 50.00000030977413
+        },
+        "60D_38A_02U": {
+          "latent_posterior_LMH": [
+            1.0886668072331162e-28,
+            0.0013000583041621583,
+            0.9986999416958354
+          ],
+          "latent_EAP": 99.93499708479165
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 1202,
+        "mixed_saturation_counts_by_component": {
+          "L": 674,
+          "M": 352,
+          "H": 176
+        },
+        "mixed_max_component_probability": 1.0,
+        "mixed_saturation_examples": {
+          "L": {
+            "r_DAU": [
+              0.0,
+              0.02,
+              0.98
+            ],
+            "probabilities": [
+              1.0,
+              9.107841336796538e-72,
+              3.605041711978514e-129
+            ],
+            "score": 4.553920668398269e-70
+          },
+          "M": {
+            "r_DAU": [
+              0.0,
+              0.92,
+              0.08
+            ],
+            "probabilities": [
+              8.766151346086004e-16,
+              1.0,
+              9.486448951868509e-36
+            ],
+            "score": 50.0
+          },
+          "H": {
+            "r_DAU": [
+              0.8,
+              0.16,
+              0.04
+            ],
+            "probabilities": [
+              7.631242679239856e-40,
+              2.9720372375745755e-15,
+              1.0
+            ],
+            "score": 100.00000000000014
+          }
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": -1.9895196601282805e-13,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": -2.7000623958883807e-13,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": -2.8421709430404007e-13,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "posterior_LMH": [
+            1.8995099025155407e-51,
+            2.564518670370365e-22,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "posterior_LMH": [
+            7.119545467578954e-57,
+            3.576733525081237e-27,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "posterior_LMH": [
+            1.4934084562693e-57,
+            8.84192191915051e-28,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "posterior_LMH": [
+            3.6621178029196525e-58,
+            2.5136265589061255e-28,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "posterior_LMH": [
+            3.181908457731254e-58,
+            2.2165430189792316e-28,
+            1.0
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "posterior_LMH": [
+            3.1326000057347356e-58,
+            2.1857815986607715e-28,
+            1.0
+          ]
+        }
+      ]
+    },
+    "dirichlet_alpha1_N10": {
+      "family": "Dirichlet_grade_predictive",
+      "alpha_total": 1,
+      "effective_exposure_N": 10,
+      "cases": {
+        "pureD": {
+          "posterior_predictive_grade_UAD": [
+            0.0303030303030303,
+            0.0303030303030303,
+            0.9393939393939394
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.3333333333333333,
+            0.3333333333333333,
+            10.333333333333334
+          ],
+          "expected_grade_score": 95.45454545454545,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              1.0763587705776548e-06,
+              0.17692786347704867
+            ],
+            [
+              1.0763587705776548e-06,
+              0.17692786347704867
+            ],
+            [
+              0.7490069701812891,
+              0.9996659631791244
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 5.462956477975751,
+          "raw_empirical_grade_score": 100.0
+        },
+        "pureA": {
+          "posterior_predictive_grade_UAD": [
+            0.0303030303030303,
+            0.9393939393939394,
+            0.0303030303030303
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.3333333333333333,
+            10.333333333333334,
+            0.3333333333333333
+          ],
+          "expected_grade_score": 50.0,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              1.0763587705776548e-06,
+              0.17692786347704859
+            ],
+            [
+              0.749006970181289,
+              0.9996659631791244
+            ],
+            [
+              1.0763587705776548e-06,
+              0.17692786347704859
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 3.5533452725935066,
+          "raw_empirical_grade_score": 50.0
+        },
+        "pureU": {
+          "posterior_predictive_grade_UAD": [
+            0.9393939393939394,
+            0.0303030303030303,
+            0.0303030303030303
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            10.333333333333334,
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "expected_grade_score": 4.545454545454545,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.749006970181289,
+              0.9996659631791244
+            ],
+            [
+              1.0763587705776548e-06,
+              0.17692786347704859
+            ],
+            [
+              1.0763587705776548e-06,
+              0.17692786347704859
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 5.462956477975741,
+          "raw_empirical_grade_score": 0.0
+        },
+        "90D_10A": {
+          "posterior_predictive_grade_UAD": [
+            0.0303030303030303,
+            0.1212121212121212,
+            0.8484848484848485
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.3333333333333333,
+            1.3333333333333333,
+            9.333333333333334
+          ],
+          "expected_grade_score": 90.9090909090909,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              1.0763587705776548e-06,
+              0.17692786347704867
+            ],
+            [
+              0.007495608566159247,
+              0.3583026780919734
+            ],
+            [
+              0.5966500367089835,
+              0.9848350886465088
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 6.604392338697992,
+          "raw_empirical_grade_score": 95.0
+        },
+        "70D_30A": {
+          "posterior_predictive_grade_UAD": [
+            0.0303030303030303,
+            0.30303030303030304,
+            0.6666666666666666
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.3333333333333333,
+            3.3333333333333335,
+            7.333333333333333
+          ],
+          "expected_grade_score": 81.81818181818181,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              1.0763587705776548e-06,
+              0.17692786347704867
+            ],
+            [
+              0.08370504989564194,
+              0.5896075670703257
+            ],
+            [
+              0.3783125962882588,
+              0.8979943742288672
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 7.799719803778031,
+          "raw_empirical_grade_score": 85.0
+        },
+        "70D_20A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.1212121212121212,
+            0.21212121212121213,
+            0.6666666666666666
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.3333333333333333,
+            2.3333333333333335,
+            7.333333333333333
+          ],
+          "expected_grade_score": 77.27272727272727,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.007495608566159247,
+              0.3583026780919734
+            ],
+            [
+              0.03731655936593137,
+              0.48407032636337494
+            ],
+            [
+              0.3783125962882588,
+              0.8979943742288672
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 10.107321260701774,
+          "raw_empirical_grade_score": 80.0
+        },
+        "50D_50U": {
+          "posterior_predictive_grade_UAD": [
+            0.4848484848484848,
+            0.0303030303030303,
+            0.4848484848484848
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            5.333333333333333,
+            0.3333333333333333,
+            5.333333333333333
+          ],
+          "expected_grade_score": 49.99999999999999,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.21111412664049606,
+              0.7637898714727059
+            ],
+            [
+              1.0763587705776548e-06,
+              0.17692786347704867
+            ],
+            [
+              0.21111412664049606,
+              0.7637898714727059
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 14.213381090374032,
+          "raw_empirical_grade_score": 50.0
+        },
+        "20D_70A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.1212121212121212,
+            0.6666666666666666,
+            0.21212121212121213
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.3333333333333333,
+            7.333333333333333,
+            2.3333333333333335
+          ],
+          "expected_grade_score": 54.54545454545454,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.007495608566159247,
+              0.3583026780919734
+            ],
+            [
+              0.3783125962882588,
+              0.8979943742288672
+            ],
+            [
+              0.03731655936593137,
+              0.48407032636337494
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 8.229379160000168,
+          "raw_empirical_grade_score": 55.0
+        },
+        "45D_45A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.1212121212121212,
+            0.4393939393939394,
+            0.4393939393939394
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.3333333333333333,
+            4.833333333333333,
+            4.833333333333333
+          ],
+          "expected_grade_score": 65.9090909090909,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.007495608566159247,
+              0.3583026780919734
+            ],
+            [
+              0.17547447300038152,
+              0.7241313405349243
+            ],
+            [
+              0.17547447300038152,
+              0.7241313405349243
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 9.782705734958302,
+          "raw_empirical_grade_score": 67.5
+        },
+        "60D_38A_02U": {
+          "posterior_predictive_grade_UAD": [
+            0.048484848484848485,
+            0.37575757575757573,
+            0.5757575757575757
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.5333333333333333,
+            4.133333333333333,
+            6.333333333333333
+          ],
+          "expected_grade_score": 76.36363636363636,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              7.749268500947595e-05,
+              0.224352139324456
+            ],
+            [
+              0.12970417099947035,
+              0.6644113513990226
+            ],
+            [
+              0.2896344078590414,
+              0.8358661493257438
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 8.492961489237283,
+          "raw_empirical_grade_score": 79.0
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 0,
+        "mixed_saturation_counts_by_component": {
+          "U": 0,
+          "A": 0,
+          "D": 0
+        },
+        "mixed_max_component_probability": 0.9212121212121214,
+        "mixed_saturation_examples": {
+          "U": null,
+          "A": null,
+          "D": null
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.9090909090908994,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.9090909090908923,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 1.8181818181817988,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "predictive_UAD": [
+            0.0303030303030303,
+            0.1212121212121212,
+            0.8484848484848485
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "predictive_UAD": [
+            0.0303030303030303,
+            0.048484848484848485,
+            0.9212121212121214
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "predictive_UAD": [
+            0.0303030303030303,
+            0.0393939393939394,
+            0.9303030303030304
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "predictive_UAD": [
+            0.0303030303030303,
+            0.031212121212121212,
+            0.9384848484848486
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "predictive_UAD": [
+            0.0303030303030303,
+            0.030393939393939393,
+            0.9393030303030304
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "predictive_UAD": [
+            0.0303030303030303,
+            0.0303030303030303,
+            0.9393939393939394
+          ]
+        }
+      ]
+    },
+    "dirichlet_alpha1_N100": {
+      "family": "Dirichlet_grade_predictive",
+      "alpha_total": 1,
+      "effective_exposure_N": 100,
+      "cases": {
+        "pureD": {
+          "posterior_predictive_grade_UAD": [
+            0.0033003300330033,
+            0.0033003300330033,
+            0.9933993399339933
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.3333333333333333,
+            0.3333333333333333,
+            100.33333333333333
+          ],
+          "expected_grade_score": 99.5049504950495,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              1.1089226932563779e-07,
+              0.019870501006956198
+            ],
+            [
+              1.1089226932563779e-07,
+              0.019870501006956198
+            ],
+            [
+              0.9710751555076725,
+              0.9999660834859959
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.6340737524383795,
+          "raw_empirical_grade_score": 100.0
+        },
+        "pureA": {
+          "posterior_predictive_grade_UAD": [
+            0.0033003300330033,
+            0.9933993399339933,
+            0.0033003300330033
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.3333333333333333,
+            100.33333333333333,
+            0.3333333333333333
+          ],
+          "expected_grade_score": 49.99999999999999,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              1.1089226932563773e-07,
+              0.019870501006956195
+            ],
+            [
+              0.9710751555076729,
+              0.9999660834859959
+            ],
+            [
+              1.1089226932563773e-07,
+              0.019870501006956195
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.4022199447699727,
+          "raw_empirical_grade_score": 50.0
+        },
+        "pureU": {
+          "posterior_predictive_grade_UAD": [
+            0.9933993399339933,
+            0.0033003300330033,
+            0.0033003300330033
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            100.33333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "expected_grade_score": 0.495049504950495,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.9710751555076729,
+              0.9999660834859959
+            ],
+            [
+              1.1089226932563773e-07,
+              0.019870501006956195
+            ],
+            [
+              1.1089226932563773e-07,
+              0.019870501006956195
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.6340737524383657,
+          "raw_empirical_grade_score": 0.0
+        },
+        "90D_10A": {
+          "posterior_predictive_grade_UAD": [
+            0.0033003300330033,
+            0.10231023102310231,
+            0.8943894389438943
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.3333333333333333,
+            10.333333333333334,
+            90.33333333333333
+          ],
+          "expected_grade_score": 94.55445544554455,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              1.1089226932563779e-07,
+              0.019870501006956198
+            ],
+            [
+              0.05138650604131435,
+              0.16808162209494024
+            ],
+            [
+              0.8278385385369833,
+              0.9462124515155398
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 1.5938759097307111,
+          "raw_empirical_grade_score": 95.0
+        },
+        "70D_30A": {
+          "posterior_predictive_grade_UAD": [
+            0.0033003300330033,
+            0.3003300330033003,
+            0.6963696369636964
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.3333333333333333,
+            30.333333333333332,
+            70.33333333333333
+          ],
+          "expected_grade_score": 84.65346534653465,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              1.1089226932563779e-07,
+              0.019870501006956198
+            ],
+            [
+              0.2153617111662433,
+              0.39278770806144075
+            ],
+            [
+              0.6036960700829702,
+              0.7816774811773057
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 2.3185362542850276,
+          "raw_empirical_grade_score": 85.0
+        },
+        "70D_20A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.10231023102310231,
+            0.20132013201320131,
+            0.6963696369636964
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            10.333333333333334,
+            20.333333333333332,
+            70.33333333333333
+          ],
+          "expected_grade_score": 79.70297029702971,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.05138650604131435,
+              0.16808162209494024
+            ],
+            [
+              0.12941005624349539,
+              0.2844211153233914
+            ],
+            [
+              0.6036960700829702,
+              0.7816774811773057
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 3.3054222024246807,
+          "raw_empirical_grade_score": 80.0
+        },
+        "50D_50U": {
+          "posterior_predictive_grade_UAD": [
+            0.4983498349834984,
+            0.0033003300330033,
+            0.4983498349834984
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            50.333333333333336,
+            0.3333333333333333,
+            50.333333333333336
+          ],
+          "expected_grade_score": 50.0,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.40155528188769074,
+              0.5952063182441483
+            ],
+            [
+              1.1089226932563779e-07,
+              0.019870501006956198
+            ],
+            [
+              0.40155528188769074,
+              0.5952063182441483
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 4.942561429014642,
+          "raw_empirical_grade_score": 50.0
+        },
+        "20D_70A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.10231023102310231,
+            0.6963696369636964,
+            0.20132013201320131
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            10.333333333333334,
+            70.33333333333333,
+            20.333333333333332
+          ],
+          "expected_grade_score": 54.95049504950495,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.05138650604131437,
+              0.16808162209494026
+            ],
+            [
+              0.6036960700829701,
+              0.7816774811773057
+            ],
+            [
+              0.1294100562434954,
+              0.2844211153233916
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 2.6835893916719047,
+          "raw_empirical_grade_score": 55.0
+        },
+        "45D_45A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.10231023102310231,
+            0.4488448844884489,
+            0.4488448844884489
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            10.333333333333334,
+            45.333333333333336,
+            45.333333333333336
+          ],
+          "expected_grade_score": 67.32673267326733,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.05138650604131435,
+              0.16808162209494024
+            ],
+            [
+              0.3534902919701433,
+              0.5461192523786996
+            ],
+            [
+              0.3534902919701433,
+              0.5461192523786996
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 3.2504481194046546,
+          "raw_empirical_grade_score": 67.5
+        },
+        "60D_38A_02U": {
+          "posterior_predictive_grade_UAD": [
+            0.023102310231023104,
+            0.3795379537953796,
+            0.5973597359735974
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            2.3333333333333335,
+            38.333333333333336,
+            60.333333333333336
+          ],
+          "expected_grade_score": 78.71287128712872,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.0035586589193904823,
+              0.05993743924730923
+            ],
+            [
+              0.28784381672658593,
+              0.47575217213893706
+            ],
+            [
+              0.500573082952422,
+              0.690492933343591
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 2.66922574137794,
+          "raw_empirical_grade_score": 79.0
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 0,
+        "mixed_saturation_counts_by_component": {
+          "U": 0,
+          "A": 0,
+          "D": 0
+        },
+        "mixed_max_component_probability": 0.9735973597359735,
+        "mixed_saturation_examples": {
+          "U": null,
+          "A": null,
+          "D": null
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.9900990099009803,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.9900990099009732,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 1.9801980198019606,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "predictive_UAD": [
+            0.0033003300330033,
+            0.10231023102310231,
+            0.8943894389438943
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "predictive_UAD": [
+            0.0033003300330033,
+            0.023102310231023104,
+            0.9735973597359735
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "predictive_UAD": [
+            0.0033003300330033,
+            0.0132013201320132,
+            0.9834983498349834
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "predictive_UAD": [
+            0.0033003300330033,
+            0.0042904290429042905,
+            0.9924092409240924
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "predictive_UAD": [
+            0.0033003300330033,
+            0.003399339933993399,
+            0.9933003300330032
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "predictive_UAD": [
+            0.0033003300330033,
+            0.0033003300330033,
+            0.9933993399339933
+          ]
+        }
+      ]
+    },
+    "dirichlet_alpha1_N10000": {
+      "family": "Dirichlet_grade_predictive",
+      "alpha_total": 1,
+      "effective_exposure_N": 10000,
+      "cases": {
+        "pureD": {
+          "posterior_predictive_grade_UAD": [
+            3.33300003333e-05,
+            3.33300003333e-05,
+            0.9999333399993334
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.3333333333333333,
+            0.3333333333333333,
+            10000.333333333334
+          ],
+          "expected_grade_score": 99.99500049995001,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              1.1125861701379711e-09,
+              0.00020134963506063141
+            ],
+            [
+              1.1125861701379711e-09,
+              0.00020134963506063141
+            ],
+            [
+              0.9997060429132738,
+              0.999999660268758
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.006453810547446953,
+          "raw_empirical_grade_score": 100.0
+        },
+        "pureA": {
+          "posterior_predictive_grade_UAD": [
+            3.33300003333e-05,
+            0.9999333399993334,
+            3.33300003333e-05
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.3333333333333333,
+            10000.333333333334,
+            0.3333333333333333
+          ],
+          "expected_grade_score": 50.0,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              1.1125861701379717e-09,
+              0.00020134963506063136
+            ],
+            [
+              0.9997060429132734,
+              0.999999660268758
+            ],
+            [
+              1.1125861701379717e-09,
+              0.00020134963506063136
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.0040818706291491,
+          "raw_empirical_grade_score": 50.0
+        },
+        "pureU": {
+          "posterior_predictive_grade_UAD": [
+            0.9999333399993334,
+            3.33300003333e-05,
+            3.33300003333e-05
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            10000.333333333334,
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "expected_grade_score": 0.004999500049995,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.9997060429132734,
+              0.999999660268758
+            ],
+            [
+              1.1125861701379717e-09,
+              0.00020134963506063136
+            ],
+            [
+              1.1125861701379717e-09,
+              0.00020134963506063136
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.006453810547454388,
+          "raw_empirical_grade_score": 0.0
+        },
+        "90D_10A": {
+          "posterior_predictive_grade_UAD": [
+            3.33300003333e-05,
+            0.10002333100023332,
+            0.8999433389994335
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.3333333333333333,
+            1000.3333333333334,
+            9000.333333333334
+          ],
+          "expected_grade_score": 94.99550044995502,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              1.1125861701379711e-09,
+              0.00020134963506063141
+            ],
+            [
+              0.09421966444544204,
+              0.10597851117423884
+            ],
+            [
+              0.8939872943603415,
+              0.9057478826413343
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.15010048349263433,
+          "raw_empirical_grade_score": 95.0
+        },
+        "70D_30A": {
+          "posterior_predictive_grade_UAD": [
+            3.33300003333e-05,
+            0.30000333300003335,
+            0.6999633369996333
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            0.3333333333333333,
+            3000.3333333333335,
+            7000.333333333333
+          ],
+          "expected_grade_score": 84.996500349965,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              1.1125861701379711e-09,
+              0.00020134963506063141
+            ],
+            [
+              0.29106064988289426,
+              0.30902177954238524
+            ],
+            [
+              0.6909446117125297,
+              0.7089063114875448
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.2291575013901855,
+          "raw_empirical_grade_score": 85.0
+        },
+        "70D_20A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.10002333100023332,
+            0.20001333200013333,
+            0.6999633369996333
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1000.3333333333334,
+            2000.3333333333333,
+            7000.333333333333
+          ],
+          "expected_grade_score": 79.99700029997,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.09421966444544204,
+              0.10597851117423884
+            ],
+            [
+              0.19223120397423157,
+              0.20790910079122227
+            ],
+            [
+              0.6909446117125297,
+              0.7089063114875448
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.33165142207922654,
+          "raw_empirical_grade_score": 80.0
+        },
+        "50D_50U": {
+          "posterior_predictive_grade_UAD": [
+            0.49998333499983333,
+            3.33300003333e-05,
+            0.49998333499983333
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            5000.333333333333,
+            0.3333333333333333,
+            5000.333333333333
+          ],
+          "expected_grade_score": 50.0,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.4901847042336427,
+              0.5097819720791512
+            ],
+            [
+              1.1125861701379711e-09,
+              0.00020134963506063141
+            ],
+            [
+              0.4901847042336427,
+              0.5097819720791512
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.49994167576236714,
+          "raw_empirical_grade_score": 50.0
+        },
+        "20D_70A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.10002333100023332,
+            0.6999633369996333,
+            0.20001333200013333
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1000.3333333333334,
+            7000.333333333333,
+            2000.3333333333333
+          ],
+          "expected_grade_score": 54.999500049995,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.09421966444544204,
+              0.10597851117423884
+            ],
+            [
+              0.6909446117125297,
+              0.7089063114875448
+            ],
+            [
+              0.19223120397423157,
+              0.20790910079122227
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.2692492648862264,
+          "raw_empirical_grade_score": 55.0
+        },
+        "45D_45A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.10002333100023332,
+            0.4499883344998833,
+            0.4499883344998833
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1000.3333333333334,
+            4500.333333333333,
+            4500.333333333333
+          ],
+          "expected_grade_score": 67.4982501749825,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.09421966444544204,
+              0.10597851117423884
+            ],
+            [
+              0.44024831612112775,
+              0.45974729856806257
+            ],
+            [
+              0.44024831612112775,
+              0.45974729856806257
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.3268985590711849,
+          "raw_empirical_grade_score": 67.5
+        },
+        "60D_38A_02U": {
+          "posterior_predictive_grade_UAD": [
+            0.020031330200313304,
+            0.37999533379995337,
+            0.5999733359997333
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            200.33333333333334,
+            3800.3333333333335,
+            6000.333333333333
+          ],
+          "expected_grade_score": 78.997100289971,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.017377619402035756,
+              0.022866803891399574
+            ],
+            [
+              0.370505859026082,
+              0.38953026932334406
+            ],
+            [
+              0.5903536458559095,
+              0.6095551537384454
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.2662776807520576,
+          "raw_empirical_grade_score": 79.0
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 0,
+        "mixed_saturation_counts_by_component": {
+          "U": 0,
+          "A": 0,
+          "D": 0
+        },
+        "mixed_max_component_probability": 0.9799353397993534,
+        "mixed_saturation_examples": {
+          "U": null,
+          "A": null,
+          "D": null
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.9999000099989956,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.9999000099989814,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 1.9998000199979842,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "predictive_UAD": [
+            3.33300003333e-05,
+            0.10002333100023332,
+            0.8999433389994335
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "predictive_UAD": [
+            3.33300003333e-05,
+            0.020031330200313304,
+            0.9799353397993534
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "predictive_UAD": [
+            3.33300003333e-05,
+            0.0100323301003233,
+            0.9899343398993434
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "predictive_UAD": [
+            3.33300003333e-05,
+            0.0010332300103323001,
+            0.9989334399893345
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "predictive_UAD": [
+            3.33300003333e-05,
+            0.0001333200013332,
+            0.9998333499983335
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "predictive_UAD": [
+            3.33300003333e-05,
+            3.33300003333e-05,
+            0.9999333399993334
+          ]
+        }
+      ]
+    },
+    "dirichlet_alpha3_N10": {
+      "family": "Dirichlet_grade_predictive",
+      "alpha_total": 3,
+      "effective_exposure_N": 10,
+      "cases": {
+        "pureD": {
+          "posterior_predictive_grade_UAD": [
+            0.07692307692307693,
+            0.07692307692307693,
+            0.8461538461538461
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.0,
+            1.0,
+            11.0
+          ],
+          "expected_grade_score": 88.46153846153847,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.002107593231860227,
+              0.2646484693970512
+            ],
+            [
+              0.002107593231860227,
+              0.2646484693970512
+            ],
+            [
+              0.6152038348490559,
+              0.9791374745399076
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 7.69230769230769,
+          "raw_empirical_grade_score": 100.0
+        },
+        "pureA": {
+          "posterior_predictive_grade_UAD": [
+            0.07692307692307693,
+            0.8461538461538461,
+            0.07692307692307693
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.0,
+            11.0,
+            1.0
+          ],
+          "expected_grade_score": 50.0,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.002107593231860227,
+              0.2646484693970512
+            ],
+            [
+              0.6152038348490559,
+              0.9791374745399076
+            ],
+            [
+              0.002107593231860227,
+              0.2646484693970512
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 5.241424183609589,
+          "raw_empirical_grade_score": 50.0
+        },
+        "pureU": {
+          "posterior_predictive_grade_UAD": [
+            0.8461538461538461,
+            0.07692307692307693,
+            0.07692307692307693
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            11.0,
+            1.0,
+            1.0
+          ],
+          "expected_grade_score": 11.538461538461538,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.6152038348490559,
+              0.9791374745399076
+            ],
+            [
+              0.002107593231860227,
+              0.2646484693970512
+            ],
+            [
+              0.002107593231860227,
+              0.2646484693970512
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 7.6923076923076925,
+          "raw_empirical_grade_score": 0.0
+        },
+        "90D_10A": {
+          "posterior_predictive_grade_UAD": [
+            0.07692307692307693,
+            0.15384615384615385,
+            0.7692307692307693
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.0,
+            2.0,
+            10.0
+          ],
+          "expected_grade_score": 84.61538461538461,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.002107593231860227,
+              0.2646484693970512
+            ],
+            [
+              0.020862525460092374,
+              0.38479616515094406
+            ],
+            [
+              0.5158622513140327,
+              0.9451393554720072
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 8.093912012448483,
+          "raw_empirical_grade_score": 95.0
+        },
+        "70D_30A": {
+          "posterior_predictive_grade_UAD": [
+            0.07692307692307693,
+            0.3076923076923077,
+            0.6153846153846154
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.0,
+            4.0,
+            8.0
+          ],
+          "expected_grade_score": 76.92307692307693,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.002107593231860227,
+              0.2646484693970512
+            ],
+            [
+              0.09924609114958328,
+              0.5718584618781891
+            ],
+            [
+              0.3488755064188155,
+              0.8483477701915698
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 8.476510231066763,
+          "raw_empirical_grade_score": 85.0
+        },
+        "70D_20A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.15384615384615385,
+            0.23076923076923078,
+            0.6153846153846154
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            2.0,
+            3.0,
+            8.0
+          ],
+          "expected_grade_score": 73.07692307692308,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.020862525460092374,
+              0.38479616515094406
+            ],
+            [
+              0.054860644527992726,
+              0.48413774868596715
+            ],
+            [
+              0.3488755064188155,
+              0.8483477701915698
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 9.966130300668713,
+          "raw_empirical_grade_score": 80.0
+        },
+        "50D_50U": {
+          "posterior_predictive_grade_UAD": [
+            0.46153846153846156,
+            0.07692307692307693,
+            0.46153846153846156
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            6.0,
+            1.0,
+            6.0
+          ],
+          "expected_grade_score": 50.0,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.21094463823929668,
+              0.7233303143178942
+            ],
+            [
+              0.002107593231860227,
+              0.2646484693970512
+            ],
+            [
+              0.21094463823929668,
+              0.7233303143178942
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 12.838814775327387,
+          "raw_empirical_grade_score": 50.0
+        },
+        "20D_70A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.15384615384615385,
+            0.6153846153846154,
+            0.23076923076923078
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            2.0,
+            8.0,
+            3.0
+          ],
+          "expected_grade_score": 53.84615384615385,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.020862525460092374,
+              0.38479616515094406
+            ],
+            [
+              0.3488755064188155,
+              0.8483477701915698
+            ],
+            [
+              0.054860644527992726,
+              0.48413774868596715
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 8.223422828074595,
+          "raw_empirical_grade_score": 55.0
+        },
+        "45D_45A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.15384615384615385,
+            0.4230769230769231,
+            0.4230769230769231
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            2.0,
+            5.5,
+            5.5
+          ],
+          "expected_grade_score": 63.46153846153846,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.020862525460092374,
+              0.38479616515094406
+            ],
+            [
+              0.1804786947897016,
+              0.6880595749598803
+            ],
+            [
+              0.1804786947897016,
+              0.6880595749598803
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 9.49095311545313,
+          "raw_empirical_grade_score": 67.5
+        },
+        "60D_38A_02U": {
+          "posterior_predictive_grade_UAD": [
+            0.0923076923076923,
+            0.3692307692307692,
+            0.5384615384615384
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.2,
+            4.8,
+            7.0
+          ],
+          "expected_grade_score": 72.3076923076923,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.004302306539501567,
+              0.2913858286238376
+            ],
+            [
+              0.14059559572689243,
+              0.6358659505759119
+            ],
+            [
+              0.2766696856821058,
+              0.7890553617607033
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 8.78021290348931,
+          "raw_empirical_grade_score": 79.0
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 0,
+        "mixed_saturation_counts_by_component": {
+          "U": 0,
+          "A": 0,
+          "D": 0
+        },
+        "mixed_max_component_probability": 0.8307692307692308,
+        "mixed_saturation_examples": {
+          "U": null,
+          "A": null,
+          "D": null
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.7692307692307594,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.7692307692307523,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 1.5384615384615188,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "predictive_UAD": [
+            0.07692307692307693,
+            0.15384615384615385,
+            0.7692307692307693
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "predictive_UAD": [
+            0.07692307692307693,
+            0.0923076923076923,
+            0.8307692307692308
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "predictive_UAD": [
+            0.07692307692307693,
+            0.08461538461538462,
+            0.8384615384615385
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "predictive_UAD": [
+            0.07692307692307693,
+            0.0776923076923077,
+            0.8453846153846154
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "predictive_UAD": [
+            0.07692307692307693,
+            0.07699999999999999,
+            0.8460769230769232
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "predictive_UAD": [
+            0.07692307692307693,
+            0.07692307692307693,
+            0.8461538461538461
+          ]
+        }
+      ]
+    },
+    "dirichlet_alpha3_N100": {
+      "family": "Dirichlet_grade_predictive",
+      "alpha_total": 3,
+      "effective_exposure_N": 100,
+      "cases": {
+        "pureD": {
+          "posterior_predictive_grade_UAD": [
+            0.009708737864077669,
+            0.009708737864077669,
+            0.9805825242718447
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.0,
+            1.0,
+            101.0
+          ],
+          "expected_grade_score": 98.54368932038835,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.0002481830012699452,
+              0.03551932665788406
+            ],
+            [
+              0.0002481830012699452,
+              0.03551932665788406
+            ],
+            [
+              0.9465845896028138,
+              0.9976165154183887
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 1.070758099995496,
+          "raw_empirical_grade_score": 100.0
+        },
+        "pureA": {
+          "posterior_predictive_grade_UAD": [
+            0.009708737864077669,
+            0.9805825242718447,
+            0.009708737864077669
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.0,
+            101.0,
+            1.0
+          ],
+          "expected_grade_score": 50.0,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.0002481830012699452,
+              0.03551932665788406
+            ],
+            [
+              0.9465845896028138,
+              0.9976165154183887
+            ],
+            [
+              0.0002481830012699452,
+              0.03551932665788406
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.6832029299302452,
+          "raw_empirical_grade_score": 50.0
+        },
+        "pureU": {
+          "posterior_predictive_grade_UAD": [
+            0.9805825242718447,
+            0.009708737864077669,
+            0.009708737864077669
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            101.0,
+            1.0,
+            1.0
+          ],
+          "expected_grade_score": 1.4563106796116503,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.9465845896028138,
+              0.9976165154183887
+            ],
+            [
+              0.0002481830012699452,
+              0.03551932665788406
+            ],
+            [
+              0.0002481830012699452,
+              0.03551932665788406
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 1.0707580999954942,
+          "raw_empirical_grade_score": 0.0
+        },
+        "90D_10A": {
+          "posterior_predictive_grade_UAD": [
+            0.009708737864077669,
+            0.10679611650485436,
+            0.883495145631068
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.0,
+            11.0,
+            91.0
+          ],
+          "expected_grade_score": 93.68932038834951,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.0002481830012699452,
+              0.03551932665788406
+            ],
+            [
+              0.05507887001583682,
+              0.17291434347330456
+            ],
+            [
+              0.8152276350283405,
+              0.9377091080179034
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 1.7657341923132057,
+          "raw_empirical_grade_score": 95.0
+        },
+        "70D_30A": {
+          "posterior_predictive_grade_UAD": [
+            0.009708737864077669,
+            0.30097087378640774,
+            0.6893203883495146
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.0,
+            31.0,
+            71.0
+          ],
+          "expected_grade_score": 83.98058252427185,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.0002481830012699452,
+              0.03551932665788406
+            ],
+            [
+              0.21671660836732984,
+              0.3925455519122981
+            ],
+            [
+              0.5971335798423012,
+              0.7745434548746326
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 2.3876541972862313,
+          "raw_empirical_grade_score": 85.0
+        },
+        "70D_20A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.10679611650485436,
+            0.20388349514563106,
+            0.6893203883495146
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            11.0,
+            21.0,
+            71.0
+          ],
+          "expected_grade_score": 79.12621359223301,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.05507887001583682,
+              0.17291434347330456
+            ],
+            [
+              0.13219408223366605,
+              0.2864530782244043
+            ],
+            [
+              0.5971335798423012,
+              0.7745434548746326
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 3.3136590046635623,
+          "raw_empirical_grade_score": 80.0
+        },
+        "50D_50U": {
+          "posterior_predictive_grade_UAD": [
+            0.49514563106796117,
+            0.009708737864077669,
+            0.49514563106796117
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            51.0,
+            1.0,
+            51.0
+          ],
+          "expected_grade_score": 50.0,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.39934493522149206,
+              0.5911249708120077
+            ],
+            [
+              0.0002481830012699452,
+              0.03551932665788406
+            ],
+            [
+              0.39934493522149206,
+              0.5911249708120077
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 4.879044826267627,
+          "raw_empirical_grade_score": 50.0
+        },
+        "20D_70A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.10679611650485436,
+            0.6893203883495146,
+            0.20388349514563106
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            11.0,
+            71.0,
+            21.0
+          ],
+          "expected_grade_score": 54.85436893203883,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.05507887001583682,
+              0.17291434347330456
+            ],
+            [
+              0.5971335798423012,
+              0.7745434548746326
+            ],
+            [
+              0.13219408223366605,
+              0.2864530782244043
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 2.691035923276414,
+          "raw_empirical_grade_score": 55.0
+        },
+        "45D_45A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.10679611650485436,
+            0.44660194174757284,
+            0.44660194174757284
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            11.0,
+            46.0,
+            46.0
+          ],
+          "expected_grade_score": 66.99029126213593,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.05507887001583682,
+              0.17291434347330456
+            ],
+            [
+              0.35224199327112327,
+              0.5429269082119952
+            ],
+            [
+              0.35224199327112327,
+              0.5429269082119952
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 3.2445592750059995,
+          "raw_empirical_grade_score": 67.5
+        },
+        "60D_38A_02U": {
+          "posterior_predictive_grade_UAD": [
+            0.02912621359223301,
+            0.3786407766990291,
+            0.5922330097087378
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            3.0,
+            39.0,
+            61.0
+          ],
+          "expected_grade_score": 78.15533980582524,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.006106973862428588,
+              0.06903921219895652
+            ],
+            [
+              0.28786590375771914,
+              0.47388094097849504
+            ],
+            [
+              0.49629826950838624,
+              0.6847738600652205
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 2.7044743884884186,
+          "raw_empirical_grade_score": 79.0
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 0,
+        "mixed_saturation_counts_by_component": {
+          "U": 0,
+          "A": 0,
+          "D": 0
+        },
+        "mixed_max_component_probability": 0.9611650485436893,
+        "mixed_saturation_examples": {
+          "U": null,
+          "A": null,
+          "D": null
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.9708737864077577,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.9708737864077577,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 1.9417475728155296,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "predictive_UAD": [
+            0.009708737864077669,
+            0.10679611650485436,
+            0.883495145631068
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "predictive_UAD": [
+            0.009708737864077669,
+            0.02912621359223301,
+            0.9611650485436893
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "predictive_UAD": [
+            0.009708737864077669,
+            0.019417475728155338,
+            0.970873786407767
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "predictive_UAD": [
+            0.009708737864077669,
+            0.010679611650485438,
+            0.979611650485437
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "predictive_UAD": [
+            0.009708737864077669,
+            0.009805825242718447,
+            0.9804854368932039
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "predictive_UAD": [
+            0.009708737864077669,
+            0.009708737864077669,
+            0.9805825242718447
+          ]
+        }
+      ]
+    },
+    "dirichlet_alpha3_N10000": {
+      "family": "Dirichlet_grade_predictive",
+      "alpha_total": 3,
+      "effective_exposure_N": 10000,
+      "cases": {
+        "pureD": {
+          "posterior_predictive_grade_UAD": [
+            9.997000899730081e-05,
+            9.997000899730081e-05,
+            0.9998000599820054
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.0,
+            1.0,
+            10001.0
+          ],
+          "expected_grade_score": 99.9850044986504,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              2.5312713398475794e-06,
+              0.00036874617898473083
+            ],
+            [
+              2.5312713398475794e-06,
+              0.00036874617898473083
+            ],
+            [
+              0.9994430743617209,
+              0.9999757829979435
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.011175422529515196,
+          "raw_empirical_grade_score": 100.0
+        },
+        "pureA": {
+          "posterior_predictive_grade_UAD": [
+            9.997000899730081e-05,
+            0.9998000599820054,
+            9.997000899730081e-05
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.0,
+            10001.0,
+            1.0
+          ],
+          "expected_grade_score": 50.0,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              2.5312713398475794e-06,
+              0.00036874617898473083
+            ],
+            [
+              0.9994430743617209,
+              0.9999757829979435
+            ],
+            [
+              2.5312713398475794e-06,
+              0.00036874617898473083
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.007068593812863509,
+          "raw_empirical_grade_score": 50.0
+        },
+        "pureU": {
+          "posterior_predictive_grade_UAD": [
+            0.9998000599820054,
+            9.997000899730081e-05,
+            9.997000899730081e-05
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            10001.0,
+            1.0,
+            1.0
+          ],
+          "expected_grade_score": 0.014995501349595122,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.9994430743617209,
+              0.9999757829979435
+            ],
+            [
+              2.5312713398475794e-06,
+              0.00036874617898473083
+            ],
+            [
+              2.5312713398475794e-06,
+              0.00036874617898473083
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.011175422529509486,
+          "raw_empirical_grade_score": 0.0
+        },
+        "90D_10A": {
+          "posterior_predictive_grade_UAD": [
+            9.997000899730081e-05,
+            0.1000699790062981,
+            0.8998300509847046
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.0,
+            1001.0,
+            9001.0
+          ],
+          "expected_grade_score": 94.98650404878536,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              2.5312713398475794e-06,
+              0.00036874617898473083
+            ],
+            [
+              0.09426565757027792,
+              0.10602576610726658
+            ],
+            [
+              0.8938716727136017,
+              0.9056370014418126
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.150316042491263,
+          "raw_empirical_grade_score": 95.0
+        },
+        "70D_30A": {
+          "posterior_predictive_grade_UAD": [
+            9.997000899730081e-05,
+            0.30000999700089975,
+            0.699890032990103
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1.0,
+            3001.0,
+            7001.0
+          ],
+          "expected_grade_score": 84.98950314905528,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              2.5312713398475794e-06,
+              0.00036874617898473083
+            ],
+            [
+              0.29106814574693407,
+              0.30902759400798996
+            ],
+            [
+              0.6908716002011172,
+              0.7088327578888817
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.2292377536727243,
+          "raw_empirical_grade_score": 85.0
+        },
+        "70D_20A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.1000699790062981,
+            0.20003998800359893,
+            0.699890032990103
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1001.0,
+            2001.0,
+            7001.0
+          ],
+          "expected_grade_score": 79.99100269919025,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.09426565757027792,
+              0.10602576610726658
+            ],
+            [
+              0.19225823539590603,
+              0.20793534856009543
+            ],
+            [
+              0.6908716002011172,
+              0.7088327578888817
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.3316624469507056,
+          "raw_empirical_grade_score": 80.0
+        },
+        "50D_50U": {
+          "posterior_predictive_grade_UAD": [
+            0.49995001499550135,
+            9.997000899730081e-05,
+            0.49995001499550135
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            5001.0,
+            1.0,
+            5001.0
+          ],
+          "expected_grade_score": 50.0,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.49015237006150914,
+              0.5097476788613027
+            ],
+            [
+              2.5312713398475794e-06,
+              0.00036874617898473083
+            ],
+            [
+              0.49015237006150914,
+              0.5097476788613027
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.499875041860224,
+          "raw_empirical_grade_score": 50.0
+        },
+        "20D_70A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.1000699790062981,
+            0.699890032990103,
+            0.20003998800359893
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1001.0,
+            7001.0,
+            2001.0
+          ],
+          "expected_grade_score": 54.99850044986505,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.09426565757027792,
+              0.10602576610726658
+            ],
+            [
+              0.6908716002011172,
+              0.7088327578888817
+            ],
+            [
+              0.19225823539590603,
+              0.20793534856009543
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.2692582237951361,
+          "raw_empirical_grade_score": 55.0
+        },
+        "45D_45A_10U": {
+          "posterior_predictive_grade_UAD": [
+            0.1000699790062981,
+            0.44996501049685095,
+            0.44996501049685095
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            1001.0,
+            4501.0,
+            4501.0
+          ],
+          "expected_grade_score": 67.49475157452764,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.09426565757027792,
+              0.10602576610726658
+            ],
+            [
+              0.4402260151666046,
+              0.45972295656245155
+            ],
+            [
+              0.4402260151666046,
+              0.45972295656245155
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.3268935153260135,
+          "raw_empirical_grade_score": 67.5
+        },
+        "60D_38A_02U": {
+          "posterior_predictive_grade_UAD": [
+            0.020093971808457463,
+            0.3799860041987404,
+            0.5999200239928022
+          ],
+          "posterior_dirichlet_parameters_UAD": [
+            201.0,
+            3801.0,
+            6001.0
+          ],
+          "expected_grade_score": 78.99130260921724,
+          "grade_frequency_marginal_95pct_CI_UAD": [
+            [
+              0.01743630167917018,
+              0.022933344987498175
+            ],
+            [
+              0.37049752269444325,
+              0.3895199408966615
+            ],
+            [
+              0.5903010942890807,
+              0.6095011090554924
+            ]
+          ],
+          "expected_grade_score_posterior_SD": 0.26631854239985586,
+          "raw_empirical_grade_score": 79.0
+        }
+      },
+      "grid_audit": {
+        "grid_points": 1326,
+        "mixed_points": 1323,
+        "mixed_saturation_count_any_component_gt_0_99": 0,
+        "mixed_saturation_counts_by_component": {
+          "U": 0,
+          "A": 0,
+          "D": 0
+        },
+        "mixed_max_component_probability": 0.9798060581825453,
+        "mixed_saturation_examples": {
+          "U": null,
+          "A": null,
+          "D": null
+        },
+        "directed_grade_improvements": {
+          "U_to_A": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.999700089973004,
+            "worst_examples": []
+          },
+          "A_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 0.9997000899729898,
+            "worst_examples": []
+          },
+          "U_to_D": {
+            "comparisons": 1275,
+            "violation_count": 0,
+            "minimum_score_delta": 1.9994001799460008,
+            "worst_examples": []
+          }
+        },
+        "total_monotonicity_violation_count": 0
+      },
+      "near_pure_D_cases": [
+        {
+          "nonD_fraction": 0.1,
+          "predictive_UAD": [
+            9.997000899730081e-05,
+            0.1000699790062981,
+            0.8998300509847046
+          ]
+        },
+        {
+          "nonD_fraction": 0.02,
+          "predictive_UAD": [
+            9.997000899730081e-05,
+            0.020093971808457463,
+            0.9798060581825453
+          ]
+        },
+        {
+          "nonD_fraction": 0.01,
+          "predictive_UAD": [
+            9.997000899730081e-05,
+            0.010096970908727382,
+            0.9898030590822753
+          ]
+        },
+        {
+          "nonD_fraction": 0.001,
+          "predictive_UAD": [
+            9.997000899730081e-05,
+            0.0010996700989703088,
+            0.9988003598920324
+          ]
+        },
+        {
+          "nonD_fraction": 0.0001,
+          "predictive_UAD": [
+            9.997000899730081e-05,
+            0.00019994001799460162,
+            0.9997000899730081
+          ]
+        },
+        {
+          "nonD_fraction": 0.0,
+          "predictive_UAD": [
+            9.997000899730081e-05,
+            9.997000899730081e-05,
+            0.9998000599820054
+          ]
+        }
+      ]
+    }
+  },
+  "dirichlet_fixed_exposure_repeat_max_probability_difference": 0.0,
+  "verification": {
+    "probability_normalization": "PASS",
+    "runtime_formula_agreement": "PASS",
+    "raw_frame_duplication_at_fixed_information": "PASS",
+    "grid_and_case_counts": "PASS",
+    "Dirichlet_score_variance_identity": "PASS",
+    "Dirichlet_monotonicity": "PASS"
+  }
+}

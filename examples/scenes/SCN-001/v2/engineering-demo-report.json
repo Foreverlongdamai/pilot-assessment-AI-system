@@ -1,0 +1,2374 @@
+{
+  "schema_version": "2.0",
+  "scene_id": "SCN-001",
+  "evaluated_at": "2026-09-14T12:11:25.594065Z",
+  "calculation_status": "complete",
+  "grade": "U",
+  "passed": false,
+  "configuration": {
+    "schema_version": "2.0",
+    "scene_id": "SCN-001",
+    "parameters": {
+      "initial_hover_duration_s": {
+        "expected": 10,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "initial_hover_height_m": {
+        "expected": 100,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "takeoff_position_x_m": {
+        "expected": 0,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "takeoff_position_y_m": {
+        "expected": 0,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "takeoff_heading_deg": {
+        "expected": 359,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "speed_hold_duration_s": {
+        "expected": 10,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "speed_hold_airspeed_mps": {
+        "expected": 20,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "air_taxi_height_m": {
+        "expected": 100,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "air_taxi_lateral_position_m": {
+        "expected": 0,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "air_taxi_heading_deg": {
+        "expected": 359,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "deceleration_onset_position_m": {
+        "expected": 0,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "quickstop_entry_airspeed_mps": {
+        "expected": 20,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "deceleration_duration_s": {
+        "expected": 10,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "quickstop_height_m": {
+        "expected": 100,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "quickstop_heading_deg": {
+        "expected": 359,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      },
+      "quickstop_lateral_position_m": {
+        "expected": 0,
+        "desired": {
+          "lower": -2,
+          "upper": 2,
+          "unbounded_upper": false
+        },
+        "acceptable": {
+          "lower": -5,
+          "upper": 5,
+          "unbounded_upper": false
+        }
+      }
+    },
+    "skill_models": {
+      "A-S2-08": {
+        "model_version": "draft-v2",
+        "calibration": "uncalibrated",
+        "parameter_source": "unconfigured",
+        "prior": [
+          null,
+          null,
+          null
+        ],
+        "state_scores": [
+          null,
+          null,
+          null
+        ],
+        "checkpoint_models": {
+          "A-S2-08-01": {
+            "states": [
+              "D",
+              "A",
+              "U"
+            ],
+            "probabilities": [
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ]
+            ]
+          },
+          "A-S2-08-02": {
+            "states": [
+              "D",
+              "A",
+              "U"
+            ],
+            "probabilities": [
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ]
+            ]
+          },
+          "A-S2-08-03": {
+            "states": [
+              "D",
+              "A",
+              "U"
+            ],
+            "probabilities": [
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ]
+            ]
+          }
+        }
+      },
+      "A-S2-05": {
+        "model_version": "draft-v2",
+        "calibration": "uncalibrated",
+        "parameter_source": "unconfigured",
+        "prior": [
+          null,
+          null,
+          null
+        ],
+        "state_scores": [
+          null,
+          null,
+          null
+        ],
+        "checkpoint_models": {
+          "A-S2-05-01": {
+            "states": [
+              "D",
+              "A",
+              "U"
+            ],
+            "probabilities": [
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ]
+            ]
+          },
+          "A-S2-05-02": {
+            "states": [
+              "D",
+              "A",
+              "U"
+            ],
+            "probabilities": [
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ]
+            ]
+          },
+          "A-S2-05-03": {
+            "states": [
+              "D",
+              "A",
+              "U"
+            ],
+            "probabilities": [
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ]
+            ]
+          }
+        }
+      },
+      "A-S2-30": {
+        "model_version": "draft-v2",
+        "calibration": "uncalibrated",
+        "parameter_source": "unconfigured",
+        "prior": [
+          null,
+          null,
+          null
+        ],
+        "state_scores": [
+          null,
+          null,
+          null
+        ],
+        "checkpoint_models": {
+          "A-S2-30-01": {
+            "states": [
+              "D",
+              "A",
+              "U"
+            ],
+            "probabilities": [
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ]
+            ]
+          },
+          "A-S2-30-02": {
+            "states": [
+              "D",
+              "A",
+              "U"
+            ],
+            "probabilities": [
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ]
+            ]
+          },
+          "A-S2-30-03": {
+            "states": [
+              "D",
+              "A",
+              "U"
+            ],
+            "probabilities": [
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ],
+              [
+                null,
+                null,
+                null
+              ]
+            ]
+          },
+          "A-S2-30-04": {
+            "states": [
+              "D",
+              "U"
+            ],
+            "probabilities": [
+              [
+                null,
+                null
+              ],
+              [
+                null,
+                null
+              ],
+              [
+                null,
+                null
+              ]
+            ]
+          }
+        }
+      }
+    }
+  },
+  "input": {
+    "schema_version": "2.0",
+    "scene_id": "SCN-001",
+    "items": {
+      "A-S1-06": {
+        "checkpoints": {
+          "A-S1-06-01": {
+            "values": {
+              "battery_check_completed": true
+            },
+            "samples": []
+          },
+          "A-S1-06-02": {
+            "values": {
+              "propulsion_check_completed": true
+            },
+            "samples": []
+          },
+          "A-S1-06-03": {
+            "values": {
+              "flight_configuration_check_completed": true
+            },
+            "samples": []
+          },
+          "A-S1-06-04": {
+            "values": {
+              "flight_instruments_check_completed": true
+            },
+            "samples": []
+          },
+          "A-S1-06-05": {
+            "values": {
+              "alerts_check_completed": true
+            },
+            "samples": []
+          },
+          "A-S1-06-06": {
+            "values": {
+              "departure_check_completed": true
+            },
+            "samples": []
+          }
+        }
+      },
+      "A-S2-08": {
+        "checkpoints": {
+          "A-S2-08-01": {
+            "values": {
+              "initial_hover_duration_s": 10
+            },
+            "samples": [
+              {
+                "start_s": 20,
+                "end_s": 24,
+                "values": {
+                  "initial_hover_height_m": 100
+                }
+              },
+              {
+                "start_s": 24,
+                "end_s": 25,
+                "values": {
+                  "initial_hover_height_m": 100
+                }
+              },
+              {
+                "start_s": 25,
+                "end_s": 27,
+                "values": {
+                  "initial_hover_height_m": 100
+                }
+              },
+              {
+                "start_s": 27,
+                "end_s": 30,
+                "values": {
+                  "initial_hover_height_m": 100
+                }
+              }
+            ]
+          },
+          "A-S2-08-02": {
+            "values": {},
+            "samples": [
+              {
+                "start_s": 20,
+                "end_s": 24,
+                "values": {
+                  "takeoff_position_x_m": 0,
+                  "takeoff_position_y_m": 0
+                }
+              },
+              {
+                "start_s": 24,
+                "end_s": 25,
+                "values": {
+                  "takeoff_position_x_m": 0,
+                  "takeoff_position_y_m": 0
+                }
+              },
+              {
+                "start_s": 25,
+                "end_s": 27,
+                "values": {
+                  "takeoff_position_x_m": 0,
+                  "takeoff_position_y_m": 0
+                }
+              },
+              {
+                "start_s": 27,
+                "end_s": 30,
+                "values": {
+                  "takeoff_position_x_m": 0,
+                  "takeoff_position_y_m": 0
+                }
+              }
+            ]
+          },
+          "A-S2-08-03": {
+            "values": {},
+            "samples": [
+              {
+                "start_s": 20,
+                "end_s": 24,
+                "values": {
+                  "takeoff_heading_deg": 359
+                }
+              },
+              {
+                "start_s": 24,
+                "end_s": 25,
+                "values": {
+                  "takeoff_heading_deg": 359
+                }
+              },
+              {
+                "start_s": 25,
+                "end_s": 27,
+                "values": {
+                  "takeoff_heading_deg": 359
+                }
+              },
+              {
+                "start_s": 27,
+                "end_s": 30,
+                "values": {
+                  "takeoff_heading_deg": 359
+                }
+              }
+            ]
+          }
+        }
+      },
+      "A-S2-05": {
+        "checkpoints": {
+          "A-S2-05-01": {
+            "values": {
+              "speed_hold_duration_s": 10
+            },
+            "samples": [
+              {
+                "start_s": 40,
+                "end_s": 44,
+                "values": {
+                  "speed_hold_airspeed_mps": 20
+                }
+              },
+              {
+                "start_s": 44,
+                "end_s": 45,
+                "values": {
+                  "speed_hold_airspeed_mps": 20
+                }
+              },
+              {
+                "start_s": 45,
+                "end_s": 47,
+                "values": {
+                  "speed_hold_airspeed_mps": 20
+                }
+              },
+              {
+                "start_s": 47,
+                "end_s": 50,
+                "values": {
+                  "speed_hold_airspeed_mps": 20
+                }
+              }
+            ]
+          },
+          "A-S2-05-02": {
+            "values": {},
+            "samples": [
+              {
+                "start_s": 40,
+                "end_s": 44,
+                "values": {
+                  "air_taxi_height_m": 100
+                }
+              },
+              {
+                "start_s": 44,
+                "end_s": 45,
+                "values": {
+                  "air_taxi_height_m": 100
+                }
+              },
+              {
+                "start_s": 45,
+                "end_s": 47,
+                "values": {
+                  "air_taxi_height_m": 100
+                }
+              },
+              {
+                "start_s": 47,
+                "end_s": 50,
+                "values": {
+                  "air_taxi_height_m": 100
+                }
+              }
+            ]
+          },
+          "A-S2-05-03": {
+            "values": {},
+            "samples": [
+              {
+                "start_s": 40,
+                "end_s": 44,
+                "values": {
+                  "air_taxi_lateral_position_m": 0,
+                  "air_taxi_heading_deg": 0
+                }
+              },
+              {
+                "start_s": 44,
+                "end_s": 45,
+                "values": {
+                  "air_taxi_lateral_position_m": 0,
+                  "air_taxi_heading_deg": 7
+                }
+              },
+              {
+                "start_s": 45,
+                "end_s": 47,
+                "values": {
+                  "air_taxi_lateral_position_m": 0,
+                  "air_taxi_heading_deg": 2
+                }
+              },
+              {
+                "start_s": 47,
+                "end_s": 50,
+                "values": {
+                  "air_taxi_lateral_position_m": 0,
+                  "air_taxi_heading_deg": 0
+                }
+              }
+            ]
+          }
+        }
+      },
+      "A-S2-30": {
+        "checkpoints": {
+          "A-S2-30-01": {
+            "values": {
+              "deceleration_started": true,
+              "deceleration_onset_position_m": 0
+            },
+            "samples": []
+          },
+          "A-S2-30-02": {
+            "values": {
+              "quickstop_entry_airspeed_mps": 20,
+              "stop_achieved": true,
+              "deceleration_duration_s": 10
+            },
+            "samples": []
+          },
+          "A-S2-30-03": {
+            "values": {},
+            "samples": [
+              {
+                "start_s": 60,
+                "end_s": 64,
+                "values": {
+                  "quickstop_height_m": 100,
+                  "quickstop_heading_deg": 359,
+                  "quickstop_lateral_position_m": 0
+                }
+              },
+              {
+                "start_s": 64,
+                "end_s": 65,
+                "values": {
+                  "quickstop_height_m": 100,
+                  "quickstop_heading_deg": 359,
+                  "quickstop_lateral_position_m": 0
+                }
+              },
+              {
+                "start_s": 65,
+                "end_s": 67,
+                "values": {
+                  "quickstop_height_m": 100,
+                  "quickstop_heading_deg": 359,
+                  "quickstop_lateral_position_m": 0
+                }
+              },
+              {
+                "start_s": 67,
+                "end_s": 70,
+                "values": {
+                  "quickstop_height_m": 100,
+                  "quickstop_heading_deg": 359,
+                  "quickstop_lateral_position_m": 0
+                }
+              }
+            ]
+          },
+          "A-S2-30-04": {
+            "values": {
+              "quickstop_prohibited_event_count": 0
+            },
+            "samples": []
+          }
+        }
+      }
+    }
+  },
+  "issues": [],
+  "items": [
+    {
+      "item_id": "A-S1-06",
+      "name": "起飞前检查",
+      "grade": "D",
+      "passed": true,
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S1-06-01",
+          "name": "电池与供电检查完成",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "battery_check_completed",
+              "value": true,
+              "expected": null,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "已完成。",
+              "parameter": null,
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            }
+          ],
+          "timeline": [],
+          "distribution": null
+        },
+        {
+          "checkpoint_id": "A-S1-06-02",
+          "name": "推进与功率检查完成",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "propulsion_check_completed",
+              "value": true,
+              "expected": null,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "已完成。",
+              "parameter": null,
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            }
+          ],
+          "timeline": [],
+          "distribution": null
+        },
+        {
+          "checkpoint_id": "A-S1-06-03",
+          "name": "飞控与起飞构型检查完成",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "flight_configuration_check_completed",
+              "value": true,
+              "expected": null,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "已完成。",
+              "parameter": null,
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            }
+          ],
+          "timeline": [],
+          "distribution": null
+        },
+        {
+          "checkpoint_id": "A-S1-06-04",
+          "name": "飞行仪表检查完成",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "flight_instruments_check_completed",
+              "value": true,
+              "expected": null,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "已完成。",
+              "parameter": null,
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            }
+          ],
+          "timeline": [],
+          "distribution": null
+        },
+        {
+          "checkpoint_id": "A-S1-06-05",
+          "name": "告警与系统状态检查完成",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "alerts_check_completed",
+              "value": true,
+              "expected": null,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "已完成。",
+              "parameter": null,
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            }
+          ],
+          "timeline": [],
+          "distribution": null
+        },
+        {
+          "checkpoint_id": "A-S1-06-06",
+          "name": "导航与任务信息检查完成",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "departure_check_completed",
+              "value": true,
+              "expected": null,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "已完成。",
+              "parameter": null,
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            }
+          ],
+          "timeline": [],
+          "distribution": null
+        }
+      ],
+      "skill_quantification": {
+        "status": "not_applicable",
+        "skill_name": "检查单完成情况",
+        "method": "not_applicable",
+        "model_version": null,
+        "calibration": null,
+        "parameter_source": null,
+        "posterior": null,
+        "score": null,
+        "evidence_count": 0,
+        "expected_evidence_count": 6,
+        "evidence": [],
+        "warnings": [],
+        "message": "检查单仅评价完成性，不推断操纵熟练度。"
+      }
+    },
+    {
+      "item_id": "A-S2-08",
+      "name": "地面起飞",
+      "grade": "D",
+      "passed": true,
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-08-01",
+          "name": "离地并建立初始悬停",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "initial_hover_duration_s",
+              "value": 10,
+              "expected": 10,
+              "deviation": 0,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "有符号偏差落在 D 档。",
+              "parameter": {
+                "expected": 10,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            },
+            {
+              "metric_id": "initial_hover_height_m",
+              "value": null,
+              "expected": 100,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "按已提供区间计算，规则档位取最差表现。",
+              "parameter": {
+                "expected": 100,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [
+                {
+                  "start_s": 20,
+                  "end_s": 24,
+                  "value": 100,
+                  "expected": 100,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 24,
+                  "end_s": 25,
+                  "value": 100,
+                  "expected": 100,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 25,
+                  "end_s": 27,
+                  "value": 100,
+                  "expected": 100,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 27,
+                  "end_s": 30,
+                  "value": 100,
+                  "expected": 100,
+                  "deviation": 0,
+                  "grade": "D"
+                }
+              ],
+              "distribution": {
+                "duration_s": 10.0,
+                "span_s": 10,
+                "gap_s": 0,
+                "durations": {
+                  "D": 10.0,
+                  "A": 0.0,
+                  "U": 0.0
+                },
+                "proportions": {
+                  "D": 1.0,
+                  "A": 0.0,
+                  "U": 0.0
+                }
+              },
+              "episodes": []
+            }
+          ],
+          "timeline": [
+            {
+              "start_s": 20,
+              "end_s": 24,
+              "grade": "D"
+            },
+            {
+              "start_s": 24,
+              "end_s": 25,
+              "grade": "D"
+            },
+            {
+              "start_s": 25,
+              "end_s": 27,
+              "grade": "D"
+            },
+            {
+              "start_s": 27,
+              "end_s": 30,
+              "grade": "D"
+            }
+          ],
+          "distribution": {
+            "duration_s": 10.0,
+            "span_s": 10,
+            "gap_s": 0,
+            "durations": {
+              "D": 10.0,
+              "A": 0.0,
+              "U": 0.0
+            },
+            "proportions": {
+              "D": 1.0,
+              "A": 0.0,
+              "U": 0.0
+            }
+          }
+        },
+        {
+          "checkpoint_id": "A-S2-08-02",
+          "name": "水平位置控制",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "takeoff_position_x_m",
+              "value": null,
+              "expected": 0,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "按已提供区间计算，规则档位取最差表现。",
+              "parameter": {
+                "expected": 0,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [
+                {
+                  "start_s": 20,
+                  "end_s": 24,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 24,
+                  "end_s": 25,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 25,
+                  "end_s": 27,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 27,
+                  "end_s": 30,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                }
+              ],
+              "distribution": {
+                "duration_s": 10.0,
+                "span_s": 10,
+                "gap_s": 0,
+                "durations": {
+                  "D": 10.0,
+                  "A": 0.0,
+                  "U": 0.0
+                },
+                "proportions": {
+                  "D": 1.0,
+                  "A": 0.0,
+                  "U": 0.0
+                }
+              },
+              "episodes": []
+            },
+            {
+              "metric_id": "takeoff_position_y_m",
+              "value": null,
+              "expected": 0,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "按已提供区间计算，规则档位取最差表现。",
+              "parameter": {
+                "expected": 0,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [
+                {
+                  "start_s": 20,
+                  "end_s": 24,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 24,
+                  "end_s": 25,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 25,
+                  "end_s": 27,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 27,
+                  "end_s": 30,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                }
+              ],
+              "distribution": {
+                "duration_s": 10.0,
+                "span_s": 10,
+                "gap_s": 0,
+                "durations": {
+                  "D": 10.0,
+                  "A": 0.0,
+                  "U": 0.0
+                },
+                "proportions": {
+                  "D": 1.0,
+                  "A": 0.0,
+                  "U": 0.0
+                }
+              },
+              "episodes": []
+            }
+          ],
+          "timeline": [
+            {
+              "start_s": 20,
+              "end_s": 24,
+              "grade": "D"
+            },
+            {
+              "start_s": 24,
+              "end_s": 25,
+              "grade": "D"
+            },
+            {
+              "start_s": 25,
+              "end_s": 27,
+              "grade": "D"
+            },
+            {
+              "start_s": 27,
+              "end_s": 30,
+              "grade": "D"
+            }
+          ],
+          "distribution": {
+            "duration_s": 10.0,
+            "span_s": 10,
+            "gap_s": 0,
+            "durations": {
+              "D": 10.0,
+              "A": 0.0,
+              "U": 0.0
+            },
+            "proportions": {
+              "D": 1.0,
+              "A": 0.0,
+              "U": 0.0
+            }
+          }
+        },
+        {
+          "checkpoint_id": "A-S2-08-03",
+          "name": "航向保持",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "takeoff_heading_deg",
+              "value": null,
+              "expected": 359,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "按已提供区间计算，规则档位取最差表现。",
+              "parameter": {
+                "expected": 359,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [
+                {
+                  "start_s": 20,
+                  "end_s": 24,
+                  "value": 359,
+                  "expected": 359,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 24,
+                  "end_s": 25,
+                  "value": 359,
+                  "expected": 359,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 25,
+                  "end_s": 27,
+                  "value": 359,
+                  "expected": 359,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 27,
+                  "end_s": 30,
+                  "value": 359,
+                  "expected": 359,
+                  "deviation": 0,
+                  "grade": "D"
+                }
+              ],
+              "distribution": {
+                "duration_s": 10.0,
+                "span_s": 10,
+                "gap_s": 0,
+                "durations": {
+                  "D": 10.0,
+                  "A": 0.0,
+                  "U": 0.0
+                },
+                "proportions": {
+                  "D": 1.0,
+                  "A": 0.0,
+                  "U": 0.0
+                }
+              },
+              "episodes": []
+            }
+          ],
+          "timeline": [
+            {
+              "start_s": 20,
+              "end_s": 24,
+              "grade": "D"
+            },
+            {
+              "start_s": 24,
+              "end_s": 25,
+              "grade": "D"
+            },
+            {
+              "start_s": 25,
+              "end_s": 27,
+              "grade": "D"
+            },
+            {
+              "start_s": 27,
+              "end_s": 30,
+              "grade": "D"
+            }
+          ],
+          "distribution": {
+            "duration_s": 10.0,
+            "span_s": 10,
+            "gap_s": 0,
+            "durations": {
+              "D": 10.0,
+              "A": 0.0,
+              "U": 0.0
+            },
+            "proportions": {
+              "D": 1.0,
+              "A": 0.0,
+              "U": 0.0
+            }
+          }
+        }
+      ],
+      "skill_quantification": {
+        "status": "pending_method",
+        "skill_name": "地面起飞当次表现",
+        "method": "pending",
+        "model_version": null,
+        "calibration": null,
+        "parameter_source": null,
+        "posterior": null,
+        "score": null,
+        "evidence_count": 0,
+        "expected_evidence_count": 3,
+        "evidence": [],
+        "warnings": [],
+        "message": "时间占比到贝叶斯后验及 item 过程算法尚未确定；保留规则与时间统计。"
+      }
+    },
+    {
+      "item_id": "A-S2-05",
+      "name": "空中滑行（加速与保速）",
+      "grade": "U",
+      "passed": false,
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-05-01",
+          "name": "达到并保持指定空速",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "speed_hold_duration_s",
+              "value": 10,
+              "expected": 10,
+              "deviation": 0,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "有符号偏差落在 D 档。",
+              "parameter": {
+                "expected": 10,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            },
+            {
+              "metric_id": "speed_hold_airspeed_mps",
+              "value": null,
+              "expected": 20,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "按已提供区间计算，规则档位取最差表现。",
+              "parameter": {
+                "expected": 20,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [
+                {
+                  "start_s": 40,
+                  "end_s": 44,
+                  "value": 20,
+                  "expected": 20,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 44,
+                  "end_s": 45,
+                  "value": 20,
+                  "expected": 20,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 45,
+                  "end_s": 47,
+                  "value": 20,
+                  "expected": 20,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 47,
+                  "end_s": 50,
+                  "value": 20,
+                  "expected": 20,
+                  "deviation": 0,
+                  "grade": "D"
+                }
+              ],
+              "distribution": {
+                "duration_s": 10.0,
+                "span_s": 10,
+                "gap_s": 0,
+                "durations": {
+                  "D": 10.0,
+                  "A": 0.0,
+                  "U": 0.0
+                },
+                "proportions": {
+                  "D": 1.0,
+                  "A": 0.0,
+                  "U": 0.0
+                }
+              },
+              "episodes": []
+            }
+          ],
+          "timeline": [
+            {
+              "start_s": 40,
+              "end_s": 44,
+              "grade": "D"
+            },
+            {
+              "start_s": 44,
+              "end_s": 45,
+              "grade": "D"
+            },
+            {
+              "start_s": 45,
+              "end_s": 47,
+              "grade": "D"
+            },
+            {
+              "start_s": 47,
+              "end_s": 50,
+              "grade": "D"
+            }
+          ],
+          "distribution": {
+            "duration_s": 10.0,
+            "span_s": 10,
+            "gap_s": 0,
+            "durations": {
+              "D": 10.0,
+              "A": 0.0,
+              "U": 0.0
+            },
+            "proportions": {
+              "D": 1.0,
+              "A": 0.0,
+              "U": 0.0
+            }
+          }
+        },
+        {
+          "checkpoint_id": "A-S2-05-02",
+          "name": "高度保持",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "air_taxi_height_m",
+              "value": null,
+              "expected": 100,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "按已提供区间计算，规则档位取最差表现。",
+              "parameter": {
+                "expected": 100,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [
+                {
+                  "start_s": 40,
+                  "end_s": 44,
+                  "value": 100,
+                  "expected": 100,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 44,
+                  "end_s": 45,
+                  "value": 100,
+                  "expected": 100,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 45,
+                  "end_s": 47,
+                  "value": 100,
+                  "expected": 100,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 47,
+                  "end_s": 50,
+                  "value": 100,
+                  "expected": 100,
+                  "deviation": 0,
+                  "grade": "D"
+                }
+              ],
+              "distribution": {
+                "duration_s": 10.0,
+                "span_s": 10,
+                "gap_s": 0,
+                "durations": {
+                  "D": 10.0,
+                  "A": 0.0,
+                  "U": 0.0
+                },
+                "proportions": {
+                  "D": 1.0,
+                  "A": 0.0,
+                  "U": 0.0
+                }
+              },
+              "episodes": []
+            }
+          ],
+          "timeline": [
+            {
+              "start_s": 40,
+              "end_s": 44,
+              "grade": "D"
+            },
+            {
+              "start_s": 44,
+              "end_s": 45,
+              "grade": "D"
+            },
+            {
+              "start_s": 45,
+              "end_s": 47,
+              "grade": "D"
+            },
+            {
+              "start_s": 47,
+              "end_s": 50,
+              "grade": "D"
+            }
+          ],
+          "distribution": {
+            "duration_s": 10.0,
+            "span_s": 10,
+            "gap_s": 0,
+            "durations": {
+              "D": 10.0,
+              "A": 0.0,
+              "U": 0.0
+            },
+            "proportions": {
+              "D": 1.0,
+              "A": 0.0,
+              "U": 0.0
+            }
+          }
+        },
+        {
+          "checkpoint_id": "A-S2-05-03",
+          "name": "航迹与航向控制",
+          "grade": "U",
+          "metrics": [
+            {
+              "metric_id": "air_taxi_lateral_position_m",
+              "value": null,
+              "expected": 0,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "按已提供区间计算，规则档位取最差表现。",
+              "parameter": {
+                "expected": 0,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [
+                {
+                  "start_s": 40,
+                  "end_s": 44,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 44,
+                  "end_s": 45,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 45,
+                  "end_s": 47,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 47,
+                  "end_s": 50,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                }
+              ],
+              "distribution": {
+                "duration_s": 10.0,
+                "span_s": 10,
+                "gap_s": 0,
+                "durations": {
+                  "D": 10.0,
+                  "A": 0.0,
+                  "U": 0.0
+                },
+                "proportions": {
+                  "D": 1.0,
+                  "A": 0.0,
+                  "U": 0.0
+                }
+              },
+              "episodes": []
+            },
+            {
+              "metric_id": "air_taxi_heading_deg",
+              "value": null,
+              "expected": 359,
+              "deviation": null,
+              "grade": "U",
+              "status": "calculated",
+              "reason": "按已提供区间计算，规则档位取最差表现。",
+              "parameter": {
+                "expected": 359,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [
+                {
+                  "start_s": 40,
+                  "end_s": 44,
+                  "value": 0,
+                  "expected": 359,
+                  "deviation": 1,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 44,
+                  "end_s": 45,
+                  "value": 7,
+                  "expected": 359,
+                  "deviation": 8,
+                  "grade": "U"
+                },
+                {
+                  "start_s": 45,
+                  "end_s": 47,
+                  "value": 2,
+                  "expected": 359,
+                  "deviation": 3,
+                  "grade": "A"
+                },
+                {
+                  "start_s": 47,
+                  "end_s": 50,
+                  "value": 0,
+                  "expected": 359,
+                  "deviation": 1,
+                  "grade": "D"
+                }
+              ],
+              "distribution": {
+                "duration_s": 10.0,
+                "span_s": 10,
+                "gap_s": 0,
+                "durations": {
+                  "D": 7.0,
+                  "A": 2.0,
+                  "U": 1.0
+                },
+                "proportions": {
+                  "D": 0.7,
+                  "A": 0.2,
+                  "U": 0.1
+                }
+              },
+              "episodes": [
+                {
+                  "start_s": 44,
+                  "end_s": 45,
+                  "grade": "U",
+                  "duration_s": 1,
+                  "max_abs_deviation": 8
+                },
+                {
+                  "start_s": 45,
+                  "end_s": 47,
+                  "grade": "A",
+                  "duration_s": 2,
+                  "max_abs_deviation": 3
+                }
+              ]
+            }
+          ],
+          "timeline": [
+            {
+              "start_s": 40,
+              "end_s": 44,
+              "grade": "D"
+            },
+            {
+              "start_s": 44,
+              "end_s": 45,
+              "grade": "U"
+            },
+            {
+              "start_s": 45,
+              "end_s": 47,
+              "grade": "A"
+            },
+            {
+              "start_s": 47,
+              "end_s": 50,
+              "grade": "D"
+            }
+          ],
+          "distribution": {
+            "duration_s": 10.0,
+            "span_s": 10,
+            "gap_s": 0,
+            "durations": {
+              "D": 7.0,
+              "A": 2.0,
+              "U": 1.0
+            },
+            "proportions": {
+              "D": 0.7,
+              "A": 0.2,
+              "U": 0.1
+            }
+          }
+        }
+      ],
+      "skill_quantification": {
+        "status": "pending_method",
+        "skill_name": "空中滑行（加速与保速）当次表现",
+        "method": "pending",
+        "model_version": null,
+        "calibration": null,
+        "parameter_source": null,
+        "posterior": null,
+        "score": null,
+        "evidence_count": 0,
+        "expected_evidence_count": 3,
+        "evidence": [],
+        "warnings": [],
+        "message": "时间占比到贝叶斯后验及 item 过程算法尚未确定；保留规则与时间统计。"
+      }
+    },
+    {
+      "item_id": "A-S2-30",
+      "name": "快速减速／急停",
+      "grade": "D",
+      "passed": true,
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-30-01",
+          "name": "按提示开始减速",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "deceleration_started",
+              "value": true,
+              "expected": null,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "已完成。",
+              "parameter": null,
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            },
+            {
+              "metric_id": "deceleration_onset_position_m",
+              "value": 0,
+              "expected": 0,
+              "deviation": 0,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "有符号偏差落在 D 档。",
+              "parameter": {
+                "expected": 0,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            }
+          ],
+          "timeline": [],
+          "distribution": null
+        },
+        {
+          "checkpoint_id": "A-S2-30-02",
+          "name": "完成减速与减速效果",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "quickstop_entry_airspeed_mps",
+              "value": 20,
+              "expected": 20,
+              "deviation": 0,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "有符号偏差落在 D 档。",
+              "parameter": {
+                "expected": 20,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            },
+            {
+              "metric_id": "stop_achieved",
+              "value": true,
+              "expected": null,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "已完成。",
+              "parameter": null,
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            },
+            {
+              "metric_id": "deceleration_duration_s",
+              "value": 10,
+              "expected": 10,
+              "deviation": 0,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "有符号偏差落在 D 档。",
+              "parameter": {
+                "expected": 10,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            }
+          ],
+          "timeline": [],
+          "distribution": null
+        },
+        {
+          "checkpoint_id": "A-S2-30-03",
+          "name": "减速过程控制",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "quickstop_height_m",
+              "value": null,
+              "expected": 100,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "按已提供区间计算，规则档位取最差表现。",
+              "parameter": {
+                "expected": 100,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [
+                {
+                  "start_s": 60,
+                  "end_s": 64,
+                  "value": 100,
+                  "expected": 100,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 64,
+                  "end_s": 65,
+                  "value": 100,
+                  "expected": 100,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 65,
+                  "end_s": 67,
+                  "value": 100,
+                  "expected": 100,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 67,
+                  "end_s": 70,
+                  "value": 100,
+                  "expected": 100,
+                  "deviation": 0,
+                  "grade": "D"
+                }
+              ],
+              "distribution": {
+                "duration_s": 10.0,
+                "span_s": 10,
+                "gap_s": 0,
+                "durations": {
+                  "D": 10.0,
+                  "A": 0.0,
+                  "U": 0.0
+                },
+                "proportions": {
+                  "D": 1.0,
+                  "A": 0.0,
+                  "U": 0.0
+                }
+              },
+              "episodes": []
+            },
+            {
+              "metric_id": "quickstop_heading_deg",
+              "value": null,
+              "expected": 359,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "按已提供区间计算，规则档位取最差表现。",
+              "parameter": {
+                "expected": 359,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [
+                {
+                  "start_s": 60,
+                  "end_s": 64,
+                  "value": 359,
+                  "expected": 359,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 64,
+                  "end_s": 65,
+                  "value": 359,
+                  "expected": 359,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 65,
+                  "end_s": 67,
+                  "value": 359,
+                  "expected": 359,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 67,
+                  "end_s": 70,
+                  "value": 359,
+                  "expected": 359,
+                  "deviation": 0,
+                  "grade": "D"
+                }
+              ],
+              "distribution": {
+                "duration_s": 10.0,
+                "span_s": 10,
+                "gap_s": 0,
+                "durations": {
+                  "D": 10.0,
+                  "A": 0.0,
+                  "U": 0.0
+                },
+                "proportions": {
+                  "D": 1.0,
+                  "A": 0.0,
+                  "U": 0.0
+                }
+              },
+              "episodes": []
+            },
+            {
+              "metric_id": "quickstop_lateral_position_m",
+              "value": null,
+              "expected": 0,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "按已提供区间计算，规则档位取最差表现。",
+              "parameter": {
+                "expected": 0,
+                "desired": {
+                  "lower": -2,
+                  "upper": 2,
+                  "unbounded_upper": false
+                },
+                "acceptable": {
+                  "lower": -5,
+                  "upper": 5,
+                  "unbounded_upper": false
+                }
+              },
+              "timeline": [
+                {
+                  "start_s": 60,
+                  "end_s": 64,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 64,
+                  "end_s": 65,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 65,
+                  "end_s": 67,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                },
+                {
+                  "start_s": 67,
+                  "end_s": 70,
+                  "value": 0,
+                  "expected": 0,
+                  "deviation": 0,
+                  "grade": "D"
+                }
+              ],
+              "distribution": {
+                "duration_s": 10.0,
+                "span_s": 10,
+                "gap_s": 0,
+                "durations": {
+                  "D": 10.0,
+                  "A": 0.0,
+                  "U": 0.0
+                },
+                "proportions": {
+                  "D": 1.0,
+                  "A": 0.0,
+                  "U": 0.0
+                }
+              },
+              "episodes": []
+            }
+          ],
+          "timeline": [
+            {
+              "start_s": 60,
+              "end_s": 64,
+              "grade": "D"
+            },
+            {
+              "start_s": 64,
+              "end_s": 65,
+              "grade": "D"
+            },
+            {
+              "start_s": 65,
+              "end_s": 67,
+              "grade": "D"
+            },
+            {
+              "start_s": 67,
+              "end_s": 70,
+              "grade": "D"
+            }
+          ],
+          "distribution": {
+            "duration_s": 10.0,
+            "span_s": 10,
+            "gap_s": 0,
+            "durations": {
+              "D": 10.0,
+              "A": 0.0,
+              "U": 0.0
+            },
+            "proportions": {
+              "D": 1.0,
+              "A": 0.0,
+              "U": 0.0
+            }
+          }
+        },
+        {
+          "checkpoint_id": "A-S2-30-04",
+          "name": "限制与禁止接触",
+          "grade": "D",
+          "metrics": [
+            {
+              "metric_id": "quickstop_prohibited_event_count",
+              "value": 0,
+              "expected": null,
+              "deviation": null,
+              "grade": "D",
+              "status": "calculated",
+              "reason": "未发生禁止事件。",
+              "parameter": null,
+              "timeline": [],
+              "distribution": null,
+              "episodes": []
+            }
+          ],
+          "timeline": [],
+          "distribution": null
+        }
+      ],
+      "skill_quantification": {
+        "status": "pending_method",
+        "skill_name": "快速减速／急停当次表现",
+        "method": "pending",
+        "model_version": null,
+        "calibration": null,
+        "parameter_source": null,
+        "posterior": null,
+        "score": null,
+        "evidence_count": 0,
+        "expected_evidence_count": 4,
+        "evidence": [],
+        "warnings": [],
+        "message": "时间占比到贝叶斯后验及 item 过程算法尚未确定；保留规则与时间统计。"
+      }
+    }
+  ]
+}

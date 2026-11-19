@@ -1,0 +1,361 @@
+{
+  "schema_version": "3.0",
+  "scene_id": "SCN-002",
+  "parameters": {
+    "hover_lower_height_m": {
+      "expected": 10,
+      "desired": {
+        "lower": -0.5,
+        "upper": 0.5,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": -1,
+        "upper": 1,
+        "unbounded_upper": false
+      }
+    },
+    "hover_upper_height_m": {
+      "expected": 15,
+      "desired": {
+        "lower": -0.5,
+        "upper": 0.5,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": -1,
+        "upper": 1,
+        "unbounded_upper": false
+      }
+    },
+    "hover_x_m": {
+      "expected": 100,
+      "desired": {
+        "lower": -0.5,
+        "upper": 0.5,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": -1,
+        "upper": 1,
+        "unbounded_upper": false
+      }
+    },
+    "hover_y_m": {
+      "expected": 100,
+      "desired": {
+        "lower": -0.5,
+        "upper": 0.5,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": -1,
+        "upper": 1,
+        "unbounded_upper": false
+      }
+    },
+    "hover_vx_mps": {
+      "expected": 0,
+      "desired": {
+        "lower": -0.5,
+        "upper": 0.5,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": -1,
+        "upper": 1,
+        "unbounded_upper": false
+      }
+    },
+    "hover_vy_mps": {
+      "expected": 0,
+      "desired": {
+        "lower": -0.5,
+        "upper": 0.5,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": -1,
+        "upper": 1,
+        "unbounded_upper": false
+      }
+    },
+    "hover_vz_mps": {
+      "expected": 0,
+      "desired": {
+        "lower": -0.5,
+        "upper": 0.5,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": -1,
+        "upper": 1,
+        "unbounded_upper": false
+      }
+    },
+    "hover_heading_deg": {
+      "expected": 359,
+      "desired": {
+        "lower": -3,
+        "upper": 3,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": -6,
+        "upper": 6,
+        "unbounded_upper": false
+      }
+    },
+    "laser_lower_spot": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": 0.2,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": 0.5,
+        "unbounded_upper": false
+      },
+      "center_u": 0,
+      "center_v": 0,
+      "target_radius": 1
+    },
+    "laser_upper_spot": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": 0.2,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": 0.5,
+        "unbounded_upper": false
+      },
+      "center_u": 0,
+      "center_v": 0,
+      "target_radius": 1
+    },
+    "transfer_x_m": {
+      "expected": 100,
+      "desired": {
+        "lower": -0.5,
+        "upper": 0.5,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": -1,
+        "upper": 1,
+        "unbounded_upper": false
+      }
+    },
+    "transfer_y_m": {
+      "expected": 100,
+      "desired": {
+        "lower": -0.5,
+        "upper": 0.5,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": -1,
+        "upper": 1,
+        "unbounded_upper": false
+      }
+    },
+    "transfer_heading_deg": {
+      "expected": 359,
+      "desired": {
+        "lower": -3,
+        "upper": 3,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": -6,
+        "upper": 6,
+        "unbounded_upper": false
+      }
+    }
+  },
+  "skill_models": {
+    "A-S2-02": {
+      "model_version": "draft-v3",
+      "calibration": "uncalibrated",
+      "parameter_source": "unconfigured",
+      "prior": [
+        null,
+        null,
+        null
+      ],
+      "state_scores": [
+        null,
+        null,
+        null
+      ],
+      "checkpoint_models": {
+        "A-S2-02-01": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-02-04": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-02-02": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-02-03": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        }
+      }
+    },
+    "SCENE-VERTICAL": {
+      "model_version": "draft-v3",
+      "calibration": "uncalibrated",
+      "parameter_source": "unconfigured",
+      "prior": [
+        null,
+        null,
+        null
+      ],
+      "state_scores": [
+        null,
+        null,
+        null
+      ],
+      "checkpoint_models": {
+        "SCENE-VERTICAL-01": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "SCENE-VERTICAL-02": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        }
+      }
+    }
+  }
+}

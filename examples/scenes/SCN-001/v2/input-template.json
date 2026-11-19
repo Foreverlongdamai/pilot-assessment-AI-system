@@ -1,0 +1,111 @@
+{
+  "schema_version": "2.0",
+  "scene_id": "SCN-001",
+  "items": {
+    "A-S1-06": {
+      "checkpoints": {
+        "A-S1-06-01": {
+          "values": {
+            "battery_check_completed": null
+          },
+          "samples": []
+        },
+        "A-S1-06-02": {
+          "values": {
+            "propulsion_check_completed": null
+          },
+          "samples": []
+        },
+        "A-S1-06-03": {
+          "values": {
+            "flight_configuration_check_completed": null
+          },
+          "samples": []
+        },
+        "A-S1-06-04": {
+          "values": {
+            "flight_instruments_check_completed": null
+          },
+          "samples": []
+        },
+        "A-S1-06-05": {
+          "values": {
+            "alerts_check_completed": null
+          },
+          "samples": []
+        },
+        "A-S1-06-06": {
+          "values": {
+            "departure_check_completed": null
+          },
+          "samples": []
+        }
+      }
+    },
+    "A-S2-08": {
+      "checkpoints": {
+        "A-S2-08-01": {
+          "values": {
+            "initial_hover_duration_s": null
+          },
+          "samples": []
+        },
+        "A-S2-08-02": {
+          "values": {},
+          "samples": []
+        },
+        "A-S2-08-03": {
+          "values": {},
+          "samples": []
+        }
+      }
+    },
+    "A-S2-05": {
+      "checkpoints": {
+        "A-S2-05-01": {
+          "values": {
+            "speed_hold_duration_s": null
+          },
+          "samples": []
+        },
+        "A-S2-05-02": {
+          "values": {},
+          "samples": []
+        },
+        "A-S2-05-03": {
+          "values": {},
+          "samples": []
+        }
+      }
+    },
+    "A-S2-30": {
+      "checkpoints": {
+        "A-S2-30-01": {
+          "values": {
+            "deceleration_started": null,
+            "deceleration_onset_position_m": null
+          },
+          "samples": []
+        },
+        "A-S2-30-02": {
+          "values": {
+            "quickstop_entry_airspeed_mps": null,
+            "stop_achieved": null,
+            "deceleration_duration_s": null
+          },
+          "samples": []
+        },
+        "A-S2-30-03": {
+          "values": {},
+          "samples": []
+        },
+        "A-S2-30-04": {
+          "values": {
+            "quickstop_prohibited_event_count": null
+          },
+          "samples": []
+        }
+      }
+    }
+  }
+}

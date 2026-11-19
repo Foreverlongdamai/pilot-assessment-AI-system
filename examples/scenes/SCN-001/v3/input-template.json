@@ -1,0 +1,73 @@
+{
+  "schema_version": "3.0",
+  "scene_id": "SCN-001",
+  "items": {
+    "A-S1-06": {
+      "frames": [
+        {
+          "timestamp_s": null,
+          "phase_id": "preflight",
+          "values": {
+            "battery_check_completed": null,
+            "propulsion_check_completed": null,
+            "flight_configuration_check_completed": null,
+            "flight_instruments_check_completed": null,
+            "alerts_check_completed": null,
+            "departure_check_completed": null
+          }
+        }
+      ]
+    },
+    "A-S2-05": {
+      "frames": [
+        {
+          "timestamp_s": null,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": null,
+            "air_taxi_height_m": null,
+            "air_taxi_lateral_position_m": null,
+            "air_taxi_heading_deg": null
+          }
+        },
+        {
+          "timestamp_s": null,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": null,
+            "air_taxi_height_m": null,
+            "air_taxi_lateral_position_m": null,
+            "air_taxi_heading_deg": null
+          }
+        }
+      ]
+    },
+    "A-S2-30": {
+      "frames": [
+        {
+          "timestamp_s": null,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_height_m": null,
+            "quickstop_heading_deg": null,
+            "quickstop_lateral_position_m": null,
+            "quickstop_prohibited_event_count": null
+          }
+        },
+        {
+          "timestamp_s": null,
+          "phase_id": "stop",
+          "values": {
+            "stop_x_m": null,
+            "stop_y_m": null,
+            "stop_height_m": null,
+            "quickstop_height_m": null,
+            "quickstop_heading_deg": null,
+            "quickstop_lateral_position_m": null,
+            "quickstop_prohibited_event_count": null
+          }
+        }
+      ]
+    }
+  }
+}

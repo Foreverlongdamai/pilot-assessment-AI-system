@@ -1,0 +1,503 @@
+{
+  "schema_version": "2.0",
+  "scene_id": "SCN-001",
+  "parameters": {
+    "initial_hover_duration_s": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "initial_hover_height_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "takeoff_position_x_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "takeoff_position_y_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "takeoff_heading_deg": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "speed_hold_duration_s": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "speed_hold_airspeed_mps": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "air_taxi_height_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "air_taxi_lateral_position_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "air_taxi_heading_deg": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "deceleration_onset_position_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "quickstop_entry_airspeed_mps": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "deceleration_duration_s": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "quickstop_height_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "quickstop_heading_deg": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "quickstop_lateral_position_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    }
+  },
+  "skill_models": {
+    "A-S2-08": {
+      "model_version": "draft-v2",
+      "calibration": "uncalibrated",
+      "parameter_source": "unconfigured",
+      "prior": [
+        null,
+        null,
+        null
+      ],
+      "state_scores": [
+        null,
+        null,
+        null
+      ],
+      "checkpoint_models": {
+        "A-S2-08-01": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-08-02": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-08-03": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        }
+      }
+    },
+    "A-S2-05": {
+      "model_version": "draft-v2",
+      "calibration": "uncalibrated",
+      "parameter_source": "unconfigured",
+      "prior": [
+        null,
+        null,
+        null
+      ],
+      "state_scores": [
+        null,
+        null,
+        null
+      ],
+      "checkpoint_models": {
+        "A-S2-05-01": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-05-02": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-05-03": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        }
+      }
+    },
+    "A-S2-30": {
+      "model_version": "draft-v2",
+      "calibration": "uncalibrated",
+      "parameter_source": "unconfigured",
+      "prior": [
+        null,
+        null,
+        null
+      ],
+      "state_scores": [
+        null,
+        null,
+        null
+      ],
+      "checkpoint_models": {
+        "A-S2-30-01": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-30-02": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-30-03": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-30-04": {
+          "states": [
+            "D",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null
+            ],
+            [
+              null,
+              null
+            ],
+            [
+              null,
+              null
+            ]
+          ]
+        }
+      }
+    }
+  }
+}

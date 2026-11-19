@@ -1,0 +1,196 @@
+Window: "Pilot Assessment", App: PilotAssessment.Desktop.exe.
+	0 窗口 Pilot Assessment Secondary Actions: Raise
+		1 窗格 Non Client Input Sink Window
+		2 窗格 AppWindow Custom Title Bar
+			3 按钮 Minimize ID: Minimize
+			4 按钮 Maximize ID: Maximize
+			5 按钮 Close ID: Close
+		6 窗格
+			7 窗格
+				8 标题栏 Pilot Assessment ID: SceneTitleBar
+					9 文本 Pilot Assessment ID: PART_TitleText
+					10 文本 场景评估 ID: PART_SubtitleText
+				11 窗格
+					12 文本 评估工作区
+					13 按钮 打开全局 Model Studio ID: StudioNavigationButton
+						14 文本 Model Studio
+						15 文本 全部场景 · 模型总图
+					16 文本 评估场景
+					17 按钮 打开场景 SCN-001 加速减速任务
+						18 文本 SCN-001
+						19 文本 加速减速任务
+					20 按钮 打开场景 SCN-002 双高度悬停任务
+						21 文本 SCN-002
+						22 文本 双高度悬停任务
+				23 文本 D / A = Pass U = Fail
+				24 文本 按 item 导入带真实时间戳和阶段的帧数据，由系统计算偏差和档位。
+				25 文本 当前场景含演示量化 参数未标定 · CPT 可编辑 ID: QuantificationNotice
+				26 文本 Model Studio ID: PageHeading
+				27 文本 2 个场景的模型总图 · 点击节点查看和编辑 · 配置与各场景共用 ID: PageDescription
+				28 应用栏 ID: Actions
+					29 应用栏按钮 保存配置
+					30 应用栏按钮 加载配置
+					31 应用栏按钮 导出空白输入模板
+					32 应用栏按钮 导入帧数据
+					33 应用栏按钮 开始评估
+					34 应用栏按钮 导出评估报告 ID: ExportReportButton
+				35 文本 当前配置 / 输入目标：SCN-001 | configuration.json | 输入：03-unqualified.input.json ID: ContextText
+				36 状态栏 ID: StatusBar
+					37 文本 警告图标 ID: StandardIcon
+					38 文本 评估完成 ID: Title
+					39 文本 场景：U / Fail。点击 item 卡片打开完整结果。 ID: Message
+				1037 文本 2 个场景 · 6 个 item · 20 个检查点
+				1038 按钮 缩小画布
+				1039 文本 22%
+				1040 按钮 放大画布
+				1041 按钮 缩放以查看全部场景
+				1042 按钮 恢复原始大小
+				1043 窗格 全部场景模型画布，可双向滚动和缩放
+					1044 文本 TASK / 场景任务
+					1045 文本 ITEM / 评估项
+					1046 文本 CHECKPOINT / 检查点证据
+					1047 文本 SCN-001 加速减速任务
+					1048 文本 SCN-002 双高度悬停任务
+					1049 按钮 SCN-001，ITEM，起飞前检查，D · Pass Description: 检查单完成性 ID: ModelNode_scene/SCN-001/task/item/A-S1-06
+						1050 文本 ITEM · A-S1-06
+						1051 文本 起飞前检查
+						1052 文本 D · Pass
+					1053 按钮 SCN-001，CHECKPOINT，电池与供电检查完成，D · Pass Description: 电池与供电检查完成 ID: ModelNode_scene/SCN-001/task/item/A-S1-06/checkpoint/A-S1-06-01
+						1054 文本 CHECKPOINT · A-S1-06-01
+						1055 文本 电池与供电检查完成
+						1056 文本 D · Pass
+					1057 按钮 SCN-001，CHECKPOINT，推进与功率检查完成，D · Pass Description: 推进与功率检查完成 ID: ModelNode_scene/SCN-001/task/item/A-S1-06/checkpoint/A-S1-06-02
+						1058 文本 CHECKPOINT · A-S1-06-02
+						1059 文本 推进与功率检查完成
+						1060 文本 D · Pass
+					1061 按钮 SCN-001，CHECKPOINT，飞控与起飞构型检查完成，D · Pass Description: 飞控与起飞构型检查完成 ID: ModelNode_scene/SCN-001/task/item/A-S1-06/checkpoint/A-S1-06-03
+						1062 文本 CHECKPOINT · A-S1-06-03
+						1063 文本 飞控与起飞构型检查完成
+						1064 文本 D · Pass
+					1065 按钮 SCN-001，CHECKPOINT，飞行仪表检查完成，D · Pass Description: 飞行仪表检查完成 ID: ModelNode_scene/SCN-001/task/item/A-S1-06/checkpoint/A-S1-06-04
+						1066 文本 CHECKPOINT · A-S1-06-04
+						1067 文本 飞行仪表检查完成
+						1068 文本 D · Pass
+					1069 按钮 SCN-001，CHECKPOINT，告警与系统状态检查完成，D · Pass Description: 告警与系统状态检查完成 ID: ModelNode_scene/SCN-001/task/item/A-S1-06/checkpoint/A-S1-06-05
+						1070 文本 CHECKPOINT · A-S1-06-05
+						1071 文本 告警与系统状态检查完成
+						1072 文本 D · Pass
+					1073 按钮 SCN-001，CHECKPOINT，导航与任务信息检查完成，D · Pass Description: 导航与任务信息检查完成 ID: ModelNode_scene/SCN-001/task/item/A-S1-06/checkpoint/A-S1-06-06
+						1074 文本 CHECKPOINT · A-S1-06-06
+						1075 文本 导航与任务信息检查完成
+						1076 文本 D · Pass
+					1077 按钮 SCN-001，ITEM，正常进近至悬停，U · Fail 演示·未标定 94.3 Description: 正常进近至悬停当次表现 ID: ModelNode_scene/SCN-001/task/item/A-S2-23
+						1078 文本 ITEM · A-S2-23
+						1079 文本 正常进近至悬停
+						1080 文本 U · Fail 演示·未标定 94.3
+					1081 按钮 SCN-001，CHECKPOINT，进近航迹控制，U · Fail Description: 进近及进近减速环节，逐帧计算实际三维位置到手工指定路线的最短空间距离。高度偏离包含在内；D/A 通道半径手填，不要求按固定时间到达路线上的某点。 ID: ModelNode_scene/SCN-001/task/item/A-S2-23/checkpoint/A-S2-23-01
+						1082 文本 CHECKPOINT · A-S2-23-01
+						1083 文本 进近航迹控制
+						1084 文本 U · Fail
+					1085 按钮 SCN-001，CHECKPOINT，到点建立悬停，D · Pass Description: 仅在 arrival_hover 环节逐帧检查目标位置、近零地速及指定航向；至少两帧仅为最低数据要求，不代表官方规定时长，不推断帧间状态。 ID: ModelNode_scene/SCN-001/task/item/A-S2-23/checkpoint/A-S2-23-03
+						1086 文本 CHECKPOINT · A-S2-23-03
+						1087 文本 到点建立悬停
+						1088 文本 D · Pass
+					1089 按钮 SCN-001，ITEM，空中滑行（加速与保速），U · Fail 演示·未标定 75.0 Description: 空中滑行（加速与保速）当次表现 ID: ModelNode_scene/SCN-001/task/item/A-S2-05
+						1090 文本 ITEM · A-S2-05
+						1091 文本 空中滑行（加速与保速）
+						1092 文本 U · Fail 演示·未标定 75.0
+					1093 按钮 SCN-001，CHECKPOINT，目标空速与保速，U · Fail Description: 保速帧比较目标空速；结束状态给出实际保速时长。不用最终目标空速评价加速途中。 ID: ModelNode_scene/SCN-001/task/item/A-S2-05/checkpoint/A-S2-05-01
+						1094 文本 CHECKPOINT · A-S2-05-01
+						1095 文本 目标空速与保速
+						1096 文本 U · Fail
+					1097 按钮 SCN-001，CHECKPOINT，高度保持，U · Fail Description: 高度保持 ID: ModelNode_scene/SCN-001/task/item/A-S2-05/checkpoint/A-S2-05-02
+						1098 文本 CHECKPOINT · A-S2-05-02
+						1099 文本 高度保持
+						1100 文本 U · Fail
+					1101 按钮 SCN-001，CHECKPOINT，航迹与航向控制，U · Fail Description: 航迹与航向控制 ID: ModelNode_scene/SCN-001/task/item/A-S2-05/checkpoint/A-S2-05-03
+						1102 文本 CHECKPOINT · A-S2-05-03
+						1103 文本 航迹与航向控制
+						1104 文本 U · Fail
+					1105 按钮 SCN-001，ITEM，快速减速／急停，U · Fail 演示·未标定 76.6 Description: 快速减速／急停当次表现 ID: ModelNode_scene/SCN-001/task/item/A-S2-30
+						1106 文本 ITEM · A-S2-30
+						1107 文本 快速减速／急停
+						1108 文本 U · Fail 演示·未标定 76.6
+					1109 按钮 SCN-001，CHECKPOINT，停止位置精度，D · Pass Description: 停止位置精度 ID: ModelNode_scene/SCN-001/task/item/A-S2-30/checkpoint/A-S2-30-02
+						1110 文本 CHECKPOINT · A-S2-30-02
+						1111 文本 停止位置精度
+						1112 文本 D · Pass
+					1113 按钮 SCN-001，CHECKPOINT，减速过程控制，U · Fail Description: 减速过程控制 ID: ModelNode_scene/SCN-001/task/item/A-S2-30/checkpoint/A-S2-30-03
+						1114 文本 CHECKPOINT · A-S2-30-03
+						1115 文本 减速过程控制
+						1116 文本 U · Fail
+					1117 按钮 SCN-001，CHECKPOINT，限制与禁止接触，D · Pass Description: 限制与禁止接触 ID: ModelNode_scene/SCN-001/task/item/A-S2-30/checkpoint/A-S2-30-04
+						1118 文本 CHECKPOINT · A-S2-30-04
+						1119 文本 限制与禁止接触
+						1120 文本 D · Pass
+					1121 按钮 SCN-001，TASK，加速减速任务，U · Fail Description: 起飞前检查→正常进近至起点悬停→加速与保速→快速减速并停在终点。进近前已完成起飞；起飞过程不属于本场景当前评分。输入按item内精确时间frames排列，比较原始值与手工配置目标或参考剖面。 ID: ModelNode_scene/SCN-001/task
+						1122 文本 TASK · SCN-001
+						1123 文本 加速减速任务
+						1124 文本 U · Fail
+					1125 按钮 SCN-002，ITEM，定点悬停保持，U · Fail 演示·未标定 89.7 Description: 定点悬停保持当次表现 ID: ModelNode_scene/SCN-002/task/item/A-S2-02
+						1126 文本 ITEM · A-S2-02
+						1127 文本 定点悬停保持
+						1128 文本 U · Fail 演示·未标定 89.7
+					1129 按钮 SCN-002，CHECKPOINT，水平位置保持，U · Fail Description: 分别比较实际X、Y与目标水平位置；水平速度分量作为稳定性补充。各指标独立设置D/A容差，逐帧取最差档位；不包含高度、不计算XYZ统一距离。 ID: ModelNode_scene/SCN-002/task/item/A-S2-02/checkpoint/A-S2-02-01
+						1130 文本 CHECKPOINT · A-S2-02-01
+						1131 文本 水平位置保持
+						1132 文本 U · Fail
+					1133 按钮 SCN-002，CHECKPOINT，悬停高度保持，U · Fail Description: 按当前已标明的下方或上方悬停环节，将实际高度与对应目标高度比较；垂直速度作为稳定性补充。各指标分别使用自己的D/A容差，逐帧取最差档位；垂直速度接近零不能代替正确高度。 ID: ModelNode_scene/SCN-002/task/item/A-S2-02/checkpoint/A-S2-02-04
+						1134 文本 CHECKPOINT · A-S2-02-04
+						1135 文本 悬停高度保持
+						1136 文本 U · Fail
+					1137 按钮 SCN-002，CHECKPOINT，航向保持，D · Pass Description: 逐帧比较实际航向与目标航向，使用跨越0/360度的最短有符号角差；按航向自身D/A容差判断，不混入位置或速度指标。 ID: ModelNode_scene/SCN-002/task/item/A-S2-02/checkpoint/A-S2-02-02
+						1138 文本 CHECKPOINT · A-S2-02-02
+						1139 文本 航向保持
+						1140 文本 D · Pass
+					1141 按钮 SCN-002，CHECKPOINT，激光指向保持，U · Fail Description: 激光指向保持 ID: ModelNode_scene/SCN-002/task/item/A-S2-02/checkpoint/A-S2-02-03
+						1142 文本 CHECKPOINT · A-S2-02-03
+						1143 文本 激光指向保持
+						1144 文本 U · Fail
+					1145 按钮 SCN-002，ITEM，垂直升降控制，U · Fail 演示·未标定 88.8 Description: 垂直升降控制当次表现 ID: ModelNode_scene/SCN-002/task/item/SCENE-VERTICAL
+						1146 文本 ITEM · SCENE-VERTICAL
+						1147 文本 垂直升降控制
+						1148 文本 U · Fail 演示·未标定 88.8
+					1149 按钮 SCN-002，CHECKPOINT，升降时水平位置，U · Fail Description: 升降时水平位置 ID: ModelNode_scene/SCN-002/task/item/SCENE-VERTICAL/checkpoint/SCENE-VERTICAL-01
+						1150 文本 CHECKPOINT · SCENE-VERTICAL-01
+						1151 文本 升降时水平位置
+						1152 文本 U · Fail
+					1153 按钮 SCN-002，CHECKPOINT，升降时航向，U · Fail Description: 升降时航向 ID: ModelNode_scene/SCN-002/task/item/SCENE-VERTICAL/checkpoint/SCENE-VERTICAL-02
+						1154 文本 CHECKPOINT · SCENE-VERTICAL-02
+						1155 文本 升降时航向
+						1156 文本 U · Fail
+					1157 按钮 SCN-002，TASK，双高度悬停任务，U · Fail Description: 到达下方指定点后开始：下点停留5秒→上升→上点停留5秒→下降→下点停留5秒→再次上升→上点停留5秒。两个item分别为定点悬停保持和垂直升降控制；定点悬停同时检查水平位置、高度、航向和激光，速度作为稳定性补充。输入已标明环节并按item逐帧组织。 ID: ModelNode_scene/SCN-002/task
+						1158 文本 TASK · SCN-002
+						1159 文本 双高度悬停任务
+						1160 文本 U · Fail
+				1162 文本 ┄┄ 场景 / 检查单归属 ──▶ 飞行 item → 检查点：CPT 结构
+				1163 文本 点击节点编辑目标、容差或 CPT · 拖动画布空白处平移 · 演示分均未标定，正式方法待确定
+				1164 窗格
+					1169 文本 item · 技能
+					1170 文本 空中滑行（加速与保速）
+					1171 文本 SCN-001 · 加速减速任务
+					1172 文本 空中滑行（加速与保速）当次表现
+					1173 文本 本次判定：U / Fail
+					1174 文本 演示量化：75.0 / 100 · 未标定
+					1175 文本 演示模型状态概率：低 5.6% · 中 38.7% · 高 55.6%
+					1176 按钮 打开此 item 的完整评估结果
+					1177 文本 阶段：加速 → 保速 → 保速结束状态
+					1178 文本 量化对象：空中滑行（加速与保速）当次表现
+					1179 文本 保留逐帧表现；当前配置提供整项累计分数与检查点完整观测曲线，参数尚未标定。
+					1180 按钮 编辑演示先验、分值与 CPT
+					1181 文本 演示方法已启用，参数未标定：按 D/A/U 帧占比、检查点等权、κ = 3 计算。输入和参数完整后才显示后验与演示分；P/F 独立保留。
+					1182 按钮 编辑此 item 的目标和偏差范围
+					1183 按钮 进入此场景评估
+					1184 滚动条 垂直 ID: VerticalScrollBar
+						1185 按钮 垂直小幅下降 ID: VerticalSmallDecrease
+						1186 按钮 垂直大幅下降 ID: VerticalLargeDecrease
+						1187 按钮 垂直大幅增长 ID: VerticalLargeIncrease
+						1188 按钮 垂直小幅增长 ID: VerticalSmallIncrease
+		117 标题栏
+			118 菜单栏 系统 ID: MenuBar
+				981 菜单项 系统
+			120 按钮 最小化
+			121 按钮 最大化
+			122 按钮 关闭
+
+The focused UI element is 7 窗格.

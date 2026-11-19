@@ -1,0 +1,113 @@
+{
+  "schema_version": "3.0",
+  "scene_id": "SCN-002",
+  "items": {
+    "A-S2-02": {
+      "frames": [
+        {
+          "timestamp_s": null,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_x_m": null,
+            "hover_y_m": null,
+            "hover_vx_mps": null,
+            "hover_vy_mps": null,
+            "hover_lower_height_m": null,
+            "hover_vz_mps": null,
+            "hover_heading_deg": null,
+            "laser_lower_spot": {
+              "status": null,
+              "u_m": null,
+              "v_m": null
+            }
+          }
+        },
+        {
+          "timestamp_s": null,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_x_m": null,
+            "hover_y_m": null,
+            "hover_vx_mps": null,
+            "hover_vy_mps": null,
+            "hover_upper_height_m": null,
+            "hover_vz_mps": null,
+            "hover_heading_deg": null,
+            "laser_upper_spot": {
+              "status": null,
+              "u_m": null,
+              "v_m": null
+            }
+          }
+        },
+        {
+          "timestamp_s": null,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_x_m": null,
+            "hover_y_m": null,
+            "hover_vx_mps": null,
+            "hover_vy_mps": null,
+            "hover_lower_height_m": null,
+            "hover_vz_mps": null,
+            "hover_heading_deg": null,
+            "laser_lower_spot": {
+              "status": null,
+              "u_m": null,
+              "v_m": null
+            }
+          }
+        },
+        {
+          "timestamp_s": null,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_x_m": null,
+            "hover_y_m": null,
+            "hover_vx_mps": null,
+            "hover_vy_mps": null,
+            "hover_upper_height_m": null,
+            "hover_vz_mps": null,
+            "hover_heading_deg": null,
+            "laser_upper_spot": {
+              "status": null,
+              "u_m": null,
+              "v_m": null
+            }
+          }
+        }
+      ]
+    },
+    "SCENE-VERTICAL": {
+      "frames": [
+        {
+          "timestamp_s": null,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_x_m": null,
+            "transfer_y_m": null,
+            "transfer_heading_deg": null
+          }
+        },
+        {
+          "timestamp_s": null,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_x_m": null,
+            "transfer_y_m": null,
+            "transfer_heading_deg": null
+          }
+        },
+        {
+          "timestamp_s": null,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_x_m": null,
+            "transfer_y_m": null,
+            "transfer_heading_deg": null
+          }
+        }
+      ]
+    }
+  }
+}

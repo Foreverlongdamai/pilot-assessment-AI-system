@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "random_records": 150,
+  "compared_posteriors": 14078,
+  "maximum_absolute_probability_error": 4.1300296516055823e-14,
+  "additional_checks": [
+    "mixed checkpoint phase applicability",
+    "phase stationary restart without prior reset",
+    "missing taints affected checkpoint and item only",
+    "dt/tau 1e-628 direct Decimal oracle",
+    "tiny CPT with nonzero retention after refresh rounds to one",
+    "binary D/U transitions",
+    "entire applicable phase missing marks CP partial and preserves prefix"
+  ],
+  "runtime_sha256": "436686f6bf570dd0f0ec9b34f62e67faf4b60f74067cd80c2242c805510c4e0c",
+  "oracle": "80-digit Decimal transition matrices and direct likelihood products, 750 digits for underflow case; no runtime inference helpers reused"
+}

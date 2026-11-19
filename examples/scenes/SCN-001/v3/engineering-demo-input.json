@@ -1,0 +1,1363 @@
+{
+  "schema_version": "3.0",
+  "scene_id": "SCN-001",
+  "items": {
+    "A-S1-06": {
+      "frames": [
+        {
+          "timestamp_s": 0.0,
+          "phase_id": "preflight",
+          "values": {
+            "alerts_check_completed": true,
+            "battery_check_completed": true,
+            "departure_check_completed": true,
+            "flight_configuration_check_completed": true,
+            "flight_instruments_check_completed": true,
+            "propulsion_check_completed": true
+          }
+        }
+      ]
+    },
+    "A-S2-05": {
+      "frames": [
+        {
+          "timestamp_s": 10.3,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 0.0,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 10.4,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 0.6666666666666666,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 10.5,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 1.3333333333333333,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 10.6,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 2.0,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 10.7,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 2.6666666666666665,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 10.8,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 3.3333333333333335,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 10.9,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 4.0,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 11.0,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 4.666666666666667,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 11.1,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 5.333333333333333,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 11.2,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 6.0,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 11.3,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 6.666666666666667,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 11.4,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 7.333333333333333,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 11.5,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 8.0,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 11.6,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 8.666666666666666,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 11.7,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 9.333333333333334,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 11.8,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 10.0,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 11.9,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 10.666666666666666,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 12.0,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 11.333333333333334,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 12.1,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 12.0,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 12.2,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 12.666666666666666,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 12.3,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 13.333333333333334,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 12.4,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 14.0,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 12.5,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 14.666666666666666,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 12.6,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 15.333333333333334,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 12.7,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 16.0,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 12.8,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 16.666666666666668,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 12.9,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 17.333333333333332,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 13.0,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 18.0,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 13.1,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 18.666666666666668,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 13.2,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 19.333333333333332,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 13.3,
+          "phase_id": "acceleration",
+          "values": {
+            "air_taxi_airspeed_mps": 20.0,
+            "air_taxi_heading_deg": 359,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 14.0,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 14.1,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 14.2,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 14.3,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 14.4,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 14.5,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 14.6,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 14.7,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 14.8,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 14.9,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.0,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 8,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.1,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 8,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.2,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 8,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.3,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 3,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.4,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 3,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.5,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 3,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.6,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 3,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.7,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 3,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.8,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.9,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.0,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.1,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.2,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.3,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.4,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.5,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.6,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.7,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.8,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.9,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        },
+        {
+          "timestamp_s": 17.0,
+          "phase_id": "hold",
+          "values": {
+            "air_taxi_airspeed_mps": 20,
+            "air_taxi_heading_deg": 1,
+            "air_taxi_height_m": 10,
+            "air_taxi_lateral_position_m": 100
+          }
+        }
+      ]
+    },
+    "A-S2-30": {
+      "frames": [
+        {
+          "timestamp_s": 18.0,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 18.1,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 18.2,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 18.3,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 18.4,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 18.5,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 18.6,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 18.7,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 18.8,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 18.9,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 19.0,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 19.1,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 19.2,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 19.3,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 19.4,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 19.5,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 19.6,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 19.7,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 19.8,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 19.9,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 20.0,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 20.1,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 20.2,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 20.3,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 20.4,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 20.5,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 20.6,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 20.7,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 20.8,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 20.9,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 21.0,
+          "phase_id": "deceleration",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0
+          }
+        },
+        {
+          "timestamp_s": 22.0,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 22.1,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 22.2,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 22.3,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 22.4,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 22.5,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 22.6,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 22.7,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 22.8,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 22.9,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 23.0,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 23.1,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 23.2,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 23.3,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 23.4,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 23.5,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 23.6,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 23.7,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 23.8,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 23.9,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 24.0,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 24.1,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 24.2,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 24.3,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 24.4,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 24.5,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 24.6,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 24.7,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 24.8,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 24.9,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 25.0,
+          "phase_id": "stop",
+          "values": {
+            "quickstop_heading_deg": 359,
+            "quickstop_height_m": 10,
+            "quickstop_lateral_position_m": 100,
+            "quickstop_prohibited_event_count": 0,
+            "stop_height_m": 10,
+            "stop_x_m": 100,
+            "stop_y_m": 100
+          }
+        }
+      ]
+    }
+  }
+}

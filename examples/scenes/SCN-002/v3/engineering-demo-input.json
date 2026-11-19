@@ -1,0 +1,4523 @@
+{
+  "schema_version": "3.0",
+  "scene_id": "SCN-002",
+  "items": {
+    "A-S2-02": {
+      "frames": [
+        {
+          "timestamp_s": 10.0,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 10.1,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 10.2,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 10.3,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 10.4,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 10.5,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 10.6,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 10.7,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 10.8,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 10.9,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 11.0,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 11.1,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 11.2,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 11.3,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 11.4,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 11.5,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 11.6,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 11.7,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 11.8,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 11.9,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 12.0,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 12.1,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 12.2,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 12.3,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 12.4,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 12.5,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 12.6,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 12.7,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 12.8,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 12.9,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 13.0,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 13.1,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 13.2,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 13.3,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 13.4,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 13.5,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 13.6,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 13.7,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 13.8,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 13.9,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 14.0,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 14.1,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 14.2,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 14.3,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 14.4,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 14.5,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 14.6,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 14.7,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 14.8,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 14.9,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 15.0,
+          "phase_id": "lower_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 20.0,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 20.1,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 20.2,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 20.3,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 20.4,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 20.5,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 20.6,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 20.7,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 20.8,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 20.9,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 21.0,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 21.1,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 21.2,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 21.3,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 21.4,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 21.5,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 21.6,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 21.7,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 21.8,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 21.9,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 22.0,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.8,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 22.1,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.8,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 22.2,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.8,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 22.3,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.8,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 22.4,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.8,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 22.5,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 22.6,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 22.7,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 22.8,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 22.9,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 23.0,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 23.1,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 23.2,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 23.3,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 23.4,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 23.5,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 23.6,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 23.7,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 23.8,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 23.9,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 24.0,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 24.1,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 24.2,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 24.3,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 24.4,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 24.5,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 24.6,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 24.7,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 24.8,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 24.9,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 25.0,
+          "phase_id": "upper_1",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 30.0,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 30.1,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 30.2,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 30.3,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 30.4,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 30.5,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 30.6,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 30.7,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 30.8,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 30.9,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 31.0,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 31.1,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 31.2,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 31.3,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 31.4,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 31.5,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 101.5,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 31.6,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 101.5,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 31.7,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 101.5,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 31.8,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 31.9,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 32.0,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 32.1,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 32.2,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 32.3,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 32.4,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 32.5,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 32.6,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 32.7,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 32.8,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 32.9,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 33.0,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 33.1,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 33.2,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 33.3,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 33.4,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 33.5,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 33.6,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 33.7,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 33.8,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 33.9,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 34.0,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 34.1,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 34.2,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 34.3,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 34.4,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 34.5,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 34.6,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 34.7,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 34.8,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 34.9,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 35.0,
+          "phase_id": "lower_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_lower_height_m": 10,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_lower_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 40.0,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 40.1,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 40.2,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 40.3,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 40.4,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 40.5,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 40.6,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 40.7,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 40.8,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 40.9,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 41.0,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 41.1,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 41.2,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 41.3,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 41.4,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 41.5,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 41.6,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 41.7,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 41.8,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 41.9,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 42.0,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 42.1,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 42.2,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 42.3,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 42.4,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 42.5,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 42.6,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 42.7,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 42.8,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 42.9,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.35,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 43.0,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 43.1,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 43.2,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 43.3,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 43.4,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 43.5,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 43.6,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 43.7,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 43.8,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 43.9,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 44.0,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 44.1,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 44.2,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 44.3,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 44.4,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 44.5,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 44.6,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 44.7,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 44.8,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 44.9,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        },
+        {
+          "timestamp_s": 45.0,
+          "phase_id": "upper_2",
+          "values": {
+            "hover_heading_deg": 359,
+            "hover_upper_height_m": 15,
+            "hover_vx_mps": 0,
+            "hover_vy_mps": 0,
+            "hover_vz_mps": 0,
+            "hover_x_m": 100,
+            "hover_y_m": 100,
+            "laser_upper_spot": {
+              "status": "hit",
+              "u_m": 0.1,
+              "v_m": 0
+            }
+          }
+        }
+      ]
+    },
+    "SCENE-VERTICAL": {
+      "frames": [
+        {
+          "timestamp_s": 15.1,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.2,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.3,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.4,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.5,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.6,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.7,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.8,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 15.9,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.0,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.1,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.2,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.3,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.4,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.5,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.6,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.7,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.8,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 16.9,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 17.0,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 17.1,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 17.2,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 17.3,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 17.4,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 17.5,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 17.6,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 17.7,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 17.8,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 17.9,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 18.0,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 18.1,
+          "phase_id": "rise_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 25.1,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 25.2,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 25.3,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 25.4,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 25.5,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 25.6,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 25.7,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 25.8,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 25.9,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 26.0,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 26.1,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 26.2,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 26.3,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 26.4,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 26.5,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 26.6,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 26.7,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 26.8,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 26.9,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 27.0,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 27.1,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 27.2,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 27.3,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 27.4,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 27.5,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 27.6,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 27.7,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 27.8,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 27.9,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 28.0,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 28.1,
+          "phase_id": "descend_1",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 35.1,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 35.2,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 35.3,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 35.4,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 35.5,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 35.6,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 35.7,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 35.8,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 35.9,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 36.0,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 36.1,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 36.2,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 36.3,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 36.4,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 36.5,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 36.6,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 36.7,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 36.8,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 36.9,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 37.0,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 37.1,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 37.2,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 37.3,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 37.4,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 37.5,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 37.6,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 37.7,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 37.8,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 37.9,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 38.0,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        },
+        {
+          "timestamp_s": 38.1,
+          "phase_id": "rise_2",
+          "values": {
+            "transfer_heading_deg": 359,
+            "transfer_x_m": 100,
+            "transfer_y_m": 100
+          }
+        }
+      ]
+    }
+  }
+}

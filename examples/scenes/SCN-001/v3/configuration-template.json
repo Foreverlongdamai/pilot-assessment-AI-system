@@ -1,0 +1,321 @@
+{
+  "schema_version": "3.0",
+  "scene_id": "SCN-001",
+  "parameters": {
+    "air_taxi_airspeed_mps": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "reference_profile": []
+    },
+    "air_taxi_height_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "air_taxi_lateral_position_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "air_taxi_heading_deg": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "stop_x_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "stop_y_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "stop_height_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "quickstop_height_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "quickstop_heading_deg": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "quickstop_lateral_position_m": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    }
+  },
+  "skill_models": {
+    "A-S2-05": {
+      "model_version": "draft-v3",
+      "inference_method": "sequential_bayes_compensation_v1",
+      "compensation": {
+        "alpha": 0.2
+      },
+      "calibration": "uncalibrated",
+      "parameter_source": "unconfigured",
+      "prior": [
+        null,
+        null,
+        null
+      ],
+      "state_scores": [
+        0,
+        50,
+        100
+      ],
+      "checkpoint_models": {
+        "A-S2-05-01": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-05-02": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-05-03": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        }
+      }
+    },
+    "A-S2-30": {
+      "model_version": "draft-v3",
+      "inference_method": "sequential_bayes_compensation_v1",
+      "compensation": {
+        "alpha": 0.2
+      },
+      "calibration": "uncalibrated",
+      "parameter_source": "unconfigured",
+      "prior": [
+        null,
+        null,
+        null
+      ],
+      "state_scores": [
+        0,
+        50,
+        100
+      ],
+      "checkpoint_models": {
+        "A-S2-30-02": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-30-03": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ],
+            [
+              null,
+              null,
+              null
+            ]
+          ]
+        },
+        "A-S2-30-04": {
+          "states": [
+            "D",
+            "U"
+          ],
+          "probabilities": [
+            [
+              null,
+              null
+            ],
+            [
+              null,
+              null
+            ],
+            [
+              null,
+              null
+            ]
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,135 @@
+=== 1. 能力格与CPT (J=9, a=1, b0=0.605, 众数对应) ===
+theta: [-1.593 -0.967 -0.589 -0.282  0.     0.282  0.589  0.967  1.593]
+score = expected grade points per level: [ 9.  20.8 31.1 40.7 50.  59.3 68.9 79.2 91. ]
+  level 1 theta -1.59  U 0.843  A 0.134  D 0.023  score 9.0
+  level 2 theta -0.97  U 0.649  A 0.286  D 0.065  score 20.8
+  level 3 theta -0.59  U 0.494  A 0.390  D 0.116  score 31.1
+  level 4 theta -0.28  U 0.366  A 0.452  D 0.181  score 40.7
+  level 5 theta +0.00  U 0.263  A 0.473  D 0.263  score 50.0
+  level 6 theta +0.28  U 0.181  A 0.452  D 0.366  score 59.3
+  level 7 theta +0.59  U 0.116  A 0.390  D 0.494  score 68.9
+  level 8 theta +0.97  U 0.065  A 0.286  D 0.649  score 79.2
+  level 9 theta +1.59  U 0.023  A 0.134  D 0.843  score 91.0
+band-averaged CPT (rows low/mid/high; cols U/A/D):
+[[0.662 0.27  0.068]
+ [0.27  0.459 0.27 ]
+ [0.068 0.27  0.662]]
+prior predictive grade mix U/A/D: 0.33/0.33/0.33
+  one U: ln LR high vs low band -2.28 (2lnB 4.55); WOE high vs not-high -1.93
+  one A: ln LR high vs low band +0.00 (2lnB 0.00); WOE high vs not-high -0.30
+  one D: ln LR high vs low band +2.28 (2lnB 4.55); WOE high vs not-high +1.36
+  current CPT one U: ln LR high vs low -6.48 (2lnB 12.95)
+
+=== 2. 锚点：单次动作 ===
+  DDDD  score  85.5  SD  8.8  低0.00/中0.03/高0.97   (raw mean grade points 100)
+  DDD   score  82.9  SD 11.0  低0.00/中0.07/高0.93   (raw mean grade points 100)
+  AAAA  score  50.0  SD 13.7  低0.16/中0.69/高0.16   (raw mean grade points 50)
+  AAA   score  50.0  SD 15.2  低0.18/中0.63/高0.18   (raw mean grade points 50)
+  UUUU  score  14.5  SD  8.8  低0.97/中0.03/高0.00   (raw mean grade points 0)
+  UUU   score  17.1  SD 11.0  低0.93/中0.07/高0.00   (raw mean grade points 0)
+  DDDU  score  72.3  SD 14.9  低0.02/中0.25/高0.73   (raw mean grade points 75)
+  DDDA  score  77.7  SD 12.5  低0.00/中0.14/高0.86   (raw mean grade points 88)
+  DDAA  score  67.4  SD 14.0  低0.02/中0.36/高0.62   (raw mean grade points 75)
+  AAAU  score  42.0  SD 14.1  低0.35/中0.59/高0.06   (raw mean grade points 38)
+  DAUU  score  39.8  SD 15.7  低0.42/中0.51/高0.07   (raw mean grade points 38)
+  UUUD  score  27.7  SD 14.9  低0.73/中0.25/高0.02   (raw mean grade points 25)
+  DDUU  score  50.0  SD 17.4  低0.22/中0.56/高0.22   (raw mean grade points 50)
+   10 obs: 70%D/20%A/10%U (raw 80) ->  78.0 ±  9.4 | 20/50/30 (raw 45) ->  45.7 ± 10.5
+   20 obs: 70%D/20%A/10%U (raw 80) ->  79.2 ±  6.6 | 20/50/30 (raw 45) ->  45.4 ±  7.7
+   40 obs: 70%D/20%A/10%U (raw 80) ->  79.3 ±  3.6 | 20/50/30 (raw 45) ->  45.3 ±  5.6
+   80 obs: 70%D/20%A/10%U (raw 80) ->  79.2 ±  0.9 | 20/50/30 (raw 45) ->  45.1 ±  4.7
+  160 obs: 70%D/20%A/10%U (raw 80) ->  79.2 ±  0.1 | 20/50/30 (raw 45) ->  44.7 ±  4.6
+  320 obs: 70%D/20%A/10%U (raw 80) ->  79.2 ±  0.0 | 20/50/30 (raw 45) ->  44.1 ±  4.4
+
+=== 3. 65 趟：单次表现分 (E1..E4, 三档) ===
+score: min 14.5 p10 32.6 median 50.0 p90 62.4 max 77.7; SD median 15.7 (range 8.8-17.8)
+Spearman with raw mean grade points 0.975; max |score-raw| 14.5
+  门控 Pass (CP1/CP2 无U): n=48  score 27.7-77.7 mean 52.2
+  门控 Fail (CP1/CP2 无U): n=17  score 14.5-50.0 mean 34.0
+  证据最差档 A: n=21 score 50.0-77.7 mean 60.0
+  证据最差档 U: n=44 score 14.5-63.9 mean 41.4
+distinct evidence patterns: 37  most common: [('DUUA', 6), ('AAA-', 6), ('DAA-', 5), ('AUA-', 4), ('UAUA', 3), ('DAUU', 2)]
+modal band low/mid/high: [10, 48, 7]
+vs §9 kappa method: Spearman 0.81; kappa range 0.1-97.1
+
+=== 4. 五档证据 vs 三档证据 (同一分数尺度) ===
+5-level thresholds [-0.605  0.     0.605  1.209] ; score per level identical to 3-level: True
+5-level: score median 50.1 range 14.5-84.5, SD median 14.6 (3-level 15.7); Spearman with 3-level 0.969; distinct scores 33 vs 12; max|Δ| 8.0
+  4 x level 5: score 89.0 SD 5.3 低0.00/中0.00/高1.00
+  4 x level 4: score 72.6 SD 11.3 低0.00/中0.20/高0.79
+  4 x level 3: score 57.9 SD 12.7 低0.05/中0.63/高0.33
+  4 x level 2: score 42.1 SD 12.7 低0.33/中0.63/高0.05
+  4 x level 1: score 14.5 SD 8.8 低0.97/中0.03/高0.00
+
+=== 5. 敏感性 (基准 J=9, a=1, b0=0.605, 期望得分映射) ===
+  J=3         Spearman 0.982  max|Δ|   7.0  mean|Δ|  1.3  DDDD  78.5  UUUU  21.5  range  21.5- 76.3  SDmed 16.8
+  J=5         Spearman 0.969  max|Δ|   2.2  mean|Δ|  0.3  DDDD  83.2  UUUU  16.8  range  16.8- 77.8  SDmed 16.1
+  J=7         Spearman 0.973  max|Δ|   0.7  mean|Δ|  0.1  DDDD  84.8  UUUU  15.2  range  15.2- 77.8  SDmed 15.8
+  J=11        Spearman 0.984  max|Δ|   0.4  mean|Δ|  0.0  DDDD  85.8  UUUU  14.2  range  14.2- 77.5  SDmed 15.7
+  J=41        Spearman 0.978  max|Δ|   1.3  mean|Δ|  0.2  DDDD  86.7  UUUU  13.3  range  13.3- 77.2  SDmed 15.6
+  a=0.7 modal Spearman 0.980  max|Δ|   8.0  mean|Δ|  2.2  DDDD  77.5  UUUU  22.5  range  22.5- 71.8  SDmed 14.7
+  a=1.5 modal Spearman 0.982  max|Δ|   6.5  mean|Δ|  1.9  DDDD  91.9  UUUU   8.1  range   8.1- 81.8  SDmed 15.8
+  a=2.0 modal Spearman 0.981  max|Δ|   9.1  mean|Δ|  3.1  DDDD  94.6  UUUU   5.4  range   5.4- 83.7  SDmed 15.2
+  a=0.7 fixb  Spearman 0.972  max|Δ|   7.7  mean|Δ|  2.4  DDDD  77.7  UUUU  22.3  range  22.3- 71.6  SDmed 15.3
+  a=1.5 fixb  Spearman 0.991  max|Δ|   6.2  mean|Δ|  2.2  DDDD  91.7  UUUU   8.3  range   8.3- 82.2  SDmed 14.8
+  b0=0.431    Spearman 0.972  max|Δ|   0.9  mean|Δ|  0.5  DDDD  85.5  UUUU  14.5  range  14.5- 76.8  SDmed 16.7
+  b0=0.967    Spearman 0.984  max|Δ|   2.2  mean|Δ|  0.4  DDDD  83.2  UUUU  16.8  range  16.8- 77.7  SDmed 13.5
+  linear J9   Spearman 0.987  max|Δ|   8.4  mean|Δ|  3.0  DDDD  93.9  UUUU   6.1  range   6.1- 84.8  SDmed 20.2
+  linear J41  Spearman 0.980  max|Δ|   5.5  mean|Δ|  1.6  DDDD  91.0  UUUU   9.0  range   9.0- 81.2  SDmed 18.3
+
+=== 6. 采样率：100 Hz vs 10 Hz ===
+5-level evidence changed: [('14_34_26', 'e2a', 2, 3), ('16_14_16', 'e1', 2, 3)]
+3-level score max|Δ| 0.00
+5-level score max|Δ| 5.63
+
+=== 7. 局部相关 Q3 (三档) ===
+  e1 ~ e2a : -0.342   (Q3 - mean = -0.042)
+  e1 ~ e3 : -0.416   (Q3 - mean = -0.116)
+  e1 ~ e4 : -0.066   (Q3 - mean = +0.234)
+  e2a ~ e3 : -0.276   (Q3 - mean = +0.024)
+  e2a ~ e4 : -0.495   (Q3 - mean = -0.195)
+  e3 ~ e4 : -0.205   (Q3 - mean = +0.095)
+  mean Q3 -0.300; max(Q3 - mean) 0.234
+
+=== 8. 检查点诊断：观察得分率 vs 模型期望 ===
+  E1 减速航迹与航向   n=65 observed 0.68 expected 0.47  diff +0.20
+  E2 减速平顺性     n=65 observed 0.39 expected 0.47  diff -0.08
+  E3 初次停住点     n=65 observed 0.31 expected 0.47  diff -0.17
+  E4 末端修正      n=38 observed 0.45 expected 0.44  diff +0.01
+
+=== 9. 证据权重示例 ===
+  14_34_26 score 39.8 ± 15.7 低0.42/中0.51/高0.07 | E1 减速航迹与航向 U WOE -1.93; E2 减速平顺性 A WOE -0.30; E3 初次停住点 A WOE -0.30; E4 末端修正 不适用
+  15_17_23 score 50.0 ± 15.2 低0.18/中0.63/高0.18 | E1 减速航迹与航向 A WOE -0.30; E2 减速平顺性 A WOE -0.30; E3 初次停住点 A WOE -0.30; E4 末端修正 不适用
+  16_54_31 score 32.6 ± 14.0 低0.62/中0.36/高0.02 | E1 减速航迹与航向 U WOE -1.93; E2 减速平顺性 A WOE -0.30; E3 初次停住点 U WOE -1.93; E4 末端修正 A WOE -0.30
+  15_42_13 score 60.2 ± 15.7 低0.07/中0.51/高0.42 | E1 减速航迹与航向 A WOE -0.30; E2 减速平顺性 D WOE +1.36; E3 初次停住点 A WOE -0.30; E4 末端修正 不适用
+
+=== 10. 能力档案：AR(1)，65 趟按时间顺序 ===
+  rho 0.000  log marginal likelihood -262.57   final profile 72.3 ± 14.9
+  rho 0.500  log marginal likelihood -260.51   final profile 67.9 ± 15.2
+  rho 0.800  log marginal likelihood -256.72   final profile 61.2 ± 14.5
+  rho 0.900  log marginal likelihood -254.18   final profile 56.7 ± 13.4
+  rho 0.950  log marginal likelihood -252.17   final profile 53.2 ± 12.1
+  rho 0.980  log marginal likelihood -250.34   final profile 50.0 ± 10.4
+  rho 0.990  log marginal likelihood -249.41   final profile 48.2 ± 9.3
+  rho 0.995  log marginal likelihood -248.58   final profile 46.2 ± 7.9
+  rho 1.000  log marginal likelihood -247.58   final profile 46.8 ± 4.4
+best rho 1.000; profile at runs: ['1:40±16', '3:37±10', '5:32±8', '10:40±6', '20:46±5', '30:47±4', '40:47±4', '50:49±2', '65:47±4']
+attempt score mean first 20 47.6 / last 20 45.9; Spearman(score, order) 0.02
+  E1 减速航迹与航向 Spearman(grade points, order) -0.13
+  E2 减速平顺性 Spearman(grade points, order) +0.02
+  E3 初次停住点 Spearman(grade points, order) +0.02
+  E4 末端修正 Spearman(grade points, order) +0.11
+between-session rule: rho_day 0.9835 (T = 60 days); after 1/7/30/90 days rho = [0.983, 0.89, 0.607, 0.224]
+  profile after 65 runs, then  0 days without training: 46.8 ± 4.4 低0.00/中1.00/高0.00
+  profile after 65 runs, then  1 days without training: 46.8 ± 7.8 低0.07/中0.92/高0.01
+  profile after 65 runs, then  7 days without training: 47.3 ± 14.9 低0.23/中0.63/高0.14
+  profile after 65 runs, then 30 days without training: 48.4 ± 22.5 低0.32/中0.41/高0.27
+  profile after 65 runs, then 90 days without training: 49.4 ± 25.4 低0.34/中0.34/高0.32
+
+=== 11. 重复实例：连续 4 趟当作一次训练的 4 个实例 ===
+  runs 1-4: per-instance ['40', '40', '40', '22'] -> combined 31.1 ± 8.3 低0.74/中0.26/高0.00
+  runs 21-24: per-instance ['50', '33', '50', '40'] -> combined 41.3 ± 8.6 低0.26/中0.73/高0.00
+  runs 41-44: per-instance ['60', '72', '50', '50'] -> combined 60.3 ± 9.3 低0.00/中0.65/高0.35
+
+=== 12. 计算量 ===
+posterior per attempt: 9.4 µs

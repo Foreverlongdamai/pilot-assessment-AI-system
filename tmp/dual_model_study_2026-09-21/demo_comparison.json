@@ -1,0 +1,1325 @@
+[
+  {
+    "scene": "SCN-001",
+    "case": "01-proficient.report",
+    "report_sha256": "d296fbff7fa03cb24575fff784a923ed6ece553ca10f3539dafc52c1482c7530",
+    "item_id": "A-S2-23",
+    "name": "正常进近至悬停",
+    "rule_grade": "A",
+    "rule_passed": true,
+    "current_score": 96.35224505625419,
+    "current_p_L_M_H": [
+      0.0016705984797534858,
+      0.06961390191540871,
+      0.9287154996048377
+    ],
+    "time_strength_unimplemented_score": 100.0,
+    "time_strength_unimplemented_p_L_M_H": [
+      1.6742009052818258e-50,
+      3.950155609693427e-21,
+      1.0
+    ],
+    "nominal_duration_s": 27.2,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 98.55371900826447,
+    "dirichlet_predictive_D_A_U": [
+      0.9349758303446125,
+      0.046156245127085604,
+      0.018867924528301886
+    ],
+    "dirichlet_quality_score": 95.80539529081553,
+    "beta_binomial2_or_binary_mean_score": 98.07298911709354,
+    "probit": {
+      "mean_score": 93.44923355280083,
+      "score_interval95": [
+        86.87238764434404,
+        99.3175344313623
+      ],
+      "interval_class_D_A_U": [
+        0.9999999997985021,
+        2.0149785452682235e-10,
+        9.84106058492702e-234
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "A-S2-23-01",
+        "q_D_A_U": [
+          0.9421487603305785,
+          0.05785123966942149,
+          0.0
+        ],
+        "effective_n": 50.0,
+        "dirichlet_predictive_D_A_U": [
+          0.9076875097458288,
+          0.07344456572586933,
+          0.018867924528301886
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-23-03",
+        "q_D_A_U": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effective_n": 50.0,
+        "dirichlet_predictive_D_A_U": [
+          0.9622641509433962,
+          0.018867924528301886,
+          0.018867924528301886
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-001",
+    "case": "01-proficient.report",
+    "report_sha256": "d296fbff7fa03cb24575fff784a923ed6ece553ca10f3539dafc52c1482c7530",
+    "item_id": "A-S2-05",
+    "name": "空中滑行（加速与保速）",
+    "rule_grade": "A",
+    "rule_passed": true,
+    "current_score": 94.91259987246623,
+    "current_p_L_M_H": [
+      0.002426181711587062,
+      0.09689563912750114,
+      0.9006781791609118
+    ],
+    "time_strength_unimplemented_score": 99.9999999979758,
+    "time_strength_unimplemented_p_L_M_H": [
+      2.625001384353776e-28,
+      4.0484110812697856e-11,
+      0.9999999999595159
+    ],
+    "nominal_duration_s": 16.099999999999998,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 96.39917695473251,
+    "dirichlet_predictive_D_A_U": [
+      0.87888398082078,
+      0.09359308339940348,
+      0.027522935779816515
+    ],
+    "dirichlet_quality_score": 92.56805225204818,
+    "beta_binomial2_or_binary_mean_score": 95.9397791631015,
+    "probit": {
+      "mean_score": 87.17290867408217,
+      "score_interval95": [
+        81.80364662527543,
+        92.98670123307038
+      ],
+      "interval_class_D_A_U": [
+        0.9999990225345202,
+        9.77465479823702e-07,
+        2.994673968414539e-220
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "A-S2-05-01",
+        "q_D_A_U": [
+          0.9012345679012346,
+          0.09876543209876543,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.854343640276362,
+          0.1181334239438215,
+          0.02752293577981652
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-05-02",
+        "q_D_A_U": [
+          0.9506172839506173,
+          0.04938271604938271,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.8996488843583645,
+          0.072828179861819,
+          0.02752293577981652
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-05-03",
+        "q_D_A_U": [
+          0.9320987654320988,
+          0.06790123456790123,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.8826594178276136,
+          0.08981764639256995,
+          0.02752293577981652
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-001",
+    "case": "01-proficient.report",
+    "report_sha256": "d296fbff7fa03cb24575fff784a923ed6ece553ca10f3539dafc52c1482c7530",
+    "item_id": "A-S2-30",
+    "name": "快速减速／急停",
+    "rule_grade": "A",
+    "rule_passed": true,
+    "current_score": 92.08110928008335,
+    "current_p_L_M_H": [
+      0.004448446435055692,
+      0.14948092152822162,
+      0.8460706320367227
+    ],
+    "time_strength_unimplemented_score": 99.9998656942772,
+    "time_strength_unimplemented_p_L_M_H": [
+      1.3612307343106067e-17,
+      2.686114455817979e-06,
+      0.9999973138855441
+    ],
+    "nominal_duration_s": 11.100000000000001,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 98.95833333333333,
+    "dirichlet_predictive_D_A_U": [
+      0.9304281345565749,
+      0.03746177370030581,
+      0.03211009174311927
+    ],
+    "dirichlet_quality_score": 94.91590214067278,
+    "beta_binomial2_or_binary_mean_score": 98.17193675889328,
+    "probit": {
+      "mean_score": 93.08300878350512,
+      "score_interval95": [
+        85.66206439777481,
+        99.39543309808516
+      ],
+      "interval_class_D_A_U": [
+        0.9999999578396016,
+        4.216039836582655e-08,
+        2.6378802529075507e-200
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "A-S2-30-02",
+        "q_D_A_U": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.944954128440367,
+          0.02752293577981652,
+          0.02752293577981652
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-30-03",
+        "q_D_A_U": [
+          0.9375,
+          0.0625,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.8876146788990826,
+          0.08486238532110092,
+          0.02752293577981652
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-30-04",
+        "q_D_A_U": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.9587155963302753,
+          0.0,
+          0.04128440366972477
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-001",
+    "case": "02-marginal.report",
+    "report_sha256": "10bc59ae0badbc55cd69b0541fe46654921cc8950f0f0d8ef6d0cd18ccce8478",
+    "item_id": "A-S2-23",
+    "name": "正常进近至悬停",
+    "rule_grade": "A",
+    "rule_passed": true,
+    "current_score": 48.20634814966574,
+    "current_p_L_M_H": [
+      0.0499033181311247,
+      0.9360664007444357,
+      0.01403028112443959
+    ],
+    "time_strength_unimplemented_score": 50.0,
+    "time_strength_unimplemented_p_L_M_H": [
+      8.185643590475843e-24,
+      1.0,
+      8.326123584775339e-34
+    ],
+    "nominal_duration_s": 27.2,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 58.057851239669425,
+    "dirichlet_predictive_D_A_U": [
+      0.17090285357866833,
+      0.8102292218930298,
+      0.018867924528301886
+    ],
+    "dirichlet_quality_score": 57.60174645251832,
+    "beta_binomial2_or_binary_mean_score": 57.978070534326164,
+    "probit": {
+      "mean_score": 55.10846623848133,
+      "score_interval95": [
+        51.646496681139695,
+        58.57016438254562
+      ],
+      "interval_class_D_A_U": [
+        5.91019659988759e-30,
+        0.9999999999999998,
+        4.6117363766649804e-67
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "A-S2-23-01",
+        "q_D_A_U": [
+          0.32231404958677684,
+          0.6776859504132231,
+          0.0
+        ],
+        "effective_n": 50.0,
+        "dirichlet_predictive_D_A_U": [
+          0.3229377826290348,
+          0.6581942928426633,
+          0.018867924528301886
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-23-03",
+        "q_D_A_U": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "effective_n": 50.0,
+        "dirichlet_predictive_D_A_U": [
+          0.018867924528301886,
+          0.9622641509433962,
+          0.018867924528301886
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-001",
+    "case": "02-marginal.report",
+    "report_sha256": "10bc59ae0badbc55cd69b0541fe46654921cc8950f0f0d8ef6d0cd18ccce8478",
+    "item_id": "A-S2-05",
+    "name": "空中滑行（加速与保速）",
+    "rule_grade": "A",
+    "rule_passed": true,
+    "current_score": 50.99646091744448,
+    "current_p_L_M_H": [
+      0.04022944752716659,
+      0.8996118865967775,
+      0.06015866587605605
+    ],
+    "time_strength_unimplemented_score": 50.00000000001213,
+    "time_strength_unimplemented_p_L_M_H": [
+      3.2752718093829894e-15,
+      0.9999999999997506,
+      2.460037087881016e-13
+    ],
+    "nominal_duration_s": 16.099999999999998,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 66.9753086419753,
+    "dirichlet_predictive_D_A_U": [
+      0.3389964888435836,
+      0.6334805753765997,
+      0.027522935779816515
+    ],
+    "dirichlet_quality_score": 65.57367765318834,
+    "beta_binomial2_or_binary_mean_score": 66.80723627918347,
+    "probit": {
+      "mean_score": 60.66808930792287,
+      "score_interval95": [
+        57.20257019166672,
+        64.14076815230926
+      ],
+      "interval_class_D_A_U": [
+        4.1637951560170485e-16,
+        0.9999999999999998,
+        2.6464475097744735e-94
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "A-S2-05-01",
+        "q_D_A_U": [
+          0.345679012345679,
+          0.654320987654321,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.34465964435383395,
+          0.6278174198663495,
+          0.02752293577981652
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-05-02",
+        "q_D_A_U": [
+          0.4012345679012346,
+          0.5987654320987654,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.39562804394608675,
+          0.5768490202740967,
+          0.02752293577981652
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-05-03",
+        "q_D_A_U": [
+          0.2716049382716049,
+          0.7283950617283951,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.2767017782308302,
+          0.6957752859893532,
+          0.02752293577981652
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-001",
+    "case": "02-marginal.report",
+    "report_sha256": "10bc59ae0badbc55cd69b0541fe46654921cc8950f0f0d8ef6d0cd18ccce8478",
+    "item_id": "A-S2-30",
+    "name": "快速减速／急停",
+    "rule_grade": "A",
+    "rule_passed": true,
+    "current_score": 51.856916258312395,
+    "current_p_L_M_H": [
+      0.042470013214,
+      0.8779216484057522,
+      0.07960833838024789
+    ],
+    "time_strength_unimplemented_score": 50.000000955688584,
+    "time_strength_unimplemented_p_L_M_H": [
+      1.8460230158453823e-10,
+      0.9999999805170238,
+      1.9298373989050023e-08
+    ],
+    "nominal_duration_s": 11.100000000000001,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 74.30847338935574,
+    "dirichlet_predictive_D_A_U": [
+      0.4781371264101971,
+      0.4897527818466836,
+      0.03211009174311927
+    ],
+    "dirichlet_quality_score": 72.3013517333539,
+    "beta_binomial2_or_binary_mean_score": 68.94285382137045,
+    "probit": {
+      "mean_score": 61.2863159889336,
+      "score_interval95": [
+        57.59620539977227,
+        65.01056596812859
+      ],
+      "interval_class_D_A_U": [
+        6.866348222390176e-13,
+        0.9999999999993133,
+        9.857540139848907e-92
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "A-S2-30-02",
+        "q_D_A_U": [
+          0.23529411764705882,
+          0.7647058823529411,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.24338909875876957,
+          0.7290879654614139,
+          0.02752293577981652
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-30-03",
+        "q_D_A_U": [
+          0.22321428571428573,
+          0.7767857142857143,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.23230668414154654,
+          0.7401703800786369,
+          0.02752293577981652
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-30-04",
+        "q_D_A_U": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.9587155963302753,
+          0.0,
+          0.04128440366972477
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-001",
+    "case": "03-unqualified.report",
+    "report_sha256": "41d7288bc9255a4f583cfefd71724b1fd812f3590aed964bded41a366eab1445",
+    "item_id": "A-S2-23",
+    "name": "正常进近至悬停",
+    "rule_grade": "U",
+    "rule_passed": false,
+    "current_score": 94.29476651660181,
+    "current_p_L_M_H": [
+      0.004516127756299719,
+      0.10507241415536435,
+      0.8904114580883359
+    ],
+    "time_strength_unimplemented_score": 100.0,
+    "time_strength_unimplemented_p_L_M_H": [
+      2.4388327694778135e-42,
+      1.480527698028352e-17,
+      1.0
+    ],
+    "nominal_duration_s": 27.2,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 94.62809917355372,
+    "dirichlet_predictive_D_A_U": [
+      0.8998908467176049,
+      0.042257913612973645,
+      0.05785123966942149
+    ],
+    "dirichlet_quality_score": 92.10198035240917,
+    "beta_binomial2_or_binary_mean_score": 94.18623680549874,
+    "probit": {
+      "mean_score": 84.05462877299009,
+      "score_interval95": [
+        79.10166796541431,
+        89.35087041335656
+      ],
+      "interval_class_D_A_U": [
+        0.999901631923476,
+        9.836807652396718e-05,
+        3.26870361791656e-210
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "A-S2-23-01",
+        "q_D_A_U": [
+          0.8677685950413223,
+          0.049586776859504134,
+          0.08264462809917356
+        ],
+        "effective_n": 50.0,
+        "dirichlet_predictive_D_A_U": [
+          0.8375175424918135,
+          0.06564790269764541,
+          0.0968345548105411
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-23-03",
+        "q_D_A_U": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effective_n": 50.0,
+        "dirichlet_predictive_D_A_U": [
+          0.9622641509433962,
+          0.018867924528301886,
+          0.018867924528301886
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-001",
+    "case": "03-unqualified.report",
+    "report_sha256": "41d7288bc9255a4f583cfefd71724b1fd812f3590aed964bded41a366eab1445",
+    "item_id": "A-S2-05",
+    "name": "空中滑行（加速与保速）",
+    "rule_grade": "U",
+    "rule_passed": false,
+    "current_score": 63.83945759477196,
+    "current_p_L_M_H": [
+      0.11564336528484079,
+      0.49192411753487925,
+      0.39243251718027994
+    ],
+    "time_strength_unimplemented_score": 54.063164951968915,
+    "time_strength_unimplemented_p_L_M_H": [
+      1.637998690936265e-07,
+      0.9187363733608835,
+      0.08126346283924736
+    ],
+    "nominal_duration_s": 16.099999999999998,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 77.2633744855967,
+    "dirichlet_predictive_D_A_U": [
+      0.6674595084381016,
+      0.16532638652924075,
+      0.16721410503265752
+    ],
+    "dirichlet_quality_score": 75.0122701702722,
+    "beta_binomial2_or_binary_mean_score": 76.99344008474921,
+    "probit": {
+      "mean_score": 66.92680118710929,
+      "score_interval95": [
+        63.364928538946344,
+        70.53351148415133
+      ],
+      "interval_class_D_A_U": [
+        7.421585501789169e-06,
+        0.9999925784144984,
+        1.5134768530389974e-131
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "A-S2-05-01",
+        "q_D_A_U": [
+          0.5308641975308642,
+          0.19753086419753085,
+          0.2716049382716049
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.5145543096613433,
+          0.20874391210782647,
+          0.2767017782308302
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-05-02",
+        "q_D_A_U": [
+          0.7962962962962963,
+          0.13580246913580246,
+          0.06790123456790123
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.7580699966021066,
+          0.15211235700532336,
+          0.08981764639256995
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-05-03",
+        "q_D_A_U": [
+          0.7654320987654321,
+          0.11728395061728394,
+          0.11728395061728394
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.7297542190508551,
+          0.13512289047457243,
+          0.13512289047457243
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-001",
+    "case": "03-unqualified.report",
+    "report_sha256": "41d7288bc9255a4f583cfefd71724b1fd812f3590aed964bded41a366eab1445",
+    "item_id": "A-S2-30",
+    "name": "快速减速／急停",
+    "rule_grade": "U",
+    "rule_passed": false,
+    "current_score": 58.791839338387035,
+    "current_p_L_M_H": [
+      0.1057305857777152,
+      0.612702041676829,
+      0.28156737254545583
+    ],
+    "time_strength_unimplemented_score": 50.15796065939478,
+    "time_strength_unimplemented_p_L_M_H": [
+      2.2493836773662215e-06,
+      0.9968362880447496,
+      0.0031614625715730457
+    ],
+    "nominal_duration_s": 11.100000000000001,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 80.61683006535947,
+    "dirichlet_predictive_D_A_U": [
+      0.6986075775876099,
+      0.16456154327174294,
+      0.13683087914064707
+    ],
+    "dirichlet_quality_score": 78.08883492234814,
+    "beta_binomial2_or_binary_mean_score": 76.42311865457646,
+    "probit": {
+      "mean_score": 65.63238561631817,
+      "score_interval95": [
+        61.827319912743285,
+        69.50676653174004
+      ],
+      "interval_class_D_A_U": [
+        1.7199413160955415e-06,
+        0.999998280058684,
+        1.7542575420986423e-114
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "A-S2-30-02",
+        "q_D_A_U": [
+          0.5098039215686274,
+          0.2549019607843137,
+          0.23529411764705882
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.4952329555675481,
+          0.2613779456736823,
+          0.24338909875876957
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-30-03",
+        "q_D_A_U": [
+          0.6696428571428571,
+          0.22321428571428573,
+          0.10714285714285714
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.6418741808650065,
+          0.23230668414154654,
+          0.12581913499344693
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-30-04",
+        "q_D_A_U": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effective_n": 33.33333333333333,
+        "dirichlet_predictive_D_A_U": [
+          0.9587155963302753,
+          0.0,
+          0.04128440366972477
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-002",
+    "case": "01-proficient.report",
+    "report_sha256": "6623387b646ef3c2187c4206d594d54babf69251dba0acda9eeab6bffb89303d",
+    "item_id": "A-S2-02",
+    "name": "定点悬停保持",
+    "rule_grade": "A",
+    "rule_passed": true,
+    "current_score": 94.65923147386899,
+    "current_p_L_M_H": [
+      0.0025623912910907026,
+      0.10169058794043925,
+      0.8957470207684701
+    ],
+    "time_strength_unimplemented_score": 100.0,
+    "time_strength_unimplemented_p_L_M_H": [
+      4.298522119559514e-61,
+      3.752008601015854e-23,
+      1.0
+    ],
+    "nominal_duration_s": 35.6,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 96.07843137254903,
+    "dirichlet_predictive_D_A_U": [
+      0.8585434173669467,
+      0.10574229691876749,
+      0.03571428571428571
+    ],
+    "dirichlet_quality_score": 91.14145658263305,
+    "beta_binomial2_or_binary_mean_score": 95.62220927975152,
+    "probit": {
+      "mean_score": 86.47649799617918,
+      "score_interval95": [
+        81.23602733861354,
+        92.1211897327217
+      ],
+      "interval_class_D_A_U": [
+        0.9999974295343231,
+        2.5704656767213923e-06,
+        2.2564919682517383e-218
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "A-S2-02-01",
+        "q_D_A_U": [
+          0.9901960784313726,
+          0.00980392156862745,
+          0.0
+        ],
+        "effective_n": 25.0,
+        "dirichlet_predictive_D_A_U": [
+          0.9198179271708684,
+          0.04446778711484594,
+          0.03571428571428571
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-02-04",
+        "q_D_A_U": [
+          0.7990196078431373,
+          0.20098039215686275,
+          0.0
+        ],
+        "effective_n": 25.0,
+        "dirichlet_predictive_D_A_U": [
+          0.749124649859944,
+          0.2151610644257703,
+          0.03571428571428571
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-02-02",
+        "q_D_A_U": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effective_n": 25.0,
+        "dirichlet_predictive_D_A_U": [
+          0.9285714285714286,
+          0.03571428571428571,
+          0.03571428571428571
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-02-03",
+        "q_D_A_U": [
+          0.8970588235294118,
+          0.10294117647058823,
+          0.0
+        ],
+        "effective_n": 25.0,
+        "dirichlet_predictive_D_A_U": [
+          0.8366596638655462,
+          0.12762605042016806,
+          0.03571428571428571
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-002",
+    "case": "01-proficient.report",
+    "report_sha256": "6623387b646ef3c2187c4206d594d54babf69251dba0acda9eeab6bffb89303d",
+    "item_id": "SCENE-VERTICAL",
+    "name": "垂直升降控制",
+    "rule_grade": "A",
+    "rule_passed": true,
+    "current_score": 95.84134732102177,
+    "current_p_L_M_H": [
+      0.001934943168691886,
+      0.07930316724218056,
+      0.9187618895891275
+    ],
+    "time_strength_unimplemented_score": 100.0,
+    "time_strength_unimplemented_p_L_M_H": [
+      4.757127126115889e-46,
+      9.647527450693861e-19,
+      1.0
+    ],
+    "nominal_duration_s": 25.4,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 97.71241830065358,
+    "dirichlet_predictive_D_A_U": [
+      0.9191022320878037,
+      0.06202984338389443,
+      0.018867924528301886
+    ],
+    "dirichlet_quality_score": 95.0117153779751,
+    "beta_binomial2_or_binary_mean_score": 97.24001811945901,
+    "probit": {
+      "mean_score": 90.65520798521683,
+      "score_interval95": [
+        84.55837833493041,
+        97.28080004132728
+      ],
+      "interval_class_D_A_U": [
+        0.9999999910179074,
+        8.982092710946278e-09,
+        2.9484346848569166e-228
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "SCENE-VERTICAL-01",
+        "q_D_A_U": [
+          0.9084967320261438,
+          0.0915032679738562,
+          0.0
+        ],
+        "effective_n": 50.0,
+        "dirichlet_predictive_D_A_U": [
+          0.8759403132322111,
+          0.10519176223948698,
+          0.018867924528301886
+        ]
+      },
+      {
+        "checkpoint_id": "SCENE-VERTICAL-02",
+        "q_D_A_U": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effective_n": 50.0,
+        "dirichlet_predictive_D_A_U": [
+          0.9622641509433962,
+          0.018867924528301886,
+          0.018867924528301886
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-002",
+    "case": "02-marginal.report",
+    "report_sha256": "870381ba64285a12cf1d61856e91f4b647a2617d4779a35caa3b73a9e116bdfe",
+    "item_id": "A-S2-02",
+    "name": "定点悬停保持",
+    "rule_grade": "A",
+    "rule_passed": true,
+    "current_score": 65.8740346733907,
+    "current_p_L_M_H": [
+      0.022348886270808697,
+      0.637821533990569,
+      0.3398295797386224
+    ],
+    "time_strength_unimplemented_score": 50.000016194766125,
+    "time_strength_unimplemented_p_L_M_H": [
+      2.867339100590854e-35,
+      0.9999996761046778,
+      3.2389532233369843e-07
+    ],
+    "nominal_duration_s": 35.6,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 79.35049019607843,
+    "dirichlet_predictive_D_A_U": [
+      0.5598301820728291,
+      0.40445553221288516,
+      0.03571428571428571
+    ],
+    "dirichlet_quality_score": 76.20579481792717,
+    "beta_binomial2_or_binary_mean_score": 79.05989128324596,
+    "probit": {
+      "mean_score": 68.82368895532296,
+      "score_interval95": [
+        65.21059491630825,
+        72.47409429748983
+      ],
+      "interval_class_D_A_U": [
+        0.0004877357554066297,
+        0.9995122642445934,
+        2.090754687976254e-139
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "A-S2-02-01",
+        "q_D_A_U": [
+          0.4803921568627451,
+          0.5196078431372549,
+          0.0
+        ],
+        "effective_n": 25.0,
+        "dirichlet_predictive_D_A_U": [
+          0.4646358543417367,
+          0.49964985994397765,
+          0.03571428571428571
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-02-04",
+        "q_D_A_U": [
+          0.3431372549019608,
+          0.6568627450980392,
+          0.0
+        ],
+        "effective_n": 25.0,
+        "dirichlet_predictive_D_A_U": [
+          0.34208683473389356,
+          0.6221988795518207,
+          0.03571428571428571
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-02-02",
+        "q_D_A_U": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effective_n": 25.0,
+        "dirichlet_predictive_D_A_U": [
+          0.9285714285714286,
+          0.03571428571428571,
+          0.03571428571428571
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-02-03",
+        "q_D_A_U": [
+          0.5245098039215687,
+          0.47549019607843135,
+          0.0
+        ],
+        "effective_n": 25.0,
+        "dirichlet_predictive_D_A_U": [
+          0.5040266106442577,
+          0.46025910364145656,
+          0.03571428571428571
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-002",
+    "case": "02-marginal.report",
+    "report_sha256": "870381ba64285a12cf1d61856e91f4b647a2617d4779a35caa3b73a9e116bdfe",
+    "item_id": "SCENE-VERTICAL",
+    "name": "垂直升降控制",
+    "rule_grade": "A",
+    "rule_passed": true,
+    "current_score": 75.01226488529568,
+    "current_p_L_M_H": [
+      0.015112262171880437,
+      0.4695301779503253,
+      0.5153575598777942
+    ],
+    "time_strength_unimplemented_score": 91.43877576780824,
+    "time_strength_unimplemented_p_L_M_H": [
+      9.191285734196522e-27,
+      0.17122448464383516,
+      0.8287755153561648
+    ],
+    "nominal_duration_s": 25.4,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 83.66013071895425,
+    "dirichlet_predictive_D_A_U": [
+      0.6539647305463065,
+      0.32716734492539157,
+      0.018867924528301886
+    ],
+    "dirichlet_quality_score": 81.75484030090023,
+    "beta_binomial2_or_binary_mean_score": 83.3268620979745,
+    "probit": {
+      "mean_score": 72.06457607006851,
+      "score_interval95": [
+        68.31998415896459,
+        75.86872455944597
+      ],
+      "interval_class_D_A_U": [
+        0.0644015989095735,
+        0.9355984010904265,
+        2.4904807234084235e-157
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "SCENE-VERTICAL-01",
+        "q_D_A_U": [
+          0.5751633986928104,
+          0.42483660130718953,
+          0.0
+        ],
+        "effective_n": 50.0,
+        "dirichlet_predictive_D_A_U": [
+          0.5614749044271796,
+          0.41965717104451844,
+          0.018867924528301886
+        ]
+      },
+      {
+        "checkpoint_id": "SCENE-VERTICAL-02",
+        "q_D_A_U": [
+          0.7712418300653595,
+          0.22875816993464052,
+          0.0
+        ],
+        "effective_n": 50.0,
+        "dirichlet_predictive_D_A_U": [
+          0.7464545566654336,
+          0.23467751880626464,
+          0.018867924528301886
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-002",
+    "case": "03-unqualified.report",
+    "report_sha256": "9ea923d0f51eb8c22830a0c85d48b42cb7aa0c2379dfeb5fc3b92141cd8a2a2c",
+    "item_id": "A-S2-02",
+    "name": "定点悬停保持",
+    "rule_grade": "U",
+    "rule_passed": false,
+    "current_score": 89.7281158539079,
+    "current_p_L_M_H": [
+      0.015005807793181216,
+      0.17542606733547983,
+      0.809568124871339
+    ],
+    "time_strength_unimplemented_score": 99.99999999999999,
+    "time_strength_unimplemented_p_L_M_H": [
+      7.834450989901335e-42,
+      1.7269771542784193e-16,
+      0.9999999999999998
+    ],
+    "nominal_duration_s": 35.6,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 89.58333333333334,
+    "dirichlet_predictive_D_A_U": [
+      0.8224352240896359,
+      0.06197478991596639,
+      0.11558998599439776
+    ],
+    "dirichlet_quality_score": 85.34226190476191,
+    "beta_binomial2_or_binary_mean_score": 89.19141914191418,
+    "probit": {
+      "mean_score": 77.3038325080921,
+      "score_interval95": [
+        73.1273274847752,
+        81.63661139471124
+      ],
+      "interval_class_D_A_U": [
+        0.8561328704940825,
+        0.14386712950591746,
+        2.797568569986702e-184
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "A-S2-02-01",
+        "q_D_A_U": [
+          0.8333333333333334,
+          0.058823529411764705,
+          0.10784313725490197
+        ],
+        "effective_n": 25.0,
+        "dirichlet_predictive_D_A_U": [
+          0.7797619047619049,
+          0.08823529411764706,
+          0.13200280112044818
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-02-04",
+        "q_D_A_U": [
+          0.8235294117647058,
+          0.024509803921568627,
+          0.15196078431372548
+        ],
+        "effective_n": 25.0,
+        "dirichlet_predictive_D_A_U": [
+          0.7710084033613445,
+          0.05759803921568628,
+          0.1713935574229692
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-02-02",
+        "q_D_A_U": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "effective_n": 25.0,
+        "dirichlet_predictive_D_A_U": [
+          0.9285714285714286,
+          0.03571428571428571,
+          0.03571428571428571
+        ]
+      },
+      {
+        "checkpoint_id": "A-S2-02-03",
+        "q_D_A_U": [
+          0.8676470588235294,
+          0.03431372549019608,
+          0.09803921568627451
+        ],
+        "effective_n": 25.0,
+        "dirichlet_predictive_D_A_U": [
+          0.8103991596638656,
+          0.0663515406162465,
+          0.12324929971988796
+        ]
+      }
+    ]
+  },
+  {
+    "scene": "SCN-002",
+    "case": "03-unqualified.report",
+    "report_sha256": "9ea923d0f51eb8c22830a0c85d48b42cb7aa0c2379dfeb5fc3b92141cd8a2a2c",
+    "item_id": "SCENE-VERTICAL",
+    "name": "垂直升降控制",
+    "rule_grade": "U",
+    "rule_passed": false,
+    "current_score": 88.83398128697965,
+    "current_p_L_M_H": [
+      0.0157019839634406,
+      0.19191640633352566,
+      0.7923816097030336
+    ],
+    "time_strength_unimplemented_score": 99.99999999813343,
+    "time_strength_unimplemented_p_L_M_H": [
+      1.4550382301039673e-29,
+      3.733154631028688e-11,
+      0.9999999999626685
+    ],
+    "nominal_duration_s": 25.4,
+    "comparison_caveats": [
+      "nominal duration includes inter-phase gaps, not effective observed exposure",
+      "Dirichlet prior mass 3 per checkpoint yields total mass 3K",
+      "Beta ordinal emissions contribute 2 trials, binary emissions 1 trial"
+    ],
+    "direct_performance_score": 89.05228758169935,
+    "dirichlet_predictive_D_A_U": [
+      0.8358613885805894,
+      0.06511283758786533,
+      0.09902577383154519
+    ],
+    "dirichlet_quality_score": 86.84178073745221,
+    "beta_binomial2_or_binary_mean_score": 88.66563126900925,
+    "probit": {
+      "mean_score": 76.74321661780108,
+      "score_interval95": [
+        72.62396102752665,
+        81.00539037762046
+      ],
+      "interval_class_D_A_U": [
+        0.7913625291937894,
+        0.2086374708062107,
+        9.741442503639815e-182
+      ]
+    },
+    "checkpoints": [
+      {
+        "checkpoint_id": "SCENE-VERTICAL-01",
+        "q_D_A_U": [
+          0.8562091503267973,
+          0.0457516339869281,
+          0.09803921568627451
+        ],
+        "effective_n": 50.0,
+        "dirichlet_predictive_D_A_U": [
+          0.8266124059686767,
+          0.06202984338389444,
+          0.11135775064742878
+        ]
+      },
+      {
+        "checkpoint_id": "SCENE-VERTICAL-02",
+        "q_D_A_U": [
+          0.8758169934640523,
+          0.05228758169934641,
+          0.0718954248366013
+        ],
+        "effective_n": 50.0,
+        "dirichlet_predictive_D_A_U": [
+          0.8451103711925022,
+          0.06819583179183623,
+          0.0866937970156616
+        ]
+      }
+    ]
+  }
+]

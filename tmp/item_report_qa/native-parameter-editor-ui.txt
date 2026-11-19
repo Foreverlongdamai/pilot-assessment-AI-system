@@ -1,0 +1,100 @@
+Window: "Pilot Assessment", App: PilotAssessment.Desktop.exe.
+	0 窗口 Pilot Assessment Secondary Actions: Raise
+		1 窗格 Non Client Input Sink Window
+		2 窗格 AppWindow Custom Title Bar
+			3 按钮 Minimize ID: Minimize
+			4 按钮 Maximize ID: Maximize
+			5 按钮 Close ID: Close
+		6 窗格
+			7 窗格
+				603 窗口 弹出窗口 Secondary Actions: Raise
+				604 窗口 A-S2-02 · 定点悬停保持 Secondary Actions: Raise
+					605 窗格 ID: ContentScrollViewer
+						606 文本 A-S2-02 · 定点悬停保持
+						607 窗格
+							608 文本 四次悬停共用水平位置、悬停高度、航向和激光四个检查点，作为同一个item评价。水平位置与高度分别设置容差；vx/vy归水平位置、vz归高度，作为稳定性补充。每帧包含当前环节的原始高度及其他指标，不从数据识别环节或补值。
+							609 文本 填写实际目标，以及低于 / 高于目标的允许量（均填非负数，可以不对称）。D 范围应包含在 A 内且更窄。三维路线使用路线节点和 D / A 通道半径；激光检查使用靶心坐标和 D / A 半径。
+							610 文本 输入阶段顺序：下方第一次悬停（至少 5 s 跨度） → 上方第一次悬停（至少 5 s 跨度） → 下方第二次悬停（至少 5 s 跨度） → 上方第二次悬停（至少 5 s 跨度）
+							611 按钮 贝叶斯参数 · 先验、分值与 CPT
+								612 文本 贝叶斯参数 · 先验、分值与 CPT
+							613 文本 水平位置保持
+							614 文本 分别比较实际X、Y与目标水平位置；水平速度分量作为稳定性补充。各指标独立设置D/A容差，逐帧取最差档位；不包含高度、不计算XYZ统一距离。
+							615 文本 悬停实际X
+							616 文本 每帧原始悬停实际X；期望值与容差由用户配置，系统不识别或截取事件。 · 单位：m
+							617 文本 适用阶段：下方第一次悬停、上方第一次悬停、下方第二次悬停、上方第二次悬停
+							618 文本 有符号偏差 = 实际值 − 期望值。
+							619 编辑 期望值 / 实际目标
+								620 文本 期望值 / 实际目标
+							621 文本 D · 允许量
+							622 编辑 低于目标允许量
+								623 文本 低于目标允许量
+							624 编辑 高于目标允许量
+								625 文本 高于目标允许量
+							626 复选框 无上限
+							627 编辑 低于目标允许量
+								628 文本 低于目标允许量
+							629 编辑 高于目标允许量
+								630 文本 高于目标允许量
+					631 按钮 应用参数 ID: PrimaryButton
+					632 按钮 保留草稿 ID: SecondaryButton
+					633 按钮 取消 ID: CloseButton
+				8 标题栏 Pilot Assessment ID: SceneTitleBar
+					9 文本 Pilot Assessment ID: PART_TitleText
+					10 文本 场景评估 ID: PART_SubtitleText
+				11 窗格
+					12 文本 评估工作区
+					13 按钮 (disabled) 打开全局 Model Studio ID: StudioNavigationButton
+						14 文本 Model Studio
+						15 文本 全部场景 · 模型总图
+					16 文本 评估场景
+					17 按钮 打开场景 SCN-001 加速减速任务
+						18 文本 SCN-001
+						19 文本 加速减速任务
+					20 按钮 打开场景 SCN-002 双高度悬停任务
+						21 文本 SCN-002
+						22 文本 双高度悬停任务
+				23 文本 D / A = Pass U = Fail
+				24 文本 按 item 导入带真实时间戳和阶段的帧数据，由系统计算偏差和档位。
+				25 文本 当前场景含演示量化 参数未标定 · CPT 可编辑 ID: QuantificationNotice
+				26 文本 双高度悬停任务 ID: PageHeading
+				27 文本 设置目标与允许量，按 item 导入真实帧，查看 D/A/U、P/F、阶段结果与帧分布。 ID: PageDescription
+				28 应用栏 (disabled) ID: Actions
+					29 应用栏按钮 (disabled) 保存配置
+					30 应用栏按钮 (disabled) 加载配置
+					31 应用栏按钮 (disabled) 导出空白输入模板
+					32 应用栏按钮 (disabled) 导入帧数据
+					33 应用栏按钮 (disabled) 开始评估
+					34 应用栏按钮 (disabled) 导出评估报告 ID: ExportReportButton
+				35 文本 当前配置 / 输入目标：SCN-002 | configuration.json | 输入：03-unqualified.input.json ID: ContextText
+				36 状态栏 ID: StatusBar
+					37 文本 “成功”图标 ID: StandardIcon
+					38 文本 报告已导出 ID: Title
+					39 文本 报告保留全部输入帧的原值、目标、偏差、档位、阶段与分布，包含输入和配置快照。 ID: Message
+				40 窗格 ID: SceneContent
+					41 文本 评估 item
+					42 文本 评估后点击卡片查看结果
+					450 按钮 (disabled) 查看 定点悬停保持 的评估结果
+						451 文本 A-S2-02 定点悬停保持
+						452 文本 水平位置保持 · 悬停高度保持 · 航向保持 · 激光指向保持
+						453 文本 U / Fail · 演示量化：89.7 / 100 · 未标定
+						454 文本 查看完整结果与过程曲线 →
+					455 按钮 (disabled) 编辑 定点悬停保持 的检查参数
+					456 按钮 (disabled) 查看 垂直升降控制 的评估结果
+						457 文本 SCENE-VERTICAL 垂直升降控制
+						458 文本 升降时水平位置 · 升降时航向
+						459 文本 U / Fail · 演示量化：88.8 / 100 · 未标定
+						460 文本 查看完整结果与过程曲线 →
+					461 按钮 (disabled) 编辑 垂直升降控制 的检查参数
+					53 文本 场景结果
+					462 文本 场景评估：U / Fail
+					463 文本 点击上方 item 卡片，在独立窗口查看整项分数变化和各检查点的完整观测。参数通过右侧“编辑参数”单独设置。
+		117 标题栏
+			118 菜单栏 系统 ID: MenuBar
+				602 菜单项 系统
+			120 按钮 最小化
+			121 按钮 最大化
+			122 按钮 关闭
+
+Document text: ```
+0.4
+```

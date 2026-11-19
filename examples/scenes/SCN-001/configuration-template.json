@@ -1,0 +1,913 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "SCN-001",
+  "parameters": {
+    "energy_electrical": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "propulsion_power": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "flight_mode_configuration": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "flight_state": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "alerts_readiness": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "departure_navigation": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "initial_hover_duration_s": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "initial_hover_max_height_error_m": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "takeoff_max_horizontal_displacement_m": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "takeoff_max_heading_error_deg": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "speed_hold_duration_s": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "speed_hold_max_airspeed_error_mps": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "air_taxi_max_height_error_m": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "air_taxi_max_cross_track_error_m": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "air_taxi_max_heading_error_deg": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "deceleration_onset_position_error_m": {
+      "expected": 0,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "quickstop_entry_airspeed_error_mps": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "deceleration_duration_s": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "quickstop_max_height_error_m": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "quickstop_max_heading_error_deg": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "quickstop_max_cross_track_error_m": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "terminal_hover_duration_s": {
+      "expected": null,
+      "desired": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": null,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "terminal_max_horizontal_position_error_m": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "terminal_max_horizontal_groundspeed_mps": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "terminal_max_heading_error_deg": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "terminal_max_height_error_m": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    },
+    "terminal_max_abs_vertical_speed_mps": {
+      "expected": 0,
+      "desired": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      },
+      "acceptable": {
+        "lower": 0,
+        "upper": null,
+        "unbounded_upper": false
+      }
+    }
+  },
+  "skill_models": {
+    "A-S1-06": {
+      "model_version": "scn001-skill-demo-v1",
+      "calibration": "uncalibrated",
+      "parameter_source": "demonstration",
+      "prior": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "state_scores": [
+        0,
+        50,
+        100
+      ],
+      "checkpoint_models": {
+        "A-S1-06-01": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S1-06-02": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S1-06-03": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S1-06-04": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S1-06-05": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S1-06-06": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        }
+      }
+    },
+    "A-S2-08": {
+      "model_version": "scn001-skill-demo-v1",
+      "calibration": "uncalibrated",
+      "parameter_source": "demonstration",
+      "prior": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "state_scores": [
+        0,
+        50,
+        100
+      ],
+      "checkpoint_models": {
+        "A-S2-08-01": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S2-08-02": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S2-08-03": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        }
+      }
+    },
+    "A-S2-05": {
+      "model_version": "scn001-skill-demo-v1",
+      "calibration": "uncalibrated",
+      "parameter_source": "demonstration",
+      "prior": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "state_scores": [
+        0,
+        50,
+        100
+      ],
+      "checkpoint_models": {
+        "A-S2-05-01": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S2-05-02": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S2-05-03": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        }
+      }
+    },
+    "A-S2-30": {
+      "model_version": "scn001-skill-demo-v1",
+      "calibration": "uncalibrated",
+      "parameter_source": "demonstration",
+      "prior": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "state_scores": [
+        0,
+        50,
+        100
+      ],
+      "checkpoint_models": {
+        "A-S2-30-01": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S2-30-02": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S2-30-03": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S2-30-04": {
+          "states": [
+            "D",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.35,
+              0.65
+            ],
+            [
+              0.75,
+              0.25
+            ],
+            [
+              0.9,
+              0.1
+            ]
+          ]
+        }
+      }
+    },
+    "A-S2-02": {
+      "model_version": "scn001-skill-demo-v1",
+      "calibration": "uncalibrated",
+      "parameter_source": "demonstration",
+      "prior": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "state_scores": [
+        0,
+        50,
+        100
+      ],
+      "checkpoint_models": {
+        "A-S2-02-01": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        },
+        "A-S2-02-02": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        }
+      }
+    },
+    "A-S2-01": {
+      "model_version": "scn001-skill-demo-v1",
+      "calibration": "uncalibrated",
+      "parameter_source": "demonstration",
+      "prior": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "state_scores": [
+        0,
+        50,
+        100
+      ],
+      "checkpoint_models": {
+        "A-S2-01-01": {
+          "states": [
+            "D",
+            "A",
+            "U"
+          ],
+          "probabilities": [
+            [
+              0.1,
+              0.25,
+              0.65
+            ],
+            [
+              0.25,
+              0.5,
+              0.25
+            ],
+            [
+              0.65,
+              0.25,
+              0.1
+            ]
+          ]
+        }
+      }
+    }
+  }
+}

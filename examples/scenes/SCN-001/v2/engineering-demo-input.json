@@ -1,0 +1,330 @@
+{
+  "schema_version": "2.0",
+  "scene_id": "SCN-001",
+  "items": {
+    "A-S1-06": {
+      "checkpoints": {
+        "A-S1-06-01": {
+          "values": {
+            "battery_check_completed": true
+          },
+          "samples": []
+        },
+        "A-S1-06-02": {
+          "values": {
+            "propulsion_check_completed": true
+          },
+          "samples": []
+        },
+        "A-S1-06-03": {
+          "values": {
+            "flight_configuration_check_completed": true
+          },
+          "samples": []
+        },
+        "A-S1-06-04": {
+          "values": {
+            "flight_instruments_check_completed": true
+          },
+          "samples": []
+        },
+        "A-S1-06-05": {
+          "values": {
+            "alerts_check_completed": true
+          },
+          "samples": []
+        },
+        "A-S1-06-06": {
+          "values": {
+            "departure_check_completed": true
+          },
+          "samples": []
+        }
+      }
+    },
+    "A-S2-08": {
+      "checkpoints": {
+        "A-S2-08-01": {
+          "values": {
+            "initial_hover_duration_s": 10
+          },
+          "samples": [
+            {
+              "start_s": 20,
+              "end_s": 24,
+              "values": {
+                "initial_hover_height_m": 100
+              }
+            },
+            {
+              "start_s": 24,
+              "end_s": 25,
+              "values": {
+                "initial_hover_height_m": 100
+              }
+            },
+            {
+              "start_s": 25,
+              "end_s": 27,
+              "values": {
+                "initial_hover_height_m": 100
+              }
+            },
+            {
+              "start_s": 27,
+              "end_s": 30,
+              "values": {
+                "initial_hover_height_m": 100
+              }
+            }
+          ]
+        },
+        "A-S2-08-02": {
+          "values": {},
+          "samples": [
+            {
+              "start_s": 20,
+              "end_s": 24,
+              "values": {
+                "takeoff_position_x_m": 0,
+                "takeoff_position_y_m": 0
+              }
+            },
+            {
+              "start_s": 24,
+              "end_s": 25,
+              "values": {
+                "takeoff_position_x_m": 0,
+                "takeoff_position_y_m": 0
+              }
+            },
+            {
+              "start_s": 25,
+              "end_s": 27,
+              "values": {
+                "takeoff_position_x_m": 0,
+                "takeoff_position_y_m": 0
+              }
+            },
+            {
+              "start_s": 27,
+              "end_s": 30,
+              "values": {
+                "takeoff_position_x_m": 0,
+                "takeoff_position_y_m": 0
+              }
+            }
+          ]
+        },
+        "A-S2-08-03": {
+          "values": {},
+          "samples": [
+            {
+              "start_s": 20,
+              "end_s": 24,
+              "values": {
+                "takeoff_heading_deg": 359
+              }
+            },
+            {
+              "start_s": 24,
+              "end_s": 25,
+              "values": {
+                "takeoff_heading_deg": 359
+              }
+            },
+            {
+              "start_s": 25,
+              "end_s": 27,
+              "values": {
+                "takeoff_heading_deg": 359
+              }
+            },
+            {
+              "start_s": 27,
+              "end_s": 30,
+              "values": {
+                "takeoff_heading_deg": 359
+              }
+            }
+          ]
+        }
+      }
+    },
+    "A-S2-05": {
+      "checkpoints": {
+        "A-S2-05-01": {
+          "values": {
+            "speed_hold_duration_s": 10
+          },
+          "samples": [
+            {
+              "start_s": 40,
+              "end_s": 44,
+              "values": {
+                "speed_hold_airspeed_mps": 20
+              }
+            },
+            {
+              "start_s": 44,
+              "end_s": 45,
+              "values": {
+                "speed_hold_airspeed_mps": 20
+              }
+            },
+            {
+              "start_s": 45,
+              "end_s": 47,
+              "values": {
+                "speed_hold_airspeed_mps": 20
+              }
+            },
+            {
+              "start_s": 47,
+              "end_s": 50,
+              "values": {
+                "speed_hold_airspeed_mps": 20
+              }
+            }
+          ]
+        },
+        "A-S2-05-02": {
+          "values": {},
+          "samples": [
+            {
+              "start_s": 40,
+              "end_s": 44,
+              "values": {
+                "air_taxi_height_m": 100
+              }
+            },
+            {
+              "start_s": 44,
+              "end_s": 45,
+              "values": {
+                "air_taxi_height_m": 100
+              }
+            },
+            {
+              "start_s": 45,
+              "end_s": 47,
+              "values": {
+                "air_taxi_height_m": 100
+              }
+            },
+            {
+              "start_s": 47,
+              "end_s": 50,
+              "values": {
+                "air_taxi_height_m": 100
+              }
+            }
+          ]
+        },
+        "A-S2-05-03": {
+          "values": {},
+          "samples": [
+            {
+              "start_s": 40,
+              "end_s": 44,
+              "values": {
+                "air_taxi_lateral_position_m": 0,
+                "air_taxi_heading_deg": 0
+              }
+            },
+            {
+              "start_s": 44,
+              "end_s": 45,
+              "values": {
+                "air_taxi_lateral_position_m": 0,
+                "air_taxi_heading_deg": 7
+              }
+            },
+            {
+              "start_s": 45,
+              "end_s": 47,
+              "values": {
+                "air_taxi_lateral_position_m": 0,
+                "air_taxi_heading_deg": 2
+              }
+            },
+            {
+              "start_s": 47,
+              "end_s": 50,
+              "values": {
+                "air_taxi_lateral_position_m": 0,
+                "air_taxi_heading_deg": 0
+              }
+            }
+          ]
+        }
+      }
+    },
+    "A-S2-30": {
+      "checkpoints": {
+        "A-S2-30-01": {
+          "values": {
+            "deceleration_started": true,
+            "deceleration_onset_position_m": 0
+          },
+          "samples": []
+        },
+        "A-S2-30-02": {
+          "values": {
+            "quickstop_entry_airspeed_mps": 20,
+            "stop_achieved": true,
+            "deceleration_duration_s": 10
+          },
+          "samples": []
+        },
+        "A-S2-30-03": {
+          "values": {},
+          "samples": [
+            {
+              "start_s": 60,
+              "end_s": 64,
+              "values": {
+                "quickstop_height_m": 100,
+                "quickstop_heading_deg": 359,
+                "quickstop_lateral_position_m": 0
+              }
+            },
+            {
+              "start_s": 64,
+              "end_s": 65,
+              "values": {
+                "quickstop_height_m": 100,
+                "quickstop_heading_deg": 359,
+                "quickstop_lateral_position_m": 0
+              }
+            },
+            {
+              "start_s": 65,
+              "end_s": 67,
+              "values": {
+                "quickstop_height_m": 100,
+                "quickstop_heading_deg": 359,
+                "quickstop_lateral_position_m": 0
+              }
+            },
+            {
+              "start_s": 67,
+              "end_s": 70,
+              "values": {
+                "quickstop_height_m": 100,
+                "quickstop_heading_deg": 359,
+                "quickstop_lateral_position_m": 0
+              }
+            }
+          ]
+        },
+        "A-S2-30-04": {
+          "values": {
+            "quickstop_prohibited_event_count": 0
+          },
+          "samples": []
+        }
+      }
+    }
+  }
+}
