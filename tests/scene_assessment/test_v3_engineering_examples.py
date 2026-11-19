@@ -14,7 +14,10 @@ def test_two_packaged_scenes_round_trip_actual_frame_evidence(tmp_path):
     factory = runpy.run_path(str(root / "tools/Generate-SceneFrameExamples.py"))["engineering_case"]
     cases = [factory(load_catalog(scene_id)) for scene_id in ("SCN-001", "SCN-002")]
     cases[1][1]["items"]["A-S2-02"]["frames"][0]["controls"] = {
-        "Pilot Lat": 20, "Pilot Yaw": -12, "Pilot Lon": 7, "Pilot Heave": 3,
+        "Pilot Lat": 20,
+        "Pilot Yaw": -12,
+        "Pilot Lon": 7,
+        "Pilot Heave": 3,
     }
     requests = [("runtime.hello", {"supported_protocols": ["1.0"]}), ("scene.list", {})]
     requests.extend(
@@ -26,15 +29,22 @@ def test_two_packaged_scenes_round_trip_actual_frame_evidence(tmp_path):
         for index, (method, params) in enumerate(requests)
     )
     process = subprocess.run(
-        [sys.executable, "-m", "pilot_assessment.scene_assessment"], input=payload,
-        text=True, encoding="utf-8", capture_output=True, cwd=tmp_path, timeout=30, check=False,
+        [sys.executable, "-m", "pilot_assessment.scene_assessment"],
+        input=payload,
+        text=True,
+        encoding="utf-8",
+        capture_output=True,
+        cwd=tmp_path,
+        timeout=30,
+        check=False,
     )
     assert process.returncode == 0, process.stderr
     responses = [json.loads(line) for line in process.stdout.splitlines()]
     assert len(responses) == len(requests)
     assert all("error" not in response for response in responses), responses
     assert [scene["scene_id"] for scene in responses[1]["result"]["scenes"]] == [
-        "SCN-001", "SCN-002"
+        "SCN-001",
+        "SCN-002",
     ]
     for index, (config, data) in enumerate(cases):
         report = responses[index + 2]["result"]

@@ -13,8 +13,9 @@ from pilot_assessment.scene_assessment.catalog import load_catalog
 @pytest.fixture
 def hover_case():
     catalog = load_catalog("SCN-002")
-    factory = runpy.run_path(str(Path(__file__).resolve().parents[2]
-                                / "tools/Generate-SceneFrameExamples.py"))["engineering_case"]
+    factory = runpy.run_path(
+        str(Path(__file__).resolve().parents[2] / "tools/Generate-SceneFrameExamples.py")
+    )["engineering_case"]
     config, data = factory(catalog)
     for item in data["items"].values():
         for frame in item["frames"]:
@@ -22,15 +23,19 @@ def hover_case():
                 parameter = config["parameters"][key]
                 frame["values"][key] = (
                     {"status": "hit", "u_m": 0, "v_m": 0}
-                    if "center_u" in parameter else parameter["expected"]
+                    if "center_u" in parameter
+                    else parameter["expected"]
                 )
     for model in config["skill_models"].values():
         model.update(
-            inference_method="sequential_bayes_compensation_v1", compensation={"alpha": 0.2},
-            parameter_source="demonstration", prior=[1 / 3] * 3, state_scores=[0, 50, 100],
+            inference_method="sequential_bayes_compensation_v1",
+            compensation={"alpha": 0.2},
+            parameter_source="demonstration",
+            prior=[1 / 3] * 3,
+            state_scores=[0, 50, 100],
         )
         for point in model["checkpoint_models"].values():
-            point["probabilities"] = [[.1, .25, .65], [.35, .63, .02], [.9, .099, .001]]
+            point["probabilities"] = [[0.1, 0.25, 0.65], [0.35, 0.63, 0.02], [0.9, 0.099, 0.001]]
     return config, data
 
 
@@ -46,7 +51,9 @@ def test_hover_template_owns_height_once_in_the_same_frame_and_model():
     points = {point["checkpoint_id"]: point for point in item["checkpoints"]}
     assert list(points) == ["A-S2-02-01", "A-S2-02-04", "A-S2-02-02", "A-S2-02-03"]
     assert points["A-S2-02-04"]["metric_ids"] == [
-        "hover_lower_height_m", "hover_upper_height_m", "hover_vz_mps"
+        "hover_lower_height_m",
+        "hover_upper_height_m",
+        "hover_vz_mps",
     ]
     assert points["A-S2-02-02"]["metric_ids"] == ["hover_heading_deg"]
     all_keys = [key for point in points.values() for key in point["metric_ids"]]
@@ -63,9 +70,9 @@ def test_hover_template_owns_height_once_in_the_same_frame_and_model():
         )
 
 
-@pytest.mark.parametrize("height_key, phase", [
-    ("hover_lower_height_m", "lower_1"), ("hover_upper_height_m", "upper_1")
-])
+@pytest.mark.parametrize(
+    "height_key, phase", [("hover_lower_height_m", "lower_1"), ("hover_upper_height_m", "upper_1")]
+)
 def test_height_error_changes_hover_fail_and_process_even_if_other_checks_are_desired(
     hover_case, height_key, phase
 ):
@@ -112,10 +119,15 @@ def test_missing_height_cannot_be_replaced_by_zero_vertical_speed_or_laser(hover
     assert any("hover_lower_height_m" in issue["path"] for issue in report["issues"])
 
 
-@pytest.mark.parametrize("metric, checkpoint", [
-    ("hover_vx_mps", "A-S2-02-01"), ("hover_vy_mps", "A-S2-02-01"),
-    ("hover_vz_mps", "A-S2-02-04"), ("hover_heading_deg", "A-S2-02-02")
-])
+@pytest.mark.parametrize(
+    "metric, checkpoint",
+    [
+        ("hover_vx_mps", "A-S2-02-01"),
+        ("hover_vy_mps", "A-S2-02-01"),
+        ("hover_vz_mps", "A-S2-02-04"),
+        ("hover_heading_deg", "A-S2-02-02"),
+    ],
+)
 def test_each_motion_indicator_affects_only_its_assigned_checkpoint(hover_case, metric, checkpoint):
     config, data = hover_case
     parameter = config["parameters"][metric]

@@ -57,17 +57,14 @@ def _model_issues(model, item, metrics, *, schema_version=None):
         model,
         MODEL_KEYS,
         path,
-        optional_keys={"inference_method", "compensation"}
-        if schema_version == "3.0" else set(),
+        optional_keys={"inference_method", "compensation"} if schema_version == "3.0" else set(),
     )
     if not isinstance(model, dict):
         return issues
     inference_method = model.get("inference_method")
     sequential = schema_version == "3.0" and inference_method == SEQUENTIAL_INFERENCE_METHOD
     if inference_method is not None and not sequential:
-        issues.append(
-            issue(path + "/inference_method", "未知推断方法；不自动选择替代算法。")
-        )
+        issues.append(issue(path + "/inference_method", "未知推断方法；不自动选择替代算法。"))
     if sequential:
         compensation = model.get("compensation")
         compensation_path = path + "/compensation"

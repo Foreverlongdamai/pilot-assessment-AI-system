@@ -20,7 +20,8 @@ def all_desired_case(scene_id):
             for key in frame["values"]:
                 parameter = config["parameters"].get(key)
                 if parameter is not None and (
-                    "reference_profiles" in parameter or "reference_profile" in parameter
+                    "reference_profiles" in parameter
+                    or "reference_profile" in parameter
                     or "route_points" in parameter
                 ):
                     # The example already follows its explicitly configured route/profile.

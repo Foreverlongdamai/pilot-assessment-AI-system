@@ -166,7 +166,8 @@ def _value(
     profile_errors = parameter_issues(parameter, metric) if profile else None
     if profile and not profile_errors:
         result["expected"] = _profile_expected(
-            parameter["reference_profile"] if shared_profile
+            parameter["reference_profile"]
+            if shared_profile
             else parameter["reference_profiles"][phase_id],
             elapsed_s,
             timestamp_s=timestamp_s,
@@ -275,7 +276,9 @@ def _metric(metric, records, parameter, missing_phases, path):
             )
     uncovered_phases = set()
     if (
-        shared and shared_origin is not None and applicable
+        shared
+        and shared_origin is not None
+        and applicable
         and not parameter_issues(parameter, metric)
     ):
         terminal = applicable[-1]["timestamp_s"]
@@ -284,31 +287,37 @@ def _metric(metric, records, parameter, missing_phases, path):
         roundoff = _profile_roundoff(terminal, shared_origin, elapsed, endpoint)
         if elapsed < endpoint and endpoint - elapsed > roundoff:
             uncovered_phases.add(metric["phase_ids"][-1])
-            issues.append(issue(
-                path + "/frames",
-                f"{metric['metric_id']} 首末帧仅覆盖共同起点后的 {elapsed:g} 秒，"
-                f"未覆盖参考曲线末端 {endpoint:g} 秒；不补帧、不拉伸时间。",
-            ))
+            issues.append(
+                issue(
+                    path + "/frames",
+                    f"{metric['metric_id']} 首末帧仅覆盖共同起点后的 {elapsed:g} 秒，"
+                    f"未覆盖参考曲线末端 {endpoint:g} 秒；不补帧、不拉伸时间。",
+                )
+            )
     missing = bool(uncovered_phases) or any(key in missing_phases for key in metric["phase_ids"])
     grade = _worst([point["grade"] for point in timeline] + ([None] if missing else []))
     status = _status(timeline)
     if missing and status != "invalid":
         status = "missing"
     only = timeline[0] if len(timeline) == 1 else {}
-    return {
-        "metric_id": metric["metric_id"],
-        "value": copy.deepcopy(only.get("value")),
-        "expected": copy.deepcopy(parameter.get("expected"))
-        if isinstance(parameter, dict)
-        else None,
-        "deviation": only.get("deviation"),
-        "parameter": copy.deepcopy(parameter),
-        "grade": grade,
-        "status": status,
-        "reason": "只计算已提供且适用的帧；不推断帧间持续状态。",
-        "timeline": timeline,
-        "frame_distribution": _distribution(timeline),
-    }, issues, uncovered_phases
+    return (
+        {
+            "metric_id": metric["metric_id"],
+            "value": copy.deepcopy(only.get("value")),
+            "expected": copy.deepcopy(parameter.get("expected"))
+            if isinstance(parameter, dict)
+            else None,
+            "deviation": only.get("deviation"),
+            "parameter": copy.deepcopy(parameter),
+            "grade": grade,
+            "status": status,
+            "reason": "只计算已提供且适用的帧；不推断帧间持续状态。",
+            "timeline": timeline,
+            "frame_distribution": _distribution(timeline),
+        },
+        issues,
+        uncovered_phases,
+    )
 
 
 def _combined_timeline(records, timelines):
@@ -494,9 +503,7 @@ def evaluate(configuration, input_data, catalog):
             if quantification["status"] == "pending_method":
                 quantification["status"] = "not_configured"
             quantification["method"] = SEQUENTIAL_INFERENCE_METHOD
-            quantification["message"] = (
-                "尚未填写完整的贝叶斯网络参数；保留规则结果与帧数分布。"
-            )
+            quantification["message"] = "尚未填写完整的贝叶斯网络参数；保留规则结果与帧数分布。"
         path = "/input/items/" + item["item_id"]
         parameter_paths = {
             "/parameters/" + key for point in item["checkpoints"] for key in point["metric_ids"]
@@ -523,22 +530,33 @@ def evaluate(configuration, input_data, catalog):
             and model.get("inference_method") == SEQUENTIAL_INFERENCE_METHOD
         ):
             result["skill_quantification"] = quantify_sequential(
-                configuration, item, result, quantification, issues,
+                configuration,
+                item,
+                result,
+                quantification,
+                issues,
                 blocked=bool(
-                    config_header or input_header or timing_issues
-                    or global_rule_issues or item_rule_issues
+                    config_header
+                    or input_header
+                    or timing_issues
+                    or global_rule_issues
+                    or item_rule_issues
                 ),
                 process_blocked=bool(
-                    process_blocks[item["item_id"]] or timing_issues
-                    or global_rule_issues or parameter_blocked
+                    process_blocks[item["item_id"]]
+                    or timing_issues
+                    or global_rule_issues
+                    or parameter_blocked
                 ),
                 records=process_records[item["item_id"]],
             )
             continue
         result["skill_quantification"] = quantification
         quantification["temporal_analysis"] = {
-            "status": "not_applicable" if item.get("assessment_kind") == "checklist"
-            else "invalid_model" if quantification["status"] == "invalid_model"
+            "status": "not_applicable"
+            if item.get("assessment_kind") == "checklist"
+            else "invalid_model"
+            if quantification["status"] == "invalid_model"
             else "not_configured",
             "method": SEQUENTIAL_INFERENCE_METHOD,
             "model_version": None,

@@ -25,7 +25,9 @@ def test_quick_stop_only_scores_position_in_explicit_stop_frame():
     assert item["name"] == "快速减速／快速停止"
     assert "Rapid Deceleration/Quick Stop" in item["description"]
     assert [point["checkpoint_id"] for point in item["checkpoints"]] == [
-        "A-S2-30-02", "A-S2-30-03", "A-S2-30-04"
+        "A-S2-30-02",
+        "A-S2-30-03",
+        "A-S2-30-04",
     ]
     metrics = {metric["metric_id"]: metric for metric in catalog["metrics"]}
     assert "deceleration_started" not in metrics
@@ -37,13 +39,15 @@ def test_quick_stop_only_scores_position_in_explicit_stop_frame():
 
 def test_acceleration_scene_excludes_an_unflown_approach_from_every_current_template():
     catalog = load_catalog()
-    assert [item["item_id"] for item in catalog["items"]] == [
-        "A-S1-06", "A-S2-05", "A-S2-30"
-    ]
+    assert [item["item_id"] for item in catalog["items"]] == ["A-S1-06", "A-S2-05", "A-S2-30"]
     assert sum(len(item["checkpoints"]) for item in catalog["items"]) == 12
     assert len(catalog["metrics"]) == 17
     assert catalog["phase_sequence"] == [
-        "preflight", "acceleration", "hold", "deceleration", "stop"
+        "preflight",
+        "acceleration",
+        "hold",
+        "deceleration",
+        "stop",
     ]
     assert "A-S2-23" not in catalog["input_template"]["items"]
     assert "A-S2-23" not in catalog["configuration_template"]["skill_models"]
@@ -64,13 +68,14 @@ def test_hover_reuses_items_and_encodes_four_five_second_holds():
     for item in catalog["items"]:
         if item["item_id"] == "A-S2-02":
             assert [phase["phase_id"] for phase in item["phases"]] == [
-                "lower_1", "upper_1", "lower_2", "upper_2"
+                "lower_1",
+                "upper_1",
+                "lower_2",
+                "upper_2",
             ]
             assert all(phase["required_duration_s"] == 5 for phase in item["phases"])
     transfer = catalog["items"][-1]
-    assert [phase["phase_id"] for phase in transfer["phases"]] == [
-        "rise_1", "descend_1", "rise_2"
-    ]
+    assert [phase["phase_id"] for phase in transfer["phases"]] == ["rise_1", "descend_1", "rise_2"]
 
 
 def test_empty_templates_do_not_invent_tolerances_or_bayesian_parameters():
@@ -83,9 +88,7 @@ def test_empty_templates_do_not_invent_tolerances_or_bayesian_parameters():
         for model in config["skill_models"].values():
             assert model["prior"] == [None, None, None]
         for item in catalog["items"]:
-            allowed = {
-                key for point in item["checkpoints"] for key in point["metric_ids"]
-            }
+            allowed = {key for point in item["checkpoints"] for key in point["metric_ids"]}
             for frame in catalog["input_template"]["items"][item["item_id"]]["frames"]:
                 assert set(frame["values"]) <= allowed
 

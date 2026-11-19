@@ -140,10 +140,14 @@ def _load_frame_catalog(resource_name: str) -> dict[str, Any]:
         parameter = {
             "expected": metric.get("default_expected"),
             "desired": {
-                "lower": 0 if radial or route else None, "upper": None, "unbounded_upper": False
+                "lower": 0 if radial or route else None,
+                "upper": None,
+                "unbounded_upper": False,
             },
             "acceptable": {
-                "lower": 0 if radial or route else None, "upper": None, "unbounded_upper": False
+                "lower": 0 if radial or route else None,
+                "upper": None,
+                "unbounded_upper": False,
             },
         }
         if radial:
@@ -158,9 +162,9 @@ def _load_frame_catalog(resource_name: str) -> dict[str, Any]:
 
     inputs, models = {}, {}
     for item in catalog["items"]:
-        item_keys = list(dict.fromkeys(
-            key for point in item["checkpoints"] for key in point["metric_ids"]
-        ))
+        item_keys = list(
+            dict.fromkeys(key for point in item["checkpoints"] for key in point["metric_ids"])
+        )
         inputs[item["item_id"]] = {
             "frames": [
                 {
@@ -169,11 +173,14 @@ def _load_frame_catalog(resource_name: str) -> dict[str, Any]:
                     "values": {
                         key: (
                             {"status": None, "u_m": None, "v_m": None}
-                            if metrics[key]["comparison"] == "radial" else (
+                            if metrics[key]["comparison"] == "radial"
+                            else (
                                 {"x_m": None, "y_m": None, "height_m": None}
-                                if metrics[key]["comparison"] == "route_3d" else None
+                                if metrics[key]["comparison"] == "route_3d"
+                                else None
                             )
-                        ) for key in item_keys
+                        )
+                        for key in item_keys
                         if phase["phase_id"] in metrics[key]["phase_ids"]
                     },
                 }
@@ -201,7 +208,9 @@ def _load_frame_catalog(resource_name: str) -> dict[str, Any]:
             "checkpoint_models": point_models,
         }
     catalog["configuration_template"] = {
-        **identity, "parameters": parameters, "skill_models": models,
+        **identity,
+        "parameters": parameters,
+        "skill_models": models,
     }
     catalog["input_template"] = {**identity, "items": inputs}
     return catalog

@@ -71,7 +71,8 @@ def test_demo_provides_acceleration_and_hold_on_one_reference(demo):
         assert len({f["values"]["air_taxi_airspeed_mps"] for f in accel}) > 30
         assert sum(
             (a["values"]["air_taxi_airspeed_mps"] + b["values"]["air_taxi_airspeed_mps"])
-            / 2 * (b["timestamp_s"] - a["timestamp_s"])
+            / 2
+            * (b["timestamp_s"] - a["timestamp_s"])
             for a, b in zip(accel, accel[1:], strict=False)
         ) == pytest.approx(30, abs=1e-7)
 
@@ -82,8 +83,10 @@ def test_stop_demonstrates_continuous_capture_and_settling(demo, case):
     stop = [f for f in data["items"]["A-S2-30"]["frames"] if f["phase_id"] == "stop"]
     assert len(stop) == 51
     assert stop[-1]["timestamp_s"] - stop[0]["timestamp_s"] == pytest.approx(5)
-    assert all(b["timestamp_s"] - a["timestamp_s"] == pytest.approx(0.1)
-               for a, b in zip(stop, stop[1:], strict=False))
+    assert all(
+        b["timestamp_s"] - a["timestamp_s"] == pytest.approx(0.1)
+        for a, b in zip(stop, stop[1:], strict=False)
+    )
     errors = [f["values"]["stop_x_m"] - 160 for f in stop]
     assert len({round(v, 5) for v in errors}) > 30
     assert errors[-1] == pytest.approx(0)

@@ -7,7 +7,10 @@ def test_current_catalog_contains_four_items_and_procedure_checklist():
     catalog = load_catalog(schema_version="2.0")
     assert catalog["schema_version"] == "2.0"
     assert [item["item_id"] for item in catalog["items"]] == [
-        "A-S1-06", "A-S2-08", "A-S2-05", "A-S2-30"
+        "A-S1-06",
+        "A-S2-08",
+        "A-S2-05",
+        "A-S2-30",
     ]
     checklist = catalog["items"][0]
     assert checklist["assessment_kind"] == "checklist"

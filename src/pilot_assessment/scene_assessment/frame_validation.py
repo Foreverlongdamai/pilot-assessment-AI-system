@@ -47,8 +47,10 @@ def _profile_parameter_issues(value, metric):
         issues.extend(object_issues(by_phase, set(metric["phase_ids"]), profiles_path))
         if not isinstance(by_phase, dict):
             return issues
-        profiles = [(profiles_path + "/" + phase_id, by_phase.get(phase_id))
-                    for phase_id in metric["phase_ids"]]
+        profiles = [
+            (profiles_path + "/" + phase_id, by_phase.get(phase_id))
+            for phase_id in metric["phase_ids"]
+        ]
     for nodes_path, nodes in profiles:
         if not isinstance(nodes, list) or len(nodes) < 2:
             issues.append(issue(nodes_path, "参考曲线至少需要两个节点。"))
@@ -65,9 +67,7 @@ def _profile_parameter_issues(value, metric):
             else:
                 if index == 0 and elapsed != 0:
                     issues.append(
-                        issue(
-                            node_path + "/elapsed_s", "参考曲线首节点必须从相对时刻 0 秒开始。"
-                        )
+                        issue(node_path + "/elapsed_s", "参考曲线首节点必须从相对时刻 0 秒开始。")
                     )
                 if previous is not None and elapsed <= previous:
                     issues.append(
