@@ -1,0 +1,815 @@
+{
+  "schema_version": "2.0",
+  "scene_id": "SCN-001",
+  "name": "加速减速任务",
+  "description": "按检查点接收已整理的原始数据：完成起飞前检查、地面起飞、加速与保速和急停。系统计算有符号偏差与D/A/U；持续悬停能力留待专门场景。",
+  "metrics": [
+    {
+      "metric_id": "battery_check_completed",
+      "name": "电池与供电检查完成",
+      "description": "按当前机型检查单完成电池与供电项目。true表示检查已完成，不自动表示设备正常。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "scalar",
+      "comparison": "boolean",
+      "shared": false
+    },
+    {
+      "metric_id": "propulsion_check_completed",
+      "name": "推进与功率检查完成",
+      "description": "按机型检查单完成推进系统与功率相关项目。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "scalar",
+      "comparison": "boolean",
+      "shared": false
+    },
+    {
+      "metric_id": "flight_configuration_check_completed",
+      "name": "飞控与起飞构型检查完成",
+      "description": "按机型检查单完成飞控模式与起飞构型项目。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "scalar",
+      "comparison": "boolean",
+      "shared": false
+    },
+    {
+      "metric_id": "flight_instruments_check_completed",
+      "name": "飞行仪表检查完成",
+      "description": "按机型检查单完成飞行仪表项目。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "scalar",
+      "comparison": "boolean",
+      "shared": false
+    },
+    {
+      "metric_id": "alerts_check_completed",
+      "name": "告警与系统状态检查完成",
+      "description": "按机型检查单完成告警与系统状态项目。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "scalar",
+      "comparison": "boolean",
+      "shared": false
+    },
+    {
+      "metric_id": "departure_check_completed",
+      "name": "导航与任务信息检查完成",
+      "description": "按机型检查单完成导航与任务信息项目。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "scalar",
+      "comparison": "boolean",
+      "shared": false
+    },
+    {
+      "metric_id": "initial_hover_duration_s",
+      "name": "初始悬停保持时长",
+      "description": "已整理的初始悬停实际保持时长，与配置的期望时长比较；本系统不识别保持段。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "scalar",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "initial_hover_height_m",
+      "name": "初始悬停实际高度",
+      "description": "仅初始悬停检查段的实际高度；与期望高度采用同一高度基准，不含正常离地上升段。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "series",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "takeoff_position_x_m",
+      "name": "起飞水平位置 X",
+      "description": "起飞与初始悬停检查段在场景固定坐标系中的实际 X 坐标；期望值为指定起飞点同系 X 坐标。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "series",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "takeoff_position_y_m",
+      "name": "起飞水平位置 Y",
+      "description": "与 X 同一固定坐标系、同一检查段的实际 Y 坐标；分别比较各轴，不自动合成径向距离。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "series",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "takeoff_heading_deg",
+      "name": "起飞实际航向",
+      "description": "已经整理好的起飞阶段机头航向，使用相同期望航向基准与有符号最短角差。",
+      "unit": "deg",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "series",
+      "comparison": "angle_degrees",
+      "shared": false
+    },
+    {
+      "metric_id": "speed_hold_duration_s",
+      "name": "指定空速保持时长",
+      "description": "已整理的指定空速保持动作持续时间；包含期间偏离，不由本系统切段。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "scalar",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "speed_hold_airspeed_mps",
+      "name": "保速阶段实际空速",
+      "description": "已整理好的保速检查段实际空速。期望值为本任务指定空速，不含正常加速过程。",
+      "unit": "m/s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "series",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "air_taxi_height_m",
+      "name": "空中滑行实际高度",
+      "description": "已整理好的空中滑行高度检查数据；原始高度与期望高度使用同一基准。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "series",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "air_taxi_lateral_position_m",
+      "name": "空中滑行横向位置坐标",
+      "description": "在场景已约定的固定走廊坐标系中的实际横向坐标；期望值为走廊中心坐标，本系统不投影或截取轨迹。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "series",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "air_taxi_heading_deg",
+      "name": "空中滑行实际航向",
+      "description": "只含该检查点已整理好的空中滑行机头航向；不是急停航向，也不是地面航迹角。",
+      "unit": "deg",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "series",
+      "comparison": "angle_degrees",
+      "shared": false
+    },
+    {
+      "metric_id": "deceleration_started",
+      "name": "本次减速操纵已执行",
+      "description": "由本检查点提供的动作完成事实，本系统不识别减速起点。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "scalar",
+      "comparison": "boolean",
+      "shared": false
+    },
+    {
+      "metric_id": "deceleration_onset_position_m",
+      "name": "减速起动实际位置坐标",
+      "description": "由检查点数据提供的减速起动沿向坐标，与配置的提示位置坐标比较；不是预计算偏差。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "scalar",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "quickstop_entry_airspeed_mps",
+      "name": "急停入口实际空速",
+      "description": "由已整理急停检查点提供的入口空速，与指定入口空速比较；系统不重新识别入口时刻。",
+      "unit": "m/s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "scalar",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "stop_achieved",
+      "name": "本次急停停止结果",
+      "description": "由急停检查点提供的停止事实；不能仅因数据包标为急停而补成true，本系统不检测停止事件。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "scalar",
+      "comparison": "boolean",
+      "shared": false
+    },
+    {
+      "metric_id": "deceleration_duration_s",
+      "name": "本次减速实际耗时",
+      "description": "已整理检查点提供的实际减速耗时，与配置期望耗时比较；不在系统中识别起止事件。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "scalar",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "quickstop_height_m",
+      "name": "急停实际高度",
+      "description": "已整理好的急停阶段实际高度，包含末端，与配置的同基准高度比较。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "series",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "quickstop_heading_deg",
+      "name": "急停实际航向",
+      "description": "已整理好的急停阶段机头航向，包含末端；独立于空中滑行航向检查。",
+      "unit": "deg",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "series",
+      "comparison": "angle_degrees",
+      "shared": false
+    },
+    {
+      "metric_id": "quickstop_lateral_position_m",
+      "name": "急停横向位置坐标",
+      "description": "急停阶段场景固定走廊坐标系中的实际横向坐标，包含末端；本系统不截取或投影轨迹。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "relative",
+      "input_kind": "series",
+      "comparison": "linear",
+      "shared": false
+    },
+    {
+      "metric_id": "quickstop_prohibited_event_count",
+      "name": "已认定的禁止事件数量",
+      "description": "本检查点已提供的禁止事件计数，0次为D，非0为U；普通D/A超差不在此重复计为禁止事件。",
+      "unit": "",
+      "value_type": "integer",
+      "rule": "zero_events",
+      "parameter_kind": "integer",
+      "input_kind": "scalar",
+      "comparison": "count",
+      "shared": false
+    }
+  ],
+  "items": [
+    {
+      "item_id": "A-S1-06",
+      "name": "起飞前检查",
+      "description": "直接使用本次飞行检查单的逐项完成结果；具体内容按机型程序配置，不使用注视秒数。",
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S1-06-01",
+          "name": "电池与供电检查完成",
+          "description": "按当前机型检查单完成电池与供电项目。true表示检查已完成，不自动表示设备正常。",
+          "metric_ids": [
+            "battery_check_completed"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.I.A.K5/K8; AP.II.F.S3",
+              "page": "印刷p.2、15 / PDF第7、20页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=20",
+              "support": "官方内容依据",
+              "note": "检查内容参考；具体机型检查单及完成性JSON为项目适配，不表示完整官方任务已覆盖。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "逐项true/false完成性检查；本项不使用眼动秒数或技能概率。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-02",
+          "name": "推进与功率检查完成",
+          "description": "按机型检查单完成推进系统与功率相关项目。",
+          "metric_ids": [
+            "propulsion_check_completed"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.I.A.K2/K3; AP.II.F.S1/S3",
+              "page": "印刷p.2、15 / PDF第7、20页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=20",
+              "support": "官方内容依据",
+              "note": "检查内容参考；具体机型检查单及完成性JSON为项目适配，不表示完整官方任务已覆盖。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "逐项true/false完成性检查；本项不使用眼动秒数或技能概率。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-03",
+          "name": "飞控与起飞构型检查完成",
+          "description": "按机型检查单完成飞控模式与起飞构型项目。",
+          "metric_ids": [
+            "flight_configuration_check_completed"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.I.A.K13; AP.II.F.S1/S4",
+              "page": "印刷p.2、15 / PDF第7、20页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=20",
+              "support": "官方内容依据",
+              "note": "检查内容参考；具体机型检查单及完成性JSON为项目适配，不表示完整官方任务已覆盖。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "逐项true/false完成性检查；本项不使用眼动秒数或技能概率。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-04",
+          "name": "飞行仪表检查完成",
+          "description": "按机型检查单完成飞行仪表项目。",
+          "metric_ids": [
+            "flight_instruments_check_completed"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.II.F.S4",
+              "page": "印刷p.15 / PDF第20页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=20",
+              "support": "官方内容依据",
+              "note": "检查内容参考；具体机型检查单及完成性JSON为项目适配，不表示完整官方任务已覆盖。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "逐项true/false完成性检查；本项不使用眼动秒数或技能概率。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-05",
+          "name": "告警与系统状态检查完成",
+          "description": "按机型检查单完成告警与系统状态项目。",
+          "metric_ids": [
+            "alerts_check_completed"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.II.F.K1b/K1c; AP.II.F.S3",
+              "page": "印刷p.15 / PDF第20页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=20",
+              "support": "官方内容依据",
+              "note": "检查内容参考；具体机型检查单及完成性JSON为项目适配，不表示完整官方任务已覆盖。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "逐项true/false完成性检查；本项不使用眼动秒数或技能概率。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-06",
+          "name": "导航与任务信息检查完成",
+          "description": "按机型检查单完成导航与任务信息项目。",
+          "metric_ids": [
+            "departure_check_completed"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.II.F.S4",
+              "page": "印刷p.15 / PDF第20页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=20",
+              "support": "官方内容依据",
+              "note": "检查内容参考；具体机型检查单及完成性JSON为项目适配，不表示完整官方任务已覆盖。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "逐项true/false完成性检查；本项不使用眼动秒数或技能概率。"
+            }
+          ],
+          "fail_when": []
+        }
+      ],
+      "assessment_kind": "checklist",
+      "skill_name": "检查单完成情况",
+      "skill_description": "完成性检查，不设置贝叶斯技能分数。"
+    },
+    {
+      "item_id": "A-S2-08",
+      "name": "地面起飞",
+      "description": "从地面离地，建立初始悬停并控制位置和航向。",
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-08-01",
+          "name": "离地并建立初始悬停",
+          "description": "直接比较本检查点已整理数据与配置目标；初始悬停保持时长、初始悬停实际高度。",
+          "metric_ids": [
+            "initial_hover_duration_s",
+            "initial_hover_height_m"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.IV.A.S4/S5",
+              "page": "印刷p.18 / PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据",
+              "note": "保持机型推荐悬停高度；距表面10 ft以内容差为推荐高度±1/2，超过10 ft为±5 ft，仅在适用条件一致时参考。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "原始量、坐标分量、期望值、相对D/A区间和时间统计为项目适配；数值默认留空，不执行事件识别。"
+            }
+          ],
+          "fail_when": [
+            {
+              "metric_id": "initial_hover_duration_s",
+              "equals": 0
+            }
+          ]
+        },
+        {
+          "checkpoint_id": "A-S2-08-02",
+          "name": "水平位置控制",
+          "description": "直接比较本检查点已整理数据与配置目标；起飞水平位置 X、起飞水平位置 Y。",
+          "metric_ids": [
+            "takeoff_position_x_m",
+            "takeoff_position_y_m"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.IV.A.S4/S6",
+              "page": "印刷p.18 / PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据",
+              "note": "支持无漂移上升和指定位置保持；S6位置容差参考±2 ft。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "原始量、坐标分量、期望值、相对D/A区间和时间统计为项目适配；数值默认留空，不执行事件识别。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-08-03",
+          "name": "航向保持",
+          "description": "直接比较本检查点已整理数据与配置目标；起飞实际航向。",
+          "metric_ids": [
+            "takeoff_heading_deg"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.IV.A.S8",
+              "page": "印刷p.18 / PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据",
+              "note": "指定航向容差参考±10°；不等于地面航迹角。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "原始量、坐标分量、期望值、相对D/A区间和时间统计为项目适配；数值默认留空，不执行事件识别。"
+            }
+          ],
+          "fail_when": []
+        }
+      ],
+      "assessment_kind": "flight",
+      "skill_name": "地面起飞当次表现",
+      "skill_description": "保留本项技能状态与检查点CPT的参数编辑；整段贝叶斯公式未定，不将旧示例概率用于序列评分。"
+    },
+    {
+      "item_id": "A-S2-05",
+      "name": "空中滑行（加速与保速）",
+      "description": "沿指定走廊加速并保持目标空速、高度及方向。",
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-05-01",
+          "name": "达到并保持指定空速",
+          "description": "直接比较本检查点已整理数据与配置目标；指定空速保持时长、保速阶段实际空速。",
+          "metric_ids": [
+            "speed_hold_duration_s",
+            "speed_hold_airspeed_mps"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.II.E.S5",
+              "page": "印刷p.14 / PDF第19页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=19",
+              "support": "官方内容依据",
+              "note": "ATP/型号等级Air Taxi指定空速容差参考±10 kt，不是所有eVTOL的通用界线。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "原始量、坐标分量、期望值、相对D/A区间和时间统计为项目适配；数值默认留空，不执行事件识别。"
+            }
+          ],
+          "fail_when": [
+            {
+              "metric_id": "speed_hold_duration_s",
+              "equals": 0
+            }
+          ]
+        },
+        {
+          "checkpoint_id": "A-S2-05-02",
+          "name": "高度保持",
+          "description": "直接比较本检查点已整理数据与配置目标；空中滑行实际高度。",
+          "metric_ids": [
+            "air_taxi_height_m"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.II.E.S4/S5",
+              "page": "印刷p.14 / PDF第19页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=19",
+              "support": "官方内容依据",
+              "note": "Air Taxi滑行高度容差参考±10 ft，按任务适用性使用。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "原始量、坐标分量、期望值、相对D/A区间和时间统计为项目适配；数值默认留空，不执行事件识别。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-05-03",
+          "name": "航迹与航向控制",
+          "description": "直接比较本检查点已整理数据与配置目标；空中滑行横向位置坐标、空中滑行实际航向。",
+          "metric_ids": [
+            "air_taxi_lateral_position_m",
+            "air_taxi_heading_deg"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.II.E.S5/S6",
+              "page": "印刷p.14 / PDF第19页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=19",
+              "support": "官方内容依据",
+              "note": "支持指定飞行路径及不同风向下点到点移动，未给本项目独立机头航向容差。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "原始量、坐标分量、期望值、相对D/A区间和时间统计为项目适配；数值默认留空，不执行事件识别。"
+            }
+          ],
+          "fail_when": []
+        }
+      ],
+      "assessment_kind": "flight",
+      "skill_name": "空中滑行（加速与保速）当次表现",
+      "skill_description": "保留本项技能状态与检查点CPT的参数编辑；整段贝叶斯公式未定，不将旧示例概率用于序列评分。"
+    },
+    {
+      "item_id": "A-S2-30",
+      "name": "快速减速／急停",
+      "description": "按提示开始减速，有效停止水平运动并控制过程和限制。",
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-30-01",
+          "name": "按提示开始减速",
+          "description": "直接比较本检查点已整理数据与配置目标；本次减速操纵已执行、减速起动实际位置坐标。",
+          "metric_ids": [
+            "deceleration_started",
+            "deceleration_onset_position_m"
+          ],
+          "sources": [
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "原始量、坐标分量、期望值、相对D/A区间和时间统计为项目适配；数值默认留空，不执行事件识别。"
+            }
+          ],
+          "fail_when": [
+            {
+              "metric_id": "deceleration_started",
+              "equals": false
+            }
+          ]
+        },
+        {
+          "checkpoint_id": "A-S2-30-02",
+          "name": "完成减速与减速效果",
+          "description": "直接比较本检查点已整理数据与配置目标；急停入口实际空速、本次急停停止结果、本次减速实际耗时。",
+          "metric_ids": [
+            "quickstop_entry_airspeed_mps",
+            "stop_achieved",
+            "deceleration_duration_s"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.VI.A.S4/S5",
+              "page": "印刷p.32 / PDF第37页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=37",
+              "support": "官方内容依据",
+              "note": "要求最大性能减速及适当功率/推力方向；耗时不能独立证明最佳功率/推力选择。"
+            },
+            {
+              "document": "CAA SD19(H) V7 February 2026",
+              "clause": "2(g)",
+              "page": "p.24",
+              "url": "https://www.caa.co.uk/publication/download/12904#page=24",
+              "support": "直升机任务类比",
+              "note": "支持指定速度、高度、航向进入并减速至停止；不照搬随后下降至低悬停的程序。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "原始量、坐标分量、期望值、相对D/A区间和时间统计为项目适配；数值默认留空，不执行事件识别。"
+            }
+          ],
+          "fail_when": [
+            {
+              "metric_id": "deceleration_started",
+              "equals": false
+            },
+            {
+              "metric_id": "stop_achieved",
+              "equals": false
+            }
+          ]
+        },
+        {
+          "checkpoint_id": "A-S2-30-03",
+          "name": "减速过程控制",
+          "description": "直接比较本检查点已整理数据与配置目标；急停实际高度、急停实际航向、急停横向位置坐标。",
+          "metric_ids": [
+            "quickstop_height_m",
+            "quickstop_heading_deg",
+            "quickstop_lateral_position_m"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.VI.A.S3; R1",
+              "page": "印刷p.32 / PDF第37页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=37",
+              "support": "技能与风险内容依据",
+              "note": "商业级急停航向容差参考±5°；高度变化属于R1风险背景。私用级±10°不能与商业级拼成官方D/A。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "原始量、坐标分量、期望值、相对D/A区间和时间统计为项目适配；数值默认留空，不执行事件识别。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-30-04",
+          "name": "限制与禁止接触",
+          "description": "直接比较本检查点已整理数据与配置目标；已认定的禁止事件数量。",
+          "metric_ids": [
+            "quickstop_prohibited_event_count"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.VI.A.K2/K3; R2/R4/R5",
+              "page": "印刷p.32 / PDF第37页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=37",
+              "support": "知识与风险依据",
+              "note": "限制与碰撞的知识/风险依据，并非原文事件计数评分公式。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-14 原始值、有符号容差与检查点序列",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "原始量、坐标分量、期望值、相对D/A区间和时间统计为项目适配；数值默认留空，不执行事件识别。"
+            }
+          ],
+          "fail_when": []
+        }
+      ],
+      "assessment_kind": "flight",
+      "skill_name": "快速减速／急停当次表现",
+      "skill_description": "保留本项技能状态与检查点CPT的参数编辑；整段贝叶斯公式未定，不将旧示例概率用于序列评分。"
+    }
+  ]
+}

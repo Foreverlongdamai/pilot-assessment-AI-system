@@ -1,0 +1,589 @@
+{
+  "schema_version": "3.0",
+  "scene_id": "SCN-001",
+  "phase_sequence": [
+    "preflight",
+    "acceleration",
+    "hold",
+    "deceleration",
+    "stop"
+  ],
+  "name": "加速减速任务",
+  "description": "加速与保速→快速减速并停在指定位置；确认结束只标记任务边界。起飞前检查单保留为独立准备项。当前任务不包含正常进近至悬停。输入按item内精确时间frames排列，比较原始值与手工配置目标或参考剖面。",
+  "metrics": [
+    {
+      "metric_id": "battery_check_completed",
+      "name": "电池与供电检查完成",
+      "description": "按机型检查单完成该项目；true代表已完成，不自动表示设备正常。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "frame",
+      "comparison": "boolean",
+      "shared": false,
+      "phase_ids": [
+        "preflight"
+      ]
+    },
+    {
+      "metric_id": "propulsion_check_completed",
+      "name": "推进与功率检查完成",
+      "description": "按机型检查单完成该项目；true代表已完成，不自动表示设备正常。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "frame",
+      "comparison": "boolean",
+      "shared": false,
+      "phase_ids": [
+        "preflight"
+      ]
+    },
+    {
+      "metric_id": "flight_configuration_check_completed",
+      "name": "飞控与起飞构型检查完成",
+      "description": "按机型检查单完成该项目；true代表已完成，不自动表示设备正常。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "frame",
+      "comparison": "boolean",
+      "shared": false,
+      "phase_ids": [
+        "preflight"
+      ]
+    },
+    {
+      "metric_id": "flight_instruments_check_completed",
+      "name": "飞行仪表检查完成",
+      "description": "按机型检查单完成该项目；true代表已完成，不自动表示设备正常。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "frame",
+      "comparison": "boolean",
+      "shared": false,
+      "phase_ids": [
+        "preflight"
+      ]
+    },
+    {
+      "metric_id": "alerts_check_completed",
+      "name": "告警与系统状态检查完成",
+      "description": "按机型检查单完成该项目；true代表已完成，不自动表示设备正常。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "frame",
+      "comparison": "boolean",
+      "shared": false,
+      "phase_ids": [
+        "preflight"
+      ]
+    },
+    {
+      "metric_id": "departure_check_completed",
+      "name": "导航与任务信息检查完成",
+      "description": "按机型检查单完成该项目；true代表已完成，不自动表示设备正常。",
+      "unit": "",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "boolean",
+      "input_kind": "frame",
+      "comparison": "boolean",
+      "shared": false,
+      "phase_ids": [
+        "preflight"
+      ]
+    },
+    {
+      "metric_id": "air_taxi_airspeed_mps",
+      "name": "加速与保速实际空速",
+      "description": "每帧原始空速与同一条速度参考曲线比较；相对时间为当前帧时刻减去 acceleration 首帧时刻，进入 hold 不归零。只插值参考值，不插值观测、不外推目标。",
+      "unit": "m/s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "target_mode": "item_profile",
+      "reference_origin_phase": "acceleration",
+      "shared": false,
+      "phase_ids": [
+        "acceleration",
+        "hold"
+      ]
+    },
+    {
+      "metric_id": "air_taxi_height_m",
+      "name": "空中滑行实际高度",
+      "description": "每帧原始空中滑行实际高度；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "acceleration",
+        "hold"
+      ]
+    },
+    {
+      "metric_id": "air_taxi_lateral_position_m",
+      "name": "空中滑行横向位置",
+      "description": "每帧原始空中滑行横向位置；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "acceleration",
+        "hold"
+      ]
+    },
+    {
+      "metric_id": "air_taxi_heading_deg",
+      "name": "空中滑行实际航向",
+      "description": "每帧原始空中滑行实际航向；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "deg",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "angle_degrees",
+      "shared": false,
+      "phase_ids": [
+        "acceleration",
+        "hold"
+      ]
+    },
+    {
+      "metric_id": "stop_x_m",
+      "name": "停止时实际X",
+      "description": "每帧原始停止时实际X；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "stop"
+      ]
+    },
+    {
+      "metric_id": "stop_y_m",
+      "name": "停止时实际Y",
+      "description": "每帧原始停止时实际Y；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "stop"
+      ]
+    },
+    {
+      "metric_id": "stop_height_m",
+      "name": "停止时实际高度",
+      "description": "每帧原始停止时实际高度；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "stop"
+      ]
+    },
+    {
+      "metric_id": "quickstop_height_m",
+      "name": "急停实际高度",
+      "description": "每帧原始急停实际高度；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "deceleration",
+        "stop"
+      ]
+    },
+    {
+      "metric_id": "quickstop_heading_deg",
+      "name": "急停实际航向",
+      "description": "每帧原始急停实际航向；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "deg",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "angle_degrees",
+      "shared": false,
+      "phase_ids": [
+        "deceleration",
+        "stop"
+      ]
+    },
+    {
+      "metric_id": "quickstop_lateral_position_m",
+      "name": "急停横向位置",
+      "description": "每帧原始急停横向位置；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "deceleration",
+        "stop"
+      ]
+    },
+    {
+      "metric_id": "quickstop_prohibited_event_count",
+      "name": "本帧已认定禁止事件数量",
+      "description": "每帧原始本帧已认定禁止事件数量；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "次",
+      "value_type": "integer",
+      "rule": "zero_events",
+      "parameter_kind": "event_count",
+      "input_kind": "frame",
+      "comparison": "zero",
+      "shared": false,
+      "phase_ids": [
+        "deceleration",
+        "stop"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "item_id": "A-S1-06",
+      "name": "起飞前检查",
+      "description": "每次训练输入检查单各条目的true/false完成结果。",
+      "assessment_kind": "checklist",
+      "phases": [
+        {
+          "phase_id": "preflight",
+          "name": "起飞前检查单",
+          "single_frame": true,
+          "required_duration_s": null
+        }
+      ],
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S1-06-01",
+          "name": "电池与供电检查完成",
+          "description": "电池与供电检查完成",
+          "metric_ids": [
+            "battery_check_completed"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.II.E.S1/S3",
+              "page": "PDF第18页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=18",
+              "support": "官方内容依据／项目适配",
+              "note": "检查单内容参照，布尔完成性是项目适配，不证明全部操作质量。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-02",
+          "name": "推进与功率检查完成",
+          "description": "推进与功率检查完成",
+          "metric_ids": [
+            "propulsion_check_completed"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.II.E.S1/S3",
+              "page": "PDF第18页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=18",
+              "support": "官方内容依据／项目适配",
+              "note": "检查单内容参照，布尔完成性是项目适配，不证明全部操作质量。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-03",
+          "name": "飞控与起飞构型检查完成",
+          "description": "飞控与起飞构型检查完成",
+          "metric_ids": [
+            "flight_configuration_check_completed"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.II.E.S1/S3",
+              "page": "PDF第18页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=18",
+              "support": "官方内容依据／项目适配",
+              "note": "检查单内容参照，布尔完成性是项目适配，不证明全部操作质量。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-04",
+          "name": "飞行仪表检查完成",
+          "description": "飞行仪表检查完成",
+          "metric_ids": [
+            "flight_instruments_check_completed"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.II.E.S1/S3",
+              "page": "PDF第18页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=18",
+              "support": "官方内容依据／项目适配",
+              "note": "检查单内容参照，布尔完成性是项目适配，不证明全部操作质量。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-05",
+          "name": "告警与系统状态检查完成",
+          "description": "告警与系统状态检查完成",
+          "metric_ids": [
+            "alerts_check_completed"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.II.E.S1/S3",
+              "page": "PDF第18页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=18",
+              "support": "官方内容依据／项目适配",
+              "note": "检查单内容参照，布尔完成性是项目适配，不证明全部操作质量。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-06",
+          "name": "导航与任务信息检查完成",
+          "description": "导航与任务信息检查完成",
+          "metric_ids": [
+            "departure_check_completed"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.II.E.S1/S3",
+              "page": "PDF第18页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=18",
+              "support": "官方内容依据／项目适配",
+              "note": "检查单内容参照，布尔完成性是项目适配，不证明全部操作质量。"
+            }
+          ],
+          "fail_when": []
+        }
+      ],
+      "skill_name": "检查单完成性",
+      "skill_description": "按检查单完成结果判定，不估计技能概率。"
+    },
+    {
+      "item_id": "A-S2-05",
+      "name": "空中滑行（加速与保速）",
+      "description": "加速及保速各阶段已由输入标明；空速沿同一条相对加速首帧计时的参考曲线逐帧评价，同时检查高度、航迹和航向。实际数据须覆盖参考曲线末端。",
+      "assessment_kind": "flight",
+      "phases": [
+        {
+          "phase_id": "acceleration",
+          "name": "加速",
+          "single_frame": false,
+          "required_duration_s": null,
+          "minimum_frame_count": 2
+        },
+        {
+          "phase_id": "hold",
+          "name": "保速",
+          "single_frame": false,
+          "required_duration_s": null,
+          "minimum_frame_count": 2
+        }
+      ],
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-05-01",
+          "name": "加速与保速速度控制",
+          "description": "从 acceleration 首帧作为 0 秒，按真实时间差逐帧线性插值同一条参考速度曲线；以原始空速减参考空速分档。缺少起点、参考越界或输入未覆盖参考末端时不能完整评估。",
+          "metric_ids": [
+            "air_taxi_airspeed_mps"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17",
+              "clause": "AP.II.E.S4/S5/S6",
+              "page": "印刷p14／PDF19",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=19",
+              "support": "官方内容依据／项目适配",
+              "note": "官方支持安全速度选择及指定空速、高度与航迹保持；逐秒加速参考曲线、任务时长和D/A容差为项目训练目标，不是官方通用时间曲线。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-05-02",
+          "name": "高度保持",
+          "description": "高度保持",
+          "metric_ids": [
+            "air_taxi_height_m"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17",
+              "clause": "AP.II.E.S4/S5/S6",
+              "page": "印刷p14／PDF19",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=19",
+              "support": "官方内容依据／项目适配",
+              "note": "指定空速、高度与航迹保持；保速时长、独立航向约束及D/A阈值是项目配置。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-05-03",
+          "name": "航迹与航向控制",
+          "description": "航迹与航向控制",
+          "metric_ids": [
+            "air_taxi_lateral_position_m",
+            "air_taxi_heading_deg"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17",
+              "clause": "AP.II.E.S4/S5/S6",
+              "page": "印刷p14／PDF19",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=19",
+              "support": "官方内容依据／项目适配",
+              "note": "指定空速、高度与航迹保持；保速时长、独立航向约束及D/A阈值是项目配置。"
+            }
+          ],
+          "fail_when": []
+        }
+      ],
+      "skill_name": "空中滑行（加速与保速）当次表现",
+      "skill_description": "贝叶斯网络根据逐帧表现更新技能状态概率；先验、CPT和更新系数可编辑，规则P/F独立保留。"
+    },
+    {
+      "item_id": "A-S2-30",
+      "equivalent_values": [
+        [
+          "stop_height_m",
+          "quickstop_height_m"
+        ]
+      ],
+      "name": "快速减速／快速停止",
+      "description": "名称参考FAA-S-ACS-2 CP.VI.A Rapid Deceleration/Quick Stop。从上游已归属的减速与停止后观察帧开始评价停止位置、过程控制及已认定禁止事件；指定停止位置是项目要求，当前检查不证明最大性能减速或全部FAA任务要求。",
+      "assessment_kind": "flight",
+      "phases": [
+        {
+          "phase_id": "deceleration",
+          "name": "减速过程",
+          "single_frame": false,
+          "required_duration_s": null
+        },
+        {
+          "phase_id": "stop",
+          "name": "停止后观察",
+          "single_frame": false,
+          "required_duration_s": null
+        }
+      ],
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-30-02",
+          "name": "停止位置精度",
+          "description": "停止位置精度",
+          "metric_ids": [
+            "stop_x_m",
+            "stop_y_m",
+            "stop_height_m"
+          ],
+          "sources": [
+            {
+              "document": "项目场景设计",
+              "clause": "2026-09-15 v3",
+              "page": "",
+              "url": "",
+              "support": "项目定义",
+              "note": "在上游明确给出的停止后观察帧中逐帧比较X/Y/高度；由输入提供多帧，不凭位置证明减速效率或最大性能。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-30-03",
+          "name": "减速过程控制",
+          "description": "减速过程控制",
+          "metric_ids": [
+            "quickstop_height_m",
+            "quickstop_heading_deg",
+            "quickstop_lateral_position_m"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.VI.A.S3; R1",
+              "page": "PDF第37页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=37",
+              "support": "官方内容依据／项目适配",
+              "note": "官方支持检查内容；有符号分量、D/A阈值与逐帧汇总是项目适配。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-30-04",
+          "name": "限制与禁止接触",
+          "description": "限制与禁止接触",
+          "metric_ids": [
+            "quickstop_prohibited_event_count"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.VI.A.K2/K3; R2/R4/R5",
+              "page": "PDF第37页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=37",
+              "support": "官方内容依据／项目适配",
+              "note": "限制与碰撞内容依据；0事件D、非0事件U是项目规则。输入必须指明按本任务及机型限制认定的事件，不把普通偏差重复计入。"
+            }
+          ],
+          "fail_when": []
+        }
+      ],
+      "skill_name": "快速减速／快速停止当次表现",
+      "skill_description": "贝叶斯网络根据逐帧表现更新技能状态概率；先验、CPT和更新系数可编辑，规则P/F独立保留。"
+    }
+  ]
+}

@@ -1,0 +1,498 @@
+{
+  "schema_version": "3.0",
+  "scene_id": "SCN-002",
+  "phase_sequence": [
+    "lower_1",
+    "rise_1",
+    "upper_1",
+    "descend_1",
+    "lower_2",
+    "rise_2",
+    "upper_2"
+  ],
+  "name": "双高度悬停任务",
+  "description": "到达下方指定点后开始：下点停留5秒→上升→上点停留5秒→下降→下点停留5秒→再次上升→上点停留5秒。两个item分别为定点悬停保持和垂直升降控制；定点悬停同时检查水平位置、高度、航向和激光，速度作为稳定性补充。输入已标明环节并按item逐帧组织。",
+  "metrics": [
+    {
+      "metric_id": "hover_lower_height_m",
+      "name": "下方悬停实际高度",
+      "description": "每帧原始下方悬停实际高度；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "lower_1",
+        "lower_2"
+      ]
+    },
+    {
+      "metric_id": "hover_upper_height_m",
+      "name": "上方悬停实际高度",
+      "description": "每帧原始上方悬停实际高度；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "upper_1",
+        "upper_2"
+      ]
+    },
+    {
+      "metric_id": "hover_x_m",
+      "name": "悬停实际X",
+      "description": "每帧原始悬停实际X；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "lower_1",
+        "upper_1",
+        "lower_2",
+        "upper_2"
+      ]
+    },
+    {
+      "metric_id": "hover_y_m",
+      "name": "悬停实际Y",
+      "description": "每帧原始悬停实际Y；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "lower_1",
+        "upper_1",
+        "lower_2",
+        "upper_2"
+      ]
+    },
+    {
+      "metric_id": "hover_vx_mps",
+      "name": "悬停地面系X速度",
+      "description": "每帧原始悬停地面系X速度；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m/s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "lower_1",
+        "upper_1",
+        "lower_2",
+        "upper_2"
+      ],
+      "default_expected": 0
+    },
+    {
+      "metric_id": "hover_vy_mps",
+      "name": "悬停地面系Y速度",
+      "description": "每帧原始悬停地面系Y速度；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m/s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "lower_1",
+        "upper_1",
+        "lower_2",
+        "upper_2"
+      ],
+      "default_expected": 0
+    },
+    {
+      "metric_id": "hover_vz_mps",
+      "name": "悬停地面系Z速度",
+      "description": "每帧原始悬停地面系Z速度；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m/s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "lower_1",
+        "upper_1",
+        "lower_2",
+        "upper_2"
+      ],
+      "default_expected": 0
+    },
+    {
+      "metric_id": "hover_heading_deg",
+      "name": "悬停实际航向",
+      "description": "每帧原始悬停实际航向；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "deg",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "angle_degrees",
+      "shared": false,
+      "phase_ids": [
+        "lower_1",
+        "upper_1",
+        "lower_2",
+        "upper_2"
+      ]
+    },
+    {
+      "metric_id": "laser_lower_spot",
+      "name": "下方靶面实际落点",
+      "description": "输入期望靶的原始u/v坐标与hit/miss/unavailable状态。系统计算距配置圆心半径，判定D/A/U；缺测不等于脱靶。",
+      "unit": "m",
+      "value_type": "object",
+      "rule": "interval",
+      "parameter_kind": "radial",
+      "input_kind": "frame",
+      "comparison": "radial",
+      "shared": false,
+      "phase_ids": [
+        "lower_1",
+        "lower_2"
+      ],
+      "default_expected": 0
+    },
+    {
+      "metric_id": "laser_upper_spot",
+      "name": "上方靶面实际落点",
+      "description": "输入期望靶的原始u/v坐标与hit/miss/unavailable状态。系统计算距配置圆心半径，判定D/A/U；缺测不等于脱靶。",
+      "unit": "m",
+      "value_type": "object",
+      "rule": "interval",
+      "parameter_kind": "radial",
+      "input_kind": "frame",
+      "comparison": "radial",
+      "shared": false,
+      "phase_ids": [
+        "upper_1",
+        "upper_2"
+      ],
+      "default_expected": 0
+    },
+    {
+      "metric_id": "transfer_x_m",
+      "name": "升降时实际X",
+      "description": "每帧原始升降时实际X；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "rise_1",
+        "descend_1",
+        "rise_2"
+      ]
+    },
+    {
+      "metric_id": "transfer_y_m",
+      "name": "升降时实际Y",
+      "description": "每帧原始升降时实际Y；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "linear",
+      "shared": false,
+      "phase_ids": [
+        "rise_1",
+        "descend_1",
+        "rise_2"
+      ]
+    },
+    {
+      "metric_id": "transfer_heading_deg",
+      "name": "升降时实际航向",
+      "description": "每帧原始升降时实际航向；期望值与容差由用户配置，系统不识别或截取事件。",
+      "unit": "deg",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "input_kind": "frame",
+      "comparison": "angle_degrees",
+      "shared": false,
+      "phase_ids": [
+        "rise_1",
+        "descend_1",
+        "rise_2"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "item_id": "A-S2-02",
+      "name": "定点悬停保持",
+      "description": "四次悬停共用水平位置、悬停高度、航向和激光四个检查点，作为同一个item评价。水平位置与高度分别设置容差；vx/vy归水平位置、vz归高度，作为稳定性补充。每帧包含当前环节的原始高度及其他指标，不从数据识别环节或补值。",
+      "assessment_kind": "flight",
+      "phases": [
+        {
+          "phase_id": "lower_1",
+          "name": "下方第一次悬停",
+          "single_frame": false,
+          "required_duration_s": 5
+        },
+        {
+          "phase_id": "upper_1",
+          "name": "上方第一次悬停",
+          "single_frame": false,
+          "required_duration_s": 5
+        },
+        {
+          "phase_id": "lower_2",
+          "name": "下方第二次悬停",
+          "single_frame": false,
+          "required_duration_s": 5
+        },
+        {
+          "phase_id": "upper_2",
+          "name": "上方第二次悬停",
+          "single_frame": false,
+          "required_duration_s": 5
+        }
+      ],
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-02-01",
+          "name": "水平位置保持",
+          "description": "分别比较实际X、Y与目标水平位置；水平速度分量作为稳定性补充。各指标独立设置D/A容差，逐帧取最差档位；不包含高度、不计算XYZ统一距离。",
+          "metric_ids": [
+            "hover_x_m",
+            "hover_y_m",
+            "hover_vx_mps",
+            "hover_vy_mps"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.IV.A.S6",
+              "page": "PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据／项目适配",
+              "note": "官方支持保持指定点附近的位置；X/Y分量、各自D/A容差与逐帧汇总为项目适配。"
+            },
+            {
+              "document": "项目场景设计",
+              "clause": "2026-09-15 悬停item合并",
+              "page": "",
+              "url": "",
+              "support": "项目定义",
+              "note": "水平速度vx/vy补充描述定点稳定性；其近零阈值及与位置取最差档位的规则并非FAA给定。"
+            },
+            {
+              "document": "EASA Flight Examiner Manual Module 3.3 CPL(H)",
+              "clause": "Section 2(c); Section 2 Skill",
+              "page": "第10、20页",
+              "url": "https://www.easa.europa.eu/en/downloads/138658/en",
+              "support": "直升机操纵内容参考／项目适配",
+              "note": "V2023.1将定点悬停列为一个考核条目，并要求保持航向、高度和地面位置；不是eVTOL专用标准，也未规定本系统的D/A、速度阈值或CPT。"
+            },
+            {
+              "document": "UK CAA Standards Document 03(H) V6",
+              "clause": "Appendix 1 Section 2(c)",
+              "page": "第18页",
+              "url": "https://www.caa.co.uk/publication/download/12966#page=18",
+              "support": "直升机操纵内容参考／项目适配",
+              "note": "在迎风、侧风、顺风条件下的定点悬停条目内，同时保持航向、高度和地面位置；本场景没有覆盖完整CPL(H)考核。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-02-04",
+          "name": "悬停高度保持",
+          "description": "按当前已标明的下方或上方悬停环节，将实际高度与对应目标高度比较；垂直速度作为稳定性补充。各指标分别使用自己的D/A容差，逐帧取最差档位；垂直速度接近零不能代替正确高度。",
+          "metric_ids": [
+            "hover_lower_height_m",
+            "hover_upper_height_m",
+            "hover_vz_mps"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.IV.A.S5",
+              "page": "PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据／项目适配",
+              "note": "官方在同一悬停任务中单列高度保持要求；上下目标高度、有符号偏差和D/A分档为项目适配，不与X/Y合成统一三维距离。"
+            },
+            {
+              "document": "项目场景设计",
+              "clause": "2026-09-15 悬停item合并",
+              "page": "",
+              "url": "",
+              "support": "项目定义",
+              "note": "上下两点目标分别手动配置；四次各5秒由用户指定。垂直速度近零作为稳定性补充，其数值阈值和检查点内最差档位聚合属于项目定义。"
+            },
+            {
+              "document": "EASA Flight Examiner Manual Module 3.3 CPL(H)",
+              "clause": "Section 2(c); Section 2 Skill",
+              "page": "第10、20页",
+              "url": "https://www.easa.europa.eu/en/downloads/138658/en",
+              "support": "直升机操纵内容参考／项目适配",
+              "note": "V2023.1将定点悬停列为一个考核条目，并要求保持航向、高度和地面位置；不是eVTOL专用标准，也未规定本系统的D/A、速度阈值或CPT。"
+            },
+            {
+              "document": "UK CAA Standards Document 03(H) V6",
+              "clause": "Appendix 1 Section 2(c)",
+              "page": "第18页",
+              "url": "https://www.caa.co.uk/publication/download/12966#page=18",
+              "support": "直升机操纵内容参考／项目适配",
+              "note": "在迎风、侧风、顺风条件下的定点悬停条目内，同时保持航向、高度和地面位置；本场景没有覆盖完整CPL(H)考核。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-02-02",
+          "name": "航向保持",
+          "description": "逐帧比较实际航向与目标航向，使用跨越0/360度的最短有符号角差；按航向自身D/A容差判断，不混入位置或速度指标。",
+          "metric_ids": [
+            "hover_heading_deg"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.IV.A.S8",
+              "page": "PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据／项目适配",
+              "note": "官方明确要求保持指定航向；D/A分档和逐帧汇总为项目适配，不能用操纵杆Yaw输入代替实际航向。"
+            },
+            {
+              "document": "EASA Flight Examiner Manual Module 3.3 CPL(H)",
+              "clause": "Section 2(c); Section 2 Skill",
+              "page": "第10、20页",
+              "url": "https://www.easa.europa.eu/en/downloads/138658/en",
+              "support": "直升机操纵内容参考／项目适配",
+              "note": "V2023.1将定点悬停列为一个考核条目，并要求保持航向、高度和地面位置；不是eVTOL专用标准，也未规定本系统的D/A、速度阈值或CPT。"
+            },
+            {
+              "document": "UK CAA Standards Document 03(H) V6",
+              "clause": "Appendix 1 Section 2(c)",
+              "page": "第18页",
+              "url": "https://www.caa.co.uk/publication/download/12966#page=18",
+              "support": "直升机操纵内容参考／项目适配",
+              "note": "在迎风、侧风、顺风条件下的定点悬停条目内，同时保持航向、高度和地面位置；本场景没有覆盖完整CPL(H)考核。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-02-03",
+          "name": "激光指向保持",
+          "description": "激光指向保持",
+          "metric_ids": [
+            "laser_lower_spot",
+            "laser_upper_spot"
+          ],
+          "sources": [
+            {
+              "document": "项目场景设计",
+              "clause": "2026-09-15 v3",
+              "page": "",
+              "url": "",
+              "support": "项目定义",
+              "note": "世界固定圆盘、机头固定激光；D内圈、A中圈、U外圈及脱靶。单个光点不能代替实际位置或姿态。"
+            }
+          ],
+          "fail_when": []
+        }
+      ],
+      "skill_name": "定点悬停保持当次表现",
+      "skill_description": "四个检查点共同进入同一悬停item的贝叶斯网络，高度不再单独计分；填写完整参数后，根据逐帧观测更新概率和分数，规则P/F独立保留。"
+    },
+    {
+      "item_id": "SCENE-VERTICAL",
+      "name": "垂直升降控制",
+      "description": "评价三次升降时的漂移和航向；目标高度由随后悬停检查负责。不设未规定的升降速度或耗时评分。",
+      "assessment_kind": "flight",
+      "phases": [
+        {
+          "phase_id": "rise_1",
+          "name": "第一次上升",
+          "single_frame": false,
+          "required_duration_s": null
+        },
+        {
+          "phase_id": "descend_1",
+          "name": "下降",
+          "single_frame": false,
+          "required_duration_s": null
+        },
+        {
+          "phase_id": "rise_2",
+          "name": "第二次上升",
+          "single_frame": false,
+          "required_duration_s": null
+        }
+      ],
+      "checkpoints": [
+        {
+          "checkpoint_id": "SCENE-VERTICAL-01",
+          "name": "升降时水平位置",
+          "description": "升降时水平位置",
+          "metric_ids": [
+            "transfer_x_m",
+            "transfer_y_m"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.IV.A.S4",
+              "page": "PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据／项目适配",
+              "note": "官方支持检查内容；有符号分量、D/A阈值与逐帧汇总是项目适配。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "SCENE-VERTICAL-02",
+          "name": "升降时航向",
+          "description": "升降时航向",
+          "metric_ids": [
+            "transfer_heading_deg"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2",
+              "clause": "CP.IV.A.S8",
+              "page": "PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据／项目适配",
+              "note": "官方支持检查内容；有符号分量、D/A阈值与逐帧汇总是项目适配。"
+            }
+          ],
+          "fail_when": []
+        }
+      ],
+      "skill_name": "垂直升降控制当次表现",
+      "skill_description": "贝叶斯网络根据逐帧表现更新技能状态概率；先验、CPT和更新系数可编辑，规则P/F独立保留。"
+    }
+  ]
+}

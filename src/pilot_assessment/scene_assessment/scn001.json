@@ -1,0 +1,917 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "SCN-001",
+  "name": "加速减速任务",
+  "description": "从起飞前检查开始，经地面起飞、加速与保速、急停，完成末端悬停。直接使用已计算结果评价六个item。",
+  "metrics": [
+    {
+      "metric_id": "energy_electrical",
+      "name": "电池与供电区停留时间",
+      "description": "起飞前在电池电量、剩余能量、温度及供电状态信息区域停留的秒数。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "gaze",
+      "shared": false
+    },
+    {
+      "metric_id": "propulsion_power",
+      "name": "推进与功率区停留时间",
+      "description": "起飞前在电机、推进系统、可用功率或推力信息区域停留的秒数。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "gaze",
+      "shared": false
+    },
+    {
+      "metric_id": "flight_mode_configuration",
+      "name": "飞控与起飞构型区停留时间",
+      "description": "起飞前在飞控模式、起飞设置、自动化与适用构型信息区域停留的秒数。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "gaze",
+      "shared": false
+    },
+    {
+      "metric_id": "flight_state",
+      "name": "主要飞行仪表区停留时间",
+      "description": "起飞前在姿态、高度、空速、垂直速度及航向信息区域停留的秒数。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "gaze",
+      "shared": false
+    },
+    {
+      "metric_id": "alerts_readiness",
+      "name": "告警与系统状态区停留时间",
+      "description": "起飞前在警告、注意及系统状态摘要信息区域停留的秒数。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "gaze",
+      "shared": false
+    },
+    {
+      "metric_id": "departure_navigation",
+      "name": "导航与任务信息区停留时间",
+      "description": "起飞前在指定方向、路径、任务目标及适用导航通信信息区域停留的秒数。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "gaze",
+      "shared": false
+    },
+    {
+      "metric_id": "initial_hover_duration_s",
+      "name": "初始悬停保持时长",
+      "description": "离地后实际执行初始悬停动作的持续时间，包含期间偏离。明确未执行为0，缺失不等于0。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "hold",
+      "shared": false
+    },
+    {
+      "metric_id": "initial_hover_max_height_error_m",
+      "name": "初始悬停最大高度偏差",
+      "description": "仅初始悬停保持期间相对指定高度的最大绝对偏差，不把正常离地上升过程算作高度错误。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "takeoff_max_horizontal_displacement_m",
+      "name": "起飞最大水平位移",
+      "description": "起飞与初始悬停期间相对指定起飞位置的最大水平位移。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "takeoff_max_heading_error_deg",
+      "name": "起飞最大航向偏差",
+      "description": "起飞与初始悬停期间机头相对指定航向的最大绝对偏差，已处理角度跨界。",
+      "unit": "deg",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "speed_hold_duration_s",
+      "name": "保速动作时长",
+      "description": "达到指定空速后实际执行保速动作的持续时间，包含偏离；不是只累计D/A时间。未保速或仅瞬间达到为0。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "hold",
+      "shared": false
+    },
+    {
+      "metric_id": "speed_hold_max_airspeed_error_mps",
+      "name": "保速最大空速偏差",
+      "description": "同一次保速动作中相对指定空速的最大绝对偏差，不包括正常加速过程；空速制式与场景目标一致。",
+      "unit": "m/s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "air_taxi_max_height_error_m",
+      "name": "空中滑行最大高度偏差",
+      "description": "加速及保速全过程相对指定任务高度的最大绝对偏差。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "air_taxi_max_cross_track_error_m",
+      "name": "空中滑行最大横向偏差",
+      "description": "加速及保速全过程相对走廊中心线的最大横向绝对偏差。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "air_taxi_max_heading_error_deg",
+      "name": "空中滑行最大航向偏差",
+      "description": "加速及保速全过程机头相对指定航向的最大绝对偏差；不是地面航迹方向。",
+      "unit": "deg",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "deceleration_started",
+      "name": "已开始减速操纵",
+      "description": "已检测到开始减速操纵的事实，不能用机体响应起动时刻代替。",
+      "unit": "—",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "fact",
+      "shared": false
+    },
+    {
+      "metric_id": "deceleration_onset_position_error_m",
+      "name": "减速起动位置偏差",
+      "description": "开始减速操纵时相对提示线的有符号距离；负值表示提前，正值表示滞后。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "signed",
+      "shared": false
+    },
+    {
+      "metric_id": "quickstop_entry_airspeed_error_mps",
+      "name": "减速入口空速偏差",
+      "description": "开始减速操纵时相对指定入口空速的绝对偏差，与前一item采用相同空速制式。",
+      "unit": "m/s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "stop_achieved",
+      "name": "已停止水平运动",
+      "description": "已停止相对地面水平运动的事实；不是空速为0，不要求位置、高度或保持时长已达标。",
+      "unit": "—",
+      "value_type": "boolean",
+      "rule": "must_be_true",
+      "parameter_kind": "fact",
+      "shared": false
+    },
+    {
+      "metric_id": "deceleration_duration_s",
+      "name": "减速耗时",
+      "description": "从开始减速操纵到停止水平运动的耗时，不含此前保速或之后悬停。性能参考对应本次机型、构型、载荷、风况及进入条件。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "duration",
+      "shared": false
+    },
+    {
+      "metric_id": "quickstop_max_height_error_m",
+      "name": "减速最大高度偏差",
+      "description": "本次减速期间相对指定任务高度的最大绝对偏差。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "quickstop_max_heading_error_deg",
+      "name": "减速最大航向偏差",
+      "description": "本次减速期间机头相对指定航向的最大绝对偏差，已处理角度跨界。",
+      "unit": "deg",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "quickstop_max_cross_track_error_m",
+      "name": "减速最大横向偏差",
+      "description": "本次减速期间相对走廊中心线的最大横向绝对偏差。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "quickstop_prohibited_event_count",
+      "name": "减速禁止事件数",
+      "description": "已按机型限制或场景规则认定的禁止超限或禁止接触事件数；普通D/A超差不重复计入，许可短时功率不视作违规。",
+      "unit": "次",
+      "value_type": "integer",
+      "rule": "zero_events",
+      "parameter_kind": "fact",
+      "shared": false
+    },
+    {
+      "metric_id": "terminal_hover_duration_s",
+      "name": "末端悬停保持时长",
+      "description": "末端实际保持动作的持续时间，包含期间位置和高度偏离。定点与高度两个item共用同一个值及D/A参数；未执行为0。",
+      "unit": "s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "hold",
+      "shared": true
+    },
+    {
+      "metric_id": "terminal_max_horizontal_position_error_m",
+      "name": "末端最大水平位置偏差",
+      "description": "同一次末端保持期间相对指定目标点的最大水平距离；不得把实际停错的位置改作目标。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "terminal_max_horizontal_groundspeed_mps",
+      "name": "末端最大水平地速",
+      "description": "同一次末端保持期间水平地速的最大值，表示保持时还在多快地水平移动；不是空速。",
+      "unit": "m/s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "terminal_max_heading_error_deg",
+      "name": "末端最大航向偏差",
+      "description": "同一次末端保持期间机头相对指定航向的最大绝对偏差。",
+      "unit": "deg",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "terminal_max_height_error_m",
+      "name": "末端最大高度偏差",
+      "description": "同一次末端保持期间相对指定目标高度的最大绝对偏差，包含开始保持时已经存在的高度错误。",
+      "unit": "m",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    },
+    {
+      "metric_id": "terminal_max_abs_vertical_speed_mps",
+      "name": "末端最大垂直速度",
+      "description": "同一次末端保持期间垂直速度绝对值的最大值，表示升降运动大小。",
+      "unit": "m/s",
+      "value_type": "number",
+      "rule": "interval",
+      "parameter_kind": "error",
+      "shared": false
+    }
+  ],
+  "items": [
+    {
+      "item_id": "A-S1-06",
+      "name": "起飞前检查",
+      "description": "按起飞前六类仪表区域的停留时间检查注视覆盖。",
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S1-06-01",
+          "name": "电池与供电区",
+          "description": "检查是否在规定区域停留符合配置要求的时间。",
+          "metric_ids": [
+            "energy_electrical"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.I.A.K5/K8; AP.II.F.S3",
+              "page": "印刷p.2、15 / PDF第7、20页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=20",
+              "support": "官方内容依据",
+              "note": "支持电池、电气与系统状态信息内容，未规定注视秒数。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "区域划分、停留时长及D/A分界属于项目人因参数。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-02",
+          "name": "推进与功率区",
+          "description": "检查推进与功率信息区域停留时间。",
+          "metric_ids": [
+            "propulsion_power"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.I.A.K2/K3; AP.II.F.S1/S3",
+              "page": "印刷p.2、15 / PDF第7、20页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=20",
+              "support": "官方内容依据",
+              "note": "支持推进系统和功率检查内容，未规定注视秒数。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "本项只评价区域停留时间，不验证读数理解或故障处置。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-03",
+          "name": "飞控与起飞构型区",
+          "description": "检查飞控模式及起飞构型信息区域停留时间。",
+          "metric_ids": [
+            "flight_mode_configuration"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.I.A.K13; AP.II.F.S1/S4",
+              "page": "印刷p.2、15 / PDF第7、20页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=20",
+              "support": "官方内容依据",
+              "note": "支持飞控与起飞构型检查内容。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "区域内容适配当前机型，D/A时长由用户填写。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-04",
+          "name": "主要飞行仪表区",
+          "description": "检查主要飞行状态信息区域停留时间。",
+          "metric_ids": [
+            "flight_state"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.II.F.S4",
+              "page": "印刷p.15 / PDF第20页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=20",
+              "support": "官方内容依据",
+              "note": "支持飞行仪表检查内容。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "停留秒数与分档是项目定义。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-05",
+          "name": "告警与系统状态区",
+          "description": "检查告警和系统状态信息区域停留时间。",
+          "metric_ids": [
+            "alerts_readiness"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.II.F.K1b/K1c; AP.II.F.S3",
+              "page": "印刷p.15 / PDF第20页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=20",
+              "support": "官方内容依据",
+              "note": "支持系统状态与告警背景，知识条款不是逐区注视技能要求。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "项目单列告警区并使用停留时间评价。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S1-06-06",
+          "name": "导航与任务信息区",
+          "description": "检查导航及指定任务信息区域停留时间。",
+          "metric_ids": [
+            "departure_navigation"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.II.F.S4",
+              "page": "印刷p.15 / PDF第20页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=20",
+              "support": "官方内容依据",
+              "note": "支持适用导航、通信信息的检查。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "指定方向与任务提示、停留时间分档为场景适配。"
+            }
+          ],
+          "fail_when": []
+        }
+      ]
+    },
+    {
+      "item_id": "A-S2-08",
+      "name": "地面起飞",
+      "description": "从地面离地，建立初始悬停并控制位置和航向。",
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-08-01",
+          "name": "离地并建立初始悬停",
+          "description": "检查初始保持时长和保持期间高度。",
+          "metric_ids": [
+            "initial_hover_duration_s",
+            "initial_hover_max_height_error_m"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.IV.A.S4/S5",
+              "page": "印刷p.18 / PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据",
+              "note": "保持机型推荐悬停高度；距表面10 ft以内容差为推荐高度±1/2，超过10 ft为±5 ft，仅在适用条件一致时参考。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "初始保持秒数及最大偏差分档是项目计算方法，参数手填。"
+            }
+          ],
+          "fail_when": [
+            {
+              "metric_id": "initial_hover_duration_s",
+              "equals": 0
+            }
+          ]
+        },
+        {
+          "checkpoint_id": "A-S2-08-02",
+          "name": "水平位置控制",
+          "description": "检查离地和初始悬停期间的水平偏移。",
+          "metric_ids": [
+            "takeoff_max_horizontal_displacement_m"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.IV.A.S4/S6",
+              "page": "印刷p.18 / PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据",
+              "note": "支持无漂移上升和指定位置保持；S6位置容差参考±2 ft。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "最大水平位移和D/A区间为本项目适配。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-08-03",
+          "name": "航向保持",
+          "description": "检查起飞过程中的机头航向。",
+          "metric_ids": [
+            "takeoff_max_heading_error_deg"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.IV.A.S8",
+              "page": "印刷p.18 / PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据",
+              "note": "指定航向容差参考±10°；不等于地面航迹角。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "最大值汇总和更严格D界线由项目定义。"
+            }
+          ],
+          "fail_when": []
+        }
+      ]
+    },
+    {
+      "item_id": "A-S2-05",
+      "name": "空中滑行（加速与保速）",
+      "description": "沿指定走廊加速并保持目标空速、高度及方向。",
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-05-01",
+          "name": "达到并保持指定空速",
+          "description": "检查实际保速动作时长和同一动作中的空速偏差。",
+          "metric_ids": [
+            "speed_hold_duration_s",
+            "speed_hold_max_airspeed_error_mps"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.II.E.S5",
+              "page": "印刷p.14 / PDF第19页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=19",
+              "support": "官方内容依据",
+              "note": "ATP/型号等级Air Taxi指定空速容差参考±10 kt，不是所有eVTOL的通用界线。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "本场景的加速/保速安排、保持秒数和最大偏差分档为项目方法。"
+            }
+          ],
+          "fail_when": [
+            {
+              "metric_id": "speed_hold_duration_s",
+              "equals": 0
+            }
+          ]
+        },
+        {
+          "checkpoint_id": "A-S2-05-02",
+          "name": "高度保持",
+          "description": "检查加速及保速全过程的高度偏差。",
+          "metric_ids": [
+            "air_taxi_max_height_error_m"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.II.E.S4/S5",
+              "page": "印刷p.14 / PDF第19页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=19",
+              "support": "官方内容依据",
+              "note": "Air Taxi滑行高度容差参考±10 ft，按任务适用性使用。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "全过程最大偏差及D/A分档由项目定义。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-05-03",
+          "name": "航迹与航向控制",
+          "description": "检查走廊中心线偏离和指定机头航向。",
+          "metric_ids": [
+            "air_taxi_max_cross_track_error_m",
+            "air_taxi_max_heading_error_deg"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-17 (November 2023)",
+              "clause": "AP.II.E.S5/S6",
+              "page": "印刷p.14 / PDF第19页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/atp_pl_acs_17.pdf#page=19",
+              "support": "官方内容依据",
+              "note": "支持指定飞行路径及不同风向下点到点移动，未给本项目独立机头航向容差。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "独立航向约束来自SCN-001任务，横向和航向D/A界线手填。"
+            }
+          ],
+          "fail_when": []
+        }
+      ]
+    },
+    {
+      "item_id": "A-S2-30",
+      "name": "快速减速／急停",
+      "description": "按提示开始减速，有效停止水平运动并控制过程和限制。",
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-30-01",
+          "name": "按提示开始减速",
+          "description": "检查是否作出减速操纵及其相对提示线的起动位置。",
+          "metric_ids": [
+            "deceleration_started",
+            "deceleration_onset_position_error_m"
+          ],
+          "sources": [
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "提示线、操纵起动位置和允许提前/滞后范围为场景要求；FAA CP.VI.A.S4未规定这些距离。"
+            }
+          ],
+          "fail_when": [
+            {
+              "metric_id": "deceleration_started",
+              "equals": false
+            }
+          ]
+        },
+        {
+          "checkpoint_id": "A-S2-30-02",
+          "name": "完成减速与减速效果",
+          "description": "入口速度符合本次比较条件，实际停住，耗时符合配置目标。",
+          "metric_ids": [
+            "quickstop_entry_airspeed_error_mps",
+            "stop_achieved",
+            "deceleration_duration_s"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.VI.A.S4/S5",
+              "page": "印刷p.32 / PDF第37页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=37",
+              "support": "官方内容依据",
+              "note": "要求最大性能减速及适当功率/推力方向；耗时不能独立证明最佳功率/推力选择。"
+            },
+            {
+              "document": "CAA SD19(H) V7 February 2026",
+              "clause": "2(g)",
+              "page": "p.24",
+              "url": "https://www.caa.co.uk/publication/download/12904#page=24",
+              "support": "直升机任务类比",
+              "note": "支持指定速度、高度、航向进入并减速至停止；不照搬随后下降至低悬停的程序。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "入口偏差、停止事实、耗时及D/A区间是项目适配，无通用推荐秒数。"
+            }
+          ],
+          "fail_when": [
+            {
+              "metric_id": "deceleration_started",
+              "equals": false
+            },
+            {
+              "metric_id": "stop_achieved",
+              "equals": false
+            }
+          ]
+        },
+        {
+          "checkpoint_id": "A-S2-30-03",
+          "name": "减速过程控制",
+          "description": "检查高度、机头航向及走廊横向偏差。",
+          "metric_ids": [
+            "quickstop_max_height_error_m",
+            "quickstop_max_heading_error_deg",
+            "quickstop_max_cross_track_error_m"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.VI.A.S3; R1",
+              "page": "印刷p.32 / PDF第37页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=37",
+              "support": "技能与风险内容依据",
+              "note": "商业级急停航向容差参考±5°；高度变化属于R1风险背景。私用级±10°不能与商业级拼成官方D/A。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "恒高和横向走廊约束来自本场景；横向偏差不能代替S6协调飞行。"
+            }
+          ],
+          "fail_when": []
+        },
+        {
+          "checkpoint_id": "A-S2-30-04",
+          "name": "限制与禁止接触",
+          "description": "检查已认定的机型禁止超限或禁止接触事件。",
+          "metric_ids": [
+            "quickstop_prohibited_event_count"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.VI.A.K2/K3; R2/R4/R5",
+              "page": "印刷p.32 / PDF第37页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=37",
+              "support": "知识与风险依据",
+              "note": "限制与碰撞的知识/风险依据，并非原文事件计数评分公式。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "0次D、至少1次U；不把普通D/A超差重复记为禁止事件。"
+            }
+          ],
+          "fail_when": []
+        }
+      ]
+    },
+    {
+      "item_id": "A-S2-02",
+      "name": "悬停定点",
+      "description": "在指定末端位置保持，限制水平移动并维持机头航向。",
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-02-01",
+          "name": "目标位置与水平稳定",
+          "description": "检查指定目标位置偏差、水平地速和共享保持时长。",
+          "metric_ids": [
+            "terminal_hover_duration_s",
+            "terminal_max_horizontal_position_error_m",
+            "terminal_max_horizontal_groundspeed_mps"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.IV.A.S4/S6",
+              "page": "印刷p.18 / PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据",
+              "note": "支持保持指定位置；位置容差参考±2 ft（0.6096 m）。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "适配至末端保持：径向最大距离、残余水平地速、保持时长与D/A分档为项目方法。"
+            }
+          ],
+          "fail_when": [
+            {
+              "metric_id": "terminal_hover_duration_s",
+              "equals": 0
+            }
+          ]
+        },
+        {
+          "checkpoint_id": "A-S2-02-02",
+          "name": "末端航向保持",
+          "description": "检查同一次末端保持动作的机头航向偏差。",
+          "not_required_when": [
+            {
+              "metric_id": "terminal_hover_duration_s",
+              "equals": 0
+            }
+          ],
+          "metric_ids": [
+            "terminal_max_heading_error_deg"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.IV.A.S8",
+              "page": "印刷p.18 / PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据",
+              "note": "指定航向容差参考±10°，是垂直起降任务中的要求。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "适配至急停后的末端保持，不代表整个官方任务已覆盖。"
+            }
+          ],
+          "fail_when": []
+        }
+      ]
+    },
+    {
+      "item_id": "A-S2-01",
+      "name": "悬停高度",
+      "description": "同一次末端保持中维持目标高度并限制上下移动。",
+      "checkpoints": [
+        {
+          "checkpoint_id": "A-S2-01-01",
+          "name": "目标高度与垂直稳定",
+          "description": "检查高度最大偏差、垂直速度绝对值及共享保持时长。",
+          "metric_ids": [
+            "terminal_max_height_error_m",
+            "terminal_max_abs_vertical_speed_mps",
+            "terminal_hover_duration_s"
+          ],
+          "sources": [
+            {
+              "document": "FAA-S-ACS-2 (November 2023)",
+              "clause": "CP.IV.A.S4/S5",
+              "page": "印刷p.18 / PDF第23页",
+              "url": "https://www.faa.gov/training_testing/testing/acs/commercial_pl_acs_2.pdf#page=23",
+              "support": "官方内容依据",
+              "note": "推荐悬停高度距表面10 ft以内时容差为其±1/2；高于10 ft时±5 ft（1.524 m），仅在条件匹配时参考。"
+            },
+            {
+              "document": "SCN-001 项目场景设计",
+              "clause": "2026-09-07 六item方法",
+              "page": "",
+              "url": "",
+              "support": "项目适配",
+              "note": "最大高度偏差、最大垂直速度、共享保持秒数及D/A分界均是项目适配，无垂直速度或秒数通用数字。"
+            }
+          ],
+          "fail_when": [
+            {
+              "metric_id": "terminal_hover_duration_s",
+              "equals": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
