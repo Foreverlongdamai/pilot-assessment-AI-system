@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>贝叶斯网络 · 两场景实算</title>
+<style>
+:root{font:15px/1.65 "Segoe UI","Microsoft YaHei",sans-serif;color:#172d40;background:#f2f5f8}*{box-sizing:border-box}body{margin:0}main{max-width:1280px;margin:auto;padding:32px}h1{font-size:29px;margin:0 0 8px}h2{font-size:20px;margin:0 0 12px}p{margin:8px 0}section{background:white;border:1px solid #dae2eb;border-radius:10px;padding:22px;margin:18px 0}.note{color:#597083;font-size:13px}.selectors{display:flex;gap:20px;flex-wrap:wrap}label{display:grid;gap:5px}select{font:inherit;padding:7px;min-width:190px;border:1px solid #b4c4d1;border-radius:5px}table{border-collapse:collapse;width:100%}td,th{padding:9px 12px;text-align:left;border-bottom:1px solid #e4eaf0}th{font-size:13px;color:#597083}.pass{color:#178260}.fail{color:#c33c48}.score{font-weight:700;font-size:22px}.scroll{overflow:auto}svg{width:100%;display:block}svg text{font:12px "Segoe UI","Microsoft YaHei",sans-serif;fill:#597083}.legend{display:flex;gap:22px}.line{display:inline-block;width:22px;height:3px;vertical-align:middle;margin-right:5px}input[type=range]{width:100%}.mono{font-family:Consolas,monospace;font-variant-numeric:tabular-nums}a{color:#2563c4}footer{margin-top:20px;font-size:13px}@media(max-width:750px){main{padding:15px}section{padding:14px}}
+</style>
+<main><h1>贝叶斯网络</h1><p class="note">根据每帧飞行表现更新状态概率，并量化为分数。以下均来自软件计算报告；网页不重新推断概率。</p>
+<section><div class="selectors"><label>场景<select id="scene"></select></label><label>飞行输入<select id="case"></select></label><label>item<select id="item"></select></label><label>查看层级<select id="node"></select></label></div></section>
+<section><h2>两个场景的三类输入结果</h2><p class="note">分数对应末帧更新结果，和过程图终点一致；不是顺序无关的整段平均。已发生的 U / Fail 不因恢复消失。概率顺序：低 / 中 / 高。</p><div class="scroll"><table id="summary"></table></div></section>
+<section><h2 id="title"></h2><p id="status" class="note"></p><div class="legend"><span><i class="line" style="background:#19855f"></i>P(高)</span><span><i class="line" style="background:#ce9617"></i>P(中)</span><span><i class="line" style="background:#cc4b56"></i>P(低)</span></div><div id="probability"></div><h2>概率换算分数</h2><div id="score"></div><h2>逐帧 D / A / U</h2><div id="grades"></div><p class="note">色带来自实际帧。绿 D，黄 A，红 U；缺测灰色，不适用留白。色块宽度不作为计分权重。</p></section>
+<section><h2>逐帧更新明细</h2><input id="frame" type="range" min="0" max="0" value="0" aria-label="选择真实帧"><p id="frame-info" class="note"></p><div class="scroll"><table id="detail"></table></div><p class="note">α 为网络更新系数，分数由更新后的概率与状态分值换算。没有数据时不补造概率。</p></section>
+<footer><a href="README_CN.md">手动加载说明</a> · <a href="SUMMARY_CN.md">全部实算结果</a> · <a href="manifest.json">输入来源</a><p class="note">人工合成演示，CPT 和 α 尚未标定。逐帧完整 CPT 会受采样率影响；本页不声称真实能力识别效度。</p></footer></main>
+<script type="application/json" id="data">__DATA__</script>
+<script>
+'use strict';
+const DATA=JSON.parse(document.getElementById('data').textContent),$=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const number=(v,n=3)=>typeof v==='number'&&Number.isFinite(v)?v.toFixed(n):'—';
+const choose=id=>Number($(id).value)||0,scene=()=>DATA.scenes[choose('scene')],run=()=>scene().cases[choose('case')],item=()=>run().report.items[choose('item')];
+let timeline=[];
+function options(id,rows){$(id).innerHTML=rows.map((v,i)=>`<option value="${i}">${esc(v)}</option>`).join('')}
+function plot(points,series,min,max,label){
+ if(!points.length)return '<p class="note">此项没有连续概率推断。</p>';
+ const W=1160,H=245,L=50,R=16,T=20,B=35,start=points[0].timestamp_s,end=points.at(-1).timestamp_s;
+ const x=t=>L+(t-start)/Math.max(end-start,.1)*(W-L-R),y=v=>T+(max-v)/(max-min)*(H-T-B);
+ let out=`<svg role="img" aria-label="${esc(label)}" viewBox="0 0 ${W} ${H}">`;
+ for(let i=0;i<5;i++){const v=min+(max-min)*i/4;out+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#e2e8ef"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${number(v,max===1?2:0)}</text>`}
+ for(let i=0;i<6;i++){const t=start+(end-start)*i/5;out+=`<text x="${x(t)}" y="${H-8}" text-anchor="middle">${number(t,1)} s</text>`}
+ for(const s of series){let line=[],phase;const flush=()=>{if(line.length>1)out+=`<polyline points="${line.join(' ')}" fill="none" stroke="${s.color}" stroke-width="2"/>`;line=[]};for(const p of points){const v=s.value(p);if(p.phase_id!==phase){flush();phase=p.phase_id}if(!Number.isFinite(v)){flush();continue}line.push(`${x(p.timestamp_s)},${y(v)}`)}flush()}
+ return out+'</svg>';
+}
+function renderSummary(){
+ $('summary').innerHTML='<thead><tr><th>item</th>'+scene().cases.map(c=>`<th>${esc(c.name)}</th>`).join('')+'</tr></thead><tbody>'+scene().cases[0].report.items.map((i,k)=>'<tr><td>'+esc(i.name)+'</td>'+scene().cases.map(c=>{const i=c.report.items[k],q=i.skill_quantification;return `<td><span class="${i.passed?'pass':'fail'}">${esc(i.grade)} / ${i.passed?'Pass':'Fail'}</span> <span class="score">${number(q.score,1)}</span><div class="note mono">${q.posterior?q.posterior.map(v=>number(v,4)).join(' / '):'检查单：仅检查完成性'}</div></td>`}).join('')+'</tr>').join('')+'</tbody>';
+}
+function renderScene(){options('case',scene().cases.map(c=>c.name));renderSummary();renderCase()}
+function renderCase(){options('item',run().report.items.map(i=>i.name));$('item').value=String(Math.max(0,run().report.items.findIndex(i=>i.skill_quantification.temporal_analysis?.item_trace)));renderItem()}
+function renderItem(){options('node',['整个 item',...item().checkpoints.map(c=>c.name)]);renderNode()}
+function gradeBand(points){
+ if(!points.length)return '<p class="note">无连续证据。</p>';
+ const start=points[0].timestamp_s,end=points.at(-1).timestamp_s,span=Math.max(end-start,.1),x=t=>50+(t-start)/span*1094;
+ const steps=points.slice(1).map((p,i)=>p.phase_id===points[i].phase_id?p.timestamp_s-points[i].timestamp_s:NaN).filter(v=>Number.isFinite(v)&&v>0).sort((a,b)=>a-b),step=steps[Math.floor(steps.length/2)]??.1;
+ return `<svg viewBox="0 0 1160 52" role="img" aria-label="逐帧等级色带">${points.map((p,k)=>{if(p.status==='no_evidence')return '';const prev=points[k-1],next=points[k+1],left=Math.max(start,p.timestamp_s-Math.min(step,prev?p.timestamp_s-prev.timestamp_s:step)/2),right=Math.min(end,p.timestamp_s+Math.min(step,next?next.timestamp_s-p.timestamp_s:step)/2);return `<rect x="${x(left)}" y="5" width="${Math.max(.5,x(right)-x(left))}" height="23" fill="${({D:'#19855f',A:'#e4b846',U:'#cc4b56'}[p.grade]??'#a6adb5')}"><title>${p.timestamp_s}s ${esc(p.grade)} ${esc(p.phase_id)}</title></rect>`}).join('')}</svg>`;
+}
+function renderNode(){
+ const a=item().skill_quantification.temporal_analysis,n=choose('node');const trace=n===0?a?.item_trace:a?.checkpoint_traces[n-1];timeline=trace?.timeline??[];
+ $('title').textContent=n===0?item().name:item().checkpoints[n-1].name;
+ $('status').textContent=trace?.message??'检查单只判完成性，不推断连续飞行技能。';
+ $('probability').innerHTML=plot(timeline,[{color:'#19855f',value:p=>p.posterior?.[2]},{color:'#ce9617',value:p=>p.posterior?.[1]},{color:'#cc4b56',value:p=>p.posterior?.[0]}],0,1,'贝叶斯网络低中高概率过程');
+ $('score').innerHTML=plot(timeline,[{color:'#2563c4',value:p=>p.score}],0,100,'贝叶斯网络分数过程');
+ $('grades').innerHTML=gradeBand(timeline);
+ $('frame').max=String(Math.max(0,timeline.length-1));$('frame').value='0';renderFrame();
+}
+function renderFrame(){const p=timeline[Number($('frame').value)];$('frame-info').textContent=p?`第 ${p.frame_index} 帧 · ${p.timestamp_s} s · ${p.phase_id} · 观测 ${p.grade??'—'} · α=${number(p.compensation_alpha)} · 分数 ${number(p.score)}`:'无过程数据';
+ const rows=p?[['更新前先验',p.prior],['CPT 观测更新',p.bayes_posterior],['本帧观测目标',p.compensation_target],['概率调整量',p.compensation_delta],['更新后概率',p.posterior]]:[];
+ $('detail').innerHTML='<thead><tr><th>步骤</th><th>P(低)</th><th>P(中)</th><th>P(高)</th></tr></thead><tbody>'+rows.map(([name,values])=>`<tr><td>${esc(name)}</td>${[0,1,2].map(k=>`<td class="mono">${number(values?.[k],6)}</td>`).join('')}</tr>`).join('')+'</tbody>';
+}
+options('scene',DATA.scenes.map(s=>s.scene_id+' · '+s.name));$('scene').onchange=renderScene;$('case').onchange=renderCase;$('item').onchange=renderItem;$('node').onchange=renderNode;$('frame').oninput=renderFrame;renderScene();
+</script></html>
