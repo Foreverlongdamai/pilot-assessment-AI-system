@@ -25,6 +25,7 @@ public sealed class SidecarProcessHost : IAsyncDisposable
     ];
 
     private readonly BackendLaunchOptions _options;
+    private readonly IReadOnlyList<string> _requiredCapabilities;
     private readonly Process _process;
     private readonly object _diagnosticGate = new();
     private readonly Queue<string> _diagnosticLines = new();
@@ -36,9 +37,11 @@ public sealed class SidecarProcessHost : IAsyncDisposable
     private SidecarProcessHost(
         BackendLaunchOptions options,
         Process process,
-        JsonRpcClient client)
+        JsonRpcClient client,
+        IReadOnlyList<string> requiredCapabilities)
     {
         _options = options;
+        _requiredCapabilities = requiredCapabilities;
         _process = process;
         Client = client;
         _stderrReader = ReadStandardErrorAsync();
@@ -64,7 +67,8 @@ public sealed class SidecarProcessHost : IAsyncDisposable
 
     public static async Task<SidecarProcessHost> StartAsync(
         BackendLaunchOptions options,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        IReadOnlyList<string>? requiredCapabilities = null)
     {
         ArgumentNullException.ThrowIfNull(options);
         var startInfo = CreateStartInfo(options);
@@ -85,7 +89,8 @@ public sealed class SidecarProcessHost : IAsyncDisposable
             process.StandardInput.BaseStream,
             options.MaxMessageBytes);
         var client = new JsonRpcClient(framer);
-        var host = new SidecarProcessHost(options, process, client);
+        var host = new SidecarProcessHost(options, process, client,
+            requiredCapabilities ?? RequiredCapabilities);
 
         try
         {
@@ -181,7 +186,7 @@ public sealed class SidecarProcessHost : IAsyncDisposable
         }
 
         var capabilities = RequiredStringArray(hello, "capabilities");
-        foreach (var capability in RequiredCapabilities)
+        foreach (var capability in _requiredCapabilities)
         {
             if (!capabilities.Contains(capability, StringComparer.Ordinal))
             {

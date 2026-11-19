@@ -44,6 +44,14 @@ public partial class App : Application
         var localization = new LocalizationService(localPreferences.Language);
         Resources["Localization"] = localization;
 
+        if (!Environment.GetCommandLineArgs().Contains("--legacy-workbench", StringComparer.Ordinal))
+        {
+            var sceneWindow = new SceneAssessmentWindow(localPreferences.Theme);
+            Window = sceneWindow;
+            sceneWindow.Activate();
+            return;
+        }
+
         var builder = Host.CreateApplicationBuilder();
         builder.Services.AddSingleton<ApplicationShellState>();
         builder.Services.AddSingleton<CanonicalObjectStore<ModelNode>>();

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Window
+    x:Class="PilotAssessment.Desktop.Views.SceneAssessmentWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:graph="using:PilotAssessment.Desktop.Controls.Graph"
+    Title="Pilot Assessment · 场景评估">
+    <Window.SystemBackdrop><MicaBackdrop /></Window.SystemBackdrop>
+    <Grid x:Name="RootGrid" Loaded="OnLoaded">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TitleBar x:Name="SceneTitleBar" Title="Pilot Assessment" Subtitle="场景评估" />
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="230" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <Border Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="22,24" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,1,0">
+                <Grid>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                    <ScrollViewer Grid.RowSpan="2" VerticalScrollBarVisibility="Auto" Margin="0,0,0,20">
+                        <StackPanel Spacing="16">
+                            <TextBlock Text="评估工作区" FontSize="14" FontWeight="SemiBold" Opacity="0.7" />
+                            <Button x:Name="StudioNavigationButton" Click="OnStudioNavigation" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="14" CornerRadius="8" AutomationProperties.Name="打开全局 Model Studio">
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Model Studio" FontSize="18" FontWeight="SemiBold" />
+                                    <TextBlock Text="全部场景 · 模型总图" TextWrapping="Wrap" Opacity="0.8" />
+                                </StackPanel>
+                            </Button>
+                            <TextBlock Text="评估场景" FontSize="14" FontWeight="SemiBold" Opacity="0.7" Margin="0,8,0,0" />
+                            <StackPanel x:Name="SceneNavigation" Spacing="8" />
+                        </StackPanel>
+                    </ScrollViewer>
+                    <StackPanel Grid.Row="2" Spacing="10">
+                        <TextBlock Text="D / A = Pass&#x0a;U = Fail" FontSize="15" LineHeight="26" />
+                        <TextBlock Text="按 item 导入带真实时间戳和阶段的帧数据，由系统计算偏差和档位。" TextWrapping="Wrap" Opacity="0.7" />
+                        <TextBlock x:Name="QuantificationNotice" Text="CPT 参数可编辑&#x0a;正式整段量化方法待确定" TextWrapping="Wrap" Opacity="0.7" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Grid Grid.Column="1" Padding="28,24,28,12" RowSpacing="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Spacing="8">
+                    <TextBlock x:Name="PageHeading" Text="Model Studio" FontSize="30" FontWeight="SemiBold" />
+                    <TextBlock x:Name="PageDescription" Text="查看全部场景的 Task、item 和检查点，点击节点设置模型。" TextWrapping="Wrap" Opacity="0.7" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Spacing="8">
+                    <CommandBar x:Name="Actions" IsEnabled="False" DefaultLabelPosition="Right" IsDynamicOverflowEnabled="True">
+                        <AppBarButton Label="保存配置" Icon="Save" Click="OnSaveConfiguration" />
+                        <AppBarButton Label="加载配置" Icon="OpenFile" Click="OnLoadConfiguration" />
+                        <AppBarSeparator />
+                        <AppBarButton Label="导出空白输入模板" Icon="Download" Click="OnExportTemplate" ToolTipService.ToolTip="按 item 导出帧结构；每帧填写真实时间戳、阶段与原始值。" />
+                        <AppBarButton Label="导入帧数据" Icon="Import" Click="OnImportInput" ToolTipService.ToolTip="读取 item 内的真实帧，系统计算相对目标的偏差或激光靶心距离。" />
+                        <AppBarSeparator />
+                        <AppBarButton Label="开始评估" Icon="Play" Click="OnEvaluate" />
+                        <AppBarButton x:Name="ExportReportButton" Label="导出评估报告" Icon="SaveLocal" IsEnabled="False" Click="OnExportReport" ToolTipService.ToolTip="保存全部真实帧、原值、目标、偏差、档位和帧分布，以及输入和配置快照。" />
+                    </CommandBar>
+                    <TextBlock x:Name="ContextText" Text="配置未保存 · 尚未导入帧数据" Opacity="0.7" TextWrapping="Wrap" />
+                </StackPanel>
+                <InfoBar x:Name="StatusBar" Grid.Row="2" IsOpen="True" IsClosable="False" Severity="Informational" Title="正在连接评估计算器" />
+                <Grid x:Name="StudioContent" Grid.Row="3" ColumnSpacing="16">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="310" /></Grid.ColumnDefinitions>
+                    <graph:SceneModelCanvas x:Name="StudioCanvas" />
+                    <Border Grid.Column="1" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="10" Padding="16" BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}" BorderThickness="1">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel x:Name="StudioInspector" Spacing="14" />
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+                <ScrollViewer x:Name="SceneContent" Grid.Row="3" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Spacing="20" Padding="0,0,12,20">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Text="评估 item" FontSize="20" FontWeight="SemiBold" />
+                            <TextBlock Text="评估后点击卡片查看结果" VerticalAlignment="Center" Opacity="0.6" />
+                        </StackPanel>
+                        <StackPanel x:Name="ItemCards" Spacing="10" />
+                        <TextBlock Text="场景结果" FontSize="20" FontWeight="SemiBold" />
+                        <StackPanel x:Name="ResultsPanel" Spacing="10">
+                            <TextBlock Text="完成参数配置并导入帧数据后，点击“开始评估”。" TextWrapping="Wrap" Opacity="0.7" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
